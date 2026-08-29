@@ -169,6 +169,53 @@ def _review_cases(
     return {ticker: tuple(sorted(issues)) for ticker, issues in sorted(cases.items())}
 
 
+def _referenced_ids(value: object) -> set[str]:
+    refs: set[str] = set()
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if key in {"evidence_refs", "selected_numeric_fact_refs"} and isinstance(
+                item, (list, tuple)
+            ):
+                refs.update(str(ref) for ref in item)
+            else:
+                refs.update(_referenced_ids(item))
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            refs.update(_referenced_ids(item))
+    return refs
+
+
+def _bounded_evidence(
+    packet: DecisionEvidencePacket,
+    *,
+    selected_context: object,
+) -> list[dict[str, object]]:
+    selected = _referenced_ids(selected_context)
+    category_counts: Counter[str] = Counter()
+    rows: list[dict[str, object]] = []
+    for ref in packet.evidence:
+        category = str(ref.category)
+        category_limit = (
+            6 if category in {"flows", "market", "price_structure", "technical_feature"} else 3
+        )
+        if ref.ref_id not in selected and category_counts[category] >= category_limit:
+            continue
+        category_counts[category] += 1
+        rows.append(
+            {
+                "ref_id": ref.ref_id,
+                "category": ref.category,
+                "label": ref.label,
+                "statement": ref.statement[:520],
+                "as_of": ref.as_of,
+                "value": str(ref.value) if ref.value is not None else None,
+                "unit": ref.unit,
+                "numeric_prose_eligible": ref.numeric_prose_eligible,
+            }
+        )
+    return rows
+
+
 def _adjudication_prompt(context: Mapping[str, object]) -> str:
     return """You are the bounded final adjudicator for one analytical BUY/HOLD/SELL calibration case.
 
@@ -224,6 +271,11 @@ def _prepare(args: argparse.Namespace) -> None:
     for ticker, issues in cases.items():
         name = f"adjudication-{ticker}"
         packet = DecisionEvidencePacket.model_validate(evidence_rows[ticker]["evidence_packet"])
+        prior_summary = _prior_summary(prior_records[ticker])
+        selected_context = {
+            "prior_review": prior_summary,
+            "blind_rerun_candidate": blind_rows[ticker]["candidate"],
+        }
         context = {
             "ticker": ticker,
             "reviewed_issues": issues,
@@ -233,10 +285,13 @@ def _prepare(args: argparse.Namespace) -> None:
                 "market": packet.market,
                 "assessment_date": packet.assessment_date,
                 "horizon": packet.horizon,
-                "evidence": [row.model_dump(mode="json") for row in packet.evidence],
+                "evidence": _bounded_evidence(
+                    packet,
+                    selected_context=selected_context,
+                ),
                 "data_quality_cautions": packet.data_quality_cautions,
             },
-            "prior_review": _prior_summary(prior_records[ticker]),
+            "prior_review": prior_summary,
             "blind_rerun_candidate": blind_rows[ticker]["candidate"],
         }
         _write_text(args.trial_dir / f"{name}.prompt.txt", _adjudication_prompt(context))
