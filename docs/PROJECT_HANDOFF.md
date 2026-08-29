@@ -5,6 +5,26 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - Cross-Market AI Decision Engine v1
+
+Start with `docs/reports/20260829-decision-canary-readiness.json`, the KR/US current-shadow reports,
+temporal replay, message-quality report, exact test-sink receipt, and artifact index. The exact
+instruction commit is `ec6ea8fa4449fd34961ecbbcf995064c46ff94a2`; implementation is
+`f28d4bb3b8eacebe7fb48a3ca7800094711793eb`.
+
+The signed-in Codex CLI used `gpt-5.6-sol` at `xhigh`. Current shadow passed `20/20` with decision
+distribution BUY `2`, HOLD `18`, SELL `0`; numeric binding is `54/54` automatic. Temporal replay
+passed all `200` immutable checkpoints with no look-ahead leak or unexplained churn and is
+`PARTIAL_SAFE` only because raw historical D/W/M bars and forward outcomes are unavailable. The
+dedicated test sink closed at exact `20/20` after a bounded rate-limit continuation; production
+recipient sends/intents, duplicates, and orphans are zero.
+
+State is `TEST_SINK_READY`, canary readiness is `PASS`, and production canary remains disabled.
+Open P0/material P1 is `0/0`; the three P2 items are historical D/W/M archival, forward diagnostics,
+and operator wording review. Next action is `REVIEW_SHADOW_DECISIONS`. Do not connect this engine
+to production packets, tasks, Telegram, assessments, or trading semantics without a separate
+operator-approved canary instruction.
+
 ## Latest Handoff - One-Shot KR Close Live Proof
 
 Use instruction commit `a0d8f190a0dd2105925810bcf21eeb1d483e0277` and start with

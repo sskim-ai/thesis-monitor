@@ -19,6 +19,7 @@
 - `20260829-decision-test-sink.md`
 - `20260829-decision-message-quality.md`
 - `20260829-decision-canary-readiness.md`
+- `20260829-decision-validation.md`
 - `20260829-ohlcv-feature-catalog.json`
 - `20260829-current-shadow-decisions.json`
 - `20260829-temporal-shadow-replay.json`

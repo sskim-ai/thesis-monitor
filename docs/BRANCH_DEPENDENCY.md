@@ -498,3 +498,15 @@ quality thresholds, and Price Structure numeric ownership. The isolated 14-messa
 does not count as natural production proof. No descendant may relabel the prior night session as
 Friday/Saturday current data, expose recipient values, manually run production, create a production
 delivery intent for proof, or enable Production Assist.
+
+The cross-market decision-engine branch starts from exact instruction commit
+`ec6ea8fa4449fd34961ecbbcf995064c46ff94a2`, whose parent is clean operating main
+`7269120fb4d97abb61c5d5d5f91863f4c998e84b`. Implementation
+`f28d4bb3b8eacebe7fb48a3ca7800094711793eb` adds two unreferenced shadow services, an archive-only
+evidence/AI/test tool, tests, and reports. No production module imports either service.
+
+Any future canary must descend from this implementation, preserve `xhigh` signed-in CLI reasoning,
+canonical evidence/numeric ownership, completed-bar and no-look-ahead gates, AI-owned decisions,
+and deterministic omission on failure. It must not enable production automatically, fabricate a
+score-based fallback decision, create order sizing, expose recipient values, or reinterpret the
+test-sink proof as natural production evidence. Operator review is the next dependency.

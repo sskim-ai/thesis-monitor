@@ -1,5 +1,23 @@
 # Next Session Prompt
 
+Latest major work follows exact instruction commit
+`ec6ea8fa4449fd34961ecbbcf995064c46ff94a2` and implementation
+`f28d4bb3b8eacebe7fb48a3ca7800094711793eb`. Read
+`docs/reports/20260829-decision-canary-readiness.json`, both current-shadow reports, temporal replay,
+message quality, test-sink receipt, and artifact index first.
+
+The signed-in Codex CLI used `gpt-5.6-sol` with `xhigh`. Current decisions pass `20/20`, temporal
+checkpoints pass `200/200` as `PARTIAL_SAFE`, and the non-production sink closed exact `20/20` with
+zero production sends. `DECISION_ENGINE_STATE=TEST_SINK_READY`,
+`DECISION_CANARY_READINESS=PASS`, and production canary is still disabled.
+
+Next action: `REVIEW_SHADOW_DECISIONS`. Review BUY/HOLD/SELL selection, mixed-language wording,
+message density, and the three P2 items. Do not auto-enable a production canary, mutate a task or
+assessment, send production Telegram, or introduce order sizing. A bounded canary requires a new
+explicit operator instruction.
+
+---
+
 Latest bounded repair follows exact work-instruction commit
 `f8ca4fcb4557037468e35578a98a66aa9cb750b5` and implementation
 `f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`. Read

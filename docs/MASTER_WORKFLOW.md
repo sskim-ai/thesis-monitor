@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v24`
-As of: `2026-08-28`
+Master Workflow: `v25`
+As of: `2026-08-29`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/run-now-one-shot-kr-close-live-proof`
+Latest evidence branch: `codex/20260829-cross-market-ai-decision-engine-v1`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,25 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. Cross-Market AI Decision Engine v1
+
+The exact instruction commit is `ec6ea8fa4449fd34961ecbbcf995064c46ff94a2`; implementation is
+`f28d4bb3b8eacebe7fb48a3ca7800094711793eb`. The new archive/shadow-only engine builds a canonical
+D/W/M OHLCV feature catalog, per-stock evidence packets, and AI-owned analytical BUY/HOLD/SELL
+classifications. Signed-in Codex CLI ran `gpt-5.6-sol` with `model_reasoning_effort="xhigh"`.
+
+Current shadow decisions pass `20/20` with `54/54` automatic numeric bindings, zero unresolved
+numeric claims, and zero substantive cross-ticker repetition. The immutable temporal replay passes
+`200/200` with look-ahead leak and unexplained churn both zero; it remains honestly `PARTIAL_SAFE`
+because full historical D/W/M bars and forward 20/60/120 outcome diagnostics are not archived.
+The dedicated non-production sink received `20/20` exact payloads after a bounded 18+2 rate-limit
+continuation, with duplicate/orphan and production recipient send/intent all zero.
+
+`DECISION_ENGINE_STATE=TEST_SINK_READY` and `DECISION_CANARY_READINESS=PASS`, with open P0/material
+P1 `0/0`. Production canary, production packet consumption, scheduled prompts, fallback, DB,
+assessments, and automated trading remain unchanged. The next action is
+`REVIEW_SHADOW_DECISIONS`; do not enable a production canary without separate operator approval.
 
 ## 0. Latest One-Shot KR Close Live Proof
 
