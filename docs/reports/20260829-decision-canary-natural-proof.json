@@ -1,0 +1,12 @@
+{
+  "contract": "cross-market-decision-canary-natural-proof-v1",
+  "as_of": "2026-08-29T17:55:00+09:00",
+  "status": "PENDING",
+  "kr": {"required_cycles": 2, "observed_cycles": 0, "cycles": []},
+  "us": {"required_cycles": 2, "observed_cycles": 0, "cycles": []},
+  "natural_buy_live_proof": "PENDING",
+  "manual_task_runs_used_as_proof": 0,
+  "manual_production_sends_used_as_proof": 0,
+  "unexplained_canary_decision_churn": 0,
+  "expansion_recommendation": "HOLD"
+}

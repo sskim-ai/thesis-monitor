@@ -4,7 +4,7 @@ Master Workflow: `v26`
 As of: `2026-08-29`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260829-cross-market-ai-decision-quality-review-before-canary`
+Latest evidence branch: `codex/20260829-cross-market-decision-engine-bounded-canary`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,24 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. Bounded Cross-Market Decision Canary
+
+Exact work instructions were committed first as `c62ddff`; implementation is
+`a639d326a578bb7f3a2c53b1df31723bfb2b9829`. The production decision surface is limited to KR
+`003690,000660` and US `GOOGL,RXRX`. Current natural classifications are `HOLD/HOLD/HOLD/SELL`;
+current BUY is zero and no BUY was forced. Signed-in Codex CLI uses `gpt-5.6-sol / xhigh`.
+
+The dedicated test sink received four current production-equivalent messages plus two explicitly
+historical BUY fixtures `6/6 exact`. Production recipient sends/intents, duplicates, orphans,
+unowned retries, order language, Price Structure numeric changes, and non-canary decision blocks
+are all zero. Identical-evidence model churn found in the first fresh pass is closed by the
+`cross-market-decision-canary-continuity-state-v1` gate; rejected attempts remain archived.
+
+The bounded state is `ENABLED_AWAITING_NATURAL_PROOF`, with open P0/material P1 `0/0`. Natural
+evidence is still KR `0/2` and US `0/2`, so expansion is `HOLD`. Do not manually run tasks or send
+production messages to manufacture proof. Wait for two ordinary cycles per market; genuine BUY
+live proof may remain pending until a natural BUY occurs.
 
 ## 0. Cross-Market Decision Quality Review Before Canary
 

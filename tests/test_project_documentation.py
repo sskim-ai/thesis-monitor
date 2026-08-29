@@ -128,15 +128,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-decision-calibration-p1-repair-before-canary"
+        "codex/20260829-cross-market-decision-engine-bounded-canary"
     )
     assert state["current_phase"] == (
-        "decision_calibration_p1_closed_canary_ready_with_observation"
+        "bounded_decision_canary_enabled_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
-        "20260829_decision_calibration_p1_repair_before_canary"
+        "20260829_cross_market_decision_engine_bounded_canary_preenable"
     )
-    assert state["next_default_phase"] == ("prepare_bounded_decision_canary_instruction")
+    assert state["next_default_phase"] == (
+        "wait_for_two_natural_canary_cycles_per_market"
+    )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -148,11 +150,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    runtime_code_commit = "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
+    canary_code_commit = "a639d326a578bb7f3a2c53b1df31723bfb2b9829"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["deployed_code_commit"] == runtime_code_commit
-    assert state["main_code_commit"] == shadow_code_commit
-    assert state["operating_code_commit"] == shadow_code_commit
+    assert state["deployed_code_commit"] == canary_code_commit
+    assert state["main_code_commit"] == canary_code_commit
+    assert state["operating_code_commit"] == canary_code_commit
+    canary = state["cross_market_decision_bounded_canary_20260829"]
+    assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
+    assert canary["kr_subjects"] == ["003690", "000660"]
+    assert canary["us_subjects"] == ["GOOGL", "RXRX"]
+    assert canary["current_distribution"] == {"BUY": 0, "HOLD": 3, "SELL": 1}
+    assert canary["preenable_test_sink"] == "PASS_6_OF_6_EXACT"
+    assert canary["production_recipient_send"] == 0
+    assert canary["unexplained_canary_decision_churn"] == 0
+    assert canary["kr_natural_cycles"] == 0
+    assert canary["us_natural_cycles"] == 0
+    assert canary["expansion_recommendation"] == "HOLD"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -1219,7 +1232,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == ("930952132077e8403bcec1a7e2c52d5732d8521a")
+    assert state["current_commit"] == canary_code_commit
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

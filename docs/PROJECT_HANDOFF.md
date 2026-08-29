@@ -5,6 +5,22 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
+## Latest Handoff - Bounded Cross-Market Decision Canary
+
+Read `docs/reports/20260829-decision-canary-state.json`, final status, churn analysis, pre-enable
+test, validation, natural-proof JSON, and artifact index first. Instructions were committed first as
+`c62ddff`; implementation is `a639d326a578bb7f3a2c53b1df31723bfb2b9829`.
+
+The exact canary is KR `003690,000660` and US `GOOGL,RXRX`. Current natural decisions are
+`HOLD/HOLD/HOLD/SELL`, produced with signed-in Codex CLI `gpt-5.6-sol / xhigh`. Current BUY is zero;
+historical BUY coverage for `003690` and `GOOGL` is test-only. The dedicated sink passed `6/6`
+exact with zero production-recipient send or intent.
+
+Identical-evidence churn discovered during pre-enable was closed by an evidence-bound continuity
+gate. Open P0/material P1 is `0/0`. State is `ENABLED_AWAITING_NATURAL_PROOF`; KR and US natural
+cycle counts are each zero, BUY live proof is pending, and expansion is HOLD. Do not manufacture
+proof with a manual task or Telegram send. Review the next two ordinary cycles per market.
+
 ## Latest Handoff - Decision Calibration P1 Repair Before Canary
 
 Start with `docs/reports/20260829-decision-calibration-readiness.json`, the repaired 20-stock

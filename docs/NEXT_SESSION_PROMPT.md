@@ -1,5 +1,21 @@
 # Next Session Prompt
 
+Latest major work follows instruction commit `c62ddff` and implementation
+`a639d326a578bb7f3a2c53b1df31723bfb2b9829`. Read the `20260829-decision-canary-*` reports,
+natural-proof JSON, BUY fixture report, and completion bundle first.
+
+The bounded production canary is limited to KR `003690,000660` and US `GOOGL,RXRX`. Current
+decisions are `HOLD/HOLD/HOLD/SELL`; signed-in Codex CLI uses `gpt-5.6-sol / xhigh`. Pre-enable
+test-sink delivery passed `6/6 exact`, including two clearly historical BUY fixtures. Open
+P0/material P1 is `0/0`; non-canary visibility, global enablement, production test sends, and Price
+Structure numeric diffs are zero.
+
+State is `ENABLED_AWAITING_NATURAL_PROOF`. Next action is read-only review of two normal KR and two
+normal US canary cycles. Do not run a Scheduled Task or send Telegram manually, do not expand the
+subject set, and do not claim live BUY proof unless a genuine current BUY occurs.
+
+---
+
 Latest major work follows exact instruction commit
 `5ccc8aadc29644295164b612de163bbf06fbcf76` and calibrated implementation
 `930952132077e8403bcec1a7e2c52d5732d8521a`. Read
