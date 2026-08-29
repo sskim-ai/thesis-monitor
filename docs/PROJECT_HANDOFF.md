@@ -2077,3 +2077,21 @@ coverage errors; the backup has three market-evidence-consumption errors and one
 allowlist error. Rejected AI was not sent. Preserve the already-proven market-data and delivery
 parity, and perform only a separately authorized bounded AI validation repair. US Price Structure
 natural proof was not adjudicated by this market-message review. Production Assist remains OFF.
+
+## 2026-08-29 US Night-Futures / Run-45 AI Repair Handoff
+
+Start with `docs/reports/20260829-us-night-ai-integrated-readiness.json` and the artifact index.
+Exact instruction commit is `f8ca4fcb4557037468e35578a98a66aa9cb750b5`; implementation is
+`f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`.
+
+Official KRX evidence establishes end-date semantics, while the required Saturday `20260829` row
+is not published. Preserve the existing safe omission; mapping the session to Friday would relabel
+the prior night session and is prohibited. Run-45 primary/backup validation now passes `37 -> 0`
+and `4 -> 0`; runtime quality, US13, frozen replay, and Price Structure numeric parity all pass.
+The dedicated non-production sink received exactly 14 production-equivalent messages once, with
+zero duplicate, orphan, production-recipient send, or production intent.
+
+Open P0/material P1 are `0/0`. After promotion, the only next action is
+`WAIT_FOR_NEXT_NATURAL_US_RUN`. Inspect the natural AI route, exact receipts, and night-futures
+visibility or safe omission read-only. Never expose recipient values, run a Scheduled Task manually,
+or send a production Telegram message. Production Assist remains OFF.

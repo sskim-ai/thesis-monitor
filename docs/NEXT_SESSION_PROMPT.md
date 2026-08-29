@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+Latest bounded repair follows exact work-instruction commit
+`f8ca4fcb4557037468e35578a98a66aa9cb750b5` and implementation
+`f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`. Read
+`docs/reports/20260829-us-night-ai-integrated-readiness.json`, the run-45 validation/replay reports,
+the exact test messages, test-delivery receipt, night-futures source-contract reports, and artifact
+index first.
+
+The run-45 primary/backup validator results are `37 -> 0` and `4 -> 0`; runtime quality, US13,
+numeric ownership, and Price Structure parity pass. A dedicated private test sink received the
+market plus 13 stock messages `14/14` with exact payload parity and zero production delivery.
+Official KRX evidence proves end-date semantics, but the Friday-night-to-Saturday `20260829` source
+row is not published, so current night futures remain safely omitted.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_RUN`. Do not run a Scheduled Task or send Telegram manually.
+Inspect the next natural AI route, exact delivery receipt, duplicate/orphan state, and canonical
+night-futures visibility or safe omission read-only. Keep Production Assist OFF and never expose
+Telegram recipient values.
+
+---
+
 Repository: `sskim-ai/thesis-monitor`
 
 Latest authoritative review follows instruction commit

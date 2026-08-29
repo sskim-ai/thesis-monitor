@@ -1,0 +1,39 @@
+# Run-45 Primary AI Error Inventory
+
+- `CORZ:unknown_fact_ids:monitoring:risk_reward_transition`
+- `CORZ:interpretation_unknown_fact_ids:monitoring:risk_reward_transition`
+- `CRCL:financial_quality_denied_fact_used:valuation:current`
+- `MU:inventory_relation_not_declared`
+- `MU:inventory_business_owner_fact_missing`
+- `MU:inventory_primary_numeric_claim_count`
+- `MU:inventory_label_missing`
+- `MU:inventory_numeric_ownership_count`
+- `SNDK:financial_quality_denied_fact_used:valuation:current`
+- `TSLA:inventory_relation_not_declared`
+- `TSLA:inventory_business_owner_fact_missing`
+- `TSLA:inventory_primary_numeric_claim_count`
+- `TSLA:inventory_label_missing`
+- `TSLA:inventory_numeric_ownership_count`
+- `WULF:unknown_fact_ids:monitoring:risk_reward_transition`
+- `WULF:interpretation_unknown_fact_ids:monitoring:risk_reward_transition`
+- `CRCL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 6.78배`
+- `CRCL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 87.86배`
+- `GOOGL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 12.42배`
+- `GOOGL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 19.29배`
+- `HUT:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 6.48배`
+- `HUT:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 134.61배`
+- `IBM:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 14.23배`
+- `IBM:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 17.35배`
+- `MU:valuation_interpretation_occurrence_uncovered:valuation_analysis.text:30`
+- `MU:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 19.07배`
+- `MU:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 10.46배`
+- `RXRX:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 1.95배`
+- `RXRX:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:PBR 역사적 백분위 15.6%`
+- `SNDK:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 13.78배`
+- `SNDK:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 6.5배`
+- `TSLA:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PER 181.64배`
+- `TSLA:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 15.86배`
+- `TSM:valuation_interpretation_unknown_occurrence_uncovered:valuation_analysis.text`
+- `WRD:valuation_interpretation_unknown_occurrence_uncovered:valuation_analysis.text`
+- `WULF:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:현재 PBR 52배`
+- `WULF:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:PBR 역사적 백분위 100%`

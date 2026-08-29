@@ -485,3 +485,16 @@ Any bounded AI repair may descend from this evidence but must preserve completed
 the `2026-08-29` night-session omission, macro temporal selection, and zero duplicate delivery.
 It may not reinterpret this market review as US Price Structure natural proof or mutate Telegram,
 tasks, DB, assessments, schedulers, feature flags, or Production Assist.
+
+The bounded US night-futures/run-45 repair starts from exact instruction commit
+`f8ca4fcb4557037468e35578a98a66aa9cb750b5`, whose parent is clean main
+`3cc91234ef88c655df981b0366a17045c95983f3`. Implementation
+`f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19` consumes the immutable run-45 candidates and official
+KRX daily source evidence.
+
+All descendants must preserve KRX night-session end-date semantics, safe omission when the target
+business-date row is unpublished, strict structured numeric/semantic validation, existing runtime
+quality thresholds, and Price Structure numeric ownership. The isolated 14-message test-sink proof
+does not count as natural production proof. No descendant may relabel the prior night session as
+Friday/Saturday current data, expose recipient values, manually run production, create a production
+delivery intent for proof, or enable Production Assist.

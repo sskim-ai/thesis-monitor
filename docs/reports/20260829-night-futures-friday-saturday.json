@@ -1,0 +1,245 @@
+{
+  "captured_at": "2026-08-29T00:44:15.636107+00:00",
+  "captures": [
+    {
+      "http_status": 200,
+      "query_date": "20260827",
+      "raw_payload_sha256": "c4b39853ea7a6b33edca64cc105fc14de0d76f28ea3f13a13cbe5837568cf90f",
+      "row_count": 385,
+      "selected_front_contract_rows": [
+        {
+          "BAS_DD": "20260827",
+          "CMPPREVDD_PRC": "-7.30",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (야간)",
+          "MKT_NM": "야간",
+          "PROD_NM": "코스닥150 선물",
+          "TDD_CLSPRC": "1417.80"
+        },
+        {
+          "BAS_DD": "20260827",
+          "CMPPREVDD_PRC": "40.20",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (주간)",
+          "MKT_NM": "정규",
+          "PROD_NM": "코스닥150 선물",
+          "TDD_CLSPRC": "1465.30"
+        },
+        {
+          "BAS_DD": "20260827",
+          "CMPPREVDD_PRC": "6.85",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (야간)",
+          "MKT_NM": "야간",
+          "PROD_NM": "코스피200 선물",
+          "TDD_CLSPRC": "1080.35"
+        },
+        {
+          "BAS_DD": "20260827",
+          "CMPPREVDD_PRC": "16.35",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (주간)",
+          "MKT_NM": "정규",
+          "PROD_NM": "코스피200 선물",
+          "TDD_CLSPRC": "1089.85"
+        }
+      ]
+    },
+    {
+      "http_status": 200,
+      "query_date": "20260828",
+      "raw_payload_sha256": "ad227ce18bc32f6bc93fb6998692c0e9cf97010b9aaa55aeb95d8aaf6c0f184a",
+      "row_count": 385,
+      "selected_front_contract_rows": [
+        {
+          "BAS_DD": "20260828",
+          "CMPPREVDD_PRC": "11.60",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (야간)",
+          "MKT_NM": "야간",
+          "PROD_NM": "코스닥150 선물",
+          "TDD_CLSPRC": "1476.90"
+        },
+        {
+          "BAS_DD": "20260828",
+          "CMPPREVDD_PRC": "-8.30",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (주간)",
+          "MKT_NM": "정규",
+          "PROD_NM": "코스닥150 선물",
+          "TDD_CLSPRC": "1457.00"
+        },
+        {
+          "BAS_DD": "20260828",
+          "CMPPREVDD_PRC": "-8.00",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (야간)",
+          "MKT_NM": "야간",
+          "PROD_NM": "코스피200 선물",
+          "TDD_CLSPRC": "1081.85"
+        },
+        {
+          "BAS_DD": "20260828",
+          "CMPPREVDD_PRC": "-21.85",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (주간)",
+          "MKT_NM": "정규",
+          "PROD_NM": "코스피200 선물",
+          "TDD_CLSPRC": "1068.00"
+        }
+      ]
+    },
+    {
+      "http_status": 200,
+      "query_date": "20260829",
+      "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+      "row_count": 0,
+      "selected_front_contract_rows": []
+    }
+  ],
+  "contract": "night-futures-friday-saturday-source-audit-v1",
+  "contract_outcome": "SOURCE_LIMITATION_SAFE",
+  "end_date_crosschecks": [
+    {
+      "contract": "A0669000",
+      "derived_change": 11.6,
+      "match": true,
+      "night_bas_dd": "20260828",
+      "night_close": "1476.90",
+      "provider_change": 11.6,
+      "reference_day_bas_dd": "20260827",
+      "reference_day_close": "1465.30"
+    },
+    {
+      "contract": "A0169000",
+      "derived_change": -8.0,
+      "match": true,
+      "night_bas_dd": "20260828",
+      "night_close": "1081.85",
+      "provider_change": -8.0,
+      "reference_day_bas_dd": "20260827",
+      "reference_day_close": "1089.85"
+    }
+  ],
+  "failure_count": 0,
+  "friday_saturday_expected_bas_dd": "20260829",
+  "friday_saturday_positive_proof": "NOT_OBSERVED",
+  "friday_saturday_row_count": 0,
+  "historical_mapping_audit": "PASS",
+  "historical_session_mapping": [
+    {
+      "attempt_count": 4,
+      "expected_night_bas_dd": "2026-08-22",
+      "expected_preceding_day_bas_dd": "2026-08-21",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-20",
+        "2026-08-21"
+      ],
+      "run_date": "2026-08-22",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-22",
+      "expected_preceding_day_bas_dd": "2026-08-21",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-20",
+        "2026-08-21"
+      ],
+      "run_date": "2026-08-23",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 4,
+      "expected_night_bas_dd": "2026-08-22",
+      "expected_preceding_day_bas_dd": "2026-08-21",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-20",
+        "2026-08-21"
+      ],
+      "run_date": "2026-08-24",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-25",
+      "expected_preceding_day_bas_dd": "2026-08-24",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-21",
+        "2026-08-24"
+      ],
+      "run_date": "2026-08-25",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-26",
+      "expected_preceding_day_bas_dd": "2026-08-25",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-24",
+        "2026-08-25"
+      ],
+      "run_date": "2026-08-26",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-27",
+      "expected_preceding_day_bas_dd": "2026-08-26",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-25",
+        "2026-08-26"
+      ],
+      "run_date": "2026-08-27",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-28",
+      "expected_preceding_day_bas_dd": "2026-08-27",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-26",
+        "2026-08-27"
+      ],
+      "run_date": "2026-08-28",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_count": 6,
+      "expected_night_bas_dd": "2026-08-29",
+      "expected_preceding_day_bas_dd": "2026-08-28",
+      "ready_product_count": 0,
+      "returned_night_business_dates": [
+        "2026-08-27",
+        "2026-08-28"
+      ],
+      "run_date": "2026-08-29",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "user_visible_integration": false
+    }
+  ],
+  "provider": "KRX official Open API",
+  "raw_night_futures_response_captured": "PASS",
+  "raw_summary_night_futures_bypass": 0,
+  "request_count": 3,
+  "root_cause": "UPSTREAM_NOT_PUBLISHED",
+  "secret_fields_emitted": 0,
+  "service": "fut_bydd_trd",
+  "source_date_semantics": "END_DATE",
+  "stale_night_futures_visible": 0,
+  "success_count": 3
+}

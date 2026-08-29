@@ -119,15 +119,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-us-morning-market-data-extraction-review"
+        "codex/20260829-us-night-futures-friday-saturday-ai-validator-repair"
     )
-    assert state["current_phase"] == "us_morning_market_data_review_partial_safe"
+    assert state["current_phase"] == (
+        "us_night_futures_source_limitation_and_run45_ai_validator_repair_ready_to_deploy"
+    )
     assert state["last_completed_phase"] == (
-        "20260829_us_morning_market_data_extraction_and_message_review"
+        "20260829_us_night_futures_friday_saturday_and_ai_validator_repair"
     )
-    assert state["next_default_phase"] == (
-        "bounded_us_ai_full_stock_validation_repair"
-    )
+    assert state["next_default_phase"] == "wait_for_next_natural_us_run"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -143,7 +143,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    runtime_code_commit = "104b0a04d326e66178c9f432798fdeb6cf82a85a"
+    runtime_code_commit = "3cc91234ef88c655df981b0366a17045c95983f3"
     assert state["deployed_code_commit"] == runtime_code_commit
     assert state["main_code_commit"] == runtime_code_commit
     assert state["operating_code_commit"] == runtime_code_commit
@@ -224,6 +224,28 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "run45_ai_full_stock_validation_rejected"
     ]
     assert morning_review["runtime_behavior_changed"] is False
+    repair = state["us_night_futures_friday_saturday_ai_validator_repair_20260829"]
+    assert repair["status"] == "READY_TO_DEPLOY"
+    assert repair["instruction_commit"] == (
+        "f8ca4fcb4557037468e35578a98a66aa9cb750b5"
+    )
+    assert repair["implementation_commit"] == (
+        "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
+    )
+    assert repair["night_futures_source_date_semantics"] == "END_DATE"
+    assert repair["friday_saturday_source_result"] == "UPSTREAM_NOT_PUBLISHED"
+    assert repair["night_futures_outcome"] == "SOURCE_LIMITATION_SAFE"
+    assert repair["primary_validator_before_after"] == [37, 0]
+    assert repair["backup_validator_before_after"] == [4, 0]
+    assert repair["runtime_message_quality"] == "PASS"
+    assert repair["us13_ai_validation"] == "PASS"
+    assert repair["test_sink_delivery"] == "PASS_14_OF_14"
+    assert repair["test_sink_exact_payload_match"] is True
+    assert repair["production_recipient_send"] == 0
+    assert repair["production_delivery_intent_created"] == 0
+    assert repair["open_p0"] == []
+    assert repair["open_material_p1"] == []
+    assert repair["next_action"] == "WAIT_FOR_NEXT_NATURAL_US_RUN"
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1296,7 +1318,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "7fc982ecce30a0af261dcda198ef50280e707531"
+        "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

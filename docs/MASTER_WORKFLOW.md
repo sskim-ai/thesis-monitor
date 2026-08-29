@@ -1947,3 +1947,26 @@ review is `PARTIAL_SAFE` with open P0/material P1 `0/1`. The P1 is bounded to AI
 does not reopen current market-data, temporal-safety, renderer, or delivery proof. No Telegram,
 task, DB, assessment, scheduler, feature, or Production Assist mutation was performed by this
 review.
+
+### 40.24 US Friday/Saturday Night Futures and Run-45 AI Validator Repair
+
+Exact work-instruction commit `f8ca4fcb4557037468e35578a98a66aa9cb750b5` precedes
+implementation `f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`. Official KRX read-only evidence proves that
+`BAS_DD` is the night-session end business date: the `20260828` rows exactly reconcile the prior
+regular-session closes and provider changes. The Friday-night-to-Saturday target therefore requires
+`BAS_DD=20260829`; that official endpoint returned no rows. This is `UPSTREAM_NOT_PUBLISHED`, not a
+date-resolver defect. Existing current-session omission remains fail-closed with stale visible facts
+and raw-summary bypass both zero.
+
+The immutable run-45 primary and backup AI candidates move from `37 -> 0` and `4 -> 0` validation
+errors. The repair uses existing structured ownership contracts for selected US market slots,
+field-specific valuation interpretation, inventory relations, and canonical monitoring facts.
+Strict semantic, numeric, runtime-quality, and Price Structure gates are unchanged. Primary and
+backup replay pass; the isolated test sink received the production-equivalent market plus 13 stock
+messages `14/14` once with exact payload parity and zero duplicate, orphan, production-recipient
+send, or production delivery intent.
+
+Open P0/material P1 are `0/0`; Production Assist stays OFF. State is `READY_TO_DEPLOY`. After clean
+promotion, wait for the next natural US run and inspect AI routing, exact delivery, and the canonical
+night-futures section or safe omission read-only. Do not manually trigger a Scheduled Task or send a
+production Telegram message.
