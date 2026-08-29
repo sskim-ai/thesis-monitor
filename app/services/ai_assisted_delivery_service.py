@@ -19,6 +19,15 @@ from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
 from app.services.delta_first_rendering_service import DeltaFirstRenderPlan
+from app.services.decision_canary_service import (
+    DecisionCanaryArtifact,
+    advance_decision_canary_state,
+    configured_decision_canary_subjects,
+    decision_canary_armed,
+    decision_canary_paths,
+    insert_decision_canary_block,
+    load_decision_canary_artifact,
+)
 from app.services.free_analyst_production_integration_service import (
     ProductionCandidate,
     build_production_candidate,
@@ -481,6 +490,30 @@ def _file_sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _load_delivery_decision_canary(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    output_path: Path,
+) -> tuple[DecisionCanaryArtifact | None, str, Path | None]:
+    settings = get_settings()
+    if not decision_canary_armed(settings=settings):
+        return None, "NOT_ACTIVE", None
+    artifact_path = decision_canary_paths(
+        output_path,
+        claim_id=output.claim_id,
+    )["final"]
+    try:
+        artifact = load_decision_canary_artifact(
+            artifact_path,
+            packet=packet,
+            claim_id=output.claim_id,
+            settings=settings,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return None, "CANARY_DECISION_SUPPRESSED_SAFE", artifact_path
+    return artifact, "PASS", artifact_path
 
 
 def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, str]]:
@@ -1184,11 +1217,30 @@ async def deliver_validated_ai_review(
         )
     output = AIDailyReviewOutput.model_validate(_read_json(output_path))
     adaptive_canary_active = free_analyst_adaptive_canary_armed()
+    decision_artifact, decision_artifact_state, decision_artifact_path = (
+        _load_delivery_decision_canary(packet, output, output_path)
+    )
+    decision_delivery_state = decision_artifact_state
+    settings = get_settings()
+    decision_targets = set(
+        decision_artifact.selected_subjects
+        if decision_artifact is not None
+        else (
+            configured_decision_canary_subjects(market, settings=settings)  # type: ignore[arg-type]
+            if decision_canary_armed(settings=settings)
+            else ()
+        )
+    )
     current = (now or datetime.now(KST)).astimezone(KST)
     target_days = get_settings().ai_review_pilot_target_success_days
     pilot_day = min(_pilot_day(market), target_days)
     reviews = {item.ticker: item for item in output.stock_reviews}
     archive_dir = _archive_directory(packet)
+    if decision_artifact is not None:
+        _atomic_json(
+            archive_dir / "decision-canary.json",
+            decision_artifact.model_dump(mode="json"),
+        )
     _atomic_json(archive_dir / "packet.json", packet)
     _atomic_json(archive_dir / "ai-review.json", output.model_dump(mode="json"))
     _atomic_json(archive_dir / "market-context.json", packet.get("market_context", {}))
@@ -1349,6 +1401,7 @@ async def deliver_validated_ai_review(
                         "logical_identity": metadata.get("delivery_identity"),
                         "common_ai_core_message_key": metadata.get("common_ai_core_message_key"),
                         "common_ai_core": metadata.get("common_ai_core"),
+                        "decision_canary": metadata.get("decision_canary"),
                         "text": str(payload.get("text") or ""),
                     }
                 )
@@ -1627,6 +1680,119 @@ async def deliver_validated_ai_review(
                 }
             )
             quality_scope_tickers = selected_stock_tickers
+
+        base_quality_messages = copy.deepcopy(quality_messages)
+        base_quality_output = quality_output
+        base_quality_scope_tickers = (
+            set(quality_scope_tickers) if quality_scope_tickers is not None else None
+        )
+        decision_base_texts: dict[str, str] = {}
+        decision_included_tickers: set[str] = set()
+        decision_blocks = {
+            block.ticker: block.text
+            for block in (decision_artifact.blocks if decision_artifact is not None else ())
+        }
+        if reused_persisted_payload:
+            decision_included_tickers = {
+                str(item.get("ticker") or "")
+                for item in final_messages
+                if isinstance(item.get("decision_canary"), dict)
+                and item["decision_canary"].get("state") == "included"
+            }
+        else:
+            payloads_by_ticker = {
+                delivery.ticker: new_payload for delivery, new_payload in prepared_payloads
+            }
+            messages_by_ticker = {str(item.get("ticker") or ""): item for item in final_messages}
+            for ticker in decision_targets:
+                new_payload = payloads_by_ticker.get(ticker)
+                message = messages_by_ticker.get(ticker)
+                if new_payload is None or message is None:
+                    continue
+                metadata = _pilot_metadata(new_payload)
+                decision_metadata: dict[str, object] = {
+                    "contract": "cross-market-decision-bounded-canary-v1",
+                    "state": decision_artifact_state,
+                    "packet_id": packet_id,
+                    "claim_id": output.claim_id,
+                    "assessment_date": packet["assessment_date"],
+                    "rejected_decision_sent": 0,
+                }
+                block = decision_blocks.get(ticker)
+                if block is not None:
+                    base_text = str(new_payload.get("text") or "")
+                    combined = insert_decision_canary_block(base_text, block)
+                    if len(combined) <= get_settings().telegram_message_max_chars:
+                        decision_base_texts[ticker] = base_text
+                        new_payload["text"] = combined
+                        message["text"] = combined
+                        decision_included_tickers.add(ticker)
+                        decision_metadata.update(
+                            {
+                                "state": "included",
+                                "decision": next(
+                                    row.decision
+                                    for row in decision_artifact.decisions
+                                    if row.ticker == ticker
+                                ),
+                                "reasoning_model": decision_artifact.reasoning_model,
+                                "reasoning_effort": decision_artifact.reasoning_effort,
+                            }
+                        )
+                    else:
+                        decision_delivery_state = "CANARY_DECISION_SUPPRESSED_SAFE"
+                        decision_metadata.update(
+                            {
+                                "state": "CANARY_DECISION_SUPPRESSED_SAFE",
+                                "suppression_reason": "combined_message_too_long",
+                            }
+                        )
+                elif decision_artifact_state != "NOT_ACTIVE":
+                    decision_metadata["suppression_reason"] = "validated_artifact_unavailable"
+                metadata["decision_canary"] = decision_metadata
+                new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+                message["decision_canary"] = decision_metadata
+
+        if decision_included_tickers and quality_messages is not None:
+            quality_keys = {str(item.get("ticker") or "") for item in quality_messages}
+            quality_messages = [
+                *quality_messages,
+                *[
+                    item
+                    for item in final_messages
+                    if str(item.get("ticker") or "") in decision_included_tickers
+                    and str(item.get("ticker") or "") not in quality_keys
+                ],
+            ]
+            quality_scope_tickers = {
+                *(quality_scope_tickers or set()),
+                *decision_included_tickers,
+            }
+            quality_output = output.model_copy(
+                update={
+                    "stock_reviews": [
+                        review
+                        for review in output.stock_reviews
+                        if review.ticker in quality_scope_tickers
+                    ]
+                }
+            )
+
+        _atomic_json(
+            archive_dir / "decision-canary-delivery.json",
+            {
+                "contract": "cross-market-decision-bounded-canary-v1",
+                "packet_id": packet_id,
+                "claim_id": output.claim_id,
+                "artifact_state": decision_artifact_state,
+                "delivery_state": decision_delivery_state,
+                "artifact_path": str(decision_artifact_path) if decision_artifact_path else None,
+                "configured_subjects": sorted(decision_targets),
+                "included_subjects": sorted(decision_included_tickers),
+                "production_scope_count": len(decision_included_tickers),
+                "global_decision_block_enabled": 0,
+            },
+        )
         deterministic_archive = archive_dir / "deterministic-messages.json"
         if deterministic_messages or not deterministic_archive.exists():
             _archive_messages(
@@ -1691,6 +1857,70 @@ async def deliver_validated_ai_review(
                 expected_stock_tickers=quality_scope_tickers,
             )
             _atomic_json(receipt_path, receipt)
+        if not reused_persisted_payload and not receipt_valid and decision_included_tickers:
+            for delivery, new_payload in prepared_payloads:
+                if delivery.ticker not in decision_included_tickers:
+                    continue
+                new_payload["text"] = decision_base_texts[delivery.ticker]
+                metadata = _pilot_metadata(new_payload)
+                decision_metadata = dict(metadata.get("decision_canary") or {})
+                decision_metadata.update(
+                    {
+                        "state": "CANARY_DECISION_SUPPRESSED_SAFE",
+                        "suppression_reason": "combined_runtime_message_quality_failed",
+                        "rejected_decision_sent": 0,
+                    }
+                )
+                metadata["decision_canary"] = decision_metadata
+                new_payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+            for item in final_messages:
+                ticker = str(item.get("ticker") or "")
+                if ticker not in decision_included_tickers:
+                    continue
+                item["text"] = decision_base_texts[ticker]
+                decision_metadata = dict(item.get("decision_canary") or {})
+                decision_metadata.update(
+                    {
+                        "state": "CANARY_DECISION_SUPPRESSED_SAFE",
+                        "suppression_reason": "combined_runtime_message_quality_failed",
+                        "rejected_decision_sent": 0,
+                    }
+                )
+                item["decision_canary"] = decision_metadata
+            quality_messages = base_quality_messages
+            quality_output = base_quality_output
+            quality_scope_tickers = base_quality_scope_tickers
+            receipt = runtime_message_quality_receipt(
+                packet,
+                quality_output,
+                quality_messages or final_messages,
+                expected_stock_tickers=quality_scope_tickers,
+                checked_at=current,
+            )
+            receipt_valid = verify_runtime_message_quality_receipt(
+                receipt,
+                packet,
+                quality_output,
+                quality_messages or final_messages,
+                expected_stock_tickers=quality_scope_tickers,
+            )
+            _atomic_json(receipt_path, receipt)
+            _atomic_json(
+                archive_dir / "decision-canary-delivery.json",
+                {
+                    "contract": "cross-market-decision-bounded-canary-v1",
+                    "packet_id": packet_id,
+                    "claim_id": output.claim_id,
+                    "artifact_state": "CANARY_DECISION_SUPPRESSED_SAFE",
+                    "configured_subjects": sorted(decision_targets),
+                    "included_subjects": [],
+                    "suppression_reason": "combined_runtime_message_quality_failed",
+                    "rejected_decision_sent": 0,
+                    "existing_delivery_preserved": True,
+                },
+            )
+            decision_delivery_state = "CANARY_DECISION_SUPPRESSED_SAFE"
+            decision_included_tickers.clear()
         if reused_persisted_payload and not receipt_valid:
             reason = (
                 ",".join(integrity_errors)
@@ -1830,6 +2060,10 @@ async def deliver_validated_ai_review(
                 "chart_knowledge_version": output.chart_knowledge_version,
                 "chart_knowledge_sha256": output.chart_knowledge_sha256,
                 "renderer_version": PILOT_RENDERER_VERSION,
+                "decision_canary_state": (
+                    "included" if decision_included_tickers else decision_delivery_state
+                ),
+                "decision_canary_subjects": sorted(decision_included_tickers),
                 **_cash_flow_run_metadata(packet),
                 **_working_capital_run_metadata(packet),
             },
@@ -1871,12 +2105,24 @@ async def deliver_validated_ai_review(
             "message_quality_receipt_sha256": receipt_sha256,
             "rendered_payload_set_sha256": receipt.get("rendered_payload_set_sha256"),
             "dispatched_at": current.isoformat() if complete else None,
+            "decision_canary_state": (
+                "included" if decision_included_tickers else decision_delivery_state
+            ),
+            "decision_canary_subjects": sorted(decision_included_tickers),
             **_cash_flow_run_metadata(packet),
             **_working_capital_run_metadata(packet),
         }
         _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)
         recorded_day = pilot_day
         if complete:
+            if decision_artifact is not None and decision_included_tickers == set(
+                decision_artifact.selected_subjects
+            ):
+                advance_decision_canary_state(
+                    decision_artifact,
+                    settings=get_settings(),
+                    updated_at=current,
+                )
             _write_ai_archive_completion_marker(
                 packet,
                 output,

@@ -1,0 +1,566 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Literal
+
+from pydantic import Field
+
+from app.config import Settings, get_settings
+from app.services.cross_market_decision_engine_service import (
+    DecisionCandidate,
+    DecisionEvidencePacket,
+    FrozenModel,
+    canonicalize_candidate_metadata,
+    compact_ai_context,
+    decision_message_quality,
+    render_shadow_decision,
+    validate_decision_candidate,
+)
+
+
+CONTRACT_VERSION = "cross-market-decision-bounded-canary-v1"
+OUTPUT_CONTRACT = "cross-market-decision-canary-output-v1"
+ARTIFACT_CONTRACT = "cross-market-decision-canary-artifact-v1"
+RECEIPT_CONTRACT = "cross-market-decision-canary-receipt-v1"
+CANARY_STATE = "canary"
+READY_STATE = "test_sink_ready"
+CANARY_REASONING_MODEL = "gpt-5.6-sol"
+CANARY_REASONING_EFFORT = "xhigh"
+CONTINUITY_STATE_CONTRACT = "cross-market-decision-canary-continuity-state-v1"
+
+
+class DecisionCanaryContinuityBaseline(FrozenModel):
+    ticker: str
+    evidence_sha256: str
+    candidate: DecisionCandidate
+    source: str
+
+
+class DecisionCanaryContext(FrozenModel):
+    contract: Literal["cross-market-decision-bounded-canary-v1"] = CONTRACT_VERSION
+    packet_id: str
+    claim_id: str
+    market: Literal["kr", "us"]
+    assessment_date: str
+    source_packet_sha256: str
+    selected_subjects: tuple[str, ...] = Field(min_length=2, max_length=2)
+    evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=2, max_length=2)
+    continuity_baselines: tuple[DecisionCanaryContinuityBaseline, ...] = Field(
+        default=(), max_length=2
+    )
+    prepared_at: str
+
+
+class DecisionCanaryBatchOutput(FrozenModel):
+    contract: Literal["cross-market-decision-canary-output-v1"] = OUTPUT_CONTRACT
+    packet_id: str
+    claim_id: str
+    market: Literal["kr", "us"]
+    assessment_date: str
+    decisions: tuple[DecisionCandidate, ...] = Field(min_length=2, max_length=2)
+
+
+class DecisionCanaryBlock(FrozenModel):
+    ticker: str
+    decision: Literal["BUY", "HOLD", "SELL"]
+    text: str = Field(min_length=1, max_length=2200)
+
+
+class DecisionCanaryArtifact(FrozenModel):
+    contract: Literal["cross-market-decision-canary-artifact-v1"] = ARTIFACT_CONTRACT
+    status: Literal["PASS"] = "PASS"
+    packet_id: str
+    claim_id: str
+    market: Literal["kr", "us"]
+    assessment_date: str
+    source_packet_sha256: str
+    selected_subjects: tuple[str, ...] = Field(min_length=2, max_length=2)
+    reasoning_model: Literal["gpt-5.6-sol"] = CANARY_REASONING_MODEL
+    reasoning_effort: Literal["xhigh"] = CANARY_REASONING_EFFORT
+    evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=2, max_length=2)
+    decisions: tuple[DecisionCandidate, ...] = Field(min_length=2, max_length=2)
+    blocks: tuple[DecisionCanaryBlock, ...] = Field(min_length=2, max_length=2)
+    message_quality: dict[str, object]
+    validated_at: str
+
+
+class DecisionCanaryStateEntry(FrozenModel):
+    ticker: str
+    market: Literal["kr", "us"]
+    evidence_sha256: str
+    candidate: DecisionCandidate
+    source_packet_id: str
+    assessment_date: str
+    updated_at: str
+
+
+class DecisionCanaryState(FrozenModel):
+    contract: Literal["cross-market-decision-canary-continuity-state-v1"] = (
+        CONTINUITY_STATE_CONTRACT
+    )
+    state: Literal["test_sink_ready", "canary"]
+    entries: tuple[DecisionCanaryStateEntry, ...]
+
+
+def _csv_subjects(value: str) -> tuple[str, ...]:
+    subjects = tuple(item.strip().upper() for item in value.split(",") if item.strip())
+    if len(subjects) != len(set(subjects)):
+        raise ValueError("duplicate_decision_canary_subject")
+    return subjects
+
+
+def configured_decision_canary_subjects(
+    market: Literal["kr", "us"],
+    *,
+    settings: Settings | None = None,
+) -> tuple[str, ...]:
+    current = settings or get_settings()
+    raw = (
+        current.decision_engine_canary_kr_subjects
+        if market == "kr"
+        else current.decision_engine_canary_us_subjects
+    )
+    return _csv_subjects(raw)
+
+
+def decision_canary_armed(*, settings: Settings | None = None) -> bool:
+    current = settings or get_settings()
+    return bool(
+        current.decision_engine_canary_enabled and current.decision_engine_state == CANARY_STATE
+    )
+
+
+def decision_canary_preconditions(*, settings: Settings | None = None) -> dict[str, object]:
+    current = settings or get_settings()
+    kr = configured_decision_canary_subjects("kr", settings=current)
+    us = configured_decision_canary_subjects("us", settings=current)
+    checks = {
+        "enabled": current.decision_engine_canary_enabled,
+        "state_is_canary": current.decision_engine_state == CANARY_STATE,
+        "kr_exactly_two": len(kr) == 2,
+        "us_exactly_two": len(us) == 2,
+        "cross_market_unique": len(set((*kr, *us))) == 4,
+    }
+    return {
+        "contract": CONTRACT_VERSION,
+        "status": "PASS" if all(checks.values()) else "FAIL",
+        "checks": checks,
+        "kr_subjects": list(kr),
+        "us_subjects": list(us),
+        "global_decision_block_enabled": 0,
+        "automatic_subject_substitution": 0,
+    }
+
+
+def canonical_sha256(value: object) -> str:
+    payload = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def strict_json_schema(value: object) -> object:
+    if isinstance(value, dict):
+        transformed = {
+            key: strict_json_schema(item) for key, item in value.items() if key != "default"
+        }
+        properties = transformed.get("properties")
+        if isinstance(properties, dict):
+            transformed["required"] = list(properties)
+            transformed["additionalProperties"] = False
+        return transformed
+    if isinstance(value, list):
+        return [strict_json_schema(item) for item in value]
+    return value
+
+
+def decision_canary_paths(
+    final_review_path: Path,
+    *,
+    claim_id: str,
+) -> dict[str, Path]:
+    stem = final_review_path.stem
+    parent = final_review_path.parent
+    claim_stem = f"{stem}--{claim_id}"
+    return {
+        "context": parent.parent / "claims" / f"{claim_stem}.decision-context.json",
+        "prompt": parent.parent / "claims" / f"{claim_stem}.decision-prompt.txt",
+        "schema": parent.parent / "claims" / f"{claim_stem}.decision-schema.json",
+        "temp": parent / f"{claim_stem}.decision.json.tmp",
+        "final": parent / f"{stem}.decision-canary.json",
+        "receipt": parent.parent / "claims" / f"{claim_stem}.decision-receipt.json",
+        "log": parent.parent / "claims" / f"{claim_stem}.decision-cli.log",
+    }
+
+
+def decision_canary_state_path(*, settings: Settings | None = None) -> Path:
+    current = settings or get_settings()
+    return Path(current.data_dir) / "ai_review" / "decision_canary" / "state.json"
+
+
+def load_decision_canary_state(*, settings: Settings | None = None) -> DecisionCanaryState | None:
+    path = decision_canary_state_path(settings=settings)
+    if not path.exists():
+        return None
+    return DecisionCanaryState.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def write_decision_canary_state(
+    state: DecisionCanaryState,
+    *,
+    settings: Settings | None = None,
+) -> Path:
+    path = decision_canary_state_path(settings=settings)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(
+            state.model_dump(mode="json"),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+    return path
+
+
+def advance_decision_canary_state(
+    artifact: DecisionCanaryArtifact,
+    *,
+    settings: Settings | None = None,
+    updated_at: datetime | None = None,
+) -> Path:
+    current_settings = settings or get_settings()
+    existing = load_decision_canary_state(settings=current_settings)
+    entries = {row.ticker: row for row in (existing.entries if existing else ())}
+    evidence = {row.ticker: row for row in artifact.evidence_packets}
+    timestamp = (updated_at or datetime.now(UTC)).astimezone(UTC).isoformat()
+    for candidate in artifact.decisions:
+        packet = evidence[candidate.ticker]
+        entries[candidate.ticker] = DecisionCanaryStateEntry(
+            ticker=candidate.ticker,
+            market=artifact.market,
+            evidence_sha256=packet.evidence_sha256,
+            candidate=candidate,
+            source_packet_id=artifact.packet_id,
+            assessment_date=artifact.assessment_date,
+            updated_at=timestamp,
+        )
+    state = DecisionCanaryState(
+        state=current_settings.decision_engine_state,
+        entries=tuple(entries[ticker] for ticker in sorted(entries)),
+    )
+    return write_decision_canary_state(state, settings=current_settings)
+
+
+def build_decision_canary_context(
+    *,
+    packet: Mapping[str, object],
+    claim_id: str,
+    evidence_packets: Sequence[DecisionEvidencePacket],
+    prepared_at: datetime | None = None,
+    continuity_candidates: Mapping[str, DecisionCandidate] | None = None,
+    continuity_source: str = "decision_canary_state",
+    settings: Settings | None = None,
+) -> DecisionCanaryContext:
+    market = str(packet.get("market") or "").lower()
+    if market not in {"kr", "us"}:
+        raise ValueError("unsupported_decision_canary_market")
+    typed_market: Literal["kr", "us"] = "kr" if market == "kr" else "us"
+    subjects = configured_decision_canary_subjects(typed_market, settings=settings)
+    if len(subjects) != 2:
+        raise ValueError("decision_canary_requires_exactly_two_market_subjects")
+    by_ticker = {row.ticker: row for row in evidence_packets}
+    if set(by_ticker) != set(subjects):
+        raise ValueError("decision_canary_subject_evidence_mismatch")
+    packet_id = str(packet.get("packet_id") or "")
+    assessment_date = str(packet.get("assessment_date") or "")
+    if not packet_id or not assessment_date:
+        raise ValueError("decision_canary_packet_identity_missing")
+    for subject in subjects:
+        evidence = by_ticker[subject]
+        if evidence.packet_id != packet_id or evidence.assessment_date != assessment_date:
+            raise ValueError("decision_canary_evidence_freshness_mismatch")
+    ordered = tuple(by_ticker[subject] for subject in subjects)
+    continuity: list[DecisionCanaryContinuityBaseline] = []
+    for subject in subjects:
+        candidate = (continuity_candidates or {}).get(subject)
+        if candidate is None:
+            continue
+        validation = validate_decision_candidate(by_ticker[subject], candidate)
+        if not validation.valid:
+            raise ValueError(
+                "decision_canary_continuity_candidate_invalid:"
+                + subject
+                + ":"
+                + ",".join(validation.errors)
+            )
+        continuity.append(
+            DecisionCanaryContinuityBaseline(
+                ticker=subject,
+                evidence_sha256=by_ticker[subject].evidence_sha256,
+                candidate=candidate,
+                source=continuity_source,
+            )
+        )
+    return DecisionCanaryContext(
+        packet_id=packet_id,
+        claim_id=claim_id,
+        market=typed_market,
+        assessment_date=assessment_date,
+        source_packet_sha256=canonical_sha256(packet),
+        selected_subjects=subjects,
+        evidence_packets=ordered,
+        continuity_baselines=tuple(continuity),
+        prepared_at=(prepared_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
+    )
+
+
+def decision_canary_prompt(context: DecisionCanaryContext) -> str:
+    packets = [compact_ai_context(packet) for packet in context.evidence_packets]
+    return (
+        """You own a bounded analytical BUY/HOLD/SELL decision for each supplied stock.
+
+This is current investment research, not an order, automated trade, or position-size instruction. Use only the canonical evidence packets below. Do not browse or use later facts. Reason from integrity, thesis, earnings quality, expectations, valuation, catalysts and risks, market/flows, then price structure. Technical evidence may own timing but cannot silently own the long-horizon decision.
+
+Hard contracts:
+- Return exactly one decision for each supplied ticker and preserve packet_id, claim_id, market, assessment_date, ticker, horizon, and reasoning_grade.
+- reasoning_grade is VERY_HIGH. Confidence is independent and measures evidence quality/convergence.
+- BUY requires current long-horizon upside/asymmetry to materially exceed downside with sufficient business, earnings, and valuation support.
+- HOLD requires material optionality, insufficient BUY asymmetry, no established downside dominance, a canonical hold_reason, and explicit why_not_buy/why_not_sell.
+- SELL means current downside or impaired risk/reward materially dominates conditional upside; it does not require formal thesis invalidation or mandatory liquidation.
+- Timing is independent. Use INSUFFICIENT for missing or materially conflicted timing evidence, not NEUTRAL.
+- Every claim must cite exact complete ref_id values from that ticker. Never alter or invent a ref_id.
+- Include company-specific decisive, supporting, opposing, unknown, timing, upgrade, and downgrade claims. Keep each claim concise enough for a production summary.
+- selected_evidence_plan must contain every cited category. selected_numeric_fact_refs must be empty for this bounded production canary; do not put exact numbers in prose.
+- Do not calculate or state a target, stop, order size, FCF valuation ratio, ROIC, CCC, runway months, or future return.
+- Do not issue buy/sell imperatives or order language. BUY/HOLD/SELL is an analytical classification only.
+- Do not target a class distribution and do not manufacture a BUY. Current BUY=0 is acceptable.
+- Decision continuity is evidence-bound, not date-bound. When DECISION_CONTINUITY supplies the same evidence_sha256 as the current packet, preserve its BUY/HOLD/SELL classification. Do not change that classification by stylistic re-interpretation. Confidence, timing, and wording remain independently evidence-owned. A future packet with a different evidence_sha256 may be classified anew.
+- Output only strict JSON matching the supplied schema.
+
+IDENTITY:
+"""
+        + json.dumps(
+            {
+                "contract": OUTPUT_CONTRACT,
+                "packet_id": context.packet_id,
+                "claim_id": context.claim_id,
+                "market": context.market,
+                "assessment_date": context.assessment_date,
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + "\n\nDECISION_CONTINUITY:\n"
+        + json.dumps(
+            [row.model_dump(mode="json") for row in context.continuity_baselines],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + "\n\nDECISION_EVIDENCE_PACKETS:\n"
+        + json.dumps(
+            packets,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+    )
+
+
+def _decision_labels() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
+    confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
+    confidence_reason = {
+        "EVIDENCE_CONVERGENT": "핵심 근거 수렴",
+        "MATERIAL_EVIDENCE_CONFLICT": "핵심 근거 충돌",
+        "DATA_QUALITY_LIMIT": "자료 품질 제약",
+        "VALUATION_LIMIT": "가치평가 제약",
+        "SECURITY_BASIS_LIMIT": "증권 기준 제약",
+        "ECONOMIC_PROOF_LIMIT": "경제성 검증 제약",
+        "OTHER_DOCUMENTED": "문서화된 기타 제약",
+    }
+    timing = {
+        "FAVORABLE": "우호적",
+        "NEUTRAL": "중립",
+        "UNFAVORABLE": "불리",
+        "INSUFFICIENT": "판단 근거 부족",
+    }
+    return confidence, confidence_reason, timing
+
+
+def render_decision_canary_block(
+    packet: DecisionEvidencePacket,
+    candidate: DecisionCandidate,
+) -> DecisionCanaryBlock:
+    validation = validate_decision_candidate(packet, candidate)
+    if not validation.valid:
+        raise ValueError("decision_canary_candidate_invalid:" + ",".join(validation.errors))
+    if candidate.selected_numeric_fact_refs:
+        raise ValueError("decision_canary_numeric_detail_not_allowed")
+    confidence, confidence_reason, timing = _decision_labels()
+    bull = (
+        candidate.opposing_evidence[0]
+        if candidate.decision == "SELL"
+        else candidate.supporting_evidence[0]
+    )
+    bear = (
+        candidate.supporting_evidence[0]
+        if candidate.decision == "SELL"
+        else candidate.opposing_evidence[0]
+    )
+    lines = [
+        f"🧠 AI 종합 판단: {candidate.decision}",
+        f"추론등급: 매우 높음 | 판단 확신도: {confidence[candidate.confidence]}",
+        f"확신 근거: {confidence_reason[candidate.confidence_reason]}",
+        f"판단 기준: {candidate.horizon} | 단기 타이밍: {timing[candidate.timing]}",
+        f"타이밍 근거: {candidate.timing_basis.text}",
+        "",
+        f"🎯 판단: {candidate.decisive_reason.text}",
+    ]
+    if candidate.decision == "HOLD":
+        lines.extend(
+            [
+                f"• BUY가 아닌 이유: {candidate.why_not_buy.text}",
+                f"• SELL이 아닌 이유: {candidate.why_not_sell.text}",
+            ]
+        )
+    lines.extend(
+        [
+            f"✅ BUY 쪽 근거: {bull.text}",
+            f"⚠️ SELL 쪽 근거: {bear.text}",
+            f"🔼 상향 조건: {candidate.upgrade_condition.text}",
+            f"🔽 하향 조건: {candidate.downgrade_condition.text}",
+            "※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+        ]
+    )
+    return DecisionCanaryBlock(
+        ticker=packet.ticker,
+        decision=candidate.decision,
+        text="\n".join(lines),
+    )
+
+
+def validate_decision_canary_output(
+    context: DecisionCanaryContext,
+    output: DecisionCanaryBatchOutput,
+    *,
+    validated_at: datetime | None = None,
+) -> DecisionCanaryArtifact:
+    identity = (
+        output.packet_id,
+        output.claim_id,
+        output.market,
+        output.assessment_date,
+    )
+    expected_identity = (
+        context.packet_id,
+        context.claim_id,
+        context.market,
+        context.assessment_date,
+    )
+    if identity != expected_identity:
+        raise ValueError("decision_canary_output_identity_mismatch")
+    packets = {packet.ticker: packet for packet in context.evidence_packets}
+    candidates = {
+        candidate.ticker: canonicalize_candidate_metadata(packets[candidate.ticker], candidate)
+        for candidate in output.decisions
+        if candidate.ticker in packets
+    }
+    if set(candidates) != set(context.selected_subjects):
+        raise ValueError("decision_canary_output_subject_mismatch")
+    ordered_candidates = tuple(candidates[ticker] for ticker in context.selected_subjects)
+    continuity = {row.ticker: row for row in context.continuity_baselines}
+    for candidate in ordered_candidates:
+        baseline = continuity.get(candidate.ticker)
+        packet = packets[candidate.ticker]
+        if (
+            baseline is not None
+            and baseline.evidence_sha256 == packet.evidence_sha256
+            and baseline.candidate.decision != candidate.decision
+        ):
+            raise ValueError(f"decision_canary_unexplained_churn:{candidate.ticker}")
+    if any(candidate.selected_numeric_fact_refs for candidate in ordered_candidates):
+        raise ValueError("decision_canary_numeric_detail_not_allowed")
+    rendered = tuple(
+        render_shadow_decision(packets[candidate.ticker], candidate)
+        for candidate in ordered_candidates
+    )
+    message_quality = decision_message_quality(rendered)
+    if message_quality.get("status") != "PASS":
+        raise ValueError("decision_canary_message_quality_failed")
+    blocks = tuple(
+        render_decision_canary_block(packets[candidate.ticker], candidate)
+        for candidate in ordered_candidates
+    )
+    return DecisionCanaryArtifact(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        source_packet_sha256=context.source_packet_sha256,
+        selected_subjects=context.selected_subjects,
+        evidence_packets=context.evidence_packets,
+        decisions=ordered_candidates,
+        blocks=blocks,
+        message_quality=message_quality,
+        validated_at=(validated_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
+    )
+
+
+def load_decision_canary_artifact(
+    path: Path,
+    *,
+    packet: Mapping[str, object],
+    claim_id: str,
+    settings: Settings | None = None,
+) -> DecisionCanaryArtifact:
+    artifact = DecisionCanaryArtifact.model_validate_json(path.read_text(encoding="utf-8"))
+    market = str(packet.get("market") or "")
+    if market not in {"kr", "us"}:
+        raise ValueError("decision_canary_artifact_market_invalid")
+    typed_market: Literal["kr", "us"] = "kr" if market == "kr" else "us"
+    expected = configured_decision_canary_subjects(typed_market, settings=settings)
+    if (
+        artifact.packet_id != str(packet.get("packet_id") or "")
+        or artifact.claim_id != claim_id
+        or artifact.market != typed_market
+        or artifact.assessment_date != str(packet.get("assessment_date") or "")
+        or artifact.source_packet_sha256 != canonical_sha256(packet)
+        or artifact.selected_subjects != expected
+    ):
+        raise ValueError("decision_canary_artifact_freshness_or_scope_mismatch")
+    packets = {row.ticker: row for row in artifact.evidence_packets}
+    decisions = {row.ticker: row for row in artifact.decisions}
+    blocks = {row.ticker: row for row in artifact.blocks}
+    if (
+        set(packets) != set(expected)
+        or set(decisions) != set(expected)
+        or set(blocks) != set(expected)
+    ):
+        raise ValueError("decision_canary_artifact_subject_mismatch")
+    for ticker in expected:
+        validation = validate_decision_candidate(packets[ticker], decisions[ticker])
+        if not validation.valid or blocks[ticker].decision != decisions[ticker].decision:
+            raise ValueError("decision_canary_artifact_validation_failed")
+    return artifact
+
+
+def insert_decision_canary_block(message: str, block: str) -> str:
+    lines = message.splitlines()
+    company_index = next(
+        (index for index, line in enumerate(lines) if line.strip().startswith("🏢")),
+        None,
+    )
+    if company_index is None:
+        return f"{block}\n\n{message}"
+    before = "\n".join(lines[: company_index + 1]).rstrip()
+    after = "\n".join(lines[company_index + 1 :]).lstrip()
+    return f"{before}\n\n{block}\n\n{after}" if after else f"{before}\n\n{block}"

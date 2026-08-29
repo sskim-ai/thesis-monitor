@@ -123,6 +123,10 @@ class Settings(BaseSettings):
     free_analyst_adaptive_canary_max_market: int = 1
     free_analyst_adaptive_canary_max_stock: int = 2
     free_analyst_adaptive_canary_max_total: int = 3
+    decision_engine_canary_enabled: bool = False
+    decision_engine_state: Literal["test_sink_ready", "canary"] = "test_sink_ready"
+    decision_engine_canary_kr_subjects: str = ""
+    decision_engine_canary_us_subjects: str = ""
     cash_flow_runtime_shadow_canary_enabled: bool = True
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
@@ -143,6 +147,29 @@ class Settings(BaseSettings):
             raise ValueError("Free Analyst canary stock limit must be between 0 and 2")
         if not 0 <= self.free_analyst_adaptive_canary_max_total <= 3:
             raise ValueError("Free Analyst canary total limit must be between 0 and 3")
+        kr_subjects = tuple(
+            item.strip().upper()
+            for item in self.decision_engine_canary_kr_subjects.split(",")
+            if item.strip()
+        )
+        us_subjects = tuple(
+            item.strip().upper()
+            for item in self.decision_engine_canary_us_subjects.split(",")
+            if item.strip()
+        )
+        if len(kr_subjects) != len(set(kr_subjects)) or len(us_subjects) != len(
+            set(us_subjects)
+        ):
+            raise ValueError("Decision canary subjects must be unique")
+        if self.decision_engine_canary_enabled and (
+            self.decision_engine_state != "canary"
+            or len(kr_subjects) != 2
+            or len(us_subjects) != 2
+            or len(set((*kr_subjects, *us_subjects))) != 4
+        ):
+            raise ValueError(
+                "Enabled decision canary requires state=canary and exact unique 2+2 subjects"
+            )
         return self
 
     model_config = SettingsConfigDict(

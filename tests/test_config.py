@@ -81,6 +81,43 @@ def test_known_ai_review_environment_settings_load(tmp_path: Path) -> None:
     assert settings.ai_review_claim_safety_margin_minutes == 5
 
 
+def test_decision_canary_defaults_fail_closed_and_accepts_exact_two_plus_two(
+    tmp_path: Path,
+) -> None:
+    defaults = Settings(_env_file=None)
+    assert defaults.decision_engine_canary_enabled is False
+    assert defaults.decision_engine_state == "test_sink_ready"
+
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "DECISION_ENGINE_CANARY_ENABLED=true",
+            "DECISION_ENGINE_STATE=canary",
+            "DECISION_ENGINE_CANARY_KR_SUBJECTS=003690,000660",
+            "DECISION_ENGINE_CANARY_US_SUBJECTS=GOOGL,RXRX",
+        ],
+    )
+    settings = Settings(_env_file=env_file)
+    assert settings.decision_engine_canary_enabled is True
+    assert settings.decision_engine_canary_kr_subjects == "003690,000660"
+    assert settings.decision_engine_canary_us_subjects == "GOOGL,RXRX"
+
+
+def test_enabled_decision_canary_rejects_incomplete_scope(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "DECISION_ENGINE_CANARY_ENABLED=true",
+            "DECISION_ENGINE_STATE=canary",
+            "DECISION_ENGINE_CANARY_KR_SUBJECTS=003690",
+            "DECISION_ENGINE_CANARY_US_SUBJECTS=GOOGL,RXRX",
+        ],
+    )
+
+    with pytest.raises(ValidationError, match="exact unique 2\\+2 subjects"):
+        Settings(_env_file=env_file)
+
+
 def test_cash_flow_user_visible_mode_defaults_off_and_accepts_runtime_value(
     tmp_path: Path,
 ) -> None:

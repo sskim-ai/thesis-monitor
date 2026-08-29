@@ -45,6 +45,14 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
 6. Write one complete draft JSON document to the returned claim-specific `temp_output_path`. Set `claim_id` from the claim response and copy both Knowledge versions and checksums. Every `numeric_fact_refs[].ref_id` must be unique within its review, its placeholder must occur exactly once in its declared `text_ref`, and its `fact_id` must also be in `facts_used`. The binder converts the draft to the final schema-4 document. Do not write outside `data/ai_review`.
    A numeric placeholder represents the complete canonical phrase: source/instrument-aware label plus formatted value. Write `{{numeric:pe}}보다 {{numeric:fpe}}가 높습니다`, not `현재 PER {{numeric:pe}}보다 선행 PER {{numeric:fpe}}가 높습니다`. Prefer punctuation or separate clauses when joining placeholders; do not append an unverified `와/과` directly after a placeholder because the bound display may require the other postposition. The binder owns `현재 PER`, `시장 예상 fPER`, `내부 추정 fPER`, index names, market-series labels, night-futures product names, and zone endpoint roles. General context such as `TWD 기준인 {{numeric:revenue}}를 현재 증권 가격과 환산하지 않습니다` is allowed because it does not pre-author the numeric label or assert an unknown security type.
 
+   When the bounded decision canary is active, generate its claim-bound sidecar after the complete draft exists and before validation. This command uses the signed-in Codex CLI with the canary-owned `xhigh` reasoning setting and writes only under `data/ai_review`. Its failure is fail-closed and must never stop or replace the regular review:
+
+   ```bash
+   .venv/bin/python -m app.jobs.decision_canary generate --packet-id <packet-id> --claim-id <claim-id>
+   ```
+
+   Continue to regular validation whether the command reports `PASS`, `NOT_ACTIVE`, or `CANARY_DECISION_SUPPRESSED_SAFE`. Never draft, repair, or send the decision block manually.
+
 7. Validate and finalize it:
 
    ```bash
