@@ -72,9 +72,7 @@ def _sha256(path: Path) -> str:
 def _strict_json_schema(value: object) -> object:
     if isinstance(value, dict):
         transformed = {
-            key: _strict_json_schema(item)
-            for key, item in value.items()
-            if key != "default"
+            key: _strict_json_schema(item) for key, item in value.items() if key != "default"
         }
         properties = transformed.get("properties")
         if isinstance(properties, dict):
@@ -163,11 +161,7 @@ async def _collect(args: argparse.Namespace) -> None:
         assert isinstance(periods, Mapping)
         features = build_multi_timeframe_feature_packet(
             ticker=ticker,
-            periods={
-                key: value
-                for key, value in periods.items()
-                if isinstance(value, list)
-            },
+            periods={key: value for key, value in periods.items() if isinstance(value, list)},
             cutoff=cutoff,
         )
         evidence = build_decision_evidence_packet(
@@ -490,9 +484,7 @@ def _prepare(args: argparse.Namespace) -> None:
     for batch_index in range(0, len(rows), args.batch_size):
         batch = rows[batch_index : batch_index + args.batch_size]
         contexts = [
-            compact_ai_context(
-                DecisionEvidencePacket.model_validate(row["evidence_packet"])
-            )
+            compact_ai_context(DecisionEvidencePacket.model_validate(row["evidence_packet"]))
             for row in batch
         ]
         name = f"current-batch-{batch_index // args.batch_size + 1:02d}"
@@ -572,9 +564,7 @@ def _run_trials(args: argparse.Namespace) -> None:
         ]
         print(f"[{index}/{len(entries)}] START {entry['name']}", flush=True)
         try:
-            with prompt.open(encoding="utf-8") as stdin, log.open(
-                "w", encoding="utf-8"
-            ) as stdout:
+            with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
                 process = subprocess.run(
                     command,
                     cwd=args.trial_dir,
@@ -597,6 +587,32 @@ def _run_trials(args: argparse.Namespace) -> None:
             failed += 1
             print(f"[{index}/{len(entries)}] FAIL {entry['name']}", flush=True)
     print(json.dumps({"completed": completed, "skipped": skipped, "failed": failed}))
+
+
+def _merge_current_repair(args: argparse.Namespace) -> None:
+    target = DecisionBatchOutput.model_validate(_read_json(args.target_output))
+    replacement = DecisionBatchOutput.model_validate(_read_json(args.replacement_output))
+    replacements = {row.ticker: row for row in replacement.decisions if row.ticker == args.ticker}
+    if set(replacements) != {args.ticker}:
+        raise ValueError("replacement_ticker_mismatch")
+    if args.ticker not in {row.ticker for row in target.decisions}:
+        raise ValueError("target_ticker_missing")
+    repaired = target.model_copy(
+        update={"decisions": tuple(replacements.get(row.ticker, row) for row in target.decisions)}
+    )
+    archive = args.target_output.with_name(args.target_output.stem + ".rejected-attempt-01.json")
+    args.target_output.replace(archive)
+    _write_json(args.target_output, repaired.model_dump(mode="json"))
+    print(
+        json.dumps(
+            {
+                "ticker": args.ticker,
+                "archive": str(archive),
+                "target": str(args.target_output),
+            },
+            sort_keys=True,
+        )
+    )
 
 
 def _finalize(args: argparse.Namespace) -> None:
@@ -782,17 +798,13 @@ def _finalize_temporal(args: argparse.Namespace) -> None:
             validation_errors.append(f"{checkpoint_id}:ticker_mismatch")
         cutoff = str(source_row["source_cutoff"])
         evidence_dates = [
-            ref.as_of
-            for ref in packet.evidence
-            if ref.as_of and len(str(ref.as_of)) >= 10
+            ref.as_of for ref in packet.evidence if ref.as_of and len(str(ref.as_of)) >= 10
         ]
         cutoff_date = _kst_cutoff_date(cutoff)
         if any(date.fromisoformat(str(value)[:10]) > cutoff_date for value in evidence_dates):
             lookahead_leaks.append(checkpoint_id)
         if not validation.valid:
-            validation_errors.extend(
-                f"{checkpoint_id}:{error}" for error in validation.errors
-            )
+            validation_errors.extend(f"{checkpoint_id}:{error}" for error in validation.errors)
         row = {
             "checkpoint_id": checkpoint_id,
             "ticker": source_row["ticker"],
@@ -866,9 +878,7 @@ def _finalize_temporal(args: argparse.Namespace) -> None:
         ],
         "subject_count": len(per_ticker),
         "checkpoint_count": len(source_rows),
-        "checkpoints_per_subject": dict(
-            Counter(len(value) for value in per_ticker.values())
-        ),
+        "checkpoints_per_subject": dict(Counter(len(value) for value in per_ticker.values())),
         "accepted_decision_count": accepted_count,
         "parse_errors": parse_errors,
         "validation_errors": validation_errors,
@@ -896,9 +906,25 @@ def _finalize_temporal(args: argparse.Namespace) -> None:
             sort_keys=True,
         )
     )
+
+
 def _received_quality(text: str) -> Mapping[str, object]:
-    required = ("AI 종합 판단:", "추론등급: 매우 높음", "결정적 이유", "반대 근거")
+    required = (
+        "AI 종합 판단:",
+        "추론등급: 매우 높음",
+        "판단 확신도:",
+        "판단 기준:",
+        "단기 타이밍:",
+        "결정적 이유",
+        "반대 근거",
+        "상향 조건:",
+        "하향 조건:",
+    )
     errors = [f"missing:{value}" for value in required if value not in text]
+    if "AI 종합 판단: HOLD" in text:
+        for value in ("왜 BUY가 아닌가:", "왜 SELL이 아닌가:"):
+            if value not in text:
+                errors.append(f"missing:{value}")
     if len(text) > 3500:
         errors.append("message_too_long")
     return {"status": "PASS" if not errors else "FAIL", "errors": errors}
@@ -916,7 +942,7 @@ async def _send_test(args: argparse.Namespace) -> None:
             "ticker": str(row["ticker"]),
             "route": "SHADOW_TEST_ONLY",
             "text": str((row.get("rendered") or {}).get("text") or ""),
-            "logical_identity": f"{TEST_NAMESPACE}:{row['ticker']}",
+            "logical_identity": f"{args.namespace}:{row['ticker']}",
         }
         for row in rows
     ]
@@ -934,7 +960,7 @@ async def _send_test(args: argparse.Namespace) -> None:
         production_sink_alias=str(sink["production_sink_alias"]),
         receipt_path=args.receipt,
         contract="cross-market-decision-test-sink-v1",
-        namespace=TEST_NAMESPACE,
+        namespace=args.namespace,
         received_payload_validator=_received_quality,
     )
     print(
@@ -943,16 +969,14 @@ async def _send_test(args: argparse.Namespace) -> None:
                 "status": receipt["status"],
                 "sent_message_count": receipt["sent_message_count"],
                 "exact_payload_match": receipt["exact_payload_match"],
-                "production_recipient_send_count": receipt[
-                    "production_recipient_send_count"
-                ],
+                "production_recipient_send_count": receipt["production_recipient_send_count"],
             },
             sort_keys=True,
         )
     )
 
 
-def _test_messages(value: Mapping[str, object]) -> list[dict[str, object]]:
+def _test_messages(value: Mapping[str, object], *, namespace: str) -> list[dict[str, object]]:
     rows = [row for row in value.get("rows") or () if isinstance(row, Mapping)]
     if value.get("status") != "PASS" or len(rows) != 20:
         raise ValueError("all_20_decisions_must_pass_before_test_delivery")
@@ -961,7 +985,7 @@ def _test_messages(value: Mapping[str, object]) -> list[dict[str, object]]:
             "ticker": str(row["ticker"]),
             "route": "SHADOW_TEST_ONLY",
             "text": str((row.get("rendered") or {}).get("text") or ""),
-            "logical_identity": f"{TEST_NAMESPACE}:{row['ticker']}",
+            "logical_identity": f"{namespace}:{row['ticker']}",
         }
         for row in rows
     ]
@@ -974,7 +998,7 @@ async def _resume_test(args: argparse.Namespace) -> None:
         raise ValueError("invalid_decisions_or_failed_receipt")
     if failed.get("status") != "failed" or failed.get("safe_error") != "http_status_429":
         raise ValueError("only_rate_limited_test_receipt_may_resume")
-    messages = _test_messages(value)
+    messages = _test_messages(value, namespace=args.namespace)
     failed_rows = [row for row in failed.get("rows") or () if isinstance(row, Mapping)]
     sent_identities = {str(row.get("logical_identity") or "") for row in failed_rows}
     if len(sent_identities) != len(failed_rows):
@@ -982,9 +1006,7 @@ async def _resume_test(args: argparse.Namespace) -> None:
     if any(row.get("exact_payload_match") is not True for row in failed_rows):
         raise ValueError("failed_receipt_contains_non_exact_payload")
     remaining = [
-        message
-        for message in messages
-        if str(message["logical_identity"]) not in sent_identities
+        message for message in messages if str(message["logical_identity"]) not in sent_identities
     ]
     if len(remaining) + len(failed_rows) != 20 or not remaining:
         raise ValueError("resume_set_is_not_exact_remaining_subset")
@@ -1002,17 +1024,15 @@ async def _resume_test(args: argparse.Namespace) -> None:
         production_sink_alias=str(sink["production_sink_alias"]),
         receipt_path=args.continuation_receipt,
         contract="cross-market-decision-test-sink-continuation-v1",
-        namespace=TEST_NAMESPACE,
+        namespace=args.namespace,
         received_payload_validator=_received_quality,
     )
-    continuation_rows = [
-        row for row in continuation.get("rows") or () if isinstance(row, Mapping)
-    ]
+    continuation_rows = [row for row in continuation.get("rows") or () if isinstance(row, Mapping)]
     all_rows = [*failed_rows, *continuation_rows]
     all_identities = [str(row.get("logical_identity") or "") for row in all_rows]
     reconciled = {
         "contract": "cross-market-decision-test-sink-reconciliation-v1",
-        "namespace": TEST_NAMESPACE,
+        "namespace": args.namespace,
         "status": "sent"
         if len(all_rows) == 20
         and len(all_identities) == len(set(all_identities))
@@ -1025,9 +1045,7 @@ async def _resume_test(args: argparse.Namespace) -> None:
         "initial_sent_count": len(failed_rows),
         "continuation_sent_count": len(continuation_rows),
         "rate_limit_recovery": True,
-        "exact_payload_match": all(
-            row.get("exact_payload_match") is True for row in all_rows
-        ),
+        "exact_payload_match": all(row.get("exact_payload_match") is True for row in all_rows),
         "duplicate_count": len(all_identities) - len(set(all_identities)),
         "orphan_count": 0,
         "production_collision": 0,
@@ -1056,7 +1074,10 @@ def _markdown_table(headers: Sequence[str], rows: Sequence[Sequence[object]]) ->
         [
             "| " + " | ".join(headers) + " |",
             "|" + "|".join("---" for _ in headers) + "|",
-            *("| " + " | ".join(str(value).replace("\n", " ") for value in row) + " |" for row in rows),
+            *(
+                "| " + " | ".join(str(value).replace("\n", " ") for value in row) + " |"
+                for row in rows
+            ),
         ]
     )
 
@@ -1070,10 +1091,7 @@ def _reports(args: argparse.Namespace) -> None:
     current = _read_json(args.current)
     temporal = _read_json(args.temporal)
     test_receipt = _read_json(args.test_receipt)
-    if not all(
-        isinstance(value, Mapping)
-        for value in (evidence, current, temporal, test_receipt)
-    ):
+    if not all(isinstance(value, Mapping) for value in (evidence, current, temporal, test_receipt)):
         raise ValueError("invalid_report_inputs")
     if current.get("status") != "PASS":
         raise ValueError("current_decisions_not_pass")
@@ -1290,7 +1308,7 @@ The dedicated test sink must differ from production, preserve exact payload hash
     _write_text(
         reports / "20260829-decision-reasoning-contract.md",
         _report_header("Decision Reasoning Contract")
-        + "\nThe signed-in CLI ran `gpt-5.6-sol` with `model_reasoning_effort=\"xhigh\"`. The AI owns BUY/HOLD/SELL; the backend owns calculations and validation. Horizon and timing are separate. Every result contains decisive, supporting, opposing, unknown, and change-condition claims. Fixed point scoring is absent.\n",
+        + '\nThe signed-in CLI ran `gpt-5.6-sol` with `model_reasoning_effort="xhigh"`. The AI owns BUY/HOLD/SELL; the backend owns calculations and validation. Horizon and timing are separate. Every result contains decisive, supporting, opposing, unknown, and change-condition claims. Fixed point scoring is absent.\n',
     )
     _write_text(
         reports / "20260829-decision-validator-contract.md",
@@ -1300,23 +1318,34 @@ The dedicated test sink must differ from production, preserve exact payload hash
 
     def shadow_report(market: str, title: str) -> str:
         selected = [row for row in current_rows if row.get("market") == market]
-        return _report_header(title) + "\n" + _markdown_table(
-            ["Ticker", "Decision", "Confidence", "Timing", "Decisive reason", "Top opposition"],
-            [
+        return (
+            _report_header(title)
+            + "\n"
+            + _markdown_table(
+                ["Ticker", "Decision", "Confidence", "Timing", "Decisive reason", "Top opposition"],
                 [
-                    row["ticker"],
-                    row["candidate"]["decision"],
-                    row["candidate"]["confidence"],
-                    row["candidate"]["timing"],
-                    row["candidate"]["decisive_reason"]["text"],
-                    row["candidate"]["opposing_evidence"][0]["text"],
-                ]
-                for row in selected
-            ],
-        ) + "\n"
+                    [
+                        row["ticker"],
+                        row["candidate"]["decision"],
+                        row["candidate"]["confidence"],
+                        row["candidate"]["timing"],
+                        row["candidate"]["decisive_reason"]["text"],
+                        row["candidate"]["opposing_evidence"][0]["text"],
+                    ]
+                    for row in selected
+                ],
+            )
+            + "\n"
+        )
 
-    _write_text(reports / "20260829-kr-current-shadow-decisions.md", shadow_report("kr", "KR Current Shadow Decisions"))
-    _write_text(reports / "20260829-us-current-shadow-decisions.md", shadow_report("us", "US Current Shadow Decisions"))
+    _write_text(
+        reports / "20260829-kr-current-shadow-decisions.md",
+        shadow_report("kr", "KR Current Shadow Decisions"),
+    )
+    _write_text(
+        reports / "20260829-us-current-shadow-decisions.md",
+        shadow_report("us", "US Current Shadow Decisions"),
+    )
     _write_text(
         reports / "20260829-temporal-shadow-replay.md",
         _report_header("Temporal Shadow Replay")
@@ -1428,6 +1457,11 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default="gpt-5.6-sol")
     run.add_argument("--timeout", type=int, default=1200)
 
+    merge = sub.add_parser("merge-current-repair")
+    merge.add_argument("--target-output", type=Path, required=True)
+    merge.add_argument("--replacement-output", type=Path, required=True)
+    merge.add_argument("--ticker", required=True)
+
     finalize = sub.add_parser("finalize")
     finalize.add_argument("--evidence", type=Path, required=True)
     finalize.add_argument("--trial-dir", type=Path, required=True)
@@ -1447,6 +1481,7 @@ def _parser() -> argparse.ArgumentParser:
     send.add_argument("--env-file", type=Path, required=True)
     send.add_argument("--decisions", type=Path, required=True)
     send.add_argument("--receipt", type=Path, required=True)
+    send.add_argument("--namespace", default=TEST_NAMESPACE)
 
     resume = sub.add_parser("resume-test")
     resume.add_argument("--env-file", type=Path, required=True)
@@ -1454,6 +1489,7 @@ def _parser() -> argparse.ArgumentParser:
     resume.add_argument("--failed-receipt", type=Path, required=True)
     resume.add_argument("--continuation-receipt", type=Path, required=True)
     resume.add_argument("--reconciled-receipt", type=Path, required=True)
+    resume.add_argument("--namespace", default=TEST_NAMESPACE)
 
     reports = sub.add_parser("reports")
     reports.add_argument("--evidence", type=Path, required=True)
@@ -1461,9 +1497,7 @@ def _parser() -> argparse.ArgumentParser:
     reports.add_argument("--temporal", type=Path, required=True)
     reports.add_argument("--test-receipt", type=Path, required=True)
     reports.add_argument("--reports-dir", type=Path, default=REPORTS)
-    reports.add_argument(
-        "--architecture-dir", type=Path, default=ROOT / "docs/architecture"
-    )
+    reports.add_argument("--architecture-dir", type=Path, default=ROOT / "docs/architecture")
     return parser
 
 
@@ -1475,6 +1509,8 @@ def main() -> None:
         _prepare(args)
     elif args.command == "run":
         _run_trials(args)
+    elif args.command == "merge-current-repair":
+        _merge_current_repair(args)
     elif args.command == "finalize":
         _finalize(args)
     elif args.command == "prepare-temporal":
