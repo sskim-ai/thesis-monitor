@@ -117,7 +117,7 @@ class DecisionCandidate(FrozenModel):
     upgrade_condition: EvidenceClaim
     downgrade_condition: EvidenceClaim
     selected_numeric_fact_refs: tuple[str, ...] = Field(default=(), max_length=3)
-    selected_evidence_plan: tuple[EvidenceCategory, ...] = Field(min_length=3, max_length=10)
+    selected_evidence_plan: tuple[EvidenceCategory, ...] = Field(min_length=3, max_length=14)
 
 
 class DecisionBatchOutput(FrozenModel):
@@ -225,7 +225,9 @@ def _add_text_refs(
             continue
         refs.append(
             DecisionEvidenceRef(
-                ref_id=_stable_ref("decision-evidence", ticker, category, label, index, _compact(value)),
+                ref_id=_stable_ref(
+                    "decision-evidence", ticker, category, label, index, _compact(value)
+                ),
                 category=category,
                 label=label,
                 statement=_compact(value),
@@ -254,16 +256,92 @@ def build_decision_evidence_packet(
     horizon = str(thesis.get("time_horizon") or "6-24개월")
     refs: list[DecisionEvidenceRef] = []
 
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.THESIS, label="핵심 투자 논리", values=thesis.get("core_thesis"), source_ref="stock.thesis.core_thesis", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.THESIS, label="논리 강화 조건", values=thesis.get("strengthen_signals") or [], source_ref="stock.thesis.strengthen_signals", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.RISKS, label="논리 약화 조건", values=thesis.get("weaken_signals") or [], source_ref="stock.thesis.weaken_signals", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.RISKS, label="무효화 조건", values=thesis.get("invalidation_signals") or [], source_ref="stock.thesis.invalidation_signals", as_of=assessment_date)
-    expectations = thesis.get("market_expectations") if isinstance(thesis.get("market_expectations"), Mapping) else {}
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.EXPECTATIONS, label="시장 기대", values=expectations, source_ref="stock.thesis.market_expectations", as_of=str(expectations.get("as_of_date") or assessment_date))
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.MACRO, label="거시 전달경로", values=thesis.get("macro_exposures") or [], source_ref="stock.thesis.macro_exposures", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.UNKNOWN, label="남은 미확인", values=stock.get("unknowns") or [], source_ref="stock.unknowns", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.MARKET, label="시장 전달", values=stock.get("market_transmission") or {}, source_ref="stock.market_transmission", as_of=assessment_date)
-    _add_text_refs(refs, ticker=ticker, category=EvidenceCategory.PRICE_STRUCTURE, label="가격 구조", values=stock.get("current_price_context") or {}, source_ref="stock.current_price_context", as_of=assessment_date)
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.THESIS,
+        label="핵심 투자 논리",
+        values=thesis.get("core_thesis"),
+        source_ref="stock.thesis.core_thesis",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.THESIS,
+        label="논리 강화 조건",
+        values=thesis.get("strengthen_signals") or [],
+        source_ref="stock.thesis.strengthen_signals",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.RISKS,
+        label="논리 약화 조건",
+        values=thesis.get("weaken_signals") or [],
+        source_ref="stock.thesis.weaken_signals",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.RISKS,
+        label="무효화 조건",
+        values=thesis.get("invalidation_signals") or [],
+        source_ref="stock.thesis.invalidation_signals",
+        as_of=assessment_date,
+    )
+    expectations = (
+        thesis.get("market_expectations")
+        if isinstance(thesis.get("market_expectations"), Mapping)
+        else {}
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.EXPECTATIONS,
+        label="시장 기대",
+        values=expectations,
+        source_ref="stock.thesis.market_expectations",
+        as_of=str(expectations.get("as_of_date") or assessment_date),
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.MACRO,
+        label="거시 전달경로",
+        values=thesis.get("macro_exposures") or [],
+        source_ref="stock.thesis.macro_exposures",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.UNKNOWN,
+        label="남은 미확인",
+        values=stock.get("unknowns") or [],
+        source_ref="stock.unknowns",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.MARKET,
+        label="시장 전달",
+        values=stock.get("market_transmission") or {},
+        source_ref="stock.market_transmission",
+        as_of=assessment_date,
+    )
+    _add_text_refs(
+        refs,
+        ticker=ticker,
+        category=EvidenceCategory.PRICE_STRUCTURE,
+        label="가격 구조",
+        values=stock.get("current_price_context") or {},
+        source_ref="stock.current_price_context",
+        as_of=assessment_date,
+    )
 
     fact_catalog = stock.get("fact_catalog")
     if isinstance(fact_catalog, list):
@@ -284,7 +362,11 @@ def build_decision_evidence_packet(
                 )
             )
 
-    for timeframe in (technical_features.monthly, technical_features.weekly, technical_features.daily):
+    for timeframe in (
+        technical_features.monthly,
+        technical_features.weekly,
+        technical_features.daily,
+    ):
         for fact in timeframe.facts:
             refs.append(
                 DecisionEvidenceRef(
@@ -399,9 +481,7 @@ def validate_decision_candidate(
     if candidate.upgrade_condition.text.strip() == candidate.downgrade_condition.text.strip():
         errors.append("symmetric_decision_change_conditions")
     timing_categories = {
-        refs[ref_id].category
-        for ref_id in candidate.timing_basis.evidence_refs
-        if ref_id in refs
+        refs[ref_id].category for ref_id in candidate.timing_basis.evidence_refs if ref_id in refs
     }
     usable_timing_categories = {
         EvidenceCategory.PRICE_STRUCTURE,
@@ -409,9 +489,7 @@ def validate_decision_candidate(
         EvidenceCategory.FLOWS,
         EvidenceCategory.MARKET,
     }
-    if candidate.timing != "INSUFFICIENT" and not (
-        timing_categories & usable_timing_categories
-    ):
+    if candidate.timing != "INSUFFICIENT" and not (timing_categories & usable_timing_categories):
         errors.append("directional_timing_without_usable_evidence")
     for claim in all_claims:
         for ref_id in claim.evidence_refs:

@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from app.services.cross_market_decision_engine_service import (
     DecisionCandidate,
+    DecisionEvidencePacket,
+    DecisionEvidenceRef,
     EvidenceCategory,
     EvidenceClaim,
+    canonicalize_candidate_metadata,
 )
 from scripts.cross_market_ai_decision_engine_v1 import _received_quality
 from scripts.decision_calibration_p1_repair import (
@@ -111,3 +114,48 @@ def test_received_quality_requires_calibrated_fields_and_hold_boundary() -> None
     assert _received_quality(complete)["status"] == "PASS"
     assert _received_quality(complete.replace("하향 조건:", ""))["status"] == "FAIL"
     assert _received_quality(complete.replace("왜 SELL이 아닌가:", ""))["status"] == "FAIL"
+
+
+def test_canonicalized_plan_round_trips_all_evidence_categories() -> None:
+    candidate = _candidate("TEST")
+    claims = [
+        EvidenceClaim(text=f"근거 {index}", evidence_refs=(f"ref:{index}",)) for index in range(14)
+    ]
+    candidate = candidate.model_copy(
+        update={
+            "decisive_reason": claims[0],
+            "timing_basis": claims[1],
+            "why_not_buy": claims[2],
+            "why_not_sell": claims[3],
+            "supporting_evidence": tuple(claims[4:8]),
+            "opposing_evidence": tuple(claims[8:12]),
+            "unknowns": (claims[12],),
+            "upgrade_condition": claims[13],
+            "downgrade_condition": claims[0],
+        }
+    )
+    packet = DecisionEvidencePacket(
+        packet_id="packet",
+        ticker="TEST",
+        company_name="Test",
+        market="us",
+        assessment_date="2026-08-29",
+        horizon="12-36개월",
+        evidence=tuple(
+            DecisionEvidenceRef(
+                ref_id=f"ref:{index}",
+                category=category,
+                label=str(category),
+                statement="근거",
+                source_ref="fixture",
+            )
+            for index, category in enumerate(EvidenceCategory)
+        ),
+        prohibited_claims=(),
+        evidence_sha256="fixture",
+    )
+
+    canonical = canonicalize_candidate_metadata(packet, candidate)
+
+    assert len(canonical.selected_evidence_plan) == len(EvidenceCategory) == 14
+    assert DecisionCandidate.model_validate(canonical.model_dump()) == canonical
