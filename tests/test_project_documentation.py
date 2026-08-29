@@ -99,6 +99,13 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "US_MARKET_DIGEST_EVIDENCE_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "KOREA_NIGHT_FUTURES_IN_US_MORNING.md",
     ROOT / "docs" / "architecture" / "US_FULL_MESSAGE_REFINEMENT_POLICY.md",
+    ROOT / "docs" / "architecture" / "CROSS_MARKET_AI_DECISION_ENGINE.md",
+    ROOT / "docs" / "architecture" / "OHLCV_MULTI_TIMEFRAME_FEATURE_ENGINE.md",
+    ROOT / "docs" / "architecture" / "DECISION_EVIDENCE_PACKET.md",
+    ROOT / "docs" / "architecture" / "DECISION_VALIDATOR_OWNERSHIP.md",
+    ROOT / "docs" / "architecture" / "DECISION_SHADOW_AND_CANARY_ROLLOUT.md",
+    ROOT / "docs" / "reports" / "20260829-decision-canary-readiness.json",
+    ROOT / "docs" / "reports" / "20260829-decision-validation.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -119,15 +126,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-us-night-futures-friday-saturday-ai-validator-repair"
+        "codex/20260829-cross-market-ai-decision-engine-v1"
     )
     assert state["current_phase"] == (
-        "us_night_futures_source_limitation_and_run45_ai_validator_repair_deployed_awaiting_natural_proof"
+        "cross_market_ai_decision_engine_v1_test_sink_ready"
     )
     assert state["last_completed_phase"] == (
-        "20260829_us_night_futures_friday_saturday_and_ai_validator_repair"
+        "20260829_cross_market_ai_decision_engine_v1"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_run"
+    assert state["next_default_phase"] == "review_shadow_decisions"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -144,9 +151,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     runtime_code_commit = "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
+    shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["deployed_code_commit"] == runtime_code_commit
-    assert state["main_code_commit"] == runtime_code_commit
-    assert state["operating_code_commit"] == runtime_code_commit
+    assert state["main_code_commit"] == shadow_code_commit
+    assert state["operating_code_commit"] == shadow_code_commit
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -255,6 +263,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert repair["open_p0"] == []
     assert repair["open_material_p1"] == []
     assert repair["next_action"] == "WAIT_FOR_NEXT_NATURAL_US_RUN"
+    decision_engine = state["cross_market_ai_decision_engine_v1_20260829"]
+    assert decision_engine["status"] == "TEST_SINK_READY"
+    assert decision_engine["implementation_commit"] == shadow_code_commit
+    assert decision_engine["reasoning_effort"] == "xhigh"
+    assert decision_engine["current_shadow"] == "PASS_20_OF_20"
+    assert decision_engine["numeric_binding"] == "PASS_54_OF_54_AUTOMATIC"
+    assert decision_engine["temporal_shadow"] == "PARTIAL_SAFE_200_OF_200"
+    assert decision_engine["historical_replay_lookahead_leak"] == 0
+    assert decision_engine["unexplained_decision_churn"] == 0
+    assert decision_engine["test_sink_delivery"] == "PASS_20_OF_20"
+    assert decision_engine["production_recipient_send"] == 0
+    assert decision_engine["production_delivery_intent_created"] == 0
+    assert decision_engine["decision_canary_readiness"] == "PASS"
+    assert decision_engine["production_canary_enabled"] is False
+    assert decision_engine["open_p0"] == []
+    assert decision_engine["open_material_p1"] == []
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1327,7 +1351,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
+        "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

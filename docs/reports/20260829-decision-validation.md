@@ -7,6 +7,8 @@
 - Base / previous main / operating: `7269120fb4d97abb61c5d5d5f91863f4c998e84b`
 - Implementation: `f28d4bb3b8eacebe7fb48a3ca7800094711793eb`
 - Implementation Actions run: `33231226457`, Test/Lint `PASS`
+- Intermediate report Actions run `33231423357`: `1` stale persistent-state assertion failed
+  after the phase metadata advanced; bounded test-contract repair closed it locally at `9/9`
 - Branch: `codex/20260829-cross-market-ai-decision-engine-v1`
 
 ## Engine
@@ -53,7 +55,7 @@
 
 ## Validation
 
-- Focused tests: `7 passed`
+- Focused engine tests: `7 passed`; persistent-document contract tests: `9 passed`
 - Full pytest: `1883 passed`, one upstream Starlette deprecation warning
 - Full Ruff: `PASS`
 - `git diff --check`: `PASS`
