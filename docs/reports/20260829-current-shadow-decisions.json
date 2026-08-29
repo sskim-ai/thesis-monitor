@@ -1,0 +1,3570 @@
+{
+  "accepted_decision_count": 20,
+  "ai_runtime": {
+    "cli_version": "codex-cli 0.148.0-alpha.9",
+    "model": "gpt-5.6-sol",
+    "provider_supported_reasoning_effort": "xhigh",
+    "route": "signed_in_local_codex_cli_archive_only",
+    "sandbox": "read-only",
+    "session": "ephemeral",
+    "tools": "prohibited_by_prompt",
+    "user_reasoning_grade": "VERY_HIGH"
+  },
+  "contract": "cross-market-ai-decision-engine-v1",
+  "decision_distribution": {
+    "BUY": 2,
+    "HOLD": 18,
+    "SELL": 0
+  },
+  "message_quality": {
+    "automatically_bound_numeric_count": 54,
+    "average_character_count": 1735.15,
+    "contract": "decision-message-quality-v1",
+    "errors": [],
+    "manual_numeric_count": 0,
+    "max_character_count": 3013,
+    "message_count": 20,
+    "numeric_claim_count": 54,
+    "repeated_substantive_span_count": 0,
+    "status": "PASS",
+    "unresolved_numeric_count": 0
+  },
+  "parse_errors": [],
+  "production_packet_changed": false,
+  "rejected_or_omitted_count": 0,
+  "rows": [
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "canonical:financial_quality:2026-06-30",
+              "decision-evidence:98d2996718a0efb76056",
+              "decision-evidence:8e40ea29aff53eebb43d"
+            ],
+            "text": "재무 데이터의 이상치가 해소되고 차세대 HBM 채택·장기계약 확대가 현금창출과 자본효율 개선으로 확인되면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:8b53a9f7450aad10afd3",
+              "decision-evidence:b4616e0ec381fe152d07",
+              "decision-evidence:cbc64e2b6442e7fe5397"
+            ],
+            "text": "차세대 HBM 실행이나 가격이 둔화하거나 핵심 고객 상실·구조적 공급과잉이 현실화되면 SELL로 하향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "분산 수급이 해소되고 거래 참여가 개선된 상태에서 확인 가격을 계속 지키면 단기 타이밍 평가는 개선될 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "canonical:financial_quality:2026-06-30",
+            "decision-evidence:e69aab50953f46aec513",
+            "canonical:valuation:historical_pb"
+          ],
+          "text": "최신 재무제표의 수익성 데이터가 이상치 사유로 사용 거부된 가운데 시장 기대와 장부가치 배수의 역사적 위치가 높아, 장기 상승 논리를 검증할 신뢰 가능한 안전마진이 부족하다는 점이 HOLD의 결정적 이유다."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:6b6165e2d38d67a5ff00",
+              "decision-evidence:2f9c52beb624deab15d0",
+              "decision-evidence:9152a60a51075de9e979"
+            ],
+            "text": "AI 서버 투자와 메모리 가격 환경이 고부가 메모리 수요·수익성을 계속 지지할 가능성은 장기 상승 논리를 뒷받침한다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:price:current",
+              "canonical:market:relative:SOXX:SPY",
+              "decision-evidence:dae0187f4419af5afeca"
+            ],
+            "text": "가격은 확인 기준을 웃돌고 반도체 업종의 상대강도도 긍정적이지만, 시장 자료 자체는 펀더멘털 확인으로 인정되지 않는다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:dc1b86209d518023ac5c73b4",
+          "technical-feature:4112d0ce507396177c43c66d",
+          "technical-feature:be2d307f9dbd045a410eead3"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "종목 정체성과 장부가치 기준은 검증됐지만 이익 자료는 거부 상태여서, 장부가치 정보와 수익성 정보의 신뢰도를 분리해 판단해야 한다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:6b6165e2d38d67a5ff00",
+              "decision-evidence:98d2996718a0efb76056",
+              "decision-evidence:8e40ea29aff53eebb43d"
+            ],
+            "text": "핵심 논리는 차세대 HBM 수요에 우호적이지만, 고객 채택과 장기계약이 실제 현금창출·자본효율 개선으로 이어지는지 확인해야 한다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e69aab50953f46aec513",
+              "canonical:valuation:historical_pb"
+            ],
+            "text": "높은 실행 기대가 이미 반영된 상황에서 장부가치 배수도 자체 역사상 높은 구간이어서 실망에 대한 민감도가 크다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:2026-08-28",
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition"
+            ],
+            "text": "수급은 분산 상태이고 가격 구조도 대기 판정이어서, 확인 가격을 지키고 있더라도 현재 진입 타이밍은 불리하다."
+          }
+        ],
+        "ticker": "000660",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:063675496467dc3c729e",
+              "decision-evidence:0e01caebeb4b7fc93547",
+              "decision-evidence:4a6bd818be43846bdda9"
+            ],
+            "text": "현금흐름·매출·마진에 미치는 영향이 확인되지 않아 핵심 수익성의 지속 가능성을 검증할 수 없다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:4b4726d39ad019b3b087",
+              "decision-evidence:0660a899023ec6e7bd08",
+              "decision-evidence:01342282a8000e8a07bc"
+            ],
+            "text": "고객명과 주문 규모, 미확인 보도의 원문 및 투자 영향이 확정되지 않았다."
+          }
+        ]
+      },
+      "evidence_sha256": "899971b974ad32c206398254e726d48c7c92079bd6ce96af5274d95ce7e9fb41",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:dc1b86209d518023ac5c73b4",
+          "technical-feature:4112d0ce507396177c43c66d",
+          "technical-feature:be2d307f9dbd045a410eead3"
+        ],
+        "text": "🏢 SK하이닉스(000660)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 최신 재무제표의 수익성 데이터가 이상치 사유로 사용 거부된 가운데 시장 기대와 장부가치 배수의 역사적 위치가 높아, 장기 상승 논리를 검증할 신뢰 가능한 안전마진이 부족하다는 점이 HOLD의 결정적 이유다.\n\n✅ 지지 근거\n• 종목 정체성과 장부가치 기준은 검증됐지만 이익 자료는 거부 상태여서, 장부가치 정보와 수익성 정보의 신뢰도를 분리해 판단해야 한다.\n• 핵심 논리는 차세대 HBM 수요에 우호적이지만, 고객 채택과 장기계약이 실제 현금창출·자본효율 개선으로 이어지는지 확인해야 한다.\n• 높은 실행 기대가 이미 반영된 상황에서 장부가치 배수도 자체 역사상 높은 구간이어서 실망에 대한 민감도가 크다.\n• 수급은 분산 상태이고 가격 구조도 대기 판정이어서, 확인 가격을 지키고 있더라도 현재 진입 타이밍은 불리하다.\n\n⚠️ 반대 근거\n• AI 서버 투자와 메모리 가격 환경이 고부가 메모리 수요·수익성을 계속 지지할 가능성은 장기 상승 논리를 뒷받침한다.\n• 가격은 확인 기준을 웃돌고 반도체 업종의 상대강도도 긍정적이지만, 시장 자료 자체는 펀더멘털 확인으로 인정되지 않는다.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_50: -15.18%\n• weekly:return_10: -40.20%\n• daily:atr_pct_14: 9.03%\n\n❓ 남은 미확인\n• 현금흐름·매출·마진에 미치는 영향이 확인되지 않아 핵심 수익성의 지속 가능성을 검증할 수 없다.\n• 고객명과 주문 규모, 미확인 보도의 원문 및 투자 영향이 확정되지 않았다.\n\n🔄 판단 변경 조건\n• 재무 데이터의 이상치가 해소되고 차세대 HBM 채택·장기계약 확대가 현금창출과 자본효율 개선으로 확인되면 BUY로 상향할 수 있다.\n• 차세대 HBM 실행이나 가격이 둔화하거나 핵심 고객 상실·구조적 공급과잉이 현실화되면 SELL로 하향할 수 있다.\n• 분산 수급이 해소되고 거래 참여가 개선된 상태에서 확인 가격을 계속 지키면 단기 타이밍 평가는 개선될 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "000660",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "000660",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:e3a74d88f4a9e45a8247",
+              "decision-evidence:b070c24aa5450d9bf543"
+            ],
+            "text": "언더라이팅 이익과 ROE가 함께 개선되고 자본적정성을 유지하면서 배당·소각이 확대되면 BUY 확신이 높아진다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:21ddf2dc43fc2951402b",
+              "decision-evidence:c4f804172911eec66544"
+            ],
+            "text": "갱신요율 약화와 손해율 악화 또는 대형재해 손실·투자수익 부진이 나타나면 HOLD로 하향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:4f60e9255e79d4eeaf5e",
+              "decision-evidence:2e5b0cdb077072e34b15"
+            ],
+            "text": "언더라이팅 적자가 구조화되거나 자본적정성 훼손으로 주주환원 여력이 크게 줄면 SELL로 하향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "인접 저항을 거래 참여 확대와 함께 돌파하고 확인 가격을 계속 지키면 타이밍 평가는 개선될 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "BUY",
+        "decisive_reason": {
+          "evidence_refs": [
+            "canonical:valuation:book_quality",
+            "canonical:valuation:book",
+            "decision-evidence:06b7f50ebb7ed7843c6d",
+            "canonical:financial_quality:2026-06-30",
+            "decision-evidence:52af705a4279a23fba6c"
+          ],
+          "text": "검증된 장부가치 기준의 할인과 균형적인 시장 기대가 존재하고 최신 이익 자료도 주의 조건 아래 사용 가능해, 언더라이팅·자본환원 논리의 장기 위험보상이 긍정적이라는 점이 BUY의 결정적 이유다."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:valuation:current"
+            ],
+            "text": "절대적인 장부가치 할인에도 역사적 비교 가능성은 낮고 제공된 상대평가는 프리미엄 상태여서 재평가 여력을 과신하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:12a3a3c58bb8cd8a0178",
+              "decision-evidence:3e615a7629221782bd1a",
+              "decision-evidence:5871b9ebe80ebb75cabb"
+            ],
+            "text": "매출과 영업수익성의 기간 비교가 없고 재무 비교에도 품질 경고가 있어 이익 개선의 연속성이 입증되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "technical-feature:8beb8925d83fd3f4f74f787a",
+              "canonical:chart:weekly"
+            ],
+            "text": "가격은 인접 저항 때문에 대기 판정이고 장기 모멘텀은 과열 상태인 반면 거래 참여는 약해 현재 타이밍은 불리하다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:012ae32ef5adca812565",
+              "decision-evidence:d7f65cbd991a34b5a64f",
+              "decision-evidence:21ddf2dc43fc2951402b",
+              "decision-evidence:c4f804172911eec66544"
+            ],
+            "text": "대형재해 비용과 갱신요율·손해율 악화가 언더라이팅을 훼손할 수 있고, 장기금리는 투자수익과 보험부채에 엇갈린 영향을 줄 수 있다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:3f6621ca395ffd527afca7ba",
+          "technical-feature:d980f44fcf0ae3328b154fe5",
+          "technical-feature:c010e0402dc033c4a4a6ed43"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "종목 정체성과 주당 장부가치 기준이 검증됐고 장부가치 배수의 통화·주식 기준도 직접 비교 가능한 상태다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:52af705a4279a23fba6c",
+              "decision-evidence:b070c24aa5450d9bf543"
+            ],
+            "text": "안정적인 언더라이팅과 투자수익·자본적정성의 결합, 자사주 소각을 포함한 자본배분이 주당가치 개선의 경로를 제공한다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "최신 연결 영업이익은 흑자이고 재무 품질도 주의 조건 아래 사용 가능한 상태여서 현재 수익 기반을 완전히 부정할 근거는 없다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:book",
+              "canonical:valuation:modeled_forward_book",
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "현재와 모형상 선행 장부가치 배수는 모두 장부가치 대비 할인 상태이며, 선행·후행 이익 배수도 동일한 주식 기준으로 비교 가능하다."
+          }
+        ],
+        "ticker": "003690",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:52af705a4279a23fba6c",
+              "decision-evidence:12a3a3c58bb8cd8a0178",
+              "decision-evidence:3e615a7629221782bd1a"
+            ],
+            "text": "핵심 논리를 검증할 합산비율·대형재해 손실·ROE·투자수익률·자본적정성의 연속적인 추세가 제시되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:5871b9ebe80ebb75cabb",
+              "decision-evidence:12a3a3c58bb8cd8a0178",
+              "decision-evidence:3e615a7629221782bd1a"
+            ],
+            "text": "동일 기준의 매출과 수익성 비교가 확보되기 전에는 성장률과 마진 방향을 확정할 수 없다."
+          }
+        ]
+      },
+      "evidence_sha256": "510a7b157d4247a9c611e38dfd96dd34851434323907b1bc10955299d8c92b6b",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "BUY",
+        "selected_numeric_fact_refs": [
+          "technical-feature:3f6621ca395ffd527afca7ba",
+          "technical-feature:d980f44fcf0ae3328b154fe5",
+          "technical-feature:c010e0402dc033c4a4a6ed43"
+        ],
+        "text": "🏢 코리안리(003690)\n🧠 AI 종합 판단: BUY\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 검증된 장부가치 기준의 할인과 균형적인 시장 기대가 존재하고 최신 이익 자료도 주의 조건 아래 사용 가능해, 언더라이팅·자본환원 논리의 장기 위험보상이 긍정적이라는 점이 BUY의 결정적 이유다.\n\n✅ 지지 근거\n• 종목 정체성과 주당 장부가치 기준이 검증됐고 장부가치 배수의 통화·주식 기준도 직접 비교 가능한 상태다.\n• 안정적인 언더라이팅과 투자수익·자본적정성의 결합, 자사주 소각을 포함한 자본배분이 주당가치 개선의 경로를 제공한다.\n• 최신 연결 영업이익은 흑자이고 재무 품질도 주의 조건 아래 사용 가능한 상태여서 현재 수익 기반을 완전히 부정할 근거는 없다.\n• 현재와 모형상 선행 장부가치 배수는 모두 장부가치 대비 할인 상태이며, 선행·후행 이익 배수도 동일한 주식 기준으로 비교 가능하다.\n\n⚠️ 반대 근거\n• 절대적인 장부가치 할인에도 역사적 비교 가능성은 낮고 제공된 상대평가는 프리미엄 상태여서 재평가 여력을 과신하기 어렵다.\n• 매출과 영업수익성의 기간 비교가 없고 재무 비교에도 품질 경고가 있어 이익 개선의 연속성이 입증되지 않았다.\n• 가격은 인접 저항 때문에 대기 판정이고 장기 모멘텀은 과열 상태인 반면 거래 참여는 약해 현재 타이밍은 불리하다.\n• 대형재해 비용과 갱신요율·손해율 악화가 언더라이팅을 훼손할 수 있고, 장기금리는 투자수익과 보험부채에 엇갈린 영향을 줄 수 있다.\n\n📊 확인된 기술 상태\n• daily:distance_from_high_20: -5.55%\n• weekly:volume_ratio_20: 0.32\n• monthly:rsi_14: 77.71\n\n❓ 남은 미확인\n• 핵심 논리를 검증할 합산비율·대형재해 손실·ROE·투자수익률·자본적정성의 연속적인 추세가 제시되지 않았다.\n• 동일 기준의 매출과 수익성 비교가 확보되기 전에는 성장률과 마진 방향을 확정할 수 없다.\n\n🔄 판단 변경 조건\n• 언더라이팅 이익과 ROE가 함께 개선되고 자본적정성을 유지하면서 배당·소각이 확대되면 BUY 확신이 높아진다.\n• 갱신요율 약화와 손해율 악화 또는 대형재해 손실·투자수익 부진이 나타나면 HOLD로 하향할 수 있다.\n• 언더라이팅 적자가 구조화되거나 자본적정성 훼손으로 주주환원 여력이 크게 줄면 SELL로 하향할 수 있다.\n• 인접 저항을 거래 참여 확대와 함께 돌파하고 확인 가격을 계속 지키면 타이밍 평가는 개선될 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "003690",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "003690",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:120e5e8a3ca67f7ceb2f",
+              "decision-evidence:ecad16c5eed63ceaa54d",
+              "decision-evidence:14d712e19c3796718378",
+              "decision-evidence:9e28762c8480fabf046e",
+              "decision-evidence:685d36bf29d8d6514ca3"
+            ],
+            "text": "철강 수익성 개선과 소재 부문의 반복 가능한 흑자가 함께 확인되고, 투자 확대에도 현금흐름·자본효율·완전희석 주당가치가 개선되면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:19a60ba704e4a95c9e0c",
+              "decision-evidence:9d4b172daa3f79473c38",
+              "decision-evidence:30eb7b45f4a7dacf1700",
+              "decision-evidence:1c04143a79ea2443a784"
+            ],
+            "text": "철강과 소재가 함께 구조적 적자로 전환하거나, 투자 이후 현금흐름과 자본효율이 장기 악화되고 순부채·희석이 누적되면 SELL로 하향할 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:d11144dcad43e1cb5b64",
+            "decision-evidence:c43ded70ccb477631e52",
+            "decision-evidence:7b3ed58b7f812e089975"
+          ],
+          "text": "재평가에 필요한 철강·소재·현금흐름·자본효율의 동시 개선이 아직 입증되지 않았고 시장 기대는 균형적이며, 가격 구조도 신규 진입 신호보다 보유자 관점의 유지 상태에 가깝다."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:d11144dcad43e1cb5b64",
+              "canonical:earnings:2026-06-30",
+              "decision-evidence:14d712e19c3796718378",
+              "decision-evidence:9e28762c8480fabf046e"
+            ],
+            "text": "최신 분기 실적만으로는 소재 이익의 반복성이나 현금흐름·자본효율 개선까지 확인되지 않아 핵심 논리의 검증이 부족하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:historical_pe",
+              "canonical:valuation:current"
+            ],
+            "text": "장부가 할인에도 현재 장부가 및 이익 기준 배수의 역사적 위치는 대체로 중간권이고 선행 배수가 없어 뚜렷한 저평가로 단정하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:monitoring:risk_reward_transition",
+              "decision-evidence:7b3ed58b7f812e089975"
+            ],
+            "text": "가격은 상향 확인에 도달하지 못했고 거래량 확인도 약하며 위험보상 구조가 이전보다 악화돼 추격 근거가 부족하다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:94be39ae695cc6dc42e4",
+              "decision-evidence:30eb7b45f4a7dacf1700",
+              "decision-evidence:c0703efb51b207666566",
+              "decision-evidence:abed876ba50ad4ba2680"
+            ],
+            "text": "투자 확대 이후 자본효율 저하, 현금흐름 감소와 순부채 증가, 잠재 희석, 소재 흑자의 일회성 가능성이 주요 하방 위험이다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "보통주 정체성과 가치평가 기준이 검증됐고 최신 재무제표도 의사결정에 사용할 수 있는 상태다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:book",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "장부가 대비 할인은 자산가치 관점의 완충 요인이고 해당 비교 기준도 일관성이 확인됐다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:c43ded70ccb477631e52",
+              "decision-evidence:120e5e8a3ca67f7ceb2f",
+              "decision-evidence:ecad16c5eed63ceaa54d"
+            ],
+            "text": "시장 기대가 과도하게 치우치지 않은 가운데 철강 수익성과 소재 흑자의 동반 개선은 여전히 유효한 재평가 경로다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "주요 가격 구조와 지지는 유지되고 있으며 수급 신호에는 외국인 재진입 요소가 있어 보유 논리를 즉시 훼손하지는 않는다."
+          }
+        ],
+        "ticker": "005490",
+        "timing": "NEUTRAL",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:d11144dcad43e1cb5b64",
+              "decision-evidence:14d712e19c3796718378",
+              "decision-evidence:9e28762c8480fabf046e",
+              "decision-evidence:685d36bf29d8d6514ca3"
+            ],
+            "text": "철강 스프레드와 소재 수익의 지속성, 투자 이후 현금흐름·자본효율, 완전희석 주당가치의 개선 여부가 남아 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:81df1addbbce68cf8493",
+              "decision-evidence:dcbcf0d9a7006b057513"
+            ],
+            "text": "관련 사안의 매출 및 마진 영향은 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:d56dc6692325226cfd30",
+              "decision-evidence:991fb8534ebe2190d004"
+            ],
+            "text": "원문이 확인되지 않은 보도와 공개되지 않은 고객 정보는 논리에 반영할 수 없다."
+          }
+        ]
+      },
+      "evidence_sha256": "4a336cbd94e784b5471c6ebf61663c8ec77504bc348ef40eb8563099b5bcff7f",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [],
+        "text": "🏢 POSCO홀딩스(005490)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 중립\n\n🎯 결정적 이유\n• 재평가에 필요한 철강·소재·현금흐름·자본효율의 동시 개선이 아직 입증되지 않았고 시장 기대는 균형적이며, 가격 구조도 신규 진입 신호보다 보유자 관점의 유지 상태에 가깝다.\n\n✅ 지지 근거\n• 보통주 정체성과 가치평가 기준이 검증됐고 최신 재무제표도 의사결정에 사용할 수 있는 상태다.\n• 장부가 대비 할인은 자산가치 관점의 완충 요인이고 해당 비교 기준도 일관성이 확인됐다.\n• 시장 기대가 과도하게 치우치지 않은 가운데 철강 수익성과 소재 흑자의 동반 개선은 여전히 유효한 재평가 경로다.\n• 주요 가격 구조와 지지는 유지되고 있으며 수급 신호에는 외국인 재진입 요소가 있어 보유 논리를 즉시 훼손하지는 않는다.\n\n⚠️ 반대 근거\n• 최신 분기 실적만으로는 소재 이익의 반복성이나 현금흐름·자본효율 개선까지 확인되지 않아 핵심 논리의 검증이 부족하다.\n• 장부가 할인에도 현재 장부가 및 이익 기준 배수의 역사적 위치는 대체로 중간권이고 선행 배수가 없어 뚜렷한 저평가로 단정하기 어렵다.\n• 가격은 상향 확인에 도달하지 못했고 거래량 확인도 약하며 위험보상 구조가 이전보다 악화돼 추격 근거가 부족하다.\n• 투자 확대 이후 자본효율 저하, 현금흐름 감소와 순부채 증가, 잠재 희석, 소재 흑자의 일회성 가능성이 주요 하방 위험이다.\n\n❓ 남은 미확인\n• 철강 스프레드와 소재 수익의 지속성, 투자 이후 현금흐름·자본효율, 완전희석 주당가치의 개선 여부가 남아 있다.\n• 관련 사안의 매출 및 마진 영향은 확인되지 않았다.\n• 원문이 확인되지 않은 보도와 공개되지 않은 고객 정보는 논리에 반영할 수 없다.\n\n🔄 판단 변경 조건\n• 철강 수익성 개선과 소재 부문의 반복 가능한 흑자가 함께 확인되고, 투자 확대에도 현금흐름·자본효율·완전희석 주당가치가 개선되면 BUY로 상향할 수 있다.\n• 철강과 소재가 함께 구조적 적자로 전환하거나, 투자 이후 현금흐름과 자본효율이 장기 악화되고 순부채·희석이 누적되면 SELL로 하향할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "005490",
+        "validation": {
+          "automatically_bound_numeric_count": 0,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 0,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "005490",
+      "validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:48aecc6d8534add68a45",
+              "decision-evidence:fb5aaa3fc2608a1659b1",
+              "decision-evidence:48ae6c535d28ac0c7bfb",
+              "decision-evidence:41715b63ce8185b81fc4",
+              "decision-evidence:d2cc3045a6dfa23f53cf"
+            ],
+            "text": "HBM 출하와 고객 채택, DS 마진과 메모리 가격, 영업현금흐름이 함께 개선되고 투자 대비 자본효율과 재고 부담 없는 현금흐름이 확인되면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:0c46003fb1a3502a8789",
+              "decision-evidence:27e6842f07cb0e200d67",
+              "decision-evidence:878a6c52687647f6e13a",
+              "decision-evidence:6a29157a96a61da8e190"
+            ],
+            "text": "주요 고객의 HBM 채택 실패, DS 수익성과 영업현금흐름의 동반 급락, 서버 수요 및 메모리 가격 약세의 장기화나 공급과잉이 확인되면 SELL로 하향할 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:5d0604cb4c5205408584",
+            "decision-evidence:8c619918b4fc57e796d8",
+            "canonical:valuation:current",
+            "decision-evidence:31036fb29e1c801c1886",
+            "decision-evidence:aecf1f7a6ee4b90d2536"
+          ],
+          "text": "실적 기반은 강하지만 HBM 실행과 현금흐름 검증 전에 기대와 장부가 기준 평가가 이미 높고 현재 가격의 위험보상도 불리해, 장기 논리를 유지하되 추가 재평가를 선반영하기는 어렵다."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:8c619918b4fc57e796d8"
+            ],
+            "text": "DS 이익 급증과 HBM 확대, 강한 현금창출에 대한 시장 기대가 매우 높아 추가 상승에는 기대 이상의 실행이 필요하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:historical_pe",
+              "canonical:valuation:current"
+            ],
+            "text": "이익 기준 배수는 역사적 하위권에 있지만 장부가 기준 배수는 역사적 상단권이어서 가치평가 신호가 엇갈린다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:risk_reward:current_price",
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "상향 확인선은 유지되지만 현재 가격의 위험보상은 추격에 불리하고 거래량 확인과 주요 투자자 수급도 혼재돼 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:0c46003fb1a3502a8789",
+              "decision-evidence:6a29157a96a61da8e190",
+              "decision-evidence:ace9ead067c5d563f792",
+              "decision-evidence:0cbeff3e598f042118ac"
+            ],
+            "text": "HBM 경쟁력 약화, 공급과잉, DX 부진의 상쇄, 재고 증가와 현금흐름 약화가 핵심 하방 위험이다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "보통주 정체성과 가치평가 계보가 검증됐으며 최신 연결 재무제표도 사용할 수 있는 상태다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "canonical:valuation:trailing_earnings",
+              "canonical:valuation:historical_pe"
+            ],
+            "text": "최신 연결 실적은 강한 수익성을 보여주고 이익 기준 배수는 자체 역사에서 상대적으로 낮은 영역에 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:043e66f308e46ff53bd2",
+              "decision-evidence:c61197f6df81130ddf44",
+              "decision-evidence:5d0604cb4c5205408584"
+            ],
+            "text": "AI 서버 투자가 HBM·서버 메모리 주문으로 이어지고 메모리 가격 사이클이 유지될 경우 DS 이익과 현금창출력 개선으로 연결될 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:price:current"
+            ],
+            "text": "가격은 상향 확인 상태를 유지하고 있어 장기 상승 논리가 기술적으로 완전히 훼손된 상태는 아니다."
+          }
+        ],
+        "ticker": "005930",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:9bddc06b7158541ace7c",
+              "decision-evidence:2a8d08db0f39312b0709",
+              "decision-evidence:31036fb29e1c801c1886"
+            ],
+            "text": "관련 사안이 매출·마진·잉여현금흐름에 미치는 영향은 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e4a78247187d382e089c",
+              "decision-evidence:48aecc6d8534add68a45"
+            ],
+            "text": "공개 근거가 없는 고객명과 실제 HBM 고객 채택의 범위 및 지속성은 확인이 더 필요하다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:41715b63ce8185b81fc4",
+              "decision-evidence:35e7e78f369d9390f50d",
+              "decision-evidence:d2cc3045a6dfa23f53cf"
+            ],
+            "text": "대규모 투자 이후 자본효율과 재고 부담을 반영한 현금흐름이 지속적으로 개선되는지는 아직 검증되지 않았다."
+          }
+        ]
+      },
+      "evidence_sha256": "b8f9bac5252d86b303e36f1a4547fc817b87da721ef187bc6b89d79d1abc7702",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [],
+        "text": "🏢 삼성전자(005930)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 실적 기반은 강하지만 HBM 실행과 현금흐름 검증 전에 기대와 장부가 기준 평가가 이미 높고 현재 가격의 위험보상도 불리해, 장기 논리를 유지하되 추가 재평가를 선반영하기는 어렵다.\n\n✅ 지지 근거\n• 보통주 정체성과 가치평가 계보가 검증됐으며 최신 연결 재무제표도 사용할 수 있는 상태다.\n• 최신 연결 실적은 강한 수익성을 보여주고 이익 기준 배수는 자체 역사에서 상대적으로 낮은 영역에 있다.\n• AI 서버 투자가 HBM·서버 메모리 주문으로 이어지고 메모리 가격 사이클이 유지될 경우 DS 이익과 현금창출력 개선으로 연결될 수 있다.\n• 가격은 상향 확인 상태를 유지하고 있어 장기 상승 논리가 기술적으로 완전히 훼손된 상태는 아니다.\n\n⚠️ 반대 근거\n• DS 이익 급증과 HBM 확대, 강한 현금창출에 대한 시장 기대가 매우 높아 추가 상승에는 기대 이상의 실행이 필요하다.\n• 이익 기준 배수는 역사적 하위권에 있지만 장부가 기준 배수는 역사적 상단권이어서 가치평가 신호가 엇갈린다.\n• 상향 확인선은 유지되지만 현재 가격의 위험보상은 추격에 불리하고 거래량 확인과 주요 투자자 수급도 혼재돼 있다.\n• HBM 경쟁력 약화, 공급과잉, DX 부진의 상쇄, 재고 증가와 현금흐름 약화가 핵심 하방 위험이다.\n\n❓ 남은 미확인\n• 관련 사안이 매출·마진·잉여현금흐름에 미치는 영향은 확인되지 않았다.\n• 공개 근거가 없는 고객명과 실제 HBM 고객 채택의 범위 및 지속성은 확인이 더 필요하다.\n• 대규모 투자 이후 자본효율과 재고 부담을 반영한 현금흐름이 지속적으로 개선되는지는 아직 검증되지 않았다.\n\n🔄 판단 변경 조건\n• HBM 출하와 고객 채택, DS 마진과 메모리 가격, 영업현금흐름이 함께 개선되고 투자 대비 자본효율과 재고 부담 없는 현금흐름이 확인되면 BUY로 상향할 수 있다.\n• 주요 고객의 HBM 채택 실패, DS 수익성과 영업현금흐름의 동반 급락, 서버 수요 및 메모리 가격 약세의 장기화나 공급과잉이 확인되면 SELL로 하향할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "005930",
+        "validation": {
+          "automatically_bound_numeric_count": 0,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 0,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "005930",
+      "validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:ebe72087294749c8f31b",
+              "decision-evidence:e4297275c34f2ec33f34",
+              "decision-evidence:8de51310ea51ac9cba46",
+              "canonical:valuation:current",
+              "canonical:security_basis:current"
+            ],
+            "text": "반복적인 대형 수주, 견조한 수익성, 개선된 현금 전환이 함께 확인되고 일관된 가치평가 근거까지 확보되면 BUY로 변경할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:67e5798e627ad7156f27",
+              "decision-evidence:07bd40f3db4654398d69",
+              "decision-evidence:fe01a327c411fcd97818",
+              "decision-evidence:b323df7b06a23406fcb3"
+            ],
+            "text": "핵심 수요 둔화가 반복적인 수주 감소와 실적 역성장으로 이어지거나, 수익성·현금흐름·재무구조가 구조적으로 악화하면 SELL로 변경한다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:c1e92c00aee5f2e76668",
+            "decision-evidence:e3e0e73c7b80428e5459",
+            "canonical:valuation:current",
+            "canonical:security_basis:current",
+            "canonical:chart:structure:state"
+          ],
+          "text": "전력 인프라 수요와 고부가 제품 믹스의 성장 논리는 유효하지만, 높은 시장 기대에 비해 안전한 가치평가 근거가 없고 가격 구조도 대기 상태여서 HOLD가 가장 균형적이다."
+        },
+        "horizon": "6-24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:e3e0e73c7b80428e5459"
+            ],
+            "text": "강한 실적과 데이터센터·전력망 수요의 지속이 이미 상당 부분 기대되어 수주나 수익성이 기대에 못 미칠 때 재평가 위험이 크다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:ef1a041a2b14d6f0cfed",
+              "decision-evidence:00742ebb0c0328cffa0c",
+              "decision-evidence:d339342b5a1a45ed98be"
+            ],
+            "text": "프로젝트 지연, 수주 증가세 둔화, 운전자본 부담 또는 제품 믹스 약화가 성장의 현금 전환과 이익의 질을 훼손할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "decision-evidence:d8432ae99b3f9d2f6832"
+            ],
+            "text": "근거리 지지와 저항이 겹치고 거래량 확인도 부족해 현재 가격 구조는 방향성이 명확하지 않다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:39981300d8186115f4f03235",
+          "technical-feature:9a8ed251b0eb823226bc642d",
+          "technical-feature:f5fe97582078d54166f94b9b"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:c1e92c00aee5f2e76668",
+              "decision-evidence:80126c333b4593e47b0f",
+              "decision-evidence:36b11e3f42d80ce72340",
+              "decision-evidence:96167e308b2a56a175bd"
+            ],
+            "text": "데이터센터와 전력망 투자가 수주로 연결되고 고부가 전력기기·솔루션 비중이 높아질수록 매출과 이익의 가시성이 개선되는 구조다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "decision-evidence:c1e92c00aee5f2e76668",
+              "decision-evidence:e4297275c34f2ec33f34"
+            ],
+            "text": "최신 분기의 강한 영업이익과 견조한 수익성은 핵심 성장 논리를 뒷받침하는 실적 근거다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "주요 투자 주체의 최근 흐름에는 외국인과 기관의 동반 매수 신호가 있어 단기 수급은 일부 우호적이다."
+          }
+        ],
+        "ticker": "010120",
+        "timing": "NEUTRAL",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "증권 정체성과 주당 지표의 기준이 검증되지 않아 주식 기준 가치평가의 무결성이 확보되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:financial_quality:2026-06-30",
+              "canonical:monitoring:confirmation_transition",
+              "decision-evidence:60458ef914f03ae493b0",
+              "decision-evidence:626a5f34451f3db9e736"
+            ],
+            "text": "재무 품질 상태와 확인 모니터링이 확정되지 않았고, 성장의 현금흐름 및 수익성 영향도 아직 검증되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e0a48b2ac25f69f3a438",
+              "decision-evidence:e14a89408cf9ee6cf11b",
+              "decision-evidence:ec64757f901dbe9be44c"
+            ],
+            "text": "개별 계약의 고객, 규모 및 매출 기여가 충분히 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "수급 자료에는 누락 참여자의 영향이 있어 관찰된 매수 흐름을 특정 주체에 안전하게 귀속하기 어렵다."
+          }
+        ]
+      },
+      "evidence_sha256": "cb11a4f88ab030d9c4279d38480c20dd9268e12a495e9cf3fa309cac63a6ca93",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:39981300d8186115f4f03235",
+          "technical-feature:9a8ed251b0eb823226bc642d",
+          "technical-feature:f5fe97582078d54166f94b9b"
+        ],
+        "text": "🏢 LS일렉트릭(010120)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6-24개월 | 단기 타이밍: 중립\n\n🎯 결정적 이유\n• 전력 인프라 수요와 고부가 제품 믹스의 성장 논리는 유효하지만, 높은 시장 기대에 비해 안전한 가치평가 근거가 없고 가격 구조도 대기 상태여서 HOLD가 가장 균형적이다.\n\n✅ 지지 근거\n• 데이터센터와 전력망 투자가 수주로 연결되고 고부가 전력기기·솔루션 비중이 높아질수록 매출과 이익의 가시성이 개선되는 구조다.\n• 최신 분기의 강한 영업이익과 견조한 수익성은 핵심 성장 논리를 뒷받침하는 실적 근거다.\n• 주요 투자 주체의 최근 흐름에는 외국인과 기관의 동반 매수 신호가 있어 단기 수급은 일부 우호적이다.\n\n⚠️ 반대 근거\n• 강한 실적과 데이터센터·전력망 수요의 지속이 이미 상당 부분 기대되어 수주나 수익성이 기대에 못 미칠 때 재평가 위험이 크다.\n• 프로젝트 지연, 수주 증가세 둔화, 운전자본 부담 또는 제품 믹스 약화가 성장의 현금 전환과 이익의 질을 훼손할 수 있다.\n• 근거리 지지와 저항이 겹치고 거래량 확인도 부족해 현재 가격 구조는 방향성이 명확하지 않다.\n\n📊 확인된 기술 상태\n• daily:distance_from_high_252: -35.97%\n• daily:atr_pct_14: 7.06%\n• daily:volume_ratio_20: 0.78\n\n❓ 남은 미확인\n• 증권 정체성과 주당 지표의 기준이 검증되지 않아 주식 기준 가치평가의 무결성이 확보되지 않았다.\n• 재무 품질 상태와 확인 모니터링이 확정되지 않았고, 성장의 현금흐름 및 수익성 영향도 아직 검증되지 않았다.\n• 개별 계약의 고객, 규모 및 매출 기여가 충분히 확인되지 않았다.\n• 수급 자료에는 누락 참여자의 영향이 있어 관찰된 매수 흐름을 특정 주체에 안전하게 귀속하기 어렵다.\n\n🔄 판단 변경 조건\n• 반복적인 대형 수주, 견조한 수익성, 개선된 현금 전환이 함께 확인되고 일관된 가치평가 근거까지 확보되면 BUY로 변경할 수 있다.\n• 핵심 수요 둔화가 반복적인 수주 감소와 실적 역성장으로 이어지거나, 수익성·현금흐름·재무구조가 구조적으로 악화하면 SELL로 변경한다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "010120",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "010120",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:7903584e4cd122656e19",
+              "decision-evidence:5c5abaf2125d13700364",
+              "decision-evidence:a1e304f095b68482fd60",
+              "decision-evidence:fc61c6ce5aa6a1fdbbce",
+              "canonical:valuation:current"
+            ],
+            "text": "대형 해외 계약과 수주잔고 확대가 확인되고 높은 지상방산 수익성이 현금흐름 개선으로 이어지며 가치평가 근거까지 확보되면 BUY로 변경할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:0308e79765a08c9e605d",
+              "decision-evidence:4ee09d7109052199a77e",
+              "decision-evidence:63d391a34d2dad45acc2",
+              "decision-evidence:7f3904077a5434759cc2"
+            ],
+            "text": "수주잔고가 구조적으로 축소되거나 프로젝트 문제로 수익성과 현금창출력이 장기간 훼손되고 해외 확장이 재무구조를 악화하면 SELL로 변경한다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:de85dd44c31a5a49c91e",
+            "decision-evidence:d301fa78465237a214e2",
+            "canonical:valuation:current",
+            "canonical:security_basis:current",
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "text": "대규모 수주잔고와 높은 지상방산 수익성은 장기 논리를 지지하지만, 기대가 높고 안전한 가치평가가 불가능한 가운데 현재 가격 구조의 추격 부담도 커 HOLD가 적절하다."
+        },
+        "horizon": "6-24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:d301fa78465237a214e2"
+            ],
+            "text": "유럽 재무장, 수출 지속, 미국 진출과 높은 수익성에 대한 기대가 이미 상당 부분 반영되어 추가 성과가 기대에 못 미칠 위험이 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e87003d3fa1ebea5acb2",
+              "decision-evidence:7a9b700c1c43c2cf5e66",
+              "decision-evidence:e3b3377c6fe7404a03c5"
+            ],
+            "text": "운전자본 악화, 기존 프로젝트의 인도 지연·원가 상승, 해외 인수 관련 추가 자본 투입이 현금창출력과 주당가치를 약화할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:risk_reward:current_price",
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "decision-evidence:4c0ab8886eb1598bd8bf"
+            ],
+            "text": "현재 가격은 저항에 비해 하방 완충이 부족한 추격 구간으로 평가되고 거래량 확인도 약해 타이밍이 불리하다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:a3e652659d4ccc601ee29087",
+          "technical-feature:a88e5127d03533359fa35a1f",
+          "technical-feature:41765ddf1c8e64ea073b2dad"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:de85dd44c31a5a49c91e",
+              "decision-evidence:5c5abaf2125d13700364",
+              "decision-evidence:a1e304f095b68482fd60"
+            ],
+            "text": "대규모 지상방산 수주잔고와 수출 사업의 높은 수익성이 향후 매출·이익 가시성을 제공한다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "decision-evidence:de85dd44c31a5a49c91e"
+            ],
+            "text": "최신 분기의 강한 연결 영업이익과 지상방산 수익성은 현재 투자 논리를 뒷받침한다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:f52df7e1fe0ef7c88af2",
+              "decision-evidence:280ef767c3ae012c2a81",
+              "decision-evidence:7903584e4cd122656e19"
+            ],
+            "text": "유럽의 국방예산 확대와 미국 방산 조달 기회는 실제 계약으로 전환될 경우 추가 성장 동력이 될 수 있다."
+          }
+        ],
+        "ticker": "012450",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "증권 정체성과 주당 지표 기준이 검증되지 않아 상대 및 절대 가치평가의 무결성이 확보되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:financial_quality:2026-06-30",
+              "canonical:monitoring:confirmation_transition",
+              "decision-evidence:445bebbd8eacfc745ba6",
+              "decision-evidence:48fd01fdaa8b249c1310"
+            ],
+            "text": "재무 품질 상태와 확인 모니터링이 확정되지 않았으며 수익성 및 현금흐름 영향도 충분히 검증되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:78eb8779eb5b7d08582d",
+              "decision-evidence:d9f0cefa6a0f1b55d394",
+              "decision-evidence:9fc70c3223a81b4771a7",
+              "decision-evidence:ffd183d198ac66232d11"
+            ],
+            "text": "미국 해양방산 확장의 인수가격과 시너지, 개별 수주의 규모·고객·매출 기여가 아직 확정되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "최근 수급은 기간별로 혼재하며 누락 참여자 영향 때문에 주체별 귀속의 신뢰도가 제한된다."
+          }
+        ]
+      },
+      "evidence_sha256": "f90677f02d6d2a6222e754fd47ace9e1ba4682f53729e4a0fcaac32f0de5dd0f",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:a3e652659d4ccc601ee29087",
+          "technical-feature:a88e5127d03533359fa35a1f",
+          "technical-feature:41765ddf1c8e64ea073b2dad"
+        ],
+        "text": "🏢 한화에어로스페이스(012450)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6-24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 대규모 수주잔고와 높은 지상방산 수익성은 장기 논리를 지지하지만, 기대가 높고 안전한 가치평가가 불가능한 가운데 현재 가격 구조의 추격 부담도 커 HOLD가 적절하다.\n\n✅ 지지 근거\n• 대규모 지상방산 수주잔고와 수출 사업의 높은 수익성이 향후 매출·이익 가시성을 제공한다.\n• 최신 분기의 강한 연결 영업이익과 지상방산 수익성은 현재 투자 논리를 뒷받침한다.\n• 유럽의 국방예산 확대와 미국 방산 조달 기회는 실제 계약으로 전환될 경우 추가 성장 동력이 될 수 있다.\n\n⚠️ 반대 근거\n• 유럽 재무장, 수출 지속, 미국 진출과 높은 수익성에 대한 기대가 이미 상당 부분 반영되어 추가 성과가 기대에 못 미칠 위험이 있다.\n• 운전자본 악화, 기존 프로젝트의 인도 지연·원가 상승, 해외 인수 관련 추가 자본 투입이 현금창출력과 주당가치를 약화할 수 있다.\n• 현재 가격은 저항에 비해 하방 완충이 부족한 추격 구간으로 평가되고 거래량 확인도 약해 타이밍이 불리하다.\n\n📊 확인된 기술 상태\n• daily:distance_from_high_252: -30.09%\n• daily:atr_pct_14: 6.01%\n• daily:volume_ratio_20: 0.59\n\n❓ 남은 미확인\n• 증권 정체성과 주당 지표 기준이 검증되지 않아 상대 및 절대 가치평가의 무결성이 확보되지 않았다.\n• 재무 품질 상태와 확인 모니터링이 확정되지 않았으며 수익성 및 현금흐름 영향도 충분히 검증되지 않았다.\n• 미국 해양방산 확장의 인수가격과 시너지, 개별 수주의 규모·고객·매출 기여가 아직 확정되지 않았다.\n• 최근 수급은 기간별로 혼재하며 누락 참여자 영향 때문에 주체별 귀속의 신뢰도가 제한된다.\n\n🔄 판단 변경 조건\n• 대형 해외 계약과 수주잔고 확대가 확인되고 높은 지상방산 수익성이 현금흐름 개선으로 이어지며 가치평가 근거까지 확보되면 BUY로 변경할 수 있다.\n• 수주잔고가 구조적으로 축소되거나 프로젝트 문제로 수익성과 현금창출력이 장기간 훼손되고 해외 확장이 재무구조를 악화하면 SELL로 변경한다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "012450",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "012450",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:485b0ab5ebfb5606a96d",
+              "decision-evidence:620681097ffebbfa7287",
+              "decision-evidence:7a021b902278f0655bc6",
+              "decision-evidence:8eca1bb884fd8f709a5a",
+              "decision-evidence:a8be713e3a59c8d0c78f"
+            ],
+            "text": "A BUY classification would require confirmed non-affiliate customer expansion, improving freight volumes and margins, and cash flow and ROIC demonstrating that vessel investment is creating value."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:2126cf3d977d3189ade5",
+              "decision-evidence:32c9de4fb98ce0f35993",
+              "decision-evidence:ab5920556adde1e2fb17",
+              "decision-evidence:c1cf909ab62eb592d1d8"
+            ],
+            "text": "A SELL classification would become appropriate if export and freight weakness persists, core logistics margins decline structurally, customer concentration rises, or vessel investment is followed by worsening utilization, cash flow, and ROIC."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:b478647c84aa3dee9e14",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:31a0e380cfbf3c724794",
+            "decision-evidence:3dd39f929b5ffd54ad7b"
+          ],
+          "text": "Expectations are elevated and earnings- and book-based multiples are near the expensive end of their histories, while the packet does not yet verify the cash-flow and margin outcomes needed to support that premium."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:28d1cff5b27c18030fca",
+              "canonical:earnings:2026-06-30"
+            ],
+            "text": "The bullish case remains credible: the logistics and vehicle-shipping franchise has a coherent route to better volume, freight rates, margins, customer diversification, and capital efficiency, while the latest period remains profitable."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "The modeled forward earnings denominator improves on a directly comparable basis, which could ease the current earnings multiple if the forecast is realized."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:2126cf3d977d3189ade5",
+              "decision-evidence:23e75f1e06b30ebd33c0",
+              "decision-evidence:32c9de4fb98ce0f35993",
+              "decision-evidence:ab5920556adde1e2fb17"
+            ],
+            "text": "Conversely, vessel-investment returns, group dependence, logistics margins, and prolonged export or freight weakness could make the downside materially worse than a neutral classification implies."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:2faafb9528e0aecc47b0",
+              "decision-evidence:5979d204f48a93a7626e",
+              "decision-evidence:bc43a040bfbde0a74b29"
+            ],
+            "text": "Fuel costs, funding costs, and currency translation remain conditional macro risks to margins and investment returns."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:08ac097c7220a46782820451",
+          "technical-feature:e222fa578715ed7d9483b7fe",
+          "technical-feature:e73a453045e0df233d2f0aa0"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:valuation:book_quality",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "Security identity is verified, the book-valuation basis passed coherence checks, and the latest full statement is usable with caution, making the packet adequate for a measured classification."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30"
+            ],
+            "text": "The latest reporting period contains positive revenue and operating income, preserving the operating thesis."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:chart:structure:state"
+            ],
+            "text": "Price has held above confirmation, but overlapping support and resistance and weak volume confirmation keep the chart in a wait state, consistent with neutral timing."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:credit_spread:BAMLH0A0HYM2",
+              "canonical:market:volatility:VIXCLS",
+              "decision-evidence:b9392fbe5b33a9890b16"
+            ],
+            "text": "Current credit and volatility conditions are mildly supportive, but the packet explicitly identifies them as low-materiality context rather than fundamental confirmation."
+          }
+        ],
+        "ticker": "086280",
+        "timing": "NEUTRAL",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:31a0e380cfbf3c724794",
+              "decision-evidence:3dd39f929b5ffd54ad7b",
+              "decision-evidence:6be218cb845ce67d8051"
+            ],
+            "text": "The packet does not establish the cash-flow, margin, or revenue impact needed to validate the central operating thesis."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:a2b95bf1f181ab31bebf",
+              "decision-evidence:a7f4cd033544ed111ba0"
+            ],
+            "text": "Customer identities are not confirmed, limiting verification of diversification beyond affiliated demand."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:b478647c84aa3dee9e14"
+            ],
+            "text": "Live consensus expectations are not connected, so the precise hurdle embedded in the market price remains uncertain."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:2026-08-28"
+            ],
+            "text": "Investor-flow data are available, but participant attribution is unsafe and omitted participants are material, so flows cannot strengthen the classification."
+          }
+        ]
+      },
+      "evidence_sha256": "beaa8badfed18996b874c983bad2989b92c6222371124ba8fd7f0a435870dd4b",
+      "market": "kr",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:08ac097c7220a46782820451",
+          "technical-feature:e222fa578715ed7d9483b7fe",
+          "technical-feature:e73a453045e0df233d2f0aa0"
+        ],
+        "text": "🏢 현대글로비스(086280)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 중립\n\n🎯 결정적 이유\n• Expectations are elevated and earnings- and book-based multiples are near the expensive end of their histories, while the packet does not yet verify the cash-flow and margin outcomes needed to support that premium.\n\n✅ 지지 근거\n• Security identity is verified, the book-valuation basis passed coherence checks, and the latest full statement is usable with caution, making the packet adequate for a measured classification.\n• The latest reporting period contains positive revenue and operating income, preserving the operating thesis.\n• Price has held above confirmation, but overlapping support and resistance and weak volume confirmation keep the chart in a wait state, consistent with neutral timing.\n• Current credit and volatility conditions are mildly supportive, but the packet explicitly identifies them as low-materiality context rather than fundamental confirmation.\n\n⚠️ 반대 근거\n• The bullish case remains credible: the logistics and vehicle-shipping franchise has a coherent route to better volume, freight rates, margins, customer diversification, and capital efficiency, while the latest period remains profitable.\n• The modeled forward earnings denominator improves on a directly comparable basis, which could ease the current earnings multiple if the forecast is realized.\n• Conversely, vessel-investment returns, group dependence, logistics margins, and prolonged export or freight weakness could make the downside materially worse than a neutral classification implies.\n• Fuel costs, funding costs, and currency translation remain conditional macro risks to margins and investment returns.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_200: -3.63%\n• weekly:return_20: -6.18%\n• daily:atr_pct_14: 4.62%\n\n❓ 남은 미확인\n• The packet does not establish the cash-flow, margin, or revenue impact needed to validate the central operating thesis.\n• Customer identities are not confirmed, limiting verification of diversification beyond affiliated demand.\n• Live consensus expectations are not connected, so the precise hurdle embedded in the market price remains uncertain.\n• Investor-flow data are available, but participant attribution is unsafe and omitted participants are material, so flows cannot strengthen the classification.\n\n🔄 판단 변경 조건\n• A BUY classification would require confirmed non-affiliate customer expansion, improving freight volumes and margins, and cash flow and ROIC demonstrating that vessel investment is creating value.\n• A SELL classification would become appropriate if export and freight weakness persists, core logistics margins decline structurally, customer concentration rises, or vessel investment is followed by worsening utilization, cash flow, and ROIC.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "086280",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "086280",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:06164bafce7057b20b52",
+              "decision-evidence:35d4bb9f5d7d5501418f",
+              "decision-evidence:8906a34193399a6c5d0a",
+              "decision-evidence:9cd49978be5160e54a03"
+            ],
+            "text": "A BUY classification would require continued growth in billed power, additional durable contracts, stable or improving colocation margins, better cash flow and leverage, and declining dilution risk."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:02b2ecf8c9efa8dce70a",
+              "decision-evidence:0f836ab7e80714aed726",
+              "decision-evidence:36090e913951b40587f1",
+              "decision-evidence:359d3801bde7f3625d6c"
+            ],
+            "text": "A SELL classification would become appropriate if major customer contracts are cancelled or reduced, completion failures recur, colocation economics deteriorate despite added capacity, or debt and dilution make further growth dependent on damaging capital raises."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:acea5134d19f8ded2449",
+            "canonical:financial_quality:2026-06-30",
+            "canonical:valuation:book_quality",
+            "canonical:valuation:current",
+            "decision-evidence:464fa6687c0246031611",
+            "decision-evidence:cc2821e2af21b4635a68"
+          ],
+          "text": "The operating transition is substantive enough to avoid a clean bearish conclusion, but the latest financial-quality gate is denied, conventional valuation is unreliable, and very high expectations coexist with material debt, dilution, execution, and control risks."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:acea5134d19f8ded2449",
+              "decision-evidence:06164bafce7057b20b52",
+              "decision-evidence:9cd49978be5160e54a03",
+              "decision-evidence:f4a5b684431292d9085f"
+            ],
+            "text": "The bullish alternative is meaningful because colocation supplies most revenue, carries a strong gross margin, has begun billing substantial capacity, and can benefit from continued hyperscaler infrastructure demand."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:trailing_earnings",
+              "canonical:valuation:book_value",
+              "canonical:valuation:book_quality",
+              "decision-evidence:d9ef83e7a574c9185b09",
+              "decision-evidence:cc2821e2af21b4635a68"
+            ],
+            "text": "The bearish alternative is also credible because reported earnings and book value are negative, valuation coherence failed, and interest and dilution could overwhelm operating progress."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:02b2ecf8c9efa8dce70a",
+              "decision-evidence:359d3801bde7f3625d6c",
+              "decision-evidence:fb3e833eaecedb42e2ae",
+              "decision-evidence:f988e9a6083fdac84102"
+            ],
+            "text": "Contract changes, construction delays, simultaneous margin and capital-spending pressure, or persistent internal-control weakness could justify a more negative classification."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:012635e82dd9d132495bf545",
+          "technical-feature:d20cc4706a5021f6de232131",
+          "technical-feature:b505e92652da789af261f821"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "The security identity is verified, but the latest statement fails the financial-quality gate; integrity-first treatment therefore supports low conviction and abstention from a stronger directional call."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:acea5134d19f8ded2449",
+              "decision-evidence:464fa6687c0246031611"
+            ],
+            "text": "The transition toward AI and high-performance-computing colocation has operating evidence through revenue mix, margin, billed capacity, and contracted power, which argues against treating the thesis as merely speculative."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:464fa6687c0246031611",
+              "decision-evidence:cc2821e2af21b4635a68",
+              "decision-evidence:d9ef83e7a574c9185b09",
+              "decision-evidence:f988e9a6083fdac84102"
+            ],
+            "text": "Very high expectations, heavy capital requirements, leverage, potential dilution, and internal-control concerns make a BUY classification insufficiently supported."
+          },
+          {
+            "evidence_refs": [
+              "canonical:price:current",
+              "canonical:chart:structure:risk_reward:current_price",
+              "canonical:chart:structure:state"
+            ],
+            "text": "Price is below the stored invalidation regime and the chart remains in a wait state with poor current-price structure, supporting unfavorable timing without allowing technicals to determine the long-horizon classification."
+          }
+        ],
+        "ticker": "CORZ",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:valuation:book_quality",
+              "canonical:valuation:current"
+            ],
+            "text": "A usable relative or forward valuation is unavailable because book-based coherence failed and historical comparison was withheld for low comparability."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:464fa6687c0246031611",
+              "decision-evidence:8906a34193399a6c5d0a",
+              "decision-evidence:cc2821e2af21b4635a68"
+            ],
+            "text": "The pace at which contracted capacity converts into revenue and cash flow, and the ultimate financing and fully diluted share burden, remain unresolved."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest",
+              "decision-evidence:44cd38ba040e4351114c"
+            ],
+            "text": "Positioning is unavailable and the packet supplies no relevant market facts that could independently validate current expectations."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:bdcb05961a2df7455d93",
+              "decision-evidence:d45d3f5246d3564c410b"
+            ],
+            "text": "Future funding costs and power-interconnection availability remain important but unresolved constraints on project completion and shareholder value."
+          }
+        ]
+      },
+      "evidence_sha256": "1ccc254085ca883705e6789bf38906da41596c7907e7c19fa65dd67e9b2e6f60",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:012635e82dd9d132495bf545",
+          "technical-feature:d20cc4706a5021f6de232131",
+          "technical-feature:b505e92652da789af261f821"
+        ],
+        "text": "🏢 Core Scientific, Inc.(CORZ)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• The operating transition is substantive enough to avoid a clean bearish conclusion, but the latest financial-quality gate is denied, conventional valuation is unreliable, and very high expectations coexist with material debt, dilution, execution, and control risks.\n\n✅ 지지 근거\n• The security identity is verified, but the latest statement fails the financial-quality gate; integrity-first treatment therefore supports low conviction and abstention from a stronger directional call.\n• The transition toward AI and high-performance-computing colocation has operating evidence through revenue mix, margin, billed capacity, and contracted power, which argues against treating the thesis as merely speculative.\n• Very high expectations, heavy capital requirements, leverage, potential dilution, and internal-control concerns make a BUY classification insufficiently supported.\n• Price is below the stored invalidation regime and the chart remains in a wait state with poor current-price structure, supporting unfavorable timing without allowing technicals to determine the long-horizon classification.\n\n⚠️ 반대 근거\n• The bullish alternative is meaningful because colocation supplies most revenue, carries a strong gross margin, has begun billing substantial capacity, and can benefit from continued hyperscaler infrastructure demand.\n• The bearish alternative is also credible because reported earnings and book value are negative, valuation coherence failed, and interest and dilution could overwhelm operating progress.\n• Contract changes, construction delays, simultaneous margin and capital-spending pressure, or persistent internal-control weakness could justify a more negative classification.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_50: -24.95%\n• daily:return_60: -42.93%\n• daily:atr_pct_14: 8.63%\n\n❓ 남은 미확인\n• A usable relative or forward valuation is unavailable because book-based coherence failed and historical comparison was withheld for low comparability.\n• The pace at which contracted capacity converts into revenue and cash flow, and the ultimate financing and fully diluted share burden, remain unresolved.\n• Positioning is unavailable and the packet supplies no relevant market facts that could independently validate current expectations.\n• Future funding costs and power-interconnection availability remain important but unresolved constraints on project completion and shareholder value.\n\n🔄 판단 변경 조건\n• A BUY classification would require continued growth in billed power, additional durable contracts, stable or improving colocation margins, better cash flow and leverage, and declining dilution risk.\n• A SELL classification would become appropriate if major customer contracts are cancelled or reduced, completion failures recur, colocation economics deteriorate despite added capacity, or debt and dilution make further growth dependent on damaging capital raises.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "CORZ",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "CORZ",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:e35ff3fd6aad2793aa06",
+              "decision-evidence:52b3b639e2122ecd51bd",
+              "decision-evidence:ce096eec7439591c0246"
+            ],
+            "text": "Reclassify to BUY if USDC share and circulation expand together, non-interest platform and payment revenue becomes more important, and profitability and cash generation improve despite lower rates."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:65dab49dc52c42ea2eb0",
+              "decision-evidence:beee0feed84acc8fe672",
+              "decision-evidence:f9389a85c4423a03dbee"
+            ],
+            "text": "Reclassify to SELL if USDC share and circulation enter structural decline, regulation damages the core model, or continued reserve-income dependence causes normalized profitability to deteriorate materially as rates fall."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "decision-evidence:8ee3e79d24ccf948a303"
+            ],
+            "text": "Timing would improve if verified supply becomes available and a support or breakout setup gains confirmation; absent that evidence, the chart setup remains insufficient."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:194457c71ac726c17374",
+            "canonical:valuation:current",
+            "canonical:earnings:2026-03-31",
+            "decision-evidence:12ce8ebba122f10d4c69",
+            "decision-evidence:da88b216c7888e5919f6",
+            "decision-evidence:f97a9d471eb72b218274"
+          ],
+          "text": "Speculative expectations and a demanding valuation are not matched by packet evidence that recurring non-interest revenue is already replacing rate-sensitive reserve income, so the long-horizon thesis is not sufficiently proven for BUY."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:194457c71ac726c17374"
+            ],
+            "text": "Expectations are speculative and already incorporate USDC growth, infrastructure expansion, and continued reserve income, leaving sensitivity to market-share or normalized-earnings disappointment."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "The forward earnings and book multiples appear demanding, while historical valuation comparability and the relationship to the trailing multiple are insufficient for a confident relative-value conclusion."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-03-31",
+              "decision-evidence:12ce8ebba122f10d4c69",
+              "decision-evidence:da88b216c7888e5919f6"
+            ],
+            "text": "The available earnings record does not demonstrate the revenue contribution, margins, or cash-generation progression required to validate the thesis."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:305a91dd774b63e72a70",
+              "decision-evidence:50a8854112f9b0152dae",
+              "decision-evidence:99f1d5354d0479b1afed"
+            ],
+            "text": "The thesis weakens if reserve-yield pressure is not offset, non-interest growth disappoints, revenue sharing becomes more burdensome, or USDC circulation and share stagnate."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:07b8eafdebd730c702ca3f03",
+          "technical-feature:10338ca94b00b22e11c2891e",
+          "technical-feature:163116acb3a396ad1af2ee3f"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-03-31",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "Security identity is verified, the latest statement source is usable, and the book-valuation basis passes its coherence checks."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:f97a9d471eb72b218274",
+              "decision-evidence:52b3b639e2122ecd51bd",
+              "decision-evidence:e35ff3fd6aad2793aa06"
+            ],
+            "text": "USDC circulation and on-chain use provide a credible growth vector, with recurring platform and payment revenue offering a path to reduce reserve-income dependence."
+          },
+          {
+            "evidence_refs": [
+              "canonical:monitoring:confirmation_transition",
+              "canonical:price:current",
+              "canonical:chart:price_transition"
+            ],
+            "text": "Price remains above the registered confirmation level, and that confirmation state continues to hold."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:volatility:VIXCLS",
+              "canonical:market:credit_spread:BAMLH0A0HYM2",
+              "decision-evidence:d90c27e7d52510158364"
+            ],
+            "text": "Current volatility and credit conditions are mildly supportive of risk appetite, although the packet explicitly does not treat them as fundamental confirmation."
+          }
+        ],
+        "ticker": "CRCL",
+        "timing": "INSUFFICIENT",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-03-31",
+              "decision-evidence:12ce8ebba122f10d4c69",
+              "decision-evidence:da88b216c7888e5919f6",
+              "decision-evidence:e35ff3fd6aad2793aa06"
+            ],
+            "text": "The packet does not establish whether current USDC share, circulation, non-interest revenue mix, and normalized profitability satisfy the thesis-strengthening conditions."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest"
+            ],
+            "text": "Positioning data is unavailable, so flow confirmation is absent."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:d446525467c68f4a1579",
+              "decision-evidence:fe350c28d228f1bd0bd5"
+            ],
+            "text": "Unverified reporting and undisclosed customer identities remain excluded from the analysis."
+          }
+        ]
+      },
+      "evidence_sha256": "06c07ec863c379d1c98bafd8304d4638c89bf63333063aeb63d02e04e4160667",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:07b8eafdebd730c702ca3f03",
+          "technical-feature:10338ca94b00b22e11c2891e",
+          "technical-feature:163116acb3a396ad1af2ee3f"
+        ],
+        "text": "🏢 Circle Internet Group(CRCL)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 6~24개월 | 단기 타이밍: 판단 근거 부족\n\n🎯 결정적 이유\n• Speculative expectations and a demanding valuation are not matched by packet evidence that recurring non-interest revenue is already replacing rate-sensitive reserve income, so the long-horizon thesis is not sufficiently proven for BUY.\n\n✅ 지지 근거\n• Security identity is verified, the latest statement source is usable, and the book-valuation basis passes its coherence checks.\n• USDC circulation and on-chain use provide a credible growth vector, with recurring platform and payment revenue offering a path to reduce reserve-income dependence.\n• Price remains above the registered confirmation level, and that confirmation state continues to hold.\n• Current volatility and credit conditions are mildly supportive of risk appetite, although the packet explicitly does not treat them as fundamental confirmation.\n\n⚠️ 반대 근거\n• Expectations are speculative and already incorporate USDC growth, infrastructure expansion, and continued reserve income, leaving sensitivity to market-share or normalized-earnings disappointment.\n• The forward earnings and book multiples appear demanding, while historical valuation comparability and the relationship to the trailing multiple are insufficient for a confident relative-value conclusion.\n• The available earnings record does not demonstrate the revenue contribution, margins, or cash-generation progression required to validate the thesis.\n• The thesis weakens if reserve-yield pressure is not offset, non-interest growth disappoints, revenue sharing becomes more burdensome, or USDC circulation and share stagnate.\n\n📊 확인된 기술 상태\n• daily:return_20: 39.18%\n• weekly:atr_pct_14: 18.62%\n• weekly:distance_from_high_60: -66.86%\n\n❓ 남은 미확인\n• The packet does not establish whether current USDC share, circulation, non-interest revenue mix, and normalized profitability satisfy the thesis-strengthening conditions.\n• Positioning data is unavailable, so flow confirmation is absent.\n• Unverified reporting and undisclosed customer identities remain excluded from the analysis.\n\n🔄 판단 변경 조건\n• Reclassify to BUY if USDC share and circulation expand together, non-interest platform and payment revenue becomes more important, and profitability and cash generation improve despite lower rates.\n• Reclassify to SELL if USDC share and circulation enter structural decline, regulation damages the core model, or continued reserve-income dependence causes normalized profitability to deteriorate materially as rates fall.\n• Timing would improve if verified supply becomes available and a support or breakout setup gains confirmation; absent that evidence, the chart setup remains insufficient.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "CRCL",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "CRCL",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:2b6d4fb027ec96785224",
+              "decision-evidence:3d5f5063af522b75f15d",
+              "decision-evidence:e3d2493f5eba998dc6c6",
+              "decision-evidence:47e26c6f53f6504d798d"
+            ],
+            "text": "Confidence in BUY would rise if Search monetization remains intact while Cloud backlog, growth, and margins improve and AI investment converts into faster cash-flow recovery."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:1eab5946cbdbeae961f6",
+              "decision-evidence:9a44445c9140d82dae68",
+              "decision-evidence:e91745bd16fef5ba4649"
+            ],
+            "text": "Reclassify to HOLD if Cloud growth or backlog weakens, Search monetization slows, or AI infrastructure costs place sustained pressure on Cloud margins."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:119eb75d8acc25305dc3",
+              "decision-evidence:da18106c96f53ecfd7b8",
+              "decision-evidence:e557bc193349d6c5e071"
+            ],
+            "text": "Reclassify to SELL if Search and Cloud decelerate together for an extended period, AI structurally damages Search economics, or capital spending structurally worsens cash generation and returns on capital."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "BUY",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:current",
+            "decision-evidence:47e26c6f53f6504d798d",
+            "decision-evidence:e557bc193349d6c5e071"
+          ],
+          "text": "The Search, Cloud, and AI earnings thesis is paired with a trailing earnings valuation near the lower portion of its high-quality history; elevated expectations and capital-spending risk temper confidence but do not outweigh the long-horizon setup."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:47e26c6f53f6504d798d"
+            ],
+            "text": "Expectations are elevated and already assume resilient Search revenue, rapid Cloud growth and margin improvement, and continued AI investment."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e557bc193349d6c5e071",
+              "decision-evidence:e91745bd16fef5ba4649",
+              "decision-evidence:f99b2da186a81fc1c21d"
+            ],
+            "text": "Large AI infrastructure commitments could pressure cash generation, returns on capital, and Cloud margins if revenue conversion or payback takes longer than expected."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "decision-evidence:1aec1a0ffbaa4e9970a7",
+              "decision-evidence:355617d6fb4dfc480ed4"
+            ],
+            "text": "Although the statement source is verified, the supplied earnings record lacks operating detail needed to independently confirm current revenue and margin effects."
+          },
+          {
+            "evidence_refs": [
+              "canonical:price:current",
+              "canonical:monitoring:confirmation_transition",
+              "technical-feature:1b9be4ba2b92547cff776bc4",
+              "technical-feature:4ef1b931230a7ddfeee41064"
+            ],
+            "text": "Price remains below the registered support and confirmation levels, while shorter-term trend and weekly momentum states remain weak."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:47cd2aeccb997de09e36a8a5",
+          "technical-feature:ea647e48644bed658f374c94",
+          "technical-feature:a2e915b6594cc9557f3ef6da"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "Security identity, share basis, and the latest full-statement source are verified and usable."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:55c968b74bb8bf591006",
+              "decision-evidence:2b6d4fb027ec96785224",
+              "decision-evidence:3d5f5063af522b75f15d",
+              "decision-evidence:e3d2493f5eba998dc6c6"
+            ],
+            "text": "Resilient Search monetization and continued Cloud growth, backlog conversion, and margin improvement provide multiple paths for AI demand to support earnings."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:historical_pe",
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "The trailing earnings multiple is near the lower portion of its high-quality history, while the book multiple is near the middle of its historical distribution and the security bases are comparable."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:be7ecd668b899891d3f0",
+              "canonical:chart:structure:state"
+            ],
+            "text": "Dynamic support and major structure remain intact, and the chart engine describes the current risk-reward as attractive, although it does not classify the setup as a new-entry confirmation."
+          }
+        ],
+        "ticker": "GOOGL",
+        "timing": "NEUTRAL",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "decision-evidence:1aec1a0ffbaa4e9970a7",
+              "decision-evidence:355617d6fb4dfc480ed4",
+              "decision-evidence:55c968b74bb8bf591006"
+            ],
+            "text": "Current Search, Cloud, backlog, capital-spending, revenue, margin, and cash-flow progress is not quantified in the supplied operating evidence."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest"
+            ],
+            "text": "Positioning data is unavailable, leaving flow confirmation unknown."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:5ca0c4afa20521627f75",
+              "decision-evidence:e871cc71b046e342eaff"
+            ],
+            "text": "Unverified reporting and undisclosed customer identities remain excluded from the thesis."
+          }
+        ]
+      },
+      "evidence_sha256": "ca42efbaae98cd548a4e1b82e5bfb141b4c768eb78ca7342539900eae6b98b66",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "BUY",
+        "selected_numeric_fact_refs": [
+          "technical-feature:47cd2aeccb997de09e36a8a5",
+          "technical-feature:ea647e48644bed658f374c94",
+          "technical-feature:a2e915b6594cc9557f3ef6da"
+        ],
+        "text": "🏢 Alphabet Inc. Class A(GOOGL)\n🧠 AI 종합 판단: BUY\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 중립\n\n🎯 결정적 이유\n• The Search, Cloud, and AI earnings thesis is paired with a trailing earnings valuation near the lower portion of its high-quality history; elevated expectations and capital-spending risk temper confidence but do not outweigh the long-horizon setup.\n\n✅ 지지 근거\n• Security identity, share basis, and the latest full-statement source are verified and usable.\n• Resilient Search monetization and continued Cloud growth, backlog conversion, and margin improvement provide multiple paths for AI demand to support earnings.\n• The trailing earnings multiple is near the lower portion of its high-quality history, while the book multiple is near the middle of its historical distribution and the security bases are comparable.\n• Dynamic support and major structure remain intact, and the chart engine describes the current risk-reward as attractive, although it does not classify the setup as a new-entry confirmation.\n\n⚠️ 반대 근거\n• Expectations are elevated and already assume resilient Search revenue, rapid Cloud growth and margin improvement, and continued AI investment.\n• Large AI infrastructure commitments could pressure cash generation, returns on capital, and Cloud margins if revenue conversion or payback takes longer than expected.\n• Although the statement source is verified, the supplied earnings record lacks operating detail needed to independently confirm current revenue and margin effects.\n• Price remains below the registered support and confirmation levels, while shorter-term trend and weekly momentum states remain weak.\n\n📊 확인된 기술 상태\n• daily:return_20: -2.68%\n• weekly:atr_pct_14: 6.87%\n• daily:distance_from_high_252: -15.18%\n\n❓ 남은 미확인\n• Current Search, Cloud, backlog, capital-spending, revenue, margin, and cash-flow progress is not quantified in the supplied operating evidence.\n• Positioning data is unavailable, leaving flow confirmation unknown.\n• Unverified reporting and undisclosed customer identities remain excluded from the thesis.\n\n🔄 판단 변경 조건\n• Confidence in BUY would rise if Search monetization remains intact while Cloud backlog, growth, and margins improve and AI investment converts into faster cash-flow recovery.\n• Reclassify to HOLD if Cloud growth or backlog weakens, Search monetization slows, or AI infrastructure costs place sustained pressure on Cloud margins.\n• Reclassify to SELL if Search and Cloud decelerate together for an extended period, AI structurally damages Search economics, or capital spending structurally worsens cash generation and returns on capital.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "GOOGL",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "GOOGL",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:8b040f8545884d2f40f7",
+              "decision-evidence:7f12a241fbf8249e9ea5",
+              "decision-evidence:85cc2f47424078a0d841"
+            ],
+            "text": "대형 프로젝트가 계획대로 가동되어 계약 수익이 실적으로 전환되고, 프로젝트 금융이 모회사 지분 부담을 제한하며, 장기 인프라 수익 비중이 뚜렷하게 커지면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:0750ded5723b45b38bd9",
+              "decision-evidence:e12752508a662d6e988d",
+              "decision-evidence:1b0709720f50a6bda8e2"
+            ],
+            "text": "핵심 계약 취소나 반복적인 준공 실패, 예상 수익성 저하와 모회사 자본 부담 급증, 채굴 의존의 구조적 지속이 확인되면 SELL로 하향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:b939d70a17422e43c177",
+              "canonical:chart:price_transition"
+            ],
+            "text": "저장된 상향 확인 구간을 거래량과 함께 회복하면 단기 타이밍 판단은 개선되며, 무효화 하단에 머무르면 불리한 타이밍이 지속된다."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:4cfce0c1d1d7f61e130c",
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "canonical:valuation:current"
+          ],
+          "text": "장기 AI 데이터센터 인프라 전환의 잠재력은 크지만, 계약이 실제 가동 수익으로 전환되는 과정은 아직 검증되지 않았고 시장 기대와 가치평가 부담도 높아 HOLD가 가장 방어적인 분류다."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:8b040f8545884d2f40f7",
+              "decision-evidence:98b0b0b4186ae9136ab0",
+              "decision-evidence:7f12a241fbf8249e9ea5"
+            ],
+            "text": "프로젝트 실행과 추가 우량 고객 확보, 프로젝트 금융 확대가 현실화되면 장기 현금흐름의 질이 빠르게 개선되어 BUY 근거가 강해질 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:price:current",
+              "canonical:valuation:current"
+            ],
+            "text": "가격이 저장된 무효화 기준을 하회하고 가치평가도 프리미엄 상태여서, 실행 차질이 이어질 경우 HOLD보다 더 보수적인 분류가 정당화될 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "technical-feature:81aea1de44369c95f363687f",
+              "technical-feature:e243fe94d810d63965c99467"
+            ],
+            "text": "월간 장기 추세와 모멘텀은 여전히 긍정적인 면을 남기고 있어 최근 가격 약세만으로 장기 논리를 폐기하기는 이르다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:74123b714201ad5f3ebe2577",
+          "technical-feature:939073f08246ed0c6e3c1b9f",
+          "technical-feature:886848d44dd302b7d2cd2f29"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:financial_quality:2026-03-31",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "증권 정체성이 확인됐고 최신 재무제표는 검증 가능한 상태이며 장부가치 기반 가치평가의 통화와 주식 기준도 일치한다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:4cfce0c1d1d7f61e130c",
+              "decision-evidence:4c28d1cc7a794cc4171c"
+            ],
+            "text": "장기 계약형 인프라 사업으로의 전환은 유의미하지만 현재 실적은 여전히 채굴 변동성의 영향을 받고, 시장은 상당한 실행 성공을 이미 기대하고 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:consensus_forward_earnings"
+            ],
+            "text": "장부가치와 예상이익 기준 가치평가 모두 높은 기대를 내포해, 실행이 입증되기 전에는 안전마진을 확인하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:f4bed9ae5b76b311f6ff",
+              "decision-evidence:6a3bc11a62cd73678d22",
+              "decision-evidence:fe783c093a24882e06a6"
+            ],
+            "text": "AI 데이터센터 수요는 우호적이지만 금융비용과 전력 인입 제약이 프로젝트 경제성과 일정에 상반된 영향을 준다."
+          }
+        ],
+        "ticker": "HUT",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:af3bdb852dc69e1ac700",
+              "decision-evidence:cb5b65968e8b5e6f42de",
+              "decision-evidence:d936cdd23ce941eccffa"
+            ],
+            "text": "계약의 구체적인 매출 및 마진 영향과 공개되지 않은 고객 구성은 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest",
+              "canonical:chart:structure:state"
+            ],
+            "text": "투자자 포지셔닝과 검증된 공급 물량 정보가 없어 가격 신호의 신뢰도를 완전히 평가할 수 없다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:4cd5c88d72b95cb1439a"
+            ],
+            "text": "원문과 투자 영향이 검증되지 않은 보도는 판단에서 제외됐다."
+          }
+        ]
+      },
+      "evidence_sha256": "5d9a3f0397fcab3f58f930bb20ea912ba8ffbaa3c11e4059b3b232af64dee387",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:74123b714201ad5f3ebe2577",
+          "technical-feature:939073f08246ed0c6e3c1b9f",
+          "technical-feature:886848d44dd302b7d2cd2f29"
+        ],
+        "text": "🏢 Hut 8 Corp.(HUT)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 장기 AI 데이터센터 인프라 전환의 잠재력은 크지만, 계약이 실제 가동 수익으로 전환되는 과정은 아직 검증되지 않았고 시장 기대와 가치평가 부담도 높아 HOLD가 가장 방어적인 분류다.\n\n✅ 지지 근거\n• 증권 정체성이 확인됐고 최신 재무제표는 검증 가능한 상태이며 장부가치 기반 가치평가의 통화와 주식 기준도 일치한다.\n• 장기 계약형 인프라 사업으로의 전환은 유의미하지만 현재 실적은 여전히 채굴 변동성의 영향을 받고, 시장은 상당한 실행 성공을 이미 기대하고 있다.\n• 장부가치와 예상이익 기준 가치평가 모두 높은 기대를 내포해, 실행이 입증되기 전에는 안전마진을 확인하기 어렵다.\n• AI 데이터센터 수요는 우호적이지만 금융비용과 전력 인입 제약이 프로젝트 경제성과 일정에 상반된 영향을 준다.\n\n⚠️ 반대 근거\n• 프로젝트 실행과 추가 우량 고객 확보, 프로젝트 금융 확대가 현실화되면 장기 현금흐름의 질이 빠르게 개선되어 BUY 근거가 강해질 수 있다.\n• 가격이 저장된 무효화 기준을 하회하고 가치평가도 프리미엄 상태여서, 실행 차질이 이어질 경우 HOLD보다 더 보수적인 분류가 정당화될 수 있다.\n• 월간 장기 추세와 모멘텀은 여전히 긍정적인 면을 남기고 있어 최근 가격 약세만으로 장기 논리를 폐기하기는 이르다.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_50: -20.12%\n• weekly:macd_histogram: -5.370332\n• daily:atr_pct_14: 11.02%\n\n❓ 남은 미확인\n• 계약의 구체적인 매출 및 마진 영향과 공개되지 않은 고객 구성은 확인되지 않았다.\n• 투자자 포지셔닝과 검증된 공급 물량 정보가 없어 가격 신호의 신뢰도를 완전히 평가할 수 없다.\n• 원문과 투자 영향이 검증되지 않은 보도는 판단에서 제외됐다.\n\n🔄 판단 변경 조건\n• 대형 프로젝트가 계획대로 가동되어 계약 수익이 실적으로 전환되고, 프로젝트 금융이 모회사 지분 부담을 제한하며, 장기 인프라 수익 비중이 뚜렷하게 커지면 BUY로 상향할 수 있다.\n• 핵심 계약 취소나 반복적인 준공 실패, 예상 수익성 저하와 모회사 자본 부담 급증, 채굴 의존의 구조적 지속이 확인되면 SELL로 하향할 수 있다.\n• 저장된 상향 확인 구간을 거래량과 함께 회복하면 단기 타이밍 판단은 개선되며, 무효화 하단에 머무르면 불리한 타이밍이 지속된다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "HUT",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "HUT",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:a4e33fdbb619e8a75ec6",
+              "decision-evidence:d746b38e4f88e9088509",
+              "decision-evidence:1e35c6622a824b5fbe74"
+            ],
+            "text": "Software와 Red Hat 성장이 가속되고 AI 수요가 전사 매출 개선으로 이어지며 현금흐름 성장과 부채 관리가 함께 개선되면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:ed03d8f73e419de39113",
+              "decision-evidence:a68244a9f6772590082d",
+              "decision-evidence:e5705361ce4c4132cde7"
+            ],
+            "text": "성장 투자 이후에도 전사 매출과 현금흐름이 장기간 정체되거나 자본수익성이 구조적으로 악화되면 SELL로 하향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:stored_price_rules",
+              "canonical:chart:price_transition",
+              "decision-evidence:f5f5d02d68353ae33d2d"
+            ],
+            "text": "저장된 상향 확인 구간을 회복해 안착하면 타이밍이 개선되고, 핵심 지지와 무효화 기준이 훼손되면 가격 위험이 커진다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:daada1e8e154d258cf46",
+            "canonical:valuation:current"
+          ],
+          "text": "Software·Red Hat·AI 기반의 반복매출 성장은 매력적이지만 전사 매출과 현금흐름의 재가속은 아직 입증되지 않았고 가치평가도 뚜렷한 저평가를 보여주지 않아 HOLD가 적절하다."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:a4e33fdbb619e8a75ec6",
+              "decision-evidence:d746b38e4f88e9088509",
+              "decision-evidence:1e35c6622a824b5fbe74"
+            ],
+            "text": "Software와 AI의 전사 성장 기여 및 현금흐름 재가속이 확인되면 현재 분류는 지나치게 보수적일 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:972c4c6634d9dcdfd155",
+              "decision-evidence:54f61a882c928f99e40b",
+              "decision-evidence:e5705361ce4c4132cde7"
+            ],
+            "text": "Consulting 정체, 현금흐름 부진, 부채 증가와 자본효율 악화가 함께 지속되면 HOLD보다 더 부정적인 분류가 타당할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "technical-feature:0c86e4fc61c205e926299204",
+              "technical-feature:7fc77a22ef4f87325b79df33",
+              "technical-feature:f7ae95af0e587ff49319c6e3"
+            ],
+            "text": "일간 가격 흐름은 회복 신호를 보이지만 주간 모멘텀은 약해, 기술적 증거도 한 방향으로 확정되지 않았다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:02ef43642657b27e959c9114",
+          "technical-feature:262dc73a2eeacdcf49445cf4",
+          "technical-feature:6612cf87a1a5af47164b9ae1"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "증권 정체성은 확인됐지만 최신 재무자료는 공식 재무기간이 완전히 해결되지 않아 주의해서 사용할 필요가 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:f5f5d02d68353ae33d2d",
+              "decision-evidence:daada1e8e154d258cf46"
+            ],
+            "text": "반복매출과 AI 성장 기대는 사업을 지지하지만 Consulting 회복과 전사 현금흐름 가속은 추가 검증이 필요하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:historical_pe"
+            ],
+            "text": "현재 이익 및 장부가치 배수는 장기 역사에서 대체로 중앙권에 있어 뚜렷한 고평가나 저평가 신호가 부족하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:price:current",
+              "canonical:chart:structure:state",
+              "decision-evidence:7e7679b468eca6edafca"
+            ],
+            "text": "가격은 지지 위에 있으나 상향 확인 전이고 인접 저항 때문에 가격 구조도 관망 상태다."
+          }
+        ],
+        "ticker": "IBM",
+        "timing": "NEUTRAL",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:3d235f4ed8efba185e47",
+              "decision-evidence:2f1f968b7649bf780fea",
+              "decision-evidence:e847d7050703d6faa296"
+            ],
+            "text": "AI 관련 계약의 구체적인 매출 및 마진 기여와 공개되지 않은 고객 구성은 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest",
+              "canonical:chart:structure:state"
+            ],
+            "text": "투자자 포지셔닝과 검증된 공급 물량 정보가 없어 가격 확인의 강도를 완전히 판단할 수 없다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:36f3517d8d3d881e4a65",
+              "decision-evidence:cfe5dab36abc0cc9e946",
+              "decision-evidence:f99ba7d4957627781057"
+            ],
+            "text": "현재 시장 여건은 근본 실적을 확인해 주지 않으며, 향후 신용비용과 실질금리의 영향도 남아 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:1a151770791d651c2c75"
+            ],
+            "text": "원문과 투자 영향이 검증되지 않은 보도는 판단에서 제외됐다."
+          }
+        ]
+      },
+      "evidence_sha256": "7bf977baa239aea1e39c219f3f447a001132b9b28c8b575d7f096d5512dac1c2",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:02ef43642657b27e959c9114",
+          "technical-feature:262dc73a2eeacdcf49445cf4",
+          "technical-feature:6612cf87a1a5af47164b9ae1"
+        ],
+        "text": "🏢 IBM(IBM)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 중립\n\n🎯 결정적 이유\n• Software·Red Hat·AI 기반의 반복매출 성장은 매력적이지만 전사 매출과 현금흐름의 재가속은 아직 입증되지 않았고 가치평가도 뚜렷한 저평가를 보여주지 않아 HOLD가 적절하다.\n\n✅ 지지 근거\n• 증권 정체성은 확인됐지만 최신 재무자료는 공식 재무기간이 완전히 해결되지 않아 주의해서 사용할 필요가 있다.\n• 반복매출과 AI 성장 기대는 사업을 지지하지만 Consulting 회복과 전사 현금흐름 가속은 추가 검증이 필요하다.\n• 현재 이익 및 장부가치 배수는 장기 역사에서 대체로 중앙권에 있어 뚜렷한 고평가나 저평가 신호가 부족하다.\n• 가격은 지지 위에 있으나 상향 확인 전이고 인접 저항 때문에 가격 구조도 관망 상태다.\n\n⚠️ 반대 근거\n• Software와 AI의 전사 성장 기여 및 현금흐름 재가속이 확인되면 현재 분류는 지나치게 보수적일 수 있다.\n• Consulting 정체, 현금흐름 부진, 부채 증가와 자본효율 악화가 함께 지속되면 HOLD보다 더 부정적인 분류가 타당할 수 있다.\n• 일간 가격 흐름은 회복 신호를 보이지만 주간 모멘텀은 약해, 기술적 증거도 한 방향으로 확정되지 않았다.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_20: 0.51%\n• weekly:macd_histogram: -1.682334\n• daily:atr_pct_14: 3.18%\n\n❓ 남은 미확인\n• AI 관련 계약의 구체적인 매출 및 마진 기여와 공개되지 않은 고객 구성은 확인되지 않았다.\n• 투자자 포지셔닝과 검증된 공급 물량 정보가 없어 가격 확인의 강도를 완전히 판단할 수 없다.\n• 현재 시장 여건은 근본 실적을 확인해 주지 않으며, 향후 신용비용과 실질금리의 영향도 남아 있다.\n• 원문과 투자 영향이 검증되지 않은 보도는 판단에서 제외됐다.\n\n🔄 판단 변경 조건\n• Software와 Red Hat 성장이 가속되고 AI 수요가 전사 매출 개선으로 이어지며 현금흐름 성장과 부채 관리가 함께 개선되면 BUY로 상향할 수 있다.\n• 성장 투자 이후에도 전사 매출과 현금흐름이 장기간 정체되거나 자본수익성이 구조적으로 악화되면 SELL로 하향할 수 있다.\n• 저장된 상향 확인 구간을 회복해 안착하면 타이밍이 개선되고, 핵심 지지와 무효화 기준이 훼손되면 가격 위험이 커진다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "IBM",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "IBM",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:a28e6663801fec8ab611",
+              "decision-evidence:7d84dda8918aa8dbcf26",
+              "decision-evidence:fc21b074ee6020ea8322",
+              "decision-evidence:a3ecd96de1e2ab92ea19",
+              "decision-evidence:472cc5c042bf61014917"
+            ],
+            "text": "차세대 HBM의 고객 채택, 메모리 가격과 고부가 믹스, 장기계약 기반 수요 가시성, 현금흐름과 자본효율의 지속성이 함께 확인되고 가격 확인까지 보강되면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:6ce38081e8f272ad68a3",
+              "decision-evidence:76ac8d9e50fd630777ff",
+              "decision-evidence:beeedb93a3d123acbe7b",
+              "decision-evidence:00cb0b2759fcf17f5a54"
+            ],
+            "text": "AI 메모리 수요와 가격이 장기 둔화하거나 HBM 경쟁력이 훼손되고, 과도한 설비투자로 현금흐름과 재무구조가 지속 악화되면 SELL로 하향할 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:31b3afdedc39a02d46b5",
+            "decision-evidence:2c7de5970a1beda446d7",
+            "canonical:valuation:historical_pb"
+          ],
+          "text": "AI 메모리와 장기 고객계약은 이익 가시성을 높이지만 그 지속 기대가 이미 매우 높고 장부가치 기준 평가도 역사적으로 극단적인 구간이어서, 상승 논리와 사이클·밸류에이션 위험이 균형을 이룬다."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:2c7de5970a1beda446d7",
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "강한 메모리 가격, 고마진, 현금흐름과 HBM 성과가 상당 부분 기대에 반영됐으며 장부가치 기준 평가는 역사적 분포상 매우 높다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:8101aa12a05f32d84593",
+              "decision-evidence:00cb0b2759fcf17f5a54",
+              "decision-evidence:beeedb93a3d123acbe7b"
+            ],
+            "text": "설비투자는 HBM 공급 확대에 도움이 되지만 공급과잉을 재현해 현금흐름과 재무구조를 훼손할 위험도 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "technical-feature:3ca7ee4d15dbf3f7114a7c16"
+            ],
+            "text": "가격 구조는 아직 유효한 지지 또는 돌파 설정을 확인하지 못했고 거래량 확인도 약하며, 장기 과열 신호가 남아 있어 현재 타이밍은 불리하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:relative:SOXX:SPY",
+              "decision-evidence:31ef44605f79fdaecfae"
+            ],
+            "text": "반도체 업종의 상대 성과가 광범위 시장보다 약하지만 이는 주문이나 마진을 확인하는 근본 증거는 아니다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:002de713bde1a4d31157d54a",
+          "technical-feature:005b9de92d5c87d8834482ff",
+          "technical-feature:0eecb6cba915e571e402ab96"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-05-28"
+            ],
+            "text": "증권 정체성과 평가 기준은 검증됐고 최신 재무제표도 주의하에 사용할 수 있어 데이터 무결성이 분류를 막지는 않는다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:31b3afdedc39a02d46b5",
+              "decision-evidence:2c7de5970a1beda446d7"
+            ],
+            "text": "AI 서버와 HBM 수요, 고부가 메모리 믹스, 장기 고객계약과 강한 현금흐름은 과거보다 높은 이익 가시성을 뒷받침한다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:working-capital-relation:dbdfd04e725e83528d8fdd31"
+            ],
+            "text": "재고 증가가 매출원가 증가보다 낮아 운전자본 품질 측면에서 긍정적인 신호가 확인된다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "선행 이익 분모가 후행 분모보다 높고 선행 이익배수가 더 낮아 시장이 반영한 이익 개선 가능성은 상당하다."
+          }
+        ],
+        "ticker": "MU",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:0132775faf09a4f3d96e",
+              "decision-evidence:abce7d8c7592cc2ada7a",
+              "decision-evidence:e6ef52c7c85cc5e96d89",
+              "decision-evidence:2c7de5970a1beda446d7"
+            ],
+            "text": "장기계약과 고객 채택이 실제 매출과 마진으로 전환되는 정도 및 일부 고객의 정체는 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-05-28",
+              "canonical:financial_quality:2026-05-28",
+              "decision-evidence:2c7de5970a1beda446d7"
+            ],
+            "text": "제공된 정형 실적 항목만으로는 마진, 현금흐름과 설비투자 부담의 지속성을 독립적으로 충분히 검증하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest"
+            ],
+            "text": "최신 포지셔닝 자료가 없어 수급 쏠림이나 잠재적 청산 위험을 판단할 수 없다."
+          }
+        ]
+      },
+      "evidence_sha256": "8e9c47cbeaa463543d9ee26b555717150a235e22d2f45d170523016f4eb008d9",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:002de713bde1a4d31157d54a",
+          "technical-feature:005b9de92d5c87d8834482ff",
+          "technical-feature:0eecb6cba915e571e402ab96"
+        ],
+        "text": "🏢 Micron Technology(MU)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• AI 메모리와 장기 고객계약은 이익 가시성을 높이지만 그 지속 기대가 이미 매우 높고 장부가치 기준 평가도 역사적으로 극단적인 구간이어서, 상승 논리와 사이클·밸류에이션 위험이 균형을 이룬다.\n\n✅ 지지 근거\n• 증권 정체성과 평가 기준은 검증됐고 최신 재무제표도 주의하에 사용할 수 있어 데이터 무결성이 분류를 막지는 않는다.\n• AI 서버와 HBM 수요, 고부가 메모리 믹스, 장기 고객계약과 강한 현금흐름은 과거보다 높은 이익 가시성을 뒷받침한다.\n• 재고 증가가 매출원가 증가보다 낮아 운전자본 품질 측면에서 긍정적인 신호가 확인된다.\n• 선행 이익 분모가 후행 분모보다 높고 선행 이익배수가 더 낮아 시장이 반영한 이익 개선 가능성은 상당하다.\n\n⚠️ 반대 근거\n• 강한 메모리 가격, 고마진, 현금흐름과 HBM 성과가 상당 부분 기대에 반영됐으며 장부가치 기준 평가는 역사적 분포상 매우 높다.\n• 설비투자는 HBM 공급 확대에 도움이 되지만 공급과잉을 재현해 현금흐름과 재무구조를 훼손할 위험도 있다.\n• 가격 구조는 아직 유효한 지지 또는 돌파 설정을 확인하지 못했고 거래량 확인도 약하며, 장기 과열 신호가 남아 있어 현재 타이밍은 불리하다.\n• 반도체 업종의 상대 성과가 광범위 시장보다 약하지만 이는 주문이나 마진을 확인하는 근본 증거는 아니다.\n\n📊 확인된 기술 상태\n• weekly:return_10: -17.74%\n• daily:close_vs_sma_200: 58.54%\n• daily:volume_ratio_20: 0.75\n\n❓ 남은 미확인\n• 장기계약과 고객 채택이 실제 매출과 마진으로 전환되는 정도 및 일부 고객의 정체는 확인되지 않았다.\n• 제공된 정형 실적 항목만으로는 마진, 현금흐름과 설비투자 부담의 지속성을 독립적으로 충분히 검증하기 어렵다.\n• 최신 포지셔닝 자료가 없어 수급 쏠림이나 잠재적 청산 위험을 판단할 수 없다.\n\n🔄 판단 변경 조건\n• 차세대 HBM의 고객 채택, 메모리 가격과 고부가 믹스, 장기계약 기반 수요 가시성, 현금흐름과 자본효율의 지속성이 함께 확인되고 가격 확인까지 보강되면 BUY로 상향할 수 있다.\n• AI 메모리 수요와 가격이 장기 둔화하거나 HBM 경쟁력이 훼손되고, 과도한 설비투자로 현금흐름과 재무구조가 지속 악화되면 SELL로 하향할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "MU",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "MU",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:cff20610893f66f3069a",
+              "decision-evidence:cf625978558ad8aee418",
+              "decision-evidence:49f131c127e173452c39",
+              "decision-evidence:b1d79226f524ced701e5",
+              "canonical:chart:price_transition"
+            ],
+            "text": "주요 임상 후보의 긍정적 데이터, 파트너 프로그램과 마일스톤 매출의 확대, 현금소진 완화와 런웨이 연장에 가격 확인까지 더해지면 BUY로 상향할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:76019cf1946660a50862",
+              "decision-evidence:5c119a38e114ea930b42",
+              "decision-evidence:89c4eda6b0a5385fecf8"
+            ],
+            "text": "핵심 임상 실패가 반복되거나 플랫폼 성과가 경제적 가치로 전환되지 않고 현금소진과 희석이 지속되면 SELL로 하향할 수 있다."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:bb19872705545d1af04f",
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:89c4eda6b0a5385fecf8",
+            "canonical:valuation:historical_pb"
+          ],
+          "text": "파트너 진전은 초기 가능성을 보여주지만 임상 성공과 반복 가능한 경제성은 아직 미증명이고 현금소진·희석 위험도 크다. 다만 역사적으로 낮은 장부가치 평가와 초기 진전 신호가 있어 SELL보다는 낮은 확신의 HOLD가 적절하다."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:valuation:trailing_earnings",
+              "canonical:earnings:2026-06-30"
+            ],
+            "text": "후행 이익이 적자이며 현재 확인된 매출만으로는 플랫폼의 반복 가능한 경제성을 입증하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:bb19872705545d1af04f",
+              "decision-evidence:5c119a38e114ea930b42"
+            ],
+            "text": "시장 기대는 투기적 성격이 강하고 AI 기반 타깃 발굴이 임상 성공이나 경제적 가치로 전환된다는 핵심 가정은 아직 입증되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:00b417dd6fd4fc571834",
+              "decision-evidence:4f0bc47466e1016adb48",
+              "decision-evidence:b7dbcfcc7a8af1559f33",
+              "decision-evidence:76019cf1946660a50862"
+            ],
+            "text": "임상 일정 지연이나 실패, 현금소진 확대와 희석은 투자 논리를 크게 훼손할 수 있는 핵심 위험이다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:a46a61d055249bee0708",
+              "decision-evidence:b49e4b9b18f4c58e3f68",
+              "decision-evidence:d0c40c9de69b5ecd366a"
+            ],
+            "text": "자금조달 여건 악화, 실질금리 상승과 바이오 위험회피는 장기 옵션 가치와 자금 접근성을 동시에 압박할 수 있다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:1c3e0c01214d1c9e52e51c58",
+          "technical-feature:8bc30adc18120d820ff0c074",
+          "technical-feature:8f80148f12d1ddf2e4a52f92"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "증권 정체성과 장부가치 기준이 검증됐고 최신 재무제표도 사용 가능해 기본적인 데이터 무결성은 양호하다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:774e2e7f46d2025d7257",
+              "decision-evidence:cf625978558ad8aee418",
+              "decision-evidence:cff20610893f66f3069a"
+            ],
+            "text": "파트너의 타깃 선택과 주요 임상 후보의 진전은 플랫폼이 실제 연구개발 성과로 이어질 가능성을 보여주는 초기 신호다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:historical_pb",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "장부가치 기준 평가는 자체 역사에 비해 낮은 구간이며 비교 기준의 정합성도 확인됐다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:volatility:VIXCLS",
+              "canonical:market:credit_spread:BAMLH0A0HYM2",
+              "decision-evidence:03ecb993e76bc653f2fe"
+            ],
+            "text": "최근 시장 변동성과 신용스프레드가 완화된 점은 위험선호와 조달 환경에 제한적으로 우호적이지만 근본 성과의 확인은 아니다."
+          }
+        ],
+        "ticker": "RXRX",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:4f0bc47466e1016adb48",
+              "decision-evidence:b1d79226f524ced701e5"
+            ],
+            "text": "실제 현금 런웨이와 향후 자금조달 필요성이 제시되지 않아 희석 위험의 시점과 강도를 판단하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:cff20610893f66f3069a",
+              "decision-evidence:49f131c127e173452c39",
+              "decision-evidence:00b417dd6fd4fc571834"
+            ],
+            "text": "주요 임상 데이터의 결과와 일정, 파트너 마일스톤의 반복성과 경제적 조건은 아직 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest"
+            ],
+            "text": "최신 포지셔닝 자료가 없어 투기적 수급과 잠재적 변동성 확대 위험을 확인할 수 없다."
+          }
+        ]
+      },
+      "evidence_sha256": "841dc9cd32476470ede419acd6600f68f83b88c0f559144539ede0d6680307d5",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:1c3e0c01214d1c9e52e51c58",
+          "technical-feature:8bc30adc18120d820ff0c074",
+          "technical-feature:8f80148f12d1ddf2e4a52f92"
+        ],
+        "text": "🏢 Recursion Pharmaceuticals(RXRX)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 6~24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 파트너 진전은 초기 가능성을 보여주지만 임상 성공과 반복 가능한 경제성은 아직 미증명이고 현금소진·희석 위험도 크다. 다만 역사적으로 낮은 장부가치 평가와 초기 진전 신호가 있어 SELL보다는 낮은 확신의 HOLD가 적절하다.\n\n✅ 지지 근거\n• 증권 정체성과 장부가치 기준이 검증됐고 최신 재무제표도 사용 가능해 기본적인 데이터 무결성은 양호하다.\n• 파트너의 타깃 선택과 주요 임상 후보의 진전은 플랫폼이 실제 연구개발 성과로 이어질 가능성을 보여주는 초기 신호다.\n• 장부가치 기준 평가는 자체 역사에 비해 낮은 구간이며 비교 기준의 정합성도 확인됐다.\n• 최근 시장 변동성과 신용스프레드가 완화된 점은 위험선호와 조달 환경에 제한적으로 우호적이지만 근본 성과의 확인은 아니다.\n\n⚠️ 반대 근거\n• 후행 이익이 적자이며 현재 확인된 매출만으로는 플랫폼의 반복 가능한 경제성을 입증하기 어렵다.\n• 시장 기대는 투기적 성격이 강하고 AI 기반 타깃 발굴이 임상 성공이나 경제적 가치로 전환된다는 핵심 가정은 아직 입증되지 않았다.\n• 임상 일정 지연이나 실패, 현금소진 확대와 희석은 투자 논리를 크게 훼손할 수 있는 핵심 위험이다.\n• 자금조달 여건 악화, 실질금리 상승과 바이오 위험회피는 장기 옵션 가치와 자금 접근성을 동시에 압박할 수 있다.\n\n📊 확인된 기술 상태\n• daily:return_20: 11.33%\n• daily:close_vs_sma_200: -9.00%\n• daily:realized_volatility_20: 76.83%\n\n❓ 남은 미확인\n• 실제 현금 런웨이와 향후 자금조달 필요성이 제시되지 않아 희석 위험의 시점과 강도를 판단하기 어렵다.\n• 주요 임상 데이터의 결과와 일정, 파트너 마일스톤의 반복성과 경제적 조건은 아직 확인되지 않았다.\n• 최신 포지셔닝 자료가 없어 투기적 수급과 잠재적 변동성 확대 위험을 확인할 수 없다.\n\n🔄 판단 변경 조건\n• 주요 임상 후보의 긍정적 데이터, 파트너 프로그램과 마일스톤 매출의 확대, 현금소진 완화와 런웨이 연장에 가격 확인까지 더해지면 BUY로 상향할 수 있다.\n• 핵심 임상 실패가 반복되거나 플랫폼 성과가 경제적 가치로 전환되지 않고 현금소진과 희석이 지속되면 SELL로 하향할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "RXRX",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "RXRX",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:7182bfe7297ce4ab39d6",
+              "decision-evidence:0ed690872e22b916098a",
+              "decision-evidence:d5166789b23ccac34611",
+              "decision-evidence:f2e01b3b63d7b1477309"
+            ],
+            "text": "The classification would move toward BUY if the next-generation HBM ramp, customer adoption, high-value mix, cash-generation durability and longer contract visibility are verified, alongside sustained price confirmation and improving medium-term flows."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:41dfa075e4353b22e62d",
+              "decision-evidence:c0b7de949ffba7459112",
+              "decision-evidence:f298d7c0d8736a7ff594"
+            ],
+            "text": "The classification would move toward SELL if the company structurally loses its HBM leadership or major customers while memory pricing and demand weaken and capital spending persistently damages cash generation and capital efficiency."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:8b7febdf06f514f5954d",
+            "canonical:financial_quality:latest",
+            "canonical:security_basis:current",
+            "decision-evidence:c78bf1321a16a218b60c",
+            "decision-evidence:d2f6c30fdb85a421401f"
+          ],
+          "text": "HOLD is warranted because the favorable AI-memory thesis cannot support a higher-conviction classification while current financial and valuation lineage remains insufficient and the ADR-specific scarcity premium creates material security-level downside risk."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:latest",
+              "canonical:financial_quality:latest"
+            ],
+            "text": "The latest financial record is not decision-usable, leaving current earnings durability and financial quality unverified."
+          },
+          {
+            "evidence_refs": [
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality",
+              "canonical:valuation:multiple_relation",
+              "decision-evidence:c78bf1321a16a218b60c",
+              "decision-evidence:d2f6c30fdb85a421401f"
+            ],
+            "text": "Reported valuation multiples cannot be interpreted reliably because denominator lineage is insufficient, while speculative expectations and an ADR scarcity premium increase valuation risk."
+          },
+          {
+            "evidence_refs": [
+              "canonical:price:current",
+              "canonical:chart:structure:state",
+              "canonical:chart:price_transition",
+              "canonical:market:relative:SOXX:SPY",
+              "decision-evidence:19ba487f1c94bd7a265e"
+            ],
+            "text": "Price remains below confirmation, the chart setup is rated insufficient with weak volume confirmation, and soft sector-relative performance is only market context rather than fundamental validation."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:21b5d954a474cea0f4aa",
+              "decision-evidence:39b48eb6fa509ca4efc2",
+              "decision-evidence:c7c64228106e41b1702e"
+            ],
+            "text": "Memory-price declines, rising inventories, stronger competitor execution and capital spending that outruns cash generation could materially weaken the thesis."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:beabd7d83ae389b67eb4c308",
+          "technical-feature:b481c8ff3efea2a8a6ff0b6c",
+          "technical-feature:bfbcc5ce9563d4fe9509cfee"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:8b7febdf06f514f5954d",
+              "decision-evidence:ca3b9c4c10a3eed64161",
+              "decision-evidence:329c162763d982913954"
+            ],
+            "text": "AI-memory leadership, long customer relationships and a broader memory-cycle recovery provide a coherent medium-term business thesis, supported by hyperscaler investment and disciplined memory supply."
+          },
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current"
+            ],
+            "text": "The ADR identity and depositary structure are verified, reducing instrument-identity ambiguity even though valuation denominator lineage remains inadequate."
+          },
+          {
+            "evidence_refs": [
+              "technical-feature:dad0d9dd6ab8920c541a67ef",
+              "technical-feature:e0e258f083031e4dde6e8be0"
+            ],
+            "text": "Daily momentum has improved without reaching an overheated state, providing limited timing support rather than fundamental confirmation."
+          }
+        ],
+        "ticker": "SKHY",
+        "timing": "INSUFFICIENT",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:latest",
+              "canonical:financial_quality:latest"
+            ],
+            "text": "A usable current financial period and verified earnings quality are unavailable."
+          },
+          {
+            "evidence_refs": [
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality",
+              "canonical:valuation:multiple_relation",
+              "decision-evidence:c78bf1321a16a218b60c"
+            ],
+            "text": "Comparable valuation denominators and the durability of the ADR premium remain unresolved."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest",
+              "canonical:chart:structure:state"
+            ],
+            "text": "Positioning data and verified supply or support needed for reliable timing are unavailable."
+          }
+        ]
+      },
+      "evidence_sha256": "9fa08ecaf3548b0ff59037a9e4bdf00c6b7f5800787678ed1bc8a1e1925dd00a",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:beabd7d83ae389b67eb4c308",
+          "technical-feature:b481c8ff3efea2a8a6ff0b6c",
+          "technical-feature:bfbcc5ce9563d4fe9509cfee"
+        ],
+        "text": "🏢 SK hynix Inc. ADR(SKHY)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 12-36개월 | 단기 타이밍: 판단 근거 부족\n\n🎯 결정적 이유\n• HOLD is warranted because the favorable AI-memory thesis cannot support a higher-conviction classification while current financial and valuation lineage remains insufficient and the ADR-specific scarcity premium creates material security-level downside risk.\n\n✅ 지지 근거\n• AI-memory leadership, long customer relationships and a broader memory-cycle recovery provide a coherent medium-term business thesis, supported by hyperscaler investment and disciplined memory supply.\n• The ADR identity and depositary structure are verified, reducing instrument-identity ambiguity even though valuation denominator lineage remains inadequate.\n• Daily momentum has improved without reaching an overheated state, providing limited timing support rather than fundamental confirmation.\n\n⚠️ 반대 근거\n• The latest financial record is not decision-usable, leaving current earnings durability and financial quality unverified.\n• Reported valuation multiples cannot be interpreted reliably because denominator lineage is insufficient, while speculative expectations and an ADR scarcity premium increase valuation risk.\n• Price remains below confirmation, the chart setup is rated insufficient with weak volume confirmation, and soft sector-relative performance is only market context rather than fundamental validation.\n• Memory-price declines, rising inventories, stronger competitor execution and capital spending that outruns cash generation could materially weaken the thesis.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_20: 3.96%\n• daily:realized_volatility_20: 73.94%\n• daily:volume_ratio_20: 0.54\n\n❓ 남은 미확인\n• A usable current financial period and verified earnings quality are unavailable.\n• Comparable valuation denominators and the durability of the ADR premium remain unresolved.\n• Positioning data and verified supply or support needed for reliable timing are unavailable.\n\n🔄 판단 변경 조건\n• The classification would move toward BUY if the next-generation HBM ramp, customer adoption, high-value mix, cash-generation durability and longer contract visibility are verified, alongside sustained price confirmation and improving medium-term flows.\n• The classification would move toward SELL if the company structurally loses its HBM leadership or major customers while memory pricing and demand weaken and capital spending persistently damages cash generation and capital efficiency.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "SKHY",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "SKHY",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:06e6f847342760f52d96",
+              "decision-evidence:0b9fa704d15bffb77dac",
+              "decision-evidence:995d5eeddc1f86a7abbc",
+              "decision-evidence:fb61100929e38148b8ed",
+              "canonical:chart:price_transition"
+            ],
+            "text": "The classification would move toward BUY if contract backlog converts into revenue and cash flow, data-center demand remains strong, margins prove durable, NAND supply discipline persists and the confirmed price structure develops reliable support."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:1a43e68befc2686f2759",
+              "decision-evidence:86645d2f1e1d8c65d8d6",
+              "decision-evidence:6a7d8f2de9200a7e4de7",
+              "decision-evidence:eaef4247b3e9e73a8809"
+            ],
+            "text": "The classification would move toward SELL if NAND pricing and data-center demand weaken together, contract backlog fails to convert and sustained margin and cash-flow deterioration invalidates the operating thesis."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:e7f88110afad8a0a90bc",
+            "decision-evidence:687af24c7385d2caf4a4",
+            "decision-evidence:78a04aa8286aa67990ec",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "canonical:valuation:current",
+            "canonical:chart:structure:state"
+          ],
+          "text": "HOLD is warranted because the strong data-center storage thesis and potentially supportive forward valuation are offset by speculative expectations, unverified margin and cash-flow durability, uncertain contract conversion and an unreliable high-volatility price setup."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:687af24c7385d2caf4a4",
+              "decision-evidence:e7f88110afad8a0a90bc",
+              "decision-evidence:eaef4247b3e9e73a8809",
+              "decision-evidence:86645d2f1e1d8c65d8d6"
+            ],
+            "text": "Expectations are speculative and depend heavily on NAND pricing, sustained data-center demand and the conversion of long-term contracts into realized revenue and cash flow."
+          },
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-07-03",
+              "decision-evidence:78a04aa8286aa67990ec",
+              "decision-evidence:f66f3863507f91085d1a",
+              "decision-evidence:6a7d8f2de9200a7e4de7"
+            ],
+            "text": "The verified filing establishes revenue but does not establish the durability of margins or cash flow, and the packet explicitly leaves important operating impacts unknown."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:multiple_relation",
+              "canonical:security_basis:current"
+            ],
+            "text": "Valuation evidence is mixed because the forward consensus view appears supportive, but book valuation is premium, historical comparison is weak and trailing-earnings lineage is insufficient."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "technical-feature:0f610bcf6cefedab2f795df1",
+              "technical-feature:3af70ff823fa786a47a55b86",
+              "technical-feature:52a82ce6315d2ab39f2f652a"
+            ],
+            "text": "The structure lacks verified support or supply, weekly momentum is bearish, price remains well below its prior high and realized volatility is elevated."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:c747c14008b3c8ce9247d953",
+          "technical-feature:52a82ce6315d2ab39f2f652a",
+          "technical-feature:742a836f9423766685cad673"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:financial_quality:2026-07-03",
+              "canonical:earnings:2026-07-03"
+            ],
+            "text": "Verified common-stock identity and a usable full-statement revenue record reduce basic integrity risk."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:e7f88110afad8a0a90bc",
+              "decision-evidence:22fd47f88eeb7afea07f",
+              "decision-evidence:0b9fa704d15bffb77dac"
+            ],
+            "text": "AI inference, data-center storage demand, long-term contracts and backlog provide coherent growth drivers, with continued hyperscaler investment offering macro support."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:security_basis:current"
+            ],
+            "text": "Forward consensus valuation is potentially supportive, and its security-basis lineage is verified even though broader historical comparison remains weak."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "technical-feature:258b765109f1853164152587"
+            ],
+            "text": "Price continues to hold above its registered confirmation level and daily momentum is positive, offering limited short-term support."
+          }
+        ],
+        "ticker": "SNDK",
+        "timing": "INSUFFICIENT",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:78a04aa8286aa67990ec",
+              "decision-evidence:f66f3863507f91085d1a",
+              "decision-evidence:86645d2f1e1d8c65d8d6"
+            ],
+            "text": "The actual margin, revenue and cash-flow impact of contract-backlog conversion remains unknown."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:245ee9076156982210b3",
+              "decision-evidence:7f6a46891608268498f3"
+            ],
+            "text": "Customer identities and order scale are not confirmed."
+          },
+          {
+            "evidence_refs": [
+              "canonical:positioning:latest",
+              "canonical:chart:structure:state"
+            ],
+            "text": "Current positioning and verified support or supply are unavailable."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:multiple_relation",
+              "canonical:security_basis:current"
+            ],
+            "text": "Reliable historical valuation comparability and trailing-earnings lineage remain unresolved."
+          }
+        ]
+      },
+      "evidence_sha256": "87a445c566621f3d10ee396310286ac6d94520a95786f5a14a9aca4f2ae732f6",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:c747c14008b3c8ce9247d953",
+          "technical-feature:52a82ce6315d2ab39f2f652a",
+          "technical-feature:742a836f9423766685cad673"
+        ],
+        "text": "🏢 SanDisk(SNDK)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 6~24개월 | 단기 타이밍: 판단 근거 부족\n\n🎯 결정적 이유\n• HOLD is warranted because the strong data-center storage thesis and potentially supportive forward valuation are offset by speculative expectations, unverified margin and cash-flow durability, uncertain contract conversion and an unreliable high-volatility price setup.\n\n✅ 지지 근거\n• Verified common-stock identity and a usable full-statement revenue record reduce basic integrity risk.\n• AI inference, data-center storage demand, long-term contracts and backlog provide coherent growth drivers, with continued hyperscaler investment offering macro support.\n• Forward consensus valuation is potentially supportive, and its security-basis lineage is verified even though broader historical comparison remains weak.\n• Price continues to hold above its registered confirmation level and daily momentum is positive, offering limited short-term support.\n\n⚠️ 반대 근거\n• Expectations are speculative and depend heavily on NAND pricing, sustained data-center demand and the conversion of long-term contracts into realized revenue and cash flow.\n• The verified filing establishes revenue but does not establish the durability of margins or cash flow, and the packet explicitly leaves important operating impacts unknown.\n• Valuation evidence is mixed because the forward consensus view appears supportive, but book valuation is premium, historical comparison is weak and trailing-earnings lineage is insufficient.\n• The structure lacks verified support or supply, weekly momentum is bearish, price remains well below its prior high and realized volatility is elevated.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_200: 52.96%\n• daily:realized_volatility_20: 96.21%\n• weekly:macd_histogram: -65.684157\n\n❓ 남은 미확인\n• The actual margin, revenue and cash-flow impact of contract-backlog conversion remains unknown.\n• Customer identities and order scale are not confirmed.\n• Current positioning and verified support or supply are unavailable.\n• Reliable historical valuation comparability and trailing-earnings lineage remain unresolved.\n\n🔄 판단 변경 조건\n• The classification would move toward BUY if contract backlog converts into revenue and cash flow, data-center demand remains strong, margins prove durable, NAND supply discipline persists and the confirmed price structure develops reliable support.\n• The classification would move toward SELL if NAND pricing and data-center demand weaken together, contract backlog fails to convert and sustained margin and cash-flow deterioration invalidates the operating thesis.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "SNDK",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "SNDK",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:01253b856674f1f9fabd",
+              "decision-evidence:07cbedff4c2b25a7f0cc",
+              "decision-evidence:b99b830cf03964463742"
+            ],
+            "text": "BUY would become defensible if paid Robotaxi scale and unit economics improve, FSD-linked growth persists, and cash generation strengthens relative to capital spending."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:a399508186fff1c1fd00",
+              "decision-evidence:14d67efcafb67911e795",
+              "decision-evidence:31cc4350366b95a54e12"
+            ],
+            "text": "SELL would become defensible if delayed autonomy monetization coincides with persistent cash consumption and a structural decline in automotive demand or share."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:0cbb33d247bc3d3facec",
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:current"
+          ],
+          "text": "Security and multiple lineage are usable, but the central high-margin autonomy thesis still requires economic proof while speculative expectations and unusually demanding earnings valuation leave little protection against execution weakness."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:valuation:historical_pe",
+              "canonical:valuation:current",
+              "decision-evidence:01fa8f7aaa1f70a9fddc",
+              "decision-evidence:03b5853364f073ce37ea"
+            ],
+            "text": "The trailing earnings multiple is near the extreme end of its history and the forward measure remains elevated, making further margin erosion or sustained weak free cash flow particularly consequential."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:68d7b8d95dabce0a9620",
+              "decision-evidence:0abcb8c49983dd5b5021"
+            ],
+            "text": "Higher real yields or funding costs could compress the value assigned to distant growth options while increasing pressure from heavy AI and production investment."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:441de0883ba00e8e9ecd",
+              "canonical:chart:structure:state"
+            ],
+            "text": "The current-price setup is classified as unattractive to pursue and the chart remains in a waiting state, weakening near-term entry quality without determining the fundamental classification."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "earnings_quality",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:007699379245ab2ba6900158",
+          "technical-feature:6a33dd7b6b6fbdcec8c67d19",
+          "technical-feature:01f0d9af9824d0a8af7d795f"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:financial_quality:2026-06-30",
+              "canonical:working-capital-relation:36181e61768dfd580d9ede01"
+            ],
+            "text": "The latest financial statement is verified as usable, and inventory growth trailed revenue growth, which provides a favorable earnings-quality signal."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:bd7317649d95840d757e",
+              "decision-evidence:01253b856674f1f9fabd",
+              "decision-evidence:07cbedff4c2b25a7f0cc"
+            ],
+            "text": "Robotaxi, FSD, and AI still offer meaningful high-margin upside if commercial scale, unit economics, and related revenue growth are demonstrated."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:volatility:VIXCLS",
+              "canonical:market:credit_spread:BAMLH0A0HYM2",
+              "decision-evidence:4e1fc7618e0934e36256"
+            ],
+            "text": "Market volatility and credit stress eased, providing a benign tactical backdrop, although the packet explicitly does not treat this as fundamental confirmation."
+          }
+        ],
+        "ticker": "TSLA",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:bd7317649d95840d757e",
+              "decision-evidence:9f260e14977e65a95a22",
+              "decision-evidence:c9669df6e40f13998762",
+              "canonical:positioning:latest"
+            ],
+            "text": "The revenue and margin contribution from Tesla's Robotaxi and FSD monetization remains unverified, and company-specific positioning data are unavailable."
+          }
+        ]
+      },
+      "evidence_sha256": "a57ecc32b6d4ab5f2f5a46235d9825e2a2e4b44dc268f3a669ad4b5a116e13b8",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:007699379245ab2ba6900158",
+          "technical-feature:6a33dd7b6b6fbdcec8c67d19",
+          "technical-feature:01f0d9af9824d0a8af7d795f"
+        ],
+        "text": "🏢 Tesla, Inc.(TSLA)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• Security and multiple lineage are usable, but the central high-margin autonomy thesis still requires economic proof while speculative expectations and unusually demanding earnings valuation leave little protection against execution weakness.\n\n✅ 지지 근거\n• The latest financial statement is verified as usable, and inventory growth trailed revenue growth, which provides a favorable earnings-quality signal.\n• Robotaxi, FSD, and AI still offer meaningful high-margin upside if commercial scale, unit economics, and related revenue growth are demonstrated.\n• Market volatility and credit stress eased, providing a benign tactical backdrop, although the packet explicitly does not treat this as fundamental confirmation.\n\n⚠️ 반대 근거\n• The trailing earnings multiple is near the extreme end of its history and the forward measure remains elevated, making further margin erosion or sustained weak free cash flow particularly consequential.\n• Higher real yields or funding costs could compress the value assigned to distant growth options while increasing pressure from heavy AI and production investment.\n• The current-price setup is classified as unattractive to pursue and the chart remains in a waiting state, weakening near-term entry quality without determining the fundamental classification.\n\n📊 확인된 기술 상태\n• daily:return_60: -17.69%\n• daily:close_vs_sma_200: -13.01%\n• weekly:realized_volatility_20: 46.34%\n\n❓ 남은 미확인\n• The revenue and margin contribution from Tesla's Robotaxi and FSD monetization remains unverified, and company-specific positioning data are unavailable.\n\n🔄 판단 변경 조건\n• BUY would become defensible if paid Robotaxi scale and unit economics improve, FSD-linked growth persists, and cash generation strengthens relative to capital spending.\n• SELL would become defensible if delayed autonomy monetization coincides with persistent cash consumption and a structural decline in automotive demand or share.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "TSLA",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "TSLA",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "decision-evidence:08a1db369b9003e5047d",
+              "decision-evidence:752b64bdc2bef3de9afc",
+              "decision-evidence:1887c6577a65ceec3a44",
+              "decision-evidence:488571d04949915641a6"
+            ],
+            "text": "BUY would become defensible after authoritative resolution of the depositary security basis alongside sustained hyperscaler investment, stronger advanced-process demand, defended pricing, and durable margins."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:15ff6435a01a9eaaec20",
+              "decision-evidence:6f4e42c1f2c48790d2a1",
+              "decision-evidence:ba6b3b6ef4c2f66a7952"
+            ],
+            "text": "SELL would become defensible if structural AI and advanced-node demand weakness is accompanied by lasting margin and cash-flow deterioration or confirmed loss of leading-edge competitiveness."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "decision-evidence:a82017fe9cb283a18521",
+            "decision-evidence:beb13ef1dcffeb355bad",
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:537b8018fe8266773952"
+          ],
+          "text": "TSMC's AI and advanced-process franchise remains compelling, but very high embedded expectations, an unverified depositary share basis that prevents reliable multiple interpretation, and a waiting price structure argue for HOLD."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:beb13ef1dcffeb355bad",
+              "decision-evidence:c1b4eea017821045c953",
+              "decision-evidence:6a454b19944a355a5ebf",
+              "decision-evidence:b21475d9a36d91c1124d"
+            ],
+            "text": "Expectations already assume strong AI growth and pricing power, leaving exposure to hyperscaler spending moderation, overseas-fab cost dilution, or customer order delays."
+          },
+          {
+            "evidence_refs": [
+              "canonical:market:relative:SOXX:SPY",
+              "canonical:price:current",
+              "decision-evidence:537b8018fe8266773952"
+            ],
+            "text": "Semiconductor relative performance softened while TSM remains below its confirmation threshold, and the current-price chart setup offers poor tactical asymmetry."
+          },
+          {
+            "evidence_refs": [
+              "canonical:financial_quality:2026-06-30",
+              "canonical:security_basis:current"
+            ],
+            "text": "The latest results are preliminary and only caution-usable, with unresolved per-share metadata limiting the strength of cross-market valuation conclusions."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "market",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:04d8db6070fc91c42094705c",
+          "technical-feature:061f84913da02edc3ed6214c",
+          "technical-feature:0ae5c96d70fe22e45697a82c"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:2026-06-30",
+              "canonical:financial_quality:2026-06-30",
+              "decision-evidence:1887c6577a65ceec3a44"
+            ],
+            "text": "The latest preliminary results show strong operating profitability and remain usable with caution, aligning with the thesis that durable margins support the franchise."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:08a1db369b9003e5047d",
+              "decision-evidence:488571d04949915641a6",
+              "decision-evidence:752b64bdc2bef3de9afc"
+            ],
+            "text": "AI data-center investment, advanced-process orders, higher utilization, and defended wafer pricing remain direct positive demand and earnings drivers."
+          },
+          {
+            "evidence_refs": [
+              "technical-feature:74fee87870c070a4ee00d2c8",
+              "technical-feature:2ee2811ac6c630e1bb153435"
+            ],
+            "text": "Longer-term and intermediate trend sequences remain constructive, offering secondary confirmation while not overriding the fundamental and integrity constraints."
+          }
+        ],
+        "ticker": "TSM",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:security_identity:current",
+              "canonical:security_basis:current",
+              "canonical:valuation:multiple_relation"
+            ],
+            "text": "TSMC's depositary ratio and per-share security basis remain unresolved, so the supplied earnings and book multiples cannot yet anchor valuation."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:58e60f275a0d457f907b",
+              "decision-evidence:1501cefdd3487fa22fd0",
+              "decision-evidence:7b46f2e76343b5aa6e0b",
+              "canonical:positioning:latest"
+            ],
+            "text": "Customer-level demand attribution and its revenue and margin effects are unconfirmed, while positioning information needed to assess semiconductor crowding is unavailable."
+          }
+        ]
+      },
+      "evidence_sha256": "4da7ef7c0eecaf24e43c51315bd11e691fa8b5a031d5d75a9833b029ee765fff",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:04d8db6070fc91c42094705c",
+          "technical-feature:061f84913da02edc3ed6214c",
+          "technical-feature:0ae5c96d70fe22e45697a82c"
+        ],
+        "text": "🏢 TSMC(TSM)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 6~24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• TSMC's AI and advanced-process franchise remains compelling, but very high embedded expectations, an unverified depositary share basis that prevents reliable multiple interpretation, and a waiting price structure argue for HOLD.\n\n✅ 지지 근거\n• The latest preliminary results show strong operating profitability and remain usable with caution, aligning with the thesis that durable margins support the franchise.\n• AI data-center investment, advanced-process orders, higher utilization, and defended wafer pricing remain direct positive demand and earnings drivers.\n• Longer-term and intermediate trend sequences remain constructive, offering secondary confirmation while not overriding the fundamental and integrity constraints.\n\n⚠️ 반대 근거\n• Expectations already assume strong AI growth and pricing power, leaving exposure to hyperscaler spending moderation, overseas-fab cost dilution, or customer order delays.\n• Semiconductor relative performance softened while TSM remains below its confirmation threshold, and the current-price chart setup offers poor tactical asymmetry.\n• The latest results are preliminary and only caution-usable, with unresolved per-share metadata limiting the strength of cross-market valuation conclusions.\n\n📊 확인된 기술 상태\n• daily:return_120: 19.74%\n• daily:close_vs_sma_200: 12.99%\n• weekly:realized_volatility_20: 29.20%\n\n❓ 남은 미확인\n• TSMC's depositary ratio and per-share security basis remain unresolved, so the supplied earnings and book multiples cannot yet anchor valuation.\n• Customer-level demand attribution and its revenue and margin effects are unconfirmed, while positioning information needed to assess semiconductor crowding is unavailable.\n\n🔄 판단 변경 조건\n• BUY would become defensible after authoritative resolution of the depositary security basis alongside sustained hyperscaler investment, stronger advanced-process demand, defended pricing, and durable margins.\n• SELL would become defensible if structural AI and advanced-node demand weakness is accompanied by lasting margin and cash-flow deterioration or confirmed loss of leading-edge competitiveness.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "TSM",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "TSM",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:5ba1286806d9b069c093",
+              "decision-evidence:8b7f93a5f707ad6158af",
+              "decision-evidence:2719c49ada648bd2940e",
+              "canonical:chart:stored_price_rules"
+            ],
+            "text": "Robotaxi 이용률과 매출이 확대되고, 마진 개선과 손실 축소가 현금소진 및 희석 억제와 함께 확인되며 가격도 상향 확인을 마치면 BUY로 변경할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:2719c49ada648bd2940e",
+              "decision-evidence:3ac5a1a0a9faff90d400",
+              "decision-evidence:7c0a4f93f99c8eba6f8f",
+              "canonical:chart:structure:invalidation"
+            ],
+            "text": "현금소진과 희석이 지속되거나 규제·안전 문제로 확장이 중단되고, 상용화에도 단위경제성이 개선되지 않으면서 가격 지지까지 무효화되면 SELL로 변경할 수 있다."
+          }
+        ],
+        "confidence": "LOW",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:e0d708a0ce64006b8bd5",
+            "decision-evidence:b6654e5fc384c0d33bda",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "상용화 진전은 있으나 단위경제성과 손실 축소가 아직 입증되지 않았고 증권 정체 및 밸류에이션 기준도 검증되지 않아, 현 단계에서는 장기 확신보다 HOLD가 타당하다."
+        },
+        "horizon": "6~24개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:992c955815b329a31eb6",
+              "decision-evidence:5ba1286806d9b069c093",
+              "decision-evidence:de936e1f44097f49e0b7"
+            ],
+            "text": "유료 서비스 지역과 fleet 확대, 차량당 이용률 개선 및 파트너십의 실제 매출 전환은 강한 상방 경로가 될 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:nearest_supports:1",
+              "technical-feature:3aa52ec9a93467f028f7267b"
+            ],
+            "text": "단기 가격은 지지 구간 부근에 있고 일봉 추세 배열에는 일부 회복 조짐이 있다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:8fccbf0e2fcc0a06ef886c02",
+          "technical-feature:0265354512cd10bd4dcd830b",
+          "technical-feature:3627fd5d2daf197065acd72d"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:e0d708a0ce64006b8bd5",
+              "decision-evidence:b6654e5fc384c0d33bda"
+            ],
+            "text": "규제 승인과 fleet 확대 기대는 크지만 이용률, 마진, 현금소진 경제성이 미증명이고 operating loss도 핵심 부담으로 남아 있다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "예탁증권의 기준과 증권 정체가 검증되지 않아 제공된 장부가치 배수를 의사결정 근거로 신뢰할 수 없다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:chart:structure:state"
+            ],
+            "text": "가격은 상향 확인에 이르지 못했고 가격 구조도 대기 상태여서 진입 시점의 확인력이 약하다."
+          }
+        ],
+        "ticker": "WRD",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "canonical:earnings:2024-12-31",
+              "canonical:financial_quality:2024-12-31"
+            ],
+            "text": "제공된 실적 레코드는 연간 매출 중심이어서 최근 수익성, 현금소진 및 희석 추세를 충분히 검증할 수 없다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:710b195602a9f9c4b1e9",
+              "decision-evidence:b9e8bd99af0e6dad0189",
+              "decision-evidence:d8b69ab6b240cce06d26",
+              "canonical:positioning:latest"
+            ],
+            "text": "마진과 매출 영향, 고객명 및 투자자 포지셔닝이 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:current",
+              "canonical:valuation:book_quality"
+            ],
+            "text": "신뢰할 수 있는 상대 밸류에이션 위치가 남아 있지 않아 기대 대비 가격의 매력도를 판단하기 어렵다."
+          }
+        ]
+      },
+      "evidence_sha256": "0120892d7ab1ec9029ee59647fcc5a3c842870f1bba1efb1a034bfe3bdbae108",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:8fccbf0e2fcc0a06ef886c02",
+          "technical-feature:0265354512cd10bd4dcd830b",
+          "technical-feature:3627fd5d2daf197065acd72d"
+        ],
+        "text": "🏢 WeRide(WRD)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 낮음\n분석 시계열: 6~24개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• 상용화 진전은 있으나 단위경제성과 손실 축소가 아직 입증되지 않았고 증권 정체 및 밸류에이션 기준도 검증되지 않아, 현 단계에서는 장기 확신보다 HOLD가 타당하다.\n\n✅ 지지 근거\n• 규제 승인과 fleet 확대 기대는 크지만 이용률, 마진, 현금소진 경제성이 미증명이고 operating loss도 핵심 부담으로 남아 있다.\n• 예탁증권의 기준과 증권 정체가 검증되지 않아 제공된 장부가치 배수를 의사결정 근거로 신뢰할 수 없다.\n• 가격은 상향 확인에 이르지 못했고 가격 구조도 대기 상태여서 진입 시점의 확인력이 약하다.\n\n⚠️ 반대 근거\n• 유료 서비스 지역과 fleet 확대, 차량당 이용률 개선 및 파트너십의 실제 매출 전환은 강한 상방 경로가 될 수 있다.\n• 단기 가격은 지지 구간 부근에 있고 일봉 추세 배열에는 일부 회복 조짐이 있다.\n\n📊 확인된 기술 상태\n• daily:close_vs_sma_200: -17.13%\n• weekly:lower_low_count_20: 11\n• daily:volume_ratio_20: 0.54\n\n❓ 남은 미확인\n• 제공된 실적 레코드는 연간 매출 중심이어서 최근 수익성, 현금소진 및 희석 추세를 충분히 검증할 수 없다.\n• 마진과 매출 영향, 고객명 및 투자자 포지셔닝이 확인되지 않았다.\n• 신뢰할 수 있는 상대 밸류에이션 위치가 남아 있지 않아 기대 대비 가격의 매력도를 판단하기 어렵다.\n\n🔄 판단 변경 조건\n• Robotaxi 이용률과 매출이 확대되고, 마진 개선과 손실 축소가 현금소진 및 희석 억제와 함께 확인되며 가격도 상향 확인을 마치면 BUY로 변경할 수 있다.\n• 현금소진과 희석이 지속되거나 규제·안전 문제로 확장이 중단되고, 상용화에도 단위경제성이 개선되지 않으면서 가격 지지까지 무효화되면 SELL로 변경할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "WRD",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "WRD",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    },
+    {
+      "candidate": {
+        "change_conditions": [
+          {
+            "evidence_refs": [
+              "decision-evidence:907f40aa087d5eaa718c",
+              "decision-evidence:98e532edddad4ffd7f34",
+              "decision-evidence:2dcc661f5df22aa2765f",
+              "decision-evidence:07364f280f1b5d129a26",
+              "decision-evidence:ede656d249779160185b"
+            ],
+            "text": "증설 프로젝트가 계획대로 가동되고 billing과 현금창출력이 개선되며 추가 희석 의존도가 낮아지고 가격 확인까지 회복되면 BUY로 변경할 수 있다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:d2e313f2c1c9f94c3e8f",
+              "decision-evidence:25605f390a39836dfe90",
+              "decision-evidence:76c6f85f248d815d8aa2",
+              "canonical:chart:price_transition"
+            ],
+            "text": "핵심 계약이 축소·취소되거나 준공 실패가 반복되고, 가동 확대에도 경제성이 개선되지 않으며 자본조달 의존과 가격 약화가 지속되면 SELL로 변경할 수 있다."
+          }
+        ],
+        "confidence": "MEDIUM",
+        "decision": "HOLD",
+        "decisive_reason": {
+          "evidence_refs": [
+            "decision-evidence:866626b17b737cd1fc94",
+            "decision-evidence:ac42471a86f5aaa6e0fa",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:trailing_earnings",
+            "decision-evidence:bcbc6fa35d4518f7f217"
+          ],
+          "text": "AI/HPC 전환의 성장 옵션은 크지만 현재 수익성과 현금흐름이 기대를 뒷받침하지 못하고, 높은 역사적 밸류에이션과 희석 위험이 주당가치 전환을 불확실하게 만들어 HOLD가 타당하다."
+        },
+        "horizon": "12-36개월",
+        "opposing_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:866626b17b737cd1fc94",
+              "decision-evidence:907f40aa087d5eaa718c",
+              "decision-evidence:07364f280f1b5d129a26"
+            ],
+            "text": "HPC가 이미 핵심 매출원으로 부상했고 장기 고객계약과 건설 중인 용량은 상당한 성장 선택가치를 제공한다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:d563a82838a3c73b73d3",
+              "decision-evidence:6da7072fa34cbf240485"
+            ],
+            "text": "AI 데이터센터 수요와 확보된 전력권은 장기적으로 긍정적이지만 전력망 연결과 준공 경로에는 양면성이 있다."
+          },
+          {
+            "evidence_refs": [
+              "technical-feature:d19adc379feb352a88e619d9",
+              "technical-feature:bb251a7b6c612f96aa487a2b"
+            ],
+            "text": "월봉 추세와 모멘텀은 장기 상승 구조가 완전히 훼손되지 않았음을 시사한다."
+          }
+        ],
+        "reasoning_grade": "VERY_HIGH",
+        "selected_evidence_plan": [
+          "earnings",
+          "expectations",
+          "flows",
+          "macro",
+          "price_structure",
+          "quality",
+          "risks",
+          "technical_feature",
+          "thesis",
+          "unknown",
+          "valuation"
+        ],
+        "selected_numeric_fact_refs": [
+          "technical-feature:1c0834321fcb21f42685600c",
+          "technical-feature:54e00cc500210f5a9c948d8e",
+          "technical-feature:1a4630341a48c60b633a8a63"
+        ],
+        "supporting_evidence": [
+          {
+            "evidence_refs": [
+              "decision-evidence:ac42471a86f5aaa6e0fa",
+              "decision-evidence:4e1a4fbf129b9478c0c8",
+              "decision-evidence:bcbc6fa35d4518f7f217"
+            ],
+            "text": "대형 계약과 증설 기대는 투기적 수준으로 반영돼 있지만 EBITDA 적자와 주식보상·희석이 아직 그 기대를 검증하지 못한다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:security_basis:current",
+              "canonical:valuation:book_quality",
+              "canonical:valuation:historical_pb"
+            ],
+            "text": "증권 및 장부가치 비교 기준은 검증됐으며, 자체 역사 대비 극단적인 장부가치 프리미엄은 무시하기 어려운 위험이다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:valuation:trailing_earnings",
+              "canonical:financial_quality:2026-06-30"
+            ],
+            "text": "검증 가능한 재무 기준에서 후행 이익이 적자여서 현재 밸류에이션을 이익으로 방어하기 어렵다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:price_transition",
+              "canonical:price:current",
+              "canonical:chart:structure:state"
+            ],
+            "text": "가격이 경고 기준을 하회했고 가까운 저항과 확인 미달 상태가 이어져 시점은 불리하다."
+          }
+        ],
+        "ticker": "WULF",
+        "timing": "UNFAVORABLE",
+        "unknowns": [
+          {
+            "evidence_refs": [
+              "decision-evidence:4101d68d252656de4253",
+              "decision-evidence:909da2014ab7889f8941",
+              "decision-evidence:6ea09b8397997a71e48c",
+              "canonical:positioning:latest"
+            ],
+            "text": "신규 HPC 사업의 마진과 매출 영향, 고객 공개 범위 및 투자자 포지셔닝이 충분히 확인되지 않았다."
+          },
+          {
+            "evidence_refs": [
+              "decision-evidence:ac42471a86f5aaa6e0fa",
+              "decision-evidence:1a3adac8a9993eb06c19",
+              "decision-evidence:233199fe9a178e3d9222"
+            ],
+            "text": "향후 billing 속도, 임대 economics, 준공 일정과 추가 자본조달 필요성은 아직 검증이 필요하다."
+          },
+          {
+            "evidence_refs": [
+              "canonical:chart:structure:state",
+              "decision-evidence:075c1c87dfff5b7d8ab2"
+            ],
+            "text": "검증된 공급 정보와 완전한 동적 지지·무효화 구조가 없어 가격 위험의 하단 확인에도 제약이 있다."
+          }
+        ]
+      },
+      "evidence_sha256": "7fd14dac34fb174098e5c47e8816ef73b7a7d4c57b24babeab4da941c521c2f2",
+      "market": "us",
+      "rendered": {
+        "contract": "decision-shadow-renderer-v1",
+        "decision": "HOLD",
+        "selected_numeric_fact_refs": [
+          "technical-feature:1c0834321fcb21f42685600c",
+          "technical-feature:54e00cc500210f5a9c948d8e",
+          "technical-feature:1a4630341a48c60b633a8a63"
+        ],
+        "text": "🏢 TeraWulf Inc.(WULF)\n🧠 AI 종합 판단: HOLD\n추론등급: 매우 높음 | 신뢰도: 중간\n분석 시계열: 12-36개월 | 단기 타이밍: 불리\n\n🎯 결정적 이유\n• AI/HPC 전환의 성장 옵션은 크지만 현재 수익성과 현금흐름이 기대를 뒷받침하지 못하고, 높은 역사적 밸류에이션과 희석 위험이 주당가치 전환을 불확실하게 만들어 HOLD가 타당하다.\n\n✅ 지지 근거\n• 대형 계약과 증설 기대는 투기적 수준으로 반영돼 있지만 EBITDA 적자와 주식보상·희석이 아직 그 기대를 검증하지 못한다.\n• 증권 및 장부가치 비교 기준은 검증됐으며, 자체 역사 대비 극단적인 장부가치 프리미엄은 무시하기 어려운 위험이다.\n• 검증 가능한 재무 기준에서 후행 이익이 적자여서 현재 밸류에이션을 이익으로 방어하기 어렵다.\n• 가격이 경고 기준을 하회했고 가까운 저항과 확인 미달 상태가 이어져 시점은 불리하다.\n\n⚠️ 반대 근거\n• HPC가 이미 핵심 매출원으로 부상했고 장기 고객계약과 건설 중인 용량은 상당한 성장 선택가치를 제공한다.\n• AI 데이터센터 수요와 확보된 전력권은 장기적으로 긍정적이지만 전력망 연결과 준공 경로에는 양면성이 있다.\n• 월봉 추세와 모멘텀은 장기 상승 구조가 완전히 훼손되지 않았음을 시사한다.\n\n📊 확인된 기술 상태\n• daily:return_20: -13.08%\n• weekly:macd_histogram: -1.254692\n• daily:atr_pct_14: 9.51%\n\n❓ 남은 미확인\n• 신규 HPC 사업의 마진과 매출 영향, 고객 공개 범위 및 투자자 포지셔닝이 충분히 확인되지 않았다.\n• 향후 billing 속도, 임대 economics, 준공 일정과 추가 자본조달 필요성은 아직 검증이 필요하다.\n• 검증된 공급 정보와 완전한 동적 지지·무효화 구조가 없어 가격 위험의 하단 확인에도 제약이 있다.\n\n🔄 판단 변경 조건\n• 증설 프로젝트가 계획대로 가동되고 billing과 현금창출력이 개선되며 추가 희석 의존도가 낮아지고 가격 확인까지 회복되면 BUY로 변경할 수 있다.\n• 핵심 계약이 축소·취소되거나 준공 실패가 반복되고, 가동 확대에도 경제성이 개선되지 않으며 자본조달 의존과 가격 약화가 지속되면 SELL로 변경할 수 있다.\n\n※ 분석 등급이며 주문 또는 자동매매 지시가 아닙니다.",
+        "ticker": "WULF",
+        "validation": {
+          "automatically_bound_numeric_count": 3,
+          "contract": "decision-validator-ownership-v1",
+          "errors": [],
+          "manual_numeric_count": 0,
+          "numeric_claim_count": 3,
+          "unresolved_numeric_count": 0,
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "WULF",
+      "validation": {
+        "automatically_bound_numeric_count": 3,
+        "contract": "decision-validator-ownership-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 3,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      }
+    }
+  ],
+  "source_evidence_sha256": "7649e675b654194b881ba3b5eadc2d2a69f1051915669a630e5e7e43b938720b",
+  "status": "PASS",
+  "subject_count": 20,
+  "user_visible": false,
+  "validation_errors": []
+}

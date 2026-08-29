@@ -1,0 +1,193 @@
+from __future__ import annotations
+
+from datetime import date, timedelta
+
+from app.services.cross_market_decision_engine_service import (
+    DecisionCandidate,
+    EvidenceCategory,
+    EvidenceClaim,
+    build_decision_evidence_packet,
+    canonicalize_candidate_metadata,
+    decision_message_quality,
+    render_shadow_decision,
+    validate_decision_candidate,
+)
+from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
+
+
+def _bars(count: int) -> list[dict[str, object]]:
+    return [
+        {
+            "date": (date(2025, 1, 1) + timedelta(days=index)).isoformat(),
+            "open": 100 + index,
+            "high": 101 + index,
+            "low": 99 + index,
+            "close": 100 + index,
+            "volume": 1_000_000 + index,
+        }
+        for index in range(count)
+    ]
+
+
+def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
+    technical = build_multi_timeframe_feature_packet(
+        ticker="TEST",
+        periods={"daily": _bars(260), "weekly": _bars(120), "monthly": _bars(80)},
+        cutoff=date(2026, 1, 1),
+    )
+    packet = build_decision_evidence_packet(
+        packet={
+            "packet_id": "2026-01-01-us-run-test",
+            "market": "us",
+            "assessment_date": "2026-01-01",
+        },
+        stock={
+            "ticker": "TEST",
+            "company_name": "Test Corp",
+            "thesis": {
+                "core_thesis": "반복 매출과 수익성 회복이 장기 논리의 중심이다.",
+                "time_horizon": "12-24개월",
+                "strengthen_signals": ["수익성 회복이 현금창출과 함께 이어지는 경우"],
+                "weaken_signals": ["수요 둔화와 마진 하락이 함께 확인되는 경우"],
+                "invalidation_signals": ["핵심 고객 기반이 구조적으로 훼손되는 경우"],
+                "market_expectations": {"summary": "회복 기대가 주가에 반영되어 있다."},
+                "macro_exposures": [{"factor": "금리", "direction": "negative"}],
+            },
+            "unknowns": ["회복의 지속성은 다음 정식 실적에서 확인이 필요하다."],
+            "market_transmission": {"state": "neutral"},
+            "current_price_context": {"state": "above_support"},
+            "fact_catalog": [
+                {
+                    "fact_id": "earnings:latest",
+                    "fact_type": "earnings",
+                    "as_of_date": "2026-01-01",
+                    "fields": {"trend": "improving"},
+                },
+                {
+                    "fact_id": "valuation:current",
+                    "fact_type": "valuation",
+                    "as_of_date": "2026-01-01",
+                    "fields": {"context": "expectations_elevated"},
+                },
+            ],
+            "data_cautions": [],
+        },
+        technical_features=technical,
+    )
+    by_category = {}
+    for ref in packet.evidence:
+        by_category.setdefault(ref.category, ref.ref_id)
+    numeric_ref = next(
+        ref.ref_id
+        for ref in packet.evidence
+        if ref.category == EvidenceCategory.TECHNICAL_FEATURE
+        and ref.label == "daily:return_20"
+    )
+    candidate = DecisionCandidate(
+        ticker="TEST",
+        decision="HOLD",
+        reasoning_grade="VERY_HIGH",
+        confidence="MEDIUM",
+        horizon="12-24개월",
+        timing="NEUTRAL",
+        decisive_reason=EvidenceClaim(
+            text="사업 회복 논리는 유효하지만 현재 기대와 남은 검증 부담이 균형을 이룬다.",
+            evidence_refs=(
+                by_category[EvidenceCategory.THESIS],
+                by_category[EvidenceCategory.EXPECTATIONS],
+            ),
+        ),
+        supporting_evidence=(
+            EvidenceClaim(
+                text="확인된 실적 방향과 가격 추세는 논리의 유지와 양립한다.",
+                evidence_refs=(
+                    by_category[EvidenceCategory.EARNINGS],
+                    numeric_ref,
+                ),
+            ),
+        ),
+        opposing_evidence=(
+            EvidenceClaim(
+                text="회복 기대가 먼저 반영되어 실적 검증 전 추가 확신은 제한된다.",
+                evidence_refs=(by_category[EvidenceCategory.RISKS],),
+            ),
+        ),
+        unknowns=(
+            EvidenceClaim(
+                text="회복의 지속성은 다음 정식 실적에서 확인해야 한다.",
+                evidence_refs=(by_category[EvidenceCategory.UNKNOWN],),
+            ),
+        ),
+        change_conditions=(
+            EvidenceClaim(
+                text="현금창출을 동반한 수익성 회복이 이어지면 상향 판단을 재검토한다.",
+                evidence_refs=(by_category[EvidenceCategory.THESIS],),
+            ),
+        ),
+        selected_numeric_fact_refs=(numeric_ref,),
+        selected_evidence_plan=(
+            EvidenceCategory.THESIS,
+            EvidenceCategory.EARNINGS,
+            EvidenceCategory.EXPECTATIONS,
+            EvidenceCategory.RISKS,
+            EvidenceCategory.UNKNOWN,
+            EvidenceCategory.TECHNICAL_FEATURE,
+        ),
+    )
+    return packet, candidate
+
+
+def test_valid_ai_owned_candidate_renders_with_backend_numeric_binding() -> None:
+    packet, candidate = _packet_and_candidate()
+    validation = validate_decision_candidate(packet, candidate)
+    assert validation.valid is True
+    assert validation.numeric_claim_count == 1
+    assert validation.automatically_bound_numeric_count == 1
+    rendered = render_shadow_decision(packet, candidate)
+    assert "AI 종합 판단: HOLD" in rendered.text
+    assert "추론등급: 매우 높음" in rendered.text
+    assert "주문 또는 자동매매 지시가 아닙니다" in rendered.text
+    assert decision_message_quality([rendered])["status"] == "PASS"
+
+
+def test_candidate_rejects_freeform_numbers_orders_and_unsupported_metrics() -> None:
+    packet, candidate = _packet_and_candidate()
+    broken = candidate.model_copy(
+        update={
+            "decisive_reason": EvidenceClaim(
+                text="지금 시장가 주문으로 전량 매수하고 FCF yield 5%를 기대한다.",
+                evidence_refs=candidate.decisive_reason.evidence_refs,
+            )
+        }
+    )
+    errors = validate_decision_candidate(packet, broken).errors
+    assert "automated_trade_or_order_language" in errors
+    assert "unsupported_metric_or_inference" in errors
+    assert "freeform_exact_numeric_claim" in errors
+
+
+def test_candidate_rejects_unknown_refs_and_unowned_horizon() -> None:
+    packet, candidate = _packet_and_candidate()
+    broken = candidate.model_copy(
+        update={
+            "horizon": "1개월",
+            "unknowns": (
+                EvidenceClaim(text="근거가 없다.", evidence_refs=("missing:ref",)),
+            ),
+        }
+    )
+    errors = validate_decision_candidate(packet, broken).errors
+    assert "horizon_not_owned_by_monitoring_thesis" in errors
+    assert "unknown_evidence_ref:missing:ref" in errors
+
+
+def test_category_plan_is_backend_derived_from_ai_selected_refs() -> None:
+    packet, candidate = _packet_and_candidate()
+    incomplete = candidate.model_copy(
+        update={"selected_evidence_plan": (EvidenceCategory.THESIS,)}
+    )
+    assert "selected_evidence_plan_incomplete" in validate_decision_candidate(
+        packet, incomplete
+    ).errors
+    normalized = canonicalize_candidate_metadata(packet, incomplete)
+    assert validate_decision_candidate(packet, normalized).valid is True

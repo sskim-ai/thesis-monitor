@@ -1,0 +1,48 @@
+{
+  "automated_trade_execution": 0,
+  "contract": "cross-market-ai-decision-canary-readiness-v1",
+  "current_shadow": {
+    "distribution": {
+      "BUY": 2,
+      "HOLD": 18,
+      "SELL": 0
+    },
+    "message_quality": "PASS",
+    "numeric_binding": 54,
+    "numeric_unresolved": 0,
+    "status": "PASS",
+    "subjects": 20
+  },
+  "db_mutation": 0,
+  "decision_canary_readiness": "PASS",
+  "decision_engine_state": "TEST_SINK_READY",
+  "next_action": "REVIEW_SHADOW_DECISIONS",
+  "open_material_p1": [],
+  "open_p0": [],
+  "operator_review_required": true,
+  "order_sizing_output": 0,
+  "p2_backlog": [
+    "archive raw D/W/M bar snapshots for full historical feature replay",
+    "add forward 20/60/120 return and relative-return diagnostics after source archival",
+    "operator wording review before any bounded production canary"
+  ],
+  "production_assist_change": 0,
+  "production_canary_enabled": false,
+  "production_user_visible_enabled": false,
+  "scheduled_task_change": 0,
+  "temporal_shadow": {
+    "accepted": 200,
+    "checkpoints": 200,
+    "lookahead_leak": 0,
+    "status": "PARTIAL_SAFE",
+    "subjects": 20,
+    "unexplained_churn": 0
+  },
+  "test_sink": {
+    "duplicate_count": 0,
+    "exact_payload_match": true,
+    "messages": 20,
+    "production_recipient_send_count": 0,
+    "status": "sent"
+  }
+}

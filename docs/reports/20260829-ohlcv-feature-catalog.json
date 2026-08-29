@@ -1,0 +1,104 @@
+{
+  "completion_policy": "completed_bars_only_explicit_provisional_exclusion",
+  "contract": "ohlcv-multi-timeframe-feature-catalog-v1",
+  "families": [
+    {
+      "family": "returns",
+      "semantics": [
+        "return_1",
+        "return_5",
+        "return_10",
+        "return_20",
+        "return_60",
+        "return_120",
+        "return_252"
+      ]
+    },
+    {
+      "family": "range_and_drawdown",
+      "semantics": [
+        "rolling_high_{20,60,120,252}",
+        "rolling_low_{20,60,120,252}",
+        "distance_from_high",
+        "distance_from_low",
+        "max_drawdown",
+        "trend_sequence_20"
+      ]
+    },
+    {
+      "family": "trend",
+      "semantics": [
+        "sma_{5,10,20,50,100,200}",
+        "ema_{5,10,20,50,100,200}",
+        "close_vs_sma"
+      ]
+    },
+    {
+      "family": "macd",
+      "semantics": [
+        "macd_12_26",
+        "macd_signal_9",
+        "macd_histogram",
+        "macd_state"
+      ]
+    },
+    {
+      "family": "momentum",
+      "semantics": [
+        "rsi_14",
+        "roc_{10,20}",
+        "stochastic_k_14",
+        "stochastic_d_3"
+      ]
+    },
+    {
+      "family": "volatility",
+      "semantics": [
+        "atr_14",
+        "atr_pct_14",
+        "realized_volatility_20",
+        "gap_latest",
+        "bollinger_20_2"
+      ]
+    },
+    {
+      "family": "directional",
+      "semantics": [
+        "adx_14",
+        "plus_di_14",
+        "minus_di_14",
+        "dmi_state"
+      ]
+    },
+    {
+      "availability": "requires_valid_volume",
+      "family": "volume",
+      "semantics": [
+        "volume_ratio_20",
+        "obv",
+        "cmf_20",
+        "mfi_14"
+      ]
+    },
+    {
+      "family": "breakout",
+      "semantics": [
+        "donchian_high_20",
+        "donchian_low_20",
+        "donchian_breakout_20"
+      ]
+    }
+  ],
+  "provider_request_limit": 1000,
+  "requested_counts": {
+    "daily": 1200,
+    "monthly": 300,
+    "weekly": 600
+  },
+  "status": "PASS",
+  "timeframes": [
+    "daily",
+    "weekly",
+    "monthly"
+  ]
+}
