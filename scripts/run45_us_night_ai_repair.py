@@ -874,6 +874,7 @@ Recipient values are represented only by non-reversible aliases in the sanitized
         f"{REPORT_DATE}-us-ai-price-structure-parity.md",
         f"{REPORT_DATE}-us-night-ai-integrated-readiness.md",
         f"{REPORT_DATE}-us-night-ai-integrated-readiness.json",
+        f"{REPORT_DATE}-us-night-ai-validation-and-promotion.md",
     ]
     artifact_paths = sorted(args.output_dir / name for name in artifact_names)
     artifact_rows = [[path.name, _sha_file(path)] for path in artifact_paths if path.is_file()]

@@ -1,0 +1,26 @@
+# US Night Futures And Run-45 AI Validation / Promotion
+
+- Work-instruction commit: `f8ca4fcb4557037468e35578a98a66aa9cb750b5`.
+- Base: `3cc91234ef88c655df981b0366a17045c95983f3`.
+- Implementation: `f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`.
+- Evidence commit: `1d089d57ac597a0863d69041ee116ef62f2ce6a2`.
+- Focused tests: `242 passed`.
+- Full pytest: `1876 passed`, one third-party deprecation warning.
+- Ruff: `PASS`.
+- Diff check: `PASS`.
+- Investment / Chart Knowledge checksums: `PASS`.
+- Public Action: `0.4.5`; operation IDs: `20/20` unique.
+- Implementation Actions run `33224154203`: Test / Lint `PASS`.
+- Evidence Actions run `33224913606`: Test / Lint `PASS`.
+- Main fast-forward: `PASS`.
+- Operating checkout parity: `PASS`.
+- API health: `PASS`.
+- Post-deploy ownership smoke: `9/9 PASS`.
+- Scheduled definitions changed: `0`.
+- Production Telegram sends from this repair: `0`.
+- Manual Scheduled Task runs: `0`.
+- DB / assessment / Pilot mutations: `0`.
+- Production Assist: `OFF`.
+- Open P0 / material P1: `0 / 0`.
+- Final state: `DEPLOYED_AWAITING_NATURAL_PROOF`.
+- Next action: `WAIT_FOR_NEXT_NATURAL_US_RUN`.

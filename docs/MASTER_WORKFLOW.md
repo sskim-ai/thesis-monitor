@@ -1966,7 +1966,8 @@ backup replay pass; the isolated test sink received the production-equivalent ma
 messages `14/14` once with exact payload parity and zero duplicate, orphan, production-recipient
 send, or production delivery intent.
 
-Open P0/material P1 are `0/0`; Production Assist stays OFF. State is `READY_TO_DEPLOY`. After clean
-promotion, wait for the next natural US run and inspect AI routing, exact delivery, and the canonical
-night-futures section or safe omission read-only. Do not manually trigger a Scheduled Task or send a
-production Telegram message.
+Open P0/material P1 are `0/0`; Production Assist stays OFF. Main and operating were promoted
+linearly, API health and the post-deploy ownership smoke pass, and state is
+`DEPLOYED_AWAITING_NATURAL_PROOF`. Wait for the next natural US run and inspect AI routing, exact
+delivery, and the canonical night-futures section or safe omission read-only. Do not manually
+trigger a Scheduled Task or send a production Telegram message.

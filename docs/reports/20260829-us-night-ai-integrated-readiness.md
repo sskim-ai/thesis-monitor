@@ -9,4 +9,4 @@
 - Test sink: `PASS`.
 - Open P0: `0`.
 - Open material P1: `0`.
-- Promotion: `READY`.
+- Promotion: `PASS`; state is `DEPLOYED_AWAITING_NATURAL_PROOF`.

@@ -2091,7 +2091,8 @@ and `4 -> 0`; runtime quality, US13, frozen replay, and Price Structure numeric 
 The dedicated non-production sink received exactly 14 production-equivalent messages once, with
 zero duplicate, orphan, production-recipient send, or production intent.
 
-Open P0/material P1 are `0/0`. After promotion, the only next action is
-`WAIT_FOR_NEXT_NATURAL_US_RUN`. Inspect the natural AI route, exact receipts, and night-futures
-visibility or safe omission read-only. Never expose recipient values, run a Scheduled Task manually,
-or send a production Telegram message. Production Assist remains OFF.
+Open P0/material P1 are `0/0`. Main/operating promotion, API health, and the post-deploy ownership
+smoke pass. The only next action is `WAIT_FOR_NEXT_NATURAL_US_RUN`. Inspect the natural AI route,
+exact receipts, and night-futures visibility or safe omission read-only. Never expose recipient
+values, run a Scheduled Task manually, or send a production Telegram message. Production Assist
+remains OFF.

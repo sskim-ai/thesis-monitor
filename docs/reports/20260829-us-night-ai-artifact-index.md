@@ -27,7 +27,8 @@
 | 20260829-us-ai-test-delivery-receipt.json | 37403d2e18d9061a0bc484840077d14a39ab138dab34f5cab5caa03cb467b066 |
 | 20260829-us-ai-test-delivery.md | 6a1d5c88b4aabcfc2b2ee1783a0069bbc3560938a952cc839549b23e253e7853 |
 | 20260829-us-ai-test-messages.json | d04efcb8d4fc0639a067c469629aca50a687e07d6879eae18caa0927c17abaa7 |
-| 20260829-us-night-ai-integrated-readiness.json | 98be6587e5489f77000d71d4c6b6f00a132cde75d0f2b8af5894d6a89e457237 |
-| 20260829-us-night-ai-integrated-readiness.md | 7e72292e91b6f8aff387b593ad0bdddcb995efe16b5608bc021f5daefdc25a19 |
+| 20260829-us-night-ai-integrated-readiness.json | d6b058e62abe90827526d981814a81e8f6a5d0c1a82164120dc430b8578990d8 |
+| 20260829-us-night-ai-integrated-readiness.md | cab4b07cd4b82dfd392548e3c5adbb187dc1cf141ec0378afab9f9e5cad23b97 |
+| 20260829-us-night-ai-validation-and-promotion.md | 979ae9be69c6d41e482034eac091197830e860c5e2b619ddf089329b6e27deae |
 | 20260829-us13-ai-validation.md | b3c7ef4ac1038f5b1654082865c4faccb5a102ca7c521d2f7b537455b6066aa3 |
 | 20260829-valuation-numeric-ownership-repair.md | e1270dff19b5ff67352ad8e92ff1ac9ca2fd64bdaf0383e0cbf825b4f71cdf0e |

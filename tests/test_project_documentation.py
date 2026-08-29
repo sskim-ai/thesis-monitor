@@ -122,7 +122,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "codex/20260829-us-night-futures-friday-saturday-ai-validator-repair"
     )
     assert state["current_phase"] == (
-        "us_night_futures_source_limitation_and_run45_ai_validator_repair_ready_to_deploy"
+        "us_night_futures_source_limitation_and_run45_ai_validator_repair_deployed_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
         "20260829_us_night_futures_friday_saturday_and_ai_validator_repair"
@@ -143,7 +143,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    runtime_code_commit = "3cc91234ef88c655df981b0366a17045c95983f3"
+    runtime_code_commit = "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
     assert state["deployed_code_commit"] == runtime_code_commit
     assert state["main_code_commit"] == runtime_code_commit
     assert state["operating_code_commit"] == runtime_code_commit
@@ -225,13 +225,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     ]
     assert morning_review["runtime_behavior_changed"] is False
     repair = state["us_night_futures_friday_saturday_ai_validator_repair_20260829"]
-    assert repair["status"] == "READY_TO_DEPLOY"
+    assert repair["status"] == "DEPLOYED_AWAITING_NATURAL_PROOF"
     assert repair["instruction_commit"] == (
         "f8ca4fcb4557037468e35578a98a66aa9cb750b5"
     )
     assert repair["implementation_commit"] == (
         "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
     )
+    assert repair["implementation_github_actions_run"] == 33224154203
+    assert repair["implementation_github_actions_status"] == (
+        "passed_test_and_lint"
+    )
+    assert repair["evidence_github_actions_run"] == 33224913606
+    assert repair["evidence_github_actions_status"] == "passed_test_and_lint"
+    assert repair["operating_promotion"] == "PASS"
+    assert repair["api_health"] == "PASS"
+    assert repair["post_deploy_smoke"] == "PASS_9_OF_9"
     assert repair["night_futures_source_date_semantics"] == "END_DATE"
     assert repair["friday_saturday_source_result"] == "UPSTREAM_NOT_PUBLISHED"
     assert repair["night_futures_outcome"] == "SOURCE_LIMITATION_SAFE"
