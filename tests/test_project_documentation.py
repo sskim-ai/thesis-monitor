@@ -292,7 +292,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "HOLD": 17,
         "SELL": 3,
     }
-    assert calibration["numeric_binding"] == "PASS_60_OF_60_AUTOMATIC"
+    assert calibration["numeric_binding"] == "PASS_57_OF_57_AUTOMATIC"
     assert calibration["hold_default_bias_after"] == "NONE"
     assert calibration["sell_suppression_bias_after"] == "NONE"
     assert calibration["confidence_calibration"] == "PASS"

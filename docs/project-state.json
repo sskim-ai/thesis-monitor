@@ -3955,7 +3955,7 @@
     "repaired_distribution": {"BUY": 0, "HOLD": 17, "SELL": 3},
     "timing_distribution": {"NEUTRAL": 8, "UNFAVORABLE": 9, "INSUFFICIENT": 3},
     "confidence_distribution": {"MEDIUM": 12, "LOW": 8, "HIGH": 0},
-    "numeric_binding": "PASS_60_OF_60_AUTOMATIC",
+    "numeric_binding": "PASS_57_OF_57_AUTOMATIC",
     "message_quality": "PASS",
     "hold_default_bias_after": "NONE",
     "sell_suppression_bias_after": "NONE",
