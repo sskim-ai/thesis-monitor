@@ -16,5 +16,8 @@
 - Manual production Telegram/task, Pilot, DB mutation: `0/0/0/0`
 - Production Assist: `OFF`
 
-Exact-SHA GitHub Actions results are recorded after branch and main promotion. Natural proof is
-intentionally pending and is not replaced by manual execution.
+- Implementation SHA `a639d326...`: GitHub Actions `33244563757`, Test/Lint `PASS`
+- Report SHA `3131b56a...`: GitHub Actions `33244563832`, Test/Lint `PASS`
+- Promoted main `3131b56a...`: GitHub Actions `33244716691`, Test/Lint `PASS`
+
+Natural proof is intentionally pending and is not replaced by manual execution.

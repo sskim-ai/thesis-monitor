@@ -4,6 +4,12 @@
   "instruction_commit": "c62ddff",
   "base_sha": "f7e0829647c782ce39353086f4fcc51101b9b566",
   "implementation_commit": "a639d326a578bb7f3a2c53b1df31723bfb2b9829",
+  "operating_sha_at_activation": "3131b56a08bd30afa7f4aee55163d6065d3e826b",
+  "github_actions": {
+    "implementation": {"run_id": 33244563757, "status": "PASS_TEST_LINT"},
+    "report": {"run_id": 33244563832, "status": "PASS_TEST_LINT"},
+    "promoted_main": {"run_id": 33244716691, "status": "PASS_TEST_LINT"}
+  },
   "canary_kr_count": 2,
   "canary_us_count": 2,
   "canary_kr_subjects": ["003690", "000660"],
