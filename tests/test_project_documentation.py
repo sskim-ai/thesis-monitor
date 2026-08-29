@@ -108,6 +108,7 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260829-decision-validation.md",
     ROOT / "docs" / "reports" / "20260829-decision-calibration-readiness.json",
     ROOT / "docs" / "reports" / "20260829-repaired-20-stock-decisions.json",
+    ROOT / "docs" / "reports" / "20260829-decision-polarity-readiness.json",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -128,13 +129,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-cross-market-decision-engine-bounded-canary"
+        "codex/20260829-decision-evidence-polarity-renderer-p1-repair"
     )
     assert state["current_phase"] == (
-        "bounded_decision_canary_enabled_awaiting_natural_proof"
+        "decision_polarity_repaired_rearmed_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
-        "20260829_cross_market_decision_engine_bounded_canary_preenable"
+        "20260829_decision_evidence_polarity_renderer_p1_repair"
     )
     assert state["next_default_phase"] == (
         "wait_for_two_natural_canary_cycles_per_market"
@@ -150,7 +151,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    canary_code_commit = "a639d326a578bb7f3a2c53b1df31723bfb2b9829"
+    canary_code_commit = "86b9fc44006c45431ccc1822131df3b4a74eb1ca"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["deployed_code_commit"] == canary_code_commit
     assert state["main_code_commit"] == canary_code_commit
@@ -166,6 +167,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert canary["kr_natural_cycles"] == 0
     assert canary["us_natural_cycles"] == 0
     assert canary["expansion_recommendation"] == "HOLD"
+    polarity = state["decision_evidence_polarity_renderer_p1_repair_20260829"]
+    assert polarity["status"] == "REPAIRED_REARMED_AWAITING_NATURAL_PROOF"
+    assert polarity["polarity_repair_changed_decision"] == 0
+    assert polarity["preenable_test_sink"] == "PASS_6_OF_6_EXACT"
+    assert polarity["production_recipient_send"] == 0
+    assert polarity["kr_natural_cycles"] == 0
+    assert polarity["us_natural_cycles"] == 0
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
