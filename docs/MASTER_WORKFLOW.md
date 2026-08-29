@@ -2047,3 +2047,22 @@ calibration/semantic gates to PASS. The dedicated non-production sink received t
 production-recipient send, or production delivery intent. Open P0/material P1 is `0/0` and
 `DECISION_CANARY_READINESS=PASS`, but production canary remains OFF. A separate bounded canary
 instruction is required before any runtime exposure.
+
+### 40.26 Decision Evidence Polarity Renderer P1 Repair
+
+Exact instruction commit `0bba7c9` precedes implementation
+`86b9fc44006c45431ccc1822131df3b4a74eb1ca`. Decision-relative support/opposition remains intact,
+while `decision-evidence-polarity-v1` independently owns BULLISH, BEARISH, and NEUTRAL claims.
+The production canary renderer and artifact validator consume the same structured plan; no
+free-form sentiment classifier or ticker exception exists.
+
+Fresh run-44/run-45 evidence reproduced the four accepted SHA values exactly and classifications
+remain 003690 HOLD, 000660 HOLD, GOOGL HOLD, RXRX SELL. GOOGL bullish evidence and RXRX neutral
+quality evidence no longer appear under SELL. Two historical BUY fixtures also pass the common
+polarity validator. The dedicated sink received all six payloads exactly once with zero production
+recipient send, intent, duplicate, or orphan.
+
+Local full pytest is `1903 PASS`; implementation Actions Test/Lint PASS. Main and operating were
+promoted linearly, the repaired continuity state was installed, and only the exact KR 2 + US 2
+canary was rearmed. Natural counts remain `0/2` per market. Open P0/material P1 are `0/0`; the next
+action is read-only natural canary review with no manual task or production Telegram proof.

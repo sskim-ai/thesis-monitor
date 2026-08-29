@@ -1,5 +1,22 @@
 # Next Session Prompt
 
+Latest authoritative repair follows instruction commit `0bba7c9` and implementation
+`86b9fc44006c45431ccc1822131df3b4a74eb1ca`. Read the
+`20260829-decision-polarity-*` reports, GOOGL/RXRX negative controls, 003690/000660 controls, BUY
+fixture control, and the single completion bundle first.
+
+The bounded canary remains exactly KR `003690,000660` and US `GOOGL,RXRX`, with decisions
+`HOLD/HOLD/HOLD/SELL`. Directional sections now use explicit BULLISH/BEARISH ownership and neutral
+data-quality facts cannot own either side. Test-sink proof is `6/6 exact`; production send/intent,
+duplicates, and orphans are zero. Open P0/material P1 is `0/0`.
+
+State is `REPAIRED_REARMED_AWAITING_NATURAL_PROOF`; natural counts remain KR `0/2`, US `0/2`.
+Review only naturally scheduled cycles read-only. Never run a Scheduled Task or production
+Telegram manually, do not expand canary subjects, and disable decision blocks on any polarity
+failure.
+
+---
+
 Latest major work follows instruction commit `c62ddff` and implementation
 `a639d326a578bb7f3a2c53b1df31723bfb2b9829`. Read the `20260829-decision-canary-*` reports,
 natural-proof JSON, BUY fixture report, and completion bundle first.

@@ -513,3 +513,11 @@ canonical evidence/numeric ownership, completed-bar and no-look-ahead gates, AI-
 and deterministic omission on failure. It must not enable production automatically, fabricate a
 score-based fallback decision, create order sizing, expose recipient values, or reinterpret the
 test-sink proof as natural production evidence. Operator review is the next dependency.
+
+The decision-evidence-polarity repair starts from operating main
+`483888edcd4afb64d108c667b47d7e9f6b5ba423`, with exact instruction commit `0bba7c9` and
+implementation `86b9fc44006c45431ccc1822131df3b4a74eb1ca`. It extends only the bounded decision
+candidate, renderer/validator, archive/test tooling, and tests. It does not alter decision
+calibration, Price Structure, valuation, market messages, schedules, recipients, assessments, DB,
+Pilot, or Production Assist. Descendants must preserve explicit BULLISH/BEARISH/NEUTRAL ownership,
+the exact four-subject canary, and the no-manual-natural-proof boundary.

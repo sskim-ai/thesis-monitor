@@ -1,5 +1,21 @@
 # Thesis Monitor Project Handoff
 
+## 2026-08-29 Decision Evidence Polarity Repair Handoff
+
+Start with `docs/reports/20260829-decision-polarity-readiness.json` and the artifact index. Exact
+instruction commit is `0bba7c9`; implementation and operating code are
+`86b9fc44006c45431ccc1822131df3b4a74eb1ca`.
+
+BUY/SELL user labels now consume explicit BULLISH/BEARISH claims, while source/basis verification
+and data-quality context remain NEUTRAL. Current decisions remain `HOLD/HOLD/HOLD/SELL` for
+003690/000660/GOOGL/RXRX. The six-message test batch passed exactly with no production delivery.
+The exact four-subject canary is rearmed; natural KR/US counters remain `0/2` and do not include
+tests.
+
+Next action is only read-only review of the next natural cycles. On any production polarity error,
+disable canary decision blocks and return to TEST_SINK_READY. Do not expand subjects, manually run
+a Scheduled Task, send a production Telegram, or infer live proof from the test sink.
+
 This document is a canonical continuation point for the AI-assisted monitoring project. Read it
 with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-state.json), and
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
