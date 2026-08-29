@@ -11,6 +11,9 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidenceRef,
     EvidenceCategory,
     EvidenceClaim,
+    EvidencePolarity,
+    EvidenceReasonRole,
+    PolarityEvidenceClaim,
 )
 from app.services.decision_canary_service import (
     DecisionCanaryBatchOutput,
@@ -18,6 +21,7 @@ from app.services.decision_canary_service import (
     build_decision_canary_context,
     configured_decision_canary_subjects,
     decision_canary_armed,
+    decision_polarity_errors,
     decision_canary_preconditions,
     insert_decision_canary_block,
     load_decision_canary_state,
@@ -59,6 +63,7 @@ def _evidence(ticker: str) -> DecisionEvidencePacket:
                 category=category,
                 label=name,
                 statement=f"{ticker} {name} 근거",
+                as_of="2026-08-29",
                 source_ref=f"stock.{name}",
             )
             for name, category in rows
@@ -105,6 +110,22 @@ def _candidate(ticker: str, phrase: str) -> DecisionCandidate:
             EvidenceClaim(
                 text=f"{phrase} 기대 부담은 추가 확신을 제한합니다.",
                 evidence_refs=(f"{ticker}:risks",),
+            ),
+        ),
+        buy_case_evidence=(
+            PolarityEvidenceClaim(
+                text=f"{phrase} 실적 근거는 장기 선택지를 지지합니다.",
+                evidence_refs=(f"{ticker}:earnings",),
+                polarity=EvidencePolarity.BULLISH,
+                reason_role=EvidenceReasonRole.FUNDAMENTAL,
+            ),
+        ),
+        sell_case_evidence=(
+            PolarityEvidenceClaim(
+                text=f"{phrase} 기대 부담은 하방 위험을 높입니다.",
+                evidence_refs=(f"{ticker}:risks",),
+                polarity=EvidencePolarity.BEARISH,
+                reason_role=EvidenceReasonRole.FUNDAMENTAL,
             ),
         ),
         unknowns=(
@@ -180,6 +201,8 @@ def test_context_output_and_continuity_are_evidence_bound(tmp_path) -> None:
     assert all(not row.selected_numeric_fact_refs for row in artifact.decisions)
     assert artifact.message_quality["status"] == "PASS"
     assert all("주문·자동매매" in block.text for block in artifact.blocks)
+    assert all("실적 근거는 장기 선택지를 지지합니다" in block.text for block in artifact.blocks)
+    assert all("기대 부담은 하방 위험을 높입니다" in block.text for block in artifact.blocks)
 
     stale = output.model_copy(update={"claim_id": "claim-2"})
     with pytest.raises(ValueError, match="identity_mismatch"):
@@ -243,3 +266,76 @@ def test_canary_rejects_numeric_prose_and_inserts_without_replacing_base() -> No
     assert "🎯 기존 핵심 판단" in combined
     assert combined.index("🏢 Alphabet") < combined.index("🧠 AI 종합 판단")
     assert combined.index("🧠 AI 종합 판단") < combined.index("🎯 기존 핵심 판단")
+
+
+def test_polarity_contract_rejects_inversion_neutral_leakage_and_overlap() -> None:
+    packet = _evidence("GOOGL")
+    candidate = _candidate("GOOGL", "광고와 클라우드의 수익화")
+
+    inverted = candidate.model_copy(
+        update={
+            "sell_case_evidence": (
+                candidate.buy_case_evidence[0].model_copy(
+                    update={"polarity": EvidencePolarity.BULLISH}
+                ),
+            )
+        }
+    )
+    assert "sell_case_wrong_polarity:BULLISH" in decision_polarity_errors(
+        packet, inverted
+    )
+
+    neutral_as_sell = candidate.model_copy(
+        update={
+            "sell_case_evidence": (
+                PolarityEvidenceClaim(
+                    text="재무제표와 증권 식별 기준을 확인했습니다.",
+                    evidence_refs=("GOOGL:unknown",),
+                    polarity=EvidencePolarity.BEARISH,
+                    reason_role=EvidenceReasonRole.DATA_QUALITY,
+                ),
+            )
+        }
+    )
+    assert "data_quality_directional_polarity:sell" in decision_polarity_errors(
+        packet, neutral_as_sell
+    )
+
+    overlapping = candidate.model_copy(
+        update={
+            "sell_case_evidence": (
+                PolarityEvidenceClaim(
+                    text="같은 근거를 반대 방향에 중복 배치했습니다.",
+                    evidence_refs=("GOOGL:earnings",),
+                    polarity=EvidencePolarity.BEARISH,
+                    reason_role=EvidenceReasonRole.FUNDAMENTAL,
+                ),
+            )
+        }
+    )
+    assert "evidence_selected_on_both_sides:GOOGL:earnings" in decision_polarity_errors(
+        packet, overlapping
+    )
+
+
+def test_polarity_contract_rejects_missing_and_timing_only_ownership() -> None:
+    packet = _evidence("RXRX")
+    candidate = _candidate("RXRX", "임상 실행과 자금 소요")
+    missing = candidate.model_copy(update={"buy_case_evidence": ()})
+    assert "buy_case_evidence_missing" in decision_polarity_errors(packet, missing)
+
+    timing_only = candidate.model_copy(
+        update={
+            "buy_case_evidence": (
+                PolarityEvidenceClaim(
+                    text="가격 구조는 단기 선택지를 지지합니다.",
+                    evidence_refs=("RXRX:price",),
+                    polarity=EvidencePolarity.BULLISH,
+                    reason_role=EvidenceReasonRole.TIMING_ONLY,
+                ),
+            )
+        }
+    )
+    assert "buy_case_owned_only_by_timing" in decision_polarity_errors(
+        packet, timing_only
+    )

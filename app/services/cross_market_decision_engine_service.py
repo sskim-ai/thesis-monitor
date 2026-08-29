@@ -61,6 +61,22 @@ class EvidenceCategory(StrEnum):
     QUALITY = "quality"
 
 
+class EvidencePolarity(StrEnum):
+    BULLISH = "BULLISH"
+    BEARISH = "BEARISH"
+    NEUTRAL = "NEUTRAL"
+
+
+class EvidenceReasonRole(StrEnum):
+    FUNDAMENTAL = "FUNDAMENTAL"
+    VALUATION = "VALUATION"
+    TIMING_ONLY = "TIMING_ONLY"
+    DATA_QUALITY = "DATA_QUALITY"
+    MARKET = "MARKET"
+    TECHNICAL = "TECHNICAL"
+    OTHER_DOCUMENTED = "OTHER_DOCUMENTED"
+
+
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -98,6 +114,11 @@ class EvidenceClaim(FrozenModel):
     evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
 
 
+class PolarityEvidenceClaim(EvidenceClaim):
+    polarity: EvidencePolarity
+    reason_role: EvidenceReasonRole
+
+
 class DecisionCandidate(FrozenModel):
     ticker: str
     decision: Decision
@@ -113,6 +134,11 @@ class DecisionCandidate(FrozenModel):
     why_not_sell: EvidenceClaim
     supporting_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     opposing_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
+    buy_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(default=(), max_length=3)
+    sell_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(default=(), max_length=3)
+    neutral_context_evidence: tuple[PolarityEvidenceClaim, ...] = Field(
+        default=(), max_length=3
+    )
     unknowns: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     upgrade_condition: EvidenceClaim
     downgrade_condition: EvidenceClaim
@@ -444,6 +470,9 @@ def _candidate_texts(candidate: DecisionCandidate) -> tuple[str, ...]:
         candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
+        *candidate.buy_case_evidence,
+        *candidate.sell_case_evidence,
+        *candidate.neutral_context_evidence,
         *candidate.unknowns,
         candidate.upgrade_condition,
         candidate.downgrade_condition,
@@ -474,6 +503,9 @@ def validate_decision_candidate(
         candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
+        *candidate.buy_case_evidence,
+        *candidate.sell_case_evidence,
+        *candidate.neutral_context_evidence,
         *candidate.unknowns,
         candidate.upgrade_condition,
         candidate.downgrade_condition,
@@ -697,6 +729,9 @@ def canonicalize_candidate_metadata(
         candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
+        *candidate.buy_case_evidence,
+        *candidate.sell_case_evidence,
+        *candidate.neutral_context_evidence,
         *candidate.unknowns,
         candidate.upgrade_condition,
         candidate.downgrade_condition,

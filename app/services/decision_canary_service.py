@@ -13,7 +13,11 @@ from app.config import Settings, get_settings
 from app.services.cross_market_decision_engine_service import (
     DecisionCandidate,
     DecisionEvidencePacket,
+    EvidenceCategory,
+    EvidencePolarity,
+    EvidenceReasonRole,
     FrozenModel,
+    PolarityEvidenceClaim,
     canonicalize_candidate_metadata,
     compact_ai_context,
     decision_message_quality,
@@ -31,6 +35,7 @@ READY_STATE = "test_sink_ready"
 CANARY_REASONING_MODEL = "gpt-5.6-sol"
 CANARY_REASONING_EFFORT = "xhigh"
 CONTINUITY_STATE_CONTRACT = "cross-market-decision-canary-continuity-state-v1"
+POLARITY_CONTRACT = "decision-evidence-polarity-v1"
 
 
 class DecisionCanaryContinuityBaseline(FrozenModel):
@@ -104,6 +109,138 @@ class DecisionCanaryState(FrozenModel):
     )
     state: Literal["test_sink_ready", "canary"]
     entries: tuple[DecisionCanaryStateEntry, ...]
+
+
+class DecisionPolarityPlan(FrozenModel):
+    contract: Literal["decision-evidence-polarity-v1"] = POLARITY_CONTRACT
+    ticker: str
+    decision: Literal["BUY", "HOLD", "SELL"]
+    evidence_sha256: str
+    buy_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    sell_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    neutral_context_evidence: tuple[PolarityEvidenceClaim, ...] = Field(
+        default=(), max_length=3
+    )
+
+
+class DecisionPolarityPlanBatch(FrozenModel):
+    contract: Literal["decision-evidence-polarity-batch-v1"] = (
+        "decision-evidence-polarity-batch-v1"
+    )
+    plans: tuple[DecisionPolarityPlan, ...] = Field(min_length=1, max_length=20)
+
+
+def decision_polarity_errors(
+    packet: DecisionEvidencePacket,
+    candidate: DecisionCandidate,
+    *,
+    require_directional: bool = True,
+) -> tuple[str, ...]:
+    return polarity_claim_errors(
+        packet,
+        buy_case_evidence=candidate.buy_case_evidence,
+        sell_case_evidence=candidate.sell_case_evidence,
+        neutral_context_evidence=candidate.neutral_context_evidence,
+        require_directional=require_directional,
+    )
+
+
+def polarity_claim_errors(
+    packet: DecisionEvidencePacket,
+    *,
+    buy_case_evidence: tuple[PolarityEvidenceClaim, ...],
+    sell_case_evidence: tuple[PolarityEvidenceClaim, ...],
+    neutral_context_evidence: tuple[PolarityEvidenceClaim, ...],
+    require_directional: bool = True,
+) -> tuple[str, ...]:
+    refs = {row.ref_id: row for row in packet.evidence}
+    sections: tuple[
+        tuple[str, tuple[PolarityEvidenceClaim, ...], EvidencePolarity], ...
+    ] = (
+        ("buy", buy_case_evidence, EvidencePolarity.BULLISH),
+        ("sell", sell_case_evidence, EvidencePolarity.BEARISH),
+        ("neutral", neutral_context_evidence, EvidencePolarity.NEUTRAL),
+    )
+    errors: list[str] = []
+    if require_directional and not buy_case_evidence:
+        errors.append("buy_case_evidence_missing")
+    if require_directional and not sell_case_evidence:
+        errors.append("sell_case_evidence_missing")
+    if require_directional and len(buy_case_evidence) != 1:
+        errors.append("buy_case_compact_selection_requires_one")
+    if require_directional and len(sell_case_evidence) != 1:
+        errors.append("sell_case_compact_selection_requires_one")
+    selected: dict[str, set[str]] = {name: set() for name, _claims, _expected in sections}
+    timing_categories = {
+        EvidenceCategory.PRICE_STRUCTURE,
+        EvidenceCategory.TECHNICAL_FEATURE,
+        EvidenceCategory.FLOWS,
+        EvidenceCategory.MARKET,
+    }
+    for name, claims, expected in sections:
+        for claim in claims:
+            if claim.polarity != expected:
+                errors.append(f"{name}_case_wrong_polarity:{claim.polarity}")
+            if (
+                claim.reason_role == EvidenceReasonRole.DATA_QUALITY
+                and claim.polarity != EvidencePolarity.NEUTRAL
+            ):
+                errors.append(f"data_quality_directional_polarity:{name}")
+            for ref_id in claim.evidence_refs:
+                ref = refs.get(ref_id)
+                if ref is None:
+                    errors.append(f"polarity_unknown_evidence_ref:{ref_id}")
+                    continue
+                if not ref.source_ref or not ref.as_of:
+                    errors.append(f"polarity_lineage_incomplete:{ref_id}")
+                selected[name].add(ref_id)
+                if (
+                    claim.reason_role == EvidenceReasonRole.TIMING_ONLY
+                    and ref.category not in timing_categories
+                ):
+                    errors.append(f"timing_role_non_timing_ref:{ref_id}")
+    overlap = selected["buy"] & selected["sell"]
+    if overlap:
+        errors.extend(f"evidence_selected_on_both_sides:{ref_id}" for ref_id in sorted(overlap))
+    for name, claims, _expected in sections[:2]:
+        flattened = [ref_id for claim in claims for ref_id in claim.evidence_refs]
+        if len(flattened) != len(set(flattened)):
+            errors.append(f"duplicate_{name}_case_evidence_ref")
+        if claims and all(
+            claim.reason_role == EvidenceReasonRole.TIMING_ONLY for claim in claims
+        ):
+            errors.append(f"{name}_case_owned_only_by_timing")
+    return tuple(dict.fromkeys(errors))
+
+
+def apply_decision_polarity_plan(
+    packet: DecisionEvidencePacket,
+    candidate: DecisionCandidate,
+    plan: DecisionPolarityPlan,
+) -> DecisionCandidate:
+    if (
+        plan.ticker != packet.ticker
+        or candidate.ticker != packet.ticker
+        or plan.decision != candidate.decision
+        or plan.evidence_sha256 != packet.evidence_sha256
+    ):
+        raise ValueError("decision_polarity_plan_identity_mismatch")
+    enriched = candidate.model_copy(
+        update={
+            "buy_case_evidence": plan.buy_case_evidence,
+            "sell_case_evidence": plan.sell_case_evidence,
+            "neutral_context_evidence": plan.neutral_context_evidence,
+        }
+    )
+    enriched = canonicalize_candidate_metadata(packet, enriched)
+    validation = validate_decision_candidate(packet, enriched)
+    errors = decision_polarity_errors(packet, enriched)
+    if not validation.valid or errors:
+        raise ValueError(
+            "decision_polarity_plan_invalid:"
+            + ",".join((*validation.errors, *errors))
+        )
+    return enriched
 
 
 def _csv_subjects(value: str) -> tuple[str, ...]:
@@ -341,6 +478,11 @@ Hard contracts:
 - Timing is independent. Use INSUFFICIENT for missing or materially conflicted timing evidence, not NEUTRAL.
 - Every claim must cite exact complete ref_id values from that ticker. Never alter or invent a ref_id.
 - Include company-specific decisive, supporting, opposing, unknown, timing, upgrade, and downgrade claims. Keep each claim concise enough for a production summary.
+- supporting_evidence/opposing_evidence are relative to the final decision. They do not own directional BUY/SELL labels.
+- The structured contract supports 1-3 directional claims, but this compact bounded canary must select exactly one strongest buy_case_evidence claim with polarity=BULLISH and exactly one strongest sell_case_evidence claim with polarity=BEARISH. Each claim needs an explicit reason_role and exact complete canonical evidence_refs.
+- neutral_context_evidence may contain polarity=NEUTRAL context. Security identity, source validity, statement basis, and missing-data limitations are neutral unless separate owned economic evidence makes a directional claim.
+- A HOLD needs credible evidence on both directional sides. A SELL still needs its strongest credible upside/optionality on the BUY side. A BUY still needs its strongest material risk on the SELL side.
+- Do not reuse one evidence ref on both directional sides. Timing-only evidence must remain reason_role=TIMING_ONLY and cannot be the sole owner of either long-horizon side.
 - selected_evidence_plan must contain every cited category. selected_numeric_fact_refs must be empty for this bounded production canary; do not put exact numbers in prose.
 - Do not calculate or state a target, stop, order size, FCF valuation ratio, ROIC, CCC, runway months, or future return.
 - Do not issue buy/sell imperatives or order language. BUY/HOLD/SELL is an analytical classification only.
@@ -405,17 +547,10 @@ def render_decision_canary_block(
         raise ValueError("decision_canary_candidate_invalid:" + ",".join(validation.errors))
     if candidate.selected_numeric_fact_refs:
         raise ValueError("decision_canary_numeric_detail_not_allowed")
+    polarity_errors = decision_polarity_errors(packet, candidate)
+    if polarity_errors:
+        raise ValueError("decision_canary_polarity_invalid:" + ",".join(polarity_errors))
     confidence, confidence_reason, timing = _decision_labels()
-    bull = (
-        candidate.opposing_evidence[0]
-        if candidate.decision == "SELL"
-        else candidate.supporting_evidence[0]
-    )
-    bear = (
-        candidate.supporting_evidence[0]
-        if candidate.decision == "SELL"
-        else candidate.opposing_evidence[0]
-    )
     lines = [
         f"🧠 AI 종합 판단: {candidate.decision}",
         f"추론등급: 매우 높음 | 판단 확신도: {confidence[candidate.confidence]}",
@@ -434,8 +569,10 @@ def render_decision_canary_block(
         )
     lines.extend(
         [
-            f"✅ BUY 쪽 근거: {bull.text}",
-            f"⚠️ SELL 쪽 근거: {bear.text}",
+            "✅ BUY 쪽 근거:",
+            *(f"• {claim.text}" for claim in candidate.buy_case_evidence),
+            "⚠️ SELL 쪽 근거:",
+            *(f"• {claim.text}" for claim in candidate.sell_case_evidence),
             f"🔼 상향 조건: {candidate.upgrade_condition.text}",
             f"🔽 하향 조건: {candidate.downgrade_condition.text}",
             "※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
@@ -489,6 +626,15 @@ def validate_decision_canary_output(
             raise ValueError(f"decision_canary_unexplained_churn:{candidate.ticker}")
     if any(candidate.selected_numeric_fact_refs for candidate in ordered_candidates):
         raise ValueError("decision_canary_numeric_detail_not_allowed")
+    for candidate in ordered_candidates:
+        polarity_errors = decision_polarity_errors(packets[candidate.ticker], candidate)
+        if polarity_errors:
+            raise ValueError(
+                "decision_canary_polarity_invalid:"
+                + candidate.ticker
+                + ":"
+                + ",".join(polarity_errors)
+            )
     rendered = tuple(
         render_shadow_decision(packets[candidate.ticker], candidate)
         for candidate in ordered_candidates
@@ -548,7 +694,12 @@ def load_decision_canary_artifact(
         raise ValueError("decision_canary_artifact_subject_mismatch")
     for ticker in expected:
         validation = validate_decision_candidate(packets[ticker], decisions[ticker])
-        if not validation.valid or blocks[ticker].decision != decisions[ticker].decision:
+        expected_block = render_decision_canary_block(packets[ticker], decisions[ticker])
+        if (
+            not validation.valid
+            or decision_polarity_errors(packets[ticker], decisions[ticker])
+            or blocks[ticker] != expected_block
+        ):
             raise ValueError("decision_canary_artifact_validation_failed")
     return artifact
 

@@ -18,6 +18,7 @@ from app.services.cross_market_decision_engine_service import (
     DecisionCandidate,
     DecisionEvidencePacket,
     build_decision_evidence_packet,
+    compact_ai_context,
 )
 from app.services.decision_canary_service import (
     CANARY_REASONING_EFFORT,
@@ -26,9 +27,13 @@ from app.services.decision_canary_service import (
     DecisionCanaryContext,
     DecisionCanaryState,
     DecisionCanaryStateEntry,
+    DecisionPolarityPlanBatch,
+    apply_decision_polarity_plan,
     build_decision_canary_context,
     decision_canary_prompt,
     insert_decision_canary_block,
+    polarity_claim_errors,
+    render_decision_canary_block,
     strict_json_schema,
     validate_decision_canary_output,
     write_decision_canary_state,
@@ -451,6 +456,216 @@ def _apply_continuity(args: argparse.Namespace) -> None:
     print(json.dumps({"status": "PASS", "continuity_subjects": 4}, sort_keys=True))
 
 
+def _enrich_polarity(args: argparse.Namespace) -> None:
+    decisions_value = _read_json(args.decisions)
+    evidence_value = _read_json(args.evidence)
+    if not isinstance(decisions_value, Mapping) or not isinstance(evidence_value, Mapping):
+        raise ValueError("polarity_inputs_invalid")
+    requested = tuple(item.strip().upper() for item in args.tickers.split(",") if item.strip())
+    if not requested or len(requested) != len(set(requested)):
+        raise ValueError("polarity_tickers_invalid")
+    candidates = {
+        str(row.get("ticker") or "").upper(): row["candidate"]
+        for row in decisions_value.get("rows") or ()
+        if isinstance(row, Mapping) and isinstance(row.get("candidate"), Mapping)
+    }
+    packets = {
+        str(row.get("ticker") or "").upper(): DecisionEvidencePacket.model_validate(
+            row["evidence_packet"]
+        )
+        for row in evidence_value.get("rows") or ()
+        if isinstance(row, Mapping) and isinstance(row.get("evidence_packet"), Mapping)
+    }
+    missing = set(requested) - (set(candidates) & set(packets))
+    if missing:
+        raise ValueError("polarity_input_subject_missing:" + ",".join(sorted(missing)))
+    args.trial_dir.mkdir(parents=True, exist_ok=True)
+    prompt_path = args.trial_dir / "polarity-prompt.txt"
+    schema_path = args.trial_dir / "polarity-schema.json"
+    output_path = args.trial_dir / "polarity-output.json"
+    log_path = args.trial_dir / "polarity-codex.log"
+    prompt = (
+        """Select explicit directional evidence ownership for the supplied existing decisions.
+
+This is a bounded semantic repair. Preserve every existing BUY/HOLD/SELL decision and all other candidate fields. Return only polarity plans. Use only exact canonical evidence ref_id values supplied for each ticker.
+
+Hard contracts:
+- buy_case_evidence: exactly one strongest genuinely BULLISH economic claim, polarity=BULLISH.
+- sell_case_evidence: exactly one strongest genuinely BEARISH economic/risk claim, polarity=BEARISH.
+- neutral_context_evidence: optional NEUTRAL source, identity, basis, or data-quality context.
+- supporting_evidence/opposing_evidence are decision-relative and do not determine directional ownership.
+- DATA_QUALITY claims must be NEUTRAL. Missing or verified data is not automatically bearish.
+- TIMING_ONLY may describe price/market/flow/technical timing but cannot be the only owner of either directional side.
+- Never place the same evidence ref on both directional sides.
+- Every selected ref must have source lineage and as_of in the canonical packet.
+- Do not invent facts, numbers, sentiment, valuation, targets, orders, or future evidence.
+- For SELL, still select credible bullish optionality for the BUY side. For BUY, still select material bearish risk for the SELL side.
+- Output strict JSON matching the supplied schema.
+
+INPUTS:\n"""
+        + json.dumps(
+            [
+                {
+                    "ticker": ticker,
+                    "decision": str(candidates[ticker].get("decision") or ""),
+                    "evidence_sha256": packets[ticker].evidence_sha256,
+                    "existing_candidate": candidates[ticker],
+                    "canonical_evidence": compact_ai_context(packets[ticker]),
+                }
+                for ticker in requested
+            ],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+    )
+    _write_text(prompt_path, prompt)
+    _write_json(
+        schema_path,
+        strict_json_schema(DecisionPolarityPlanBatch.model_json_schema()),
+    )
+    command = [
+        str(args.codex_bin),
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "read-only",
+        "-m",
+        CANARY_REASONING_MODEL,
+        "-c",
+        f'model_reasoning_effort="{CANARY_REASONING_EFFORT}"',
+        "--output-schema",
+        str(schema_path),
+        "-o",
+        str(output_path),
+        "-",
+    ]
+    with prompt_path.open(encoding="utf-8") as stdin, log_path.open(
+        "w", encoding="utf-8"
+    ) as stdout:
+        process = subprocess.run(
+            command,
+            cwd=args.trial_dir,
+            env=dict(os.environ),
+            stdin=stdin,
+            stdout=stdout,
+            stderr=subprocess.STDOUT,
+            timeout=args.timeout,
+            check=False,
+            text=True,
+        )
+    if process.returncode != 0:
+        raise RuntimeError("codex_polarity_generation_failed")
+    batch = DecisionPolarityPlanBatch.model_validate(_read_json(output_path))
+    plans = {plan.ticker: plan for plan in batch.plans}
+    if set(plans) != set(requested):
+        raise ValueError("polarity_output_subject_mismatch")
+    rows: list[dict[str, object]] = []
+    for ticker in requested:
+        raw_candidate = candidates[ticker]
+        try:
+            current_candidate = DecisionCandidate.model_validate(raw_candidate)
+        except ValueError:
+            current_candidate = None
+        if current_candidate is not None:
+            enriched = apply_decision_polarity_plan(
+                packets[ticker], current_candidate, plans[ticker]
+            )
+            candidate_payload = enriched.model_dump(mode="json")
+            block_payload = render_decision_canary_block(
+                packets[ticker], enriched
+            ).model_dump(mode="json")
+        else:
+            plan = plans[ticker]
+            if (
+                plan.ticker != ticker
+                or plan.decision != str(raw_candidate.get("decision") or "")
+                or plan.evidence_sha256 != packets[ticker].evidence_sha256
+            ):
+                raise ValueError("legacy_polarity_plan_identity_mismatch")
+            errors = polarity_claim_errors(
+                packets[ticker],
+                buy_case_evidence=plan.buy_case_evidence,
+                sell_case_evidence=plan.sell_case_evidence,
+                neutral_context_evidence=plan.neutral_context_evidence,
+            )
+            if errors:
+                raise ValueError("legacy_polarity_plan_invalid:" + ",".join(errors))
+            changes = raw_candidate.get("change_conditions") or ()
+            if not isinstance(changes, list) or len(changes) < 2:
+                raise ValueError("legacy_change_conditions_missing")
+            confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
+            timing = {
+                "FAVORABLE": "우호적",
+                "NEUTRAL": "중립",
+                "UNFAVORABLE": "불리",
+                "INSUFFICIENT": "판단 근거 부족",
+            }
+            lines = [
+                f"🧠 AI 종합 판단: {plan.decision}",
+                "추론등급: 매우 높음 | 판단 확신도: "
+                + confidence[str(raw_candidate.get("confidence") or "LOW")],
+                f"판단 기준: {raw_candidate.get('horizon')} | 단기 타이밍: "
+                + timing[str(raw_candidate.get("timing") or "INSUFFICIENT")],
+                "",
+                f"🎯 판단: {raw_candidate['decisive_reason']['text']}",
+                "✅ BUY 쪽 근거:",
+                *(f"• {claim.text}" for claim in plan.buy_case_evidence),
+                "⚠️ SELL 쪽 근거:",
+                *(f"• {claim.text}" for claim in plan.sell_case_evidence),
+                f"🔼 상향 조건: {changes[0]['text']}",
+                f"🔽 하향 조건: {changes[1]['text']}",
+                "※ 역사적 test-only 분석 분류이며 현재 판단·주문 지시가 아닙니다.",
+            ]
+            block_text = "\n".join(lines)
+            if len(block_text) > 2200:
+                raise ValueError("legacy_polarity_block_too_long")
+            candidate_payload = {
+                **raw_candidate,
+                "buy_case_evidence": [
+                    row.model_dump(mode="json") for row in plan.buy_case_evidence
+                ],
+                "sell_case_evidence": [
+                    row.model_dump(mode="json") for row in plan.sell_case_evidence
+                ],
+                "neutral_context_evidence": [
+                    row.model_dump(mode="json") for row in plan.neutral_context_evidence
+                ],
+            }
+            block_payload = {
+                "ticker": ticker,
+                "decision": plan.decision,
+                "text": block_text,
+            }
+        rows.append(
+            {
+                "ticker": ticker,
+                "decision": str(raw_candidate.get("decision") or ""),
+                "evidence_sha256": packets[ticker].evidence_sha256,
+                "candidate": candidate_payload,
+                "evidence_packet": packets[ticker].model_dump(mode="json"),
+                "block": block_payload,
+                "validation": {
+                    "valid": True,
+                    "polarity_contract": "decision-evidence-polarity-v1",
+                },
+            }
+        )
+    _write_json(
+        args.output,
+        {
+            "contract": "decision-evidence-polarity-enrichment-v1",
+            "status": "PASS",
+            "reasoning_model": CANARY_REASONING_MODEL,
+            "reasoning_effort": CANARY_REASONING_EFFORT,
+            "rows": rows,
+        },
+    )
+    print(json.dumps({"status": "PASS", "subjects": len(rows)}, sort_keys=True))
+
+
 def _deterministic_texts(path: Path) -> dict[str, str]:
     value = _read_json(path)
     if not isinstance(value, Mapping):
@@ -558,9 +773,9 @@ def _build_test(args: argparse.Namespace) -> None:
         }:
             continue
         candidate = row.get("candidate")
-        rendered = row.get("rendered")
+        block = row.get("block")
         validation = row.get("validation")
-        if not all(isinstance(value, Mapping) for value in (candidate, rendered, validation)):
+        if not all(isinstance(value, Mapping) for value in (candidate, block, validation)):
             continue
         if candidate.get("decision") != "BUY" or validation.get("valid") is not True:
             continue
@@ -572,7 +787,7 @@ def _build_test(args: argparse.Namespace) -> None:
             "🧪 TEST FIXTURE · BUY 경로 검증\n"
             f"역사적 as_of: {as_of}\n"
             "현재 판단이나 production 상태가 아닙니다.\n\n"
-            f"{rendered['text']}"
+            f"{block['text']}"
         )
         if len(text) > 3500 or "AI 종합 판단: BUY" not in text:
             raise ValueError(f"buy_fixture_quality_failed:{ticker}")
@@ -744,6 +959,19 @@ def _parser() -> argparse.ArgumentParser:
     continuity.add_argument("--continuity-decisions", type=Path, required=True)
     continuity.add_argument("--trial-dir", type=Path, required=True)
 
+    polarity = sub.add_parser("enrich-polarity")
+    polarity.add_argument("--decisions", type=Path, required=True)
+    polarity.add_argument("--evidence", type=Path, required=True)
+    polarity.add_argument("--tickers", required=True)
+    polarity.add_argument("--trial-dir", type=Path, required=True)
+    polarity.add_argument("--output", type=Path, required=True)
+    polarity.add_argument(
+        "--codex-bin",
+        type=Path,
+        default=Path("/Applications/ChatGPT.app/Contents/Resources/codex"),
+    )
+    polarity.add_argument("--timeout", type=int, default=900)
+
     build_test = sub.add_parser("build-test")
     build_test.add_argument("--current", type=Path, required=True)
     build_test.add_argument("--kr-messages", type=Path, required=True)
@@ -775,6 +1003,8 @@ def main() -> None:
         _run(args)
     elif args.command == "apply-continuity":
         _apply_continuity(args)
+    elif args.command == "enrich-polarity":
+        _enrich_polarity(args)
     elif args.command == "build-test":
         _build_test(args)
     elif args.command == "send-test":
