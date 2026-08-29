@@ -22,6 +22,17 @@ RENDERER_CONTRACT = "decision-shadow-renderer-v1"
 Decision = Literal["BUY", "HOLD", "SELL"]
 Confidence = Literal["HIGH", "MEDIUM", "LOW"]
 Timing = Literal["FAVORABLE", "NEUTRAL", "UNFAVORABLE", "INSUFFICIENT"]
+HoldReason = Literal[
+    "BALANCED_EVIDENCE",
+    "GOOD_BUSINESS_INSUFFICIENT_ASYMMETRY",
+    "VALUATION_EXPECTATION_CONSTRAINT",
+    "FUNDAMENTALS_NOT_YET_PROVEN",
+    "DATA_LIMITED",
+    "OPTIONALITY_OFFSETS_DOWNSIDE",
+    "THESIS_INTACT_TIMING_POOR",
+    "OTHER_DOCUMENTED",
+    "NOT_HOLD",
+]
 
 
 class EvidenceCategory(StrEnum):
@@ -85,7 +96,10 @@ class DecisionCandidate(FrozenModel):
     confidence: Confidence
     horizon: str = Field(min_length=1, max_length=80)
     timing: Timing
+    hold_reason: HoldReason
     decisive_reason: EvidenceClaim
+    why_not_buy: EvidenceClaim
+    why_not_sell: EvidenceClaim
     supporting_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     opposing_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     unknowns: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
@@ -331,6 +345,8 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
 def _candidate_texts(candidate: DecisionCandidate) -> tuple[str, ...]:
     claims = (
         candidate.decisive_reason,
+        candidate.why_not_buy,
+        candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,
@@ -349,8 +365,14 @@ def validate_decision_candidate(
         errors.append("ticker_mismatch")
     if candidate.horizon != packet.horizon:
         errors.append("horizon_not_owned_by_monitoring_thesis")
+    if candidate.decision == "HOLD" and candidate.hold_reason == "NOT_HOLD":
+        errors.append("hold_reason_missing")
+    if candidate.decision != "HOLD" and candidate.hold_reason != "NOT_HOLD":
+        errors.append("hold_reason_present_for_directional_decision")
     all_claims = (
         candidate.decisive_reason,
+        candidate.why_not_buy,
+        candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,
@@ -436,13 +458,26 @@ def render_shadow_decision(
         "",
         "🎯 결정적 이유",
         f"• {candidate.decisive_reason.text}",
-        "",
-        "✅ 지지 근거",
-        *(f"• {claim.text}" for claim in candidate.supporting_evidence),
-        "",
-        "⚠️ 반대 근거",
-        *(f"• {claim.text}" for claim in candidate.opposing_evidence),
     ]
+    if candidate.decision == "HOLD":
+        lines.extend(
+            [
+                "",
+                "⚖️ HOLD 경계",
+                f"• 왜 BUY가 아닌가: {candidate.why_not_buy.text}",
+                f"• 왜 SELL이 아닌가: {candidate.why_not_sell.text}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "✅ 지지 근거",
+            *(f"• {claim.text}" for claim in candidate.supporting_evidence),
+            "",
+            "⚠️ 반대 근거",
+            *(f"• {claim.text}" for claim in candidate.opposing_evidence),
+        ]
+    )
     if candidate.selected_numeric_fact_refs:
         lines.extend(["", "📊 확인된 기술 상태"])
         for ref_id in candidate.selected_numeric_fact_refs:
@@ -532,6 +567,8 @@ def canonicalize_candidate_metadata(
     refs = {ref.ref_id: ref for ref in packet.evidence}
     claims = (
         candidate.decisive_reason,
+        candidate.why_not_buy,
+        candidate.why_not_sell,
         *candidate.supporting_evidence,
         *candidate.opposing_evidence,
         *candidate.unknowns,

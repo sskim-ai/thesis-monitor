@@ -229,6 +229,9 @@ Hard rules:
 - Every claim needs one or more exact ref_id values from that ticker.
 - Copy each ref_id as one complete opaque string. Never shorten, extend, splice, infer, or append punctuation to a ref_id. Before returning, verify every cited ref_id by exact string equality against the supplied packet.
 - Include genuine supporting and opposing evidence, remaining unknowns, and change conditions.
+- HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
+- SELL means present downside and impaired risk/reward materially dominate conditional upside at the stated horizon; it does not require formal thesis invalidation or a price breakdown.
+- HOLD means material positive optionality remains and downside dominance is not established. Do not use HOLD as a default for uncertainty.
 - selected_evidence_plan must contain every category actually cited.
 - Do not put exact numeric values in prose. To surface up to three useful numeric technical observations, choose their canonical ref_id in selected_numeric_fact_refs; the backend will format them.
 - Do not calculate a feature, return, target, fair value, FCF yield, per-share FCF, EV/FCF, ROIC, CCC, DSO, DPO, runway months, or an order size.
@@ -251,6 +254,8 @@ Hard rules:
 - reasoning_grade must be VERY_HIGH and horizon must match that checkpoint packet verbatim.
 - Every claim must cite exact complete ref_id strings from the same checkpoint. Never alter, splice, shorten, infer, or punctuate a ref_id.
 - Include supporting evidence, opposing evidence, unknowns, and change conditions.
+- HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
+- SELL does not require formal thesis invalidation; HOLD still requires material optionality that prevents downside dominance.
 - Do not put exact numbers in prose. Select up to three numeric technical refs only when numeric_prose_eligible is true.
 - Do not calculate technical features, valuation multiples, targets, fair values, FCF valuation ratios, or future returns.
 - Do not repeat an identical substantive sentence across companies or checkpoints. Make each reason specific to the available company evidence.

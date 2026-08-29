@@ -90,12 +90,21 @@ def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
         confidence="MEDIUM",
         horizon="12-24개월",
         timing="NEUTRAL",
+        hold_reason="BALANCED_EVIDENCE",
         decisive_reason=EvidenceClaim(
             text="사업 회복 논리는 유효하지만 현재 기대와 남은 검증 부담이 균형을 이룬다.",
             evidence_refs=(
                 by_category[EvidenceCategory.THESIS],
                 by_category[EvidenceCategory.EXPECTATIONS],
             ),
+        ),
+        why_not_buy=EvidenceClaim(
+            text="회복 기대가 먼저 반영돼 추가 상승 비대칭이 아직 충분하지 않다.",
+            evidence_refs=(by_category[EvidenceCategory.EXPECTATIONS],),
+        ),
+        why_not_sell=EvidenceClaim(
+            text="반복 매출과 수익성 회복 가능성이 하방 우위를 확정하지 못하게 한다.",
+            evidence_refs=(by_category[EvidenceCategory.THESIS],),
         ),
         supporting_evidence=(
             EvidenceClaim(
@@ -145,6 +154,8 @@ def test_valid_ai_owned_candidate_renders_with_backend_numeric_binding() -> None
     assert validation.automatically_bound_numeric_count == 1
     rendered = render_shadow_decision(packet, candidate)
     assert "AI 종합 판단: HOLD" in rendered.text
+    assert "왜 BUY가 아닌가" in rendered.text
+    assert "왜 SELL이 아닌가" in rendered.text
     assert "추론등급: 매우 높음" in rendered.text
     assert "주문 또는 자동매매 지시가 아닙니다" in rendered.text
     assert decision_message_quality([rendered])["status"] == "PASS"
@@ -191,3 +202,16 @@ def test_category_plan_is_backend_derived_from_ai_selected_refs() -> None:
     ).errors
     normalized = canonicalize_candidate_metadata(packet, incomplete)
     assert validate_decision_candidate(packet, normalized).valid is True
+
+
+def test_hold_requires_reason_and_directional_decisions_reject_hold_reason() -> None:
+    packet, candidate = _packet_and_candidate()
+    missing = candidate.model_copy(update={"hold_reason": "NOT_HOLD"})
+    assert "hold_reason_missing" in validate_decision_candidate(packet, missing).errors
+
+    directional = candidate.model_copy(
+        update={"decision": "SELL", "hold_reason": "OPTIONALITY_OFFSETS_DOWNSIDE"}
+    )
+    assert "hold_reason_present_for_directional_decision" in validate_decision_candidate(
+        packet, directional
+    ).errors
