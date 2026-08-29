@@ -22,6 +22,15 @@ RENDERER_CONTRACT = "decision-shadow-renderer-v1"
 Decision = Literal["BUY", "HOLD", "SELL"]
 Confidence = Literal["HIGH", "MEDIUM", "LOW"]
 Timing = Literal["FAVORABLE", "NEUTRAL", "UNFAVORABLE", "INSUFFICIENT"]
+ConfidenceReason = Literal[
+    "EVIDENCE_CONVERGENT",
+    "MATERIAL_EVIDENCE_CONFLICT",
+    "DATA_QUALITY_LIMIT",
+    "VALUATION_LIMIT",
+    "SECURITY_BASIS_LIMIT",
+    "ECONOMIC_PROOF_LIMIT",
+    "OTHER_DOCUMENTED",
+]
 HoldReason = Literal[
     "BALANCED_EVIDENCE",
     "GOOD_BUSINESS_INSUFFICIENT_ASYMMETRY",
@@ -94,8 +103,10 @@ class DecisionCandidate(FrozenModel):
     decision: Decision
     reasoning_grade: Literal["VERY_HIGH"]
     confidence: Confidence
+    confidence_reason: ConfidenceReason
     horizon: str = Field(min_length=1, max_length=80)
     timing: Timing
+    timing_basis: EvidenceClaim
     hold_reason: HoldReason
     decisive_reason: EvidenceClaim
     why_not_buy: EvidenceClaim
@@ -345,6 +356,7 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
 def _candidate_texts(candidate: DecisionCandidate) -> tuple[str, ...]:
     claims = (
         candidate.decisive_reason,
+        candidate.timing_basis,
         candidate.why_not_buy,
         candidate.why_not_sell,
         *candidate.supporting_evidence,
@@ -369,8 +381,11 @@ def validate_decision_candidate(
         errors.append("hold_reason_missing")
     if candidate.decision != "HOLD" and candidate.hold_reason != "NOT_HOLD":
         errors.append("hold_reason_present_for_directional_decision")
+    if candidate.confidence == "HIGH" and candidate.confidence_reason != "EVIDENCE_CONVERGENT":
+        errors.append("high_confidence_without_convergent_evidence")
     all_claims = (
         candidate.decisive_reason,
+        candidate.timing_basis,
         candidate.why_not_buy,
         candidate.why_not_sell,
         *candidate.supporting_evidence,
@@ -378,6 +393,21 @@ def validate_decision_candidate(
         *candidate.unknowns,
         *candidate.change_conditions,
     )
+    timing_categories = {
+        refs[ref_id].category
+        for ref_id in candidate.timing_basis.evidence_refs
+        if ref_id in refs
+    }
+    usable_timing_categories = {
+        EvidenceCategory.PRICE_STRUCTURE,
+        EvidenceCategory.TECHNICAL_FEATURE,
+        EvidenceCategory.FLOWS,
+        EvidenceCategory.MARKET,
+    }
+    if candidate.timing != "INSUFFICIENT" and not (
+        timing_categories & usable_timing_categories
+    ):
+        errors.append("directional_timing_without_usable_evidence")
     for claim in all_claims:
         for ref_id in claim.evidence_refs:
             if ref_id not in refs:
@@ -444,6 +474,15 @@ def render_shadow_decision(
     refs = {ref.ref_id: ref for ref in packet.evidence}
     decision_labels = {"BUY": "BUY", "HOLD": "HOLD", "SELL": "SELL"}
     confidence_labels = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
+    confidence_reason_labels = {
+        "EVIDENCE_CONVERGENT": "핵심 근거 수렴",
+        "MATERIAL_EVIDENCE_CONFLICT": "핵심 근거 충돌",
+        "DATA_QUALITY_LIMIT": "자료 품질 제약",
+        "VALUATION_LIMIT": "가치평가 제약",
+        "SECURITY_BASIS_LIMIT": "증권 기준 제약",
+        "ECONOMIC_PROOF_LIMIT": "경제성 검증 제약",
+        "OTHER_DOCUMENTED": "문서화된 기타 제약",
+    }
     timing_labels = {
         "FAVORABLE": "우호적",
         "NEUTRAL": "중립",
@@ -453,8 +492,10 @@ def render_shadow_decision(
     lines = [
         f"🏢 {packet.company_name}({packet.ticker})",
         f"🧠 AI 종합 판단: {decision_labels[candidate.decision]}",
-        f"추론등급: 매우 높음 | 신뢰도: {confidence_labels[candidate.confidence]}",
+        f"추론등급: 매우 높음 | 판단 확신도: {confidence_labels[candidate.confidence]}",
+        f"판단 기준: {confidence_reason_labels[candidate.confidence_reason]}",
         f"분석 시계열: {candidate.horizon} | 단기 타이밍: {timing_labels[candidate.timing]}",
+        f"타이밍 근거: {candidate.timing_basis.text}",
         "",
         "🎯 결정적 이유",
         f"• {candidate.decisive_reason.text}",
@@ -567,6 +608,7 @@ def canonicalize_candidate_metadata(
     refs = {ref.ref_id: ref for ref in packet.evidence}
     claims = (
         candidate.decisive_reason,
+        candidate.timing_basis,
         candidate.why_not_buy,
         candidate.why_not_sell,
         *candidate.supporting_evidence,

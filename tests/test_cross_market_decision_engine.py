@@ -88,8 +88,13 @@ def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
         decision="HOLD",
         reasoning_grade="VERY_HIGH",
         confidence="MEDIUM",
+        confidence_reason="MATERIAL_EVIDENCE_CONFLICT",
         horizon="12-24개월",
         timing="NEUTRAL",
+        timing_basis=EvidenceClaim(
+            text="확인 가능한 가격 구조가 진입에 일방적인 우호 또는 불리 신호를 주지 않는다.",
+            evidence_refs=(by_category[EvidenceCategory.PRICE_STRUCTURE],),
+        ),
         hold_reason="BALANCED_EVIDENCE",
         decisive_reason=EvidenceClaim(
             text="사업 회복 논리는 유효하지만 현재 기대와 남은 검증 부담이 균형을 이룬다.",
@@ -140,6 +145,7 @@ def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
             EvidenceCategory.EXPECTATIONS,
             EvidenceCategory.RISKS,
             EvidenceCategory.UNKNOWN,
+            EvidenceCategory.PRICE_STRUCTURE,
             EvidenceCategory.TECHNICAL_FEATURE,
         ),
     )
@@ -157,6 +163,9 @@ def test_valid_ai_owned_candidate_renders_with_backend_numeric_binding() -> None
     assert "왜 BUY가 아닌가" in rendered.text
     assert "왜 SELL이 아닌가" in rendered.text
     assert "추론등급: 매우 높음" in rendered.text
+    assert "판단 확신도: 중간" in rendered.text
+    assert "판단 기준: 핵심 근거 충돌" in rendered.text
+    assert "단기 타이밍: 중립" in rendered.text
     assert "주문 또는 자동매매 지시가 아닙니다" in rendered.text
     assert decision_message_quality([rendered])["status"] == "PASS"
 
@@ -214,4 +223,24 @@ def test_hold_requires_reason_and_directional_decisions_reject_hold_reason() -> 
     )
     assert "hold_reason_present_for_directional_decision" in validate_decision_candidate(
         packet, directional
+    ).errors
+
+
+def test_timing_and_confidence_require_independent_evidence_basis() -> None:
+    packet, candidate = _packet_and_candidate()
+    non_timing = candidate.model_copy(
+        update={
+            "timing": "UNFAVORABLE",
+            "timing_basis": candidate.why_not_buy,
+        }
+    )
+    assert "directional_timing_without_usable_evidence" in validate_decision_candidate(
+        packet, non_timing
+    ).errors
+
+    unsupported_high = candidate.model_copy(
+        update={"confidence": "HIGH", "confidence_reason": "DATA_QUALITY_LIMIT"}
+    )
+    assert "high_confidence_without_convergent_evidence" in validate_decision_candidate(
+        packet, unsupported_high
     ).errors

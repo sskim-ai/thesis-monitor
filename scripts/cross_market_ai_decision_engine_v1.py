@@ -232,6 +232,8 @@ Hard rules:
 - HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
 - SELL means present downside and impaired risk/reward materially dominate conditional upside at the stated horizon; it does not require formal thesis invalidation or a price breakdown.
 - HOLD means material positive optionality remains and downside dominance is not established. Do not use HOLD as a default for uncertainty.
+- Timing is independent: FAVORABLE/NEUTRAL/UNFAVORABLE require usable price, technical, flow, or market evidence; use INSUFFICIENT when that evidence is unavailable or conflicted. NEUTRAL is balanced evidence, not missing evidence.
+- confidence measures decision-evidence quality and convergence, not reasoning effort. Return one canonical confidence_reason. HIGH requires convergent critical evidence; missing critical valuation, security-basis, data-quality, or economic proof normally lowers confidence.
 - selected_evidence_plan must contain every category actually cited.
 - Do not put exact numeric values in prose. To surface up to three useful numeric technical observations, choose their canonical ref_id in selected_numeric_fact_refs; the backend will format them.
 - Do not calculate a feature, return, target, fair value, FCF yield, per-share FCF, EV/FCF, ROIC, CCC, DSO, DPO, runway months, or an order size.
@@ -256,6 +258,8 @@ Hard rules:
 - Include supporting evidence, opposing evidence, unknowns, and change conditions.
 - HOLD requires one canonical hold_reason plus evidence-linked why_not_buy and why_not_sell. Use NOT_HOLD only for BUY or SELL.
 - SELL does not require formal thesis invalidation; HOLD still requires material optionality that prevents downside dominance.
+- Keep timing independent from the long-horizon decision. Directional timing requires usable market/flow/price/technical evidence; use INSUFFICIENT for material evidence gaps, not NEUTRAL.
+- confidence is evidence quality/convergence and must include one canonical confidence_reason; it is not the VERY_HIGH reasoning grade.
 - Do not put exact numbers in prose. Select up to three numeric technical refs only when numeric_prose_eligible is true.
 - Do not calculate technical features, valuation multiples, targets, fair values, FCF valuation ratios, or future returns.
 - Do not repeat an identical substantive sentence across companies or checkpoints. Make each reason specific to the available company evidence.
