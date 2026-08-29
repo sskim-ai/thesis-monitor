@@ -1,0 +1,203 @@
+{
+  "000660_EVIDENCE_CHANGED": "NO",
+  "003690_EVIDENCE_CHANGED": "NO",
+  "AI_CALCULATED_TECHNICAL_FEATURE": 0,
+  "AMBIGUOUS_CURRENT_VS_STRUCTURE_PRICE_LABEL": 0,
+  "BOLLINGER_ONLY_MAJOR_SR_VISIBLE": 0,
+  "BUY_SELL_POLARITY_MESSAGE_QUALITY": "PASS",
+  "CURRENT_000660_DECISION": "HOLD",
+  "CURRENT_003690_DECISION": "HOLD",
+  "CURRENT_CANARY_KR_COUNT": 2,
+  "CURRENT_CANARY_SUBJECTS": {
+    "kr": [
+      "003690",
+      "000660"
+    ],
+    "us": [
+      "GOOGL",
+      "RXRX"
+    ]
+  },
+  "CURRENT_CANARY_US_COUNT": 2,
+  "CURRENT_GOOGL_DECISION": "HOLD",
+  "CURRENT_RXRX_DECISION": "SELL",
+  "CURRENT_TIME_CANARY_E2E": "PASS",
+  "CURRENT_TIME_MESSAGE_QUALITY": "PASS",
+  "CURRENT_TIME_SESSION_RESOLUTION": "PASS",
+  "DECISION_ENGINE_STATE": "CANARY",
+  "EXECUTION_TIME_KST": "2026-08-29T21:16:59.579875+09:00",
+  "GOOGL_EVIDENCE_CHANGED": "NO",
+  "KR_MARKET_DATA_REFRESH": "PASS",
+  "KR_NATURAL_CANARY_CYCLES": 0,
+  "LATEST_COMPLETED_KR_SESSION": "2026-08-28",
+  "LATEST_COMPLETED_US_SESSION": "2026-08-28",
+  "MACD_ALONE_OWNS_BUY_SELL": 0,
+  "NEUTRAL_FACT_FORCED_INTO_BUY_SELL_SECTION": 0,
+  "NEXT_ACTION": "WAIT_FOR_NATURAL_CANARY_CYCLES",
+  "NIGHT_FUTURES_CANONICAL_GATE_USED": "PASS",
+  "NIGHT_FUTURES_CURRENT_STATE": "SOURCE_LIMITATION_SAFE",
+  "OPEN_MATERIAL_P1": 0,
+  "OPEN_P0": 0,
+  "ORDER_COMMAND_LANGUAGE": 0,
+  "ORDER_SIZING_OUTPUT": 0,
+  "PRODUCTION_CANARY_ENABLED": true,
+  "PRODUCTION_DELIVERY_INTENT_CREATED": 0,
+  "PROVISIONAL_BOLLINGER_AUTHORITY_LEAK": 0,
+  "REASONING_GRADE_AS_CONFIDENCE": 0,
+  "RXRX_EVIDENCE_CHANGED": "NO",
+  "STALE_NIGHT_FUTURES_VISIBLE": 0,
+  "TEST_DUPLICATE": 0,
+  "TEST_EXACT_PAYLOAD_MATCH": "PASS",
+  "TEST_MESSAGE_COUNT": 6,
+  "TEST_ORPHAN": 0,
+  "TEST_PRODUCTION_RECIPIENT_SEND": 0,
+  "TIMING_TO_DECISION_HARD_MAPPING": 0,
+  "UNEXPLAINED_CURRENT_DECISION_CHURN": 0,
+  "US_MARKET_DATA_REFRESH": "PASS",
+  "US_NATURAL_CANARY_CYCLES": 0,
+  "canonical_store_audit": {
+    "contract": "current-canonical-store-read-only-audit-v1",
+    "database_query_only": true,
+    "rows": [
+      {
+        "financial_store": {
+          "latest_ingested_at": "2026-08-28 07:05:41.233405",
+          "latest_reported_date": "2026-08-28",
+          "row_count": 48
+        },
+        "latest_assessment": {
+          "assessment_date": "2026-08-28",
+          "business_thesis_change": "no_material_change",
+          "created_at": "2026-08-28 07:05:47.211448",
+          "earnings_estimate_impact": "unchanged",
+          "status": "no_material_change",
+          "valuation_change": "neutral"
+        },
+        "status": "PASS",
+        "thesis": {
+          "created_at": "2026-08-12 05:34:08.735969",
+          "status": "active",
+          "time_horizon": "12-36개월",
+          "version": 6
+        },
+        "ticker": "003690",
+        "watchlist": {
+          "active": 1,
+          "company_name": "코리안리",
+          "exchange": "KRX",
+          "latest_assessment_date": "2026-08-28",
+          "latest_status": "no_material_change"
+        }
+      },
+      {
+        "financial_store": {
+          "latest_ingested_at": "2026-08-15 07:05:31.135834",
+          "latest_reported_date": "2026-08-14",
+          "row_count": 42
+        },
+        "latest_assessment": {
+          "assessment_date": "2026-08-28",
+          "business_thesis_change": "no_material_change",
+          "created_at": "2026-08-28 07:05:36.888831",
+          "earnings_estimate_impact": "unchanged",
+          "status": "no_material_change",
+          "valuation_change": "neutral"
+        },
+        "status": "PASS",
+        "thesis": {
+          "created_at": "2026-08-12 05:59:33.508589",
+          "status": "active",
+          "time_horizon": "12-36개월",
+          "version": 6
+        },
+        "ticker": "000660",
+        "watchlist": {
+          "active": 1,
+          "company_name": "SK하이닉스",
+          "exchange": "KRX",
+          "latest_assessment_date": "2026-08-28",
+          "latest_status": "no_material_change"
+        }
+      },
+      {
+        "financial_store": {
+          "latest_ingested_at": "2026-08-12 00:40:16.160416",
+          "latest_reported_date": "2026-07-23",
+          "row_count": 44
+        },
+        "latest_assessment": {
+          "assessment_date": "2026-08-29",
+          "business_thesis_change": "no_material_change",
+          "created_at": "2026-08-28 23:05:49.784845",
+          "earnings_estimate_impact": "unchanged",
+          "status": "no_material_change",
+          "valuation_change": "neutral"
+        },
+        "status": "PASS",
+        "thesis": {
+          "created_at": "2026-08-10 14:20:17.359236",
+          "status": "active",
+          "time_horizon": "6~24개월",
+          "version": 3
+        },
+        "ticker": "GOOGL",
+        "watchlist": {
+          "active": 1,
+          "company_name": "Alphabet Inc. Class A",
+          "exchange": "NASDAQ",
+          "latest_assessment_date": "2026-08-29",
+          "latest_status": "no_material_change"
+        }
+      },
+      {
+        "financial_store": {
+          "latest_ingested_at": "2026-08-11 03:26:07.836248",
+          "latest_reported_date": "2026-08-05",
+          "row_count": 22
+        },
+        "latest_assessment": {
+          "assessment_date": "2026-08-29",
+          "business_thesis_change": "no_material_change",
+          "created_at": "2026-08-28 23:06:14.576413",
+          "earnings_estimate_impact": "unchanged",
+          "status": "no_material_change",
+          "valuation_change": "neutral"
+        },
+        "status": "PASS",
+        "thesis": {
+          "created_at": "2026-08-10 14:20:17.363374",
+          "status": "active",
+          "time_horizon": "6~24개월",
+          "version": 3
+        },
+        "ticker": "RXRX",
+        "watchlist": {
+          "active": 1,
+          "company_name": "Recursion Pharmaceuticals",
+          "exchange": "NASDAQ",
+          "latest_assessment_date": "2026-08-29",
+          "latest_status": "no_material_change"
+        }
+      }
+    ],
+    "status": "PASS"
+  },
+  "contract": "current-time-cross-market-canary-message-e2e-review-v1",
+  "message_sha256": {
+    "000660": "c25c249a2e3a2d8613906bd246658fad8f9d15f87f7019f242bad6290c2dc557",
+    "003690": "d9cd741962f45e79b7c9780b3d4cd0bcdb84fcc4610201f42467cdf1d3f35212",
+    "GOOGL": "adb7503c68f4bf9fe8e4fe04851ab9efc4ea4920e20e1d745b2343c6ac44c10e",
+    "KR_MARKET": "77082b2ffa21df42005ae1d9256b55ff28a6d2fdb137c9a1f1585d98d3010c03",
+    "RXRX": "c3ea5bdc030bb10ded4a1d6d9f06a9db9a5cf57d14c6736f1c3b6cfe7df7bf46",
+    "US_MARKET": "04bd0c599428b1a6a3b1306f022961ed2324c223470b68561d7918052816ea97"
+  },
+  "validation": {
+    "action_contract": "0.4.5 / schema 4 / operationId 20/20 unique",
+    "chart_knowledge_sha256": "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b",
+    "diff_check": "PASS",
+    "focused_pytest": "15 passed in 0.74s",
+    "full_pytest": "1906 passed, 1 warning in 63.30s",
+    "investment_knowledge_sha256": "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312",
+    "ruff": "PASS"
+  }
+}
