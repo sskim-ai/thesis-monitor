@@ -1,21 +1,21 @@
 # Next Session Prompt
 
 Latest major work follows exact instruction commit
-`86829a52c4711e1fad632cc9f558a44c08cc2ddc` and review implementation
-`cd829ff8009759af7f5c73e487e43c06dc4b1a9c`. Read
-`docs/reports/20260829-decision-quality-review.json`, the agreement matrix, all five material
-adjudications, calibration audits, canary recommendation, and artifact index first.
+`5ccc8aadc29644295164b612de163bbf06fbcf76` and calibrated implementation
+`930952132077e8403bcec1a7e2c52d5732d8521a`. Read
+`docs/reports/20260829-decision-calibration-readiness.json`, the repaired 20-stock decisions, nine
+bounded adjudications, six timing and three confidence resolutions, bias audits, exact test-sink
+report, and artifact index first.
 
-The signed-in Codex CLI used `gpt-5.6-sol` with `xhigh`. A label-blind independent review completed
-`20/20`; baseline BUY/HOLD/SELL `2/18/0` became independent `2/13/5` and adjudicated final
-`2/15/3`. Cross-market semantics pass, but the review found material HOLD-default and SELL-
-suppression bias plus unresolved timing, confidence, and HUT decision-change boundaries.
+The same canonical packets were rerun blind with signed-in Codex CLI `gpt-5.6-sol / xhigh`. Final
+BUY/HOLD/SELL is `0/17/3`; RXRX, TSLA, and WULF are SELL, while HUT and CRCL retain explicit HOLD
+boundaries. Numeric binding is `60/60`, repetition is zero, and every decision owns separate
+upgrade/downgrade conditions. Independent HOLD-default and SELL-suppression audits are both `NONE`.
 
-`CANARY_RECOMMENDATION=NOT_READY`, open P0/material P1 is `0/4`, engine state remains
-`TEST_SINK_READY`, and production canary remains disabled. Next action is
-`BOUNDED_CROSS_MARKET_DECISION_CALIBRATION_REPAIR`, followed by the same quality review gate.
-Do not enable a canary, mutate a task or assessment, send production Telegram, change the frozen
-baseline, or treat P2 wording polish as the blocking work.
+`DECISION_CANARY_READINESS=PASS`, `CANARY_RECOMMENDATION=READY_WITH_OBSERVATION`, and open
+P0/material P1 is `0/0`. Engine state remains `TEST_SINK_READY`; production canary remains OFF.
+Next action is `PREPARE_BOUNDED_CANARY_INSTRUCTION`. Do not enable automatically, mutate tasks or
+assessments, send production decisions, or treat the proposed six-name observation set as approval.
 
 ---
 

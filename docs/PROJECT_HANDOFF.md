@@ -5,7 +5,29 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Latest Handoff - Cross-Market Decision Quality Review
+## Latest Handoff - Decision Calibration P1 Repair Before Canary
+
+Start with `docs/reports/20260829-decision-calibration-readiness.json`, the repaired 20-stock
+decisions, nine bounded adjudications, timing/confidence resolutions, bias audits, exact test-sink
+report, and artifact index. Exact instruction commit is
+`5ccc8aadc29644295164b612de163bbf06fbcf76`; calibrated implementation is
+`930952132077e8403bcec1a7e2c52d5732d8521a`.
+
+The same 20 canonical packets were rerun blind with signed-in Codex CLI `gpt-5.6-sol / xhigh`.
+After nine bounded adjudications the result is BUY `0`, HOLD `17`, SELL `3`. RXRX, TSLA, and WULF
+remain analytical SELL; HUT is `HOLD / OPTIONALITY_OFFSETS_DOWNSIDE / LOW / UNFAVORABLE`; CRCL is
+`HOLD / LOW / INSUFFICIENT`. All six timing and three confidence cases are resolved. Exact numeric
+binding is `60/60`, cross-ticker substantive repetition is zero, and every decision has asymmetric
+upgrade/downgrade conditions.
+
+The independent portfolio audit sets HOLD-default and SELL-suppression bias to `NONE`. The dedicated
+test sink closed `20/20 exact` after an owned `17 + 3` Telegram rate-limit continuation, with zero
+duplicates, orphans, production-recipient sends, or production delivery intents. Open P0/material
+P1 is `0/0`; `DECISION_CANARY_READINESS=PASS` and recommendation is
+`READY_WITH_OBSERVATION`. Production canary remains OFF. The next action is a separate bounded
+canary instruction, not automatic enablement.
+
+## Previous Handoff - Cross-Market Decision Quality Review
 
 Start with `docs/reports/20260829-decision-quality-review.json`, the operator table, agreement
 matrix, five adjudications, SELL=0/HOLD-default audits, and canary recommendation. Exact instruction

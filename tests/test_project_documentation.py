@@ -106,6 +106,8 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "DECISION_SHADOW_AND_CANARY_ROLLOUT.md",
     ROOT / "docs" / "reports" / "20260829-decision-canary-readiness.json",
     ROOT / "docs" / "reports" / "20260829-decision-validation.md",
+    ROOT / "docs" / "reports" / "20260829-decision-calibration-readiness.json",
+    ROOT / "docs" / "reports" / "20260829-repaired-20-stock-decisions.json",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -126,27 +128,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-cross-market-ai-decision-quality-review-before-canary"
+        "codex/20260829-decision-calibration-p1-repair-before-canary"
     )
     assert state["current_phase"] == (
-        "cross_market_ai_decision_quality_review_not_ready"
+        "decision_calibration_p1_closed_canary_ready_with_observation"
     )
     assert state["last_completed_phase"] == (
-        "20260829_cross_market_ai_decision_quality_review_before_canary"
+        "20260829_decision_calibration_p1_repair_before_canary"
     )
-    assert state["next_default_phase"] == (
-        "bounded_cross_market_decision_calibration_repair"
-    )
+    assert state["next_default_phase"] == ("prepare_bounded_decision_canary_instruction")
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
     top3_implementation = "a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb"
-    price_structure_repair_implementation = (
-        "04fb7ad7646a55e03000134f50b3f402a6c49c87"
-    )
-    daily_1200_implementation = (
-        "f957bea48e1bf8df23c6b8fe769812ade5663456"
-    )
+    price_structure_repair_implementation = "04fb7ad7646a55e03000134f50b3f402a6c49c87"
+    daily_1200_implementation = "f957bea48e1bf8df23c6b8fe769812ade5663456"
     kr_integration_commit = "848eb80f6ce6504a9a855973b591ee0749167514"
     detector_implementation_commit = "3685aa991589ca0e7cc560104d4ebf8289e3f91d"
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
@@ -169,12 +165,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["numeric_summary_ownership"] == ("numeric-summary-ownership-v1")
     assert state["contracts"]["typed_template_skeleton"] == ("typed-template-skeleton-v1")
     assert state["contracts"]["canonical_supply_flow_tuple"] == ("canonical-supply-flow-tuple-v1")
-    assert state["contracts"]["deterministic_sr_base_layer"] == (
-        "deterministic-sr-base-layer-v1"
-    )
-    assert state["contracts"]["sr_proximity_relevance_gate"] == (
-        "sr-proximity-relevance-gate-v1"
-    )
+    assert state["contracts"]["deterministic_sr_base_layer"] == ("deterministic-sr-base-layer-v1")
+    assert state["contracts"]["sr_proximity_relevance_gate"] == ("sr-proximity-relevance-gate-v1")
     assert state["contracts"]["major_sr_price_anchor_reality_gate"] == (
         "major-sr-price-anchor-reality-gate-v1"
     )
@@ -193,9 +185,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert convergence["runtime_hotfix_required"] is False
     assert convergence["run44_frozen_replay"] == "PASS"
     assert convergence["fallback_dynamic_resistance_not_rendered"] == 0
-    assert convergence["selected_fact_missing_negative_control"] == (
-        "FAIL_AS_EXPECTED"
-    )
+    assert convergence["selected_fact_missing_negative_control"] == ("FAIL_AS_EXPECTED")
     assert convergence["kr7_replay"] == "PASS_7_OF_7"
     assert convergence["us_replay"] == "PASS_13_OF_13"
     assert convergence["test_exact_payload_match"] == "PASS_22_OF_22"
@@ -206,9 +196,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     live_proof = state["run_now_one_shot_kr_close_live_proof"]
     assert live_proof["status"] == "LIVE_PASS"
-    assert live_proof["implementation_commit"] == (
-        "239db58958b1193a8fd591500618ee4e7940c994"
-    )
+    assert live_proof["implementation_commit"] == ("239db58958b1193a8fd591500618ee4e7940c994")
     assert live_proof["one_shot_run_count"] == 1
     assert live_proof["normal_recurring_schedule_changed"] == 0
     assert live_proof["residual_one_shot_schedule_count"] == 0
@@ -230,22 +218,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert morning_review["natural_delivery"] == "PASS_14_OF_14"
     assert morning_review["rejected_ai_sent"] is False
     assert morning_review["open_p0"] == []
-    assert morning_review["open_material_p1"] == [
-        "run45_ai_full_stock_validation_rejected"
-    ]
+    assert morning_review["open_material_p1"] == ["run45_ai_full_stock_validation_rejected"]
     assert morning_review["runtime_behavior_changed"] is False
     repair = state["us_night_futures_friday_saturday_ai_validator_repair_20260829"]
     assert repair["status"] == "DEPLOYED_AWAITING_NATURAL_PROOF"
-    assert repair["instruction_commit"] == (
-        "f8ca4fcb4557037468e35578a98a66aa9cb750b5"
-    )
-    assert repair["implementation_commit"] == (
-        "f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19"
-    )
+    assert repair["instruction_commit"] == ("f8ca4fcb4557037468e35578a98a66aa9cb750b5")
+    assert repair["implementation_commit"] == ("f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19")
     assert repair["implementation_github_actions_run"] == 33224154203
-    assert repair["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert repair["implementation_github_actions_status"] == ("passed_test_and_lint")
     assert repair["evidence_github_actions_run"] == 33224913606
     assert repair["evidence_github_actions_status"] == "passed_test_and_lint"
     assert repair["operating_promotion"] == "PASS"
@@ -281,13 +261,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert decision_engine["production_canary_enabled"] is False
     assert decision_engine["open_p0"] == []
     assert decision_engine["open_material_p1"] == []
-    quality_review = state[
-        "cross_market_ai_decision_quality_review_before_canary_20260829"
-    ]
+    quality_review = state["cross_market_ai_decision_quality_review_before_canary_20260829"]
     assert quality_review["status"] == "NOT_READY"
-    assert quality_review["review_commit"] == (
-        "cd829ff8009759af7f5c73e487e43c06dc4b1a9c"
-    )
+    assert quality_review["review_commit"] == ("cd829ff8009759af7f5c73e487e43c06dc4b1a9c")
     assert quality_review["reasoning_effort"] == "xhigh"
     assert quality_review["independent_review_label_blind"] == "PASS"
     assert quality_review["independent_review"] == "PASS_20_OF_20"
@@ -305,15 +281,44 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert quality_review["production_decision_message_sent"] == 0
     assert quality_review["open_p0"] == []
     assert len(quality_review["open_material_p1"]) == 4
+    calibration = state["decision_calibration_p1_repair_before_canary_20260829"]
+    assert calibration["status"] == "READY_WITH_OBSERVATION"
+    assert calibration["implementation_commit"] == ("930952132077e8403bcec1a7e2c52d5732d8521a")
+    assert calibration["reasoning_effort"] == "xhigh"
+    assert calibration["same_evidence_blind_rerun"] == "PASS_20_OF_20"
+    assert calibration["bounded_adjudication"] == "PASS_9_OF_9"
+    assert calibration["repaired_distribution"] == {
+        "BUY": 0,
+        "HOLD": 17,
+        "SELL": 3,
+    }
+    assert calibration["numeric_binding"] == "PASS_60_OF_60_AUTOMATIC"
+    assert calibration["hold_default_bias_after"] == "NONE"
+    assert calibration["sell_suppression_bias_after"] == "NONE"
+    assert calibration["confidence_calibration"] == "PASS"
+    assert calibration["timing_calibration"] == "PASS"
+    assert calibration["decision_change_condition_quality"] == "PASS"
+    assert calibration["hut_decision_taxonomy"] == "PASS"
+    assert calibration["sell_positive_controls"] == "PASS_RXRX_TSLA_WULF"
+    assert calibration["test_sink_delivery"] == ("PASS_20_OF_20_AFTER_RATE_LIMIT_CONTINUATION")
+    assert calibration["test_sink_exact_payload_match"] is True
+    assert calibration["production_recipient_send"] == 0
+    assert calibration["production_delivery_intent_created"] == 0
+    assert calibration["production_canary_enabled"] is False
+    assert calibration["open_p0"] == []
+    assert calibration["open_material_p1"] == []
+    assert calibration["decision_canary_readiness"] == "PASS"
+    assert calibration["canary_recommendation"] == "READY_WITH_OBSERVATION"
+    assert state["contracts"]["cross_market_decision_calibration"] == (
+        "PASS_CANARY_READY_WITH_OBSERVATION_CANARY_OFF"
+    )
     assert state["contracts"]["cross_market_decision_quality_review"] == (
         "cross-market-decision-quality-review-v1"
     )
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
-    assert state["contracts"]["us_market_digest_plan"] == (
-        "us-market-digest-plan-v1"
-    )
+    assert state["contracts"]["us_market_digest_plan"] == ("us-market-digest-plan-v1")
     assert state["contracts"]["us_morning_exact_payload_quality"] == (
         "us-morning-exact-payload-quality-v1"
     )
@@ -325,9 +330,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert macro_quality["test_stock_message_count"] == 0
     assert macro_quality["open_p0"] == []
     assert macro_quality["open_material_p1"] == []
-    assert state["contracts"]["us_morning_full_message"] == (
-        "us-morning-full-message-v1"
-    )
+    assert state["contracts"]["us_morning_full_message"] == ("us-morning-full-message-v1")
     assert state["contracts"]["us_price_structure_selective_rollout"] == (
         "us-price-structure-selective-rollout-v1"
     )
@@ -357,9 +360,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     rollout = state["us_market_and_price_structure_rollout"]
     assert rollout["status"] == "enabled_awaiting_natural_proof"
-    assert rollout["implementation_commit"] == (
-        "1ba463571060a1fc9a5868afcdeab3de15f2bbe6"
-    )
+    assert rollout["implementation_commit"] == ("1ba463571060a1fc9a5868afcdeab3de15f2bbe6")
     assert rollout["active_us_foreign_subjects"] == 13
     assert rollout["test_exact_payload_match"] == "PASS_14_OF_14"
     assert rollout["price_structure_replay"] == "PASS_13_OF_13"
@@ -381,9 +382,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert current_data["production_enabled"] is False
     renderer = state["price_structure_v3_renderer_integration_micro_repair"]
     assert renderer["status"] == "integrated_ready_not_armed"
-    assert renderer["implementation_commit"] == (
-        "4246efb4f8afa3516402d1df7864967c177ac6e7"
-    )
+    assert renderer["implementation_commit"] == ("4246efb4f8afa3516402d1df7864967c177ac6e7")
     assert renderer["target_sessions"] == {"kr": "2026-08-26", "us": "2026-08-25"}
     assert renderer["fib_confluence_render_equivalence"] == "PASS"
     assert renderer["current_sr_stored_rule_separation"] == "PASS"
@@ -406,31 +405,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert detector["nontechnical_prose_suppressed"] == 0
     assert detector["production_enablement_ready"] == "YES"
     assert detector["production_enabled"] is False
-    assert state["contracts"]["market_context_adapter"] == (
-        "market-context-adapter-v1"
-    )
-    assert state["contracts"]["structured_market_context"] == (
-        "structured-market-context-v1"
-    )
+    assert state["contracts"]["market_context_adapter"] == ("market-context-adapter-v1")
+    assert state["contracts"]["structured_market_context"] == ("structured-market-context-v1")
     assert state["contracts"]["nasdaq_official_exchange_breadth"] == (
         "nasdaq-official-exchange-breadth-v1"
     )
-    assert state["contracts"]["kiwoom_kr_market_context"] == (
-        "kiwoom-kr-market-context-v1"
-    )
+    assert state["contracts"]["kiwoom_kr_market_context"] == ("kiwoom-kr-market-context-v1")
     assert state["contracts"]["kr_market_flow_reconciliation"] == (
         "kr-market-flow-reconciliation-v1"
     )
-    assert state["contracts"]["kr_market_flow_concentration"] == (
-        "kr-market-flow-concentration-v1"
-    )
+    assert state["contracts"]["kr_market_flow_concentration"] == ("kr-market-flow-concentration-v1")
     assert state["contracts"]["message_quality_v2"] == "message-quality-v2"
-    assert state["contracts"]["kr_market_internal_layout"] == (
-        "kr-market-internal-layout-v1"
-    )
-    assert state["contracts"]["market_research_seed_adapter"] == (
-        "market-research-seed-adapter-v1"
-    )
+    assert state["contracts"]["kr_market_internal_layout"] == ("kr-market-internal-layout-v1")
+    assert state["contracts"]["market_research_seed_adapter"] == ("market-research-seed-adapter-v1")
     assert state["contracts"]["production_research_connector_boundary"] == (
         "production-research-connector-boundary-v1"
     )
@@ -441,15 +428,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "kr-investor-flow-reconciliation-v1"
     )
     assert state["contracts"]["xkrx_role_target"] == "xkrx-role-target-v1"
-    assert state["contracts"]["packet_bound_delivery_intent"] == (
-        "packet-bound-delivery-intent-v1"
-    )
+    assert state["contracts"]["packet_bound_delivery_intent"] == ("packet-bound-delivery-intent-v1")
     assert state["contracts"]["kr_production_packet_persistence"] == (
         "kr-production-packet-persistence-v1"
     )
-    assert state["contracts"]["shadow_cohort_readiness"] == (
-        "shadow-cohort-readiness-v1"
-    )
+    assert state["contracts"]["shadow_cohort_readiness"] == ("shadow-cohort-readiness-v1")
     assert state["contracts"]["kr_orphan_delivery_reconciliation"] == (
         "kr-orphan-delivery-reconciliation-v1"
     )
@@ -483,36 +466,22 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["macro_digest_temporal_eligibility"] == (
         "macro-digest-temporal-eligibility-v1"
     )
-    assert state["contracts"]["kr_market_digest_quality"] == (
-        "kr-market-digest-quality-v1"
-    )
-    assert state["contracts"]["entity_specific_synthesis"] == (
-        "entity-specific-synthesis-v1"
-    )
+    assert state["contracts"]["kr_market_digest_quality"] == ("kr-market-digest-quality-v1")
+    assert state["contracts"]["entity_specific_synthesis"] == ("entity-specific-synthesis-v1")
     assert state["contracts"]["cross_message_synthesis_specificity"] == (
         "cross-message-synthesis-specificity-v1"
     )
-    assert state["contracts"]["price_only_ai_anchor_packet"] == (
-        "price-only-ai-anchor-packet-v1"
-    )
+    assert state["contracts"]["price_only_ai_anchor_packet"] == ("price-only-ai-anchor-packet-v1")
     assert state["contracts"]["variable_ai_swing_anchor_selection"] == (
         "variable-ai-swing-anchor-selection-v1"
     )
-    assert state["contracts"]["ai_anchor_stability_policy"] == (
-        "ai-anchor-stability-policy-v1"
-    )
-    assert state["contracts"]["fibonacci_sr_ownership"] == (
-        "fibonacci-sr-ownership-v1"
-    )
+    assert state["contracts"]["ai_anchor_stability_policy"] == ("ai-anchor-stability-policy-v1")
+    assert state["contracts"]["fibonacci_sr_ownership"] == ("fibonacci-sr-ownership-v1")
     assert state["contracts"]["canonical_swing_structure_candidate"] == (
         "canonical-swing-structure-candidate-v1"
     )
-    assert state["contracts"]["fibonacci_valid_abstention"] == (
-        "fibonacci-valid-abstention-v1"
-    )
-    assert state["contracts"]["ai_anchor_consensus_policy"] == (
-        "ai-anchor-consensus-policy-v1"
-    )
+    assert state["contracts"]["fibonacci_valid_abstention"] == ("fibonacci-valid-abstention-v1")
+    assert state["contracts"]["ai_anchor_consensus_policy"] == ("ai-anchor-consensus-policy-v1")
     assert state["contracts"]["variable_ai_swing_structure_consensus"] == (
         "variable-ai-swing-structure-consensus-v1"
     )
@@ -536,12 +505,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "price-structure-v3-shadow-policy-v1"
     )
     assert state["contracts"]["ohlcv_bar_completion"] == "ohlcv-bar-completion-v1"
-    assert state["contracts"]["ohlcv_1200_backfill_cache"] == (
-        "ohlcv-1200-backfill-cache-v1"
-    )
-    assert state["contracts"]["wave_degree_current_cycle"] == (
-        "wave-degree-current-cycle-v1"
-    )
+    assert state["contracts"]["ohlcv_1200_backfill_cache"] == ("ohlcv-1200-backfill-cache-v1")
+    assert state["contracts"]["wave_degree_current_cycle"] == ("wave-degree-current-cycle-v1")
     assert state["contracts"]["price_structure_v3_ai_feedback_loop"] == (
         "price-structure-v3-ai-feedback-loop-v1"
     )
@@ -551,27 +516,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["fib_family_endpoint_dependency"] == (
         "fib-family-endpoint-dependency-v1"
     )
-    assert state["contracts"]["fib_family_consensus"] == (
-        "fib-family-consensus-v1"
-    )
+    assert state["contracts"]["fib_family_consensus"] == ("fib-family-consensus-v1")
     assert state["contracts"]["family_consensus_membership_audit"] == (
         "family-consensus-membership-audit-v1"
     )
     assert state["contracts"]["price_structure_v3_ambiguity_set"] == (
         "price-structure-v3-ambiguity-set-v1"
     )
-    assert state["contracts"]["family_filtered_confluence"] == (
-        "family-filtered-confluence-v1"
-    )
-    bounded_quality = state[
-        "kr_market_digest_us_entity_specific_synthesis_bounded_repair"
-    ]
-    assert bounded_quality["instruction_commit"] == (
-        "8cf5226ca0c5ae5553fb06b24399462ea3cf6088"
-    )
-    assert bounded_quality["implementation_commit"] == (
-        "f2326c39485e600bca2cee15747deeb8465c5c8a"
-    )
+    assert state["contracts"]["family_filtered_confluence"] == ("family-filtered-confluence-v1")
+    bounded_quality = state["kr_market_digest_us_entity_specific_synthesis_bounded_repair"]
+    assert bounded_quality["instruction_commit"] == ("8cf5226ca0c5ae5553fb06b24399462ea3cf6088")
+    assert bounded_quality["implementation_commit"] == ("f2326c39485e600bca2cee15747deeb8465c5c8a")
     assert bounded_quality["kr_domestic_context_rich"] is True
     assert bounded_quality["kr_market_digest_local_first"] == "pass"
     assert bounded_quality["kr_replay"] == "pass_8_of_8"
@@ -585,12 +540,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert bounded_quality["open_p0"] == []
     assert bounded_quality["open_material_p1"] == []
     fibonacci_anchor = state["fibonacci_variable_ai_anchor_p1_closure"]
-    assert fibonacci_anchor["instruction_commit"] == (
-        "d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890"
-    )
-    assert fibonacci_anchor["implementation_commit"] == (
-        "9ac9a3cf2f6c759fa73ba5cbee6ab55c08ee1901"
-    )
+    assert fibonacci_anchor["instruction_commit"] == ("d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890")
+    assert fibonacci_anchor["implementation_commit"] == ("9ac9a3cf2f6c759fa73ba5cbee6ab55c08ee1901")
     assert fibonacci_anchor["active_universe"] == 20
     assert fibonacci_anchor["benchmark_runs_per_packet"] == 5
     assert fibonacci_anchor["wider_universe_runs_per_packet"] == 3
@@ -612,9 +563,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert len(fibonacci_anchor["open_material_p1"]) == 2
     assert fibonacci_anchor["production_assist"] is False
     fibonacci_consensus = state["fibonacci_anchor_sr_consensus_final_p1_closure"]
-    assert fibonacci_consensus["instruction_commit"] == (
-        "39cab7ed8b1cb3bebea1bd1240498caa454bd09a"
-    )
+    assert fibonacci_consensus["instruction_commit"] == ("39cab7ed8b1cb3bebea1bd1240498caa454bd09a")
     assert fibonacci_consensus["implementation_commit"] == prior_fibonacci_commit
     assert fibonacci_consensus["active_universe"] == 20
     assert fibonacci_consensus["benchmark_runs_per_packet"] == 5
@@ -646,14 +595,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert fibonacci_consensus["production_assist"] is False
     price_structure_v3 = state["price_structure_wave_fibonacci_v3"]
     assert price_structure_v3["status"] == "integrated_ready_not_armed"
-    assert price_structure_v3["instruction_commit"] == (
-        "b0f81c8e16f588e314f93eb6097370e85f285241"
-    )
+    assert price_structure_v3["instruction_commit"] == ("b0f81c8e16f588e314f93eb6097370e85f285241")
     assert price_structure_v3["implementation_commit"] == prior_price_structure_commit
     assert price_structure_v3["implementation_github_actions_run"] == 32945710995
-    assert price_structure_v3["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert price_structure_v3["implementation_github_actions_status"] == ("passed_test_and_lint")
     assert price_structure_v3["active_universe"] == 20
     assert price_structure_v3["coverage"]["daily"] == {"pass": 14, "partial": 6}
     assert price_structure_v3["coverage"]["weekly"] == {
@@ -675,27 +620,20 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert price_structure_v3["ai_semantic_rejections"] == 0
     assert price_structure_v3["family_consensus_gates"]["dependency_mismatch"] == 0
     assert price_structure_v3["family_consensus_gates"]["tolerance_widening"] == 0
-    assert price_structure_v3["family_consensus_gates"][
-        "unstable_source_in_confluence"
-    ] == 0
-    assert price_structure_v3["sk_hynix_family_consensus"][
-        "full_hypothesis_stability"
-    ] == "MATERIAL_VARIATION"
-    assert price_structure_v3["sk_hynix_family_consensus"][
-        "family_level_price_structure"
-    ] == "PASS"
+    assert price_structure_v3["family_consensus_gates"]["unstable_source_in_confluence"] == 0
+    assert (
+        price_structure_v3["sk_hynix_family_consensus"]["full_hypothesis_stability"]
+        == "MATERIAL_VARIATION"
+    )
+    assert price_structure_v3["sk_hynix_family_consensus"]["family_level_price_structure"] == "PASS"
     assert price_structure_v3["true_conflict_controls"] == {
         "TSLA": "PASS_ZERO_SAFE_FAMILIES",
         "TSM_W3_DEPENDENCY": "PASS",
     }
     assert price_structure_v3["selected_but_not_fed_to_engine"] == 0
     assert price_structure_v3["unstable_fibonacci_user_visible_eligible"] == 0
-    assert price_structure_v3["sk_hynix_reference"] == (
-        "REFERENCE_MATCH_FAMILY_LEVEL_SAFE_SUBSET"
-    )
-    assert price_structure_v3["price_structure_wave_fib_v3"] == (
-        "INTEGRATED_READY_NOT_ARMED"
-    )
+    assert price_structure_v3["sk_hynix_reference"] == ("REFERENCE_MATCH_FAMILY_LEVEL_SAFE_SUBSET")
+    assert price_structure_v3["price_structure_wave_fib_v3"] == ("INTEGRATED_READY_NOT_ARMED")
     assert price_structure_v3["price_structure_v3_family_consensus"] == (
         "INTEGRATED_READY_NOT_ARMED"
     )
@@ -705,13 +643,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert price_structure_v3["current_user_visible_message_diff"] == 0
     assert price_structure_v3["production_assist"] is False
     preenablement = state["price_structure_v3_preenablement_micro_repair"]
-    assert preenablement["instruction_commit"] == (
-        "38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8"
-    )
+    assert preenablement["instruction_commit"] == ("38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8")
     assert preenablement["implementation_commit"] == preenablement_commit
-    assert preenablement["membership_contract"] == (
-        "family-consensus-membership-audit-v1"
-    )
+    assert preenablement["membership_contract"] == ("family-consensus-membership-audit-v1")
     assert preenablement["consensus_membership_semantics"] == "PASS"
     assert preenablement["unjustified_alternative_in_consensus"] == 0
     assert preenablement["previous_stable_baseline_count"] == 7
@@ -736,12 +670,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert preenablement["current_user_visible_message_diff"] == 0
     assert preenablement["production_assist"] is False
     sr_completeness = state["price_structure_v3_sr_completeness_proximity_repair"]
-    assert sr_completeness["instruction_commit"] == (
-        "7267ca1d3e518d39986941bfda1d6447560db344"
-    )
-    assert sr_completeness["implementation_commit"] == (
-        "176f3e73eb097fac99f4038a8987b610954804cc"
-    )
+    assert sr_completeness["instruction_commit"] == ("7267ca1d3e518d39986941bfda1d6447560db344")
+    assert sr_completeness["implementation_commit"] == ("176f3e73eb097fac99f4038a8987b610954804cc")
     assert sr_completeness["contracts"] == {
         "base_layer": "deterministic-sr-base-layer-v1",
         "proximity_relevance": "sr-proximity-relevance-gate-v1",
@@ -808,12 +738,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert advancement["phase_9_1e_1_inventory_only_rollout_ready"] is True
     assert advancement["phase_9_1e_1_operating_enabled"] is True
     assert advancement["phase_9_1e_1_user_visible_mode"] == "SELECTIVE_INVENTORY"
-    assert advancement["phase_9_1e_1_inventory_user_visible"] == (
-        "ENABLED_PENDING_NATURAL"
-    )
-    assert advancement["phase_9_1e_1_trade_ar_user_visible"] == (
-        "OFF_PENDING_NATURAL_PROOF"
-    )
+    assert advancement["phase_9_1e_1_inventory_user_visible"] == ("ENABLED_PENDING_NATURAL")
+    assert advancement["phase_9_1e_1_trade_ar_user_visible"] == ("OFF_PENDING_NATURAL_PROOF")
     assert advancement["next_major_architecture_ready"] is False
     producer_repair = state["kr_non_trading_day_producer_repair"]
     assert producer_repair["status"] == "deployed_pending_natural"
@@ -829,24 +755,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     macro_temporal = state["macro_digest_temporal_repair"]
     assert macro_temporal["status"] == "deployed_pending_natural"
     assert macro_temporal["root_cause_branch"] == "B"
-    assert macro_temporal["instruction_commit"] == (
-        "951558c0ec79f84b739eff1cbafd2870eb6f3fba"
-    )
-    assert macro_temporal["implementation_commit"] == (
-        "68a6c39a098380d8a22de5b4d784c730818e9b04"
-    )
+    assert macro_temporal["instruction_commit"] == ("951558c0ec79f84b739eff1cbafd2870eb6f3fba")
+    assert macro_temporal["implementation_commit"] == ("68a6c39a098380d8a22de5b4d784c730818e9b04")
     assert macro_temporal["false_today_claims_after"] == 0
     assert macro_temporal["open_p0"] == 0
     assert macro_temporal["open_material_p1"] == 0
     shadow_gate = state["kr_shadow_gate_packet_repair"]
     assert shadow_gate["status"] == "deployed_pending_natural"
     assert shadow_gate["root_cause_branch"] == "C"
-    assert shadow_gate["instruction_commit"] == (
-        "7da8d8866a9b7aafc8c010424cdbc4192de46cbb"
-    )
-    assert shadow_gate["implementation_commit"] == (
-        "64086c4af7735dcbe2fd3f5093f4167952a280e0"
-    )
+    assert shadow_gate["instruction_commit"] == ("7da8d8866a9b7aafc8c010424cdbc4192de46cbb")
+    assert shadow_gate["implementation_commit"] == ("64086c4af7735dcbe2fd3f5093f4167952a280e0")
     assert shadow_gate["source_run_id"] == 36
     assert shadow_gate["source_analysis"] == "7_of_7"
     assert shadow_gate["replay_packet_count"] == 1
@@ -867,12 +785,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert common_ai_core["canary_runtime_quality"] == "passed"
     assert common_ai_core["production_assist"] is False
     assert common_ai_core["free_analyst_adaptive_enabled"] is True
-    assert common_ai_core["free_analyst_adaptive_mode"] == (
-        "free_analyst_adaptive_canary"
-    )
-    assert common_ai_core["free_analyst_adaptive_canary"] == (
-        "enabled_pending_natural"
-    )
+    assert common_ai_core["free_analyst_adaptive_mode"] == ("free_analyst_adaptive_canary")
+    assert common_ai_core["free_analyst_adaptive_canary"] == ("enabled_pending_natural")
     assert common_ai_core["free_analyst_adaptive_full"] == "off"
     assert common_ai_core["kr_canary_natural"] == "not_observed"
     assert common_ai_core["us_canary_natural"] == "not_observed"
@@ -882,9 +796,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     structured_quality = state["structured_data_quality_v2"]
     assert structured_quality["kr_structured_acquisition"] == "PARTIAL"
     assert structured_quality["us_structured_acquisition"] == "PARTIAL"
-    assert structured_quality["kr_structured_context_value_add"] == (
-        "NO_MATERIAL_VALUE"
-    )
+    assert structured_quality["kr_structured_context_value_add"] == ("NO_MATERIAL_VALUE")
     assert structured_quality["us_structured_context_value_add"] == "PASS"
     assert structured_quality["common_message_quality_v2"] == "PASS"
     assert structured_quality["production_ready"] == "YES"
@@ -900,9 +812,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert market_adapter["production_research_connector"] == "NOT_AVAILABLE"
     assert market_adapter["open_research_live_canary"] == "BLOCKED_CONNECTOR"
     assert market_adapter["open_research_production_integration"] == 0
-    assert market_adapter["structured_adapter_production"] == (
-        "DEPLOYED_PENDING_NATURAL"
-    )
+    assert market_adapter["structured_adapter_production"] == ("DEPLOYED_PENDING_NATURAL")
     assert market_adapter["open_p0"] == []
     assert market_adapter["open_material_p1"] == []
     phase_90a = state["phase_9_0a_cash_flow_capital_efficiency"]
@@ -1034,9 +944,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert phase_91e["phase_9_1e_preintegration_ready"] is True
     phase_91e1 = state["phase_9_1e_1_inventory_only_user_visible_enablement"]
     assert phase_91e1["status"] == "deployed_inventory_only_pending_natural"
-    assert phase_91e1["work_instruction_commit"] == (
-        "880e7a9834439971f53b8a7bc0712d0ece26854d"
-    )
+    assert phase_91e1["work_instruction_commit"] == ("880e7a9834439971f53b8a7bc0712d0ece26854d")
     assert phase_91e1["inventory_natural_proof"] == "LIVE_PASS_RUN32"
     assert phase_91e1["trade_ar_natural_proof"] == "NOT_OBSERVED"
     assert phase_91e1["inventory_selected"] == 3
@@ -1085,22 +993,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     master = state["master_market_validation_price_structure_rollout"]
     assert master["status"] == "natural_us_reproof_pending_kr_live_pass"
-    assert master["instruction_commit"] == (
-        "e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d"
-    )
+    assert master["instruction_commit"] == ("e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d")
     assert master["integration_code_commit"] == implementation_commit
     assert master["track_a"]["status"] == "replay_pass_natural_reproof_pending"
     assert master["track_a"]["natural_run_id"] == 41
-    assert master["track_a"]["natural_packet"] == (
-        "2026-08-27-us-run-41-ae4f42c23abc"
-    )
+    assert master["track_a"]["natural_packet"] == ("2026-08-27-us-run-41-ae4f42c23abc")
     assert master["track_a"]["open_material_p1"] == []
     assert master["track_b"]["status"] == "live_pass_run42"
     assert master["track_b"]["natural_run_id"] == 42
     assert master["track_b"]["target_session"] == "2026-08-27"
-    assert master["track_b"]["natural_packet"] == (
-        "2026-08-27-kr-run-42-5d8d23e6fbd6"
-    )
+    assert master["track_b"]["natural_packet"] == ("2026-08-27-kr-run-42-5d8d23e6fbd6")
     assert master["track_b"]["natural_route"] == "ai_assisted"
     assert master["track_b"]["natural_reproof"] == "PASS"
     assert master["track_b"]["open_material_p1"] == []
@@ -1115,9 +1017,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert master["production_assist"] is False
     bounded_repair = state["kr_bounded_local_first_numeric_registry_repair"]
     assert bounded_repair["status"] == "live_pass_run42"
-    assert bounded_repair["instruction_commit"] == (
-        "f6ba660048d3fa520e3aeb43d04036c119764292"
-    )
+    assert bounded_repair["instruction_commit"] == ("f6ba660048d3fa520e3aeb43d04036c119764292")
     assert bounded_repair["integration_code_commit"] == kr_integration_commit
     assert bounded_repair["numeric_paths"] == {
         "total": 1989,
@@ -1157,12 +1057,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert us_repair["next_action"] == "WAIT_FOR_NEXT_NATURAL_US_MORNING"
     kr_natural = state["kr_afternoon_natural_market_data_reproof"]
     assert kr_natural["status"] == "live_pass"
-    assert kr_natural["instruction_commit"] == (
-        "107f40b0b6b7e794f420534e71b69af0c969e643"
-    )
-    assert kr_natural["producer_operating_sha"] == (
-        "a1fb1a7006109f8699e03997662bde27db5ad464"
-    )
+    assert kr_natural["instruction_commit"] == ("107f40b0b6b7e794f420534e71b69af0c969e643")
+    assert kr_natural["producer_operating_sha"] == ("a1fb1a7006109f8699e03997662bde27db5ad464")
     assert kr_natural["natural_run_id"] == 42
     assert kr_natural["target_session"] == "2026-08-27"
     assert kr_natural["packet_id"] == "2026-08-27-kr-run-42-5d8d23e6fbd6"
@@ -1176,9 +1072,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_natural["open_material_p1"] == []
     kr_size_sector = state["kr_size_sector_message_selection_bounded_repair"]
     assert kr_size_sector["status"] == "live_pass_run_now"
-    assert kr_size_sector["instruction_commit"] == (
-        "794c6f5d956d0928eac0113d658fede58b1266dc"
-    )
+    assert kr_size_sector["instruction_commit"] == ("794c6f5d956d0928eac0113d658fede58b1266dc")
     assert kr_size_sector["implementation_commit"] == kr_size_sector_implementation
     assert kr_size_sector["historical_message_new_policy"] == "FAIL_AS_EXPECTED"
     assert kr_size_sector["repaired_ai_utilization"] == "PASS"
@@ -1189,15 +1083,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert kr_size_sector["material_information_loss"] == 0
     assert kr_size_sector["open_p0"] == []
     assert kr_size_sector["open_material_p1"] == []
-    assert kr_size_sector["natural_kr_reproof"] == (
-        "LIVE_PASS_PACKET_E4CF532E619B"
-    )
+    assert kr_size_sector["natural_kr_reproof"] == ("LIVE_PASS_PACKET_E4CF532E619B")
     assert kr_size_sector["next_action"] == "CLOSED_BY_RUN_NOW_LIVE_PROOF"
     preenable = state["kr_market_preenable_test_send_and_bounded_enablement"]
     assert preenable["status"] == "blocked_no_safe_test_sink"
-    assert preenable["instruction_commit"] == (
-        "f161bc1c724cfd431efaaa458af61e02a378daeb"
-    )
+    assert preenable["instruction_commit"] == ("f161bc1c724cfd431efaaa458af61e02a378daeb")
     assert preenable["implementation_commit"] == preenable_implementation
     assert preenable["data_collection"] == "PASS_STORED_PRODUCTION_PACKET_42_OF_42"
     assert preenable["numeric_gate"] == "PASS"
@@ -1209,14 +1099,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert preenable["runtime_gate_type"] == "ALREADY_ACTIVE_BY_CODE_DEFAULT"
     assert preenable["enablement_action"] == "DO_NOT_ENABLE"
     assert preenable["open_p0"] == []
-    assert preenable["open_material_p1"] == [
-        "dedicated_test_sink_not_configured"
-    ]
+    assert preenable["open_material_p1"] == ["dedicated_test_sink_not_configured"]
     rollout = state["kr_top3_sector_price_structure_selective_preenablement"]
     assert rollout["status"] == "blocked_no_safe_test_sink"
-    assert rollout["instruction_commit"] == (
-        "0c95ddc9be319dbacc5ce1d824802e0c3c72fed1"
-    )
+    assert rollout["instruction_commit"] == ("0c95ddc9be319dbacc5ce1d824802e0c3c72fed1")
     assert rollout["implementation_commit"] == top3_implementation
     assert rollout["implementation_github_actions_run"] == 33071858051
     assert rollout["track_a"] == "implemented_default_off"
@@ -1231,65 +1117,39 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert rollout["us_price_structure_enabled"] is False
     assert rollout["runtime_user_visible_diff"] == 0
     assert rollout["open_p0"] == []
-    assert rollout["open_material_p1"] == [
-        "dedicated_test_sink_not_configured"
-    ]
-    price_structure_repair = state[
-        "kr_price_structure_daily_history_nearest_repair"
-    ]
-    assert price_structure_repair["status"] == (
-        "replay_pass_ready_for_preenable"
-    )
+    assert rollout["open_material_p1"] == ["dedicated_test_sink_not_configured"]
+    price_structure_repair = state["kr_price_structure_daily_history_nearest_repair"]
+    assert price_structure_repair["status"] == ("replay_pass_ready_for_preenable")
     assert price_structure_repair["instruction_commit"] == (
         "0a8dae7eeca7126844094f0aebcc7a7df0bea606"
     )
-    assert price_structure_repair["track_a_commit"] == (
-        "da82d89c2e1c3bc125442128da1573d532263d74"
-    )
-    assert price_structure_repair["track_b_commit"] == (
-        "83f3d643bc2cb40d9039c1d965647d01a43769e2"
-    )
+    assert price_structure_repair["track_a_commit"] == ("da82d89c2e1c3bc125442128da1573d532263d74")
+    assert price_structure_repair["track_b_commit"] == ("83f3d643bc2cb40d9039c1d965647d01a43769e2")
     assert price_structure_repair["integration_code_commit"] == (
         price_structure_repair_implementation
     )
     assert price_structure_repair["implementation_github_actions_status"] == (
         "passed_test_and_lint"
     )
-    assert price_structure_repair["daily_zero_root_cause"] == (
-        "provider_parameter_bug"
-    )
+    assert price_structure_repair["daily_zero_root_cause"] == ("provider_parameter_bug")
     assert price_structure_repair["daily_subjects_partial_provider_limit"] == 7
     assert price_structure_repair["synthetic_daily_bars"] == 0
-    assert price_structure_repair["old_000660_render_new_validator"] == (
-        "fail_as_expected"
-    )
+    assert price_structure_repair["old_000660_render_new_validator"] == ("fail_as_expected")
     assert price_structure_repair["current_validator_errors"] == 0
     assert price_structure_repair["open_p0"] == []
     assert price_structure_repair["open_material_p1"] == []
-    assert price_structure_repair["kr_price_structure"] == (
-        "INTEGRATED_READY_NOT_ARMED"
-    )
+    assert price_structure_repair["kr_price_structure"] == ("INTEGRATED_READY_NOT_ARMED")
     assert price_structure_repair["runtime_enablement"] is False
     assert price_structure_repair["test_send"] is False
     daily_1200 = state["kr_price_structure_daily_1200_extension_or_degradation"]
     assert daily_1200["status"] == "replay_pass_ready_for_preenable"
-    assert daily_1200["instruction_commit"] == (
-        "3e42f3fad2e32ff1b3cca47861cfb9704095ce28"
-    )
-    assert daily_1200["track_a_commit"] == (
-        "c9e8fc1e25394857bd88d4652e3a8b1e88638011"
-    )
-    assert daily_1200["track_b_commit"] == (
-        "d60b7b2a9edecbad0ed54c2151ecfba163478522"
-    )
+    assert daily_1200["instruction_commit"] == ("3e42f3fad2e32ff1b3cca47861cfb9704095ce28")
+    assert daily_1200["track_a_commit"] == ("c9e8fc1e25394857bd88d4652e3a8b1e88638011")
+    assert daily_1200["track_b_commit"] == ("d60b7b2a9edecbad0ed54c2151ecfba163478522")
     assert daily_1200["integration_code_commit"] == daily_1200_implementation
     assert daily_1200["implementation_github_actions_run"] == 33081793581
-    assert daily_1200["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
-    assert daily_1200["provider_capability"] == (
-        "PROVIDER_HARD_LIMIT_NO_OLDER_WINDOW"
-    )
+    assert daily_1200["implementation_github_actions_status"] == ("passed_test_and_lint")
+    assert daily_1200["provider_capability"] == ("PROVIDER_HARD_LIMIT_NO_OLDER_WINDOW")
     assert daily_1200["implementation_path"] == "VERIFIED_PARTIAL_SAFE_1000"
     assert daily_1200["daily_canonical_target"] == 1200
     assert daily_1200["daily_provider_request_limit"] == 1000
@@ -1301,16 +1161,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert daily_1200["operating_promotion"] is False
     final_preenable = state["kr_top3_price_structure_final_preenable_and_enable"]
     assert final_preenable["status"] == "blocked_no_test_sink"
-    assert final_preenable["instruction_commit"] == (
-        "9f37cfad97487876d6dfa63c03750f4dab664dbf"
-    )
-    assert final_preenable["track_a_commit"] == (
-        "05b57901f7cf25086b580510aac6a6e72329cdfc"
-    )
+    assert final_preenable["instruction_commit"] == ("9f37cfad97487876d6dfa63c03750f4dab664dbf")
+    assert final_preenable["track_a_commit"] == ("05b57901f7cf25086b580510aac6a6e72329cdfc")
     assert final_preenable["track_a_github_actions_run"] == 33085141564
-    assert final_preenable["track_a_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert final_preenable["track_a_github_actions_status"] == ("passed_test_and_lint")
     assert final_preenable["track_a"] == "BLOCKED_NO_TEST_SINK"
     assert final_preenable["track_b"] == "NOT_RUN_TRACK_A_BLOCKED"
     assert final_preenable["track_c"] == "NOT_RUN_TRACK_A_BLOCKED"
@@ -1321,22 +1175,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert final_preenable["kr_price_structure_enabled"] is False
     assert final_preenable["us_price_structure_enabled"] is False
     assert final_preenable["open_p0"] == []
-    assert final_preenable["open_material_p1"] == [
-        "dedicated_test_sink_not_configured"
-    ]
+    assert final_preenable["open_material_p1"] == ["dedicated_test_sink_not_configured"]
     assert final_preenable["kr_rollout"] == "NOT_ENABLED"
     resume = state["kr_test_sink_configuration_and_final_preenable_resume"]
     assert resume["status"] == "enabled_live_pass"
-    assert resume["instruction_commit"] == (
-        "68ede1eae42315d94a89023fbc6c1f9be07fc99d"
-    )
-    assert resume["implementation_commit"] == (
-        "315081005198e7b5676e9383f10d4a52b3d3ca34"
-    )
+    assert resume["instruction_commit"] == ("68ede1eae42315d94a89023fbc6c1f9be07fc99d")
+    assert resume["implementation_commit"] == ("315081005198e7b5676e9383f10d4a52b3d3ca34")
     assert resume["implementation_github_actions_run"] == 33094185080
-    assert resume["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert resume["implementation_github_actions_status"] == ("passed_test_and_lint")
     assert resume["test_sink_available"] is True
     assert resume["test_production_sink_collision"] == 0
     assert resume["test_production_intent_collision"] == 0
@@ -1353,16 +1199,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert resume["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     formatting = state["kr_market_internal_linebreak_formatting_micro_repair"]
     assert formatting["status"] == "live_pass"
-    assert formatting["instruction_commit"] == (
-        "dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a"
-    )
-    assert formatting["implementation_commit"] == (
-        "03a418ab1f616d0063becf3928a1327056dd2d66"
-    )
+    assert formatting["instruction_commit"] == ("dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a")
+    assert formatting["implementation_commit"] == ("03a418ab1f616d0063becf3928a1327056dd2d66")
     assert formatting["implementation_github_actions_run"] == 33099146372
-    assert formatting["implementation_github_actions_status"] == (
-        "passed_test_and_lint"
-    )
+    assert formatting["implementation_github_actions_status"] == ("passed_test_and_lint")
     assert formatting["test_market_message_count"] == 1
     assert formatting["test_stock_message_count"] == 0
     assert formatting["test_exact_payload_match"] == "PASS_1_OF_1"
@@ -1379,17 +1219,11 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == (
-        "cd829ff8009759af7f5c73e487e43c06dc4b1a9c"
-    )
+    assert state["current_commit"] == ("930952132077e8403bcec1a7e2c52d5732d8521a")
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
-    assert reality_gate["instruction_commit"] == (
-        "4a5702823da3f950b9f125bcbcfecd7c6cfa84df"
-    )
-    assert reality_gate["implementation_commit"] == (
-        "c5f1fbcb9c952c2d14ad0b178a9b33351d15b512"
-    )
+    assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")
+    assert reality_gate["implementation_commit"] == ("c5f1fbcb9c952c2d14ad0b178a9b33351d15b512")
     assert reality_gate["same_raw_replay"] == "PASS_20_OF_20"
     assert reality_gate["dynamic_only_major_before"] == 18
     assert reality_gate["dynamic_only_major_after"] == 0
@@ -1454,12 +1288,7 @@ def test_kr_afternoon_run42_natural_reproof_artifacts_are_closed() -> None:
         assert (ROOT / "docs" / "reports" / f"{prefix}{suffix}").exists()
 
     readiness = json.loads(
-        (
-            ROOT
-            / "docs"
-            / "reports"
-            / f"{prefix}natural-reproof-readiness.json"
-        ).read_text()
+        (ROOT / "docs" / "reports" / f"{prefix}natural-reproof-readiness.json").read_text()
     )
     gates = readiness["gates"]
     assert readiness["natural_run_id"] == 42
@@ -1489,12 +1318,7 @@ def test_kr_afternoon_run42_natural_reproof_artifacts_are_closed() -> None:
     assert readiness["price_structure_track_c"] == "DO_NOT_START"
 
     matrix = json.loads(
-        (
-            ROOT
-            / "docs"
-            / "reports"
-            / f"{prefix}data-completeness-matrix.json"
-        ).read_text()
+        (ROOT / "docs" / "reports" / f"{prefix}data-completeness-matrix.json").read_text()
     )
     assert matrix["target_session"] == "2026-08-27"
     assert len(matrix["rows"]) == 19
@@ -1522,12 +1346,7 @@ def test_kr_size_sector_message_selection_replay_artifacts_are_closed() -> None:
         assert (ROOT / "docs" / "reports" / f"{prefix}{suffix}").exists()
 
     readiness = json.loads(
-        (
-            ROOT
-            / "docs"
-            / "reports"
-            / f"{prefix}size-sector-repair-readiness.json"
-        ).read_text()
+        (ROOT / "docs" / "reports" / f"{prefix}size-sector-repair-readiness.json").read_text()
     )
     gates = readiness["gates"]
     assert readiness["packet_id"] == "2026-08-27-kr-run-42-5d8d23e6fbd6"
@@ -1538,9 +1357,7 @@ def test_kr_size_sector_message_selection_replay_artifacts_are_closed() -> None:
     assert gates["SECTOR_EXTREMES_AVAILABLE_BUT_OMITTED"] == 0
     assert gates["UNREGISTERED_SIZE_SECTOR_NUMERIC"] == 0
     assert gates["CODE_CORRECTNESS"] == "PASS"
-    assert gates["KR_SIZE_SECTOR_MESSAGE_REPAIR"] == (
-        "REPLAY_PASS_NATURAL_REPROOF_PENDING"
-    )
+    assert gates["KR_SIZE_SECTOR_MESSAGE_REPAIR"] == ("REPLAY_PASS_NATURAL_REPROOF_PENDING")
     assert readiness["open_p0"] == []
     assert readiness["open_material_p1"] == []
     assert readiness["natural_kr_reproof"] == "PENDING"
@@ -1689,9 +1506,7 @@ def test_fail_closed_kr_preenable_artifacts_are_complete() -> None:
     provenance = (reports / "20260827-kr-preenable-numeric-provenance.md").read_text()
     assert provenance.count("market:cross-section:sector:") == 10
 
-    evidence = json.loads(
-        (reports / "20260827-kr-preenable-gate-matrix.json").read_text()
-    )
+    evidence = json.loads((reports / "20260827-kr-preenable-gate-matrix.json").read_text())
     gates = evidence["gates"]
     assert gates["PREENABLE_DATA_COLLECTION"] == "PASS"
     assert gates["NUMERIC_GATE"] == "PASS"
@@ -1703,9 +1518,7 @@ def test_fail_closed_kr_preenable_artifacts_are_complete() -> None:
     assert gates["ENABLEMENT_ACTION"] == "DO_NOT_ENABLE"
     assert gates["PRICE_STRUCTURE_RUNTIME_ARMED"] == 0
     assert evidence["open_p0"] == []
-    assert evidence["open_material_p1"] == [
-        "dedicated_test_sink_not_configured"
-    ]
+    assert evidence["open_material_p1"] == ["dedicated_test_sink_not_configured"]
 
 
 def test_kr_top3_price_structure_preenablement_artifacts_are_complete() -> None:
@@ -1737,9 +1550,7 @@ def test_kr_top3_price_structure_preenablement_artifacts_are_complete() -> None:
     )
     assert all((reports / name).exists() for name in (*markdown, *machine_readable))
 
-    evidence = json.loads(
-        (reports / "20260827-kr-rollout-gate-matrix.json").read_text()
-    )
+    evidence = json.loads((reports / "20260827-kr-rollout-gate-matrix.json").read_text())
     gates = evidence["gates"]
     assert gates["KR_TOP3_SECTOR_POLICY"] == "PASS"
     assert gates["SELECTIVE_ELIGIBILITY_ROUTING"] == "PASS"
@@ -1749,9 +1560,7 @@ def test_kr_top3_price_structure_preenablement_artifacts_are_complete() -> None:
     assert gates["KR_PRICE_STRUCTURE_ENABLEMENT"] == "DO_NOT_ENABLE"
     assert gates["US_PRICE_STRUCTURE_ENABLED"] == 0
     assert evidence["open_p0"] == []
-    assert evidence["open_material_p1"] == [
-        "dedicated_test_sink_not_configured"
-    ]
+    assert evidence["open_material_p1"] == ["dedicated_test_sink_not_configured"]
 
 
 def test_us_market_and_price_structure_rollout_artifacts_are_complete() -> None:
@@ -1799,9 +1608,7 @@ def test_us_market_and_price_structure_rollout_artifacts_are_complete() -> None:
     )
     assert all((reports / name).exists() for name in (*market, *price))
 
-    market_ready = json.loads(
-        (reports / "20260828-us-full-message-readiness.json").read_text()
-    )
+    market_ready = json.loads((reports / "20260828-us-full-message-readiness.json").read_text())
     assert market_ready["state"] == "DEPLOYED_AWAITING_NATURAL_PROOF"
     assert market_ready["test_delivery"] == "PASS_1_OF_1"
     assert market_ready["open_p0"] == []

@@ -2008,3 +2008,24 @@ linearly, API health and the post-deploy ownership smoke pass, and state is
 `DEPLOYED_AWAITING_NATURAL_PROOF`. Wait for the next natural US run and inspect AI routing, exact
 delivery, and the canonical night-futures section or safe omission read-only. Do not manually
 trigger a Scheduled Task or send a production Telegram message.
+
+### 40.25 Decision Calibration P1 Repair Before Canary
+
+Exact instruction commit `5ccc8aadc29644295164b612de163bbf06fbcf76` precedes taxonomy,
+timing/confidence, decision-change-condition, and adjudication implementation through
+`930952132077e8403bcec1a7e2c52d5732d8521a`. The same 20 canonical evidence packets were rerun
+blind with signed-in Codex CLI `gpt-5.6-sol / xhigh`; no web facts, future evidence, score, class
+target, or ticker outcome exception entered the pass.
+
+Nine material comparisons were adjudicated. Final distribution is BUY `0`, HOLD `17`, SELL `3`.
+RXRX, TSLA, and WULF remain SELL. HUT resolves to `HOLD / OPTIONALITY_OFFSETS_DOWNSIDE / LOW /
+UNFAVORABLE`; CRCL remains `HOLD / LOW / INSUFFICIENT`. All six timing and three confidence cases
+are closed, all 20 decisions own asymmetric evidence-linked upgrade/downgrade conditions, numeric
+binding is `60/60`, and repeated substantive spans are zero.
+
+An independent xhigh portfolio audit sets HOLD-default and SELL-suppression bias to `NONE` and all
+calibration/semantic gates to PASS. The dedicated non-production sink received the final set
+`20/20 exact` through an owned `17 + 3` rate-limit continuation, with zero duplicate, orphan,
+production-recipient send, or production delivery intent. Open P0/material P1 is `0/0` and
+`DECISION_CANARY_READINESS=PASS`, but production canary remains OFF. A separate bounded canary
+instruction is required before any runtime exposure.

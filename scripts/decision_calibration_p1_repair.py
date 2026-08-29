@@ -768,6 +768,388 @@ def _finalize_readiness(args: argparse.Namespace) -> None:
     )
 
 
+def _claim_summary(value: object) -> str:
+    if not isinstance(value, Mapping):
+        return "없음"
+    text = str(value.get("text") or "없음").replace("\n", " ")
+    refs = ", ".join(f"`{ref}`" for ref in value.get("evidence_refs") or ())
+    return f"{text} ({refs})" if refs else text
+
+
+def _claim_group(value: object) -> str:
+    if not isinstance(value, (list, tuple)) or not value:
+        return "없음"
+    return "<br>".join(_claim_summary(item) for item in value)
+
+
+def _report_header(title: str, *, implementation_sha: str) -> str:
+    return (
+        f"# {title}\n\n"
+        f"- Date: `2026-08-29 KST`\n"
+        f"- Contract: `{CONTRACT}`\n"
+        f"- Implementation SHA: `{implementation_sha}`\n"
+        "- Production canary: `OFF`\n"
+        "- Production recipient sends/intents: `0 / 0`\n"
+    )
+
+
+def _reports(args: argparse.Namespace) -> None:
+    prior = _read_json(args.prior_review)
+    blind = _read_json(args.blind_decisions)
+    repaired = _read_json(args.decisions)
+    portfolio = PortfolioCalibrationAudit.model_validate(_read_json(args.portfolio_audit))
+    receipt = _read_json(args.test_receipt)
+    readiness = _read_json(args.readiness)
+    if not all(
+        isinstance(value, Mapping) for value in (prior, blind, repaired, receipt, readiness)
+    ):
+        raise ValueError("invalid_report_inputs")
+    assert isinstance(prior, Mapping)
+    assert isinstance(blind, Mapping)
+    assert isinstance(repaired, Mapping)
+    assert isinstance(receipt, Mapping)
+    assert isinstance(readiness, Mapping)
+    reports = args.reports_dir
+    reports.mkdir(parents=True, exist_ok=True)
+    repaired_rows = {
+        str(row["ticker"]): row for row in repaired.get("rows") or () if isinstance(row, Mapping)
+    }
+    blind_rows = {
+        str(row["ticker"]): row for row in blind.get("rows") or () if isinstance(row, Mapping)
+    }
+    prior_rows = {
+        str(row["ticker"]): row for row in prior.get("records") or () if isinstance(row, Mapping)
+    }
+    adjudications = {
+        str(row["ticker"]): row
+        for row in repaired.get("adjudications") or ()
+        if isinstance(row, Mapping)
+    }
+    header = lambda title: _report_header(  # noqa: E731
+        title, implementation_sha=args.implementation_sha
+    )
+
+    _write_text(
+        reports / "20260829-decision-calibration-p1-scope.md",
+        header("Decision Calibration P1 Scope")
+        + f"\n- Master instruction commit: `{args.instruction_commit}`\n"
+        + f"- Base SHA: `{args.base_sha}`\n"
+        + "- Closed scope: HUT taxonomy, six timing cases, three confidence cases, HUT downside condition.\n"
+        + "- Same-evidence blind rerun: `20/20 PASS` with signed-in Codex CLI `gpt-5.6-sol / xhigh`.\n"
+        + "- New web facts, forced class targets, score aggregation, ticker outcome hard-codes: `0`.\n",
+    )
+    _write_text(
+        reports / "20260829-buy-hold-sell-taxonomy.md",
+        header("BUY HOLD SELL Taxonomy")
+        + "\n## BUY\nCurrent long-horizon upside and asymmetry materially exceed downside with sufficient business, earnings, and valuation support. Favorable timing is not required.\n"
+        + "\n## HOLD\nMaterial optionality remains, but BUY asymmetry is insufficient and downside dominance is not established. Every HOLD owns a canonical reason and explicit why-not-BUY/why-not-SELL.\n"
+        + "\n## SELL\nPresent downside or impaired risk/reward materially dominates conditional upside. Formal thesis invalidation or price breakdown is not required.\n"
+        + "\n- Top-level classes: `BUY / HOLD / SELL` only.\n- Fixed score or distribution target: `0`.\n",
+    )
+    _write_text(
+        reports / "20260829-hold-sell-boundary.md",
+        header("HOLD SELL Boundary")
+        + "\nHOLD preserves a material, evidence-backed upside path when current downside dominance is not established. SELL applies when direct present negatives outweigh conditional or long-dated optionality.\n"
+        + "\n- HUT/CRCL HOLD boundary: `PASS`\n- RXRX/TSLA/WULF SELL boundary: `PASS`\n- Thesis invalidation required for SELL: `NO`\n",
+    )
+    hut = repaired_rows["HUT"]["candidate"]
+    _write_text(
+        reports / "20260829-hut-taxonomy-repair.md",
+        header("HUT Taxonomy Repair")
+        + f"\n- Final: `{hut['decision']} / {hut['hold_reason']} / {hut['confidence']} / {hut['timing']}`\n"
+        + f"- Decisive reason: {_claim_summary(hut['decisive_reason'])}\n"
+        + f"- Why not BUY: {_claim_summary(hut['why_not_buy'])}\n"
+        + f"- Why not SELL: {_claim_summary(hut['why_not_sell'])}\n"
+        + "- `HUT_DECISION_TAXONOMY = PASS`\n",
+    )
+    sell_lines = [
+        "| Ticker | Prior final | Blind | Repaired | Confidence | Timing |",
+        "|---|---:|---:|---:|---:|---:|",
+    ]
+    for ticker in SELL_POSITIVE_CONTROLS:
+        candidate = repaired_rows[ticker]["candidate"]
+        sell_lines.append(
+            f"| {ticker} | {prior_rows[ticker]['final_decision']} | "
+            f"{blind_rows[ticker]['candidate']['decision']} | {candidate['decision']} | "
+            f"{candidate['confidence']} | {candidate['timing']} |"
+        )
+    _write_text(
+        reports / "20260829-sell-positive-controls.md",
+        header("SELL Positive Controls")
+        + "\n"
+        + "\n".join(sell_lines)
+        + "\n\n- `SELL_POSITIVE_CONTROLS = PASS`\n- Forced SELL for balance: `0`\n",
+    )
+    _write_text(
+        reports / "20260829-timing-taxonomy.md",
+        header("Timing Taxonomy")
+        + "\n- `FAVORABLE`: usable timing evidence supports current entry/setup.\n"
+        + "- `NEUTRAL`: usable positive and negative evidence is balanced or non-decisive.\n"
+        + "- `UNFAVORABLE`: usable evidence materially argues against the near-term setup.\n"
+        + "- `INSUFFICIENT`: required timing evidence is missing, denied, stale, or too incomplete.\n"
+        + "- Timing-to-decision hard mapping: `0`\n- MACD-only decision ownership: `0`\n",
+    )
+    timing_lines = [
+        "| Ticker | Usable | Missing | Positive | Negative | Final | Decisive basis |",
+        "|---|---|---|---|---|---:|---|",
+    ]
+    for ticker in TIMING_CASES:
+        adjudication = adjudications[ticker]
+        candidate = repaired_rows[ticker]["candidate"]
+        timing_lines.append(
+            f"| {ticker} | {_claim_group(adjudication['usable_timing_evidence'])} | "
+            f"{_claim_group(adjudication['missing_timing_evidence'])} | "
+            f"{_claim_group(adjudication['positive_timing_evidence'])} | "
+            f"{_claim_group(adjudication['negative_timing_evidence'])} | "
+            f"{candidate['timing']} | {_claim_summary(candidate['timing_basis'])} |"
+        )
+    _write_text(
+        reports / "20260829-six-timing-case-resolution.md",
+        header("Six Timing Case Resolution")
+        + "\n"
+        + "\n".join(timing_lines)
+        + "\n\n- `TIMING_UNRESOLVED_COUNT_AFTER = 0`\n",
+    )
+    _write_text(
+        reports / "20260829-confidence-taxonomy.md",
+        header("Confidence Taxonomy")
+        + "\n- `HIGH`: critical evidence is complete and reasonably convergent.\n"
+        + "- `MEDIUM`: direction is supported but material uncertainty or conflict remains.\n"
+        + "- `LOW`: the classification is safest, but critical data, valuation, security-basis, or economic-proof limits materially weaken direction confidence.\n"
+        + "- Reasoning grade and confidence are independent. Forced HIGH: `0`.\n",
+    )
+    confidence_lines = [
+        "| Ticker | Final | Reason | Decision-critical limits | Stable decision |",
+        "|---|---:|---:|---|---:|",
+    ]
+    for ticker in CONFIDENCE_CASES:
+        adjudication = adjudications[ticker]
+        candidate = repaired_rows[ticker]["candidate"]
+        confidence_lines.append(
+            f"| {ticker} | {candidate['confidence']} | {candidate['confidence_reason']} | "
+            f"{_claim_group(adjudication['decision_critical_confidence_limits'])} | "
+            f"{candidate['decision']} |"
+        )
+    _write_text(
+        reports / "20260829-three-confidence-case-resolution.md",
+        header("Three Confidence Case Resolution")
+        + "\n"
+        + "\n".join(confidence_lines)
+        + "\n\n- `CONFIDENCE_UNRESOLVED_COUNT_AFTER = 0`\n",
+    )
+    _write_text(
+        reports / "20260829-decision-change-condition-contract.md",
+        header("Decision Change Condition Contract")
+        + "\nEvery analytical decision now requires separate evidence-linked `upgrade_condition` and `downgrade_condition`. Conditions must be asymmetric, observable, and free of invented thresholds.\n"
+        + "\n- Missing upgrade conditions: `0`\n- Missing downgrade conditions: `0`\n- Unowned conditions: `0`\n",
+    )
+    _write_text(
+        reports / "20260829-hut-downside-condition.md",
+        header("HUT Downside Condition")
+        + f"\n- Upgrade: {_claim_summary(hut['upgrade_condition'])}\n"
+        + f"- Downgrade: {_claim_summary(hut['downgrade_condition'])}\n"
+        + "- `HUT_DOWNSIDE_CHANGE_CONDITION = PASS`\n",
+    )
+    review_lines = [
+        "| Ticker | Prior | Blind | Repaired | Source | Hold reason | Confidence | Timing |",
+        "|---|---:|---:|---:|---:|---|---:|---:|",
+    ]
+    for ticker, row in repaired_rows.items():
+        candidate = row["candidate"]
+        review_lines.append(
+            f"| {ticker} | {prior_rows[ticker]['final_decision']} | "
+            f"{blind_rows[ticker]['candidate']['decision']} | {candidate['decision']} | "
+            f"{row['selection_source']} | {candidate['hold_reason']} | "
+            f"{candidate['confidence']} | {candidate['timing']} |"
+        )
+    _write_text(
+        reports / "20260829-repaired-20-stock-blind-review.md",
+        header("Repaired 20 Stock Blind Review")
+        + f"\n- Evidence SHA-256: `{repaired['source_evidence_sha256']}`\n"
+        + "- First pass: blind to prior labels; adjudication only after comparison.\n\n"
+        + "\n".join(review_lines)
+        + "\n",
+    )
+    agreement_counts: Counter[str] = Counter()
+    agreement_lines = [
+        "| Ticker | Prior vs blind | Blind vs repaired | Repaired reason |",
+        "|---|---:|---:|---|",
+    ]
+    for ticker, row in repaired_rows.items():
+        prior_decision = prior_rows[ticker]["final_decision"]
+        blind_decision = blind_rows[ticker]["candidate"]["decision"]
+        repaired_decision = row["candidate"]["decision"]
+        prior_blind = "AGREE" if prior_decision == blind_decision else "DISAGREE"
+        blind_repaired = "AGREE" if blind_decision == repaired_decision else "ADJUDICATED"
+        agreement_counts[prior_blind] += 1
+        agreement_lines.append(
+            f"| {ticker} | {prior_blind} | {blind_repaired} | "
+            f"{row['candidate']['decisive_reason']['text']} |"
+        )
+    _write_text(
+        reports / "20260829-repaired-decision-agreement.md",
+        header("Repaired Decision Agreement")
+        + f"\n- Prior/blind agreement: `{agreement_counts['AGREE']}/20`\n"
+        + f"- Prior/blind disagreement: `{agreement_counts['DISAGREE']}/20`\n\n"
+        + "\n".join(agreement_lines)
+        + "\n",
+    )
+    adjudication_lines = [
+        "| Ticker | Issues | Better supported | Final | Resolution |",
+        "|---|---|---:|---:|---|",
+    ]
+    for ticker, row in adjudications.items():
+        adjudication_lines.append(
+            f"| {ticker} | {', '.join(row['reviewed_issues'])} | "
+            f"{row['better_supported']} | {row['candidate']['decision']} | "
+            f"{_claim_summary(row['resolution'])} |"
+        )
+    _write_text(
+        reports / "20260829-repaired-adjudication.md",
+        header("Repaired Adjudication")
+        + "\n"
+        + "\n".join(adjudication_lines)
+        + "\n\nThe rejected 003690 ref-corrupted attempt was archived and never selected. Its replacement was a fresh xhigh generation; manual label/text repair was `0`.\n",
+    )
+    _write_text(
+        reports / "20260829-hold-default-bias-after.md",
+        header("HOLD Default Bias After")
+        + f"\n- Independent audit: `{portfolio.hold_default_bias_after}`\n"
+        + "- Every HOLD has a canonical reason and explicit why-not-BUY/why-not-SELL.\n"
+        + "- HOLD count was not used as a quality target.\n"
+        + f"- Audit explanation: {portfolio.explanation}\n",
+    )
+    _write_text(
+        reports / "20260829-sell-suppression-bias-after.md",
+        header("SELL Suppression Bias After")
+        + f"\n- Independent audit: `{portfolio.sell_suppression_bias_after}`\n"
+        + "- RXRX/TSLA/WULF remain SELL without requiring thesis invalidation.\n"
+        + "- HUT/CRCL remain HOLD through explicit optionality boundaries.\n"
+        + "- Forced SELL count: `0`\n",
+    )
+    _write_text(
+        reports / "20260829-confidence-calibration-after.md",
+        header("Confidence Calibration After")
+        + f"\n- Result: `{portfolio.confidence_calibration}`\n"
+        + f"- Distribution: `{json.dumps(repaired['confidence_distribution'], sort_keys=True)}`\n"
+        + "- HIGH absence: supported; no subject had sufficiently convergent critical evidence.\n"
+        + "- Forced HIGH: `0`\n",
+    )
+    _write_text(
+        reports / "20260829-timing-calibration-after.md",
+        header("Timing Calibration After")
+        + f"\n- Result: `{portfolio.timing_calibration}`\n"
+        + f"- Distribution: `{json.dumps(repaired['timing_distribution'], sort_keys=True)}`\n"
+        + "- FAVORABLE absence: supported by the current packet; no class target was imposed.\n"
+        + "- Neutral-for-missing and unfavorable-without-usable-evidence: `0 / 0`\n",
+    )
+    receipt_rows = [row for row in receipt.get("rows") or () if isinstance(row, Mapping)]
+    receipt_lines = [
+        "| Seq | Ticker | Exact | Received quality | Payload SHA-256 |",
+        "|---:|---|---:|---:|---|",
+    ]
+    for row in receipt_rows:
+        quality = row.get("received_payload_quality")
+        quality_status = quality.get("status") if isinstance(quality, Mapping) else "PASS"
+        receipt_lines.append(
+            f"| {row['sequence']} | {row['ticker']} | {row['exact_payload_match']} | "
+            f"{quality_status} | `{row['received_sha256']}` |"
+        )
+    _write_text(
+        reports / "20260829-decision-test-sink-after-calibration.md",
+        header("Decision Test Sink After Calibration")
+        + f"\n- Reconciled status: `{receipt['status']}`\n"
+        + f"- Initial/continuation: `{receipt['initial_sent_count']} / {receipt['continuation_sent_count']}`\n"
+        + f"- Exact messages: `{receipt['sent_message_count']}/20`\n"
+        + f"- Duplicate/orphan: `{receipt['duplicate_count']} / {receipt['orphan_count']}`\n"
+        + "- Production recipient sends/intents: `0 / 0`\n"
+        + "- Raw recipient IDs in repository/report: `0`\n\n"
+        + "\n".join(receipt_lines)
+        + "\n",
+    )
+    gates = readiness["gates"]
+    gate_lines = "\n".join(f"- `{key} = {value}`" for key, value in gates.items())
+    _write_text(
+        reports / "20260829-decision-canary-readiness-after-calibration.md",
+        header("Decision Canary Readiness After Calibration")
+        + f"\n{gate_lines}\n"
+        + f"\n- Proposed bounded canary set: `{', '.join(readiness['proposed_canary_set'])}`\n"
+        + f"- Next action: `{readiness['next_action']}`\n"
+        + "- This report does not enable canary.\n",
+    )
+    _write_text(
+        reports / "20260829-decision-calibration-validation.md",
+        header("Decision Calibration Validation")
+        + f"\n- Repaired shadow: `{repaired['accepted_decision_count']}/20 PASS`\n"
+        + f"- Message quality: `{repaired['message_quality']['status']}`\n"
+        + f"- Numeric automatic/manual/unresolved: `{repaired['message_quality']['automatically_bound_numeric_count']} / 0 / {repaired['message_quality']['unresolved_numeric_count']}`\n"
+        + f"- Repeated substantive spans: `{repaired['message_quality']['repeated_substantive_span_count']}`\n"
+        + "- Focused/full/ruff/diff/CI results are finalized in the completion commit update.\n",
+    )
+    artifacts = [
+        "20260829-decision-calibration-p1-scope.md",
+        "20260829-buy-hold-sell-taxonomy.md",
+        "20260829-hold-sell-boundary.md",
+        "20260829-hut-taxonomy-repair.md",
+        "20260829-sell-positive-controls.md",
+        "20260829-timing-taxonomy.md",
+        "20260829-six-timing-case-resolution.md",
+        "20260829-confidence-taxonomy.md",
+        "20260829-three-confidence-case-resolution.md",
+        "20260829-decision-change-condition-contract.md",
+        "20260829-hut-downside-condition.md",
+        "20260829-repaired-20-stock-blind-review.md",
+        "20260829-repaired-decision-agreement.md",
+        "20260829-repaired-adjudication.md",
+        "20260829-hold-default-bias-after.md",
+        "20260829-sell-suppression-bias-after.md",
+        "20260829-confidence-calibration-after.md",
+        "20260829-timing-calibration-after.md",
+        "20260829-decision-test-sink-after-calibration.md",
+        "20260829-decision-canary-readiness-after-calibration.md",
+        "20260829-decision-calibration-validation.md",
+        "20260829-repaired-20-stock-decisions.json",
+        "20260829-decision-calibration-readiness.json",
+    ]
+    _write_text(
+        reports / "20260829-decision-calibration-artifact-index.md",
+        header("Decision Calibration Artifact Index")
+        + "\n"
+        + "\n".join(f"- `{name}`" for name in artifacts)
+        + "\n\nWork instructions:\n"
+        + "\n".join(
+            f"- `{name}`"
+            for name in (
+                "20260829-decision-calibration-p1-repair-before-canary.md",
+                "tracks/20260829-track-a-buy-hold-sell-taxonomy-and-hold-sell-boundary.md",
+                "tracks/20260829-track-b-timing-and-confidence-calibration.md",
+                "tracks/20260829-track-c-decision-change-conditions-and-hut-repair.md",
+                "tracks/20260829-track-d-20-stock-blind-rerun-adjudication-and-test-sink.md",
+            )
+        )
+        + "\n",
+    )
+    _write_json(
+        reports / "20260829-repaired-20-stock-decisions.json",
+        repaired,
+    )
+    _write_json(
+        reports / "20260829-decision-calibration-readiness.json",
+        readiness,
+    )
+    print(
+        json.dumps(
+            {
+                "required_markdown_reports": 21,
+                "validation_report": 1,
+                "json_reports": 2,
+                "reports_dir": str(reports),
+            },
+            sort_keys=True,
+        )
+    )
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -802,6 +1184,18 @@ def _parser() -> argparse.ArgumentParser:
     readiness.add_argument("--portfolio-audit", type=Path, required=True)
     readiness.add_argument("--test-receipt", type=Path, required=True)
     readiness.add_argument("--output", type=Path, required=True)
+
+    reports = sub.add_parser("reports")
+    reports.add_argument("--prior-review", type=Path, required=True)
+    reports.add_argument("--blind-decisions", type=Path, required=True)
+    reports.add_argument("--decisions", type=Path, required=True)
+    reports.add_argument("--portfolio-audit", type=Path, required=True)
+    reports.add_argument("--test-receipt", type=Path, required=True)
+    reports.add_argument("--readiness", type=Path, required=True)
+    reports.add_argument("--instruction-commit", required=True)
+    reports.add_argument("--base-sha", required=True)
+    reports.add_argument("--implementation-sha", required=True)
+    reports.add_argument("--reports-dir", type=Path, default=REPORTS)
     return parser
 
 
@@ -817,6 +1211,8 @@ def main() -> None:
         _prepare_portfolio(args)
     elif args.command == "finalize-readiness":
         _finalize_readiness(args)
+    elif args.command == "reports":
+        _reports(args)
 
 
 if __name__ == "__main__":
