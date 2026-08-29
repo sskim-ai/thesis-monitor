@@ -5,7 +5,25 @@ with [MASTER_WORKFLOW.md](MASTER_WORKFLOW.md), [project-state.json](project-stat
 [NEXT_SESSION_PROMPT.md](NEXT_SESSION_PROMPT.md) before changing runtime policy, Knowledge,
 validation, delivery, or Scheduled Tasks.
 
-## Latest Handoff - Cross-Market AI Decision Engine v1
+## Latest Handoff - Cross-Market Decision Quality Review
+
+Start with `docs/reports/20260829-decision-quality-review.json`, the operator table, agreement
+matrix, five adjudications, SELL=0/HOLD-default audits, and canary recommendation. Exact instruction
+commit is `86829a52c4711e1fad632cc9f558a44c08cc2ddc`; review implementation is
+`cd829ff8009759af7f5c73e487e43c06dc4b1a9c`.
+
+The label-blind signed-in Codex CLI `xhigh` pass completed `20/20`. Baseline distribution
+`2/18/0` became independent `2/13/5`; all five decision disagreements were adjudicated. Final
+review is BUY `2`, HOLD `15`, SELL `3`, with RXRX, TSLA, and WULF confirmed as analytical SELL.
+CRCL and HUT return to HOLD. Cross-market semantics pass and neither MACD nor a fixed score owns a
+decision.
+
+`CANARY_RECOMMENDATION=NOT_READY`, open P0/material P1 `0/4`. Repair HUT decision taxonomy,
+six timing boundaries, three confidence boundaries, and HUT's missing downside change condition.
+Do not repair P2 wording first, enable canary, send production decisions, mutate tasks/DB, or alter
+the frozen baseline. Engine state remains `TEST_SINK_READY`; production canary remains OFF.
+
+## Previous Handoff - Cross-Market AI Decision Engine v1
 
 Start with `docs/reports/20260829-decision-canary-readiness.json`, the KR/US current-shadow reports,
 temporal replay, message-quality report, exact test-sink receipt, and artifact index. The exact

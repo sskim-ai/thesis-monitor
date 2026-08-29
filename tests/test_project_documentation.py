@@ -126,15 +126,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-cross-market-ai-decision-engine-v1"
+        "codex/20260829-cross-market-ai-decision-quality-review-before-canary"
     )
     assert state["current_phase"] == (
-        "cross_market_ai_decision_engine_v1_test_sink_ready"
+        "cross_market_ai_decision_quality_review_not_ready"
     )
     assert state["last_completed_phase"] == (
-        "20260829_cross_market_ai_decision_engine_v1"
+        "20260829_cross_market_ai_decision_quality_review_before_canary"
     )
-    assert state["next_default_phase"] == "review_shadow_decisions"
+    assert state["next_default_phase"] == (
+        "bounded_cross_market_decision_calibration_repair"
+    )
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -279,6 +281,33 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert decision_engine["production_canary_enabled"] is False
     assert decision_engine["open_p0"] == []
     assert decision_engine["open_material_p1"] == []
+    quality_review = state[
+        "cross_market_ai_decision_quality_review_before_canary_20260829"
+    ]
+    assert quality_review["status"] == "NOT_READY"
+    assert quality_review["review_commit"] == (
+        "cd829ff8009759af7f5c73e487e43c06dc4b1a9c"
+    )
+    assert quality_review["reasoning_effort"] == "xhigh"
+    assert quality_review["independent_review_label_blind"] == "PASS"
+    assert quality_review["independent_review"] == "PASS_20_OF_20"
+    assert quality_review["material_disagreement_count"] == 5
+    assert quality_review["adjudication_count"] == 5
+    assert quality_review["final_review_distribution"] == {
+        "BUY": 2,
+        "HOLD": 15,
+        "SELL": 3,
+    }
+    assert quality_review["hold_default_bias"] == "MATERIAL"
+    assert quality_review["sell_suppression_bias"] == "MATERIAL"
+    assert quality_review["cross_market_decision_semantics"] == "PASS"
+    assert quality_review["production_canary_enabled"] is False
+    assert quality_review["production_decision_message_sent"] == 0
+    assert quality_review["open_p0"] == []
+    assert len(quality_review["open_material_p1"]) == 4
+    assert state["contracts"]["cross_market_decision_quality_review"] == (
+        "cross-market-decision-quality-review-v1"
+    )
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
     )
@@ -1351,7 +1380,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
+        "cd829ff8009759af7f5c73e487e43c06dc4b1a9c"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

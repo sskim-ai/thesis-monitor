@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v25`
+Master Workflow: `v26`
 As of: `2026-08-29`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260829-cross-market-ai-decision-engine-v1`
+Latest evidence branch: `codex/20260829-cross-market-ai-decision-quality-review-before-canary`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -16,7 +16,25 @@ AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
 
-## 0. Cross-Market AI Decision Engine v1
+## 0. Cross-Market Decision Quality Review Before Canary
+
+Exact instruction commit `86829a52c4711e1fad632cc9f558a44c08cc2ddc` precedes review
+implementation `cd829ff8009759af7f5c73e487e43c06dc4b1a9c`. The review reused the exact
+canonical evidence SHA `7649e675...b938720b`, hid all baseline labels during the independent pass,
+and ran signed-in Codex CLI `gpt-5.6-sol` with `model_reasoning_effort="xhigh"`. Web enrichment,
+future outcomes, fixed scores, order language, production sends, and runtime mutation were zero.
+
+The baseline `BUY 2 / HOLD 18 / SELL 0` became independent `BUY 2 / HOLD 13 / SELL 5`. All five
+HOLD-to-SELL disagreements were adjudicated on the same packets. CRCL and HUT returned to HOLD;
+RXRX, TSLA, and WULF remained SELL. Final review distribution is `BUY 2 / HOLD 15 / SELL 3`.
+Cross-market semantics pass, MACD alone owns no decision, and no class balance was forced.
+
+The quality gate is `NOT_READY`: HOLD-default and SELL-suppression bias are `MATERIAL`, while
+confidence, timing, and decision-change-condition calibration need bounded repair. Open P0/material
+P1 are `0/4`. Production canary stays OFF and engine state stays `TEST_SINK_READY`. The next action
+is `BOUNDED_REPAIR`, followed by a fresh review; this report does not authorize a canary.
+
+## 0.1 Cross-Market AI Decision Engine v1
 
 The exact instruction commit is `ec6ea8fa4449fd34961ecbbcf995064c46ff94a2`; implementation is
 `f28d4bb3b8eacebe7fb48a3ca7800094711793eb`. The new archive/shadow-only engine builds a canonical
@@ -30,10 +48,10 @@ because full historical D/W/M bars and forward 20/60/120 outcome diagnostics are
 The dedicated non-production sink received `20/20` exact payloads after a bounded 18+2 rate-limit
 continuation, with duplicate/orphan and production recipient send/intent all zero.
 
-`DECISION_ENGINE_STATE=TEST_SINK_READY` and `DECISION_CANARY_READINESS=PASS`, with open P0/material
-P1 `0/0`. Production canary, production packet consumption, scheduled prompts, fallback, DB,
-assessments, and automated trading remain unchanged. The next action is
-`REVIEW_SHADOW_DECISIONS`; do not enable a production canary without separate operator approval.
+`DECISION_ENGINE_STATE=TEST_SINK_READY` and its original technical canary gate passed with open
+P0/material P1 `0/0`. The later independent decision-quality review above supersedes actual canary
+readiness as `NOT_READY`. Production packet consumption, scheduled prompts, fallback, DB,
+assessments, and automated trading remain unchanged.
 
 ## 0. Latest One-Shot KR Close Live Proof
 

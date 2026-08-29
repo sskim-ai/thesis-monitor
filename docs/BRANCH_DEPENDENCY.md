@@ -1,10 +1,11 @@
 # Branch Dependency Manifest
 
-As of 2026-08-28. Resolve final SHAs from Git; documentation commits are intentionally not
+As of 2026-08-29. Resolve final SHAs from Git; documentation commits are intentionally not
 self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
 |---|---|---|---|---|---|
+| `codex/20260829-cross-market-ai-decision-quality-review-before-canary` | exact instruction `86829a5...` on main `398f4fa...` | label-blind signed-in `xhigh` review, agreement screening, material adjudication, bias/calibration audits and canary recommendation | consumes immutable decision evidence only; no runtime import, task, Telegram, DB, assessment, Public Action or production-canary dependency | report/audit promotion eligible; production canary `NOT_READY` | review `cd829ff...`; close four bounded material P1 items, then repeat the same quality gate |
 | `main` / operating | runtime baseline `23b17c4...`; final docs SHA resolves from Git | provisional Bollinger/price-label runtime plus run-44 validator convergence controls; KR live proof passed | no KRX/peer experimental dependency | current baseline after promotion | wait for remaining natural US proof |
 | `codex/run-now-one-shot-kr-close-live-proof` | exact instruction `a0d8f19...` on operating main `23b17c4...` | operator-authorized one-shot regular KR close, exact production messages, V3 validator/delivery/scheduler proof | no runtime code, recurring schedule, Public Action, provider contract, DB schema, KRX breadth, or peer dependency | report/audit promotion eligible | evidence `239db58...`; `8/8` production delivery, one producer run, zero residual schedule; final docs resolve from Git |
 | `codex/run44-v3-validator-convergence-cross-market-readiness` | exact instruction `1e8a008...` on operating main `026df71...` | frozen run-44 fixture/tests, cross-market read-only replay/test-sink tooling, validator ownership docs and final readiness | no runtime behavior change, provider addition, DB/task mutation, KRX breadth, or peer dependency | tests/docs promotion eligible | implementation `aa5e7d4...`; clean linear fast-forward after final exact-SHA CI |

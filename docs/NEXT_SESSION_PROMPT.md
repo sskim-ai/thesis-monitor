@@ -1,20 +1,21 @@
 # Next Session Prompt
 
 Latest major work follows exact instruction commit
-`ec6ea8fa4449fd34961ecbbcf995064c46ff94a2` and implementation
-`f28d4bb3b8eacebe7fb48a3ca7800094711793eb`. Read
-`docs/reports/20260829-decision-canary-readiness.json`, both current-shadow reports, temporal replay,
-message quality, test-sink receipt, and artifact index first.
+`86829a52c4711e1fad632cc9f558a44c08cc2ddc` and review implementation
+`cd829ff8009759af7f5c73e487e43c06dc4b1a9c`. Read
+`docs/reports/20260829-decision-quality-review.json`, the agreement matrix, all five material
+adjudications, calibration audits, canary recommendation, and artifact index first.
 
-The signed-in Codex CLI used `gpt-5.6-sol` with `xhigh`. Current decisions pass `20/20`, temporal
-checkpoints pass `200/200` as `PARTIAL_SAFE`, and the non-production sink closed exact `20/20` with
-zero production sends. `DECISION_ENGINE_STATE=TEST_SINK_READY`,
-`DECISION_CANARY_READINESS=PASS`, and production canary is still disabled.
+The signed-in Codex CLI used `gpt-5.6-sol` with `xhigh`. A label-blind independent review completed
+`20/20`; baseline BUY/HOLD/SELL `2/18/0` became independent `2/13/5` and adjudicated final
+`2/15/3`. Cross-market semantics pass, but the review found material HOLD-default and SELL-
+suppression bias plus unresolved timing, confidence, and HUT decision-change boundaries.
 
-Next action: `REVIEW_SHADOW_DECISIONS`. Review BUY/HOLD/SELL selection, mixed-language wording,
-message density, and the three P2 items. Do not auto-enable a production canary, mutate a task or
-assessment, send production Telegram, or introduce order sizing. A bounded canary requires a new
-explicit operator instruction.
+`CANARY_RECOMMENDATION=NOT_READY`, open P0/material P1 is `0/4`, engine state remains
+`TEST_SINK_READY`, and production canary remains disabled. Next action is
+`BOUNDED_CROSS_MARKET_DECISION_CALIBRATION_REPAIR`, followed by the same quality review gate.
+Do not enable a canary, mutate a task or assessment, send production Telegram, change the frozen
+baseline, or treat P2 wording polish as the blocking work.
 
 ---
 
