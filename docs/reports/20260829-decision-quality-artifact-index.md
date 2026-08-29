@@ -1,0 +1,26 @@
+# Decision Quality Artifact Index
+
+- `20260829-buy-case-db-insurance.md`
+- `20260829-buy-case-googl.md`
+- `20260829-confidence-calibration.md`
+- `20260829-cross-market-decision-consistency.md`
+- `20260829-current-20-decision-baseline.md`
+- `20260829-decision-agreement-matrix.json`
+- `20260829-decision-agreement-matrix.md`
+- `20260829-decision-canary-review-recommendation.json`
+- `20260829-decision-canary-review-recommendation.md`
+- `20260829-decision-change-condition-quality.md`
+- `20260829-decision-quality-artifact-index.md`
+- `20260829-decision-quality-review-scope.md`
+- `20260829-decision-quality-review.json`
+- `20260829-fundamental-technical-conflict.md`
+- `20260829-hold-challenge-kr.md`
+- `20260829-hold-challenge-us.md`
+- `20260829-hold-default-audit.md`
+- `20260829-independent-blind-review.md`
+- `20260829-macd-decision-contribution.md`
+- `20260829-material-disagreement-adjudication.md`
+- `20260829-ohlcv-feature-contribution.md`
+- `20260829-sell-zero-bias-audit.md`
+- `20260829-timing-calibration.md`
+- `20260829-valuation-expectation-conflict.md`

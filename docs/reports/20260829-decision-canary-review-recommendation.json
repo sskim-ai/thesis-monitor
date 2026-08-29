@@ -1,0 +1,77 @@
+{
+  "contract": "cross-market-decision-canary-review-recommendation-v1",
+  "gates": {
+    "ADJUDICATION_COUNT": 5,
+    "AXIS_STATE_USED_AS_FIXED_SCORE": 0,
+    "BASELINE_BUY_COUNT": 2,
+    "BASELINE_HOLD_COUNT": 18,
+    "BASELINE_SELL_COUNT": 0,
+    "BASELINE_SUBJECT_COUNT": 20,
+    "CANARY_RECOMMENDATION": "NOT_READY",
+    "CONFIDENCE_CALIBRATION": "NEEDS_REPAIR",
+    "CROSS_MARKET_DECISION_SEMANTICS": "PASS",
+    "DECISION_CHANGE_CONDITION_QUALITY": "NEEDS_REPAIR",
+    "DECISION_ENGINE_STATE": "TEST_SINK_READY",
+    "FINAL_REVIEW_BUY_COUNT": 2,
+    "FINAL_REVIEW_HOLD_COUNT": 15,
+    "FINAL_REVIEW_SELL_COUNT": 3,
+    "FORCED_SELL_FOR_CLASS_BALANCE": 0,
+    "HOLD_DEFAULT_BIAS": "MATERIAL",
+    "INDEPENDENT_REVIEW_COUNT": 20,
+    "INDEPENDENT_REVIEW_LABEL_BLIND": "PASS",
+    "MACD_ALONE_OWNS_BUY_SELL": 0,
+    "MATERIAL_DISAGREEMENT_COUNT": 5,
+    "ONE_SIDED_DECISION_COUNT": 0,
+    "OPEN_MATERIAL_P1": 4,
+    "OPEN_P0": 0,
+    "ORDER_COMMAND_LANGUAGE": 0,
+    "PARTIAL_SAFE_BACKTEST_PRESENTED_AS_VALIDATED_ALPHA": 0,
+    "PRODUCTION_CANARY_ENABLED": false,
+    "PRODUCTION_DECISION_MESSAGE_SENT": 0,
+    "SELL_SUPPRESSION_BIAS": "MATERIAL",
+    "TIMING_CALIBRATION": "NEEDS_REPAIR"
+  },
+  "portfolio_audit": {
+    "canary_reason": "Canary remains off and production is not enabled. After P1 repair, the proposed set covers KR/US, BUY/HOLD/SELL, aligned and disputed timing, INSUFFICIENT timing, clean and limited data, and adjudicated outcomes.",
+    "canary_recommendation": "NOT_READY",
+    "confidence_calibration": "NEEDS_REPAIR",
+    "confidence_explanation": "Independent confidence is MEDIUM for 19 of 20 names despite materially different evidence quality. Adjudication appropriately restores LOW for CRCL and HUT, but LOW-versus-MEDIUM differences remain unresolved for CORZ, SKHY, and SNDK.",
+    "contract": "cross-market-portfolio-calibration-v1",
+    "cross_market_decision_semantics": "PASS",
+    "cross_market_explanation": "Final outcomes are KR 1 BUY/6 HOLD/0 SELL and US 1 BUY/9 HOLD/3 SELL. The difference is supported by universe composition: US SELLs combine unproven economics with losses or weakening profitability and valuation or dilution pressure, while KR HOLDs retain operating, earnings, valuation, or price-structure offsets. No market-specific decision threshold is evident.",
+    "decision_change_condition_quality": "NEEDS_REPAIR",
+    "hold_default_bias": "MATERIAL",
+    "next_action": "BOUNDED_REPAIR",
+    "open_material_p1": [
+      "Resolve HUT's adjudication-confirmed DECISION_TAXONOMY defect before any canary.",
+      "Resolve final timing for 003690, 005490, 010120, GOOGL, SKHY, and SNDK; baseline and independent summaries disagree without adjudication.",
+      "Resolve final confidence tiers for CORZ, SKHY, and SNDK, where material data limitations coexist with LOW-versus-MEDIUM disagreement.",
+      "Add a downside decision-change trigger for adjudicated HOLD HUT; its supplied conditions are upgrade-only."
+    ],
+    "open_p0": [],
+    "p2_backlog": [
+      "Standardize quantitative thresholds and observation windows for otherwise directional decision-change conditions.",
+      "Repair the adjudication-noted TSLA DECISION_TAXONOMY P2 issue in the next maintenance cycle."
+    ],
+    "proposed_canary_set": [
+      "003690",
+      "086280",
+      "010120",
+      "GOOGL",
+      "CRCL",
+      "RXRX"
+    ],
+    "sell_suppression_bias": "MATERIAL",
+    "sell_zero_explanation": "SELL=0 applies only to the baseline, which classified 18 HOLD and 2 BUY. All five independent SELL challenges began as baseline HOLD; adjudication retained SELL for RXRX, TSLA, and WULF while returning CRCL and HUT to HOLD. Thus zero SELL was not justified for the completed portfolio: adjudication recovered three legitimate SELLs, although the baseline still shows structural suppression through overweighting optionality and weak valuation offsets.",
+    "timing_calibration": "NEEDS_REPAIR",
+    "timing_explanation": "Timing disagrees on 7 of 20 names. CRCL was adjudicated to INSUFFICIENT, but six cases remain unresolved, reflecting recurring ambiguity between NEUTRAL, UNFAVORABLE, and evidence-insufficient states."
+  },
+  "proposed_canary_set": [
+    "003690",
+    "086280",
+    "010120",
+    "GOOGL",
+    "CRCL",
+    "RXRX"
+  ]
+}
