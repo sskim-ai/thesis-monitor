@@ -1,0 +1,58 @@
+{
+  "contract": "v2-production-cutover-preflight-v1",
+  "markets": {
+    "kr": {
+      "message_quality": {
+        "contract": "v2-accepted-production-message-quality-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "message_count": 7,
+        "numeric_claim_count": 0,
+        "repeated_substantive_span_count": 0,
+        "status": "PASS",
+        "unresolved_numeric_count": 0
+      },
+      "not_ready_count": 0,
+      "packet_id": "2026-08-28-kr-run-44-e4cf532e619b",
+      "ready_count": 7,
+      "subject_count": 7
+    },
+    "us": {
+      "message_quality": {
+        "contract": "v2-accepted-production-message-quality-v1",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "message_count": 13,
+        "numeric_claim_count": 0,
+        "repeated_substantive_span_count": 0,
+        "status": "PASS",
+        "unresolved_numeric_count": 0
+      },
+      "not_ready_count": 0,
+      "packet_id": "2026-08-30-us-run-46-74e2093322f0",
+      "ready_count": 13,
+      "subject_count": 13
+    }
+  },
+  "production_delivery_intent_created": 0,
+  "production_recipient_send": 0,
+  "reasoning_effort": "xhigh",
+  "reasoning_model": "gpt-5.6-sol",
+  "status": "PASS",
+  "subject_count": 20,
+  "test_sink": {
+    "available": true,
+    "configured_test_key_names": [
+      "TELEGRAM_TEST_CHAT_ID"
+    ],
+    "namespace": "TEST_ONLY_NON_PRODUCTION",
+    "production_collision": 0,
+    "production_intent_collision": 0,
+    "production_sink_alias": "production:7937bea5b823",
+    "reason": "safe_dedicated_test_sink",
+    "selected_test_key_name": "TELEGRAM_TEST_CHAT_ID",
+    "test_sink_alias": "test:6d6e2ff463bf"
+  },
+  "test_sink_exact_payload": "sent",
+  "test_sink_sent": true
+}

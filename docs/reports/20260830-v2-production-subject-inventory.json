@@ -1,0 +1,28 @@
+{
+  "contract": "v2-production-subject-inventory-v1",
+  "date_kst": "2026-08-30",
+  "counts": {"kr": 7, "us_foreign": 13, "total": 20, "ready": 20, "not_ready": 0},
+  "distribution": {"BUY": 1, "HOLD": 16, "SELL": 3},
+  "subjects": [
+    {"market":"kr","ticker":"000660","decision":"HOLD","status":"READY","repair":null},
+    {"market":"kr","ticker":"003690","decision":"HOLD","status":"READY","repair":null},
+    {"market":"kr","ticker":"005490","decision":"HOLD","status":"READY","repair":null},
+    {"market":"kr","ticker":"005930","decision":"HOLD","status":"READY","repair":"postconfirmation_flag"},
+    {"market":"kr","ticker":"010120","decision":"HOLD","status":"READY","repair":null},
+    {"market":"kr","ticker":"012450","decision":"HOLD","status":"READY","repair":null},
+    {"market":"kr","ticker":"086280","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"CORZ","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"CRCL","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"GOOGL","decision":"BUY","status":"READY","repair":null},
+    {"market":"us","ticker":"HUT","decision":"SELL","status":"READY","repair":null},
+    {"market":"us","ticker":"IBM","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"MU","decision":"HOLD","status":"READY","repair":"postconfirmation_flag"},
+    {"market":"us","ticker":"RXRX","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"SKHY","decision":"HOLD","status":"READY","repair":"replay_cutoff_date"},
+    {"market":"us","ticker":"SNDK","decision":"HOLD","status":"READY","repair":"postconfirmation_flag"},
+    {"market":"us","ticker":"TSLA","decision":"SELL","status":"READY","repair":null},
+    {"market":"us","ticker":"TSM","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"WRD","decision":"HOLD","status":"READY","repair":null},
+    {"market":"us","ticker":"WULF","decision":"SELL","status":"READY","repair":"exact_evidence_ref"}
+  ]
+}
