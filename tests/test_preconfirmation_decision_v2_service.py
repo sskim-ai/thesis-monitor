@@ -40,6 +40,8 @@ from app.services.accepted_decision_v2_service import (
     AcceptedDecisionStatus,
     AcceptedV2Adjudication,
     accepted_message_quality,
+    decision_change_condition_errors,
+    normalize_decision_change_condition,
     render_accepted_v2_shadow,
     resolve_accepted_v2_decision,
     validate_accepted_v2_decision,
@@ -400,3 +402,39 @@ def test_accepted_render_validator_rejects_candidate_label_leak() -> None:
     )
     assert validation.valid is False
     assert "rendered_decision_not_accepted_decision" in validation.errors
+
+
+def test_hold_change_condition_removes_impossible_hold_to_hold_downgrade() -> None:
+    claim = _claim(
+        "ref:risks",
+        "갱신요율과 손해율이 함께 악화하면 보유 판단으로 낮추고, "
+        "자본 훼손이 구조화되면 매도 판단으로 전환한다.",
+    )
+    normalized = normalize_decision_change_condition("HOLD", "DOWNGRADE", claim)
+    assert "보유 판단으로 낮추" not in normalized.text
+    assert "HOLD 확신을 낮추고" in normalized.text
+    assert "매도 판단으로 전환" in normalized.text
+    assert normalized.evidence_refs == claim.evidence_refs
+    assert decision_change_condition_errors(
+        "HOLD",
+        upgrade_text="사업 증거가 확인되면 매수 판단을 재검토한다.",
+        downgrade_text=normalized.text,
+    ) == ()
+
+
+def test_self_transition_validator_covers_buy_hold_and_sell() -> None:
+    assert decision_change_condition_errors(
+        "BUY",
+        upgrade_text="근거가 늘면 매수 판단으로 상향한다.",
+        downgrade_text="근거가 약해지면 보유 판단을 재검토한다.",
+    ) == ("self_transition_wording:BUY:UPGRADE",)
+    assert decision_change_condition_errors(
+        "HOLD",
+        upgrade_text="근거가 늘면 매수 판단을 재검토한다.",
+        downgrade_text="근거가 약해지면 보유 판단으로 낮춘다.",
+    ) == ("self_transition_wording:HOLD:DOWNGRADE",)
+    assert decision_change_condition_errors(
+        "SELL",
+        upgrade_text="근거가 회복되면 보유 판단을 재검토한다.",
+        downgrade_text="근거가 더 약해지면 매도 판단으로 낮춘다.",
+    ) == ("self_transition_wording:SELL:DOWNGRADE",)

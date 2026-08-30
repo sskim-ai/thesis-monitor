@@ -27,6 +27,7 @@ from app.services.scenario_asymmetry_service import Asymmetry
 CONTRACT_VERSION = "v2-accepted-decision-ownership-v1"
 VALIDATOR_CONTRACT = "v2-accepted-decision-validator-v1"
 RENDERER_CONTRACT = "v2-accepted-decision-shadow-renderer-v1"
+CHANGE_CONDITION_CONTRACT = "decision-aware-change-condition-v1"
 
 
 class AcceptedDecisionStatus(StrEnum):
@@ -124,6 +125,77 @@ _ORDER_LANGUAGE = re.compile(
 _EXACT_NUMBER = re.compile(
     r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%|원|달러|USD|KRW|배|주|MW|GW)"
 )
+
+_SELF_TRANSITION = {
+    ("BUY", "UPGRADE"): re.compile(
+        r"(?:매수|BUY)\s*(?:판단\s*)?(?:으로|로)\s*(?:상향|높|전환)",
+        re.IGNORECASE,
+    ),
+    ("HOLD", "UPGRADE"): re.compile(
+        r"(?:보유|HOLD)\s*(?:판단\s*)?(?:으로|로)\s*(?:상향|높|전환)",
+        re.IGNORECASE,
+    ),
+    ("HOLD", "DOWNGRADE"): re.compile(
+        r"(?:보유|HOLD)\s*(?:판단\s*)?(?:으로|로)\s*(?:하향|낮|전환)",
+        re.IGNORECASE,
+    ),
+    ("SELL", "DOWNGRADE"): re.compile(
+        r"(?:매도|SELL)\s*(?:판단\s*)?(?:으로|로)\s*(?:하향|낮|전환)",
+        re.IGNORECASE,
+    ),
+}
+
+
+def normalize_decision_change_condition(
+    decision: Decision,
+    direction: Literal["UPGRADE", "DOWNGRADE"],
+    claim: EvidenceClaim,
+) -> EvidenceClaim:
+    """Remove impossible top-level self transitions without changing evidence."""
+    text = claim.text
+    replacements: dict[tuple[Decision, str], tuple[tuple[str, str], ...]] = {
+        ("BUY", "UPGRADE"): (
+            (r"매수 판단으로 높인다", "BUY 확신을 높인다"),
+            (r"매수 판단으로 상향한다", "BUY 확신을 높인다"),
+            (r"매수로 상향한다", "BUY 확신을 높인다"),
+        ),
+        ("HOLD", "UPGRADE"): (
+            (r"보유 판단으로 높인다", "BUY 재평가 조건으로 삼는다"),
+            (r"보유 판단으로 상향한다", "BUY 재평가 조건으로 삼는다"),
+            (r"보유로 상향한다", "BUY 재평가 조건으로 삼는다"),
+        ),
+        ("HOLD", "DOWNGRADE"): (
+            (r"보유 판단으로 낮추고", "HOLD 확신을 낮추고"),
+            (r"보유 판단으로 낮춘다", "HOLD 확신을 낮춘다"),
+            (r"보유 판단으로 하향한다", "SELL 재평가 조건으로 삼는다"),
+            (r"보유로 하향한다", "SELL 재평가 조건으로 삼는다"),
+        ),
+        ("SELL", "DOWNGRADE"): (
+            (r"매도 판단으로 낮춘다", "SELL 확신을 높인다"),
+            (r"매도 판단으로 하향한다", "SELL 확신을 높인다"),
+            (r"매도로 하향한다", "SELL 확신을 높인다"),
+        ),
+    }
+    for source, target in replacements.get((decision, direction), ()):
+        text = re.sub(source, target, text, flags=re.IGNORECASE)
+    return claim.model_copy(update={"text": text})
+
+
+def decision_change_condition_errors(
+    decision: Decision,
+    *,
+    upgrade_text: str,
+    downgrade_text: str,
+) -> tuple[str, ...]:
+    errors: list[str] = []
+    for direction, text in (
+        ("UPGRADE", upgrade_text),
+        ("DOWNGRADE", downgrade_text),
+    ):
+        pattern = _SELF_TRANSITION.get((decision, direction))
+        if pattern is not None and pattern.search(text):
+            errors.append(f"self_transition_wording:{decision}:{direction}")
+    return tuple(errors)
 
 
 def _canonical_fingerprint(prefix: str, value: object) -> str:
@@ -331,8 +403,12 @@ def resolve_accepted_v2_decision(
         accepted_confirmation_cost_basis=(
             candidate.confirmation_cost.basis if accepted_preconfirmation_buy else None
         ),
-        accepted_upgrade_condition=candidate.upgrade_condition,
-        accepted_downgrade_condition=candidate.downgrade_condition,
+        accepted_upgrade_condition=normalize_decision_change_condition(
+            accepted_decision, "UPGRADE", candidate.upgrade_condition
+        ),
+        accepted_downgrade_condition=normalize_decision_change_condition(
+            accepted_decision, "DOWNGRADE", candidate.downgrade_condition
+        ),
         denial_reason=None,
     )
 
@@ -383,6 +459,18 @@ def validate_accepted_v2_decision(
         for ref_id in claim.evidence_refs:
             if ref_id not in allowed_refs:
                 errors.append(f"unknown_accepted_evidence_ref:{ref_id}")
+    if plan.accepted_decision is not None:
+        errors.extend(
+            decision_change_condition_errors(
+                plan.accepted_decision,
+                upgrade_text=(plan.accepted_upgrade_condition.text if plan.accepted_upgrade_condition else ""),
+                downgrade_text=(
+                    plan.accepted_downgrade_condition.text
+                    if plan.accepted_downgrade_condition
+                    else ""
+                ),
+            )
+        )
     return AcceptedDecisionValidationResult(
         valid=not errors,
         errors=tuple(dict.fromkeys(errors)),
