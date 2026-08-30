@@ -18,6 +18,7 @@ REQUIRED_REPORTS = (
     "20260830-v2-accepted-renderer-validator.md",
     "20260830-v2-accepted-test-sink.md",
     "20260830-v2-accepted-message-quality.md",
+    "20260830-v2-accepted-test-ci-summary.md",
     "20260830-v2-accepted-migration-readiness.md",
     "20260830-v2-accepted-artifact-index.md",
     "20260830-v2-accepted-decisions.json",

@@ -14,6 +14,7 @@
 | docs/reports/20260830-v2-accepted-renderer-validator.md | 885c6c44db16e243de48b3f394f8f3b2e09d64667905859348ad916365d2a063 | 357 |
 | docs/reports/20260830-v2-accepted-test-sink.md | 6ea187520f552ab6de60d8a56d5378e8e63e5daaf449431432276bacf0f211aa | 17488 |
 | docs/reports/20260830-v2-accepted-message-quality.md | 1214d1b0af98dcf74b6796fb574e8b61b08eefc56c9141ae75980517b884ddae | 270 |
+| docs/reports/20260830-v2-accepted-test-ci-summary.md | 401a82040f5d4a23cdca86ac261f901e218349bf2e3f977e48164ccd6ff8d4d8 | 977 |
 | docs/reports/20260830-v2-accepted-migration-readiness.md | d191043f771eb3d1c1ec586c61ba2ab74651b91fb61cb72c1350d03a525dcf40 | 2317 |
 | docs/reports/20260830-v2-accepted-decisions.json | 20852c545e3d000be221b7f3097388c6b9da9831ef94b4d7b670ee6dabb426e2 | 120475 |
 | docs/reports/20260830-v2-accepted-migration-readiness.json | fd560350da27a0024b1bc8b0caf8dff9addc4bf43f6f0b07124deedaf225ef65 | 2938 |

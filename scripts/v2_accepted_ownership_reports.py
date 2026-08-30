@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
@@ -14,6 +13,7 @@ REPORTS = ROOT / "docs/reports"
 ARCHITECTURE = ROOT / "docs/architecture"
 INSTRUCTION_COMMIT = "4662c08"
 BASE_SHA = "29bdd4cf378438fedad7f602b4b8ede80c46dd44"
+IMPLEMENTATION_SHA = "f55605189ee0179ab4af7030b94d79d706ed32a8"
 
 
 def _read_json(path: Path) -> object:
@@ -80,13 +80,7 @@ def _write_reports(args: argparse.Namespace) -> None:
     rows = _row_map(accepted)
     if len(rows) != 20:
         raise ValueError("accepted_report_subject_set_not_20")
-    implementation_sha = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT,
-        capture_output=True,
-        check=True,
-        text=True,
-    ).stdout.strip()
+    implementation_sha = IMPLEMENTATION_SHA
 
     candidate_distribution = dict(accepted.get("candidate_distribution") or {})
     accepted_distribution = dict(accepted.get("accepted_distribution") or {})
@@ -434,6 +428,7 @@ Open P0 / material P1: `0 / 0`.
         REPORTS / "20260830-v2-accepted-renderer-validator.md",
         REPORTS / "20260830-v2-accepted-test-sink.md",
         REPORTS / "20260830-v2-accepted-message-quality.md",
+        REPORTS / "20260830-v2-accepted-test-ci-summary.md",
         REPORTS / "20260830-v2-accepted-migration-readiness.md",
         REPORTS / "20260830-v2-accepted-decisions.json",
         REPORTS / "20260830-v2-accepted-migration-readiness.json",
