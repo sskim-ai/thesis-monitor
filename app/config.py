@@ -127,6 +127,10 @@ class Settings(BaseSettings):
     decision_engine_state: Literal["test_sink_ready", "canary"] = "test_sink_ready"
     decision_engine_canary_kr_subjects: str = ""
     decision_engine_canary_us_subjects: str = ""
+    visible_stock_decision_engine: Literal["v1_canary", "v2_accepted"] = "v1_canary"
+    v2_production_enabled: bool = False
+    v2_full_monitored_stock_coverage_target: bool = False
+    v1_decision_rollback_available: bool = True
     cash_flow_runtime_shadow_canary_enabled: bool = True
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
@@ -169,6 +173,15 @@ class Settings(BaseSettings):
         ):
             raise ValueError(
                 "Enabled decision canary requires state=canary and exact unique 2+2 subjects"
+            )
+        if self.visible_stock_decision_engine == "v2_accepted" and (
+            not self.v2_production_enabled
+            or not self.v2_full_monitored_stock_coverage_target
+            or not self.v1_decision_rollback_available
+        ):
+            raise ValueError(
+                "Visible v2 accepted decisions require production enablement, "
+                "full monitored-stock coverage target, and v1 rollback availability"
             )
         return self
 

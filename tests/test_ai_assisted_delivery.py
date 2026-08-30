@@ -11,6 +11,10 @@ import app.services.ai_assisted_delivery_service as delivery_service
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIMarketReview, AIStockReview
+from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2ProductionArtifact,
+    AcceptedV2ProductionBlock,
+)
 from app.services.ai_assisted_delivery_service import (
     _render_ai_market_message,
     _render_ai_stock_message,
@@ -83,6 +87,39 @@ def _settings(monkeypatch, tmp_path: Path):
     monkeypatch.setattr("app.services.ai_assisted_delivery_service.get_settings", lambda: settings)
     monkeypatch.setattr("app.services.notification_service.get_settings", lambda: settings)
     return settings
+
+
+def test_v2_production_keeps_ai_assisted_route_active_after_pilot_days(
+    monkeypatch, tmp_path: Path
+) -> None:
+    settings = _settings(monkeypatch, tmp_path).model_copy(
+        update={
+            "visible_stock_decision_engine": "v2_accepted",
+            "v2_production_enabled": True,
+            "v2_full_monitored_stock_coverage_target": True,
+            "v1_decision_rollback_available": True,
+        }
+    )
+    monkeypatch.setattr(delivery_service, "get_settings", lambda: settings)
+    monkeypatch.setattr(
+        delivery_service,
+        "_pilot_state",
+        lambda: {
+            "markets": {
+                "us": {
+                    "successful_packet_ids": ["one", "two", "three", "four", "five"],
+                    "successful_assessment_dates": [
+                        "2026-08-24",
+                        "2026-08-25",
+                        "2026-08-26",
+                        "2026-08-27",
+                        "2026-08-28",
+                    ],
+                }
+            }
+        },
+    )
+    assert ai_assisted_pilot_active("us") is True
 
 
 def _packet() -> dict[str, object]:
@@ -364,6 +401,74 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     )
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
+
+
+@pytest.mark.anyio
+async def test_v2_accepted_block_is_visible_without_raw_candidate_fallback(
+    monkeypatch, tmp_path: Path
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    artifact = AcceptedV2ProductionArtifact.model_construct(
+        status="PASS",
+        packet_id=PACKET_ID,
+        claim_id="claim-1",
+        market="kr",
+        assessment_date=RUN_DATE.isoformat(),
+        source_packet_sha256="fixture",
+        selected_subjects=("PILOT",),
+        reasoning_model="gpt-5.6-sol",
+        reasoning_effort="xhigh",
+        evidence_packets=(),
+        candidates=(),
+        accepted_plans=(),
+        blocks=(
+            AcceptedV2ProductionBlock(
+                ticker="PILOT",
+                decision="HOLD",
+                accepted_decision_id="accepted-plan-id",
+                text=(
+                    "🧠 AI 분석 판단: HOLD\n"
+                    "판단 확신도: 중간 | 증거 성숙도: 부분 확인\n\n"
+                    "🎯 핵심 판단\n• 검증된 근거는 보유 판단을 지지합니다.\n\n"
+                    "🔄 재평가 조건\n"
+                    "• 상향 재평가: 사업 증명이 확인되면 BUY를 재평가합니다.\n"
+                    "• 하향 재평가: 사업 훼손이 확인되면 SELL을 재평가합니다."
+                ),
+            ),
+        ),
+        ready_count=1,
+        not_ready_count=0,
+        message_quality={"status": "PASS"},
+        validated_at="2026-08-30T00:00:00+00:00",
+    )
+    monkeypatch.setattr(
+        delivery_service, "v2_accepted_production_armed", lambda **kwargs: True
+    )
+    monkeypatch.setattr(
+        delivery_service,
+        "_load_delivery_accepted_v2",
+        lambda packet, output, output_path: (artifact, "PASS", tmp_path / "v2.json"),
+    )
+    advanced: list[str] = []
+    monkeypatch.setattr(
+        delivery_service,
+        "advance_accepted_v2_state",
+        lambda value, **kwargs: advanced.append(value.packet_id),
+    )
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        result = await deliver_validated_ai_review(session, PACKET_ID, notifier=notifier)
+
+    assert result.status == "sent"
+    stock = next(item for item in notifier.payloads if item["type"].endswith("stock"))
+    text = str(stock["text"])
+    assert "🧠 AI 분석 판단: HOLD" in text
+    assert "raw candidate" not in text.lower()
+    assert "SHADOW" not in text
+    assert advanced == [PACKET_ID]
 
 
 @pytest.mark.anyio

@@ -42,10 +42,17 @@ from app.services.accepted_decision_v2_service import (
     accepted_message_quality,
     decision_change_condition_errors,
     normalize_decision_change_condition,
+    render_accepted_v2_production,
     render_accepted_v2_shadow,
     resolve_accepted_v2_decision,
     validate_accepted_v2_decision,
     validate_accepted_v2_render,
+)
+from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2ProductionBaseline,
+    AcceptedV2ProductionBatchOutput,
+    build_accepted_v2_production_context,
+    validate_accepted_v2_production_output,
 )
 
 
@@ -438,3 +445,132 @@ def test_self_transition_validator_covers_buy_hold_and_sell() -> None:
         upgrade_text="근거가 회복되면 보유 판단을 재검토한다.",
         downgrade_text="근거가 더 약해지면 매도 판단으로 낮춘다.",
     ) == ("self_transition_wording:SELL:DOWNGRADE",)
+
+
+def test_production_renderer_consumes_only_ready_accepted_plan() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V1", accepted_decision="HOLD"),
+    )
+    rendered = render_accepted_v2_production(packet, plan)
+    assert "🧠 AI 분석 판단: HOLD" in rendered.text
+    assert "SHADOW" not in rendered.text
+    assert "후보" not in rendered.text
+    assert "AI 분석 판단: BUY" not in rendered.text
+    assert rendered.validation.valid is True
+
+
+def test_v2_production_output_resolves_ready_plan_for_complete_scope() -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2",
+        evidence_packets=(packet,),
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(_candidate(),),
+    )
+    artifact = validate_accepted_v2_production_output(context, output)
+    assert artifact.status == "PASS"
+    assert artifact.ready_count == 1
+    assert artifact.not_ready_count == 0
+    assert artifact.accepted_plans[0].accepted_decision == "BUY"
+    assert artifact.blocks[0].decision == "BUY"
+    assert "SHADOW" not in artifact.blocks[0].text
+
+
+def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2",
+        evidence_packets=(packet,),
+    ).model_copy(
+        update={
+            "prior_accepted": (
+                AcceptedV2ProductionBaseline(
+                    ticker="TEST",
+                    market="us",
+                    accepted_decision="HOLD",
+                    evidence_sha256="prior-evidence",
+                    accepted_decision_id="prior-accepted-id",
+                    source="fixture",
+                ),
+            )
+        }
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(_candidate(),),
+    )
+    artifact = validate_accepted_v2_production_output(context, output)
+    assert artifact.status == "PARTIAL_SAFE"
+    assert artifact.ready_count == 0
+    assert artifact.not_ready_count == 1
+    assert artifact.blocks == ()
+    assert artifact.accepted_plans[0].denial_reason == (
+        "material_disagreement_without_final_adjudication"
+    )
+
+
+def test_same_evidence_v2_decision_churn_fails_closed() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2",
+        evidence_packets=(packet,),
+    ).model_copy(
+        update={
+            "prior_accepted": (
+                AcceptedV2ProductionBaseline(
+                    ticker="TEST",
+                    market="us",
+                    accepted_decision="HOLD",
+                    evidence_sha256=packet.evidence_sha256,
+                    accepted_decision_id="prior-accepted-id",
+                    source="fixture",
+                ),
+            )
+        }
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(_candidate(),),
+        adjudications=(_adjudication(recommendation="KEEP_V2", accepted_decision="BUY"),),
+    )
+    try:
+        validate_accepted_v2_production_output(context, output)
+    except ValueError as exc:
+        assert "same_evidence_unexplained_churn:TEST" in str(exc)
+    else:
+        raise AssertionError("same-evidence decision churn must fail closed")

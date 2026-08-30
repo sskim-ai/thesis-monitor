@@ -18,6 +18,13 @@ from sqlmodel import Session, select
 from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
+from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2ProductionArtifact,
+    accepted_v2_production_paths,
+    advance_accepted_v2_state,
+    load_accepted_v2_production_artifact,
+    v2_accepted_production_armed,
+)
 from app.services.delta_first_rendering_service import DeltaFirstRenderPlan
 from app.services.decision_canary_service import (
     DecisionCanaryArtifact,
@@ -198,6 +205,8 @@ def ai_assisted_pilot_active(market: PilotMarket) -> bool:
     settings = get_settings()
     if not settings.ai_review_pilot_enabled:
         return False
+    if v2_accepted_production_armed(settings=settings):
+        return True
     with _pilot_lock("state"):
         return len(_market_success_dates(_pilot_state(), market)) < (
             settings.ai_review_pilot_target_success_days
@@ -514,6 +523,29 @@ def _load_delivery_decision_canary(
     except (FileNotFoundError, ValueError, json.JSONDecodeError):
         return None, "CANARY_DECISION_SUPPRESSED_SAFE", artifact_path
     return artifact, "PASS", artifact_path
+
+
+def _load_delivery_accepted_v2(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    output_path: Path,
+) -> tuple[AcceptedV2ProductionArtifact | None, str, Path | None]:
+    settings = get_settings()
+    if not v2_accepted_production_armed(settings=settings):
+        return None, "NOT_ACTIVE", None
+    artifact_path = accepted_v2_production_paths(
+        output_path,
+        claim_id=output.claim_id,
+    )["final"]
+    try:
+        artifact = load_accepted_v2_production_artifact(
+            artifact_path,
+            packet=packet,
+            claim_id=output.claim_id,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return None, "V2_DECISION_SUPPRESSED_SAFE", artifact_path
+    return artifact, artifact.status, artifact_path
 
 
 def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, str]]:
@@ -1217,20 +1249,31 @@ async def deliver_validated_ai_review(
         )
     output = AIDailyReviewOutput.model_validate(_read_json(output_path))
     adaptive_canary_active = free_analyst_adaptive_canary_armed()
-    decision_artifact, decision_artifact_state, decision_artifact_path = (
-        _load_delivery_decision_canary(packet, output, output_path)
-    )
+    accepted_v2_active = v2_accepted_production_armed()
+    if accepted_v2_active:
+        decision_artifact, decision_artifact_state, decision_artifact_path = (
+            _load_delivery_accepted_v2(packet, output, output_path)
+        )
+    else:
+        decision_artifact, decision_artifact_state, decision_artifact_path = (
+            _load_delivery_decision_canary(packet, output, output_path)
+        )
     decision_delivery_state = decision_artifact_state
     settings = get_settings()
-    decision_targets = set(
-        decision_artifact.selected_subjects
-        if decision_artifact is not None
-        else (
+    if decision_artifact is not None:
+        decision_targets = set(decision_artifact.selected_subjects)
+    elif accepted_v2_active:
+        decision_targets = {
+            str(row.get("ticker") or "").upper()
+            for row in packet.get("stocks") or ()
+            if isinstance(row, dict)
+        }
+    elif decision_canary_armed(settings=settings):
+        decision_targets = set(
             configured_decision_canary_subjects(market, settings=settings)  # type: ignore[arg-type]
-            if decision_canary_armed(settings=settings)
-            else ()
         )
-    )
+    else:
+        decision_targets = set()
     current = (now or datetime.now(KST)).astimezone(KST)
     target_days = get_settings().ai_review_pilot_target_success_days
     pilot_day = min(_pilot_day(market), target_days)
@@ -1238,7 +1281,12 @@ async def deliver_validated_ai_review(
     archive_dir = _archive_directory(packet)
     if decision_artifact is not None:
         _atomic_json(
-            archive_dir / "decision-canary.json",
+            archive_dir
+            / (
+                "decision-v2-accepted.json"
+                if accepted_v2_active
+                else "decision-canary.json"
+            ),
             decision_artifact.model_dump(mode="json"),
         )
     _atomic_json(archive_dir / "packet.json", packet)
@@ -1711,7 +1759,11 @@ async def deliver_validated_ai_review(
                     continue
                 metadata = _pilot_metadata(new_payload)
                 decision_metadata: dict[str, object] = {
-                    "contract": "cross-market-decision-bounded-canary-v1",
+                    "contract": (
+                        "v2-accepted-production-runtime-v1"
+                        if accepted_v2_active
+                        else "cross-market-decision-bounded-canary-v1"
+                    ),
                     "state": decision_artifact_state,
                     "packet_id": packet_id,
                     "claim_id": output.claim_id,
@@ -1732,9 +1784,10 @@ async def deliver_validated_ai_review(
                                 "state": "included",
                                 "decision": next(
                                     row.decision
-                                    for row in decision_artifact.decisions
+                                    for row in decision_artifact.blocks
                                     if row.ticker == ticker
                                 ),
+                                "accepted_plan_only": accepted_v2_active,
                                 "reasoning_model": decision_artifact.reasoning_model,
                                 "reasoning_effort": decision_artifact.reasoning_effort,
                             }
@@ -2115,14 +2168,24 @@ async def deliver_validated_ai_review(
         _atomic_json(_archive_directory(packet) / "delivery-result.json", delivery_result)
         recorded_day = pilot_day
         if complete:
-            if decision_artifact is not None and decision_included_tickers == set(
-                decision_artifact.selected_subjects
-            ):
-                advance_decision_canary_state(
-                    decision_artifact,
-                    settings=get_settings(),
-                    updated_at=current,
-                )
+            if decision_artifact is not None:
+                artifact_block_tickers = {row.ticker for row in decision_artifact.blocks}
+                if decision_included_tickers == artifact_block_tickers:
+                    if accepted_v2_active:
+                        assert isinstance(
+                            decision_artifact, AcceptedV2ProductionArtifact
+                        )
+                        advance_accepted_v2_state(
+                            decision_artifact,
+                            settings=get_settings(),
+                            updated_at=current,
+                        )
+                    else:
+                        advance_decision_canary_state(
+                            decision_artifact,
+                            settings=get_settings(),
+                            updated_at=current,
+                        )
             _write_ai_archive_completion_marker(
                 packet,
                 output,

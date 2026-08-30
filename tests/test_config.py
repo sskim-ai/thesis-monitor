@@ -118,6 +118,35 @@ def test_enabled_decision_canary_rejects_incomplete_scope(tmp_path: Path) -> Non
         Settings(_env_file=env_file)
 
 
+def test_v2_accepted_production_selector_is_explicit_and_fail_closed(
+    tmp_path: Path,
+) -> None:
+    defaults = Settings(_env_file=None)
+    assert defaults.visible_stock_decision_engine == "v1_canary"
+    assert defaults.v2_production_enabled is False
+    assert defaults.v2_full_monitored_stock_coverage_target is False
+    assert defaults.v1_decision_rollback_available is True
+
+    invalid = _write_env(
+        tmp_path / "invalid.env",
+        ["VISIBLE_STOCK_DECISION_ENGINE=v2_accepted"],
+    )
+    with pytest.raises(ValidationError, match="Visible v2 accepted decisions require"):
+        Settings(_env_file=invalid)
+
+    valid = _write_env(
+        tmp_path / "valid.env",
+        [
+            "VISIBLE_STOCK_DECISION_ENGINE=v2_accepted",
+            "V2_PRODUCTION_ENABLED=true",
+            "V2_FULL_MONITORED_STOCK_COVERAGE_TARGET=true",
+            "V1_DECISION_ROLLBACK_AVAILABLE=true",
+        ],
+    )
+    settings = Settings(_env_file=valid)
+    assert settings.visible_stock_decision_engine == "v2_accepted"
+
+
 def test_cash_flow_user_visible_mode_defaults_off_and_accepts_runtime_value(
     tmp_path: Path,
 ) -> None:

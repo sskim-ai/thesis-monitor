@@ -48,7 +48,7 @@ Use this skill only for immutable packets under `data/ai_review/inbox`. Do not b
    When the bounded decision canary is active, generate its claim-bound sidecar after the complete draft exists and before validation. This command uses the signed-in Codex CLI with the canary-owned `xhigh` reasoning setting and writes only under `data/ai_review`. Its failure is fail-closed and must never stop or replace the regular review:
 
    ```bash
-   .venv/bin/python -m app.jobs.decision_canary generate --packet-id <packet-id> --claim-id <claim-id>
+   .venv/bin/python -m app.jobs.stock_decision generate --packet-id <packet-id> --claim-id <claim-id>
    ```
 
    Continue to regular validation whether the command reports `PASS`, `NOT_ACTIVE`, or `CANARY_DECISION_SUPPRESSED_SAFE`. Never draft, repair, or send the decision block manually.

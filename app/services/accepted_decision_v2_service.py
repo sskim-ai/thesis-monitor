@@ -117,6 +117,15 @@ class RenderedAcceptedDecision(FrozenModel):
     validation: AcceptedRenderValidationResult
 
 
+class RenderedProductionAcceptedDecision(FrozenModel):
+    contract: str = "v2-accepted-decision-production-renderer-v1"
+    ticker: str
+    accepted_decision: Decision
+    accepted_source: AcceptedDecisionSource
+    text: str
+    validation: AcceptedRenderValidationResult
+
+
 _ORDER_LANGUAGE = re.compile(
     r"시장가|지정가|(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|"
     r"포지션\s*크기|buy\s+now|sell\s+now",
@@ -482,14 +491,20 @@ def validate_accepted_v2_render(
     *,
     rendered_decision: Decision,
     text: str,
+    render_mode: Literal["shadow", "production"] = "shadow",
 ) -> AcceptedRenderValidationResult:
     errors: list[str] = []
     if plan.status != AcceptedDecisionStatus.READY or plan.accepted_decision is None:
         errors.append("accepted_decision_not_ready")
     elif rendered_decision != plan.accepted_decision:
         errors.append("rendered_decision_not_accepted_decision")
-    if "🧪 SHADOW V2 · accepted decision 검증" not in text:
-        errors.append("accepted_shadow_label_missing")
+    required_label = (
+        "🧪 SHADOW V2 · accepted decision 검증"
+        if render_mode == "shadow"
+        else "🧠 AI 분석 판단:"
+    )
+    if required_label not in text:
+        errors.append(f"accepted_{render_mode}_label_missing")
     if plan.accepted_reason is not None and plan.accepted_reason.text not in text:
         errors.append("accepted_reason_missing")
     if _ORDER_LANGUAGE.search(text):
@@ -498,6 +513,27 @@ def validate_accepted_v2_render(
         valid=not errors,
         errors=tuple(dict.fromkeys(errors)),
     )
+
+
+def normalize_accepted_plan_conditions(
+    plan: AcceptedDecisionPlan,
+) -> AcceptedDecisionPlan:
+    if plan.accepted_decision is None:
+        return plan
+    updates: dict[str, EvidenceClaim] = {}
+    if plan.accepted_upgrade_condition is not None:
+        updates["accepted_upgrade_condition"] = normalize_decision_change_condition(
+            plan.accepted_decision,
+            "UPGRADE",
+            plan.accepted_upgrade_condition,
+        )
+    if plan.accepted_downgrade_condition is not None:
+        updates["accepted_downgrade_condition"] = normalize_decision_change_condition(
+            plan.accepted_decision,
+            "DOWNGRADE",
+            plan.accepted_downgrade_condition,
+        )
+    return plan.model_copy(update=updates) if updates else plan
 
 
 def render_accepted_v2_shadow(
@@ -566,6 +602,60 @@ def render_accepted_v2_shadow(
     return RenderedAcceptedDecision(
         ticker=packet.ticker,
         candidate_decision=plan.candidate_decision,
+        accepted_decision=plan.accepted_decision,
+        accepted_source=plan.accepted_source,
+        text=text,
+        validation=validation,
+    )
+
+
+def render_accepted_v2_production(
+    packet: DecisionEvidencePacket,
+    plan: AcceptedDecisionPlan,
+) -> RenderedProductionAcceptedDecision:
+    plan = normalize_accepted_plan_conditions(plan)
+    accepted_validation = validate_accepted_v2_decision(packet, plan)
+    if not accepted_validation.valid or plan.accepted_decision is None:
+        raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
+    if plan.accepted_source is None or plan.accepted_reason is None:
+        raise ValueError("accepted_decision_lineage_missing")
+    if plan.accepted_upgrade_condition is None or plan.accepted_downgrade_condition is None:
+        raise ValueError("accepted_change_condition_missing")
+    confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
+    maturity = {
+        "EARLY": "초기",
+        "PARTIAL": "부분 확인",
+        "CONFIRMED": "확인",
+        "MIXED": "혼재",
+        "UNKNOWN": "판단 근거 부족",
+    }
+    lines = [
+        f"🧠 AI 분석 판단: {plan.accepted_decision}",
+        (
+            f"판단 확신도: {confidence[str(plan.accepted_confidence)]} | "
+            f"증거 성숙도: {maturity[str(plan.accepted_overall_maturity)]}"
+        ),
+        "",
+        "🎯 핵심 판단",
+        f"• {plan.accepted_reason.text}",
+        "",
+        "🔄 재평가 조건",
+        f"• 상향 재평가: {plan.accepted_upgrade_condition.text}",
+        f"• 하향 재평가: {plan.accepted_downgrade_condition.text}",
+        "",
+        "※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+    ]
+    text = "\n".join(lines)
+    validation = validate_accepted_v2_render(
+        plan,
+        rendered_decision=plan.accepted_decision,
+        text=text,
+        render_mode="production",
+    )
+    if not validation.valid:
+        raise ValueError("accepted_render_invalid:" + ",".join(validation.errors))
+    return RenderedProductionAcceptedDecision(
+        ticker=packet.ticker,
         accepted_decision=plan.accepted_decision,
         accepted_source=plan.accepted_source,
         text=text,
