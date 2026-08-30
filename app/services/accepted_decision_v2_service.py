@@ -3,10 +3,12 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections import Counter
 from enum import StrEnum
 from typing import Literal
 
 from app.services.cross_market_decision_engine_service import (
+    Confidence,
     Decision,
     DecisionEvidencePacket,
     EvidenceClaim,
@@ -24,6 +26,7 @@ from app.services.scenario_asymmetry_service import Asymmetry
 
 CONTRACT_VERSION = "v2-accepted-decision-ownership-v1"
 VALIDATOR_CONTRACT = "v2-accepted-decision-validator-v1"
+RENDERER_CONTRACT = "v2-accepted-decision-shadow-renderer-v1"
 
 
 class AcceptedDecisionStatus(StrEnum):
@@ -79,6 +82,7 @@ class AcceptedDecisionPlan(FrozenModel):
     accepted_evidence_fingerprint: str | None
     accepted_as_of: str | None
     accepted_reason: EvidenceClaim | None
+    accepted_confidence: Confidence | None
     accepted_overall_maturity: EvidenceMaturity | None
     accepted_pricing_requirement: PricingRequirement | None
     accepted_asymmetry: Asymmetry | None
@@ -94,6 +98,22 @@ class AcceptedDecisionValidationResult(FrozenModel):
     contract: str = VALIDATOR_CONTRACT
     valid: bool
     errors: tuple[str, ...]
+
+
+class AcceptedRenderValidationResult(FrozenModel):
+    contract: str = "v2-accepted-decision-render-validator-v1"
+    valid: bool
+    errors: tuple[str, ...]
+
+
+class RenderedAcceptedDecision(FrozenModel):
+    contract: str = RENDERER_CONTRACT
+    ticker: str
+    candidate_decision: Decision
+    accepted_decision: Decision
+    accepted_source: AcceptedDecisionSource
+    text: str
+    validation: AcceptedRenderValidationResult
 
 
 _ORDER_LANGUAGE = re.compile(
@@ -145,6 +165,7 @@ def _not_ready_plan(
         accepted_evidence_fingerprint=None,
         accepted_as_of=None,
         accepted_reason=None,
+        accepted_confidence=None,
         accepted_overall_maturity=None,
         accepted_pricing_requirement=None,
         accepted_asymmetry=None,
@@ -301,6 +322,7 @@ def resolve_accepted_v2_decision(
         accepted_evidence_fingerprint=accepted_evidence_fingerprint,
         accepted_as_of=packet.assessment_date,
         accepted_reason=accepted_reason,
+        accepted_confidence=candidate.confidence,
         accepted_overall_maturity=candidate.overall_maturity.maturity,
         accepted_pricing_requirement=candidate.pricing_requirement.requirement,
         accepted_asymmetry=accepted_asymmetry,
@@ -329,6 +351,8 @@ def validate_accepted_v2_decision(
         errors.append("accepted_identity_missing")
     if not plan.accepted_evidence_fingerprint or not plan.accepted_as_of:
         errors.append("accepted_lineage_missing")
+    if plan.accepted_confidence is None:
+        errors.append("accepted_confidence_missing")
     if plan.accepted_preconfirmation_buy and plan.accepted_decision != "BUY":
         errors.append("rejected_preconfirmation_buy_leaked_to_accepted")
     if plan.accepted_postconfirmation_hold and plan.accepted_decision != "HOLD":
@@ -363,3 +387,135 @@ def validate_accepted_v2_decision(
         valid=not errors,
         errors=tuple(dict.fromkeys(errors)),
     )
+
+
+def validate_accepted_v2_render(
+    plan: AcceptedDecisionPlan,
+    *,
+    rendered_decision: Decision,
+    text: str,
+) -> AcceptedRenderValidationResult:
+    errors: list[str] = []
+    if plan.status != AcceptedDecisionStatus.READY or plan.accepted_decision is None:
+        errors.append("accepted_decision_not_ready")
+    elif rendered_decision != plan.accepted_decision:
+        errors.append("rendered_decision_not_accepted_decision")
+    if "🧪 SHADOW V2 · accepted decision 검증" not in text:
+        errors.append("accepted_shadow_label_missing")
+    if plan.accepted_reason is not None and plan.accepted_reason.text not in text:
+        errors.append("accepted_reason_missing")
+    if _ORDER_LANGUAGE.search(text):
+        errors.append("order_command_language")
+    return AcceptedRenderValidationResult(
+        valid=not errors,
+        errors=tuple(dict.fromkeys(errors)),
+    )
+
+
+def render_accepted_v2_shadow(
+    packet: DecisionEvidencePacket,
+    plan: AcceptedDecisionPlan,
+) -> RenderedAcceptedDecision:
+    accepted_validation = validate_accepted_v2_decision(packet, plan)
+    if not accepted_validation.valid or plan.accepted_decision is None:
+        raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
+    if plan.accepted_source is None or plan.accepted_reason is None:
+        raise ValueError("accepted_decision_lineage_missing")
+    confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
+    maturity = {
+        "EARLY": "초기",
+        "PARTIAL": "부분 확인",
+        "CONFIRMED": "확인",
+        "MIXED": "혼재",
+        "UNKNOWN": "판단 근거 부족",
+    }
+    asymmetry = {
+        "FAVORABLE": "유리",
+        "BALANCED": "균형",
+        "UNFAVORABLE": "불리",
+        "UNKNOWN": "판단 보류",
+    }
+    lines = [
+        "🧪 SHADOW V2 · accepted decision 검증",
+        f"🏢 {packet.company_name}({packet.ticker})",
+        f"🧠 AI 수용 판단: {plan.accepted_decision}",
+        f"추론등급: 매우 높음 | 판단 확신도: {confidence[str(plan.accepted_confidence)]}",
+        (
+            "증거 성숙도: "
+            f"{maturity[str(plan.accepted_overall_maturity)]} | "
+            f"가격 비대칭: {asymmetry[str(plan.accepted_asymmetry)]}"
+        ),
+        "",
+        "🎯 판단",
+        f"• {plan.accepted_reason.text}",
+    ]
+    if plan.accepted_preconfirmation_buy and plan.accepted_confirmation_cost_basis is not None:
+        lines.extend(
+            [
+                "",
+                "🔎 완전 확인 전 BUY",
+                f"• 확인을 기다리는 비용: {plan.accepted_confirmation_cost_basis.text}",
+            ]
+        )
+    lines.extend(
+        [
+            "",
+            "🔄 판단 변경 조건",
+            f"• 상향: {plan.accepted_upgrade_condition.text}",
+            f"• 하향: {plan.accepted_downgrade_condition.text}",
+            "",
+            "※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        ]
+    )
+    text = "\n".join(lines)
+    validation = validate_accepted_v2_render(
+        plan,
+        rendered_decision=plan.accepted_decision,
+        text=text,
+    )
+    if not validation.valid:
+        raise ValueError("accepted_render_invalid:" + ",".join(validation.errors))
+    return RenderedAcceptedDecision(
+        ticker=packet.ticker,
+        candidate_decision=plan.candidate_decision,
+        accepted_decision=plan.accepted_decision,
+        accepted_source=plan.accepted_source,
+        text=text,
+        validation=validation,
+    )
+
+
+def accepted_message_quality(
+    rendered: tuple[RenderedAcceptedDecision, ...],
+) -> dict[str, object]:
+    errors: list[str] = []
+    texts = [row.text for row in rendered]
+    if any(not row.validation.valid for row in rendered):
+        errors.append("accepted_render_validation_failed")
+    if any(len(text) > 3500 for text in texts):
+        errors.append("message_too_long")
+    if any(_ORDER_LANGUAGE.search(text) for text in texts):
+        errors.append("order_command_language")
+    substantive: list[str] = []
+    for text in texts:
+        for line in text.splitlines():
+            normalized = re.sub(r"\s+", " ", line.strip().removeprefix("• "))
+            if len(normalized) >= 36 and not normalized.startswith("Shadow 연구 분류이며"):
+                substantive.append(normalized)
+    repeated = [text for text, count in Counter(substantive).items() if count >= 2]
+    if repeated:
+        errors.append("cross_ticker_substantive_repetition")
+    return {
+        "contract": "v2-accepted-decision-message-quality-v1",
+        "status": "PASS" if not errors else "FAIL",
+        "errors": errors,
+        "message_count": len(texts),
+        "average_character_count": (
+            round(sum(map(len, texts)) / len(texts), 2) if texts else 0
+        ),
+        "max_character_count": max(map(len, texts), default=0),
+        "numeric_claim_count": 0,
+        "manual_numeric_count": 0,
+        "unresolved_numeric_count": 0,
+        "repeated_substantive_span_count": len(repeated),
+    }

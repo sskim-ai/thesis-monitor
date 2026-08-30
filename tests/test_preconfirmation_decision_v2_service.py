@@ -39,8 +39,11 @@ from app.services.accepted_decision_v2_service import (
     AcceptedDecisionSource,
     AcceptedDecisionStatus,
     AcceptedV2Adjudication,
+    accepted_message_quality,
+    render_accepted_v2_shadow,
     resolve_accepted_v2_decision,
     validate_accepted_v2_decision,
+    validate_accepted_v2_render,
 )
 
 
@@ -360,3 +363,40 @@ def test_accepted_resolution_is_idempotent() -> None:
     assert first == second
     assert first.accepted_decision_id == second.accepted_decision_id
     assert first.accepted_evidence_fingerprint == second.accepted_evidence_fingerprint
+
+
+def test_accepted_renderer_uses_keep_v1_hold_not_raw_candidate_buy() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V1", accepted_decision="HOLD"),
+    )
+    rendered = render_accepted_v2_shadow(packet, plan)
+    assert rendered.candidate_decision == "BUY"
+    assert rendered.accepted_decision == "HOLD"
+    assert "AI 수용 판단: HOLD" in rendered.text
+    assert "AI 수용 판단: BUY" not in rendered.text
+    assert "완전 확인 전 BUY" not in rendered.text
+    assert accepted_message_quality((rendered,))["status"] == "PASS"
+
+
+def test_accepted_render_validator_rejects_candidate_label_leak() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V1", accepted_decision="HOLD"),
+    )
+    rendered = render_accepted_v2_shadow(packet, plan)
+    validation = validate_accepted_v2_render(
+        plan,
+        rendered_decision="BUY",
+        text=rendered.text.replace("AI 수용 판단: HOLD", "AI 수용 판단: BUY"),
+    )
+    assert validation.valid is False
+    assert "rendered_decision_not_accepted_decision" in validation.errors

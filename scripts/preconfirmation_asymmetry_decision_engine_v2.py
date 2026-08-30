@@ -12,12 +12,11 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
-
+from app.services.accepted_decision_v2_service import (
+    AcceptedV2Adjudication as V2Adjudication,
+)
 from app.services.cross_market_decision_engine_service import (
-    Decision,
     DecisionEvidencePacket,
-    EvidenceClaim,
     FrozenModel,
     compact_ai_context,
 )
@@ -38,22 +37,6 @@ REPORTS = ROOT / "docs/reports"
 MODEL = "gpt-5.6-sol"
 REASONING_EFFORT = "xhigh"
 TEST_NAMESPACE = "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY"
-
-
-class V2Adjudication(FrozenModel):
-    ticker: str
-    v1_decision: Decision
-    v2_decision: Decision
-    accepted_decision: Decision
-    recommendation: Literal["KEEP_V1", "KEEP_V2", "NEEDS_REPAIR"]
-    v1_overrequired_confirmation: Literal["YES", "NO", "UNCERTAIN"]
-    v2_underweighted_execution_risk: Literal["YES", "NO", "UNCERTAIN"]
-    v1_ignored_confirmation_cost: Literal["YES", "NO", "UNCERTAIN"]
-    v2_overstated_favorable_asymmetry: Literal["YES", "NO", "UNCERTAIN"]
-    valuation_or_expectation_misuse: Literal["V1", "V2", "BOTH", "NEITHER", "UNCERTAIN"]
-    data_quality_comparison_safe: bool
-    decisive_basis: EvidenceClaim
-    bounded_repair: str = Field(min_length=2, max_length=300)
 
 
 class V2AdjudicationBatch(FrozenModel):
