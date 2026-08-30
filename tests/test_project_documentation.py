@@ -129,18 +129,19 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260830-preconfirmation-asymmetry-decision-engine-v2"
+        "codex/20260830-v2-adjudicated-decision-ownership-repair"
     )
     assert state["current_phase"] == (
-        "preconfirmation_asymmetry_v2_shadow_closed_ready_with_observation"
+        "v2_accepted_decision_ownership_closed_ready_with_observation"
     )
     assert state["last_completed_phase"] == (
-        "20260830_preconfirmation_asymmetry_decision_engine_v2"
+        "20260830_v2_adjudicated_decision_ownership_repair"
     )
     assert state["next_default_phase"] == (
-        "review_v2_shadow_decisions_before_bounded_migration"
+        "review_accepted_v2_messages_before_bounded_migration"
     )
     v2_implementation_commit = "c0c9139babb06ead11112aea072a67ef364a9b22"
+    accepted_implementation_commit = "f55605189ee0179ab4af7030b94d79d706ed32a8"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -154,8 +155,8 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["deployed_code_commit"] == state["recorded_base_commit"]
-    assert state["main_code_commit"] == v2_implementation_commit
-    assert state["operating_code_commit"] == v2_implementation_commit
+    assert state["main_code_commit"] == accepted_implementation_commit
+    assert state["operating_code_commit"] == accepted_implementation_commit
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -196,6 +197,29 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert v2["open_material_p1"] == []
     assert v2["migration_recommendation"] == "READY_WITH_OBSERVATION"
     assert v2["next_action"] == "REVIEW_V2_SHADOW_DECISIONS"
+    accepted = state["v2_adjudicated_decision_ownership_repair_20260830"]
+    assert accepted["status"] == "CLOSED_READY_FOR_MIGRATION_REVIEW"
+    assert accepted["instruction_commit"] == "4662c08"
+    assert accepted["base_commit"] == "29bdd4cf378438fedad7f602b4b8ede80c46dd44"
+    assert accepted["track_a_commit"] == (
+        "5730f816617263c7b09d5683d3832c303d8f79ce"
+    )
+    assert accepted["track_b_commit"] == (
+        "6370d3fa87c37f5616e1726c055f1bc5fb883f3d"
+    )
+    assert accepted["track_c_commit"] == accepted_implementation_commit
+    assert accepted["candidate_distribution"] == {"BUY": 2, "HOLD": 14, "SELL": 4}
+    assert accepted["accepted_distribution"] == {"BUY": 1, "HOLD": 16, "SELL": 3}
+    assert accepted["accepted_preconfirmation_buy_subjects"] == ["GOOGL"]
+    assert accepted["test_sink_delivery"] == "PASS_20_OF_20_EXACT"
+    assert accepted["production_recipient_send"] == 0
+    assert accepted["production_delivery_intent_created"] == 0
+    assert accepted["production_v2_exposure"] == 0
+    assert accepted["current_v1_state"] == "CANARY_UNCHANGED"
+    assert accepted["open_p0"] == []
+    assert accepted["open_material_p1"] == []
+    assert accepted["migration_recommendation"] == "READY_WITH_OBSERVATION"
+    assert accepted["next_action"] == "REVIEW_ACCEPTED_V2_MESSAGES"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -208,6 +232,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["numeric_summary_ownership"] == ("numeric-summary-ownership-v1")
     assert state["contracts"]["typed_template_skeleton"] == ("typed-template-skeleton-v1")
     assert state["contracts"]["canonical_supply_flow_tuple"] == ("canonical-supply-flow-tuple-v1")
+    assert state["contracts"]["v2_accepted_decision_ownership"] == (
+        "v2-accepted-decision-ownership-v1"
+    )
+    assert state["contracts"]["v2_accepted_decision_renderer"] == (
+        "v2-accepted-decision-shadow-renderer-v1"
+    )
+    assert state["contracts"]["v2_accepted_decision_migration_readiness"] == (
+        "v2-accepted-decision-migration-readiness-v1"
+    )
     assert state["contracts"]["deterministic_sr_base_layer"] == ("deterministic-sr-base-layer-v1")
     assert state["contracts"]["sr_proximity_relevance_gate"] == ("sr-proximity-relevance-gate-v1")
     assert state["contracts"]["major_sr_price_anchor_reality_gate"] == (
@@ -1271,7 +1304,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == v2_implementation_commit
+    assert state["current_commit"] == accepted_implementation_commit
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

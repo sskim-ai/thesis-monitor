@@ -1,5 +1,22 @@
 # Thesis Monitor Project Handoff
 
+## 2026-08-30 V2 Accepted Decision Ownership Handoff
+
+Start with `docs/reports/20260830-v2-accepted-migration-readiness.json`, accepted decisions JSON,
+five ownership controls, exact test-sink receipt, and artifact index. Exact instruction commit is
+`4662c08`; deterministic implementation is `f55605189ee0179ab4af7030b94d79d706ed32a8` on base
+`29bdd4cf378438fedad7f602b4b8ede80c46dd44`.
+
+Raw V2 candidates remain immutable at BUY `2`, HOLD `14`, SELL `4`; they are audit history, not
+post-adjudication authority. Accepted V2 is BUY `1`, HOLD `16`, SELL `3`. `003690/SNDK` keep v1,
+`GOOGL/HUT/RXRX` keep v2, and `GOOGL` is the only accepted pre-confirmation BUY. All downstream
+summary, renderer, validator, sink, and readiness paths consume `accepted_plan`.
+
+The accepted sink passed `20/20 exact` with zero production send/intent and no raw recipient ID in
+repository artifacts. V1 canary is unchanged, V2 production exposure is zero, and open P0/material
+P1 is `0/0`. Recommendation is `READY_WITH_OBSERVATION`; next action is operator review of accepted
+messages before any separately instructed bounded migration.
+
 ## 2026-08-30 Pre-Confirmation Asymmetry V2 Handoff
 
 Start with `docs/reports/20260830-v2-migration-readiness.json`, the current-20 v2 JSON, v1/v2

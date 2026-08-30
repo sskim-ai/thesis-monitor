@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v27`
+Master Workflow: `v28`
 As of: `2026-08-30`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260830-preconfirmation-asymmetry-decision-engine-v2`
+Latest evidence branch: `codex/20260830-v2-adjudicated-decision-ownership-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,26 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. V2 Accepted Decision Ownership
+
+Exact work instructions were committed first as `4662c08` on base
+`29bdd4cf378438fedad7f602b4b8ede80c46dd44`. Tracks A/B/C implement deterministic accepted
+ownership through `f55605189ee0179ab4af7030b94d79d706ed32a8`. Raw candidate and adjudication artifacts are
+immutable history; after a material disagreement the only summary, renderer, validator, test-sink,
+and readiness authority is `accepted_plan` under `v2-accepted-decision-ownership-v1`.
+
+The raw candidate distribution remains BUY `2`, HOLD `14`, SELL `4`. The frozen adjudicated result
+is BUY `1`, HOLD `16`, SELL `3`: keep v1 for `003690/SNDK`, and keep v2 for `GOOGL/HUT/RXRX`.
+Rejected `003690` pre-confirmation BUY semantics cannot leak into accepted output; `GOOGL` remains
+the sole accepted pre-confirmation BUY. Missing required adjudication fails closed as `NOT_READY`
+and never silently falls back to either candidate.
+
+The accepted renderer and validator passed all 20 subjects. The dedicated sink passed `20/20 exact`
+with zero production recipient sends/intents and no recipient identifiers retained. V1 production
+canary state and user-visible output are unchanged. Open P0/material P1 is `0/0`, and
+`V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`. The next action is review of accepted V2
+messages; this repair does not authorize production migration.
 
 ## 0. Pre-Confirmation Asymmetry Decision Engine V2
 

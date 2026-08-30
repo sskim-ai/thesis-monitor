@@ -1,0 +1,357 @@
+{
+  "contract": "v2-accepted-decision-test-reconciliation-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY",
+  "orphan_count": 0,
+  "planned_message_count": 20,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "receipt_count": 2,
+  "received_payload_quality": "PASS",
+  "rows": [
+    {
+      "character_count": 379,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:000660",
+      "outbound_sha256": "074455b0db648667d486e429658a91f99fa4f310a75d7409a50e740b8e4f1d4c",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "074455b0db648667d486e429658a91f99fa4f310a75d7409a50e740b8e4f1d4c",
+      "remote_message_alias": "8ad37c992dd9",
+      "rendered_sha256": "074455b0db648667d486e429658a91f99fa4f310a75d7409a50e740b8e4f1d4c",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "000660"
+    },
+    {
+      "character_count": 416,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:003690",
+      "outbound_sha256": "6cbdcb62e4d6afd42fd53715f181f4a988fa12a566cb4facc677f6d64852f09d",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "6cbdcb62e4d6afd42fd53715f181f4a988fa12a566cb4facc677f6d64852f09d",
+      "remote_message_alias": "7232c078249f",
+      "rendered_sha256": "6cbdcb62e4d6afd42fd53715f181f4a988fa12a566cb4facc677f6d64852f09d",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "003690"
+    },
+    {
+      "character_count": 386,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:005490",
+      "outbound_sha256": "166fad6a6ec22bebbf0adc6ee3de3e81c6c577e72f84213f8e182017ea090c1a",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "166fad6a6ec22bebbf0adc6ee3de3e81c6c577e72f84213f8e182017ea090c1a",
+      "remote_message_alias": "e09712bc94d3",
+      "rendered_sha256": "166fad6a6ec22bebbf0adc6ee3de3e81c6c577e72f84213f8e182017ea090c1a",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 3,
+      "ticker": "005490"
+    },
+    {
+      "character_count": 385,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:005930",
+      "outbound_sha256": "0a9d4f0a378ee9b893d114da89dabf4536ae7ff37bc78e5613f99db5df967780",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "0a9d4f0a378ee9b893d114da89dabf4536ae7ff37bc78e5613f99db5df967780",
+      "remote_message_alias": "728ab2f2aac8",
+      "rendered_sha256": "0a9d4f0a378ee9b893d114da89dabf4536ae7ff37bc78e5613f99db5df967780",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 4,
+      "ticker": "005930"
+    },
+    {
+      "character_count": 370,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:010120",
+      "outbound_sha256": "c9645e7cacc8db3a753019d7d995a9a8504b703af96f910d0160c172003846ee",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "c9645e7cacc8db3a753019d7d995a9a8504b703af96f910d0160c172003846ee",
+      "remote_message_alias": "7e846d5d55bb",
+      "rendered_sha256": "c9645e7cacc8db3a753019d7d995a9a8504b703af96f910d0160c172003846ee",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 5,
+      "ticker": "010120"
+    },
+    {
+      "character_count": 366,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:012450",
+      "outbound_sha256": "67d97e7ab084d78b22497c61eb21126fb4ddce0ba119a55492160ffd49c8fa00",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "67d97e7ab084d78b22497c61eb21126fb4ddce0ba119a55492160ffd49c8fa00",
+      "remote_message_alias": "c82464c8d84f",
+      "rendered_sha256": "67d97e7ab084d78b22497c61eb21126fb4ddce0ba119a55492160ffd49c8fa00",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 6,
+      "ticker": "012450"
+    },
+    {
+      "character_count": 342,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:086280",
+      "outbound_sha256": "f76d66ecfecfd534e0f9ab9a2f3c5080aafce6a8608e6b7629b0cbd43ec51cc6",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "f76d66ecfecfd534e0f9ab9a2f3c5080aafce6a8608e6b7629b0cbd43ec51cc6",
+      "remote_message_alias": "fe6b64b87776",
+      "rendered_sha256": "f76d66ecfecfd534e0f9ab9a2f3c5080aafce6a8608e6b7629b0cbd43ec51cc6",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 7,
+      "ticker": "086280"
+    },
+    {
+      "character_count": 364,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:CORZ",
+      "outbound_sha256": "a2ced248573a7d884ac7901ea98759f5b952f0d034df36425e4ef2de3bfce036",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "a2ced248573a7d884ac7901ea98759f5b952f0d034df36425e4ef2de3bfce036",
+      "remote_message_alias": "e1921f58cdb7",
+      "rendered_sha256": "a2ced248573a7d884ac7901ea98759f5b952f0d034df36425e4ef2de3bfce036",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 8,
+      "ticker": "CORZ"
+    },
+    {
+      "character_count": 365,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:CRCL",
+      "outbound_sha256": "63364819e038c4e7a1fa44768529b6da9c9c26e66dc5888db3fb7e3a6311c490",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "63364819e038c4e7a1fa44768529b6da9c9c26e66dc5888db3fb7e3a6311c490",
+      "remote_message_alias": "54c5b2f617b8",
+      "rendered_sha256": "63364819e038c4e7a1fa44768529b6da9c9c26e66dc5888db3fb7e3a6311c490",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 9,
+      "ticker": "CRCL"
+    },
+    {
+      "character_count": 531,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:GOOGL",
+      "outbound_sha256": "4c48b37b81da5d9bcaa534e9ec176ec6960ed9a4830b634fa979371b6665cdea",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "4c48b37b81da5d9bcaa534e9ec176ec6960ed9a4830b634fa979371b6665cdea",
+      "remote_message_alias": "94544a2aeb19",
+      "rendered_sha256": "4c48b37b81da5d9bcaa534e9ec176ec6960ed9a4830b634fa979371b6665cdea",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 10,
+      "ticker": "GOOGL"
+    },
+    {
+      "character_count": 417,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:HUT",
+      "outbound_sha256": "cd9e7081539684dc9be6708c61d914ebd0a9fb576b929702262123188392ac8b",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "cd9e7081539684dc9be6708c61d914ebd0a9fb576b929702262123188392ac8b",
+      "remote_message_alias": "bbf458666187",
+      "rendered_sha256": "cd9e7081539684dc9be6708c61d914ebd0a9fb576b929702262123188392ac8b",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "HUT"
+    },
+    {
+      "character_count": 362,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:IBM",
+      "outbound_sha256": "0984afa4203ef3e4432388bec86207455a4ff4a70b736006d2df2569c5e70c24",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "0984afa4203ef3e4432388bec86207455a4ff4a70b736006d2df2569c5e70c24",
+      "remote_message_alias": "7e1c03100820",
+      "rendered_sha256": "0984afa4203ef3e4432388bec86207455a4ff4a70b736006d2df2569c5e70c24",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "IBM"
+    },
+    {
+      "character_count": 386,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:MU",
+      "outbound_sha256": "90b43e975d9005876ca5bce4f677ffb2b1cce952d4e31b5f7e29cbf06894921e",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "90b43e975d9005876ca5bce4f677ffb2b1cce952d4e31b5f7e29cbf06894921e",
+      "remote_message_alias": "ba0fe24ed4e6",
+      "rendered_sha256": "90b43e975d9005876ca5bce4f677ffb2b1cce952d4e31b5f7e29cbf06894921e",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 3,
+      "ticker": "MU"
+    },
+    {
+      "character_count": 405,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:RXRX",
+      "outbound_sha256": "00e8b59f106ec95f83a5e000a94f6bb2c3f0aee16e2163fdc1e61da4ec52e1d5",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "00e8b59f106ec95f83a5e000a94f6bb2c3f0aee16e2163fdc1e61da4ec52e1d5",
+      "remote_message_alias": "05a09a50c908",
+      "rendered_sha256": "00e8b59f106ec95f83a5e000a94f6bb2c3f0aee16e2163fdc1e61da4ec52e1d5",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 4,
+      "ticker": "RXRX"
+    },
+    {
+      "character_count": 414,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:SKHY",
+      "outbound_sha256": "5836b3b85d9ededd47d64682986a130337062077a5e30a300b2102fbc37d9d07",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "5836b3b85d9ededd47d64682986a130337062077a5e30a300b2102fbc37d9d07",
+      "remote_message_alias": "9e2f2d7ee787",
+      "rendered_sha256": "5836b3b85d9ededd47d64682986a130337062077a5e30a300b2102fbc37d9d07",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 5,
+      "ticker": "SKHY"
+    },
+    {
+      "character_count": 415,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:SNDK",
+      "outbound_sha256": "7cc17fa749c0c81bda0ea4bad87dfb70e43a55a7af8824af86fb91b35677d555",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "7cc17fa749c0c81bda0ea4bad87dfb70e43a55a7af8824af86fb91b35677d555",
+      "remote_message_alias": "a670071b87b0",
+      "rendered_sha256": "7cc17fa749c0c81bda0ea4bad87dfb70e43a55a7af8824af86fb91b35677d555",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 6,
+      "ticker": "SNDK"
+    },
+    {
+      "character_count": 366,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:TSLA",
+      "outbound_sha256": "b901acdc54cb3e7457bb06c854bbc4d7e2dcdc86b7859a2ffc11197a2d773e55",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "b901acdc54cb3e7457bb06c854bbc4d7e2dcdc86b7859a2ffc11197a2d773e55",
+      "remote_message_alias": "449357dad2e2",
+      "rendered_sha256": "b901acdc54cb3e7457bb06c854bbc4d7e2dcdc86b7859a2ffc11197a2d773e55",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 7,
+      "ticker": "TSLA"
+    },
+    {
+      "character_count": 384,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:TSM",
+      "outbound_sha256": "00e50d49fd6ad97fa4da26f8c5d1f4c4cfbce4207677fb5546739bc55fe555e6",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "00e50d49fd6ad97fa4da26f8c5d1f4c4cfbce4207677fb5546739bc55fe555e6",
+      "remote_message_alias": "f4d8f0563014",
+      "rendered_sha256": "00e50d49fd6ad97fa4da26f8c5d1f4c4cfbce4207677fb5546739bc55fe555e6",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 8,
+      "ticker": "TSM"
+    },
+    {
+      "character_count": 365,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:WRD",
+      "outbound_sha256": "7b52bee9b71f9555577230d2b28f6206b84b9de0beeb4a25ac59b82dadbf9fb6",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "7b52bee9b71f9555577230d2b28f6206b84b9de0beeb4a25ac59b82dadbf9fb6",
+      "remote_message_alias": "67d60e6fd4ef",
+      "rendered_sha256": "7b52bee9b71f9555577230d2b28f6206b84b9de0beeb4a25ac59b82dadbf9fb6",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 9,
+      "ticker": "WRD"
+    },
+    {
+      "character_count": 367,
+      "exact_payload_match": true,
+      "logical_identity": "V2_ACCEPTED_DECISION_OWNERSHIP_TEST_ONLY:WULF",
+      "outbound_sha256": "18adad01fdcce6763feb1bc61ecd8c3f2062fac93c73587242f0c418e4872716",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "18adad01fdcce6763feb1bc61ecd8c3f2062fac93c73587242f0c418e4872716",
+      "remote_message_alias": "c7a51e6b16b8",
+      "rendered_sha256": "18adad01fdcce6763feb1bc61ecd8c3f2062fac93c73587242f0c418e4872716",
+      "route": "SHADOW_V2_ACCEPTED_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 10,
+      "ticker": "WULF"
+    }
+  ],
+  "sent_message_count": 20,
+  "status": "PASS"
+}

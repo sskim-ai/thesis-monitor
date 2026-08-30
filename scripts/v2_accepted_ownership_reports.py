@@ -421,26 +421,27 @@ Open P0 / material P1: `0 / 0`.
 """,
     )
 
-    artifact_names = [
-        "20260830-v2-accepted-decision-root-cause.md",
-        "20260830-v2-accepted-decision-contract.md",
-        "20260830-v2-candidate-vs-accepted-20.md",
-        "20260830-v2-five-adjudication-ownership-controls.md",
-        "20260830-v2-accepted-reasoning-controls.md",
-        "20260830-v2-accepted-distribution.md",
-        "20260830-v2-completion-summary-errata.md",
-        "20260830-v2-accepted-renderer-validator.md",
-        "20260830-v2-accepted-test-sink.md",
-        "20260830-v2-accepted-message-quality.md",
-        "20260830-v2-accepted-migration-readiness.md",
-        "20260830-v2-accepted-decisions.json",
-        "20260830-v2-accepted-migration-readiness.json",
-        "20260830-v2-accepted-test-sink-receipt.json",
+    artifact_paths = [
+        ARCHITECTURE / "V2_ACCEPTED_DECISION_OWNERSHIP.md",
+        ARCHITECTURE / "DECISION_ENGINE_V2_SHADOW_MIGRATION.md",
+        REPORTS / "20260830-v2-accepted-decision-root-cause.md",
+        REPORTS / "20260830-v2-accepted-decision-contract.md",
+        REPORTS / "20260830-v2-candidate-vs-accepted-20.md",
+        REPORTS / "20260830-v2-five-adjudication-ownership-controls.md",
+        REPORTS / "20260830-v2-accepted-reasoning-controls.md",
+        REPORTS / "20260830-v2-accepted-distribution.md",
+        REPORTS / "20260830-v2-completion-summary-errata.md",
+        REPORTS / "20260830-v2-accepted-renderer-validator.md",
+        REPORTS / "20260830-v2-accepted-test-sink.md",
+        REPORTS / "20260830-v2-accepted-message-quality.md",
+        REPORTS / "20260830-v2-accepted-migration-readiness.md",
+        REPORTS / "20260830-v2-accepted-decisions.json",
+        REPORTS / "20260830-v2-accepted-migration-readiness.json",
+        REPORTS / "20260830-v2-accepted-test-sink-receipt.json",
     ]
     index_rows = []
-    for name in artifact_names:
-        path = REPORTS / name
-        index_rows.append([name, _sha(path), path.stat().st_size])
+    for path in artifact_paths:
+        index_rows.append([path.relative_to(ROOT), _sha(path), path.stat().st_size])
     _write_text(
         REPORTS / "20260830-v2-accepted-artifact-index.md",
         "# V2 Accepted Artifact Index\n\n"

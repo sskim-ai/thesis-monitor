@@ -1,0 +1,2208 @@
+{
+  "accepted_distribution": {
+    "BUY": 1,
+    "HOLD": 16,
+    "SELL": 3
+  },
+  "accepted_postconfirmation_hold_count": 0,
+  "accepted_preconfirmation_buy_count": 1,
+  "adjudication_count": 5,
+  "candidate_distribution": {
+    "BUY": 2,
+    "HOLD": 14,
+    "SELL": 4
+  },
+  "candidate_preconfirmation_buy_count": 2,
+  "contract": "v2-accepted-decision-replay-v1",
+  "errors": [],
+  "material_disagreement_count": 5,
+  "message_quality": {
+    "average_character_count": 389.25,
+    "contract": "v2-accepted-decision-message-quality-v1",
+    "errors": [],
+    "manual_numeric_count": 0,
+    "max_character_count": 531,
+    "message_count": 20,
+    "numeric_claim_count": 0,
+    "repeated_substantive_span_count": 0,
+    "status": "PASS",
+    "unresolved_numeric_count": 0
+  },
+  "ownership_repair_redecided_frozen_cases": 0,
+  "production_delivery_intent_created": 0,
+  "production_packet_changed": false,
+  "rows": [
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:303cc89497a762bf26dda47a385303af155c5d409466a21fb9257e306349b408",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:b4616e0ec381fe152d07",
+            "decision-evidence:cbc64e2b6442e7fe5397",
+            "decision-evidence:8b53a9f7450aad10afd3"
+          ],
+          "text": "핵심 고객 상실이나 구조적 기술 열위가 나타나고 공급과잉까지 중기 수익성을 훼손하면 매도 판단으로 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:0aeca1619e6d5180920d0b413f227238d81418a1a4f36004afd9dc009df6a6ea",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:financial_quality:2026-06-30",
+            "decision-evidence:e69aab50953f46aec513"
+          ],
+          "text": "핵심 이익 자료가 품질 심사를 통과하지 못한 상태에서 시장 기대까지 매우 높아 신규 방향성을 확정할 근거가 부족하다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:financial_quality:2026-06-30",
+            "decision-evidence:98d2996718a0efb76056",
+            "decision-evidence:8e40ea29aff53eebb43d"
+          ],
+          "text": "일관된 기준의 재무자료가 수익성을 재검증하고 고객 채택 확대와 현금창출 개선이 함께 관찰되면 매수 판단을 재개한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:f8391b24a7981ed707ee82decc3b75a65125e9944a0b9a54815e339e46e642ae",
+        "candidate_evidence_fingerprint": "899971b974ad32c206398254e726d48c7c92079bd6ce96af5274d95ce7e9fb41",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "000660"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:f8391b24a7981ed707ee82decc3b75a65125e9944a0b9a54815e339e46e642ae",
+        "candidate_evidence_fingerprint": "899971b974ad32c206398254e726d48c7c92079bd6ce96af5274d95ce7e9fb41",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "e662b6046b487e66e2fd8568f47ff65190063adeb0646589ed76b389f46b66c7",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "SK하이닉스",
+      "evidence_fingerprint": "899971b974ad32c206398254e726d48c7c92079bd6ce96af5274d95ce7e9fb41",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 SK하이닉스(000660)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 혼재 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 핵심 이익 자료가 품질 심사를 통과하지 못한 상태에서 시장 기대까지 매우 높아 신규 방향성을 확정할 근거가 부족하다.\n\n🔄 판단 변경 조건\n• 상향: 일관된 기준의 재무자료가 수익성을 재검증하고 고객 채택 확대와 현금창출 개선이 함께 관찰되면 매수 판단을 재개한다.\n• 하향: 핵심 고객 상실이나 구조적 기술 열위가 나타나고 공급과잉까지 중기 수익성을 훼손하면 매도 판단으로 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "000660",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "000660",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:accf73e89a9b43c13e904170bb4f86d548ff79f7b2afd2d24a8bae07b5a554fa",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:21ddf2dc43fc2951402b",
+            "decision-evidence:4f60e9255e79d4eeaf5e",
+            "decision-evidence:2e5b0cdb077072e34b15"
+          ],
+          "text": "갱신요율과 손해율이 함께 악화하면 보유 판단으로 낮추고, 언더라이팅 적자나 자본 훼손이 구조화되면 매도 판단으로 전환한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:9b02939e1d00c4baf20984dfcb2b14ed3888610bbe7d05a9f4896a9c91d89830",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "BASE_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:5871b9ebe80ebb75cabb",
+            "decision-evidence:52af705a4279a23fba6c",
+            "decision-evidence:2e5b0cdb077072e34b15",
+            "decision-evidence:06b7f50ebb7ed7843c6d",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "기간 비교의 기준 일관성이 경고된 가운데 보험영업의 반복성과 자본적정성 기반 환원이 미확인이고 관련 기대도 이미 반영돼, 장부가치 할인만으로 BUY 비대칭은 입증되지 않는다."
+        },
+        "accepted_source": "ADJUDICATION_KEEP_V1",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:e3a74d88f4a9e45a8247",
+            "decision-evidence:b070c24aa5450d9bf543"
+          ],
+          "text": "언더라이팅 이익과 자기자본 수익성이 함께 개선되고 자본적정성을 유지한 환원 확대가 관찰되면 확신을 높인다."
+        },
+        "adjudication_id": "v2-adjudication:sha256:dd203cf50dd5a83fc5e40227e7eadb5a75449fa57c1f62cef28925167ad05b0d",
+        "adjudication_reason": {
+          "evidence_refs": [
+            "decision-evidence:5871b9ebe80ebb75cabb",
+            "decision-evidence:52af705a4279a23fba6c",
+            "decision-evidence:2e5b0cdb077072e34b15",
+            "decision-evidence:06b7f50ebb7ed7843c6d",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "기간 비교의 기준 일관성이 경고된 가운데 보험영업의 반복성과 자본적정성 기반 환원이 미확인이고 관련 기대도 이미 반영돼, 장부가치 할인만으로 BUY 비대칭은 입증되지 않는다."
+        },
+        "adjudication_recommendation": "KEEP_V1",
+        "adjudication_status": "FINAL",
+        "candidate_decision": "BUY",
+        "candidate_decision_id": "v2-candidate:sha256:a0c7be1eac86925b96eeeb30a21da8e6e7a95c73f8ccc9fed80f1c5818162583",
+        "candidate_evidence_fingerprint": "510a7b157d4247a9c611e38dfd96dd34851434323907b1bc10955299d8c92b6b",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": true,
+        "status": "READY",
+        "ticker": "003690"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "accepted_decision": "HOLD",
+        "adjudication_id": "v2-adjudication:sha256:dd203cf50dd5a83fc5e40227e7eadb5a75449fa57c1f62cef28925167ad05b0d",
+        "adjudication_status": "FINAL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": false,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:5871b9ebe80ebb75cabb",
+            "decision-evidence:52af705a4279a23fba6c",
+            "decision-evidence:2e5b0cdb077072e34b15",
+            "decision-evidence:06b7f50ebb7ed7843c6d",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "기간 비교의 기준 일관성이 경고된 가운데 보험영업의 반복성과 자본적정성 기반 환원이 미확인이고 관련 기대도 이미 반영돼, 장부가치 할인만으로 BUY 비대칭은 입증되지 않는다."
+        },
+        "recommendation": "KEEP_V1",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+        "ticker": "003690",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "BUY",
+        "v2_overstated_favorable_asymmetry": "YES",
+        "v2_underweighted_execution_risk": "YES",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "candidate_history": {
+        "candidate_decision": "BUY",
+        "candidate_decision_id": "v2-candidate:sha256:a0c7be1eac86925b96eeeb30a21da8e6e7a95c73f8ccc9fed80f1c5818162583",
+        "candidate_evidence_fingerprint": "510a7b157d4247a9c611e38dfd96dd34851434323907b1bc10955299d8c92b6b",
+        "candidate_preconfirmation_buy": true,
+        "candidate_source_row_fingerprint": "966005811f1c192cb5baae1df248104699ad8124bc29413e98dbe790c91dad75",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "코리안리",
+      "evidence_fingerprint": "510a7b157d4247a9c611e38dfd96dd34851434323907b1bc10955299d8c92b6b",
+      "market": "kr",
+      "material_disagreement": true,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "ADJUDICATION_KEEP_V1",
+        "candidate_decision": "BUY",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 코리안리(003690)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 기간 비교의 기준 일관성이 경고된 가운데 보험영업의 반복성과 자본적정성 기반 환원이 미확인이고 관련 기대도 이미 반영돼, 장부가치 할인만으로 BUY 비대칭은 입증되지 않는다.\n\n🔄 판단 변경 조건\n• 상향: 언더라이팅 이익과 자기자본 수익성이 함께 개선되고 자본적정성을 유지한 환원 확대가 관찰되면 확신을 높인다.\n• 하향: 갱신요율과 손해율이 함께 악화하면 보유 판단으로 낮추고, 언더라이팅 적자나 자본 훼손이 구조화되면 매도 판단으로 전환한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "003690",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "003690",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "BALANCED",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:92d722e54359f85edbd73bf46cf8227f574ceac7eab3eaaab66a51bc9ea9a7f6",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:30eb7b45f4a7dacf1700",
+            "decision-evidence:abed876ba50ad4ba2680",
+            "decision-evidence:cfc90990a93562bc6bda"
+          ],
+          "text": "현금흐름 감소와 순부채 증가가 겹치고 소재 흑자가 일회성으로 드러나거나 철강 마진이 다시 악화되면 매도 판단으로 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:3f9cbe771cec4c738098a8cf91f414cc9e53349dfcfe26794ed164faccf5411f",
+        "accepted_overall_maturity": "EARLY",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "BASE_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:c43ded70ccb477631e52",
+            "canonical:valuation:historical_pb",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "text": "시장 기대와 역사적 상대평가가 중립권인 반면 사업 확인은 초기 단계여서 현시점에는 보유 관찰이 가장 타당하다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:120e5e8a3ca67f7ceb2f",
+            "decision-evidence:ecad16c5eed63ceaa54d",
+            "decision-evidence:14d712e19c3796718378"
+          ],
+          "text": "철강 스프레드와 연결 수익성이 함께 개선되고 소재 흑자가 반복되며 현금창출이 투자비 부담을 흡수하면 매수 판단으로 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:0257ca2b399e4e71bca4ae2aba23f875ef7a90b667621369b163937dd818cec4",
+        "candidate_evidence_fingerprint": "4a336cbd94e784b5471c6ebf61663c8ec77504bc348ef40eb8563099b5bcff7f",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "005490"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:0257ca2b399e4e71bca4ae2aba23f875ef7a90b667621369b163937dd818cec4",
+        "candidate_evidence_fingerprint": "4a336cbd94e784b5471c6ebf61663c8ec77504bc348ef40eb8563099b5bcff7f",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "ee1ab8b9cf3ff3ddce15daab7e09549fe54d24d27f78163d3609b3238b6fbad5",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "POSCO홀딩스",
+      "evidence_fingerprint": "4a336cbd94e784b5471c6ebf61663c8ec77504bc348ef40eb8563099b5bcff7f",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 POSCO홀딩스(005490)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 초기 | 가격 비대칭: 균형\n\n🎯 판단\n• 시장 기대와 역사적 상대평가가 중립권인 반면 사업 확인은 초기 단계여서 현시점에는 보유 관찰이 가장 타당하다.\n\n🔄 판단 변경 조건\n• 상향: 철강 스프레드와 연결 수익성이 함께 개선되고 소재 흑자가 반복되며 현금창출이 투자비 부담을 흡수하면 매수 판단으로 높인다.\n• 하향: 현금흐름 감소와 순부채 증가가 겹치고 소재 흑자가 일회성으로 드러나거나 철강 마진이 다시 악화되면 매도 판단으로 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "005490",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "005490",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:231ed337454849a76b65783d18c2d8cb348c5560ffb3e4b6762ba4a2fb078284",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:cbc17715825321d622ec",
+            "decision-evidence:f3369e2d19ebb67502d3",
+            "decision-evidence:0cbeff3e598f042118ac"
+          ],
+          "text": "고객 채택 속도가 둔화되고 메모리 수익성이 하락하며 재고 증가와 현금흐름 약화가 동반되면 매도 판단으로 전환한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:d177ab78441c19e299a149f962cd3d915c54a8394aa589ac84587c47880b03a1",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:8c619918b4fc57e796d8",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:historical_pe"
+          ],
+          "text": "실적 기반 평가는 과도하지 않지만 장부평가와 시장 기대가 높아 추가 매수보다 기존 보유의 검증 대기가 적절하다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:48aecc6d8534add68a45",
+            "decision-evidence:fb5aaa3fc2608a1659b1",
+            "decision-evidence:48ae6c535d28ac0c7bfb"
+          ],
+          "text": "고객 채택과 출하 확대가 부문 수익성 개선 및 영업현금흐름 증가로 함께 확인되고도 기대 부담이 완화되면 매수 판단으로 상향한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:2937e70bb4dd0ce80b79b779d935da3992af6d42c4c28df1512641e2ee3613ef",
+        "candidate_evidence_fingerprint": "b8f9bac5252d86b303e36f1a4547fc817b87da721ef187bc6b89d79d1abc7702",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "005930"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:2937e70bb4dd0ce80b79b779d935da3992af6d42c4c28df1512641e2ee3613ef",
+        "candidate_evidence_fingerprint": "b8f9bac5252d86b303e36f1a4547fc817b87da721ef187bc6b89d79d1abc7702",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "a331c33acf7c2f625f27e29c302e96d33ee888877362987eb7333208c1e62cce",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "삼성전자",
+      "evidence_fingerprint": "b8f9bac5252d86b303e36f1a4547fc817b87da721ef187bc6b89d79d1abc7702",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 삼성전자(005930)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 불리\n\n🎯 판단\n• 실적 기반 평가는 과도하지 않지만 장부평가와 시장 기대가 높아 추가 매수보다 기존 보유의 검증 대기가 적절하다.\n\n🔄 판단 변경 조건\n• 상향: 고객 채택과 출하 확대가 부문 수익성 개선 및 영업현금흐름 증가로 함께 확인되고도 기대 부담이 완화되면 매수 판단으로 상향한다.\n• 하향: 고객 채택 속도가 둔화되고 메모리 수익성이 하락하며 재고 증가와 현금흐름 약화가 동반되면 매도 판단으로 전환한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "005930",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "005930",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "LOW",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:7c0e4b7a16bb84fb65c67245e5223b86cf5be90b61ec9795b1333cb8d7ceaba0",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:67e5798e627ad7156f27",
+            "decision-evidence:07bd40f3db4654398d69",
+            "decision-evidence:fe01a327c411fcd97818"
+          ],
+          "text": "핵심 수요 약화가 반복적인 프로젝트 감소와 실적 위축으로 이어지고 수익성과 현금 전환도 함께 나빠지면 부정 판단이 강화된다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:172ba2265724bd33e570a8a77e58c388cae27c6b38642a64a3d9e792cff8dcaa",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current"
+          ],
+          "text": "보통주 정체성의 출처와 가치평가 분모가 검증되지 않아 방향성 판단을 보류한다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "canonical:valuation:book_quality",
+            "decision-evidence:8de51310ea51ac9cba46",
+            "decision-evidence:e4297275c34f2ec33f34"
+          ],
+          "text": "공식 근거로 증권 정체성과 분모가 검증된 뒤 수익성 지속과 현금 전환 개선이 함께 관찰되면 긍정 판단을 재검토한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:a437cadb9e8654f8b92f04e8ad4c25af7bc54896a9d948add7216e64725e8787",
+        "candidate_evidence_fingerprint": "cb11a4f88ab030d9c4279d38480c20dd9268e12a495e9cf3fa309cac63a6ca93",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "010120"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:a437cadb9e8654f8b92f04e8ad4c25af7bc54896a9d948add7216e64725e8787",
+        "candidate_evidence_fingerprint": "cb11a4f88ab030d9c4279d38480c20dd9268e12a495e9cf3fa309cac63a6ca93",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "2262b8237e1f5f1a9f87b4a8bdf5cf8eaf97156b34d6d5a5a4c42ee2b95fd03a",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "LS일렉트릭",
+      "evidence_fingerprint": "cb11a4f88ab030d9c4279d38480c20dd9268e12a495e9cf3fa309cac63a6ca93",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 LS일렉트릭(010120)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 낮음\n증거 성숙도: 부분 확인 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 보통주 정체성의 출처와 가치평가 분모가 검증되지 않아 방향성 판단을 보류한다.\n\n🔄 판단 변경 조건\n• 상향: 공식 근거로 증권 정체성과 분모가 검증된 뒤 수익성 지속과 현금 전환 개선이 함께 관찰되면 긍정 판단을 재검토한다.\n• 하향: 핵심 수요 약화가 반복적인 프로젝트 감소와 실적 위축으로 이어지고 수익성과 현금 전환도 함께 나빠지면 부정 판단이 강화된다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "010120",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "010120",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:3ba0157300cda80fe31dcb8f05b241be923299669ff2b445fb49d02959f2d45b",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:0308e79765a08c9e605d",
+            "decision-evidence:4ee09d7109052199a77e",
+            "decision-evidence:7f3904077a5434759cc2"
+          ],
+          "text": "수주잔고가 구조적으로 줄고 핵심 사업의 수익성과 현금창출이 훼손되며 해외 확장 부담까지 커지면 매도로 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:599baff8cdedadd24951f75cff7e5c5a101ceb1d46e9d1b051074d74378e2933",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current"
+          ],
+          "text": "미검증 증권·주당 기준 때문에 현재 가격이 요구하는 사업 성과와 손익 비대칭을 판단할 수 없다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "decision-evidence:7903584e4cd122656e19",
+            "decision-evidence:fc61c6ce5aa6a1fdbbce",
+            "decision-evidence:78eb8779eb5b7d08582d"
+          ],
+          "text": "증권·주당 기준이 확인되고 신규 계약, 현금창출과 자본효율적인 미국 확장이 함께 입증되면 매수로 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:040903875050897867c3433d1302dd9b6b1a9d2c039fdda5fe357526e4d93fd1",
+        "candidate_evidence_fingerprint": "f90677f02d6d2a6222e754fd47ace9e1ba4682f53729e4a0fcaac32f0de5dd0f",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "012450"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:040903875050897867c3433d1302dd9b6b1a9d2c039fdda5fe357526e4d93fd1",
+        "candidate_evidence_fingerprint": "f90677f02d6d2a6222e754fd47ace9e1ba4682f53729e4a0fcaac32f0de5dd0f",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "3d2aaf2c814a89aaef972615e3537575dd553d58621bc9625bc55ff99a909e94",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "한화에어로스페이스",
+      "evidence_fingerprint": "f90677f02d6d2a6222e754fd47ace9e1ba4682f53729e4a0fcaac32f0de5dd0f",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 한화에어로스페이스(012450)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 혼재 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 미검증 증권·주당 기준 때문에 현재 가격이 요구하는 사업 성과와 손익 비대칭을 판단할 수 없다.\n\n🔄 판단 변경 조건\n• 상향: 증권·주당 기준이 확인되고 신규 계약, 현금창출과 자본효율적인 미국 확장이 함께 입증되면 매수로 높인다.\n• 하향: 수주잔고가 구조적으로 줄고 핵심 사업의 수익성과 현금창출이 훼손되며 해외 확장 부담까지 커지면 매도로 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "012450",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "012450",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-28",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:af29541c232f21976551ce419bb760603d0db53703133cc1aaf36e11b00e31b8",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:192202f2ad376ac36e38",
+            "decision-evidence:2126cf3d977d3189ade5",
+            "decision-evidence:32c9de4fb98ce0f35993"
+          ],
+          "text": "운임과 물량이 함께 둔화하는 가운데 물류 마진과 선박 투자 회수 성과까지 악화되면 판단을 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:139f9fda74c90a924ae51091fd07b9f906814a7a5e5ed22dd3e54e48e3887ebe",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:b478647c84aa3dee9e14",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:28d1cff5b27c18030fca"
+          ],
+          "text": "핵심 사업 개선의 세부 증명보다 기대와 평가가 앞서 있어 현재 위험보상이 충분하지 않다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:485b0ab5ebfb5606a96d",
+            "decision-evidence:7a021b902278f0655bc6",
+            "decision-evidence:8eca1bb884fd8f709a5a",
+            "decision-evidence:620681097ffebbfa7287"
+          ],
+          "text": "비계열 비중 상승과 물류 마진 개선이 현금창출 및 자본효율 상승으로 이어지면 판단을 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:afbdca78c29bf8b3a72b58ca3b62e09176f907b972c4a18187974df22ffd3a77",
+        "candidate_evidence_fingerprint": "beaa8badfed18996b874c983bad2989b92c6222371124ba8fd7f0a435870dd4b",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "086280"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:afbdca78c29bf8b3a72b58ca3b62e09176f907b972c4a18187974df22ffd3a77",
+        "candidate_evidence_fingerprint": "beaa8badfed18996b874c983bad2989b92c6222371124ba8fd7f0a435870dd4b",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "783a28b7e717eaf1a04aa4a4ec0c661f9d34eebd57d0bbc6f2bcb92f2fa177c0",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "현대글로비스",
+      "evidence_fingerprint": "beaa8badfed18996b874c983bad2989b92c6222371124ba8fd7f0a435870dd4b",
+      "market": "kr",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 현대글로비스(086280)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 혼재 | 가격 비대칭: 불리\n\n🎯 판단\n• 핵심 사업 개선의 세부 증명보다 기대와 평가가 앞서 있어 현재 위험보상이 충분하지 않다.\n\n🔄 판단 변경 조건\n• 상향: 비계열 비중 상승과 물류 마진 개선이 현금창출 및 자본효율 상승으로 이어지면 판단을 높인다.\n• 하향: 운임과 물량이 함께 둔화하는 가운데 물류 마진과 선박 투자 회수 성과까지 악화되면 판단을 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "086280",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "086280",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:3e31af665a9ca80803b68fa1489cdf5de86f69a02f5eb97d8e6a685956787f34",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:02b2ecf8c9efa8dce70a",
+            "decision-evidence:36090e913951b40587f1",
+            "decision-evidence:0f836ab7e80714aed726"
+          ],
+          "text": "핵심 계약 축소나 반복적 준공 실패가 발생하고 부채·희석이 주주 귀속가치를 계속 훼손하면 판단을 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:4a847cff13c938dc87f7f3ab5f45b3dddfe8881ea392feb6f29387bbbed8ed8a",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:financial_quality:2026-06-30",
+            "canonical:valuation:book_quality",
+            "canonical:security_basis:current"
+          ],
+          "text": "재무자료와 가치평가의 정합성이 차단돼 방향성 판단보다 사실 기반 복구가 우선이다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:financial_quality:2026-06-30",
+            "decision-evidence:06164bafce7057b20b52",
+            "decision-evidence:9cd49978be5160e54a03",
+            "decision-evidence:8906a34193399a6c5d0a"
+          ],
+          "text": "재무 품질이 사용 가능 상태로 회복되고 가동 전환·수익성·현금흐름 개선이 함께 검증되면 판단을 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:deaa1e66c8e825bfaf7943157f8742399fcadffb8e3cbba20b5e6d8e3719190d",
+        "candidate_evidence_fingerprint": "1ccc254085ca883705e6789bf38906da41596c7907e7c19fa65dd67e9b2e6f60",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "CORZ"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:deaa1e66c8e825bfaf7943157f8742399fcadffb8e3cbba20b5e6d8e3719190d",
+        "candidate_evidence_fingerprint": "1ccc254085ca883705e6789bf38906da41596c7907e7c19fa65dd67e9b2e6f60",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "7d4dd49de4e75b56bd152d06bd74fb8acdac3c9fe3caf3a0937412f24db4cec2",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Core Scientific, Inc.",
+      "evidence_fingerprint": "1ccc254085ca883705e6789bf38906da41596c7907e7c19fa65dd67e9b2e6f60",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Core Scientific, Inc.(CORZ)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 혼재 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 재무자료와 가치평가의 정합성이 차단돼 방향성 판단보다 사실 기반 복구가 우선이다.\n\n🔄 판단 변경 조건\n• 상향: 재무 품질이 사용 가능 상태로 회복되고 가동 전환·수익성·현금흐름 개선이 함께 검증되면 판단을 높인다.\n• 하향: 핵심 계약 축소나 반복적 준공 실패가 발생하고 부채·희석이 주주 귀속가치를 계속 훼손하면 판단을 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "CORZ",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "CORZ",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:a670dbc984de9a9120b9e4681b852baebc027a90e16363f7304aa996885b322b",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:65dab49dc52c42ea2eb0",
+            "decision-evidence:beee0feed84acc8fe672",
+            "decision-evidence:f9389a85c4423a03dbee"
+          ],
+          "text": "USDC 점유율과 유통량이 구조적으로 위축되거나 규제가 핵심 사업모델을 훼손하면 매도 판단으로 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:7288e5214ca6611d4ca62fb5976f325696488f715d5ae63e148242aee0eaeea8",
+        "accepted_overall_maturity": "EARLY",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation"
+          ],
+          "text": "후행 이익 분모의 검증 실패가 가치평가와 비대칭 판단을 차단하므로 관망이 안전한 결론이다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:e35ff3fd6aad2793aa06",
+            "decision-evidence:52b3b639e2122ecd51bd"
+          ],
+          "text": "후행 분모 계보가 검증되고 USDC 확장과 비이자 수익 증가가 함께 관찰되면 매수 후보로 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:e6d399a85dce8ed5c4d7f3984f075e9dec051fc9514a1c73d0cdd4fb142513eb",
+        "candidate_evidence_fingerprint": "06c07ec863c379d1c98bafd8304d4638c89bf63333063aeb63d02e04e4160667",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "CRCL"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:e6d399a85dce8ed5c4d7f3984f075e9dec051fc9514a1c73d0cdd4fb142513eb",
+        "candidate_evidence_fingerprint": "06c07ec863c379d1c98bafd8304d4638c89bf63333063aeb63d02e04e4160667",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "fd3c24dc5bc7fded08cb13c161587b9882e072c0b5a7ff2ea49d649f52a2796f",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Circle Internet Group",
+      "evidence_fingerprint": "06c07ec863c379d1c98bafd8304d4638c89bf63333063aeb63d02e04e4160667",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Circle Internet Group(CRCL)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 초기 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 후행 이익 분모의 검증 실패가 가치평가와 비대칭 판단을 차단하므로 관망이 안전한 결론이다.\n\n🔄 판단 변경 조건\n• 상향: 후행 분모 계보가 검증되고 USDC 확장과 비이자 수익 증가가 함께 관찰되면 매수 후보로 높인다.\n• 하향: USDC 점유율과 유통량이 구조적으로 위축되거나 규제가 핵심 사업모델을 훼손하면 매도 판단으로 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "CRCL",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "CRCL",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "FAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": {
+          "evidence_refs": [
+            "decision-evidence:47e26c6f53f6504d798d",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6"
+          ],
+          "text": "일부 성장 기대는 반영됐지만 클라우드 수익화와 현금흐름 회복의 확인은 추가 재평가를 부를 수 있다."
+        },
+        "accepted_decision": "BUY",
+        "accepted_decision_id": "v2-accepted-decision:sha256:a7daf3cf1beb446d4f6ad94945e3a32b392b7577e5ba85862d39fbb2eabf9da7",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:9a44445c9140d82dae68",
+            "decision-evidence:1eab5946cbdbeae961f6",
+            "decision-evidence:e557bc193349d6c5e071"
+          ],
+          "text": "검색 수익화가 약해지고 클라우드 수요 전환도 둔화하거나 투자 확대가 현금흐름을 구조적으로 훼손하면 보유 또는 매도로 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:c68b6b812643f225f324b51a371765d7e80e819a846c7b815adbcda2defe1c27",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": true,
+        "accepted_pricing_requirement": "BASE_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6",
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "text": "검색·클라우드 이익 경로가 부분 확인됐고 자체 역사 대비 낮은 후행 이익평가가 완충을 제공하므로, AI 투자 회수의 완전한 확인을 기다리며 클라우드 재평가를 놓칠 비용까지 고려한 부분 확인 BUY가 더 지지된다."
+        },
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6",
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "text": "클라우드 성장과 수익성이 동반 개선되고 수주잔고 전환 및 현금흐름 회복이 확인되면 확신을 높인다."
+        },
+        "adjudication_id": "v2-adjudication:sha256:3a9da82cdcab38fee879b3d8e3e937c3b8b02353ca991f87aecf774601df0888",
+        "adjudication_reason": {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6",
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "text": "검색·클라우드 이익 경로가 부분 확인됐고 자체 역사 대비 낮은 후행 이익평가가 완충을 제공하므로, AI 투자 회수의 완전한 확인을 기다리며 클라우드 재평가를 놓칠 비용까지 고려한 부분 확인 BUY가 더 지지된다."
+        },
+        "adjudication_recommendation": "KEEP_V2",
+        "adjudication_status": "FINAL",
+        "candidate_decision": "BUY",
+        "candidate_decision_id": "v2-candidate:sha256:a58d36082fdd4a30368014fe4ccc37219c54bab395f422cbf1daaf0d9fe3d449",
+        "candidate_evidence_fingerprint": "ca42efbaae98cd548a4e1b82e5bfb141b4c768eb78ca7342539900eae6b98b66",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": true,
+        "status": "READY",
+        "ticker": "GOOGL"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "accepted_decision": "BUY",
+        "adjudication_id": "v2-adjudication:sha256:3a9da82cdcab38fee879b3d8e3e937c3b8b02353ca991f87aecf774601df0888",
+        "adjudication_status": "FINAL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6",
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "text": "검색·클라우드 이익 경로가 부분 확인됐고 자체 역사 대비 낮은 후행 이익평가가 완충을 제공하므로, AI 투자 회수의 완전한 확인을 기다리며 클라우드 재평가를 놓칠 비용까지 고려한 부분 확인 BUY가 더 지지된다."
+        },
+        "recommendation": "KEEP_V2",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+        "ticker": "GOOGL",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "YES",
+        "v2_decision": "BUY",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "candidate_history": {
+        "candidate_decision": "BUY",
+        "candidate_decision_id": "v2-candidate:sha256:a58d36082fdd4a30368014fe4ccc37219c54bab395f422cbf1daaf0d9fe3d449",
+        "candidate_evidence_fingerprint": "ca42efbaae98cd548a4e1b82e5bfb141b4c768eb78ca7342539900eae6b98b66",
+        "candidate_preconfirmation_buy": true,
+        "candidate_source_row_fingerprint": "6bb07a26ba68a2feebe19b0f8adbb6bce5d598b7a6a6c00683daf6cc307c2ef6",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Alphabet Inc. Class A",
+      "evidence_fingerprint": "ca42efbaae98cd548a4e1b82e5bfb141b4c768eb78ca7342539900eae6b98b66",
+      "market": "us",
+      "material_disagreement": true,
+      "rendered": {
+        "accepted_decision": "BUY",
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "candidate_decision": "BUY",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Alphabet Inc. Class A(GOOGL)\n🧠 AI 수용 판단: BUY\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 유리\n\n🎯 판단\n• 검색·클라우드 이익 경로가 부분 확인됐고 자체 역사 대비 낮은 후행 이익평가가 완충을 제공하므로, AI 투자 회수의 완전한 확인을 기다리며 클라우드 재평가를 놓칠 비용까지 고려한 부분 확인 BUY가 더 지지된다.\n\n🔎 완전 확인 전 BUY\n• 확인을 기다리는 비용: 일부 성장 기대는 반영됐지만 클라우드 수익화와 현금흐름 회복의 확인은 추가 재평가를 부를 수 있다.\n\n🔄 판단 변경 조건\n• 상향: 클라우드 성장과 수익성이 동반 개선되고 수주잔고 전환 및 현금흐름 회복이 확인되면 확신을 높인다.\n• 하향: 검색 수익화가 약해지고 클라우드 수요 전환도 둔화하거나 투자 확대가 현금흐름을 구조적으로 훼손하면 보유 또는 매도로 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "GOOGL",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "GOOGL",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "SELL",
+        "accepted_decision_id": "v2-accepted-decision:sha256:e7ef2f94dde490f17d21602e3f339b1866b5476395d064efca03397ead7f6de4",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:0750ded5723b45b38bd9",
+            "decision-evidence:e12752508a662d6e988d",
+            "decision-evidence:1b0709720f50a6bda8e2"
+          ],
+          "text": "핵심 고객계약 축소나 준공 실패가 발생하고 자본투입 부담까지 커지면 부정 판단의 확신이 높아진다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:c2b79094f85dddafa9a6a924f17f6da7ed1548594516a6895ae5cf69f196a238",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "canonical:valuation:current",
+            "decision-evidence:af3bdb852dc69e1ac700",
+            "decision-evidence:cb5b65968e8b5e6f42de",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "text": "높은 계약 실행 기대와 프리미엄 가치평가가 반영된 반면 실제 매출·마진 전환과 모회사 자본부담은 미확인이라, 낮은 확인 대기 비용을 감안하면 확인 전 위험대비보상은 불리하다."
+        },
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:8b040f8545884d2f40f7",
+            "decision-evidence:7f12a241fbf8249e9ea5",
+            "decision-evidence:85cc2f47424078a0d841",
+            "decision-evidence:4c28d1cc7a794cc4171c"
+          ],
+          "text": "프로젝트 가동과 계약 수익이 반복 확인되고 외부 금융이 모회사 부담을 제한하며 인프라 수익 중심 전환이 분명해지면 판단을 상향한다."
+        },
+        "adjudication_id": "v2-adjudication:sha256:62b6ea48e0d2e8eb1d8d3d31d58845452ac222310eb4e0759579f8fa80dd7739",
+        "adjudication_reason": {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "canonical:valuation:current",
+            "decision-evidence:af3bdb852dc69e1ac700",
+            "decision-evidence:cb5b65968e8b5e6f42de",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "text": "높은 계약 실행 기대와 프리미엄 가치평가가 반영된 반면 실제 매출·마진 전환과 모회사 자본부담은 미확인이라, 낮은 확인 대기 비용을 감안하면 확인 전 위험대비보상은 불리하다."
+        },
+        "adjudication_recommendation": "KEEP_V2",
+        "adjudication_status": "FINAL",
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:1d2ffdae7a75fea1f97965fe17f5c2fad4038e0f2673ed2561ed17036f01d9e7",
+        "candidate_evidence_fingerprint": "5d9a3f0397fcab3f58f930bb20ea912ba8ffbaa3c11e4059b3b232af64dee387",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": true,
+        "status": "READY",
+        "ticker": "HUT"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "accepted_decision": "SELL",
+        "adjudication_id": "v2-adjudication:sha256:62b6ea48e0d2e8eb1d8d3d31d58845452ac222310eb4e0759579f8fa80dd7739",
+        "adjudication_status": "FINAL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "canonical:valuation:current",
+            "decision-evidence:af3bdb852dc69e1ac700",
+            "decision-evidence:cb5b65968e8b5e6f42de",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "text": "높은 계약 실행 기대와 프리미엄 가치평가가 반영된 반면 실제 매출·마진 전환과 모회사 자본부담은 미확인이라, 낮은 확인 대기 비용을 감안하면 확인 전 위험대비보상은 불리하다."
+        },
+        "recommendation": "KEEP_V2",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+        "ticker": "HUT",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "SELL",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "candidate_history": {
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:1d2ffdae7a75fea1f97965fe17f5c2fad4038e0f2673ed2561ed17036f01d9e7",
+        "candidate_evidence_fingerprint": "5d9a3f0397fcab3f58f930bb20ea912ba8ffbaa3c11e4059b3b232af64dee387",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "804a685d415483e5eb28167c73e5fa80babc30e9538b1a3e629a4e1ce416cb35",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Hut 8 Corp.",
+      "evidence_fingerprint": "5d9a3f0397fcab3f58f930bb20ea912ba8ffbaa3c11e4059b3b232af64dee387",
+      "market": "us",
+      "material_disagreement": true,
+      "rendered": {
+        "accepted_decision": "SELL",
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "candidate_decision": "SELL",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Hut 8 Corp.(HUT)\n🧠 AI 수용 판단: SELL\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 불리\n\n🎯 판단\n• 높은 계약 실행 기대와 프리미엄 가치평가가 반영된 반면 실제 매출·마진 전환과 모회사 자본부담은 미확인이라, 낮은 확인 대기 비용을 감안하면 확인 전 위험대비보상은 불리하다.\n\n🔄 판단 변경 조건\n• 상향: 프로젝트 가동과 계약 수익이 반복 확인되고 외부 금융이 모회사 부담을 제한하며 인프라 수익 중심 전환이 분명해지면 판단을 상향한다.\n• 하향: 핵심 고객계약 축소나 준공 실패가 발생하고 자본투입 부담까지 커지면 부정 판단의 확신이 높아진다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "HUT",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "HUT",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "BALANCED",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:63395a47e73bea28328ae9dd13d19fb12d53e2d2b3067a05911df6029842d515",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:e9b769462b74d97c8dbc",
+            "decision-evidence:972c4c6634d9dcdfd155",
+            "decision-evidence:e5705361ce4c4132cde7",
+            "decision-evidence:54f61a882c928f99e40b"
+          ],
+          "text": "소프트웨어 둔화와 컨설팅 정체가 이어지는 가운데 현금흐름과 자본효율까지 악화되면 판단을 낮춘다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:eecd1e8d53ff43c1a6e6a52ea3c3e60252e7f61931bb9391350a4525aa7d1475",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "BASE_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:daada1e8e154d258cf46",
+            "canonical:valuation:multiple_relation"
+          ],
+          "text": "핵심 성장축은 방향성이 있으나 선행 이익 기대는 더 강한 실적을 요구하고 전사 현금창출 증거는 아직 부분적이다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:a4e33fdbb619e8a75ec6",
+            "decision-evidence:d746b38e4f88e9088509",
+            "decision-evidence:1e35c6622a824b5fbe74"
+          ],
+          "text": "소프트웨어 성장 가속과 인공지능 매출의 전사 확산이 현금흐름 및 부채 관리 개선과 함께 나타나면 판단을 높인다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:7fec6fc404a760a177331ed29ab338e938e0e242ad85249c91cdf9ba24076e06",
+        "candidate_evidence_fingerprint": "7bf977baa239aea1e39c219f3f447a001132b9b28c8b575d7f096d5512dac1c2",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "IBM"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:7fec6fc404a760a177331ed29ab338e938e0e242ad85249c91cdf9ba24076e06",
+        "candidate_evidence_fingerprint": "7bf977baa239aea1e39c219f3f447a001132b9b28c8b575d7f096d5512dac1c2",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "33f02ba9b09f5013c4686026362783619eb9a63a3a647072fab737b14e7e20cf",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "IBM",
+      "evidence_fingerprint": "7bf977baa239aea1e39c219f3f447a001132b9b28c8b575d7f096d5512dac1c2",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 IBM(IBM)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 균형\n\n🎯 판단\n• 핵심 성장축은 방향성이 있으나 선행 이익 기대는 더 강한 실적을 요구하고 전사 현금창출 증거는 아직 부분적이다.\n\n🔄 판단 변경 조건\n• 상향: 소프트웨어 성장 가속과 인공지능 매출의 전사 확산이 현금흐름 및 부채 관리 개선과 함께 나타나면 판단을 높인다.\n• 하향: 소프트웨어 둔화와 컨설팅 정체가 이어지는 가운데 현금흐름과 자본효율까지 악화되면 판단을 낮춘다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "IBM",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "IBM",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:2181270ca68219fbd89a6dd748a4bb7b9206bfc0214afc9bd9cb9f77cd3d51c8",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:b19318d37863cd366850",
+            "decision-evidence:b4450f1f4ffd534fe72c",
+            "decision-evidence:beeedb93a3d123acbe7b"
+          ],
+          "text": "메모리 가격 둔화와 재고 증가가 나타나고 HBM 경쟁력 약화 또는 과잉투자로 현금창출이 거듭 훼손될 때 하향한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:1d33d36ccbef1dcafa80b2e70de102f4225b73130fb737dae656c396113e6f32",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:31b3afdedc39a02d46b5",
+            "decision-evidence:2c7de5970a1beda446d7",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:multiple_relation"
+          ],
+          "text": "사업 개선은 부분적으로 입증됐지만 매우 높은 기대와 장부가치 프리미엄 때문에 낙관적 지속성이 필요하다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:a28e6663801fec8ab611",
+            "decision-evidence:7d84dda8918aa8dbcf26",
+            "decision-evidence:a3ecd96de1e2ab92ea19",
+            "decision-evidence:2c7de5970a1beda446d7"
+          ],
+          "text": "차세대 HBM 채택과 메모리 가격·믹스 강세가 이어지고 투자 확대에도 현금창출이 유지되며 기대 부담이 낮아질 때 상향한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:ce350774e4c1eeb2a89c7f70efecbed717f235ed805b05b30ee2eb45f30aa799",
+        "candidate_evidence_fingerprint": "8e9c47cbeaa463543d9ee26b555717150a235e22d2f45d170523016f4eb008d9",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "MU"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:ce350774e4c1eeb2a89c7f70efecbed717f235ed805b05b30ee2eb45f30aa799",
+        "candidate_evidence_fingerprint": "8e9c47cbeaa463543d9ee26b555717150a235e22d2f45d170523016f4eb008d9",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "e119fd2ff43e64bd06c9f24ad943daa301901d85818158d47b95735648d606dc",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Micron Technology",
+      "evidence_fingerprint": "8e9c47cbeaa463543d9ee26b555717150a235e22d2f45d170523016f4eb008d9",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Micron Technology(MU)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 부분 확인 | 가격 비대칭: 불리\n\n🎯 판단\n• 사업 개선은 부분적으로 입증됐지만 매우 높은 기대와 장부가치 프리미엄 때문에 낙관적 지속성이 필요하다.\n\n🔄 판단 변경 조건\n• 상향: 차세대 HBM 채택과 메모리 가격·믹스 강세가 이어지고 투자 확대에도 현금창출이 유지되며 기대 부담이 낮아질 때 상향한다.\n• 하향: 메모리 가격 둔화와 재고 증가가 나타나고 HBM 경쟁력 약화 또는 과잉투자로 현금창출이 거듭 훼손될 때 하향한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "MU",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "MU",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "BALANCED",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:09c0c1308f9461d12877893031ce6cb64e6e1c2d61f962b6645037d4e0369092",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:76019cf1946660a50862",
+            "decision-evidence:cb8ca0214f6312e64b75",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "text": "핵심 임상 실패가 반복되고 파트너 성과 정체와 대규모 희석이 함께 나타날 때 하향한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:3bfcc0ce0623ec47fed6ff0d4fb7735911cfa4c36c4b158b1b3aea88151504a7",
+        "accepted_overall_maturity": "EARLY",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "canonical:valuation:historical_pb",
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "text": "초기 파트너·임상 진전과 낮은 역사적 장부가치 위치가 불연속 재평가 선택권을 남기지만, 경제적 전환 미증명과 희석 위험도 커 비대칭성은 균형적이며 HOLD가 적절하다."
+        },
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:cf625978558ad8aee418",
+            "decision-evidence:49f131c127e173452c39",
+            "decision-evidence:cff20610893f66f3069a",
+            "decision-evidence:b1d79226f524ced701e5"
+          ],
+          "text": "파트너 타깃 선택과 경제적 마일스톤이 늘고 임상 데이터가 긍정적이며 현금소진이 줄어드는 조합에서 상향한다."
+        },
+        "adjudication_id": "v2-adjudication:sha256:bec5c69390cd39cbd2a8de906122aa16a28f1ee10344c3cc1dc81eed6f873378",
+        "adjudication_reason": {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "canonical:valuation:historical_pb",
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "text": "초기 파트너·임상 진전과 낮은 역사적 장부가치 위치가 불연속 재평가 선택권을 남기지만, 경제적 전환 미증명과 희석 위험도 커 비대칭성은 균형적이며 HOLD가 적절하다."
+        },
+        "adjudication_recommendation": "KEEP_V2",
+        "adjudication_status": "FINAL",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:ee4e3dd92b6d4e0d4a03b10cccb933a28ab1d4a43f6135d454b82c19b1c758c0",
+        "candidate_evidence_fingerprint": "841dc9cd32476470ede419acd6600f68f83b88c0f559144539ede0d6680307d5",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": true,
+        "status": "READY",
+        "ticker": "RXRX"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "accepted_decision": "HOLD",
+        "adjudication_id": "v2-adjudication:sha256:bec5c69390cd39cbd2a8de906122aa16a28f1ee10344c3cc1dc81eed6f873378",
+        "adjudication_status": "FINAL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "canonical:valuation:historical_pb",
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "text": "초기 파트너·임상 진전과 낮은 역사적 장부가치 위치가 불연속 재평가 선택권을 남기지만, 경제적 전환 미증명과 희석 위험도 커 비대칭성은 균형적이며 HOLD가 적절하다."
+        },
+        "recommendation": "KEEP_V2",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+        "ticker": "RXRX",
+        "v1_decision": "SELL",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "YES",
+        "v2_decision": "HOLD",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:ee4e3dd92b6d4e0d4a03b10cccb933a28ab1d4a43f6135d454b82c19b1c758c0",
+        "candidate_evidence_fingerprint": "841dc9cd32476470ede419acd6600f68f83b88c0f559144539ede0d6680307d5",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "b8216436fa58c40551420f54bc2095f6ad30c8fc9ce48dfff2c0d17d7b53e1d7",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Recursion Pharmaceuticals",
+      "evidence_fingerprint": "841dc9cd32476470ede419acd6600f68f83b88c0f559144539ede0d6680307d5",
+      "market": "us",
+      "material_disagreement": true,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "ADJUDICATION_KEEP_V2",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Recursion Pharmaceuticals(RXRX)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 초기 | 가격 비대칭: 균형\n\n🎯 판단\n• 초기 파트너·임상 진전과 낮은 역사적 장부가치 위치가 불연속 재평가 선택권을 남기지만, 경제적 전환 미증명과 희석 위험도 커 비대칭성은 균형적이며 HOLD가 적절하다.\n\n🔄 판단 변경 조건\n• 상향: 파트너 타깃 선택과 경제적 마일스톤이 늘고 임상 데이터가 긍정적이며 현금소진이 줄어드는 조합에서 상향한다.\n• 하향: 핵심 임상 실패가 반복되고 파트너 성과 정체와 대규모 희석이 함께 나타날 때 하향한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "RXRX",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "RXRX",
+      "v1_decision": "SELL"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "LOW",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:a9a00c7bf541fc236f15b93cd47fd80d129ee37129e2c62c349b9c7372734f72",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:41dfa075e4353b22e62d",
+            "decision-evidence:21b5d954a474cea0f4aa",
+            "decision-evidence:d2f6c30fdb85a421401f"
+          ],
+          "text": "핵심 고객에서 기술·공급 우위가 훼손되고 메모리 가격 약세와 재고 증가가 겹치거나 ADR 프리미엄이 급격히 축소되면 매도로 하향한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:e76c55a600fec5b1186aee125e8c8cabfb2e423f3b3a1da64b03773aad123a5d",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:financial_quality:latest",
+            "canonical:valuation:book_quality",
+            "decision-evidence:c78bf1321a16a218b60c"
+          ],
+          "text": "사업 잠재력과 별개로 현재 ADR의 적격 재무 분모가 없고 시장 기대도 투기적이어서 신규 방향성을 안전하게 확정할 수 없다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:financial_quality:latest",
+            "decision-evidence:7182bfe7297ce4ab39d6",
+            "decision-evidence:0ed690872e22b916098a"
+          ],
+          "text": "현재 ADR 기준 재무 분모가 검증되고 고객 채택·계약 전환·현금 창출이 확인되며 시장 기대가 완화되면 매수로 상향할 수 있다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:374a5f72c685c208c90c34ce07d70d845c963fccf9de0a9a297706f93b7b11ce",
+        "candidate_evidence_fingerprint": "9fa08ecaf3548b0ff59037a9e4bdf00c6b7f5800787678ed1bc8a1e1925dd00a",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "SKHY"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:374a5f72c685c208c90c34ce07d70d845c963fccf9de0a9a297706f93b7b11ce",
+        "candidate_evidence_fingerprint": "9fa08ecaf3548b0ff59037a9e4bdf00c6b7f5800787678ed1bc8a1e1925dd00a",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "23457f444113a29ae60cafe5dd5aca23f9781d222793e156feb9ab093db683cc",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "SK hynix Inc. ADR",
+      "evidence_fingerprint": "9fa08ecaf3548b0ff59037a9e4bdf00c6b7f5800787678ed1bc8a1e1925dd00a",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 SK hynix Inc. ADR(SKHY)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 낮음\n증거 성숙도: 혼재 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 사업 잠재력과 별개로 현재 ADR의 적격 재무 분모가 없고 시장 기대도 투기적이어서 신규 방향성을 안전하게 확정할 수 없다.\n\n🔄 판단 변경 조건\n• 상향: 현재 ADR 기준 재무 분모가 검증되고 고객 채택·계약 전환·현금 창출이 확인되며 시장 기대가 완화되면 매수로 상향할 수 있다.\n• 하향: 핵심 고객에서 기술·공급 우위가 훼손되고 메모리 가격 약세와 재고 증가가 겹치거나 ADR 프리미엄이 급격히 축소되면 매도로 하향한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "SKHY",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "SKHY",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:301b3bf9503bf664519d7b7ac61f8acfb0c71a58d8e403ca6b5fa35566153aa7",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:1a43e68befc2686f2759",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "decision-evidence:6a7d8f2de9200a7e4de7"
+          ],
+          "text": "NAND 가격과 데이터센터 수요가 함께 약화되고 계약 전환 실패 및 현금흐름 저하가 지속되면 매도 확신을 높인다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:eea51d6aa2f9188396f0e1296328f5e20057abc6e6466694d5bfbf43e86b37eb",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "OPTIMISTIC_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4",
+            "decision-evidence:1a43e68befc2686f2759",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "canonical:chart:price_transition"
+          ],
+          "text": "기대 수준은 높지만 하방 근거는 아직 조건부 위험이고 가격 확인도 유지된다. 현재 하방 우위를 입증하지 못한 SELL보다 HOLD가 더 잘 뒷받침된다."
+        },
+        "accepted_source": "ADJUDICATION_KEEP_V1",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:06e6f847342760f52d96",
+            "decision-evidence:995d5eeddc1f86a7abbc",
+            "decision-evidence:687af24c7385d2caf4a4"
+          ],
+          "text": "계약이 반복 가능한 매출과 현금으로 전환되고 가격 의존도가 낮은 수익성이 확인되며 기대 수준이 완화되면 보유 이상으로 상향할 수 있다."
+        },
+        "adjudication_id": "v2-adjudication:sha256:722a19a54a289686d91f22c37807940100c450ff01a404eb911f45bfb6c0674e",
+        "adjudication_reason": {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4",
+            "decision-evidence:1a43e68befc2686f2759",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "canonical:chart:price_transition"
+          ],
+          "text": "기대 수준은 높지만 하방 근거는 아직 조건부 위험이고 가격 확인도 유지된다. 현재 하방 우위를 입증하지 못한 SELL보다 HOLD가 더 잘 뒷받침된다."
+        },
+        "adjudication_recommendation": "KEEP_V1",
+        "adjudication_status": "FINAL",
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:388e41575fac0495c1ecb817c7be98fc09af46945271e2324f382b29ccb47e6a",
+        "candidate_evidence_fingerprint": "87a445c566621f3d10ee396310286ac6d94520a95786f5a14a9aca4f2ae732f6",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": true,
+        "status": "READY",
+        "ticker": "SNDK"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "accepted_decision": "HOLD",
+        "adjudication_id": "v2-adjudication:sha256:722a19a54a289686d91f22c37807940100c450ff01a404eb911f45bfb6c0674e",
+        "adjudication_status": "FINAL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4",
+            "decision-evidence:1a43e68befc2686f2759",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "canonical:chart:price_transition"
+          ],
+          "text": "기대 수준은 높지만 하방 근거는 아직 조건부 위험이고 가격 확인도 유지된다. 현재 하방 우위를 입증하지 못한 SELL보다 HOLD가 더 잘 뒷받침된다."
+        },
+        "recommendation": "KEEP_V1",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+        "ticker": "SNDK",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "UNCERTAIN",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "SELL",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "V2"
+      },
+      "candidate_history": {
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:388e41575fac0495c1ecb817c7be98fc09af46945271e2324f382b29ccb47e6a",
+        "candidate_evidence_fingerprint": "87a445c566621f3d10ee396310286ac6d94520a95786f5a14a9aca4f2ae732f6",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "b2edd7e541c6f738182469af38f07b2af88d892e7658af50436a28fbe01c9a3f",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "SanDisk",
+      "evidence_fingerprint": "87a445c566621f3d10ee396310286ac6d94520a95786f5a14a9aca4f2ae732f6",
+      "market": "us",
+      "material_disagreement": true,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "ADJUDICATION_KEEP_V1",
+        "candidate_decision": "SELL",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 SanDisk(SNDK)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 기대 수준은 높지만 하방 근거는 아직 조건부 위험이고 가격 확인도 유지된다. 현재 하방 우위를 입증하지 못한 SELL보다 HOLD가 더 잘 뒷받침된다.\n\n🔄 판단 변경 조건\n• 상향: 계약이 반복 가능한 매출과 현금으로 전환되고 가격 의존도가 낮은 수익성이 확인되며 기대 수준이 완화되면 보유 이상으로 상향할 수 있다.\n• 하향: NAND 가격과 데이터센터 수요가 함께 약화되고 계약 전환 실패 및 현금흐름 저하가 지속되면 매도 확신을 높인다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "SNDK",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "SNDK",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "SELL",
+        "accepted_decision_id": "v2-accepted-decision:sha256:8493d26e91564416bf8f740759b90f5a95541a3a50916ccb4fd149d2496179ba",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:14d67efcafb67911e795",
+            "decision-evidence:31cc4350366b95a54e12",
+            "decision-evidence:a399508186fff1c1fd00"
+          ],
+          "text": "현금소모가 이어지는 가운데 자동차 수요·점유율 하락과 수익화 지연이 함께 확인되면 부정적 판단이 더욱 강화된다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:b58a9a8bbcfe712e005afc8497fb2ff1cb7691716f5d8b3a9544157a6a0e995a",
+        "accepted_overall_maturity": "MIXED",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "BULL_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:0cbb33d247bc3d3facec",
+            "canonical:valuation:current",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:78738239503d582a1819"
+          ],
+          "text": "핵심 수익화는 초기 단계인데 현재 가격은 강한 성공 가정을 요구해 확인 전 위험보다 보상이 작다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:01253b856674f1f9fabd",
+            "decision-evidence:07cbedff4c2b25a7f0cc",
+            "decision-evidence:b99b830cf03964463742"
+          ],
+          "text": "유료 운행 경제성, 관련 매출 성장, 자동차 이익과 현금창출 개선이 함께 관찰되면 판단을 상향할 수 있다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:412b949bb91a142df7a98441c0e8806f9e5cab66eb57fd93349fac7c13f32a69",
+        "candidate_evidence_fingerprint": "a57ecc32b6d4ab5f2f5a46235d9825e2a2e4b44dc268f3a669ad4b5a116e13b8",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "TSLA"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:412b949bb91a142df7a98441c0e8806f9e5cab66eb57fd93349fac7c13f32a69",
+        "candidate_evidence_fingerprint": "a57ecc32b6d4ab5f2f5a46235d9825e2a2e4b44dc268f3a669ad4b5a116e13b8",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "31e184d9c0339860ea1f5e63d9a4964023428e07b21bd935fe8285039111c0ad",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "Tesla, Inc.",
+      "evidence_fingerprint": "a57ecc32b6d4ab5f2f5a46235d9825e2a2e4b44dc268f3a669ad4b5a116e13b8",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "SELL",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "SELL",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 Tesla, Inc.(TSLA)\n🧠 AI 수용 판단: SELL\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 혼재 | 가격 비대칭: 불리\n\n🎯 판단\n• 핵심 수익화는 초기 단계인데 현재 가격은 강한 성공 가정을 요구해 확인 전 위험보다 보상이 작다.\n\n🔄 판단 변경 조건\n• 상향: 유료 운행 경제성, 관련 매출 성장, 자동차 이익과 현금창출 개선이 함께 관찰되면 판단을 상향할 수 있다.\n• 하향: 현금소모가 이어지는 가운데 자동차 수요·점유율 하락과 수익화 지연이 함께 확인되면 부정적 판단이 더욱 강화된다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "TSLA",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "TSLA",
+      "v1_decision": "SELL"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "HIGH",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:b8e74c7644f2877fd7bdb30541d96105d9e4c22fafeac10bb45e43cb1570665e",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:15ff6435a01a9eaaec20",
+            "decision-evidence:6f4e42c1f2c48790d2a1",
+            "decision-evidence:ba6b3b6ef4c2f66a7952"
+          ],
+          "text": "증권 기준이 해소된 뒤 인공지능 수요 둔화, 선단공정 경쟁력 약화, 이익률 하락이 함께 확인되면 매도 판단으로 낮출 수 있다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:c79dafd25a2e97238ebe3ebc0946e344ff01cc8e0b6fcaf4d9c5b1e626b7babb",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "canonical:valuation:book_quality",
+            "canonical:valuation:multiple_relation"
+          ],
+          "text": "예탁증권 비율과 증권 단위가 미검증이어서 가치평가와 비대칭 판단을 폐쇄하고 관망해야 한다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "decision-evidence:08a1db369b9003e5047d",
+            "decision-evidence:1887c6577a65ceec3a44"
+          ],
+          "text": "예탁증권 기준이 권위 있게 해소되고 수요의 매출 전환과 이익률 방어가 확인되며 보수적 가격 정당화가 가능해지면 매수로 상향할 수 있다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:5152d8b64b0c9f8b3aeaeffa6ec196f99c742521e8f20e50e4a80ef06410b7d0",
+        "candidate_evidence_fingerprint": "4da7ef7c0eecaf24e43c51315bd11e691fa8b5a031d5d75a9833b029ee765fff",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "TSM"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:5152d8b64b0c9f8b3aeaeffa6ec196f99c742521e8f20e50e4a80ef06410b7d0",
+        "candidate_evidence_fingerprint": "4da7ef7c0eecaf24e43c51315bd11e691fa8b5a031d5d75a9833b029ee765fff",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "453f0c87c8f6409286353df988e556f0545444aa84eeaaf285c879f65cadc4d7",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "TSMC",
+      "evidence_fingerprint": "4da7ef7c0eecaf24e43c51315bd11e691fa8b5a031d5d75a9833b029ee765fff",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 TSMC(TSM)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 높음\n증거 성숙도: 부분 확인 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 예탁증권 비율과 증권 단위가 미검증이어서 가치평가와 비대칭 판단을 폐쇄하고 관망해야 한다.\n\n🔄 판단 변경 조건\n• 상향: 예탁증권 기준이 권위 있게 해소되고 수요의 매출 전환과 이익률 방어가 확인되며 보수적 가격 정당화가 가능해지면 매수로 상향할 수 있다.\n• 하향: 증권 기준이 해소된 뒤 인공지능 수요 둔화, 선단공정 경쟁력 약화, 이익률 하락이 함께 확인되면 매도 판단으로 낮출 수 있다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "TSM",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "TSM",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNKNOWN",
+        "accepted_confidence": "LOW",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "HOLD",
+        "accepted_decision_id": "v2-accepted-decision:sha256:3c8118b15d5b42906be3746eaf4b9d70c195a2db131ab8fe5faa7a1537b3a269",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:3ac5a1a0a9faff90d400",
+            "decision-evidence:7c0a4f93f99c8eba6f8f",
+            "decision-evidence:2719c49ada648bd2940e"
+          ],
+          "text": "규제·안전 문제로 확장이 구조적으로 중단되거나 단위경제성 실패와 지속적 희석 중 하나가 명확해지면 부정 판단을 강화한다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:9f61e1e4cb9dc8a8bd352099ea6647db6e7d0a9be9b5a8e4b020c0ac5663694a",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "UNKNOWN",
+        "accepted_reason": {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "상용화의 방향성보다 증권 정체성 및 주식 기준 미검증이 우선하는 차단 사유다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "decision-evidence:5ba1286806d9b069c093",
+            "decision-evidence:8b7f93a5f707ad6158af"
+          ],
+          "text": "먼저 증권 정체성과 분모가 권위 있게 확정되고, 이어 이용률·마진·손실 개선이 함께 관찰돼야 긍정 판단을 검토한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:02deeb40c7cbf4dd84df6c9fcd2de046fcf537d993a2f0699caa1417b211dda5",
+        "candidate_evidence_fingerprint": "0120892d7ab1ec9029ee59647fcc5a3c842870f1bba1efb1a034bfe3bdbae108",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "WRD"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "HOLD",
+        "candidate_decision_id": "v2-candidate:sha256:02deeb40c7cbf4dd84df6c9fcd2de046fcf537d993a2f0699caa1417b211dda5",
+        "candidate_evidence_fingerprint": "0120892d7ab1ec9029ee59647fcc5a3c842870f1bba1efb1a034bfe3bdbae108",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "0089aea58869063cb13a639a882c0fbcf70d3911a225f5826dd209c9f538acbc",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "WeRide",
+      "evidence_fingerprint": "0120892d7ab1ec9029ee59647fcc5a3c842870f1bba1efb1a034bfe3bdbae108",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "HOLD",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "HOLD",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 WeRide(WRD)\n🧠 AI 수용 판단: HOLD\n추론등급: 매우 높음 | 판단 확신도: 낮음\n증거 성숙도: 부분 확인 | 가격 비대칭: 판단 보류\n\n🎯 판단\n• 상용화의 방향성보다 증권 정체성 및 주식 기준 미검증이 우선하는 차단 사유다.\n\n🔄 판단 변경 조건\n• 상향: 먼저 증권 정체성과 분모가 권위 있게 확정되고, 이어 이용률·마진·손실 개선이 함께 관찰돼야 긍정 판단을 검토한다.\n• 하향: 규제·안전 문제로 확장이 구조적으로 중단되거나 단위경제성 실패와 지속적 희석 중 하나가 명확해지면 부정 판단을 강화한다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "WRD",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "WRD",
+      "v1_decision": "HOLD"
+    },
+    {
+      "accepted_plan": {
+        "accepted_as_of": "2026-08-29",
+        "accepted_asymmetry": "UNFAVORABLE",
+        "accepted_confidence": "MEDIUM",
+        "accepted_confirmation_cost_basis": null,
+        "accepted_decision": "SELL",
+        "accepted_decision_id": "v2-accepted-decision:sha256:22954f25e81aca7b077d319c4a07d67ca7dd0ec62f93884b867e91c96e4102a1",
+        "accepted_downgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:d2e313f2c1c9f94c3e8f",
+            "decision-evidence:76c6f85f248d815d8aa2",
+            "decision-evidence:25605f390a39836dfe90"
+          ],
+          "text": "핵심 계약 훼손, 반복적 준공 실패, 지속적 가치 희석 중 하나가 현실화되면 부정 판단의 확신을 높인다."
+        },
+        "accepted_evidence_fingerprint": "v2-accepted-evidence:sha256:77871f2e1a5cd90257c02a3c627907d27bf62c3451e4b3957814cbfa7c136412",
+        "accepted_overall_maturity": "PARTIAL",
+        "accepted_postconfirmation_hold": false,
+        "accepted_preconfirmation_buy": false,
+        "accepted_pricing_requirement": "BULL_CASE_REQUIRED",
+        "accepted_reason": {
+          "evidence_refs": [
+            "decision-evidence:ac42471a86f5aaa6e0fa",
+            "canonical:valuation:historical_pb",
+            "decision-evidence:866626b17b737cd1fc94"
+          ],
+          "text": "부분적인 사업 증거보다 이미 반영된 대규모 성공 기대와 미검증 수익성·자본효율 사이의 간극이 더 크다."
+        },
+        "accepted_source": "CANDIDATE",
+        "accepted_upgrade_condition": {
+          "evidence_refs": [
+            "decision-evidence:907f40aa087d5eaa718c",
+            "decision-evidence:07364f280f1b5d129a26",
+            "decision-evidence:98e532edddad4ffd7f34",
+            "decision-evidence:2dcc661f5df22aa2765f"
+          ],
+          "text": "예정된 가동과 실제 청구가 확인되고 수익성·현금흐름 개선이 큰 희석 없이 이어질 때 판단을 완화한다."
+        },
+        "adjudication_id": null,
+        "adjudication_reason": null,
+        "adjudication_recommendation": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:a6944fa9275016d3e4357e5799851dd4f7e53da44578ce859184f4705dc36ab3",
+        "candidate_evidence_fingerprint": "7fd14dac34fb174098e5c47e8816ef73b7a7d4c57b24babeab4da941c521c2f2",
+        "contract": "v2-accepted-decision-ownership-v1",
+        "denial_reason": null,
+        "material_disagreement": false,
+        "status": "READY",
+        "ticker": "WULF"
+      },
+      "accepted_validation": {
+        "contract": "v2-accepted-decision-validator-v1",
+        "errors": [],
+        "valid": true
+      },
+      "adjudication_history": {
+        "adjudication_id": null,
+        "adjudication_status": "NOT_REQUIRED",
+        "source_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb"
+      },
+      "candidate_history": {
+        "candidate_decision": "SELL",
+        "candidate_decision_id": "v2-candidate:sha256:a6944fa9275016d3e4357e5799851dd4f7e53da44578ce859184f4705dc36ab3",
+        "candidate_evidence_fingerprint": "7fd14dac34fb174098e5c47e8816ef73b7a7d4c57b24babeab4da941c521c2f2",
+        "candidate_preconfirmation_buy": false,
+        "candidate_source_row_fingerprint": "d0fe080b312b6ed9ed92a74eb6324d89e0fae659550334edfdb9c2d8416f35fa",
+        "source_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583"
+      },
+      "candidate_validation": {
+        "automatically_bound_numeric_count": 0,
+        "contract": "preconfirmation-asymmetry-validator-v2",
+        "errors": [],
+        "manual_numeric_count": 0,
+        "numeric_claim_count": 0,
+        "unresolved_numeric_count": 0,
+        "valid": true
+      },
+      "company_name": "TeraWulf Inc.",
+      "evidence_fingerprint": "7fd14dac34fb174098e5c47e8816ef73b7a7d4c57b24babeab4da941c521c2f2",
+      "market": "us",
+      "material_disagreement": false,
+      "rendered": {
+        "accepted_decision": "SELL",
+        "accepted_source": "CANDIDATE",
+        "candidate_decision": "SELL",
+        "contract": "v2-accepted-decision-shadow-renderer-v1",
+        "text": "🧪 SHADOW V2 · accepted decision 검증\n🏢 TeraWulf Inc.(WULF)\n🧠 AI 수용 판단: SELL\n추론등급: 매우 높음 | 판단 확신도: 중간\n증거 성숙도: 부분 확인 | 가격 비대칭: 불리\n\n🎯 판단\n• 부분적인 사업 증거보다 이미 반영된 대규모 성공 기대와 미검증 수익성·자본효율 사이의 간극이 더 크다.\n\n🔄 판단 변경 조건\n• 상향: 예정된 가동과 실제 청구가 확인되고 수익성·현금흐름 개선이 큰 희석 없이 이어질 때 판단을 완화한다.\n• 하향: 핵심 계약 훼손, 반복적 준공 실패, 지속적 가치 희석 중 하나가 현실화되면 부정 판단의 확신을 높인다.\n\n※ Shadow 연구 분류이며 주문·자동매매 지시가 아닙니다.",
+        "ticker": "WULF",
+        "validation": {
+          "contract": "v2-accepted-decision-render-validator-v1",
+          "errors": [],
+          "valid": true
+        }
+      },
+      "status": "PASS",
+      "ticker": "WULF",
+      "v1_decision": "SELL"
+    }
+  ],
+  "source_agreement_artifact_sha256": "bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb",
+  "source_candidate_artifact_sha256": "723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583",
+  "source_evidence_sha256": "7649e675b654194b881ba3b5eadc2d2a69f1051915669a630e5e7e43b938720b",
+  "status": "PASS",
+  "subject_count": 20,
+  "v1_canary_state_changed": false,
+  "v2_production_decision_block_visible": 0
+}

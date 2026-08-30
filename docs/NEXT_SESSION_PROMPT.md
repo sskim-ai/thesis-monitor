@@ -1,5 +1,23 @@
 # Next Session Prompt
 
+Latest authoritative V2 work follows exact instruction commit `4662c08` and deterministic
+implementation `f55605189ee0179ab4af7030b94d79d706ed32a8`. Read the
+`20260830-v2-accepted-*` reports, accepted decisions JSON, exact sink receipt, and artifact index
+first.
+
+Candidate BUY/HOLD/SELL `2/14/4` is immutable history. Accepted BUY/HOLD/SELL is `1/16/3` after
+keeping v1 for `003690/SNDK` and v2 for `GOOGL/HUT/RXRX`. Only `accepted_plan` owns downstream
+summary/render/validation/test/readiness. Missing material adjudication fails closed. Test sink is
+`20/20 exact`; V1 canary diff, V2 production exposure, production send/intent, order language, and
+raw recipient identifiers are zero.
+
+`V2_ACCEPTED_OWNERSHIP=READY_FOR_MIGRATION_REVIEW` and
+`V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`. Review accepted messages before drafting a
+separate bounded migration instruction. Do not migrate automatically, rerun frozen AI decisions,
+mutate the v1 canary, or manufacture natural proof.
+
+---
+
 Latest shadow-v2 work follows exact instruction commit `46bdf4c` and implementation
 `c0c9139babb06ead11112aea072a67ef364a9b22`. Read
 `docs/reports/20260830-v2-migration-readiness.json`, the 20-stock shadow decisions, v1/v2 agreement,
