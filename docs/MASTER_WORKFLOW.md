@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v26`
-As of: `2026-08-29`
+Master Workflow: `v27`
+As of: `2026-08-30`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260829-cross-market-decision-engine-bounded-canary`
+Latest evidence branch: `codex/20260830-preconfirmation-asymmetry-decision-engine-v2`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,28 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. Pre-Confirmation Asymmetry Decision Engine V2
+
+Exact work instructions were committed first as `46bdf4c` on base
+`1359a5769c36d64dd5e0acc9bbf03f90578fb062`. Track A/B/C/D implementation is fixed through
+`c0c9139babb06ead11112aea072a67ef364a9b22`. The archive-only engine adds driver-level evidence
+maturity, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost,
+pre-confirmation error cost, and explicit pre-confirmation BUY/post-confirmation HOLD semantics.
+There is no fixed score or maturity-to-decision map.
+
+The same 20 canonical evidence packets were reviewed label-blind with signed-in Codex CLI
+`gpt-5.6-sol / xhigh`. V2 produced BUY `2`, HOLD `14`, SELL `4`; `003690` and `GOOGL` were
+pre-confirmation BUY candidates. All 20 candidates and messages passed. Five v1/v2 disagreements
+were adjudicated: keep v1 for `003690/SNDK`, keep v2 for `GOOGL/HUT/RXRX`; open P0/material P1 is
+`0/0`.
+
+The dedicated test sink passed `20/20 exact` with zero production recipient sends, intents,
+duplicates, orphans, or raw recipient identifiers retained. Historical confirmation-delay outcome
+diagnostics remain `NOT_AVAILABLE` because canonical PIT outcome/estimate series are not archived;
+look-ahead leakage and alpha claims are zero. `V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`.
+V2 production exposure is still zero and the exact v1 canary remains unchanged. Review the v2
+shadow decisions before creating any separate bounded migration instruction.
 
 ## 0. Bounded Cross-Market Decision Canary
 

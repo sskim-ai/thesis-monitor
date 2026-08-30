@@ -1,0 +1,67 @@
+{
+  "base_sha": "1359a5769c36d64dd5e0acc9bbf03f90578fb062",
+  "contract": "preconfirmation-asymmetry-v2-migration-readiness-v1",
+  "current_v1_canary": {
+    "mutated_by_v2": false,
+    "state": "CANARY",
+    "subjects": {
+      "kr": [
+        "003690",
+        "000660"
+      ],
+      "us": [
+        "GOOGL",
+        "RXRX"
+      ]
+    }
+  },
+  "date_kst": "2026-08-30",
+  "gates": {
+    "AI_INVENTED_SCENARIO_TARGET_PRICE": 0,
+    "CURRENT_V1_DECISION_ENGINE_STATE": "CANARY",
+    "FINAL_DECISION_FROM_FIXED_WEIGHT_SUM": 0,
+    "FORCED_PRECONFIRMATION_BUY_COUNT": 0,
+    "HISTORICAL_REPLAY_LOOKAHEAD_LEAK": 0,
+    "MATURITY_HARD_MAPS_TO_CONFIDENCE": 0,
+    "MATURITY_HARD_MAPS_TO_DECISION": 0,
+    "OPEN_MATERIAL_P1": 0,
+    "OPEN_P0": 0,
+    "PARTIAL_SAFE_BACKTEST_PRESENTED_AS_VALIDATED_ALPHA": 0,
+    "POLARITY_REGRESSION": 0,
+    "POSTCONFIRMATION_HOLD_COUNT": 0,
+    "PRECONFIRMATION_BUY_COUNT": 2,
+    "PRECONFIRMATION_DECISION_FROM_FIXED_RULE": 0,
+    "PRECONFIRMATION_LOGIC_BYPASSES_DATA_SAFETY": 0,
+    "PRICING_REQUIREMENT_WITHOUT_EVIDENCE": 0,
+    "PRODUCTION_DELIVERY_INTENT_CREATED": 0,
+    "TECHNICAL_FEATURE_OWNS_ASYMMETRY": 0,
+    "TICKER_003690_IDENTITY": "코리안리",
+    "US_DECISION_LOCALIZATION_REGRESSION": 0,
+    "V1_V2_MATERIAL_DISAGREEMENT_COUNT": 5,
+    "V2_ADJUDICATION_COUNT": 5,
+    "V2_BUY_COUNT": 2,
+    "V2_HOLD_COUNT": 14,
+    "V2_MIGRATION_RECOMMENDATION": "READY_WITH_OBSERVATION",
+    "V2_MUTATED_CANARY_STATE": 0,
+    "V2_PRODUCTION_DECISION_BLOCK_VISIBLE": 0,
+    "V2_SELL_COUNT": 4,
+    "V2_SHADOW_SUBJECT_COUNT": 20,
+    "V2_TEST_EXACT_PAYLOAD": "PASS",
+    "V2_TEST_MESSAGE_COUNT": 20,
+    "V2_TEST_MESSAGE_QUALITY": "PASS",
+    "V2_TEST_PRODUCTION_RECIPIENT_SEND": 0
+  },
+  "implementation_sha": "c0c9139babb06ead11112aea072a67ef364a9b22",
+  "master_instruction_commit": "46bdf4c",
+  "migration_recommendation": "READY_WITH_OBSERVATION",
+  "next_action": "REVIEW_V2_SHADOW_DECISIONS",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "historical confirmation-delay return/estimate diagnostic awaits canonical PIT series",
+    "optional compact label wording may be refined during bounded migration"
+  ],
+  "production_v2_exposure": 0,
+  "source_evidence_sha256": "7649e675b654194b881ba3b5eadc2d2a69f1051915669a630e5e7e43b938720b",
+  "status": "PASS"
+}

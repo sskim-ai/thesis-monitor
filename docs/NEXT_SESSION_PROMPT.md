@@ -1,5 +1,24 @@
 # Next Session Prompt
 
+Latest shadow-v2 work follows exact instruction commit `46bdf4c` and implementation
+`c0c9139babb06ead11112aea072a67ef364a9b22`. Read
+`docs/reports/20260830-v2-migration-readiness.json`, the 20-stock shadow decisions, v1/v2 agreement,
+five adjudications, test-sink exact messages, message quality, and artifact index first.
+
+Signed-in Codex CLI `gpt-5.6-sol / xhigh` produced BUY `2`, HOLD `14`, SELL `4`; raw v2
+pre-confirmation BUY candidates are `003690` and `GOOGL`. Five disagreements were adjudicated with
+no open material repair. Test sink is `20/20 exact`; v2 production exposure, production sends,
+delivery intents, canary mutation, fixed-score decisions, target-price invention, and factual-safety
+bypass are zero.
+
+`V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`. Review the v2 shadow and adjudication outcomes
+before drafting a separate bounded migration instruction. Do not migrate automatically. Keep the
+existing v1 production canary and its natural-proof counters unchanged, do not run a Scheduled Task
+or production Telegram manually, and do not present unavailable historical confirmation-delay
+returns as alpha.
+
+---
+
 Latest authoritative repair follows instruction commit `0bba7c9` and implementation
 `86b9fc44006c45431ccc1822131df3b4a74eb1ca`. Read the
 `20260829-decision-polarity-*` reports, GOOGL/RXRX negative controls, 003690/000660 controls, BUY

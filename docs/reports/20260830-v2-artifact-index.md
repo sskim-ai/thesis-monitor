@@ -1,0 +1,31 @@
+# V2 Artifact Index
+
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| DECISION_ENGINE_V2_SHADOW_MIGRATION.md | 291ea2ee9762ce46cd5cd240873093d4f7da18cc3a508a43a6ddc9655d1dfd7b | 645 |
+| EVIDENCE_MATURITY_MODEL.md | fb69f1a5e321899427b970c88cad554a0e58e73ca18975dd30b235027bbe89e6 | 580 |
+| PRECONFIRMATION_BUY_REASONING.md | 2153cc96b9cf33c4ea1a4a30a155b75c433b7228f8b69ea3fa440bd556a01562 | 667 |
+| PRICING_REQUIREMENT_AND_ASYMMETRY.md | 64f3a1e85cbe5778d8a22965d91163a8a9471473856be79d4d313372682ecf25 | 682 |
+| 20260830-preconfirmation-v2-scope.md | b249396d6572a7b751be1a3b2e5a9c5f1cc3c487f72027b25647ce3881d699ae | 521 |
+| 20260830-evidence-maturity-contract.md | a8cbe3961fd862cc596d0f14871fbab52e0c9d3cb638a198dfb860a239b026a1 | 285 |
+| 20260830-pricing-requirement-contract.md | be9d98d14ae550ffc7840bca89d9a0fb1e66eb983b811a20729ed60226d9d83c | 346 |
+| 20260830-scenario-asymmetry-contract.md | 34e43a7ce6cbdc8b771bde2103ca05d45a570dfe44e328c9300f441d9d868111 | 305 |
+| 20260830-confirmation-cost-contract.md | 8f85f016573ff576be0b10c50fc9bc46d6c0fcbec785fce615f0d69a7400d05a | 298 |
+| 20260830-preconfirmation-error-cost-contract.md | c9536c61cb4c5e05cd692c763541dd601c46ba5c3eb15a8f63623c33d9813d96 | 308 |
+| 20260830-preconfirmation-buy-contract.md | 85aa76ea02fa0c6972dddbc072b23d2e4ca5c47194558dcb142ede9ac263aa97 | 357 |
+| 20260830-postconfirmation-hold-contract.md | 489f5ecacfd79d3582280a902a9fd139c0c0196c6565c305a15572f65e561429 | 285 |
+| 20260830-003690-preconfirmation-challenge.md | 41659dbb7872ae2f9a71fbcd10d902451c88a06f82104da62efb48bc5960250b | 532 |
+| 20260830-googl-preconfirmation-challenge.md | 2a5fd482c831d2c291d42ff98bc69fa989ca93a8870644867549c542f14800ef | 529 |
+| 20260830-semiconductor-preconfirmation-controls.md | e6f27501ed023fca5d390d690142a73d54faf818d31a1dc919045cc7f77ec16b | 668 |
+| 20260830-speculative-optionality-controls.md | 32a29e8efbb379ceb5c9836724e93dbf8685cd78306c313607c65a869d31ad46 | 574 |
+| 20260830-current-20-v2-shadow-decisions.md | 7f0402e9139f5935f2d414eab58e533f7bbd25c4f0943eb9bebae771c16784a0 | 2359 |
+| 20260830-v1-v2-decision-agreement.md | 898d2a412fe0f84aa888f382ab5d5bdd8a3329bfc822921367ffe48b7aa0f692 | 1216 |
+| 20260830-v2-material-disagreement-adjudication.md | ebd56c873fa85308e650929203d6a313fc5d285d5fd2f4422afe44d3a7ef7177 | 453 |
+| 20260830-confirmation-delay-historical-diagnostic.md | 2c9279ac63726c2ccad13d974151331dfdd808a45c62a2543eb5ef3fc27ec021 | 381 |
+| 20260830-v2-test-sink.md | b9eef590e0649aa492102eed167c8fd395ee614f934a203a67afd5e16758aed1 | 18210 |
+| 20260830-v2-message-quality.md | d7fe34fea4496d1538f93a3f24046f2c7b724b588074507db7a39425f4072cfc | 291 |
+| 20260830-v2-migration-readiness.md | ff366c08d2e0cd555a6a6f872434a3cc008554693e067cafbf4ffa1ce849ace0 | 1780 |
+| 20260830-current-20-v2-shadow-decisions.json | 723580ff3fe926eb1507ed066afefbb276cabee3a99bd555dd56df57e3eb7583 | 417443 |
+| 20260830-v1-v2-decision-agreement.json | bbbbb4c6303a18296c510eddbf47eda50f40b2a958668851069600698d79befb | 9929 |
+| 20260830-v2-migration-readiness.json | d673b804df6612903075fb780fc2bf863f5865a6f3a189d9a88b76a709e163ad | 2317 |
+| 20260830-v2-test-sink-receipt.json | 34a219c6a12723bc63c88e117715ca60588dc0ac90055f82654181869c48be2a | 14150 |

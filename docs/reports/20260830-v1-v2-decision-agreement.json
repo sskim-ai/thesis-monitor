@@ -1,0 +1,303 @@
+{
+  "adjudication_count": 5,
+  "agreement_count": 15,
+  "contract": "preconfirmation-v2-v1-agreement-v1",
+  "material_disagreement_count": 5,
+  "rows": [
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "000660",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": {
+        "accepted_decision": "HOLD",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": false,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:5871b9ebe80ebb75cabb",
+            "decision-evidence:52af705a4279a23fba6c",
+            "decision-evidence:2e5b0cdb077072e34b15",
+            "decision-evidence:06b7f50ebb7ed7843c6d",
+            "canonical:valuation:book_quality"
+          ],
+          "text": "기간 비교의 기준 일관성이 경고된 가운데 보험영업의 반복성과 자본적정성 기반 환원이 미확인이고 관련 기대도 이미 반영돼, 장부가치 할인만으로 BUY 비대칭은 입증되지 않는다."
+        },
+        "recommendation": "KEEP_V1",
+        "ticker": "003690",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "BUY",
+        "v2_overstated_favorable_asymmetry": "YES",
+        "v2_underweighted_execution_risk": "YES",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "decision_agreement": false,
+      "market": "kr",
+      "material_disagreement": true,
+      "ticker": "003690",
+      "v1_decision": "HOLD",
+      "v2_decision": "BUY"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "005490",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "005930",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "010120",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "012450",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "kr",
+      "material_disagreement": false,
+      "ticker": "086280",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "CORZ",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "CRCL",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": {
+        "accepted_decision": "BUY",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "canonical:valuation:historical_pe",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6",
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "text": "검색·클라우드 이익 경로가 부분 확인됐고 자체 역사 대비 낮은 후행 이익평가가 완충을 제공하므로, AI 투자 회수의 완전한 확인을 기다리며 클라우드 재평가를 놓칠 비용까지 고려한 부분 확인 BUY가 더 지지된다."
+        },
+        "recommendation": "KEEP_V2",
+        "ticker": "GOOGL",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "YES",
+        "v2_decision": "BUY",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "decision_agreement": false,
+      "market": "us",
+      "material_disagreement": true,
+      "ticker": "GOOGL",
+      "v1_decision": "HOLD",
+      "v2_decision": "BUY"
+    },
+    {
+      "adjudication": {
+        "accepted_decision": "SELL",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "canonical:valuation:current",
+            "decision-evidence:af3bdb852dc69e1ac700",
+            "decision-evidence:cb5b65968e8b5e6f42de",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "text": "높은 계약 실행 기대와 프리미엄 가치평가가 반영된 반면 실제 매출·마진 전환과 모회사 자본부담은 미확인이라, 낮은 확인 대기 비용을 감안하면 확인 전 위험대비보상은 불리하다."
+        },
+        "recommendation": "KEEP_V2",
+        "ticker": "HUT",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "SELL",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "decision_agreement": false,
+      "market": "us",
+      "material_disagreement": true,
+      "ticker": "HUT",
+      "v1_decision": "HOLD",
+      "v2_decision": "SELL"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "IBM",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "MU",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": {
+        "accepted_decision": "HOLD",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "canonical:valuation:historical_pb",
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "text": "초기 파트너·임상 진전과 낮은 역사적 장부가치 위치가 불연속 재평가 선택권을 남기지만, 경제적 전환 미증명과 희석 위험도 커 비대칭성은 균형적이며 HOLD가 적절하다."
+        },
+        "recommendation": "KEEP_V2",
+        "ticker": "RXRX",
+        "v1_decision": "SELL",
+        "v1_ignored_confirmation_cost": "YES",
+        "v1_overrequired_confirmation": "YES",
+        "v2_decision": "HOLD",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "NEITHER"
+      },
+      "decision_agreement": false,
+      "market": "us",
+      "material_disagreement": true,
+      "ticker": "RXRX",
+      "v1_decision": "SELL",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "SKHY",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": {
+        "accepted_decision": "HOLD",
+        "bounded_repair": "NONE",
+        "data_quality_comparison_safe": true,
+        "decisive_basis": {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4",
+            "decision-evidence:1a43e68befc2686f2759",
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "canonical:chart:price_transition"
+          ],
+          "text": "기대 수준은 높지만 하방 근거는 아직 조건부 위험이고 가격 확인도 유지된다. 현재 하방 우위를 입증하지 못한 SELL보다 HOLD가 더 잘 뒷받침된다."
+        },
+        "recommendation": "KEEP_V1",
+        "ticker": "SNDK",
+        "v1_decision": "HOLD",
+        "v1_ignored_confirmation_cost": "UNCERTAIN",
+        "v1_overrequired_confirmation": "NO",
+        "v2_decision": "SELL",
+        "v2_overstated_favorable_asymmetry": "NO",
+        "v2_underweighted_execution_risk": "NO",
+        "valuation_or_expectation_misuse": "V2"
+      },
+      "decision_agreement": false,
+      "market": "us",
+      "material_disagreement": true,
+      "ticker": "SNDK",
+      "v1_decision": "HOLD",
+      "v2_decision": "SELL"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "TSLA",
+      "v1_decision": "SELL",
+      "v2_decision": "SELL"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "TSM",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "WRD",
+      "v1_decision": "HOLD",
+      "v2_decision": "HOLD"
+    },
+    {
+      "adjudication": null,
+      "decision_agreement": true,
+      "market": "us",
+      "material_disagreement": false,
+      "ticker": "WULF",
+      "v1_decision": "SELL",
+      "v2_decision": "SELL"
+    }
+  ],
+  "subject_count": 20
+}

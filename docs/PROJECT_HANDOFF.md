@@ -1,5 +1,23 @@
 # Thesis Monitor Project Handoff
 
+## 2026-08-30 Pre-Confirmation Asymmetry V2 Handoff
+
+Start with `docs/reports/20260830-v2-migration-readiness.json`, the current-20 v2 JSON, v1/v2
+agreement, five adjudications, exact test-sink report, and artifact index. Exact instruction commit
+is `46bdf4c`; implementation is `c0c9139babb06ead11112aea072a67ef364a9b22` on base
+`1359a5769c36d64dd5e0acc9bbf03f90578fb062`.
+
+The label-blind signed-in Codex CLI `gpt-5.6-sol / xhigh` result is BUY `2`, HOLD `14`, SELL `4`.
+`003690` and `GOOGL` are raw v2 pre-confirmation BUY candidates. Adjudication keeps v1 HOLD for
+`003690`, keeps v2 BUY for `GOOGL`, keeps v2 SELL for `HUT`, keeps v2 HOLD for `RXRX`, and keeps v1
+HOLD for `SNDK`. All five disagreements are closed with open P0/material P1 `0/0`.
+
+The dedicated sink passed `20/20 exact`; production recipient sends/intents and v2 runtime state
+mutation are zero. The existing v1 canary remains KR `003690,000660`, US `GOOGL,RXRX`, with its
+current decisions and natural-proof counters unchanged. Migration recommendation is
+`READY_WITH_OBSERVATION`, not automatic authorization. Next action is operator review of the v2
+shadow decisions followed, if approved, by a separate bounded migration instruction.
+
 ## 2026-08-29 Decision Evidence Polarity Repair Handoff
 
 Start with `docs/reports/20260829-decision-polarity-readiness.json` and the artifact index. Exact

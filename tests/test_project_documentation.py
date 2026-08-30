@@ -129,17 +129,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260829-decision-evidence-polarity-renderer-p1-repair"
+        "codex/20260830-preconfirmation-asymmetry-decision-engine-v2"
     )
     assert state["current_phase"] == (
-        "decision_polarity_repaired_rearmed_awaiting_natural_proof"
+        "preconfirmation_asymmetry_v2_shadow_closed_ready_with_observation"
     )
     assert state["last_completed_phase"] == (
-        "20260829_decision_evidence_polarity_renderer_p1_repair"
+        "20260830_preconfirmation_asymmetry_decision_engine_v2"
     )
     assert state["next_default_phase"] == (
-        "wait_for_two_natural_canary_cycles_per_market"
+        "review_v2_shadow_decisions_before_bounded_migration"
     )
+    v2_implementation_commit = "c0c9139babb06ead11112aea072a67ef364a9b22"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -153,9 +154,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     canary_code_commit = "86b9fc44006c45431ccc1822131df3b4a74eb1ca"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["deployed_code_commit"] == canary_code_commit
-    assert state["main_code_commit"] == canary_code_commit
-    assert state["operating_code_commit"] == canary_code_commit
+    assert state["deployed_code_commit"] == state["recorded_base_commit"]
+    assert state["main_code_commit"] == v2_implementation_commit
+    assert state["operating_code_commit"] == v2_implementation_commit
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -174,6 +175,28 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert polarity["production_recipient_send"] == 0
     assert polarity["kr_natural_cycles"] == 0
     assert polarity["us_natural_cycles"] == 0
+    v2 = state["preconfirmation_asymmetry_decision_engine_v2_20260830"]
+    assert v2["status"] == "CLOSED_SHADOW_READY_WITH_OBSERVATION"
+    assert v2["instruction_commit"] == "46bdf4c"
+    assert v2["implementation_commit"] == v2_implementation_commit
+    assert v2["reasoning_effort"] == "xhigh"
+    assert v2["label_blind_shadow"] == "PASS_20_OF_20"
+    assert v2["v2_distribution"] == {"BUY": 2, "HOLD": 14, "SELL": 4}
+    assert v2["preconfirmation_buy_subjects"] == ["003690", "GOOGL"]
+    assert v2["material_disagreements"] == 5
+    assert v2["adjudications"] == 5
+    assert v2["historical_replay_lookahead_leak"] == 0
+    assert v2["test_sink_delivery"] == "PASS_20_OF_20_EXACT"
+    assert v2["test_sink_duplicate"] == 0
+    assert v2["test_sink_orphan"] == 0
+    assert v2["production_recipient_send"] == 0
+    assert v2["production_delivery_intent_created"] == 0
+    assert v2["production_v2_exposure"] == 0
+    assert v2["current_v1_state"] == "CANARY_UNCHANGED"
+    assert v2["open_p0"] == []
+    assert v2["open_material_p1"] == []
+    assert v2["migration_recommendation"] == "READY_WITH_OBSERVATION"
+    assert v2["next_action"] == "REVIEW_V2_SHADOW_DECISIONS"
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -335,6 +358,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     assert state["contracts"]["cross_market_decision_quality_review"] == (
         "cross-market-decision-quality-review-v1"
+    )
+    assert state["contracts"]["evidence_maturity_pricing"] == (
+        "evidence-maturity-pricing-v2"
+    )
+    assert state["contracts"]["scenario_asymmetry_confirmation_cost"] == (
+        "scenario-asymmetry-confirmation-cost-v2"
+    )
+    assert state["contracts"]["preconfirmation_asymmetry_decision_engine"] == (
+        "preconfirmation-asymmetry-decision-engine-v2"
     )
     assert state["contracts"]["legacy_technical_token_detection"] == (
         "legacy-technical-token-detection-v1"
@@ -1240,7 +1272,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == canary_code_commit
+    assert state["current_commit"] == v2_implementation_commit
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

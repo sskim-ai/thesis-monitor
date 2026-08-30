@@ -1,0 +1,357 @@
+{
+  "contract": "preconfirmation-asymmetry-v2-test-reconciliation-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY",
+  "orphan_count": 0,
+  "planned_message_count": 20,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "receipt_count": 2,
+  "received_payload_quality": "PASS",
+  "rows": [
+    {
+      "character_count": 374,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:000660",
+      "outbound_sha256": "990aa85beda9953bbda66ea44de9ab39644e07942213473eb5b1b46ce7404ec2",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "990aa85beda9953bbda66ea44de9ab39644e07942213473eb5b1b46ce7404ec2",
+      "remote_message_alias": "0a1aaf27227a",
+      "rendered_sha256": "990aa85beda9953bbda66ea44de9ab39644e07942213473eb5b1b46ce7404ec2",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "000660"
+    },
+    {
+      "character_count": 594,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:003690",
+      "outbound_sha256": "125fbda26c78fb8dbbdf3570673f44c5bc889fe48057ce471b87c1583766b0c1",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "125fbda26c78fb8dbbdf3570673f44c5bc889fe48057ce471b87c1583766b0c1",
+      "remote_message_alias": "7adac528e1ed",
+      "rendered_sha256": "125fbda26c78fb8dbbdf3570673f44c5bc889fe48057ce471b87c1583766b0c1",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "003690"
+    },
+    {
+      "character_count": 378,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:005490",
+      "outbound_sha256": "f4639c35744c02917d9e5f6ec0473f1f00cd7dd737e1452c35a63644f69470fa",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "f4639c35744c02917d9e5f6ec0473f1f00cd7dd737e1452c35a63644f69470fa",
+      "remote_message_alias": "3a52bf6815a7",
+      "rendered_sha256": "f4639c35744c02917d9e5f6ec0473f1f00cd7dd737e1452c35a63644f69470fa",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 3,
+      "ticker": "005490"
+    },
+    {
+      "character_count": 377,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:005930",
+      "outbound_sha256": "0f7d1c19af805414a3b3a845af4c34a5d1bccdfa5a1f691662cdf2fb454364ad",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "0f7d1c19af805414a3b3a845af4c34a5d1bccdfa5a1f691662cdf2fb454364ad",
+      "remote_message_alias": "7a41a85bcc91",
+      "rendered_sha256": "0f7d1c19af805414a3b3a845af4c34a5d1bccdfa5a1f691662cdf2fb454364ad",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 4,
+      "ticker": "005930"
+    },
+    {
+      "character_count": 365,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:010120",
+      "outbound_sha256": "e978e51d90a11af4b8a54e714fb2de07e9c10cdcd7d38c6dc6c9fce763145498",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "e978e51d90a11af4b8a54e714fb2de07e9c10cdcd7d38c6dc6c9fce763145498",
+      "remote_message_alias": "77e0ae593edc",
+      "rendered_sha256": "e978e51d90a11af4b8a54e714fb2de07e9c10cdcd7d38c6dc6c9fce763145498",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 5,
+      "ticker": "010120"
+    },
+    {
+      "character_count": 361,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:012450",
+      "outbound_sha256": "93dab8ce0d75d4083a08e801a79aadfdbeedf6b64977f25eefa2f95356651cc8",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "93dab8ce0d75d4083a08e801a79aadfdbeedf6b64977f25eefa2f95356651cc8",
+      "remote_message_alias": "8f1746c733f8",
+      "rendered_sha256": "93dab8ce0d75d4083a08e801a79aadfdbeedf6b64977f25eefa2f95356651cc8",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 6,
+      "ticker": "012450"
+    },
+    {
+      "character_count": 334,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:086280",
+      "outbound_sha256": "5986e0c46857422886cf7a8509204714878cce143659064fe3877d21e32c3f25",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "5986e0c46857422886cf7a8509204714878cce143659064fe3877d21e32c3f25",
+      "remote_message_alias": "e65f2554d695",
+      "rendered_sha256": "5986e0c46857422886cf7a8509204714878cce143659064fe3877d21e32c3f25",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 7,
+      "ticker": "086280"
+    },
+    {
+      "character_count": 359,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:CORZ",
+      "outbound_sha256": "b00d5cd161819fa16c58948835fe0021b6824c09489cef4ff8c8c8586a4cde49",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "b00d5cd161819fa16c58948835fe0021b6824c09489cef4ff8c8c8586a4cde49",
+      "remote_message_alias": "17a094ecd20d",
+      "rendered_sha256": "b00d5cd161819fa16c58948835fe0021b6824c09489cef4ff8c8c8586a4cde49",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 8,
+      "ticker": "CORZ"
+    },
+    {
+      "character_count": 360,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:CRCL",
+      "outbound_sha256": "6b2d1755919a9bd97c60a279abdc0f3722476e144bdfc31f1c0aebd0198e7de1",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "6b2d1755919a9bd97c60a279abdc0f3722476e144bdfc31f1c0aebd0198e7de1",
+      "remote_message_alias": "f014da1aa2fe",
+      "rendered_sha256": "6b2d1755919a9bd97c60a279abdc0f3722476e144bdfc31f1c0aebd0198e7de1",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 9,
+      "ticker": "CRCL"
+    },
+    {
+      "character_count": 619,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:GOOGL",
+      "outbound_sha256": "3a20acd389e9f4e27365d49873a7684b47bc9037cd74b5596f3974f8193a6499",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "3a20acd389e9f4e27365d49873a7684b47bc9037cd74b5596f3974f8193a6499",
+      "remote_message_alias": "7eed9ac04b1a",
+      "rendered_sha256": "3a20acd389e9f4e27365d49873a7684b47bc9037cd74b5596f3974f8193a6499",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 10,
+      "ticker": "GOOGL"
+    },
+    {
+      "character_count": 371,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:HUT",
+      "outbound_sha256": "5a375f5a8c7ccdf7f4051d20ee6bac44a6cafed24a4eb34f44cdc1fc401e7246",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "5a375f5a8c7ccdf7f4051d20ee6bac44a6cafed24a4eb34f44cdc1fc401e7246",
+      "remote_message_alias": "9e7f3e48aedb",
+      "rendered_sha256": "5a375f5a8c7ccdf7f4051d20ee6bac44a6cafed24a4eb34f44cdc1fc401e7246",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "HUT"
+    },
+    {
+      "character_count": 354,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:IBM",
+      "outbound_sha256": "85dbf4d23df74548e35614cb4d7edc2b62b275c79b0e4cf1162b42d0dbfc82f9",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "85dbf4d23df74548e35614cb4d7edc2b62b275c79b0e4cf1162b42d0dbfc82f9",
+      "remote_message_alias": "517b1388b335",
+      "rendered_sha256": "85dbf4d23df74548e35614cb4d7edc2b62b275c79b0e4cf1162b42d0dbfc82f9",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "IBM"
+    },
+    {
+      "character_count": 378,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:MU",
+      "outbound_sha256": "f0cd3b72c61369759c14d554b03570135194762f71d5a7dc8c1bf7c6e05ea504",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "f0cd3b72c61369759c14d554b03570135194762f71d5a7dc8c1bf7c6e05ea504",
+      "remote_message_alias": "6d5a224d1ddf",
+      "rendered_sha256": "f0cd3b72c61369759c14d554b03570135194762f71d5a7dc8c1bf7c6e05ea504",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 3,
+      "ticker": "MU"
+    },
+    {
+      "character_count": 364,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:RXRX",
+      "outbound_sha256": "2b3835ef490b357a8e49bc03057af9a4c00ce367ba4f543b65712949887755e1",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "2b3835ef490b357a8e49bc03057af9a4c00ce367ba4f543b65712949887755e1",
+      "remote_message_alias": "42eb55adefdb",
+      "rendered_sha256": "2b3835ef490b357a8e49bc03057af9a4c00ce367ba4f543b65712949887755e1",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 4,
+      "ticker": "RXRX"
+    },
+    {
+      "character_count": 409,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:SKHY",
+      "outbound_sha256": "4cff39b1c5d342c09ce81aceb7e1107f8a7d392b0348a49b6fcf9ae7bb5f421b",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "4cff39b1c5d342c09ce81aceb7e1107f8a7d392b0348a49b6fcf9ae7bb5f421b",
+      "remote_message_alias": "23c7232d5907",
+      "rendered_sha256": "4cff39b1c5d342c09ce81aceb7e1107f8a7d392b0348a49b6fcf9ae7bb5f421b",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 5,
+      "ticker": "SKHY"
+    },
+    {
+      "character_count": 389,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:SNDK",
+      "outbound_sha256": "190500d309534a88faa0776f46e69e964851ede1a9df84bc21aa7509eede19fe",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "190500d309534a88faa0776f46e69e964851ede1a9df84bc21aa7509eede19fe",
+      "remote_message_alias": "d9e2fe290feb",
+      "rendered_sha256": "190500d309534a88faa0776f46e69e964851ede1a9df84bc21aa7509eede19fe",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 6,
+      "ticker": "SNDK"
+    },
+    {
+      "character_count": 358,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:TSLA",
+      "outbound_sha256": "43dc724388073f92946b9c9d2c5744aae8f32da32ae1de31bc503663829603a4",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "43dc724388073f92946b9c9d2c5744aae8f32da32ae1de31bc503663829603a4",
+      "remote_message_alias": "05aa83cb8103",
+      "rendered_sha256": "43dc724388073f92946b9c9d2c5744aae8f32da32ae1de31bc503663829603a4",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 7,
+      "ticker": "TSLA"
+    },
+    {
+      "character_count": 379,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:TSM",
+      "outbound_sha256": "9e7e7b09c4476029d49389599e12b7fbbef7132a4f4c771406c505415ae80294",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "9e7e7b09c4476029d49389599e12b7fbbef7132a4f4c771406c505415ae80294",
+      "remote_message_alias": "1fee0d3f175f",
+      "rendered_sha256": "9e7e7b09c4476029d49389599e12b7fbbef7132a4f4c771406c505415ae80294",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 8,
+      "ticker": "TSM"
+    },
+    {
+      "character_count": 360,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:WRD",
+      "outbound_sha256": "18c60a8689773099a1f2fb7b3d70011306d46fdbb0f1d9fcc1c809168b706f99",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "18c60a8689773099a1f2fb7b3d70011306d46fdbb0f1d9fcc1c809168b706f99",
+      "remote_message_alias": "40a3ef62f916",
+      "rendered_sha256": "18c60a8689773099a1f2fb7b3d70011306d46fdbb0f1d9fcc1c809168b706f99",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 9,
+      "ticker": "WRD"
+    },
+    {
+      "character_count": 359,
+      "exact_payload_match": true,
+      "logical_identity": "PRECONFIRMATION_ASYMMETRY_V2_SHADOW_TEST_ONLY:WULF",
+      "outbound_sha256": "76eb793a7201227129364bb5984b9e275aa48bb1e12b13443a24cd408019bfaa",
+      "received_payload_quality": {
+        "errors": [],
+        "status": "PASS"
+      },
+      "received_sha256": "76eb793a7201227129364bb5984b9e275aa48bb1e12b13443a24cd408019bfaa",
+      "remote_message_alias": "d17257df961d",
+      "rendered_sha256": "76eb793a7201227129364bb5984b9e275aa48bb1e12b13443a24cd408019bfaa",
+      "route": "SHADOW_V2_TEST_ONLY",
+      "send_attempts": 1,
+      "sequence": 10,
+      "ticker": "WULF"
+    }
+  ],
+  "sent_message_count": 20,
+  "status": "PASS"
+}
