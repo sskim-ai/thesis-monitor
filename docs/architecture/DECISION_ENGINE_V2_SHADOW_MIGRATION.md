@@ -21,6 +21,8 @@ After adjudication, `accepted_decision_plan` is the sole authority for summaries
 rendering, validation, test delivery, and readiness. A required adjudication that is missing or
 non-final stops at `NOT_READY`.
 
-V2 is archive/test shadow only. The v1 production canary, subject scope, decisions, natural-proof
-counters, scheduled tasks, delivery paths, and persistence remain unchanged. Migration requires a
-separate bounded instruction; this phase does not expose v2 in production.
+The retrospective shadow and accepted-ownership phases are complete. The bounded production
+cutover adds an accepted-only runtime behind explicit feature state while preserving scheduled
+tasks, delivery routing, Price Structure, valuation, and persistence boundaries. Deployment may be
+armed only after full-inventory preflight and dedicated test-sink proof. Natural KR and US cycles
+remain the required live proof; deployment alone must not be called `LIVE_PASS`.

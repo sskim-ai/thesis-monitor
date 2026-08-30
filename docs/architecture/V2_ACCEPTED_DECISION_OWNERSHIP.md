@@ -22,3 +22,13 @@ flags. In particular, rejected pre-confirmation BUY cannot remain active in acce
 
 The renderer consumes an accepted plan. The validator checks that same plan and cannot select or
 recompute a winner. Historical candidate artifacts remain immutable audit evidence only.
+
+## Production Runtime
+
+Production cutover preserves this ownership boundary. The V2 runtime generates candidates for the
+complete packet inventory, requires adjudication for material changes, and renders only ready
+accepted plans. A missing or non-final adjudication suppresses that subject's decision block; it
+cannot expose the raw candidate or silently substitute a V1 visible decision.
+
+Accepted state advances only after the corresponding normal delivery completes. Preflight and
+dedicated test-sink sends do not mutate production delivery intent or accepted runtime state.

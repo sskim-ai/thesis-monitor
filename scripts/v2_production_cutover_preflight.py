@@ -4,9 +4,6 @@ import argparse
 import asyncio
 import hashlib
 import json
-import os
-import shutil
-import subprocess
 from collections.abc import Mapping, Sequence
 from datetime import date
 from pathlib import Path
@@ -14,13 +11,19 @@ from pathlib import Path
 import httpx
 
 from app.config import get_settings
-from app.jobs.accepted_decision_v2_runtime import _fetch_ohlcv
+from app.jobs.accepted_decision_v2_runtime import (
+    V2_REASONING_BATCH_SIZE,
+    _fetch_ohlcv,
+    _invoke_signed_in_codex,
+    _signed_in_codex_bin,
+)
 from app.services.accepted_decision_v2_runtime_service import (
     REASONING_EFFORT,
     REASONING_MODEL,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionContext,
     accepted_v2_production_prompt,
+    accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
     validate_accepted_v2_production_output,
 )
@@ -33,6 +36,9 @@ from app.services.decision_canary_service import (
     strict_json_schema,
 )
 from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
+from app.services.preconfirmation_decision_v2_service import (
+    validate_preconfirmation_candidate,
+)
 from scripts.kr_final_preenable_test_delivery import deliver_test_messages
 from scripts.kr_market_preenable_evidence import audit_test_sink, load_env_values
 
@@ -127,9 +133,7 @@ def _codex_batch(
     output_dir: Path,
     timeout: int,
 ) -> AcceptedV2ProductionBatchOutput:
-    codex_bin = shutil.which("codex") or str(
-        Path("/Applications/ChatGPT.app/Contents/Resources/codex")
-    )
+    codex_bin = _signed_in_codex_bin()
     schema = output_dir / "output.schema.json"
     _write_json(
         schema,
@@ -137,53 +141,95 @@ def _codex_batch(
     )
     candidates = []
     adjudications = []
-    for index in range(0, len(context.selected_subjects), 5):
-        subjects = context.selected_subjects[index : index + 5]
-        batch_number = index // 5 + 1
+    for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
+        subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
+        batch_number = index // V2_REASONING_BATCH_SIZE + 1
         prompt = output_dir / f"batch-{batch_number:02d}.prompt.txt"
         output = output_dir / f"batch-{batch_number:02d}.output.json"
         log = output_dir / f"batch-{batch_number:02d}.log"
         _write_text(prompt, accepted_v2_production_prompt(context, subjects=subjects))
-        command = [
-            codex_bin,
-            "exec",
-            "--ephemeral",
-            "--ignore-user-config",
-            "--ignore-rules",
-            "--skip-git-repo-check",
-            "--sandbox",
-            "read-only",
-            "-m",
-            REASONING_MODEL,
-            "-c",
-            f'model_reasoning_effort="{REASONING_EFFORT}"',
-            "--output-schema",
-            str(schema),
-            "-o",
-            str(output),
-            "-",
-        ]
-        with prompt.open(encoding="utf-8") as stdin, log.open(
-            "w", encoding="utf-8"
-        ) as stdout:
-            process = subprocess.run(
-                command,
-                cwd=output_dir,
-                env=dict(os.environ),
-                stdin=stdin,
-                stdout=stdout,
-                stderr=subprocess.STDOUT,
-                timeout=timeout,
-                check=False,
-                text=True,
-            )
-        if process.returncode != 0:
-            raise ValueError(f"preflight_codex_batch_failed:{batch_number}")
+        _invoke_signed_in_codex(
+            codex_bin=codex_bin,
+            prompt=prompt,
+            output=output,
+            log=log,
+            schema=schema,
+            cwd=output_dir,
+            timeout=timeout,
+        )
         batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(output))
-        if {row.ticker for row in batch.candidates} != set(subjects):
-            raise ValueError(f"preflight_batch_scope_mismatch:{batch_number}")
-        candidates.extend(batch.candidates)
-        adjudications.extend(batch.adjudications)
+        if (
+            batch.packet_id != context.packet_id
+            or batch.claim_id != context.claim_id
+            or batch.market != context.market
+            or batch.assessment_date != context.assessment_date
+            or {row.ticker for row in batch.candidates} != set(subjects)
+        ):
+            raise ValueError(f"preflight_batch_identity_or_scope_mismatch:{batch_number}")
+        batch_candidates = {row.ticker: row for row in batch.candidates}
+        batch_adjudications = {row.ticker: row for row in batch.adjudications}
+        if len(batch_adjudications) != len(batch.adjudications):
+            raise ValueError(f"preflight_duplicate_adjudication:{batch_number}")
+        packets = {row.ticker: row for row in context.evidence_packets}
+        for ticker in subjects:
+            validation = validate_preconfirmation_candidate(
+                packets[ticker], batch_candidates[ticker]
+            )
+            if validation.valid:
+                continue
+            repair_prompt = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.txt"
+            repair_output = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.json"
+            repair_log = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.log"
+            _write_text(
+                repair_prompt,
+                accepted_v2_production_repair_prompt(
+                    context,
+                    ticker=ticker,
+                    rejected_candidate=batch_candidates[ticker],
+                    validation_errors=tuple(dict.fromkeys(validation.errors)),
+                ),
+            )
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=repair_prompt,
+                output=repair_output,
+                log=repair_log,
+                schema=schema,
+                cwd=output_dir,
+                timeout=timeout,
+            )
+            repaired = AcceptedV2ProductionBatchOutput.model_validate(
+                _read_json(repair_output)
+            )
+            if (
+                repaired.packet_id != context.packet_id
+                or repaired.claim_id != context.claim_id
+                or repaired.market != context.market
+                or repaired.assessment_date != context.assessment_date
+                or len(repaired.candidates) != 1
+                or repaired.candidates[0].ticker != ticker
+                or any(row.ticker != ticker for row in repaired.adjudications)
+            ):
+                raise ValueError(f"preflight_repair_scope_mismatch:{ticker}")
+            repaired_validation = validate_preconfirmation_candidate(
+                packets[ticker], repaired.candidates[0]
+            )
+            if not repaired_validation.valid:
+                raise ValueError(
+                    f"preflight_bounded_repair_failed:{ticker}:"
+                    + ",".join(repaired_validation.errors)
+                )
+            batch_candidates[ticker] = repaired.candidates[0]
+            batch_adjudications.pop(ticker, None)
+            batch_adjudications.update(
+                {row.ticker: row for row in repaired.adjudications}
+            )
+        candidates.extend(batch_candidates[ticker] for ticker in subjects)
+        adjudications.extend(
+            batch_adjudications[ticker]
+            for ticker in subjects
+            if ticker in batch_adjudications
+        )
     return AcceptedV2ProductionBatchOutput(
         packet_id=context.packet_id,
         claim_id=context.claim_id,
@@ -232,7 +278,45 @@ def _production_payloads(
     return messages
 
 
+async def _send_existing_payloads(args: argparse.Namespace) -> None:
+    payload = _read_json(args.output_dir / "production-payloads.json")
+    messages = payload.get("messages")
+    if not isinstance(messages, list) or not messages:
+        raise ValueError("preflight_existing_payloads_missing")
+    sink = audit_test_sink(load_env_values(args.env_file))
+    if not sink.get("available"):
+        raise ValueError("dedicated_test_sink_unavailable")
+    values = load_env_values(args.env_file)
+    receipt = await deliver_test_messages(
+        messages,
+        token=values.get("TELEGRAM_BOT_TOKEN", ""),
+        test_chat_id=values.get(str(sink["selected_test_key_name"]), ""),
+        production_chat_id=values.get("TELEGRAM_CHAT_ID", ""),
+        test_sink_alias=str(sink["test_sink_alias"]),
+        production_sink_alias=str(sink["production_sink_alias"]),
+        receipt_path=args.output_dir / "test-sink-receipt.json",
+        contract="v2-production-premerge-test-sink-v1",
+        namespace=TEST_NAMESPACE,
+    )
+    summary_path = args.output_dir / "summary.json"
+    summary = _read_json(summary_path)
+    summary.update(
+        {
+            "test_sink": sink,
+            "test_sink_sent": True,
+            "test_sink_exact_payload": receipt.get("status"),
+            "production_recipient_send": 0,
+            "production_delivery_intent_created": 0,
+        }
+    )
+    _write_json(summary_path, summary)
+    print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+
+
 async def _run(args: argparse.Namespace) -> None:
+    if args.send_existing:
+        await _send_existing_payloads(args)
+        return
     args.output_dir.mkdir(parents=True, exist_ok=True)
     contexts = []
     artifacts = []
@@ -304,6 +388,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=1800)
     parser.add_argument("--send-test-sink", action="store_true")
+    parser.add_argument("--send-existing", action="store_true")
     asyncio.run(_run(parser.parse_args()))
 
 

@@ -280,9 +280,26 @@ def accepted_v2_production_prompt(
     prior = {row.ticker: row for row in context.prior_accepted}
     if not selected or not set(selected).issubset(packets):
         raise ValueError("v2_production_prompt_subject_mismatch")
+    identity = {
+        "contract": OUTPUT_CONTRACT,
+        "packet_id": context.packet_id,
+        "claim_id": context.claim_id,
+        "market": context.market,
+        "assessment_date": context.assessment_date,
+    }
     payload = [
         {
-            "canonical_evidence": compact_ai_context(packets[ticker]),
+            "canonical_evidence": compact_ai_context(
+                packets[ticker].model_copy(
+                    update={
+                        "evidence": tuple(
+                            row
+                            for row in packets[ticker].evidence
+                            if not row.ref_id.startswith("technical-feature:")
+                        )
+                    }
+                )
+            ),
             "prior_accepted": (
                 prior[ticker].model_dump(mode="json") if ticker in prior else None
             ),
@@ -298,11 +315,49 @@ The prior accepted decision is continuity evidence, not a target distribution. F
 
 Change conditions are reassessment conditions, not automatic trades. Never describe a self transition: BUY must not be raised to BUY, HOLD must not be lowered to HOLD, and SELL must not be lowered to SELL. Refer to confidence/timing/risk when staying inside the same top-level decision.
 
-Return strict JSON only. Copy packet_id, claim_id, market, and assessment_date exactly, set contract=v2-accepted-production-output-v1, and include no candidate or adjudication outside the supplied ticker set.
+Do not state or infer ROIC, CCC, DSO, DPO, runway months, FCF yield, per-share FCF, EV/FCF, or P/FCF. Never abbreviate, truncate, or reconstruct an evidence ref ID; copy every cited ref exactly from the supplied context.
+
+Return strict JSON only. Copy every PRODUCTION_V2_IDENTITY field exactly and include no candidate or adjudication outside the supplied ticker set.
+
+PRODUCTION_V2_IDENTITY:
+"""
+        + json.dumps(identity, ensure_ascii=False, separators=(",", ":"))
+        + """
 
 PRODUCTION_V2_CONTEXT:
 """
         + json.dumps(payload, ensure_ascii=False, separators=(",", ":"), default=str)
+    )
+
+
+def accepted_v2_production_repair_prompt(
+    context: AcceptedV2ProductionContext,
+    *,
+    ticker: str,
+    rejected_candidate: PreconfirmationDecisionCandidate,
+    validation_errors: Sequence[str],
+) -> str:
+    if ticker != rejected_candidate.ticker:
+        raise ValueError("v2_production_repair_ticker_mismatch")
+    return (
+        accepted_v2_production_prompt(context, subjects=(ticker,))
+        + "\n\nBOUNDED_VALIDATOR_REPAIR:\n"
+        + json.dumps(
+            {
+                "ticker": ticker,
+                "validation_errors": list(validation_errors),
+                "rejected_candidate": rejected_candidate.model_dump(mode="json"),
+                "instructions": (
+                    "Repair only the listed contract violations. Preserve the analytical "
+                    "decision unless the supplied canonical evidence requires otherwise. "
+                    "Return exactly one complete candidate and any adjudication required by "
+                    "the prior accepted decision. Use only exact supplied evidence ref IDs."
+                ),
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+            default=str,
+        )
     )
 def _production_message_quality(
     rendered: Sequence[RenderedProductionAcceptedDecision],

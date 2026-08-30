@@ -21,6 +21,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionContext,
     accepted_v2_production_paths,
     accepted_v2_production_prompt,
+    accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
     v2_accepted_production_armed,
@@ -32,6 +33,12 @@ from app.services.cross_market_decision_engine_service import (
 )
 from app.services.decision_canary_service import strict_json_schema
 from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
+from app.services.preconfirmation_decision_v2_service import (
+    validate_preconfirmation_candidate,
+)
+
+
+V2_REASONING_BATCH_SIZE = 3
 
 
 def _read_json(path: Path) -> dict[str, object]:
@@ -61,6 +68,66 @@ def _atomic_text(path: Path, value: str) -> None:
 
 def _root() -> Path:
     return Path(get_settings().data_dir) / "ai_review"
+
+
+def _signed_in_codex_bin() -> str:
+    candidates = (
+        os.environ.get("CODEX_CLI_BIN"),
+        "/Applications/ChatGPT.app/Contents/Resources/codex",
+        shutil.which("codex"),
+        "/Users/sskim/Applications/Codex.app/Contents/Resources/codex",
+    )
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    raise ValueError("signed_in_codex_cli_missing")
+
+
+def _invoke_signed_in_codex(
+    *,
+    codex_bin: str,
+    prompt: Path,
+    output: Path,
+    log: Path,
+    schema: Path,
+    cwd: Path,
+    timeout: int,
+) -> None:
+    command = [
+        codex_bin,
+        "exec",
+        "--ephemeral",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "read-only",
+        "-m",
+        REASONING_MODEL,
+        "-c",
+        f'model_reasoning_effort="{REASONING_EFFORT}"',
+        "--output-schema",
+        str(schema),
+        "-o",
+        str(output),
+        "-",
+    ]
+    with prompt.open(encoding="utf-8") as stdin, log.open(
+        "w", encoding="utf-8"
+    ) as stdout:
+        process = subprocess.run(
+            command,
+            cwd=cwd,
+            env=dict(os.environ),
+            stdin=stdin,
+            stdout=stdout,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+            check=False,
+            text=True,
+        )
+    if process.returncode != 0 or not output.exists() or not output.stat().st_size:
+        raise ValueError("signed_in_codex_cli_v2_production_generation_failed")
 
 
 def _claim(packet_id: str, claim_id: str) -> dict[str, object]:
@@ -230,19 +297,15 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     prepared = await prepare_context(packet_id, claim_id)
     if prepared.get("status") != "CONTEXT_READY":
         return prepared
-    codex_bin = shutil.which("codex") or str(
-        Path("/Applications/ChatGPT.app/Contents/Resources/codex")
-    )
-    if not Path(codex_bin).exists():
-        raise ValueError("signed_in_codex_cli_missing")
+    codex_bin = _signed_in_codex_bin()
     claim = _claim(packet_id, claim_id)
     paths = _paths(claim, claim_id)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
     candidates = []
     adjudications = []
-    for index in range(0, len(context.selected_subjects), 5):
-        subjects = context.selected_subjects[index : index + 5]
-        batch_number = index // 5 + 1
+    for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
+        subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
+        batch_number = index // V2_REASONING_BATCH_SIZE + 1
         batch_prompt = paths["prompt"].with_name(
             f"{paths['prompt'].stem}.batch-{batch_number:02d}.txt"
         )
@@ -256,42 +319,15 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             batch_prompt,
             accepted_v2_production_prompt(context, subjects=subjects),
         )
-        command = [
-            codex_bin,
-            "exec",
-            "--ephemeral",
-            "--ignore-user-config",
-            "--ignore-rules",
-            "--skip-git-repo-check",
-            "--sandbox",
-            "read-only",
-            "-m",
-            REASONING_MODEL,
-            "-c",
-            f'model_reasoning_effort="{REASONING_EFFORT}"',
-            "--output-schema",
-            str(prepared["schema_path"]),
-            "-o",
-            str(batch_output),
-            "-",
-        ]
-        with (
-            batch_prompt.open(encoding="utf-8") as stdin,
-            batch_log.open("w", encoding="utf-8") as stdout,
-        ):
-            process = subprocess.run(
-                command,
-                cwd=paths["prompt"].parent,
-                env=dict(os.environ),
-                stdin=stdin,
-                stdout=stdout,
-                stderr=subprocess.STDOUT,
-                timeout=timeout,
-                check=False,
-                text=True,
-            )
-        if process.returncode != 0 or not batch_output.exists() or not batch_output.stat().st_size:
-            raise ValueError("signed_in_codex_cli_v2_production_generation_failed")
+        _invoke_signed_in_codex(
+            codex_bin=codex_bin,
+            prompt=batch_prompt,
+            output=batch_output,
+            log=batch_log,
+            schema=Path(str(prepared["schema_path"])),
+            cwd=paths["prompt"].parent,
+            timeout=timeout,
+        )
         batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(batch_output))
         if (
             batch.packet_id != context.packet_id
@@ -301,8 +337,78 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             or {row.ticker for row in batch.candidates} != set(subjects)
         ):
             raise ValueError("v2_production_batch_identity_or_scope_mismatch")
-        candidates.extend(batch.candidates)
-        adjudications.extend(batch.adjudications)
+        batch_candidates = {row.ticker: row for row in batch.candidates}
+        batch_adjudications = {row.ticker: row for row in batch.adjudications}
+        if len(batch_adjudications) != len(batch.adjudications):
+            raise ValueError("v2_production_duplicate_batch_adjudication")
+        packets = {row.ticker: row for row in context.evidence_packets}
+        for ticker in subjects:
+            validation = validate_preconfirmation_candidate(
+                packets[ticker], batch_candidates[ticker]
+            )
+            if validation.valid:
+                continue
+            repair_prompt = paths["prompt"].with_name(
+                f"{paths['prompt'].stem}.batch-{batch_number:02d}.{ticker}.repair.txt"
+            )
+            repair_output = paths["temp"].with_name(
+                f"{paths['temp'].stem}.batch-{batch_number:02d}.{ticker}.repair.json"
+            )
+            repair_log = paths["log"].with_name(
+                f"{paths['log'].stem}.batch-{batch_number:02d}.{ticker}.repair.log"
+            )
+            _atomic_text(
+                repair_prompt,
+                accepted_v2_production_repair_prompt(
+                    context,
+                    ticker=ticker,
+                    rejected_candidate=batch_candidates[ticker],
+                    validation_errors=tuple(dict.fromkeys(validation.errors)),
+                ),
+            )
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=repair_prompt,
+                output=repair_output,
+                log=repair_log,
+                schema=Path(str(prepared["schema_path"])),
+                cwd=paths["prompt"].parent,
+                timeout=timeout,
+            )
+            repaired = AcceptedV2ProductionBatchOutput.model_validate(
+                _read_json(repair_output)
+            )
+            if (
+                repaired.packet_id != context.packet_id
+                or repaired.claim_id != context.claim_id
+                or repaired.market != context.market
+                or repaired.assessment_date != context.assessment_date
+                or len(repaired.candidates) != 1
+                or repaired.candidates[0].ticker != ticker
+                or any(row.ticker != ticker for row in repaired.adjudications)
+            ):
+                raise ValueError("v2_production_repair_identity_or_scope_mismatch")
+            repaired_validation = validate_preconfirmation_candidate(
+                packets[ticker], repaired.candidates[0]
+            )
+            if not repaired_validation.valid:
+                raise ValueError(
+                    "v2_production_bounded_repair_failed:"
+                    + ticker
+                    + ":"
+                    + ",".join(repaired_validation.errors)
+                )
+            batch_candidates[ticker] = repaired.candidates[0]
+            batch_adjudications.pop(ticker, None)
+            batch_adjudications.update(
+                {row.ticker: row for row in repaired.adjudications}
+            )
+        candidates.extend(batch_candidates[ticker] for ticker in subjects)
+        adjudications.extend(
+            batch_adjudications[ticker]
+            for ticker in subjects
+            if ticker in batch_adjudications
+        )
     output_path = Path(str(prepared["temp_output_path"]))
     _atomic_json(
         output_path,
