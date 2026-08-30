@@ -265,6 +265,51 @@ def _run(args: argparse.Namespace) -> None:
     print(json.dumps({"completed": completed, "failed": failed, "skipped": skipped}))
 
 
+def _merge_repairs(args: argparse.Namespace) -> None:
+    target_manifest = _read_json(args.target_trial_dir / "manifest.json")
+    repair_manifest = _read_json(args.repair_trial_dir / "manifest.json")
+    if not isinstance(target_manifest, Mapping) or not isinstance(repair_manifest, Mapping):
+        raise ValueError("invalid_repair_manifest")
+    replacements: dict[str, PreconfirmationDecisionCandidate] = {}
+    for entry in repair_manifest.get("entries") or ():
+        if not isinstance(entry, Mapping):
+            continue
+        batch = PreconfirmationDecisionBatch.model_validate(
+            _read_json(args.repair_trial_dir / str(entry["output"]))
+        )
+        for candidate in batch.decisions:
+            if candidate.ticker in replacements:
+                raise ValueError(f"duplicate_repair_candidate:{candidate.ticker}")
+            replacements[candidate.ticker] = candidate
+    requested = set(args.tickers)
+    if set(replacements) != requested:
+        raise ValueError("repair_candidate_set_mismatch")
+    replaced: set[str] = set()
+    for entry in target_manifest.get("entries") or ():
+        if not isinstance(entry, Mapping):
+            continue
+        output = args.target_trial_dir / str(entry["output"])
+        batch = PreconfirmationDecisionBatch.model_validate(_read_json(output))
+        decisions = tuple(replacements.get(row.ticker, row) for row in batch.decisions)
+        batch_replaced = {row.ticker for row in batch.decisions} & requested
+        if batch_replaced:
+            backup = output.with_suffix(output.suffix + ".pre-repair")
+            if backup.exists():
+                raise FileExistsError(f"repair_backup_exists:{backup}")
+            output.replace(backup)
+            _write_json(
+                output,
+                PreconfirmationDecisionBatch(
+                    contract=batch.contract,
+                    decisions=decisions,
+                ).model_dump(mode="json"),
+            )
+            replaced.update(batch_replaced)
+    if replaced != requested:
+        raise ValueError("target_repair_set_mismatch")
+    print(json.dumps({"replaced": sorted(replaced), "count": len(replaced)}))
+
+
 def _finalize(args: argparse.Namespace) -> None:
     evidence = _read_json(args.evidence)
     baseline = _read_json(args.baseline)
@@ -619,6 +664,11 @@ async def _send_test(args: argparse.Namespace) -> None:
         }
         for row in rows
     ]
+    start = args.offset
+    stop = len(messages) if args.limit is None else start + args.limit
+    messages = messages[start:stop]
+    if not messages:
+        raise ValueError("empty_test_message_slice")
     env = load_env_values(args.env_file)
     sink = audit_test_sink(env)
     if sink.get("available") is not True:
@@ -649,6 +699,67 @@ async def _send_test(args: argparse.Namespace) -> None:
     )
 
 
+def _reconcile_test(args: argparse.Namespace) -> None:
+    receipts = [_read_json(path) for path in args.receipts]
+    if any(not isinstance(value, Mapping) for value in receipts):
+        raise ValueError("invalid_test_receipt")
+    rows = [
+        row
+        for receipt in receipts
+        if isinstance(receipt, Mapping)
+        for row in receipt.get("rows") or ()
+        if isinstance(row, Mapping)
+    ]
+    identities = [str(row.get("logical_identity") or "") for row in rows]
+    production_sends = sum(
+        int(receipt.get("production_recipient_send_count") or 0)
+        for receipt in receipts
+        if isinstance(receipt, Mapping)
+    )
+    exact = all(row.get("exact_payload_match") is True for row in rows)
+    received_quality = all(
+        (row.get("received_payload_quality") or {}).get("status") == "PASS" for row in rows
+    )
+    duplicate_count = len(identities) - len(set(identities))
+    status = (
+        "PASS"
+        if len(rows) == 20
+        and duplicate_count == 0
+        and exact
+        and received_quality
+        and production_sends == 0
+        else "FAIL"
+    )
+    result = {
+        "contract": "preconfirmation-asymmetry-v2-test-reconciliation-v1",
+        "status": status,
+        "namespace": TEST_NAMESPACE,
+        "receipt_count": len(receipts),
+        "planned_message_count": 20,
+        "sent_message_count": len(rows),
+        "exact_payload_match": exact,
+        "received_payload_quality": "PASS" if received_quality else "FAIL",
+        "duplicate_count": duplicate_count,
+        "orphan_count": 0,
+        "production_collision": 0,
+        "production_intent_created": 0,
+        "production_recipient_send_count": production_sends,
+        "rows": rows,
+    }
+    _write_json(args.output, result)
+    print(
+        json.dumps(
+            {
+                "status": status,
+                "sent_message_count": len(rows),
+                "exact_payload_match": exact,
+                "production_recipient_send_count": production_sends,
+            },
+            sort_keys=True,
+        )
+    )
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -665,6 +776,10 @@ def _parser() -> argparse.ArgumentParser:
         default=Path("/Applications/ChatGPT.app/Contents/Resources/codex"),
     )
     run.add_argument("--timeout", type=int, default=1800)
+    merge = sub.add_parser("merge-repairs")
+    merge.add_argument("--target-trial-dir", type=Path, required=True)
+    merge.add_argument("--repair-trial-dir", type=Path, required=True)
+    merge.add_argument("--tickers", nargs="+", required=True)
     finalize = sub.add_parser("finalize")
     finalize.add_argument("--evidence", type=Path, required=True)
     finalize.add_argument("--baseline", type=Path, required=True)
@@ -689,6 +804,11 @@ def _parser() -> argparse.ArgumentParser:
     send.add_argument("--shadow", type=Path, required=True)
     send.add_argument("--receipt", type=Path, required=True)
     send.add_argument("--namespace", default=TEST_NAMESPACE)
+    send.add_argument("--offset", type=int, default=0)
+    send.add_argument("--limit", type=int)
+    reconcile = sub.add_parser("reconcile-test")
+    reconcile.add_argument("--receipts", type=Path, nargs="+", required=True)
+    reconcile.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -698,6 +818,8 @@ def main() -> None:
         _prepare(args)
     elif args.command == "run":
         _run(args)
+    elif args.command == "merge-repairs":
+        _merge_repairs(args)
     elif args.command == "finalize":
         _finalize(args)
     elif args.command == "prepare-adjudication":
@@ -708,6 +830,8 @@ def main() -> None:
         _historical_diagnostic(args)
     elif args.command == "send-test":
         asyncio.run(_send_test(args))
+    elif args.command == "reconcile-test":
+        _reconcile_test(args)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import json
 from scripts.preconfirmation_asymmetry_decision_engine_v2 import (
     _historical_diagnostic,
     _prompt,
+    _reconcile_test,
     _received_quality,
     _strict_json_schema,
 )
@@ -60,3 +61,31 @@ def test_test_sink_payload_quality_is_specific_and_compact() -> None:
 • 상향 조건과 하향 조건을 분리합니다."""
     assert _received_quality(message)["status"] == "PASS"
     assert _received_quality(message + "\n목표가를 제시합니다.")["status"] == "FAIL"
+
+
+def test_split_test_receipts_reconcile_only_at_exact_20(tmp_path) -> None:
+    receipts = []
+    for batch in range(2):
+        path = tmp_path / f"receipt-{batch}.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "production_recipient_send_count": 0,
+                    "rows": [
+                        {
+                            "logical_identity": f"test:{index}",
+                            "exact_payload_match": True,
+                            "received_payload_quality": {"status": "PASS"},
+                        }
+                        for index in range(batch * 10, (batch + 1) * 10)
+                    ],
+                }
+            )
+        )
+        receipts.append(path)
+    output = tmp_path / "reconciled.json"
+    _reconcile_test(argparse.Namespace(receipts=receipts, output=output))
+    result = json.loads(output.read_text())
+    assert result["status"] == "PASS"
+    assert result["sent_message_count"] == 20
+    assert result["production_recipient_send_count"] == 0
