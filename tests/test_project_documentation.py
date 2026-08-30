@@ -152,7 +152,6 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     preenablement_commit = "84f8f549bc8fa0338309a84b23b2738f2e357646"
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
-    canary_code_commit = "86b9fc44006c45431ccc1822131df3b4a74eb1ca"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["deployed_code_commit"] == state["recorded_base_commit"]
     assert state["main_code_commit"] == v2_implementation_commit
