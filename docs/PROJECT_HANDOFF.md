@@ -2223,3 +2223,23 @@ smoke pass. The only next action is `WAIT_FOR_NEXT_NATURAL_US_RUN`. Inspect the 
 exact receipts, and night-futures visibility or safe omission read-only. Never expose recipient
 values, run a Scheduled Task manually, or send a production Telegram message. Production Assist
 remains OFF.
+
+## 2026-08-30 V2 Production Cutover Handoff
+
+Start with `docs/reports/20260830-v2-production-rollout-readiness.json` and the artifact index.
+Exact instruction commit is `0eb8bad`; implementation is
+`6c429fc2f8afc4316b319494ca098c77594d0d2d`; promoted main/operating is
+`2a30bb3dcaecb40f83ca53f59982de1e18dab0ee` before documentation closure.
+
+The complete KR 7 + US 13 inventory passed accepted-only preflight `20/20`, with distribution
+BUY/HOLD/SELL `1/16/3`. Five bounded validator repairs preserved every top-level decision. Test
+sink delivery is `20/20 exact`; production recipient, production intent, duplicate, orphan, raw
+candidate visibility, same-evidence churn, Price Structure diff, and valuation diff are all zero.
+Prompt/artifact provenance is exact against committed runtime code.
+
+Operating is armed with `VISIBLE_STOCK_DECISION_ENGINE=V2_ACCEPTED`, V2/full-coverage true, and V1
+rollback true. Production Assist stays OFF. No schedule changed and no task or production Telegram
+was manually run. State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`. Review the normal 2026-08-31 KR
+cycle first, then the 2026-08-31 US session delivered 2026-09-01 KST. Create natural proof reports
+only after those cycles occur. Roll back the selector to V1 only on a material live defect; never
+replay already delivered messages automatically.

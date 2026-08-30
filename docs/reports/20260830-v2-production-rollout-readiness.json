@@ -1,11 +1,17 @@
 {
   "contract": "v2-production-rollout-readiness-v1",
   "date_kst": "2026-08-30",
-  "status": "PREMERGE_PASS",
+  "status": "MERGED_ARMED_AWAITING_NATURAL_LIVE",
   "base_sha": "6db9256b539e437a7067a1822237ef9c504c63fa",
   "master_instruction_commit": "0eb8bad",
   "implementation_sha": "6c429fc2f8afc4316b319494ca098c77594d0d2d",
   "implementation_actions_run": 33299339989,
+  "premerge_actions_run": 33300809775,
+  "exact_provenance_actions_run": 33301030455,
+  "main_actions_run": 33301218328,
+  "main_actions_status": "PASS_TEST_AND_LINT",
+  "promoted_main_sha": "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee",
+  "operating_sha": "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee",
   "inventory": {"kr": 7, "us": 13, "total": 20},
   "accepted_distribution": {"BUY": 1, "HOLD": 16, "SELL": 3},
   "premerge_ready": 20,
@@ -35,12 +41,20 @@
     "MANUAL_SCHEDULED_JOB_TRIGGER_20260830": 0,
     "OPEN_P0": 0,
     "OPEN_MATERIAL_P1": 0,
-    "PREMERGE_PRODUCTION_CUTOVER": "PASS"
+    "PREMERGE_PRODUCTION_CUTOVER": "PASS",
+    "MAIN_OPERATING_DIVERGENCE": 0,
+    "SCHEDULER_DIFF_UNRELATED_TO_CUTOVER": 0,
+    "VISIBLE_STOCK_DECISION_ENGINE": "V2_ACCEPTED",
+    "V2_PRODUCTION_ENABLED": true,
+    "FULL_MONITORED_STOCK_COVERAGE_TARGET": true,
+    "V1_VISIBLE_DECISION_ENGINE": false,
+    "V1_ROLLBACK_AVAILABLE": true,
+    "PRODUCTION_ASSIST": "OFF"
   },
   "next_live": {
     "kr": "2026-08-31",
     "us_session": "2026-08-31 America/New_York",
     "us_expected_kst_delivery": "2026-09-01"
   },
-  "production_cutover": "AWAITING_MAIN_MERGE_AND_ARM"
+  "production_cutover": "MERGED_ARMED_AWAITING_NATURAL_LIVE"
 }

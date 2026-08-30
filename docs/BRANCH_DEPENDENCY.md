@@ -523,3 +523,16 @@ candidate, renderer/validator, archive/test tooling, and tests. It does not alte
 calibration, Price Structure, valuation, market messages, schedules, recipients, assessments, DB,
 Pilot, or Production Assist. Descendants must preserve explicit BULLISH/BEARISH/NEUTRAL ownership,
 the exact four-subject canary, and the no-manual-natural-proof boundary.
+
+The V2 production cutover descends linearly from operating main
+`6db9256b539e437a7067a1822237ef9c504c63fa`. Exact instruction commit `0eb8bad` precedes Track A
+`1a6488e`, Track B `7f32c34`, and convergence implementation
+`6c429fc2f8afc4316b319494ca098c77594d0d2d`. Premerge/exact-provenance evidence advances through
+`2a30bb3dcaecb40f83ca53f59982de1e18dab0ee`.
+
+All descendants must preserve accepted-plan-only rendering, required adjudication for material
+changes, subject-local NOT_READY suppression, same-evidence churn rejection, signed-in
+`gpt-5.6-sol / xhigh`, complete packet inventory, unchanged Price Structure/valuation/market
+messages, and selector-based V1 rollback. Test-sink proof is not natural proof. No descendant may
+manually run a Scheduled Task, send a production Telegram proof, expose raw recipient IDs, rewrite
+accepted history, or declare LIVE_PASS before both required natural KR and US cycles.

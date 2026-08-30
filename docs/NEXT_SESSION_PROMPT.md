@@ -1,5 +1,27 @@
 # Next Session Prompt
 
+Latest authoritative state is the V2 accepted production cutover. Read
+`docs/reports/20260830-v2-production-rollout-readiness.json`,
+`docs/reports/20260830-v2-production-artifact-index.md`, exact provenance, subject inventory,
+preflight, test-sink receipt, main merge, and feature-state reports first.
+
+Instruction commit is `0eb8bad`; runtime implementation is
+`6c429fc2f8afc4316b319494ca098c77594d0d2d`; promoted main/operating is
+`2a30bb3dcaecb40f83ca53f59982de1e18dab0ee` before documentation closure. Fresh preflight is
+`20/20 READY`, BUY/HOLD/SELL `1/16/3`, test sink `20/20 exact`, open P0/material P1 `0/0`, and
+Price Structure/valuation diff `0/0`. The visible selector is V2 accepted, full coverage is
+targeted, V1 rollback remains available, and Production Assist is OFF.
+
+State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`, not LIVE_PASS. Next action is read-only review of the
+normal 2026-08-31 KR cycle, followed by the 2026-08-31 US New York session delivered 2026-09-01
+KST. Do not manually run a Scheduled Task or send a production Telegram message. Verify accepted
+V2 ownership, exact payloads, 003690 wording, localization/polarity, Price Structure/valuation
+parity, and zero duplicate/orphan. Create natural proof reports only after the cycles actually
+occur. Roll back to the V1 selector only for a material live defect and do not replay delivered
+messages automatically.
+
+---
+
 Latest authoritative V2 work follows exact instruction commit `4662c08` and deterministic
 implementation `f55605189ee0179ab4af7030b94d79d706ed32a8`. Read the
 `20260830-v2-accepted-*` reports, accepted decisions JSON, exact sink receipt, and artifact index

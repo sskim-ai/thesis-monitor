@@ -2108,3 +2108,25 @@ Local full pytest is `1903 PASS`; implementation Actions Test/Lint PASS. Main an
 promoted linearly, the repaired continuity state was installed, and only the exact KR 2 + US 2
 canary was rearmed. Natural counts remain `0/2` per market. Open P0/material P1 are `0/0`; the next
 action is read-only natural canary review with no manual task or production Telegram proof.
+
+### 40.27 V2 Accepted Production Cutover
+
+Exact instruction commit `0eb8bad` precedes decision-aware wording `1a6488e`, accepted runtime
+`7f32c34`, and exact preflight convergence `6c429fc2f8afc4316b319494ca098c77594d0d2d`.
+The runtime consumes the complete packet inventory, uses signed-in Codex CLI
+`gpt-5.6-sol / xhigh`, requires final adjudication for material decision changes, and renders only
+`accepted_decision_plan`. Missing or non-final ownership suppresses that subject's decision block;
+raw candidates and silent V1 visible fallback are prohibited.
+
+Fresh KR run-44 plus US run-46 preflight produced `20/20 READY`, BUY/HOLD/SELL `1/16/3`, strict
+message quality PASS, and zero repeated substantive spans. Five subject-local validator repairs
+changed no top-level decision. The dedicated non-production sink received `20/20 exact` with zero
+retry, duplicate, orphan, production-recipient send, or production intent. Current code reproduces
+all 13 saved prompts and both accepted artifacts exactly.
+
+Main and operating advanced linearly to `2a30bb3dcaecb40f83ca53f59982de1e18dab0ee`. The visible
+selector is `V2_ACCEPTED`, full monitored coverage is targeted, V1 rollback remains available, and
+Production Assist remains OFF. Schedules and LaunchAgent checksums are unchanged; API and OHLCV
+health pass. State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`, not LIVE_PASS. Review the normal KR
+2026-08-31 and US 2026-08-31 New York / 2026-09-01 KST cycles read-only. Do not manually trigger a
+task or send a production Telegram message for proof.
