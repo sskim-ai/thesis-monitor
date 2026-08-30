@@ -12,6 +12,8 @@ KR_PLAN_CONTRACT = "kr-market-digest-quality-v1"
 _REQUIRED_SLOT_ERRORS = {
     "CURRENT_MARKET": "CORE_MARKET_SLOT_UNCONSUMED",
     "PARTICIPATION_STYLE": "SELECTED_RSP_SLOT_UNCONSUMED",
+    "SMALL_CAP_RELATIVE": "SELECTED_IWM_RELATIVE_SLOT_UNCONSUMED",
+    "SEMICONDUCTOR_RELATIVE": "SELECTED_SOXX_RELATIVE_SLOT_UNCONSUMED",
     "SECTOR_DISPERSION": "SELECTED_SECTOR_DISPERSION_UNCONSUMED",
     "BREADTH_STATE": "SELECTED_BREADTH_SLOT_UNCONSUMED",
 }
@@ -79,7 +81,11 @@ def _slot_consumed(
         return bool(consumed), consumed
     if slot == "PARTICIPATION_STYLE":
         return bool(refs and refs[0] in interpretation_refs), consumed
-    if slot == "SECTOR_DISPERSION":
+    if slot in {
+        "SMALL_CAP_RELATIVE",
+        "SEMICONDUCTOR_RELATIVE",
+        "SECTOR_DISPERSION",
+    }:
         return bool(refs and set(refs).issubset(interpretation_refs)), consumed
     return bool(consumed), consumed
 
@@ -151,6 +157,12 @@ def validate_us_market_evidence_utilization(
         "CORE_MARKET_SLOT_UNCONSUMED": int("CORE_MARKET_SLOT_UNCONSUMED" in names),
         "SELECTED_RSP_SLOT_UNCONSUMED": int(
             "SELECTED_RSP_SLOT_UNCONSUMED" in names
+        ),
+        "SELECTED_IWM_RELATIVE_SLOT_UNCONSUMED": int(
+            "SELECTED_IWM_RELATIVE_SLOT_UNCONSUMED" in names
+        ),
+        "SELECTED_SOXX_RELATIVE_SLOT_UNCONSUMED": int(
+            "SELECTED_SOXX_RELATIVE_SLOT_UNCONSUMED" in names
         ),
         "SELECTED_SECTOR_DISPERSION_UNCONSUMED": int(
             "SELECTED_SECTOR_DISPERSION_UNCONSUMED" in names

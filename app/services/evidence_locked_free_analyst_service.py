@@ -945,6 +945,8 @@ def build_free_analyst_analysis(
                 claim
                 for slot in (
                     UsMarketDigestSlot.PARTICIPATION_STYLE,
+                    UsMarketDigestSlot.SMALL_CAP_RELATIVE,
+                    UsMarketDigestSlot.SEMICONDUCTOR_RELATIVE,
                     UsMarketDigestSlot.SECTOR_DISPERSION,
                     UsMarketDigestSlot.BREADTH_STATE,
                 )

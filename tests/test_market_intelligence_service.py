@@ -132,6 +132,10 @@ def test_market_fact_selection_uses_verified_changes_and_excludes_stale() -> Non
     assert facts["market:relative:SOXX:SPY"]["fields"]["relative_return_pct"] == (
         2.1422 - 0.2194
     )
+    assert "market:relative:IWM:SPY" in facts
+    assert facts["market:relative:IWM:SPY"]["fields"]["relative_return_pct"] == (
+        0.6446 - 0.2194
+    )
     assert result["key_change_fact_ids"] == [
         "market:relative:SOXX:SPY",
         "market:oil:DCOILWTICO",

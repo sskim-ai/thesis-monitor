@@ -75,6 +75,7 @@ _EXPECTED_SERIES = {
 _SELECTION_THRESHOLDS = {
     ("SPY", "return_pct"): 1.0,
     ("QQQ:SPY", "relative_return_pct"): 0.4,
+    ("IWM:SPY", "relative_return_pct"): 0.5,
     ("SOXX:SPY", "relative_return_pct"): 0.5,
     ("DGS10", "change_bp"): 5.0,
     ("DFII10", "change_bp"): 3.0,
@@ -394,6 +395,7 @@ def _selected_change_fact_ids(
     candidates = (
         ("SPY", "return_pct", "market:index:SPY"),
         ("QQQ:SPY", "relative_return_pct", "market:relative:QQQ:SPY"),
+        ("IWM:SPY", "relative_return_pct", "market:relative:IWM:SPY"),
         ("SOXX:SPY", "relative_return_pct", "market:relative:SOXX:SPY"),
         ("DGS10", "change_bp", "market:nominal_yield:DGS10"),
         ("DFII10", "change_bp", "market:real_yield:DFII10"),
@@ -574,6 +576,7 @@ def build_market_intelligence(
     facts = list(facts_by_series.values())
     for subject, benchmark in (
         ("QQQ", "SPY"),
+        ("IWM", "SPY"),
         ("SOXX", "SPY"),
         ("RSP", "SPY"),
         ("XLE", "XLF"),

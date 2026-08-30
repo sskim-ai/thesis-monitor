@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -36,6 +37,7 @@ CANARY_REASONING_MODEL = "gpt-5.6-sol"
 CANARY_REASONING_EFFORT = "xhigh"
 CONTINUITY_STATE_CONTRACT = "cross-market-decision-canary-continuity-state-v1"
 POLARITY_CONTRACT = "decision-evidence-polarity-v1"
+_HANGUL_SYLLABLE = re.compile(r"[가-힣]")
 
 
 class DecisionCanaryContinuityBaseline(FrozenModel):
@@ -487,6 +489,7 @@ Hard contracts:
 - Do not calculate or state a target, stop, order size, FCF valuation ratio, ROIC, CCC, runway months, or future return.
 - Do not issue buy/sell imperatives or order language. BUY/HOLD/SELL is an analytical classification only.
 - Do not target a class distribution and do not manufacture a BUY. Current BUY=0 is acceptable.
+- For market=us, write every user-facing structured claim text in natural Korean. English is allowed only inside a Korean sentence for tickers, framework names, and proper nouns. Do not rely on post-render translation.
 - Decision continuity is evidence-bound, not date-bound. When DECISION_CONTINUITY supplies the same evidence_sha256 as the current packet, preserve its BUY/HOLD/SELL classification. Do not change that classification by stylistic re-interpretation. Confidence, timing, and wording remain independently evidence-owned. A future packet with a different evidence_sha256 may be classified anew.
 - Output only strict JSON matching the supplied schema.
 
@@ -538,6 +541,37 @@ def _decision_labels() -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     return confidence, confidence_reason, timing
 
 
+def decision_korean_localization_errors(
+    packet: DecisionEvidencePacket,
+    candidate: DecisionCandidate,
+) -> tuple[str, ...]:
+    if packet.market != "us":
+        return ()
+    claims = [
+        ("timing_basis", candidate.timing_basis),
+        ("decisive_reason", candidate.decisive_reason),
+        ("why_not_buy", candidate.why_not_buy),
+        ("why_not_sell", candidate.why_not_sell),
+        ("upgrade_condition", candidate.upgrade_condition),
+        ("downgrade_condition", candidate.downgrade_condition),
+    ]
+    groups = (
+        ("supporting_evidence", candidate.supporting_evidence),
+        ("opposing_evidence", candidate.opposing_evidence),
+        ("buy_case_evidence", candidate.buy_case_evidence),
+        ("sell_case_evidence", candidate.sell_case_evidence),
+        ("neutral_context_evidence", candidate.neutral_context_evidence),
+        ("unknowns", candidate.unknowns),
+    )
+    for name, rows in groups:
+        claims.extend((f"{name}:{index}", claim) for index, claim in enumerate(rows))
+    return tuple(
+        f"us_claim_not_korean:{name}"
+        for name, claim in claims
+        if not _HANGUL_SYLLABLE.search(claim.text)
+    )
+
+
 def render_decision_canary_block(
     packet: DecisionEvidencePacket,
     candidate: DecisionCandidate,
@@ -550,6 +584,14 @@ def render_decision_canary_block(
     polarity_errors = decision_polarity_errors(packet, candidate)
     if polarity_errors:
         raise ValueError("decision_canary_polarity_invalid:" + ",".join(polarity_errors))
+    localization_errors = decision_korean_localization_errors(packet, candidate)
+    if localization_errors:
+        raise ValueError(
+            "decision_canary_korean_localization_invalid:"
+            + packet.ticker
+            + ":"
+            + ",".join(localization_errors)
+        )
     confidence, confidence_reason, timing = _decision_labels()
     lines = [
         f"🧠 AI 종합 판단: {candidate.decision}",
@@ -634,6 +676,16 @@ def validate_decision_canary_output(
                 + candidate.ticker
                 + ":"
                 + ",".join(polarity_errors)
+            )
+        localization_errors = decision_korean_localization_errors(
+            packets[candidate.ticker], candidate
+        )
+        if localization_errors:
+            raise ValueError(
+                "decision_canary_korean_localization_invalid:"
+                + candidate.ticker
+                + ":"
+                + ",".join(localization_errors)
             )
     rendered = tuple(
         render_shadow_decision(packets[candidate.ticker], candidate)

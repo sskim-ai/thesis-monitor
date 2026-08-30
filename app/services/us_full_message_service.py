@@ -161,11 +161,35 @@ def render_us_full_market_message(
 
     internal_lines: list[str] = []
     style = _plan_item(plan, UsMarketDigestSlot.PARTICIPATION_STYLE)
-    if style is not None and style.selected and style.claim_text:
-        internal_lines.append(f"• {style.claim_text}")
+    small_cap = _plan_item(plan, UsMarketDigestSlot.SMALL_CAP_RELATIVE)
     breadth = _plan_item(plan, UsMarketDigestSlot.BREADTH_STATE)
+    style_claim = (
+        style.claim_text
+        if style is not None and style.selected and style.claim_text
+        else ""
+    )
+    small_cap_claim = (
+        small_cap.claim_text
+        if small_cap is not None and small_cap.selected and small_cap.claim_text
+        else ""
+    )
+    breadth_claim = (
+        breadth.claim_text
+        if breadth is not None and breadth.selected and breadth.claim_text
+        else ""
+    )
+    if style_claim and small_cap_claim and breadth_claim:
+        internal_lines.append(f"• {style_claim} {small_cap_claim}")
+    else:
+        internal_lines.extend(
+            f"• {claim}" for claim in (style_claim, small_cap_claim) if claim
+        )
     if breadth is not None and breadth.selected and breadth.claim_text:
         internal_lines.append(f"• {breadth.claim_text}")
+
+    semiconductor = _plan_item(plan, UsMarketDigestSlot.SEMICONDUCTOR_RELATIVE)
+    if semiconductor is not None and semiconductor.selected and semiconductor.claim_text:
+        internal_lines.append(f"• {semiconductor.claim_text}")
 
     sector_fact_ids: list[str] = []
     sector = _plan_item(plan, UsMarketDigestSlot.SECTOR_DISPERSION)

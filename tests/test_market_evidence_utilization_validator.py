@@ -138,6 +138,47 @@ def test_sector_dispersion_requires_both_selected_extremes() -> None:
     assert "SELECTED_SECTOR_DISPERSION_UNCONSUMED" in result.errors
 
 
+def test_relative_slots_require_both_subject_and_spy_refs() -> None:
+    plan = _run41_plan()
+    plan["items"].extend(
+        [
+            _item(
+                "SMALL_CAP_RELATIVE",
+                ["market:index:IWM", "market:index:SPY"],
+            ),
+            _item(
+                "SEMICONDUCTOR_RELATIVE",
+                ["market:sector:SOXX", "market:index:SPY"],
+            ),
+        ]
+    )
+    incomplete = {
+        "market:index:SPY",
+        "market:style:RSP",
+        "market:sector:XLI",
+        "market:sector:XLV",
+        "market:index:IWM",
+        "market:sector:SOXX",
+    }
+
+    result = validate_us_market_evidence_utilization(
+        plan,
+        facts_used=incomplete,
+        interpretation_fact_ids=incomplete - {"market:index:SPY"},
+    )
+
+    assert result.status == "FAIL"
+    assert "SELECTED_IWM_RELATIVE_SLOT_UNCONSUMED" in result.errors
+    assert "SELECTED_SOXX_RELATIVE_SLOT_UNCONSUMED" in result.errors
+
+    passed = validate_us_market_evidence_utilization(
+        plan,
+        facts_used=incomplete,
+        interpretation_fact_ids=incomplete,
+    )
+    assert passed.status == "PASS"
+
+
 def test_interpreted_plan_evidence_must_be_declared_in_facts_used() -> None:
     interpreted = {
         "market:index:SPY",

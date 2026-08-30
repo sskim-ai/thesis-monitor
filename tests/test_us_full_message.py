@@ -113,6 +113,40 @@ def test_full_message_owns_index_and_sector_numbers_in_fixed_order() -> None:
         assert rendered.text.count(line) == 1
     assert rendered.text.index("📈 주요 지수") < rendered.text.index("🔎 시장 내부")
     assert rendered.text.index("🔎 시장 내부") < rendered.text.index("📌 다음 확인")
+    assert "반도체 SOXX가 SPY를 크게 웃돌아" in rendered.text
+    assert "소형주 IWM" not in rendered.text
+
+
+def test_current_close_renders_material_iwm_soxx_without_overloading_roles() -> None:
+    context = _context()
+    current_returns = {
+        "SPY": -0.2269,
+        "QQQ": -0.6490,
+        "IWM": -1.3542,
+        "SOXX": -3.1993,
+        "RSP": -0.3432,
+        "XLK": -1.55,
+        "XLP": -0.20,
+    }
+    for fact in context["fact_catalog"]:
+        series = fact["fields"]["series_code"]
+        if series in current_returns:
+            fact["fields"]["return_pct"] = current_returns[series]
+    context["us_market_digest_plan"] = build_us_market_digest_plan(context).to_dict()
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.text.count(
+        "소형주 IWM도 SPY보다 약해 위험선호는 제한적이었습니다."
+    ) == 1
+    assert rendered.text.count(
+        "반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다."
+    ) == 1
+    assert "동일가중 S&P500은 하락해" in rendered.text
+    assert "breadth" not in rendered.text
+    assert rendered.text.count("• 업종 강세:") == 1
+    assert rendered.text.count("• 업종 약세:") == 1
 
 
 def test_full_message_renders_verified_night_returns_without_levels() -> None:

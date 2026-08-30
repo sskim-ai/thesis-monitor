@@ -23,6 +23,8 @@ SUPPORTED_MACRO_FACT_TYPES = frozenset(
 class UsMarketDigestSlot(StrEnum):
     CURRENT_MARKET = "CURRENT_MARKET"
     PARTICIPATION_STYLE = "PARTICIPATION_STYLE"
+    SMALL_CAP_RELATIVE = "SMALL_CAP_RELATIVE"
+    SEMICONDUCTOR_RELATIVE = "SEMICONDUCTOR_RELATIVE"
     SECTOR_DISPERSION = "SECTOR_DISPERSION"
     BREADTH_STATE = "BREADTH_STATE"
     MACRO_CONTEXT = "MACRO_CONTEXT"
@@ -361,6 +363,90 @@ def _style_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
     )
 
 
+def _relative_signal_item(
+    facts: list[dict[str, object]],
+    *,
+    subject: str,
+    slot: UsMarketDigestSlot,
+    priority: int,
+) -> UsMarketDigestPlanItem:
+    subject_fact = next((fact for fact in facts if _series(fact) == subject), None)
+    spy = next((fact for fact in facts if _series(fact) == "SPY"), None)
+    candidates = [fact for fact in (subject_fact, spy) if fact is not None]
+    if subject_fact is None or spy is None:
+        return _item(
+            slot,
+            priority,
+            facts=candidates,
+            materiality=f"{subject}:SPY relative signal source is unavailable",
+            omission_reason=DigestOmissionReason.OMITTED_UNAVAILABLE,
+            required_consumption=False,
+        )
+    if (
+        not _current_directional(subject_fact)
+        or not _current_directional(spy)
+        or _date(subject_fact) != _date(spy)
+        or _role(subject_fact) != _role(spy)
+    ):
+        return _item(
+            slot,
+            priority,
+            facts=candidates,
+            materiality=f"{subject}:SPY relative signal is not current-session comparable",
+            omission_reason=DigestOmissionReason.OMITTED_TEMPORAL,
+            required_consumption=False,
+        )
+    subject_return = _number(_fields(subject_fact).get("return_pct"))
+    spy_return = _number(_fields(spy).get("return_pct"))
+    if subject_return is None or spy_return is None:
+        return _item(
+            slot,
+            priority,
+            facts=candidates,
+            materiality=f"{subject}:SPY relative return inputs are incomplete",
+            omission_reason=DigestOmissionReason.OMITTED_UNAVAILABLE,
+            required_consumption=False,
+        )
+    spread = subject_return - spy_return
+    threshold = 0.5
+    if abs(spread) < threshold:
+        return _item(
+            slot,
+            priority,
+            facts=candidates,
+            materiality=(
+                f"{subject}:SPY spread {spread:+.2f}pp is below the existing "
+                f"{threshold:.2f}pp material-relative threshold"
+            ),
+            omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
+            required_consumption=False,
+        )
+    if subject == "SOXX":
+        claim = (
+            "반도체 SOXX가 SPY를 크게 웃돌아 반도체 상대강세가 두드러졌습니다."
+            if spread > 0
+            else "반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다."
+        )
+    else:
+        claim = (
+            "소형주 IWM이 SPY보다 강해 위험선호가 상대적으로 확산됐습니다."
+            if spread > 0
+            else "소형주 IWM도 SPY보다 약해 위험선호는 제한적이었습니다."
+        )
+    return _item(
+        slot,
+        priority,
+        facts=candidates,
+        claim_text=claim,
+        materiality=(
+            f"backend-computed {subject}:SPY spread {spread:+.2f}pp passed the existing "
+            f"{threshold:.2f}pp material-relative threshold"
+        ),
+        omission_reason=DigestOmissionReason.SELECTED,
+        required_consumption=True,
+    )
+
+
 def _sector_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
     sectors = [
         fact
@@ -377,7 +463,7 @@ def _sector_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
         ]
         return _item(
             UsMarketDigestSlot.SECTOR_DISPERSION,
-            3,
+            5,
             facts=candidates,
             materiality="fewer than two current directional sector proxies are available",
             omission_reason=(
@@ -392,7 +478,7 @@ def _sector_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
     selected = [leader, laggard]
     return _item(
         UsMarketDigestSlot.SECTOR_DISPERSION,
-        3,
+        5,
         facts=selected,
         claim_text=(
             f"업종 프록시에서는 {_fields(leader).get('label')}가 가장 강했고 "
@@ -418,7 +504,7 @@ def _breadth_item(
             status = coverage["breadth"].get("status")
         return _item(
             UsMarketDigestSlot.BREADTH_STATE,
-            4,
+            6,
             materiality=f"official breadth state is {status or 'unavailable'}",
             omission_reason=DigestOmissionReason.OMITTED_UNAVAILABLE,
             required_consumption=False,
@@ -429,7 +515,7 @@ def _breadth_item(
     if advance is None or decline is None:
         return _item(
             UsMarketDigestSlot.BREADTH_STATE,
-            4,
+            6,
             facts=[counts],
             materiality="breadth counts are incomplete",
             omission_reason=DigestOmissionReason.OMITTED_UNAVAILABLE,
@@ -444,7 +530,7 @@ def _breadth_item(
     )
     return _item(
         UsMarketDigestSlot.BREADTH_STATE,
-        4,
+        6,
         facts=[counts],
         claim_text=f"공식 breadth에서 상승 종목 수는 하락 종목 수보다 {relation}.",
         materiality="official issue-level participation is distinct from RSP",
@@ -471,7 +557,7 @@ def _macro_item(
     if selected is None:
         return _item(
             UsMarketDigestSlot.MACRO_CONTEXT,
-            5,
+            7,
             materiality="no additional macro change passed the existing selection policy",
             omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
             required_consumption=False,
@@ -480,7 +566,7 @@ def _macro_item(
     if change is None or change[1] == 0:
         return _item(
             UsMarketDigestSlot.MACRO_CONTEXT,
-            5,
+            7,
             facts=[selected],
             materiality="generic zero-change macro is not decision-material",
             omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
@@ -491,7 +577,7 @@ def _macro_item(
     if not claim_text:
         return _item(
             UsMarketDigestSlot.MACRO_CONTEXT,
-            5,
+            7,
             facts=[selected],
             materiality="macro semantic label or change field is not safely renderable",
             omission_reason=DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL,
@@ -500,7 +586,7 @@ def _macro_item(
         )
     return _item(
         UsMarketDigestSlot.MACRO_CONTEXT,
-        5,
+        7,
         facts=[selected],
         claim_text=claim_text,
         materiality="macro is retained only after current-session market structure",
@@ -522,6 +608,18 @@ def build_us_market_digest_plan(value: object) -> UsMarketDigestPlan:
     items = (
         _current_market_item(facts),
         _style_item(facts),
+        _relative_signal_item(
+            facts,
+            subject="IWM",
+            slot=UsMarketDigestSlot.SMALL_CAP_RELATIVE,
+            priority=3,
+        ),
+        _relative_signal_item(
+            facts,
+            subject="SOXX",
+            slot=UsMarketDigestSlot.SEMICONDUCTOR_RELATIVE,
+            priority=4,
+        ),
         _sector_item(facts),
         _breadth_item(facts, coverage),
         _macro_item(facts, key_changes),

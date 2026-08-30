@@ -105,6 +105,12 @@ def test_run41_plan_keeps_current_core_rsp_and_sector_extremes() -> None:
         "market:style:RSP",
         "market:index:SPY",
     )
+    assert items[UsMarketDigestSlot.SMALL_CAP_RELATIVE].omission_reason == (
+        DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL
+    )
+    assert items[UsMarketDigestSlot.SEMICONDUCTOR_RELATIVE].omission_reason == (
+        DigestOmissionReason.OMITTED_SAFE_NOT_MATERIAL
+    )
     assert items[UsMarketDigestSlot.SECTOR_DISPERSION].evidence_refs == (
         "market:sector:XLI",
         "market:sector:XLV",
@@ -113,6 +119,47 @@ def test_run41_plan_keeps_current_core_rsp_and_sector_extremes() -> None:
         DigestOmissionReason.OMITTED_UNAVAILABLE
     )
     assert items[UsMarketDigestSlot.MACRO_CONTEXT].required_consumption is False
+
+
+def test_material_iwm_and_soxx_relative_signals_are_selected_by_backend() -> None:
+    context = run41_market_context()
+    current_returns = {
+        "SPY": -0.2269,
+        "QQQ": -0.6490,
+        "IWM": -1.3542,
+        "SOXX": -3.1993,
+        "RSP": -0.3432,
+    }
+    for fact in context["fact_catalog"]:
+        if not isinstance(fact, dict):
+            continue
+        fields = fact.get("fields")
+        if not isinstance(fields, dict):
+            continue
+        series = fields.get("series_code")
+        if series in current_returns:
+            fields["return_pct"] = current_returns[series]
+
+    plan = build_us_market_digest_plan(context)
+    items = {item.slot: item for item in plan.items}
+    small_cap = items[UsMarketDigestSlot.SMALL_CAP_RELATIVE]
+    semiconductor = items[UsMarketDigestSlot.SEMICONDUCTOR_RELATIVE]
+
+    assert small_cap.selected is True
+    assert small_cap.evidence_refs == ("market:index:IWM", "market:index:SPY")
+    assert small_cap.claim_text == (
+        "소형주 IWM도 SPY보다 약해 위험선호는 제한적이었습니다."
+    )
+    assert "-1.13pp" in small_cap.materiality
+    assert semiconductor.selected is True
+    assert semiconductor.evidence_refs == (
+        "market:sector:SOXX",
+        "market:index:SPY",
+    )
+    assert semiconductor.claim_text == (
+        "반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다."
+    )
+    assert "-2.97pp" in semiconductor.materiality
 
 
 def test_plan_round_trip_preserves_typed_slots_and_refs() -> None:

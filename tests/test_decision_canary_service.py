@@ -21,6 +21,8 @@ from app.services.decision_canary_service import (
     build_decision_canary_context,
     configured_decision_canary_subjects,
     decision_canary_armed,
+    decision_canary_prompt,
+    decision_korean_localization_errors,
     decision_polarity_errors,
     decision_canary_preconditions,
     insert_decision_canary_block,
@@ -200,6 +202,7 @@ def test_context_output_and_continuity_are_evidence_bound(tmp_path) -> None:
     assert artifact.selected_subjects == ("GOOGL", "RXRX")
     assert all(not row.selected_numeric_fact_refs for row in artifact.decisions)
     assert artifact.message_quality["status"] == "PASS"
+    assert "natural Korean" in decision_canary_prompt(context)
     assert all("주문·자동매매" in block.text for block in artifact.blocks)
     assert all("실적 근거는 장기 선택지를 지지합니다" in block.text for block in artifact.blocks)
     assert all("기대 부담은 하방 위험을 높입니다" in block.text for block in artifact.blocks)
@@ -233,6 +236,42 @@ def test_context_output_and_continuity_are_evidence_bound(tmp_path) -> None:
         "GOOGL": "HOLD",
         "RXRX": "HOLD",
     }
+
+
+def test_us_canary_rejects_english_structured_claim_before_rendering() -> None:
+    packet = {
+        "packet_id": "2026-08-29-us-run-canary",
+        "market": "us",
+        "assessment_date": "2026-08-29",
+    }
+    context = build_decision_canary_context(
+        packet=packet,
+        claim_id="claim-1",
+        evidence_packets=(_evidence("GOOGL"), _evidence("RXRX")),
+        settings=_settings(),
+    )
+    googl = _candidate("GOOGL", "광고와 클라우드의 수익화")
+    english = googl.model_copy(
+        update={
+            "decisive_reason": EvidenceClaim(
+                text="Cloud optionality remains, but valuation support is incomplete.",
+                evidence_refs=("GOOGL:thesis",),
+            )
+        }
+    )
+    output = DecisionCanaryBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        decisions=(english, _candidate("RXRX", "임상 실행과 자금 소요")),
+    )
+
+    assert decision_korean_localization_errors(_evidence("GOOGL"), english) == (
+        "us_claim_not_korean:decisive_reason",
+    )
+    with pytest.raises(ValueError, match="korean_localization_invalid:GOOGL"):
+        validate_decision_canary_output(context, output)
 
 
 def test_canary_rejects_numeric_prose_and_inserts_without_replacing_base() -> None:

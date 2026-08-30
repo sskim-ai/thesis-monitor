@@ -1250,8 +1250,8 @@ def _write_reports(
             "Material Disagreement Adjudication",
             [row for row in records if row["agreement"]["material_disagreement"]],
         ) + f"\n- Adjudication count: `{adjudication['adjudication_count']}`\n",
-        "20260829-buy-case-db-insurance.md": _deep_dive(
-            "BUY Challenge: DB Insurance",
+        "20260829-buy-case-korean-re.md": _deep_dive(
+            "BUY Challenge: Korean Re (코리안리)",
             [row for row in records if row["ticker"] == "003690"],
         ),
         "20260829-buy-case-googl.md": _deep_dive(
