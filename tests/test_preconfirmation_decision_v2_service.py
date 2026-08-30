@@ -35,6 +35,13 @@ from app.services.scenario_asymmetry_service import (
     ScenarioName,
     ScenarioSet,
 )
+from app.services.accepted_decision_v2_service import (
+    AcceptedDecisionSource,
+    AcceptedDecisionStatus,
+    AcceptedV2Adjudication,
+    resolve_accepted_v2_decision,
+    validate_accepted_v2_decision,
+)
 
 
 def _claim(ref: str, text: str = "검증된 근거가 이 해석을 지지합니다.") -> EvidenceClaim:
@@ -247,3 +254,109 @@ def test_target_price_fixed_score_and_order_language_are_rejected() -> None:
     assert "invented_target_price_language" in errors
     assert "fixed_score_language" in errors
     assert "order_command_language" in errors
+
+
+def _adjudication(
+    *, recommendation: str, accepted_decision: str
+) -> AcceptedV2Adjudication:
+    return AcceptedV2Adjudication(
+        ticker="TEST",
+        v1_decision="HOLD",
+        v2_decision="BUY",
+        accepted_decision=accepted_decision,
+        recommendation=recommendation,
+        v1_overrequired_confirmation="NO",
+        v2_underweighted_execution_risk="YES",
+        v1_ignored_confirmation_cost="NO",
+        v2_overstated_favorable_asymmetry="YES",
+        valuation_or_expectation_misuse="NEITHER",
+        data_quality_comparison_safe=True,
+        decisive_basis=_claim(
+            "ref:risks", "실행 위험이 남아 현재는 보유 판단이 더 적절합니다."
+        ),
+        bounded_repair="NONE",
+    )
+
+
+def test_no_disagreement_accepts_candidate_as_single_authority() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate().model_copy(update={"decision": "HOLD", "pre_confirmation_buy": False,
+                                        "preconfirmation_buy_explanation": None}),
+        v1_decision="HOLD",
+        material_disagreement=False,
+        adjudication=None,
+    )
+    assert plan.status == AcceptedDecisionStatus.READY
+    assert plan.accepted_decision == "HOLD"
+    assert plan.accepted_source == AcceptedDecisionSource.CANDIDATE
+    assert validate_accepted_v2_decision(packet, plan).valid is True
+
+
+def test_keep_v1_replaces_candidate_and_suppresses_rejected_prebuy() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V1", accepted_decision="HOLD"),
+    )
+    assert plan.status == AcceptedDecisionStatus.READY
+    assert plan.candidate_decision == "BUY"
+    assert plan.accepted_decision == "HOLD"
+    assert plan.accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V1
+    assert plan.accepted_preconfirmation_buy is False
+    assert plan.accepted_asymmetry == "UNKNOWN"
+    assert validate_accepted_v2_decision(packet, plan).valid is True
+
+
+def test_keep_v2_preserves_candidate_decision_and_prebuy() -> None:
+    packet = _packet()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V2", accepted_decision="BUY"),
+    )
+    assert plan.accepted_decision == "BUY"
+    assert plan.accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V2
+    assert plan.accepted_preconfirmation_buy is True
+    assert validate_accepted_v2_decision(packet, plan).valid is True
+
+
+def test_missing_material_adjudication_fails_closed_without_candidate_fallback() -> None:
+    plan = resolve_accepted_v2_decision(
+        _packet(),
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=None,
+    )
+    assert plan.status == AcceptedDecisionStatus.NOT_READY
+    assert plan.accepted_decision is None
+    assert plan.denial_reason == "material_disagreement_without_final_adjudication"
+
+
+def test_accepted_resolution_is_idempotent() -> None:
+    packet = _packet()
+    adjudication = _adjudication(recommendation="KEEP_V1", accepted_decision="HOLD")
+    first = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=adjudication,
+    )
+    second = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=adjudication,
+    )
+    assert first == second
+    assert first.accepted_decision_id == second.accepted_decision_id
+    assert first.accepted_evidence_fingerprint == second.accepted_evidence_fingerprint
