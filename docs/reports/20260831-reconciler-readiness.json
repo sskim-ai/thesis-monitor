@@ -96,7 +96,7 @@
     "main_before_report": "5e3820456ace797450b9403386edaa2fc6af6cf1",
     "master_instruction_commit": "c95e176",
     "operating_before_report": "5e3820456ace797450b9403386edaa2fc6af6cf1",
-    "report_commit": "REPORT_COMMIT_PENDING",
+    "report_commit": "543e6934e79553f207476aa3d23423a31c49997e",
     "source_bundle_sha256": "05682213ea98ca52f0faee6fb2d9ef7647d0d090e6145c597d2477aafa81671d"
   },
   "runtime": {

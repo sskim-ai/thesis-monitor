@@ -1,6 +1,6 @@
 # Reconciler Artifact Index
 
-Report commit: `REPORT_COMMIT_PENDING`.
+Report commit: `543e6934e79553f207476aa3d23423a31c49997e`.
 
 - `docs/reports/20260831-background-onboarding-reconciler.md`: `388edbf6533ca0e35860968642652e0c631676a81c0ae56ed2f7a354e9678950`
 - `docs/reports/20260831-cpng-generic-reconciler-control.md`: `0f5d10a150396a8b8a89a837aaeeb7d19307b3cb7051bdc7924220afa0daece8`
@@ -12,9 +12,9 @@ Report commit: `REPORT_COMMIT_PENDING`.
 - `docs/reports/20260831-pending-isolation-negative-controls.md`: `65595f81b160a516ff6463bbe42991cf45731965d52683a3978c66faea0d4c1b`
 - `docs/reports/20260831-pending-onboarding-auto-reconciler-exact-instruction.md`: `c03e19d7630bf0eda5a685001ec6fb7e60d3f7de90cb8f18d644817d58ca85da`
 - `docs/reports/20260831-pending-onboarding-reconciler-scope.md`: `8d6f15df68ed2c207989eae42081edcd4e5936232fb88bb357f6e979d0a19b1f`
-- `docs/reports/20260831-pending-onboarding-reconciler.json`: `913dc89d22da28de3615ccfeef9c61a953b82b309093f598656945b87b771111`
-- `docs/reports/20260831-reconciler-main-merge.md`: `479428b80ad4cc884ea181786d5aec9041391c78d4260f5264151dc10aaa22d7`
-- `docs/reports/20260831-reconciler-readiness.json`: `b7aaf0d9440f417f11596b607d451556fb455db28a7e925bdbe724225d650355`
+- `docs/reports/20260831-pending-onboarding-reconciler.json`: `d9eb658fe74f2c174d75ed556ea74c822a333d03291aafb8e63eadc6dd980cab`
+- `docs/reports/20260831-reconciler-main-merge.md`: `c61c5ef113286be38be74637fcac27b9560fee28ef392e251854d83b2413443e`
+- `docs/reports/20260831-reconciler-readiness.json`: `5bb858c27c752ea44968cf9703a49168c2fae5c26da971ca7267e64eb48ed771`
 - `docs/reports/20260831-reconciler-readiness.md`: `8be460b9bcb6417196cb40a60b427e14f2c4d7f3cb87010c2b93a80b40ba4bb7`
 - `docs/reports/20260831-reconciler-test-messages.json`: `429f17e04840006a632954882a3ddc1bfc29ff5784e1e3585d8d0d43e1b57a67`
 - `docs/reports/20260831-reconciler-test-sink-summary.json`: `54f1fd2755e966bbcf86e5fbce1e0f691482b1b435b58025380211443ed21e64`
