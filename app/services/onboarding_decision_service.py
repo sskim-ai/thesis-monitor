@@ -125,6 +125,11 @@ def build_onboarding_decision_evidence_packet(
             "latest_safe_earnings_checkpoint",
             evidence.get("latest_safe_earnings_checkpoint"),
         ),
+        (
+            EvidenceCategory.EXPECTATIONS,
+            "market_expectations",
+            evidence.get("market_expectations"),
+        ),
         (EvidenceCategory.CATALYSTS, "relevant_events", evidence.get("relevant_events")),
         (EvidenceCategory.VALUATION, "valuation_context", evidence.get("valuation_context")),
         (EvidenceCategory.PRICE_STRUCTURE, "price_structure", evidence.get("price_structure")),

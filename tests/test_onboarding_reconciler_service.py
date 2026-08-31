@@ -12,8 +12,10 @@ from app.models.watchlist import WatchlistItem
 from app.services import onboarding_decision_service
 from app.services.company_profile_service import profile_provenance_path
 from app.services.onboarding_decision_service import (
+    build_onboarding_decision_evidence_packet,
     validate_onboarding_decision_readiness,
 )
+from app.services.cross_market_decision_engine_service import EvidenceCategory
 from app.services.onboarding_evidence_service import initial_evidence_fingerprint
 from app.services.onboarding_readiness_service import (
     OnboardingState,
@@ -142,6 +144,7 @@ def _evidence(ticker: str) -> dict[str, object]:
         "as_of": "2026-08-31T01:00:00+00:00",
         "current_thesis": {"core_thesis": "verified demand"},
         "latest_safe_earnings_checkpoint": {"status": "AVAILABLE"},
+        "market_expectations": {"level": "balanced"},
         "relevant_events": [],
         "valuation_context": {"provider": "official_test_fixture"},
         "current_price": 100,
@@ -565,6 +568,23 @@ def test_raw_candidate_cannot_satisfy_decision_readiness() -> None:
 
     assert valid is False
     assert reason == "raw_candidate_grants_ready"
+
+
+def test_decision_packet_binds_market_expectations_to_expected_category(
+    tmp_path: Path,
+) -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        item = _seed_pending(session, tmp_path, ticker="EXPECT", exchange="NASDAQ")
+        packet = build_onboarding_decision_evidence_packet(
+            session, item, _evidence(item.ticker)
+        )
+
+    expectation_refs = [
+        ref for ref in packet.evidence if ref.category == EvidenceCategory.EXPECTATIONS
+    ]
+    assert len(expectation_refs) == 1
+    assert expectation_refs[0].label == "market_expectations"
 
 
 def test_signed_in_codex_uses_absolute_artifact_paths(
