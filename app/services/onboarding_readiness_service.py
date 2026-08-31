@@ -123,7 +123,11 @@ def _baseline_assessment(
         snapshot = _json_dict(row.thesis_snapshot)
         if snapshot.get("assessment_mode") == "initial_baseline":
             return row
-    # Assessments created before the explicit mode field are preserved as legacy baselines.
+    # Legacy subjects can begin with an intraday provisional assessment. Their first
+    # final assessment is the earliest activation-safe baseline.
+    for row in rows:
+        if row.assessment_state == "final":
+            return row
     return rows[0] if rows else None
 
 

@@ -184,6 +184,50 @@ def test_complete_prerequisites_transition_pending_ready_active(tmp_path: Path) 
     assert first_session == date(2026, 9, 1)
 
 
+def test_legacy_baseline_uses_first_final_after_provisional(tmp_path: Path) -> None:
+    engine = _engine()
+    with Session(engine) as session:
+        item = _seed_ready_prerequisites(
+            session,
+            tmp_path,
+            ticker="LEGACY1",
+            exchange="NASDAQ",
+            company_name="Legacy Subject",
+        )
+        provisional = session.exec(
+            select(ThesisAssessment).where(ThesisAssessment.ticker == "LEGACY1")
+        ).one()
+        provisional.assessment_state = "provisional"
+        provisional.thesis_snapshot = '{"base_thesis":"legacy provisional"}'
+        session.add(provisional)
+        session.add(
+            ThesisAssessment(
+                ticker="LEGACY1",
+                thesis_version=1,
+                assessment_date=date(2026, 9, 1),
+                status="no_material_change",
+                summary="First final legacy baseline.",
+                new_buyer_view="Wait for operating confirmation.",
+                holder_view="Monitor validation metrics.",
+                price_view="Price evidence is available.",
+                risk_level="normal",
+                confidence=0.7,
+                assessment_state="final",
+                price_context='{"decision":{"current_price":101}}',
+                valuation_snapshot='{"method":"forward earnings"}',
+                thesis_snapshot='{"base_thesis":"legacy final","thesis_version":1}',
+            )
+        )
+        session.commit()
+
+        readiness = evaluate_onboarding_readiness(session, item, data_dir=tmp_path)
+
+    assert readiness.onboarding_ready is True
+    evidence = readiness.requirement_details["INITIAL_EVIDENCE"]
+    assert evidence["assessment_date"] == "2026-09-01"
+    assert evidence["assessment_final"] is True
+
+
 def test_placeholder_profile_does_not_activate(tmp_path: Path) -> None:
     engine = _engine()
     with Session(engine) as session:
