@@ -104,11 +104,16 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "DECISION_EVIDENCE_PACKET.md",
     ROOT / "docs" / "architecture" / "DECISION_VALIDATOR_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "DECISION_SHADOW_AND_CANARY_ROLLOUT.md",
+    ROOT / "docs" / "architecture" / "MONITORING_ONBOARDING_LIFECYCLE.md",
+    ROOT / "docs" / "architecture" / "ONBOARDING_READINESS_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "MARKET_COHORT_SCOPED_READINESS.md",
+    ROOT / "docs" / "architecture" / "PRODUCTION_PACKET_UNIVERSE_SNAPSHOT.md",
     ROOT / "docs" / "reports" / "20260829-decision-canary-readiness.json",
     ROOT / "docs" / "reports" / "20260829-decision-validation.md",
     ROOT / "docs" / "reports" / "20260829-decision-calibration-readiness.json",
     ROOT / "docs" / "reports" / "20260829-repaired-20-stock-decisions.json",
     ROOT / "docs" / "reports" / "20260829-decision-polarity-readiness.json",
+    ROOT / "docs" / "reports" / "20260831-onboarding-readiness-artifact-index.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -129,21 +134,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260830-v2-production-cutover-main-merge-next-live"
+        "codex/atomic-onboarding-scoped-readiness-repair"
     )
     assert state["current_phase"] == (
-        "v2_production_merged_armed_awaiting_natural_live"
+        "atomic_onboarding_deployed_awaiting_natural_cohorts"
     )
     assert state["last_completed_phase"] == (
-        "20260830_v2_production_cutover_deployment"
+        "20260831_atomic_onboarding_scoped_readiness_repair"
     )
-    assert state["next_default_phase"] == (
-        "review_20260831_kr_natural_v2_live"
-    )
+    assert state["next_default_phase"] == "review_next_natural_us_onboarding_cohort"
     v2_implementation_commit = "c0c9139babb06ead11112aea072a67ef364a9b22"
     accepted_implementation_commit = "f55605189ee0179ab4af7030b94d79d706ed32a8"
     production_base_commit = "6db9256b539e437a7067a1822237ef9c504c63fa"
     production_deployed_commit = "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee"
+    onboarding_base_commit = "ecd01297f81d0b68aaf95ecfe866721b6aa2c104"
+    onboarding_runtime_commit = "6521d509c0598838543d6981f4905ebf5f8e153c"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -156,10 +161,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == production_base_commit
-    assert state["deployed_code_commit"] == production_deployed_commit
-    assert state["main_code_commit"] == production_deployed_commit
-    assert state["operating_code_commit"] == production_deployed_commit
+    assert state["recorded_base_commit"] == onboarding_base_commit
+    assert state["deployed_code_commit"] == onboarding_runtime_commit
+    assert state["main_code_commit"] == onboarding_runtime_commit
+    assert state["operating_code_commit"] == onboarding_runtime_commit
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -243,6 +248,27 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert cutover["v1_rollback_available"] is True
     assert cutover["open_p0"] == []
     assert cutover["open_material_p1"] == []
+    onboarding = state["atomic_onboarding_scoped_readiness_repair_20260831"]
+    assert onboarding["status"] == "DEPLOYED_AWAITING_NATURAL_PROOF"
+    assert onboarding["active_implies_onboarding_ready"] is True
+    assert onboarding["audited_active_subject_count"] == 21
+    assert onboarding["audited_ready_active_subject_count"] == 21
+    assert onboarding["audited_active_incomplete_subject_count"] == 0
+    assert onboarding["subject_047810_state"] == "ACTIVE_READY"
+    assert onboarding["subject_cpng_state"] == "PENDING_SAFE"
+    assert onboarding["bounded_legacy_baseline_repair_commit"] == (
+        onboarding_runtime_commit
+    )
+    assert onboarding["bounded_repair_github_actions_run"] == 33386496321
+    assert onboarding["api_health"] == "PASS"
+    assert onboarding["open_p0"] == []
+    assert onboarding["open_material_p1"] == []
+    assert state["contracts"]["monitoring_onboarding_readiness"] == (
+        "monitoring-onboarding-readiness-v1"
+    )
+    assert state["contracts"]["production_packet_universe"] == (
+        "production-packet-universe-v1"
+    )
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -1327,7 +1353,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == production_deployed_commit
+    assert state["current_commit"] == onboarding_runtime_commit
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")
