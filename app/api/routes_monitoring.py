@@ -17,7 +17,7 @@ from app.services.monitoring_service import (
     list_monitoring_items,
     list_monitoring_summaries,
     record_assessment,
-    register_monitoring_item,
+    register_monitoring_item_with_continuation,
 )
 
 router = APIRouter(
@@ -38,11 +38,11 @@ router = APIRouter(
         "version; an identical request is idempotent."
     ),
 )
-def monitor_stock(
+async def monitor_stock(
     payload: MonitoringItemCreate,
     session: Session = Depends(get_session),
 ) -> MonitoringItemRead:
-    return register_monitoring_item(session, payload)
+    return await register_monitoring_item_with_continuation(session, payload)
 
 
 @router.get(

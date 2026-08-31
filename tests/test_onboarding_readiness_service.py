@@ -18,6 +18,7 @@ from app.services.onboarding_readiness_service import (
     production_universe_snapshot,
     reconcile_onboarding,
 )
+from app.services.onboarding_evidence_service import initial_evidence_fingerprint
 from app.services.security_master_service import SecurityMasterService
 
 
@@ -119,6 +120,47 @@ def _seed_ready_prerequisites(
     )
     session.commit()
     SecurityMasterService().ensure(session, ticker)
+    evidence = {
+        "contract": "initial-onboarding-evidence-v1",
+        "ticker": ticker,
+        "market": "kr" if ticker.isdigit() else "us",
+        "thesis_version": 1,
+        "as_of": "2026-08-31T01:00:00+00:00",
+        "current_thesis": {"core_thesis": "verified"},
+        "latest_safe_earnings_checkpoint": {
+            "status": "UNAVAILABLE",
+            "reason": "test_fixture_safe_unavailable",
+        },
+        "relevant_events": [],
+        "valuation_context": {"provider": "test_fixture"},
+        "current_price": 100,
+        "price_as_of": "2026-08-31",
+        "price_currency": "KRW" if ticker.isdigit() else "USD",
+        "ohlcv_feature_availability": {
+            period: {"available": True, "actual_count": 10, "latest_date": "2026-08-31"}
+            for period in ("daily", "weekly", "monthly")
+        },
+        "price_structure": {"available": True, "timeframes": ["daily", "weekly", "monthly"]},
+        "material_market_context": {"status": "UNAVAILABLE"},
+        "material_unknowns": ["next operating checkpoint"],
+    }
+    evidence["fingerprint"] = initial_evidence_fingerprint(evidence)
+    item.onboarding_initial_evidence = json.dumps(evidence)
+    item.onboarding_evidence_fingerprint = str(evidence["fingerprint"])
+    item.onboarding_decision_readiness = json.dumps(
+        {
+            "contract": "onboarding-accepted-decision-v1",
+            "status": "READY",
+            "ticker": ticker,
+            "source_initial_evidence_fingerprint": evidence["fingerprint"],
+            "decision_evidence_sha256": "test-evidence-sha",
+            "accepted_decision": "HOLD",
+            "accepted_decision_id": f"accepted:{ticker}",
+            "accepted_evidence_fingerprint": f"accepted-evidence:{ticker}",
+            "raw_candidate_grants_ready": False,
+        }
+    )
+    session.add(item)
     session.commit()
     _write_profile(data_dir, ticker, "kr" if ticker.isdigit() else "us")
     return item
@@ -223,9 +265,9 @@ def test_legacy_baseline_uses_first_final_after_provisional(tmp_path: Path) -> N
         readiness = evaluate_onboarding_readiness(session, item, data_dir=tmp_path)
 
     assert readiness.onboarding_ready is True
-    evidence = readiness.requirement_details["INITIAL_EVIDENCE"]
-    assert evidence["assessment_date"] == "2026-09-01"
-    assert evidence["assessment_final"] is True
+    baseline = readiness.requirement_details["INITIAL_BASELINE_ASSESSMENT"]
+    assert baseline["assessment_date"] == "2026-09-01"
+    assert baseline["ready"] is True
 
 
 def test_placeholder_profile_does_not_activate(tmp_path: Path) -> None:

@@ -204,6 +204,9 @@ class MonitoringItemRead(BaseModel):
     onboarding_state: str = "ACTIVE"
     production_eligible: bool = True
     onboarding_blockers: list[str] = Field(default_factory=list)
+    onboarding_retry_class: str = "NONE"
+    onboarding_next_retry_at: datetime | None = None
+    registration_status_message: str = ""
     first_eligible_session: date | None = None
     thesis: InvestmentThesisRead | None
     latest_status: AssessmentStatus | None = None

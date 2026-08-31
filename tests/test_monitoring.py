@@ -53,6 +53,8 @@ def test_monitoring_item_registration_versions_and_deactivation() -> None:
         assert response.json()["active"] is False
         assert response.json()["onboarding_state"] == "PENDING_ONBOARDING"
         assert response.json()["production_eligible"] is False
+        assert "모니터링 등록 준비 중" in response.json()["registration_status_message"]
+        assert "자동 온보딩이 계속 진행됩니다" in response.json()["registration_status_message"]
         assert response.json()["thesis"]["version"] == 1
         assert response.json()["thesis"]["thesis_drivers"] == [
             "HBM leadership",

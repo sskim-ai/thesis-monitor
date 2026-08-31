@@ -6,6 +6,7 @@ from datetime import UTC, date, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Literal
+from zoneinfo import ZoneInfo
 
 from sqlmodel import Session, select
 
@@ -16,6 +17,10 @@ from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.watchlist import WatchlistItem
 from app.services.company_profile_service import read_profile_provenance
 from app.services.market_session import market_scope_for_security
+from app.services.onboarding_decision_service import (
+    validate_onboarding_decision_readiness,
+)
+from app.services.onboarding_evidence_service import validate_initial_evidence
 from app.services.security_master_service import SecurityMasterService
 from app.utils.tickers import normalize_ticker
 
@@ -215,6 +220,11 @@ def evaluate_onboarding_readiness(
         item.ticker,
         thesis.version if thesis is not None else None,
     )
+    legacy_active = bool(
+        item.active
+        and item.production_eligible
+        and item.onboarding_state == OnboardingState.ACTIVE
+    )
 
     details: dict[str, dict[str, object]] = {}
     identity_ready = bool(
@@ -261,27 +271,19 @@ def evaluate_onboarding_readiness(
         "thesis_version": thesis.version if thesis else None,
     }
 
-    price_context = _json_dict(baseline.price_context) if baseline else {}
-    valuation = _json_dict(baseline.valuation_snapshot) if baseline else {}
-    thesis_snapshot = _json_dict(baseline.thesis_snapshot) if baseline else {}
-    evidence_ready = bool(
-        baseline
-        and price_context
-        and valuation
-        and thesis_snapshot
-        and baseline.assessment_state == "final"
+    explicit_evidence = _json_dict(item.onboarding_initial_evidence)
+    explicit_evidence_ready, evidence_reason = validate_initial_evidence(
+        explicit_evidence,
+        ticker=item.ticker,
+        thesis_version=thesis.version if thesis else 0,
     )
+    evidence_ready = explicit_evidence_ready or legacy_active
     details[OnboardingRequirement.INITIAL_EVIDENCE] = {
         "ready": evidence_ready,
-        "assessment_date": (
-            baseline.assessment_date.isoformat() if baseline else None
-        ),
-        "price_context": bool(price_context),
-        "valuation_context": bool(valuation),
-        "thesis_snapshot": bool(thesis_snapshot),
-        "assessment_final": bool(
-            baseline and baseline.assessment_state == "final"
-        ),
+        "contract": explicit_evidence.get("contract"),
+        "fingerprint": explicit_evidence.get("fingerprint"),
+        "reason": None if explicit_evidence_ready else evidence_reason,
+        "legacy_active_preserved": legacy_active and not explicit_evidence_ready,
     }
 
     baseline_snapshot = _json_dict(baseline.thesis_snapshot) if baseline else {}
@@ -297,19 +299,21 @@ def evaluate_onboarding_readiness(
         "thesis_version": baseline.thesis_version if baseline else None,
     }
 
-    decision_ready = bool(
-        baseline
-        and baseline.assessment_state == "final"
-        and baseline.summary.strip()
-        and baseline.new_buyer_view.strip()
-        and baseline.holder_view.strip()
-        and baseline.risk_level.strip()
-        and baseline.confidence >= 0
+    decision_payload = _json_dict(item.onboarding_decision_readiness)
+    decision_ready_explicit, decision_reason = validate_onboarding_decision_readiness(
+        decision_payload,
+        ticker=item.ticker,
+        initial_evidence_fingerprint=str(explicit_evidence.get("fingerprint") or ""),
     )
+    decision_ready = decision_ready_explicit or legacy_active
     details[OnboardingRequirement.DECISION_READINESS] = {
         "ready": decision_ready,
-        "accepted_decision_required_for_activation": False,
-        "policy": "final_baseline_evidence_ready; accepted decision remains downstream",
+        "accepted_decision_required_for_activation": not legacy_active,
+        "accepted_decision": decision_payload.get("accepted_decision"),
+        "accepted_decision_id": decision_payload.get("accepted_decision_id"),
+        "reason": None if decision_ready_explicit else decision_reason,
+        "legacy_active_preserved": legacy_active and not decision_ready_explicit,
+        "raw_candidate_grants_ready": False,
     }
 
     completed = tuple(
@@ -353,6 +357,17 @@ def begin_onboarding(
     item.onboarding_state = OnboardingState.PENDING_ONBOARDING
     item.onboarding_readiness = "{}"
     item.onboarding_failure_stage = None
+    if renew_request:
+        item.onboarding_initial_evidence = "{}"
+        item.onboarding_evidence_fingerprint = None
+        item.onboarding_decision_readiness = "{}"
+        item.onboarding_retry_class = "NONE"
+        item.onboarding_attempt_count = 0
+        item.onboarding_last_attempt_at = None
+        item.onboarding_next_retry_at = None
+        item.onboarding_last_error = None
+        item.onboarding_last_attempt_origin = None
+        item.onboarding_market_packet_cutoff = None
     if renew_request:
         item.registration_requested_at = current
     item.onboarding_ready_at = None
@@ -452,6 +467,10 @@ def production_universe_snapshot(
                 activated_at = activated_at.replace(tzinfo=UTC)
             if activated_at.astimezone(UTC) > cutoff_utc:
                 reasons.append("activated_after_packet_cutoff")
+        if item.first_eligible_session is not None:
+            cutoff_session = cutoff_utc.astimezone(ZoneInfo("Asia/Seoul")).date()
+            if item.first_eligible_session > cutoff_session:
+                reasons.append("first_eligible_session_not_reached")
         if reasons:
             excluded.append(
                 {

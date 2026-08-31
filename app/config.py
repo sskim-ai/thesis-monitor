@@ -63,6 +63,14 @@ class Settings(BaseSettings):
     monitor_lookback_days: int = 3
     monitor_retry_attempts: int = 3
     monitor_retry_base_seconds: float = 2.0
+    onboarding_reconciler_enabled: bool = True
+    onboarding_retry_base_minutes: int = 30
+    onboarding_retry_max_minutes: int = 720
+    onboarding_immediate_timeout_seconds: float = 45.0
+    onboarding_background_timeout_seconds: float = 900.0
+    onboarding_preflight_timeout_seconds: float = 8.0
+    onboarding_pending_sla_hours: int = 24
+    onboarding_repeated_failure_warning_threshold: int = 5
     assessment_distribution_warning_threshold: float = 0.7
     valuation_distribution_warning_threshold: float = 0.7
     valuation_snapshot_max_age_days: int = 7
@@ -141,6 +149,20 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":
+        if self.onboarding_retry_base_minutes < 1:
+            raise ValueError("Onboarding retry base must be at least one minute")
+        if self.onboarding_retry_max_minutes < self.onboarding_retry_base_minutes:
+            raise ValueError("Onboarding retry maximum must not be below its base")
+        if min(
+            self.onboarding_immediate_timeout_seconds,
+            self.onboarding_background_timeout_seconds,
+            self.onboarding_preflight_timeout_seconds,
+        ) <= 0:
+            raise ValueError("Onboarding timeouts must be positive")
+        if self.onboarding_pending_sla_hours < 1:
+            raise ValueError("Onboarding pending SLA must be positive")
+        if self.onboarding_repeated_failure_warning_threshold < 1:
+            raise ValueError("Onboarding retry warning threshold must be positive")
         if self.ai_review_backup_delay_minutes <= (
             self.ai_review_claim_lease_minutes + self.ai_review_claim_safety_margin_minutes
         ):

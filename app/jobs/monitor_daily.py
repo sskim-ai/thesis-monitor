@@ -27,6 +27,9 @@ from app.services.ai_assisted_delivery_service import (
 )
 from app.services.market_session import MarketScope
 from app.services.market_session import us_market_session
+from app.services.onboarding_reconciler_service import (
+    market_preflight_onboarding_resume,
+)
 from app.services.morning_gate import (
     initialize_morning_gate,
     run_morning_night_futures_gate,
@@ -230,6 +233,13 @@ async def _run_market_job(
             }
     cutoff = _requeue_cutoff(run_date, market_scope)
     decision = _analysis_decision(session, run_date, cutoff, market_scope)
+    onboarding_preflight = await market_preflight_onboarding_resume(
+        session,
+        market=market_scope,
+        run_date=run_date,
+        cutoff=datetime.now(timezone.utc),
+        current_cycle_eligible=decision.refresh,
+    )
     kr_close_result: dict[str, object] | None = None
     if market_scope == "kr":
         try:
@@ -254,6 +264,7 @@ async def _run_market_job(
             "analysis_action": decision.action,
             "analysis_run_status": decision.run_status,
             "delivery_action": "deferred",
+            "onboarding_preflight": onboarding_preflight,
             "macro": _stored_macro_result(session, run_date),
             "kr_close_market": kr_close_result,
             "theses": None,
@@ -271,6 +282,7 @@ async def _run_market_job(
             "analysis_action": decision.action,
             "analysis_run_status": decision.run_status,
             "delivery_action": gate.dispatch_action,
+            "onboarding_preflight": onboarding_preflight,
             "morning_gate": gate.as_dict(),
             "macro": _stored_macro_result(session, run_date),
             "kr_close_market": None,
@@ -407,6 +419,7 @@ async def _run_market_job(
         "analysis_action": decision.action,
         "analysis_run_status": result.status,
         "delivery_action": delivery_action,
+        "onboarding_preflight": onboarding_preflight,
         "morning_gate": gate_result,
         "ai_assisted_pilot": pilot_hold,
         "macro": macro_result,

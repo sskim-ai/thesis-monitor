@@ -1,4 +1,6 @@
+import asyncio
 import json
+from datetime import UTC, datetime, timedelta
 
 from sqlmodel import Session, select
 
@@ -22,10 +24,15 @@ from app.schemas.thesis import (
     ValuationFrameworkInput,
 )
 from app.services.local_storage import export_assessment_history, export_thesis
+from app.config import get_settings
 from app.services.onboarding_readiness_service import (
     begin_onboarding,
     deactivate_onboarding,
     reconcile_onboarding,
+)
+from app.services.onboarding_reconciler_service import (
+    OnboardingAttemptMode,
+    resume_onboarding_subject,
 )
 from app.utils.tickers import normalize_ticker
 
@@ -208,6 +215,27 @@ def _monitoring_item_read(
         current_summary = snapshot.get("current_thesis") or latest_assessment.summary
     readiness = _json_dict(getattr(item, "onboarding_readiness", "{}"))
     blockers = readiness.get("blocking_requirements", [])
+    blocker_values = (
+        [str(value) for value in blockers] if isinstance(blockers, list) else []
+    )
+    if (
+        item.active
+        and item.production_eligible
+        and item.onboarding_state == "ACTIVE"
+    ):
+        registration_message = (
+            "✅ 모니터링 등록 완료\n"
+            "현재 상태: ACTIVE_READY\n"
+            "다음 eligible cycle부터 자동 점검"
+        )
+    else:
+        remaining = ", ".join(blocker_values) or "자동 온보딩 재검증"
+        registration_message = (
+            "🟡 모니터링 등록 준비 중\n"
+            "현재 상태: PENDING_ONBOARDING\n"
+            f"남은 단계: {remaining}\n"
+            "자동 온보딩이 계속 진행됩니다."
+        )
     return MonitoringItemRead(
         ticker=item.ticker,
         company_name=item.company_name,
@@ -216,9 +244,10 @@ def _monitoring_item_read(
         monitoring_requested=item.monitoring_requested,
         onboarding_state=item.onboarding_state,
         production_eligible=item.production_eligible,
-        onboarding_blockers=(
-            [str(value) for value in blockers] if isinstance(blockers, list) else []
-        ),
+        onboarding_blockers=blocker_values,
+        onboarding_retry_class=item.onboarding_retry_class,
+        onboarding_next_retry_at=item.onboarding_next_retry_at,
+        registration_status_message=registration_message,
         first_eligible_session=item.first_eligible_session,
         thesis=thesis_to_read(thesis),
         latest_status=latest_status,
@@ -556,6 +585,45 @@ def register_monitoring_item(
         session.refresh(thesis)
         export_thesis(thesis)
     return _monitoring_item_read(session, item, thesis)
+
+
+async def register_monitoring_item_with_continuation(
+    session: Session,
+    payload: MonitoringItemCreate,
+) -> MonitoringItemRead:
+    initial = register_monitoring_item(session, payload)
+    if initial.active and initial.production_eligible:
+        return initial
+    item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == initial.ticker)
+    ).one()
+    try:
+        async with asyncio.timeout(
+            get_settings().onboarding_immediate_timeout_seconds
+        ):
+            await resume_onboarding_subject(
+                session,
+                item,
+                origin="registration_immediate_continuation",
+                mode=OnboardingAttemptMode.IMMEDIATE,
+            )
+    except TimeoutError:
+        session.rollback()
+        item = session.exec(
+            select(WatchlistItem).where(WatchlistItem.ticker == initial.ticker)
+        ).one()
+        current = datetime.now(UTC)
+        item.onboarding_retry_class = "RETRYABLE"
+        item.onboarding_last_attempt_at = current
+        item.onboarding_last_attempt_origin = "registration_immediate_continuation"
+        item.onboarding_last_error = "TimeoutError:immediate_continuation_timeout"
+        item.onboarding_next_retry_at = current + timedelta(
+            minutes=get_settings().onboarding_retry_base_minutes
+        )
+        session.add(item)
+        session.commit()
+    session.refresh(item)
+    return _monitoring_item_read(session, item, _latest_thesis(session, item.ticker))
 
 
 def list_monitoring_items(session: Session, active_only: bool = True) -> list[MonitoringItemRead]:

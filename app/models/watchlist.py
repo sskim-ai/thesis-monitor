@@ -21,6 +21,16 @@ class WatchlistItem(SQLModel, table=True):
     production_eligible: bool = True
     onboarding_readiness: str = Field(default="{}", sa_column=Column(Text))
     onboarding_failure_stage: str | None = None
+    onboarding_initial_evidence: str = Field(default="{}", sa_column=Column(Text))
+    onboarding_evidence_fingerprint: str | None = None
+    onboarding_decision_readiness: str = Field(default="{}", sa_column=Column(Text))
+    onboarding_retry_class: str = Field(default="NONE", index=True)
+    onboarding_attempt_count: int = 0
+    onboarding_last_attempt_at: datetime | None = None
+    onboarding_next_retry_at: datetime | None = Field(default=None, index=True)
+    onboarding_last_error: str | None = None
+    onboarding_last_attempt_origin: str | None = None
+    onboarding_market_packet_cutoff: datetime | None = None
     registration_requested_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
