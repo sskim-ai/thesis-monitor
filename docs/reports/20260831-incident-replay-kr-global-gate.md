@@ -14,4 +14,5 @@ Repaired fixture: incomplete subjects are pending, target-market selection runs 
 - CPNG: `PENDING_SAFE`; blockers: `INITIAL_EVIDENCE, INITIAL_BASELINE_ASSESSMENT, DECISION_READINESS`
 - Test sink: `22/22`; exact: `TRUE`
 - Local validation: `PASS`
-- CI: `PENDING`
+- CI: `PASS`
+- CI run: `33385383279`

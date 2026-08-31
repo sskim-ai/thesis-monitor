@@ -183,6 +183,7 @@ def generate(args: argparse.Namespace) -> dict[str, object]:
 - Test sink: `{test_count}/22`; exact: `{str(exact).upper()}`
 - Local validation: `{local_validation}`
 - CI: `{ci_status}`
+- CI run: `{args.ci_run}`
 """
 
     reports = {
@@ -433,6 +434,7 @@ def main() -> None:
     parser.add_argument("--implementation-sha", required=True)
     parser.add_argument("--local-validation", default="PASS")
     parser.add_argument("--ci-status", default="PENDING")
+    parser.add_argument("--ci-run", default="PENDING")
     args = parser.parse_args()
     print(json.dumps(generate(args), ensure_ascii=False, sort_keys=True))
 

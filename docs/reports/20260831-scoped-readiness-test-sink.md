@@ -17,4 +17,5 @@ Telegram accepted the first 20 and returned HTTP 429. Continuation verified ever
 - CPNG: `PENDING_SAFE`; blockers: `INITIAL_EVIDENCE, INITIAL_BASELINE_ASSESSMENT, DECISION_READINESS`
 - Test sink: `22/22`; exact: `TRUE`
 - Local validation: `PASS`
-- CI: `PENDING`
+- CI: `PASS`
+- CI run: `33385383279`

@@ -4169,11 +4169,14 @@
     "report": "docs/reports/20260830-v2-production-rollout-readiness.json"
   },
   "atomic_onboarding_scoped_readiness_repair_20260831": {
-    "status": "IMPLEMENTED_AWAITING_PROMOTION",
+    "status": "READY_FOR_MAIN",
     "instruction_commit": "8da71e7",
     "base_commit": "ecd01297f81d0b68aaf95ecfe866721b6aa2c104",
     "branch": "codex/atomic-onboarding-scoped-readiness-repair",
     "implementation_commit": "2c4b973",
+    "report_commit": "37715be7d8be38588b329dda26ec00c49b42db6d",
+    "implementation_github_actions_run": 33385383279,
+    "implementation_github_actions_status": "passed_test_and_lint",
     "lifecycle_contract": "monitoring-onboarding-readiness-v1",
     "packet_universe_contract": "production-packet-universe-v1",
     "active_implies_onboarding_ready": true,

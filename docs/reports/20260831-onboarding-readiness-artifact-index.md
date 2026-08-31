@@ -8,7 +8,8 @@
 - CPNG: `PENDING_SAFE`; blockers: `INITIAL_EVIDENCE, INITIAL_BASELINE_ASSESSMENT, DECISION_READINESS`
 - Test sink: `22/22`; exact: `TRUE`
 - Local validation: `PASS`
-- CI: `PENDING`
+- CI: `PASS`
+- CI run: `33385383279`
 
 ## Artifacts
 
@@ -16,26 +17,26 @@
 - `docs/architecture/MONITORING_ONBOARDING_LIFECYCLE.md`: `4e9e24b97d073baa9ba6f3faedeeb980b5d380f7fae92650db0ea8150951d7b4`
 - `docs/architecture/ONBOARDING_READINESS_CONTRACT.md`: `8f5b3fdef420f2f50f2190062a37b598ed1998c7fab50727d214e005bf3949f4`
 - `docs/architecture/PRODUCTION_PACKET_UNIVERSE_SNAPSHOT.md`: `6bfc8f223cd2a93f8ceb00d9fee38642863efd8c0b713e0dde8ed6c0607ab51b`
-- `docs/reports/20260831-047810-onboarding-backfill.md`: `7159fa5accbacebf8a585e76b03aee610fdd4aad3e1bae422eb8bdf1a6cbf709`
-- `docs/reports/20260831-active-incomplete-universe-audit.md`: `82da860eb75a0512587434033ccc4bfe1959a1e60502d624794f23203b94c288`
+- `docs/reports/20260831-047810-onboarding-backfill.md`: `e12622f3b47c3adf5bfb61910097f6678a1f625cdf6842f4e8fe482d54d5a03e`
+- `docs/reports/20260831-active-incomplete-universe-audit.md`: `a6960ef17fefe6ef9294283f975fd299d7564a0886155389ecb735f6401b85b4`
 - `docs/reports/20260831-active-onboarding-readiness-audit.json`: `e324f15c372bad671422a8d9530c94f1361a6571921400cad6e88e3e31038a4f`
-- `docs/reports/20260831-cpng-onboarding-backfill.md`: `870988a0fa9b3492791845d71c40f30062fa6e90b4f25d81fb5caa8f918a4f26`
-- `docs/reports/20260831-cross-ticker-contamination-controls.md`: `17c955a53bc49de34a9b3b63b79d58739e88dfae2cc71cea22569a231af8f10d`
-- `docs/reports/20260831-incident-replay-kr-global-gate.md`: `df72af1d7fc493b8c2d32ff04e48d008e5672eba7d1eeb3f24e52d03502ab352`
-- `docs/reports/20260831-market-cohort-readiness-contract.md`: `ce28a4654c196e67716f784d823fb46b4c9896b4edaf103ac15110b65dc7f320`
-- `docs/reports/20260831-monitoring-onboarding-state-machine.md`: `8bec54e7fd4494e716a36849647e8e0e0355c7fecbd76f9185f75daee9462ce9`
-- `docs/reports/20260831-new-subject-message-quality.md`: `d986204a8dba9b932193407f7bc68310b33f9cd82cccce221d9eb594f80a3884`
+- `docs/reports/20260831-cpng-onboarding-backfill.md`: `5e8fa201797d85f32e8136da3cef6029609e18f5e18d8371df388f9497849579`
+- `docs/reports/20260831-cross-ticker-contamination-controls.md`: `23b2740f57a6a0b2dfc0a3e6ea6ca14d049e08c36942307ac490f071b7f4a92c`
+- `docs/reports/20260831-incident-replay-kr-global-gate.md`: `ab10b5107fe23a5436880e43137b3ace83348647177340a2d96dd4f79681e9f1`
+- `docs/reports/20260831-market-cohort-readiness-contract.md`: `ad6c2c4cf0fc3cbaa4fd0a71d9544e7bb2e5daa17350812374096d71fec3f50f`
+- `docs/reports/20260831-monitoring-onboarding-state-machine.md`: `8724e5759e2abb0a409b7901e1769ec623aef47c65f0acf0784277ec7145018e`
+- `docs/reports/20260831-new-subject-message-quality.md`: `4b6bba47a58060f184045b533cd6eb537872c2e37eb23557ee61bc6142dc3ffd`
 - `docs/reports/20260831-new-subject-readiness.json`: `385841e8cfac0485c88d334ef3169512c17f7fa913dad3df51bee15ec91f8775`
-- `docs/reports/20260831-onboarding-idempotency.md`: `f77a1d199aca70a69e9937938d87c5680f88c70988577f72a1d2d02a37363e5b`
+- `docs/reports/20260831-onboarding-idempotency.md`: `5a35637eee0f8da8a038e32efeb1c1aad1c013bc6d11f51d1744444a5900dbcf`
 - `docs/reports/20260831-onboarding-readiness-deployment.json`: `e148290e8066977c54b5d2ce0685252915e6083b1061fc94f25f3dd59459808b`
-- `docs/reports/20260831-onboarding-readiness-live-guard.md`: `fdb8a2656b7c74d2bc9b91b914d1aaf0af88d9070d6dd6eca0b48bf60d50894f`
-- `docs/reports/20260831-onboarding-readiness-main-merge.md`: `dce9dddb681159b9162048171ffb4ff73f500b79f63f04942866cf4c65692194`
-- `docs/reports/20260831-onboarding-readiness-root-cause.md`: `34114a2cee09c21f3520f5d3a6f8609250518a0c441ecefeeaa3685a7fc9cf8a`
+- `docs/reports/20260831-onboarding-readiness-live-guard.md`: `1f57b1a150cdbfc7e9faefc295dd76e1084578d1d85772d1fe6dab2dc59e5437`
+- `docs/reports/20260831-onboarding-readiness-main-merge.md`: `123f8121edfb3f785a8e8320f92db8a2f813df1f3c1d7884d00b7c67374ffdeb`
+- `docs/reports/20260831-onboarding-readiness-root-cause.md`: `fff4a3db8783834bbbebe0017d1ac126155120cc8da6edb9c08d978ea895a130`
 - `docs/reports/20260831-onboarding-readiness-test-messages.json`: `8eb3ba17b6dc40ce96a9d8bde276af20991b5fea1bf3b6731cdad30541ccaf6d`
 - `docs/reports/20260831-onboarding-readiness-test-sink-continuation-receipt.json`: `b54f7f7131f6af81ab47fbfbe8bfeea50891d6cd0680674c2ced15fc2c0818ef`
 - `docs/reports/20260831-onboarding-readiness-test-sink-final-receipt.json`: `ab64eb3e25d728abf7e0920c1f48b5717406fdf2a22ee630505338f0ebecb96c`
 - `docs/reports/20260831-onboarding-readiness-test-sink-initial-receipt.json`: `f099bf1668e467398ba8fd5103ffc12a441b54d43896b28f3eadd3e284beb510`
-- `docs/reports/20260831-onboarding-required-prerequisites.md`: `9a04e5280593ca8543e0727eeea92427393967ea049574e1057392cfb8dda9df`
-- `docs/reports/20260831-onboarding-validator-contract.md`: `13c63cfc8aa64299da90ddbb9b845e21fad6ce3cc2a492d1079eceba477bf12d`
-- `docs/reports/20260831-production-packet-universe-contract.md`: `56196a38968fed534ed5d330f74e3eb6ef09a4554bf48f7540e93d23d73eab8d`
-- `docs/reports/20260831-scoped-readiness-test-sink.md`: `4b2007dde8824284dd5407fe0045714086f0d19bc2150f6feb5330bcb5f90b36`
+- `docs/reports/20260831-onboarding-required-prerequisites.md`: `7ed98af60fe424fc6dfe0e4767360d195219bd74aba2d03c2ac5a39443e9c09d`
+- `docs/reports/20260831-onboarding-validator-contract.md`: `22b93a17ae254ecc4671227d31b121632f0e5c689b98f03524cf5bf0c13a101f`
+- `docs/reports/20260831-production-packet-universe-contract.md`: `27a0d864c11416a94ee4a56cbe008622a46c644f9b86ecd3996ca1ab824a61d6`
+- `docs/reports/20260831-scoped-readiness-test-sink.md`: `30b90f485383099d0385b36463b2f69d811bf2fda33dd1450373d8ec15cb9d79`

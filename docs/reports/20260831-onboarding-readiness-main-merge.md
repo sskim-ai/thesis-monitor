@@ -1,12 +1,12 @@
 # Onboarding Readiness Main Merge
 
-Promotion gate is `PENDING_CI`.
+Promotion gate is `READY_FOR_MAIN`.
 
 - Open P0: `0`
 - Open material P1: `0`
 - Local full pytest: `PASS` (`1961 passed`)
 - Ruff: `PASS`
-- CI: `PENDING`
+- CI: `PASS`
 - Price Structure algorithm diff: `0`
 - Valuation algorithm diff: `0`
 - Scheduler diff: `0`
@@ -19,4 +19,5 @@ Promotion gate is `PENDING_CI`.
 - CPNG: `PENDING_SAFE`; blockers: `INITIAL_EVIDENCE, INITIAL_BASELINE_ASSESSMENT, DECISION_READINESS`
 - Test sink: `22/22`; exact: `TRUE`
 - Local validation: `PASS`
-- CI: `PENDING`
+- CI: `PASS`
+- CI run: `33385383279`
