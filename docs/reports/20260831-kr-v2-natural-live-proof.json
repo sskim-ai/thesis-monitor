@@ -1,0 +1,511 @@
+{
+  "contract": "kr-v2-natural-live-proof-v1",
+  "gates": {
+    "KR_003690_CHANGE_CONDITION_WORDING": "PASS",
+    "KR_ACCEPTED_BUY_COUNT": 0,
+    "KR_ACCEPTED_HOLD_COUNT": 0,
+    "KR_ACCEPTED_READY_COUNT": 0,
+    "KR_ACCEPTED_SELL_COUNT": 0,
+    "KR_BACKUP_ACTUAL_TIME": "2026-08-31T16:57:11.283+09:00",
+    "KR_CANONICAL_SESSION_DATE": "2026-08-31",
+    "KR_DECISION_BLOCK_VISIBLE_COUNT": 0,
+    "KR_DELIVERY_TIMING": "NORMAL_1710_DISPATCH",
+    "KR_DISPATCHER_ACTUAL_TIME": "2026-08-31T17:10:07.170731+09:00",
+    "KR_DUPLICATE": 0,
+    "KR_EMPTY_VISIBLE_SECTION_COUNT": 0,
+    "KR_EXACTLY_ONCE_DELIVERY": "PASS",
+    "KR_EXPECTED_PRODUCTION_MESSAGE_COUNT": 9,
+    "KR_EXPECTED_STOCK_MESSAGE_COUNT": 8,
+    "KR_FIRST_DELIVERY_TIME": "2026-08-31T17:10:09.430568+09:00",
+    "KR_INVESTOR_FLOW_COLLECTION": "PASS",
+    "KR_LAST_DELIVERY_TIME": "2026-08-31T17:10:19.733510+09:00",
+    "KR_LIVE_EXACT_PAYLOAD": "PASS",
+    "KR_MARKET_DATA_COLLECTION": "PASS",
+    "KR_MONITORED_SUBJECT_COUNT": 8,
+    "KR_NEW_SUBJECT_047810": "FULLY_INCLUDED",
+    "KR_NOT_READY_COUNT": 8,
+    "KR_ORPHAN": 0,
+    "KR_PACKET_CLAIM_TIME": "NOT_CLAIMED",
+    "KR_PRICE_STRUCTURE_CONTRACT": "PASS",
+    "KR_PRIMARY_ACTUAL_TIME": "2026-08-31T16:16:09.010+09:00",
+    "KR_RAW_CANDIDATE_VISIBLE": 0,
+    "KR_RECEIVED_PRODUCTION_MESSAGE_COUNT": 9,
+    "KR_SAME_EVIDENCE_UNEXPLAINED_DECISION_CHURN": 0,
+    "KR_SENT_PRODUCTION_MESSAGE_COUNT": 9,
+    "KR_UNADJUDICATED_MATERIAL_CHANGE_VISIBLE": 0,
+    "KR_UNOWNED_RETRY": 0,
+    "KR_V2_MESSAGE_QUALITY": "FAIL",
+    "KR_V2_NATURAL_LIVE": "FAIL",
+    "KR_VALUATION_CONTRACT": "PASS",
+    "MANUAL_PRODUCTION_JOB_TRIGGER": 0,
+    "MANUAL_PRODUCTION_SEND": 0,
+    "NEXT_ACTION": "BOUNDED_REPAIR",
+    "OPEN_MATERIAL_P1": 1,
+    "OPEN_P0": 0,
+    "OPEN_P2": 0,
+    "PRODUCTION_STATE_MUTATION": 0,
+    "US_NEW_SUBJECT_CPNG_NEXT_LIVE_ELIGIBILITY": "NOT_READY_SAFE",
+    "US_NEXT_LIVE_EXPECTED_STOCK_COUNT": 14
+  },
+  "investor_flow_collection": {
+    "status": "PASS",
+    "subjects": [
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -211398,
+          "20d": -4216450,
+          "5d": -2023535
+        },
+        "foreign_holding_ratio": 50.57,
+        "individual": {
+          "1d": -111515,
+          "20d": 1110730,
+          "5d": -133485
+        },
+        "institution": {
+          "1d": -315361,
+          "20d": -1942986,
+          "5d": -1052375
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "foreign_exit_broad_absorption",
+        "quality": "distribution",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "000660"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -156884,
+          "20d": 355451,
+          "5d": -83649
+        },
+        "foreign_holding_ratio": 26.57,
+        "individual": {
+          "1d": 39301,
+          "20d": -188524,
+          "5d": 23326
+        },
+        "institution": {
+          "1d": 115643,
+          "20d": -71408,
+          "5d": 64267
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "mixed_window_flow",
+        "quality": "foreign_led",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "003690"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -26396,
+          "20d": 83840,
+          "5d": -132487
+        },
+        "foreign_holding_ratio": 32.29,
+        "individual": {
+          "1d": 5946,
+          "20d": -104247,
+          "5d": -75110
+        },
+        "institution": {
+          "1d": 22442,
+          "20d": 46196,
+          "5d": 209296
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "foreign_reentry",
+        "quality": "strong_joint",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "005490"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -7627,
+          "20d": -4971695,
+          "5d": -3013778
+        },
+        "foreign_holding_ratio": 46.72,
+        "individual": {
+          "1d": 333173,
+          "20d": 10564787,
+          "5d": -3379106
+        },
+        "institution": {
+          "1d": -2349842,
+          "20d": -18411991,
+          "5d": -3392696
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "foreign_exit_broad_absorption",
+        "quality": "distribution",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "005930"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -82768,
+          "20d": 570961,
+          "5d": 418672
+        },
+        "foreign_holding_ratio": 18.71,
+        "individual": {
+          "1d": 141666,
+          "20d": -443119,
+          "5d": -569134
+        },
+        "institution": {
+          "1d": -61374,
+          "20d": -103282,
+          "5d": 165508
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "material_other_participant_flow",
+        "quality": "foreign_led",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "010120"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -19408,
+          "20d": 72567,
+          "5d": -24915
+        },
+        "foreign_holding_ratio": 45.55,
+        "individual": {
+          "1d": 31501,
+          "20d": -37168,
+          "5d": 23280
+        },
+        "institution": {
+          "1d": -12026,
+          "20d": -36174,
+          "5d": 1013
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "mixed_window_flow",
+        "quality": "foreign_led",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "012450"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": 10328,
+          "20d": -597537,
+          "5d": -23793
+        },
+        "foreign_holding_ratio": 23.65,
+        "individual": {
+          "1d": 41634,
+          "20d": 368288,
+          "5d": 53785
+        },
+        "institution": {
+          "1d": -52982,
+          "20d": -389896,
+          "5d": -30531
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "foreign_exit_broad_absorption",
+        "quality": "distribution",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "047810"
+      },
+      {
+        "as_of_date": "2026-08-31",
+        "attribution_safe": false,
+        "foreign": {
+          "1d": -11574,
+          "20d": 170256,
+          "5d": 33366
+        },
+        "foreign_holding_ratio": 46.53,
+        "individual": {
+          "1d": -10674,
+          "20d": -185149,
+          "5d": -131546
+        },
+        "institution": {
+          "1d": 23289,
+          "20d": 26036,
+          "5d": 100326
+        },
+        "participant_contract": "kr-investor-flow-participants-v1",
+        "primary_signal": "material_other_participant_flow",
+        "quality": "strong_joint",
+        "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+        "ticker": "086280"
+      }
+    ]
+  },
+  "market_collection": {
+    "provider": "KIWOOM_REST",
+    "retrieved_at": "2026-08-31T16:50:06.417917+09:00",
+    "source_payload_sha256": "a2978805678688df94c58225d4103d497225a46ff9281f442580974f891a79fd",
+    "status": "PASS"
+  },
+  "operating_sha": "ecd01297f81d0b68aaf95ecfe866721b6aa2c104",
+  "origin_main": "ecd01297f81d0b68aaf95ecfe866721b6aa2c104",
+  "p1": [
+    {
+      "affected_subjects": [
+        "047810",
+        "CPNG"
+      ],
+      "bounded_repair": "Complete canonical profile/onboarding readiness through the normal producer path, without ticker exceptions or manual production runs.",
+      "effect": "No KR candidate/adjudication/accepted V2 decision for all eight subjects; deterministic fallback delivered safely.",
+      "id": "same_day_new_subject_profile_gate_blocked_entire_v2_packet",
+      "severity": "P1"
+    }
+  ],
+  "packet_id": "2026-08-31-kr-run-48-a573c2a6f245",
+  "price_structure": {
+    "status": "PASS",
+    "subjects": [
+      {
+        "currency": "KRW",
+        "current_price": 1674000.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 1,674,000원\n• 가까운 지지: 약 158.7만~160.4만원 · 일봉 볼린저 중첩\n• 잠정 볼린저 지지(주봉·진행중): 약 107.7만~108.3만원 · 봉 마감 전 변동 가능",
+        "ticker": "000660"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 14280.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 14,280원\n• 가까운 지지: 약 1.4만~1.41만원\n• 가까운 저항: 약 1.429만~1.457만원\n• 주요 구조 지지: 약 1.3만~1.4만원\n• 주요 구조 저항: 약 1.48만~1.51만원 · 월봉 볼린저 중첩\n• 잠정 볼린저 저항(주봉·진행중): 약 1.5만~1.6만원 · 봉 마감 전 변동 가능",
+        "ticker": "003690"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 338500.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 338,500원\n• 가까운 지지: 약 32.6만~33.4만원\n• 가까운 저항: 약 34.1만~35.1만원\n• 주요 구조 지지: 약 30.8만~31.8만원 · 월봉 볼린저 중첩\n• 주요 구조 저항: 약 42.5만~43.8만원\n• 잠정 볼린저 지지(주봉·진행중): 약 24만~24.3만원 · 봉 마감 전 변동 가능",
+        "ticker": "005490"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 260000.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 260,000원\n• 가까운 지지: 약 25.3만~25.5만원\n• 가까운 저항: 약 27.7만~27.9만원 · 주봉 볼린저 중첩\n• 잠정 볼린저 지지(주봉·진행중): 약 20.4만~20.6만원 · 봉 마감 전 변동 가능",
+        "ticker": "005930"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 207500.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 207,500원\n• 가까운 지지: 약 20.2만~20.5만원\n• 가까운 저항: 약 21.1만~21.3만원\n• 볼린저 저항(주봉): 약 22.5만~22.7만원\n• 잠정 볼린저 지지(주봉·진행중): 약 15.8만~15.9만원 · 봉 마감 전 변동 가능",
+        "ticker": "010120"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 1102000.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 1,102,000원\n• 가까운 지지: 약 103.2만~105.5만원\n• 가까운 저항: 약 110.27만~112.48만원\n• 볼린저 저항(주봉): 약 114.7만~115.3만원\n• 잠정 볼린저 지지(주봉·진행중): 약 84.4만~85만원 · 봉 마감 전 변동 가능",
+        "ticker": "012450"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 131000.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 131,000원\n• 가까운 지지: 약 12.1만~12.3만원 · 잠정 주봉 볼린저 중첩\n• 주요 구조 저항: 약 13.8만~14만원\n• 주요 구조 지지: 약 11.6만~12만원 · 월봉 볼린저 중첩",
+        "ticker": "047810"
+      },
+      {
+        "currency": "KRW",
+        "current_price": 207500.0,
+        "eligibility": "ELIGIBLE_SR_ONLY",
+        "enabled": true,
+        "price_as_of": "2026-08-31",
+        "render_validation_errors": [],
+        "section": "📐 현재 가격 구조\n• 현재가(정규장 종가): 207,500원\n• 가까운 지지: 약 20.3만~20.7만원\n• 가까운 저항: 약 20.9만~21.3만원\n• 주요 구조 지지: 약 17.2만~17.7만원 · 잠정 주봉 볼린저 중첩\n• 주요 구조 저항: 약 21.2만~21.5만원 · 주봉 볼린저 중첩",
+        "ticker": "086280"
+      }
+    ]
+  },
+  "production_packet_persistence": {
+    "conditions": {
+      "analysis_complete": true,
+      "deterministic_fallback_available": true,
+      "hard_safety_conflict_free": true,
+      "packet_schema_valid": true,
+      "supported_market": true
+    },
+    "contract_version": "kr-production-packet-persistence-v1",
+    "denial_reason": null,
+    "eligible": true,
+    "hard_errors": [],
+    "shadow_readiness_influence": "none"
+  },
+  "profile_gate": {
+    "active_total": 22,
+    "complete_count": 20,
+    "missing_count": 2,
+    "ready": false,
+    "unavailable_count": 0
+  },
+  "run_id": 48,
+  "runtime_code_sha": "ecd01297f81d0b68aaf95ecfe866721b6aa2c104",
+  "session_date": "2026-08-31",
+  "valuation": {
+    "status": "PASS",
+    "subjects": [
+      {
+        "currency": "KRW",
+        "forward_pe": 9.6844,
+        "forward_price_to_book": 3.2313,
+        "price_as_of": "2026-08-31",
+        "price_to_book": 4.5367,
+        "price_to_book_basis_status": "directly_comparable",
+        "primary_method": "mid-cycle P/B와 cycle-adjusted FCF·earnings",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\nPBR = 현재가 ÷ BVPS = 1,674,000원 ÷ 368,991.21원 = 4.5배\n과거 대비:\nPER 중앙값 11.3배 · PBR 중앙값 1.7배 · 87백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.",
+        "security_identity_state": "verified_non_depositary",
+        "ticker": "000660",
+        "trailing_pe": 7.3573,
+        "trailing_pe_basis_status": "directly_comparable"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": 5.9398,
+        "forward_price_to_book": 0.5809,
+        "price_as_of": "2026-08-31",
+        "price_to_book": 0.6278,
+        "price_to_book_basis_status": "directly_comparable",
+        "primary_method": "P/B-ROE",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\nPER = 현재가 ÷ TTM EPS = 14,280원 ÷ 2,410원 = 5.9배\nPBR = 현재가 ÷ BVPS = 14,280원 ÷ 22,746.58원 = 0.6배\nfPER = 현재가 ÷ 내부 정상화 ROE 추정 EPS = 14,280원 ÷ 2,404.13원 = 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = 14,280원 ÷ 24,580.72원 = 0.6배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 6.7배 · 16백분위 · PBR 중앙값 0.5배 · 87백분위\n현재 Valuation: 부담 구간\n해석: 현재 시스템에 확보된 point-in-time 재무 이력이 충분하지 않거나 사업구조 변화가 있어 장기 역사적 비교 신뢰도가 낮습니다.",
+        "security_identity_state": "verified_non_depositary",
+        "ticker": "003690",
+        "trailing_pe": 5.9253,
+        "trailing_pe_basis_status": "directly_comparable"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": null,
+        "forward_price_to_book": null,
+        "price_as_of": "2026-08-31",
+        "price_to_book": 0.4454,
+        "price_to_book_basis_status": "directly_comparable",
+        "primary_method": "sum-of-the-parts",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\nPER = 현재가 ÷ TTM EPS = 338,500원 ÷ 17,818원 = 19.0배\nPBR = 현재가 ÷ BVPS = 338,500원 ÷ 759,917.29원 = 0.4배\n과거 대비:\nPER 중앙값 17.8배 · 53백분위 · PBR 중앙값 0.4배 · 48백분위\n현재 Valuation: 중립 범위\n해석: SOTP가 주 평가 방식이므로 역사적 PER/PBR은 참고 수준으로만 반영했습니다.",
+        "security_identity_state": "verified_non_depositary",
+        "ticker": "005490",
+        "trailing_pe": 18.9976,
+        "trailing_pe_basis_status": "directly_comparable"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": null,
+        "forward_price_to_book": null,
+        "price_as_of": "2026-08-31",
+        "price_to_book": 2.6522,
+        "price_to_book_basis_status": "directly_comparable",
+        "primary_method": "sum-of-the-parts + mid-cycle DS P/B",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\nPER = 현재가 ÷ TTM EPS = 260,000원 ÷ 22,463원 = 11.6배\nPBR = 현재가 ÷ BVPS = 260,000원 ÷ 98,030.17원 = 2.7배\n과거 대비:\nPER 중앙값 13.4배 · 39백분위 · PBR 중앙값 1.2배 · 90백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.",
+        "security_identity_state": "verified_non_depositary",
+        "ticker": "005930",
+        "trailing_pe": 11.5746,
+        "trailing_pe_basis_status": "directly_comparable"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": null,
+        "forward_price_to_book": null,
+        "price_as_of": "2026-08-31",
+        "price_to_book": null,
+        "price_to_book_basis_status": "insufficient_metadata",
+        "primary_method": "현재 PER·PBR을 실적 성장·마진·수주 가시성과 결합해 평가",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.",
+        "security_identity_state": "unknown",
+        "ticker": "010120",
+        "trailing_pe": null,
+        "trailing_pe_basis_status": "insufficient_metadata"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": null,
+        "forward_price_to_book": null,
+        "price_as_of": "2026-08-31",
+        "price_to_book": null,
+        "price_to_book_basis_status": "insufficient_metadata",
+        "primary_method": "수주잔고 기반 실적 가시성, 정상화 영업이익과 FCF를 중심으로 평가",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.",
+        "security_identity_state": "unknown",
+        "ticker": "012450",
+        "trailing_pe": null,
+        "trailing_pe_basis_status": "insufficient_metadata"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": null,
+        "forward_price_to_book": null,
+        "price_as_of": "2026-08-31",
+        "price_to_book": null,
+        "price_to_book_basis_status": "insufficient_metadata",
+        "primary_method": "방산/항공 완제기 성장주로서 Forward PER을 중심으로 수주잔고·인도대수·정상화 마진을 결합해 평가",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.",
+        "security_identity_state": "unknown",
+        "ticker": "047810",
+        "trailing_pe": null,
+        "trailing_pe_basis_status": "insufficient_metadata"
+      },
+      {
+        "currency": "KRW",
+        "forward_pe": 9.2716,
+        "forward_price_to_book": 1.426,
+        "price_as_of": "2026-08-31",
+        "price_to_book": 1.4288,
+        "price_to_book_basis_status": "directly_comparable",
+        "primary_method": "forward P/E",
+        "quality": "partial",
+        "rendered_section": "📐 Valuation\nPER = 현재가 ÷ TTM EPS = 207,500원 ÷ 20,548원 = 10.1배\nPBR = 현재가 ÷ BVPS = 207,500원 ÷ 145,223.80원 = 1.4배\nfPER = 현재가 ÷ 내부 정상화 마진 추정 EPS = 207,500원 ÷ 22,380.20원 = 9.3배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = 207,500원 ÷ 145,513.28원 = 1.4배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 6.1배 · 92백분위 · PBR 중앙값 1.0배 · 85백분위\n현재 Valuation: 부담 구간\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.",
+        "security_identity_state": "verified_non_depositary",
+        "ticker": "086280",
+        "trailing_pe": 10.0983,
+        "trailing_pe_basis_status": "directly_comparable"
+      }
+    ]
+  },
+  "work_instruction_commit": "3733bdb1ff6c1c7ed3b8cdd8d91f921f8ccb7425"
+}

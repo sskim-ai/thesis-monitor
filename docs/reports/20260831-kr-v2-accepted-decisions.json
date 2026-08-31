@@ -1,0 +1,122 @@
+{
+  "contract": "kr-v2-natural-accepted-decision-audit-v1",
+  "counts": {
+    "accepted_ready": 0,
+    "buy": 0,
+    "hold": 0,
+    "not_ready": 8,
+    "sell": 0,
+    "visible_v2_blocks": 0
+  },
+  "decisions": [
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "SK하이닉스",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "000660",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "코리안리",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "003690",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "POSCO홀딩스",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "005490",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "삼성전자",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "005930",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "LS일렉트릭",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "010120",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "한화에어로스페이스",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "012450",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "한국항공우주산업",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": false,
+      "ticker": "047810",
+      "visible_v2_decision_block": false
+    },
+    {
+      "accepted_decision": null,
+      "accepted_ready": false,
+      "adjudication": "NOT_RUN",
+      "candidate_decision": null,
+      "claim_owner": null,
+      "company_name": "현대글로비스",
+      "reason": "shadow_profile_gate_not_ready",
+      "subject_profile_complete": true,
+      "ticker": "086280",
+      "visible_v2_decision_block": false
+    }
+  ],
+  "packet_id": "2026-08-31-kr-run-48-a573c2a6f245",
+  "packet_ready_for_ai": false,
+  "profile_gate": {
+    "active_total": 22,
+    "complete_count": 20,
+    "missing_count": 2,
+    "ready": false,
+    "unavailable_count": 0
+  },
+  "session_date": "2026-08-31",
+  "suppression_reasons": [
+    "shadow_profile_gate_not_ready"
+  ]
+}
