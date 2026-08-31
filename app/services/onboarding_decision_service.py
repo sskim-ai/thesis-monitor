@@ -192,6 +192,10 @@ def _invoke_signed_in_codex(
     schema: Path,
     timeout: int,
 ) -> None:
+    prompt = prompt.resolve()
+    output = output.resolve()
+    log = log.resolve()
+    schema = schema.resolve()
     command = [
         _signed_in_codex_bin(),
         "exec",

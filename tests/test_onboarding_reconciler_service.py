@@ -9,6 +9,7 @@ from sqlmodel import SQLModel, Session, create_engine, select
 from app.models.company import Company
 from app.models.thesis import InvestmentThesis, ThesisAssessment
 from app.models.watchlist import WatchlistItem
+from app.services import onboarding_decision_service
 from app.services.company_profile_service import profile_provenance_path
 from app.services.onboarding_decision_service import (
     validate_onboarding_decision_readiness,
@@ -564,3 +565,45 @@ def test_raw_candidate_cannot_satisfy_decision_readiness() -> None:
 
     assert valid is False
     assert reason == "raw_candidate_grants_ready"
+
+
+def test_signed_in_codex_uses_absolute_artifact_paths(
+    tmp_path: Path, monkeypatch
+) -> None:
+    artifact_dir = tmp_path / "data" / "onboarding" / "TEST"
+    artifact_dir.mkdir(parents=True)
+    prompt = artifact_dir / "prompt.txt"
+    output = artifact_dir / "output.json"
+    log = artifact_dir / "cli.log"
+    schema = artifact_dir / "schema.json"
+    prompt.write_text("prompt\n", encoding="utf-8")
+    schema.write_text("{}\n", encoding="utf-8")
+    captured: dict[str, object] = {}
+
+    def fake_run(command, **kwargs):
+        captured["command"] = command
+        captured["cwd"] = kwargs["cwd"]
+        Path(command[command.index("-o") + 1]).write_text("{}\n", encoding="utf-8")
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        onboarding_decision_service, "_signed_in_codex_bin", lambda: "/tmp/codex"
+    )
+    monkeypatch.setattr(onboarding_decision_service.subprocess, "run", fake_run)
+
+    onboarding_decision_service._invoke_signed_in_codex(
+        prompt=prompt.relative_to(tmp_path),
+        output=output.relative_to(tmp_path),
+        log=log.relative_to(tmp_path),
+        schema=schema.relative_to(tmp_path),
+        timeout=30,
+    )
+
+    command = captured["command"]
+    assert isinstance(command, list)
+    schema_arg = Path(command[command.index("--output-schema") + 1])
+    output_arg = Path(command[command.index("-o") + 1])
+    assert schema_arg.is_absolute() and schema_arg == schema
+    assert output_arg.is_absolute() and output_arg == output
+    assert captured["cwd"] == artifact_dir
