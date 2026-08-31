@@ -386,6 +386,15 @@ class CompanyProfilePopulationService:
             ).all()
         )
 
+    def requested_items(self, session: Session) -> list[WatchlistItem]:
+        return list(
+            session.exec(
+                select(WatchlistItem)
+                .where(WatchlistItem.monitoring_requested.is_(True))
+                .order_by(WatchlistItem.ticker)
+            ).all()
+        )
+
     async def populate_active(
         self,
         session: Session,
@@ -396,139 +405,177 @@ class CompanyProfilePopulationService:
         current = (verified_at or datetime.now(UTC)).astimezone(UTC)
         results: list[ProfilePopulationResult] = []
         for item in self.active_items(session):
-            security = session.exec(
-                select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
-            ).first()
-            market = market_scope_for_security(
-                item.ticker,
-                item.exchange or (security.exchange if security else None),
-            )
-            source = (
-                self.kr_source
-                if market == "kr"
-                else self.us_source
-                if market == "us"
-                else None
-            )
-            company = session.exec(select(Company).where(Company.ticker == item.ticker)).first()
-            existing_populated = bool(
-                company
-                and any(
-                    value
-                    for value in (
-                        company.industry,
-                        company.sector,
-                        company.business_units,
-                        company.revenue_sources,
-                    )
-                )
-            )
-            official: OfficialProfile | None = None
-            reason: str | None = None
-            if source is None:
-                reason = "official_profile_source_not_configured"
-            else:
-                try:
-                    official = await source.fetch(item, security)
-                except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
-                    reason = f"official_profile_fetch_failed:{type(exc).__name__}"
-            if official is None:
-                quality: ProfileQuality = "partial" if existing_populated else "unavailable"
-                payload = {
-                    "schema_version": "1",
-                    "ticker": item.ticker,
-                    "company_name": item.company_name,
-                    "market": market,
-                    "quality": quality,
-                    "source": None,
-                    "source_as_of": None,
-                    "verified_at": current.isoformat(),
-                    "classification_method": "preserved_existing" if existing_populated else "unavailable",
-                    "reason": reason or "official_profile_unavailable",
-                    "industry": company.industry if company else None,
-                    "sector": company.sector if company else None,
-                    "business_units": company.business_units if company else None,
-                    "revenue_sources": company.revenue_sources if company else None,
-                    "taxonomy_key": None,
-                }
-                path = profile_provenance_path(item.ticker, self.data_dir)
-                if not dry_run:
-                    _atomic_json(path, payload)
-                results.append(
-                    ProfilePopulationResult(
-                        ticker=item.ticker,
-                        company_name=item.company_name,
-                        market=market,
-                        quality=quality,
-                        status="preserved" if existing_populated else "unavailable",
-                        source=None,
-                        industry=company.industry if company else None,
-                        sector=company.sector if company else None,
-                        taxonomy_key=None,
-                    reason=str(payload["reason"]),
-                        provenance_path=str(path) if not dry_run else None,
-                    )
-                )
-                continue
-
-            normalized = normalize_official_industry(official)
-            row = company or Company(
-                ticker=item.ticker,
-                company_name=item.company_name,
-                exchange=item.exchange,
-            )
-            if normalized.industry:
-                row.industry = normalized.industry
-            if normalized.sector:
-                row.sector = normalized.sector
-            row.ir_url = row.ir_url or official.ir_url
-            row.filings_url = row.filings_url or official.filings_url
-            payload = {
-                "schema_version": "1",
-                "ticker": item.ticker,
-                "company_name": item.company_name,
-                "market": market,
-                "quality": normalized.quality,
-                "source": official.source,
-                "source_as_of": official.source_as_of,
-                "verified_at": current.isoformat(),
-                "classification_method": normalized.classification_method,
-                "reason": normalized.reason,
-                "official_industry_code": official.official_industry_code,
-                "official_industry_description": official.official_industry_description,
-                "industry": row.industry,
-                "sector": row.sector,
-                "business_units": row.business_units,
-                "revenue_sources": row.revenue_sources,
-                "taxonomy_key": normalized.taxonomy_key,
-            }
-            path = profile_provenance_path(item.ticker, self.data_dir)
-            if not dry_run:
-                session.add(row)
-                if security is not None:
-                    security.legal_name = official.legal_name or security.legal_name
-                    security.cik = official.cik or security.cik
-                    security.corp_code = official.corp_code or security.corp_code
-                    session.add(security)
-                _atomic_json(path, payload)
             results.append(
-                ProfilePopulationResult(
-                    ticker=item.ticker,
-                    company_name=item.company_name,
-                    market=market,
-                    quality=normalized.quality,
-                    status="populated" if normalized.industry or normalized.sector else "partial",
-                    source=official.source,
-                    industry=row.industry,
-                    sector=row.sector,
-                    taxonomy_key=normalized.taxonomy_key,
-                    reason=normalized.reason,
-                    provenance_path=str(path) if not dry_run else None,
+                await self._populate_item(
+                    session,
+                    item,
+                    current=current,
+                    dry_run=dry_run,
                 )
             )
         if not dry_run:
             session.commit()
         return results
+
+    async def populate_items(
+        self,
+        session: Session,
+        items: list[WatchlistItem],
+        *,
+        verified_at: datetime | None = None,
+        dry_run: bool = False,
+    ) -> list[ProfilePopulationResult]:
+        current = (verified_at or datetime.now(UTC)).astimezone(UTC)
+        results = [
+            await self._populate_item(
+                session,
+                item,
+                current=current,
+                dry_run=dry_run,
+            )
+            for item in items
+        ]
+        if not dry_run:
+            session.commit()
+        return results
+
+    async def _populate_item(
+        self,
+        session: Session,
+        item: WatchlistItem,
+        *,
+        current: datetime,
+        dry_run: bool,
+    ) -> ProfilePopulationResult:
+        security = session.exec(
+            select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
+        ).first()
+        market = market_scope_for_security(
+            item.ticker,
+            item.exchange or (security.exchange if security else None),
+        )
+        source = (
+            self.kr_source
+            if market == "kr"
+            else self.us_source
+            if market == "us"
+            else None
+        )
+        company = session.exec(
+            select(Company).where(Company.ticker == item.ticker)
+        ).first()
+        existing_populated = bool(
+            company
+            and any(
+                value
+                for value in (
+                    company.industry,
+                    company.sector,
+                    company.business_units,
+                    company.revenue_sources,
+                )
+            )
+        )
+        official: OfficialProfile | None = None
+        reason: str | None = None
+        if source is None:
+            reason = "official_profile_source_not_configured"
+        else:
+            try:
+                official = await source.fetch(item, security)
+            except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
+                reason = f"official_profile_fetch_failed:{type(exc).__name__}"
+        if official is None:
+            quality: ProfileQuality = "partial" if existing_populated else "unavailable"
+            payload = {
+                "schema_version": "1",
+                "ticker": item.ticker,
+                "company_name": item.company_name,
+                "market": market,
+                "quality": quality,
+                "source": None,
+                "source_as_of": None,
+                "verified_at": current.isoformat(),
+                "classification_method": (
+                    "preserved_existing" if existing_populated else "unavailable"
+                ),
+                "reason": reason or "official_profile_unavailable",
+                "industry": company.industry if company else None,
+                "sector": company.sector if company else None,
+                "business_units": company.business_units if company else None,
+                "revenue_sources": company.revenue_sources if company else None,
+                "taxonomy_key": None,
+            }
+            path = profile_provenance_path(item.ticker, self.data_dir)
+            if not dry_run:
+                _atomic_json(path, payload)
+            return ProfilePopulationResult(
+                ticker=item.ticker,
+                company_name=item.company_name,
+                market=market,
+                quality=quality,
+                status="preserved" if existing_populated else "unavailable",
+                source=None,
+                industry=company.industry if company else None,
+                sector=company.sector if company else None,
+                taxonomy_key=None,
+                reason=str(payload["reason"]),
+                provenance_path=str(path) if not dry_run else None,
+            )
+
+        normalized = normalize_official_industry(official)
+        row = company or Company(
+            ticker=item.ticker,
+            company_name=item.company_name,
+            exchange=item.exchange,
+        )
+        if normalized.industry:
+            row.industry = normalized.industry
+        if normalized.sector:
+            row.sector = normalized.sector
+        row.ir_url = row.ir_url or official.ir_url
+        row.filings_url = row.filings_url or official.filings_url
+        payload = {
+            "schema_version": "1",
+            "ticker": item.ticker,
+            "company_name": item.company_name,
+            "market": market,
+            "quality": normalized.quality,
+            "source": official.source,
+            "source_as_of": official.source_as_of,
+            "verified_at": current.isoformat(),
+            "classification_method": normalized.classification_method,
+            "reason": normalized.reason,
+            "official_industry_code": official.official_industry_code,
+            "official_industry_description": official.official_industry_description,
+            "industry": row.industry,
+            "sector": row.sector,
+            "business_units": row.business_units,
+            "revenue_sources": row.revenue_sources,
+            "taxonomy_key": normalized.taxonomy_key,
+        }
+        path = profile_provenance_path(item.ticker, self.data_dir)
+        if not dry_run:
+            session.add(row)
+            if security is not None:
+                security.legal_name = official.legal_name or security.legal_name
+                security.cik = official.cik or security.cik
+                security.corp_code = official.corp_code or security.corp_code
+                session.add(security)
+            _atomic_json(path, payload)
+        return ProfilePopulationResult(
+            ticker=item.ticker,
+            company_name=item.company_name,
+            market=market,
+            quality=normalized.quality,
+            status="populated" if normalized.industry or normalized.sector else "partial",
+            source=official.source,
+            industry=row.industry,
+            sector=row.sector,
+            taxonomy_key=normalized.taxonomy_key,
+            reason=normalized.reason,
+            provenance_path=str(path) if not dry_run else None,
+        )
 
 
 def profile_population_summary(results: list[ProfilePopulationResult]) -> dict[str, object]:
@@ -547,10 +594,20 @@ def profile_population_summary(results: list[ProfilePopulationResult]) -> dict[s
     }
 
 
-def company_profile_coverage(session: Session, data_dir: str | Path | None = None) -> dict[str, object]:
+def company_profile_coverage(
+    session: Session,
+    data_dir: str | Path | None = None,
+    *,
+    watchlist_items: list[WatchlistItem] | tuple[WatchlistItem, ...] | None = None,
+) -> dict[str, object]:
     service = CompanyProfilePopulationService(data_dir=data_dir)
     items: list[dict[str, object]] = []
-    for watchlist_item in service.active_items(session):
+    source_items = (
+        list(watchlist_items)
+        if watchlist_items is not None
+        else service.active_items(session)
+    )
+    for watchlist_item in source_items:
         company = session.exec(
             select(Company).where(Company.ticker == watchlist_item.ticker)
         ).first()
@@ -572,7 +629,7 @@ def company_profile_coverage(session: Session, data_dir: str | Path | None = Non
         complete = bool(
             provenance
             and quality in {"verified", "partial", "ambiguous"}
-            and (has_identity or reason)
+            and has_identity
         )
         items.append(
             {

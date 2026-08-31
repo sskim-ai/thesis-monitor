@@ -18,6 +18,10 @@ class WatchlistItemRead(BaseModel):
     exchange: str | None = None
     notes: str | None = None
     active: bool
+    monitoring_requested: bool
+    onboarding_state: str
+    production_eligible: bool
+    onboarding_failure_stage: str | None = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

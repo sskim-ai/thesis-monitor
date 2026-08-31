@@ -47,6 +47,15 @@ def _ensure_sqlite_columns() -> None:
     table_columns = {
         "watchlistitem": {
             "active": "BOOLEAN DEFAULT 1",
+            "monitoring_requested": "BOOLEAN DEFAULT 1",
+            "onboarding_state": "VARCHAR DEFAULT 'ACTIVE'",
+            "production_eligible": "BOOLEAN DEFAULT 1",
+            "onboarding_readiness": "TEXT DEFAULT '{}'",
+            "onboarding_failure_stage": "VARCHAR",
+            "registration_requested_at": "DATETIME",
+            "onboarding_ready_at": "DATETIME",
+            "activated_at": "DATETIME",
+            "first_eligible_session": "DATE",
             "latest_status": "VARCHAR",
             "latest_assessment_date": "DATE",
             "latest_valuation_context": "VARCHAR",

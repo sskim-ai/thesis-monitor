@@ -75,6 +75,10 @@ from app.services.company_profile_service import (
     company_profile_coverage,
     read_profile_provenance,
 )
+from app.services.onboarding_readiness_service import (
+    ProductionUniverseSnapshot,
+    production_universe_snapshot,
+)
 from app.services.current_price_context_service import select_current_price_context
 from app.services.daily_digest import build_daily_digest
 from app.services.financial_quality_service import (
@@ -257,13 +261,23 @@ def _shadow_gate_error_state(
 def _shadow_cohort_readiness(
     session: Session,
     registries: list[list[dict[str, object]]],
+    *,
+    watchlist_items: list[WatchlistItem] | tuple[WatchlistItem, ...],
+    profile_gate_override: dict[str, object] | None = None,
 ) -> dict[str, object]:
     errors: list[str] = []
-    try:
-        profile_gate = company_profile_coverage(session, get_settings().data_dir)
-    except Exception as exc:  # noqa: BLE001
-        profile_gate = _shadow_gate_error_state("profile", exc)
-        errors.append(f"profile_gate:{type(exc).__name__}")
+    if profile_gate_override is not None:
+        profile_gate = profile_gate_override
+    else:
+        try:
+            profile_gate = company_profile_coverage(
+                session,
+                get_settings().data_dir,
+                watchlist_items=watchlist_items,
+            )
+        except Exception as exc:  # noqa: BLE001
+            profile_gate = _shadow_gate_error_state("profile", exc)
+            errors.append(f"profile_gate:{type(exc).__name__}")
     try:
         numeric_gate = numeric_registry_coverage(registries)
     except Exception as exc:  # noqa: BLE001
@@ -3540,13 +3554,63 @@ def build_ai_review_packet(
     run = _source_run(session, run_date, market)
     if run is None or run.status != "success" or run.id is None:
         return None
-    items = [
-        item
-        for item in session.exec(
-            select(WatchlistItem).where(WatchlistItem.active.is_(True))
-        ).all()
-        if _scope_for_item(session, item) == market
-    ]
+    packet_generated_at = (generated_at or datetime.now(UTC)).astimezone(UTC)
+    packet_cutoff = run.started_at
+    if packet_cutoff.tzinfo is None:
+        packet_cutoff = packet_cutoff.replace(tzinfo=UTC)
+    universe = production_universe_snapshot(
+        session,
+        market,
+        cutoff=packet_cutoff,
+        session_key=run.run_type,
+    )
+    profile_at_cutoff: dict[str, object] | None = None
+    try:
+        profile_at_cutoff = company_profile_coverage(
+            session,
+            get_settings().data_dir,
+            watchlist_items=universe.eligible_items,
+        )
+    except Exception:  # noqa: BLE001
+        # The shadow gate below records the exact safe error without losing the packet.
+        pass
+    profile_rows_value = (
+        profile_at_cutoff.get("items") if profile_at_cutoff is not None else None
+    )
+    profile_gate_override: dict[str, object] | None = None
+    if isinstance(profile_rows_value, list):
+        profile_rows = {
+            str(row.get("ticker") or ""): row
+            for row in profile_rows_value
+            if isinstance(row, dict)
+        }
+        profile_ready_items = tuple(
+            item
+            for item in universe.eligible_items
+            if profile_rows.get(item.ticker, {}).get("complete") is True
+        )
+        profile_excluded = tuple(
+            {
+                "ticker": item.ticker,
+                "market": market,
+                "onboarding_state": item.onboarding_state,
+                "reasons": ["company_profile_not_ready_at_packet_cutoff"],
+            }
+            for item in universe.eligible_items
+            if profile_rows.get(item.ticker, {}).get("complete") is not True
+        )
+        universe = ProductionUniverseSnapshot(
+            market=universe.market,
+            session=universe.session,
+            cutoff=universe.cutoff,
+            eligible_items=profile_ready_items,
+            excluded_subjects=(*universe.excluded_subjects, *profile_excluded),
+        )
+        if not profile_ready_items:
+            profile_gate_override = profile_at_cutoff
+    elif profile_at_cutoff is not None:
+        profile_gate_override = profile_at_cutoff
+    items = list(universe.eligible_items)
     assessments = {
         assessment.ticker: assessment
         for assessment in session.exec(
@@ -3562,11 +3626,10 @@ def build_ai_review_packet(
         if (assessment := assessments.get(item.ticker)) is not None
         and (stock := _stock_packet(session, item, assessment)) is not None
     ]
-    if len(stocks) != run.success_count:
+    if len(stocks) != len(items):
         return None
     knowledge = knowledge_manifest()
     chart_knowledge = chart_knowledge_manifest()
-    packet_generated_at = (generated_at or datetime.now(UTC)).astimezone(UTC)
     market_context = _market_packet(
         session,
         run_date,
@@ -3644,6 +3707,8 @@ def build_ai_review_packet(
             market_context["numeric_registry"],
             *(stock["numeric_registry"] for stock in stocks),
         ],
+        watchlist_items=items,
+        profile_gate_override=profile_gate_override,
     )
     cohort_ready = shadow_cohort["eligible"] is True
     body = {
@@ -3663,6 +3728,7 @@ def build_ai_review_packet(
             "failure_count": run.failure_count,
             "completed_at": run.completed_at,
         },
+        "production_universe": universe.to_dict(),
         "market_context": market_context,
         "stocks": stocks,
         "shadow_cohort": shadow_cohort,

@@ -24,6 +24,7 @@ from app.services.notification_service import (
     queue_daily_digest_notification,
     queue_daily_stock_notification,
 )
+from app.services.onboarding_readiness_service import production_universe_snapshot
 from app.services.ohlcv_client import OhlcvClient
 from app.services.issue_identity_audit_service import IssueIdentityAuditService
 from app.services.kr_investor_flow_service import serialize_price_context_with_reconciliation
@@ -52,10 +53,17 @@ def _watchlist_for_scope(
     market_scope: MarketScope,
     *,
     active_only: bool,
+    cutoff: datetime | None = None,
 ) -> list[WatchlistItem]:
-    query = select(WatchlistItem).order_by(WatchlistItem.ticker)
     if active_only:
-        query = query.where(WatchlistItem.active.is_(True))
+        snapshot = production_universe_snapshot(
+            session,
+            market_scope,
+            cutoff=cutoff or datetime.now(timezone.utc),
+            session_key=_run_type(market_scope),
+        )
+        return list(snapshot.eligible_items)
+    query = select(WatchlistItem).order_by(WatchlistItem.ticker)
     items = list(session.exec(query).all())
     if market_scope == "all":
         return items
@@ -119,7 +127,7 @@ def queue_daily_monitor_notifications(
     """Queue one scoped run, optionally bound to a persisted AI-review packet."""
     scoped_tickers = {
         item.ticker
-        for item in _watchlist_for_scope(session, market_scope, active_only=False)
+        for item in _watchlist_for_scope(session, market_scope, active_only=True)
     }
     assessments = (
         list(
@@ -327,10 +335,15 @@ async def run_daily_monitor(
 ) -> DailyMonitorResponse:
     run_date = run_date or date.today()
     run_type = _run_type(market_scope)
-    scoped_items = _watchlist_for_scope(session, market_scope, active_only=True)
-    scoped_tickers = {item.ticker for item in _watchlist_for_scope(
-        session, market_scope, active_only=False
-    )}
+    run_cutoff = datetime.now(timezone.utc)
+    universe = production_universe_snapshot(
+        session,
+        market_scope,
+        cutoff=run_cutoff,
+        session_key=run_type,
+    )
+    scoped_items = list(universe.eligible_items)
+    scoped_tickers = {item.ticker for item in scoped_items}
     existing_run = session.exec(
         select(MonitorRun).where(MonitorRun.run_date == run_date, MonitorRun.run_type == run_type)
     ).first()
@@ -373,7 +386,7 @@ async def run_daily_monitor(
 
     run = existing_run or MonitorRun(run_date=run_date, run_type=run_type)
     run.status = "running"
-    run.started_at = datetime.now(timezone.utc)
+    run.started_at = run_cutoff
     run.completed_at = None
     run.success_count = 0
     run.failure_count = 0
@@ -394,6 +407,7 @@ async def run_daily_monitor(
     details: dict[str, object] = {
         "market_scope": market_scope,
         "market_scope_unknown": unknown_tickers,
+        "production_universe": universe.to_dict(),
         "tickers": {},
     }
     completed_assessments: list[ThesisAssessment] = []

@@ -23,8 +23,20 @@ from app.models.macro import (
     ThesisMacroImpact,
 )
 from app.models.thesis import NotificationDelivery
+from app.models.watchlist import WatchlistItem
 from app.schemas.thesis import MacroExposureInput, MonitoringItemCreate
 from app.services.monitoring_service import register_monitoring_item
+
+
+def _activate_test_subject(session: Session, ticker: str) -> None:
+    item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+    ).one()
+    item.active = True
+    item.onboarding_state = "ACTIVE"
+    item.production_eligible = True
+    session.add(item)
+    session.commit()
 
 
 class FakeMacroProvider:
@@ -104,6 +116,7 @@ async def test_macro_monitor_builds_briefing_impacts_and_dedupes() -> None:
                 ],
             ),
         )
+        _activate_test_subject(session, "MCR2031")
         result = await run_macro_monitor(
             session,
             run_date=run_date,
@@ -347,6 +360,7 @@ def test_macro_impacts_separate_overall_and_valuation_channels() -> None:
                     macro_exposures=exposures,
                 ),
             )
+            _activate_test_subject(session, ticker)
         session.add_all(
             [
                 MacroObservation(

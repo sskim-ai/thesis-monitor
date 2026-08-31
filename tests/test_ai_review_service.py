@@ -5456,7 +5456,7 @@ def test_representative_packet_numeric_registry_has_explicit_coverage(
     assert {item["semantic_type"] for item in denied} == {"share_denominator"}
 
 
-def test_shadow_ineligible_packet_persists_but_remains_unclaimable(
+def test_subject_ineligible_packet_is_not_persisted_or_claimable(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -5477,11 +5477,52 @@ def test_shadow_ineligible_packet_persists_but_remains_unclaimable(
     assert packet["ready_for_ai"] is False
     assert packet["shadow_cohort"]["profile_gate"]["ready"] is False
     assert packet["shadow_cohort"]["numeric_semantic_gate"]["ready"] is True
-    assert packet["production_packet_persistence"]["eligible"] is True
-    assert persisted.status == "created"
-    assert persisted.reason == "shadow_cohort_not_active"
-    assert persisted.path is not None and Path(persisted.path).is_file()
+    assert packet["production_universe"]["eligible_subjects"] == []
+    assert packet["production_packet_persistence"]["eligible"] is False
+    assert persisted.status == "not_ready"
+    assert persisted.path is None
     assert claim.status == "no_pending_packet"
+
+
+def test_incident_replay_pending_kr_and_us_subjects_do_not_block_ready_us_peer(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        session.add_all(
+            [
+                WatchlistItem(
+                    ticker="CPNG",
+                    company_name="Coupang",
+                    exchange="NYSE",
+                    active=False,
+                    monitoring_requested=True,
+                    onboarding_state="PENDING_ONBOARDING",
+                    production_eligible=False,
+                ),
+                WatchlistItem(
+                    ticker="047810",
+                    company_name="Korea Aerospace Industries",
+                    exchange="KRX",
+                    active=False,
+                    monitoring_requested=True,
+                    onboarding_state="PENDING_ONBOARDING",
+                    production_eligible=False,
+                ),
+            ]
+        )
+        session.commit()
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+
+    assert packet is not None
+    assert packet["production_universe"]["eligible_subjects"] == ["PACKETUS"]
+    assert [row["ticker"] for row in packet["production_universe"]["excluded_subjects"]] == [
+        "CPNG"
+    ]
+    assert [row["ticker"] for row in packet["stocks"]] == ["PACKETUS"]
+    assert packet["ready_for_ai"] is True
 
 
 def test_numeric_shadow_failure_preserves_production_packet(
@@ -5544,7 +5585,7 @@ def test_shadow_readiness_exception_is_recorded_without_blocking_production(
     assert packet["production_packet_persistence"]["eligible"] is True
 
 
-def test_shadow_readiness_transition_does_not_change_production_packet_identity(
+def test_subject_readiness_transition_changes_frozen_packet_universe_identity(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -5557,7 +5598,7 @@ def test_shadow_readiness_transition_does_not_change_production_packet_identity(
         monkeypatch.setattr(
             ai_review_service,
             "company_profile_coverage",
-            lambda session, data_dir: {
+            lambda session, data_dir, **_: {
                 "active_total": 1,
                 "complete_count": 1,
                 "missing_count": 0,
@@ -5570,7 +5611,9 @@ def test_shadow_readiness_transition_does_not_change_production_packet_identity(
     assert second is not None
     assert first["ready_for_ai"] is False
     assert second["ready_for_ai"] is True
-    assert first["packet_id"] == second["packet_id"]
+    assert first["production_universe"]["eligible_subjects"] == []
+    assert second["production_universe"]["eligible_subjects"] == ["PACKETUS"]
+    assert first["packet_id"] != second["packet_id"]
 
 
 @pytest.mark.parametrize(

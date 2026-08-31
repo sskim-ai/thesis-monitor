@@ -50,6 +50,9 @@ def test_monitoring_item_registration_versions_and_deactivation() -> None:
         response = client.post("/monitoring-items", json=_payload(), headers=AUTH_HEADERS)
         assert response.status_code == 200
         assert response.json()["ticker"] == "000660"
+        assert response.json()["active"] is False
+        assert response.json()["onboarding_state"] == "PENDING_ONBOARDING"
+        assert response.json()["production_eligible"] is False
         assert response.json()["thesis"]["version"] == 1
         assert response.json()["thesis"]["thesis_drivers"] == [
             "HBM leadership",
@@ -100,7 +103,9 @@ def test_monitoring_routes_require_api_key() -> None:
 def test_monitoring_summaries_are_compact_and_action_friendly() -> None:
     with TestClient(app) as client:
         client.post("/monitoring-items", json=_payload(), headers=AUTH_HEADERS)
-        response = client.get("/monitoring-items/summaries", headers=AUTH_HEADERS)
+        response = client.get(
+            "/monitoring-items/summaries?active_only=false", headers=AUTH_HEADERS
+        )
 
     assert response.status_code == 200
     summary = response.json()[0]

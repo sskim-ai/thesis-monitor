@@ -200,6 +200,11 @@ class MonitoringItemRead(BaseModel):
     company_name: str
     exchange: str | None
     active: bool
+    monitoring_requested: bool = True
+    onboarding_state: str = "ACTIVE"
+    production_eligible: bool = True
+    onboarding_blockers: list[str] = Field(default_factory=list)
+    first_eligible_session: date | None = None
     thesis: InvestmentThesisRead | None
     latest_status: AssessmentStatus | None = None
     latest_assessment_date: date | None = None

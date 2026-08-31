@@ -50,6 +50,19 @@ from app.services.notification_service import (
 )
 
 
+def _activate_test_subject(session: Session, ticker: str) -> None:
+    item = session.exec(
+        select(WatchlistItem).where(WatchlistItem.ticker == ticker)
+    ).one()
+    item.active = True
+    item.monitoring_requested = True
+    item.onboarding_state = "ACTIVE"
+    item.production_eligible = True
+    item.activated_at = datetime(2020, 1, 1, tzinfo=timezone.utc)
+    session.add(item)
+    session.commit()
+
+
 class FakeCollectionService:
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         event = Event(
@@ -1184,6 +1197,7 @@ async def test_daily_monitor_can_run_without_queuing_notifications() -> None:
                 core_thesis="A test thesis",
             ),
         )
+        _activate_test_subject(session, "NOSEND1")
         result = await run_daily_monitor(
             session,
             run_date=date(2029, 12, 31),
@@ -1222,6 +1236,7 @@ async def test_daily_monitor_assesses_and_queues_dry_run_notification() -> None:
                 invalidation_signals=["largest customer terminates all orders"],
             ),
         )
+        _activate_test_subject(session, "TST1")
         result = await run_daily_monitor(
             session,
             run_date=date(2030, 1, 2),
@@ -1278,6 +1293,7 @@ async def test_baseline_consumes_backfill_then_only_new_events_drive_delta() -> 
                 strengthen_signals=["new customer production order"],
             ),
         )
+        _activate_test_subject(session, "BASE1")
         first_date = date(2032, 1, 2)
         first = await run_daily_monitor(
             session,
@@ -1355,6 +1371,7 @@ async def test_same_day_baseline_advances_to_delta_and_preserves_fingerprints() 
                 strengthen_signals=["material production order"],
             ),
         )
+        _activate_test_subject(session, ticker)
         for suffix in ("A", "B", "C"):
             session.add(
                 Event(
@@ -1470,6 +1487,7 @@ async def test_first_assessment_of_new_thesis_version_is_a_new_baseline() -> Non
                 core_thesis="Original thesis",
             ),
         )
+        _activate_test_subject(session, "BASE2")
         await run_daily_monitor(
             session,
             run_date=date(2033, 1, 2),
@@ -1565,6 +1583,7 @@ async def test_same_day_new_thesis_version_is_isolated_then_advances_to_delta() 
                 core_thesis="Version one thesis",
             ),
         )
+        _activate_test_subject(session, ticker)
         await run_daily_monitor(
             session,
             run_date=run_date,
@@ -1807,6 +1826,7 @@ async def test_daily_monitor_dispatches_deferred_delta_after_pending_baseline(
                 core_thesis="Version one thesis",
             ),
         )
+        _activate_test_subject(session, ticker)
         await run_daily_monitor(
             session,
             run_date=run_date,
@@ -2031,6 +2051,7 @@ async def test_daily_monitor_uses_structured_price_rules() -> None:
                 ),
             ),
         )
+        _activate_test_subject(session, "PRC1")
         result = await run_daily_monitor(
             session,
             run_date=date(2030, 1, 3),
@@ -2067,6 +2088,7 @@ async def test_price_invalidation_requires_review_without_automatic_deactivation
                 ),
             ),
         )
+        _activate_test_subject(session, "PRC2")
         result = await run_daily_monitor(
             session,
             run_date=date(2030, 1, 4),

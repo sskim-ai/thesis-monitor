@@ -22,6 +22,11 @@ from app.schemas.thesis import (
     ValuationFrameworkInput,
 )
 from app.services.local_storage import export_assessment_history, export_thesis
+from app.services.onboarding_readiness_service import (
+    begin_onboarding,
+    deactivate_onboarding,
+    reconcile_onboarding,
+)
 from app.utils.tickers import normalize_ticker
 
 
@@ -201,11 +206,20 @@ def _monitoring_item_read(
         )
         snapshot = _assessment_snapshot(latest_assessment)
         current_summary = snapshot.get("current_thesis") or latest_assessment.summary
+    readiness = _json_dict(getattr(item, "onboarding_readiness", "{}"))
+    blockers = readiness.get("blocking_requirements", [])
     return MonitoringItemRead(
         ticker=item.ticker,
         company_name=item.company_name,
         exchange=item.exchange,
         active=item.active,
+        monitoring_requested=item.monitoring_requested,
+        onboarding_state=item.onboarding_state,
+        production_eligible=item.production_eligible,
+        onboarding_blockers=(
+            [str(value) for value in blockers] if isinstance(blockers, list) else []
+        ),
+        first_eligible_session=item.first_eligible_session,
         thesis=thesis_to_read(thesis),
         latest_status=latest_status,
         latest_assessment_date=latest_assessment_date,
@@ -391,6 +405,8 @@ def record_assessment(
     item.latest_assessment_date = payload.assessment_date
     item.latest_valuation_context = payload.valuation_context.value
     item.latest_earnings_estimate_impact = payload.earnings_estimate_impact.value
+    session.flush()
+    reconcile_onboarding(session, item)
     session.commit()
     session.refresh(assessment)
     export_assessment_history(session, ticker)
@@ -403,19 +419,22 @@ def register_monitoring_item(
 ) -> MonitoringItemRead:
     ticker = normalize_ticker(payload.ticker)
     item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
+    was_new = item is None
     if item is None:
         item = WatchlistItem(
             ticker=ticker,
             company_name=payload.company_name,
             exchange=payload.exchange,
             notes="Investment thesis monitoring",
-            active=True,
+            active=False,
+            monitoring_requested=True,
+            onboarding_state="PENDING_ONBOARDING",
+            production_eligible=False,
         )
         session.add(item)
     else:
         item.company_name = payload.company_name
         item.exchange = payload.exchange
-        item.active = True
 
     company = session.exec(select(Company).where(Company.ticker == ticker)).first()
     if company is None:
@@ -518,6 +537,19 @@ def register_monitoring_item(
         )
         session.add(thesis)
 
+    requires_onboarding = bool(
+        was_new
+        or existing_values != requested_values
+        or not (
+            item.active
+            and item.production_eligible
+            and item.onboarding_state == "ACTIVE"
+        )
+    )
+    if requires_onboarding:
+        begin_onboarding(item)
+    session.flush()
+    reconcile_onboarding(session, item)
     session.commit()
     session.refresh(item)
     if thesis is not None:
@@ -529,7 +561,11 @@ def register_monitoring_item(
 def list_monitoring_items(session: Session, active_only: bool = True) -> list[MonitoringItemRead]:
     query = select(WatchlistItem)
     if active_only:
-        query = query.where(WatchlistItem.active.is_(True))
+        query = query.where(
+            WatchlistItem.active.is_(True),
+            WatchlistItem.production_eligible.is_(True),
+            WatchlistItem.onboarding_state == "ACTIVE",
+        )
     items = session.exec(query.order_by(WatchlistItem.ticker)).all()
     return [
         _monitoring_item_read(session, item, _latest_thesis(session, item.ticker))
@@ -560,7 +596,7 @@ def deactivate_monitoring_item(session: Session, ticker: str) -> MonitoringItemR
     item = session.exec(select(WatchlistItem).where(WatchlistItem.ticker == ticker)).first()
     if item is None:
         return None
-    item.active = False
+    deactivate_onboarding(item)
     session.commit()
     session.refresh(item)
     return _monitoring_item_read(session, item, _latest_thesis(session, ticker))
