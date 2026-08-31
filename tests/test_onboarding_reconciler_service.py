@@ -16,7 +16,10 @@ from app.services.onboarding_decision_service import (
     validate_onboarding_decision_readiness,
 )
 from app.services.cross_market_decision_engine_service import EvidenceCategory
-from app.services.onboarding_evidence_service import initial_evidence_fingerprint
+from app.services.onboarding_evidence_service import (
+    initial_evidence_fingerprint,
+    validate_initial_evidence,
+)
 from app.services.onboarding_readiness_service import (
     OnboardingState,
     production_universe_snapshot,
@@ -585,6 +588,21 @@ def test_decision_packet_binds_market_expectations_to_expected_category(
     ]
     assert len(expectation_refs) == 1
     assert expectation_refs[0].label == "market_expectations"
+
+
+def test_initial_evidence_rejects_missing_market_expectations() -> None:
+    evidence = _evidence("EXPECT")
+    evidence.pop("market_expectations")
+    evidence["fingerprint"] = initial_evidence_fingerprint(evidence)
+
+    valid, reason = validate_initial_evidence(
+        evidence,
+        ticker="EXPECT",
+        thesis_version=1,
+    )
+
+    assert valid is False
+    assert reason == "initial_evidence_expectations_unbound"
 
 
 def test_signed_in_codex_uses_absolute_artifact_paths(

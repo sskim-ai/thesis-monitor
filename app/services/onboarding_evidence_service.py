@@ -218,6 +218,10 @@ def validate_initial_evidence(
         return False, "initial_evidence_price_structure_unbound"
     if not isinstance(evidence.get("valuation_context"), Mapping):
         return False, "initial_evidence_valuation_unbound"
+    if not isinstance(evidence.get("market_expectations"), Mapping) or not evidence.get(
+        "market_expectations"
+    ):
+        return False, "initial_evidence_expectations_unbound"
     if not isinstance(evidence.get("latest_safe_earnings_checkpoint"), Mapping):
         return False, "initial_evidence_earnings_unbound"
     if not isinstance(evidence.get("relevant_events"), list):
@@ -285,6 +289,7 @@ async def build_initial_evidence(
             session, item.ticker
         ),
         "relevant_events": _event_refs(session, item.ticker, current),
+        "market_expectations": _json_dict(thesis.market_expectations),
         "valuation_context": valuation.model_dump(
             mode="json",
             exclude={"earnings_quarter_series", "data_coverage"},

@@ -132,6 +132,7 @@ def _seed_ready_prerequisites(
             "reason": "test_fixture_safe_unavailable",
         },
         "relevant_events": [],
+        "market_expectations": {"level": "balanced"},
         "valuation_context": {"provider": "test_fixture"},
         "current_price": 100,
         "price_as_of": "2026-08-31",
