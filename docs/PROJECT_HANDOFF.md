@@ -2263,3 +2263,9 @@ peers continue. Do not invent those facts or copy another ticker's profile. Test
 `22/22 exact`, with zero production recipient send or intent. No 2026-08-31 production replay is
 authorized. After deployment, inspect the next natural US and KR cohorts read-only; Production
 Assist remains OFF.
+
+Operating convergence is complete at `6521d50`. The initial apply safely excluded seven legacy US
+subjects because their earliest assessment was provisional; the bounded selector repair now uses
+the earliest final legacy baseline and restores the intended cohort without weakening the contract.
+Final state is active/ready-active/incomplete `21/21/0`, and API health plus the authenticated active
+cohort smoke pass. CPNG remains excluded. Continue with natural observation only.

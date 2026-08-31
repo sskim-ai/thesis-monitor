@@ -1,17 +1,34 @@
 {
-  "active_count": 21,
+  "active_count": 14,
   "active_incomplete_count": 0,
   "active_incomplete_subjects": [],
   "applied": true,
   "contract": "active-onboarding-readiness-audit-v1",
-  "generated_at": "2026-08-31T11:24:07.429477+00:00",
+  "generated_at": "2026-08-31T11:15:45.417658+00:00",
   "provider_profile_calls": {
     "failure_count": 0,
-    "request_count": 0,
-    "results": [],
-    "success_count": 0
+    "request_count": 2,
+    "results": [
+      {
+        "market": "kr",
+        "quality": "verified",
+        "reason": null,
+        "source": "opendart_company",
+        "status": "populated",
+        "ticker": "047810"
+      },
+      {
+        "market": "us",
+        "quality": "partial",
+        "reason": "official_description_not_mapped_to_internal_taxonomy",
+        "source": "sec_submissions",
+        "status": "populated",
+        "ticker": "CPNG"
+      }
+    ],
+    "success_count": 2
   },
-  "ready_active_count": 21,
+  "ready_active_count": 14,
   "requested_count": 22,
   "subject_count": 23,
   "subjects": [
@@ -316,14 +333,14 @@
         "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
+        "active": true,
         "blockers": [
           "INITIAL_EVIDENCE",
           "INITIAL_BASELINE_ASSESSMENT",
           "DECISION_READINESS"
         ],
         "onboarding_ready": false,
-        "state": "PENDING_ONBOARDING"
+        "state": "ACTIVE"
       },
       "company_name": "Coupang, Inc.",
       "exchange": "NYSE",
@@ -363,29 +380,33 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "Alphabet Inc. Class A",
       "exchange": "NASDAQ",
@@ -425,29 +446,33 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "IBM",
       "exchange": "NYSE",
@@ -526,29 +551,33 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "Recursion Pharmaceuticals",
       "exchange": "NASDAQ",
@@ -590,29 +619,33 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "SanDisk",
       "exchange": "NASDAQ",
@@ -621,29 +654,33 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "Tesla, Inc.",
       "exchange": "NASDAQ",
@@ -652,31 +689,35 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [
           "SECURITY_MASTER:per_share_depositary_basis"
         ],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "TSMC",
       "exchange": "NYSE",
@@ -685,31 +726,35 @@
     },
     {
       "after": {
-        "active": true,
-        "blockers": [],
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
         "completed": [
           "IDENTITY",
           "SECURITY_MASTER",
           "COMPANY_PROFILE",
           "INVESTMENT_LOGIC",
-          "INITIAL_EVIDENCE",
-          "INITIAL_BASELINE_ASSESSMENT",
-          "DECISION_READINESS"
+          "INITIAL_BASELINE_ASSESSMENT"
         ],
-        "failure_stage": null,
-        "first_eligible_session": "2026-09-01",
-        "onboarding_ready": true,
-        "production_eligible": true,
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
         "safe_unavailable": [
           "SECURITY_MASTER:per_share_depositary_basis"
         ],
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": false,
-        "blockers": [],
-        "onboarding_ready": true,
-        "state": "PENDING_ONBOARDING"
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
       },
       "company_name": "WeRide",
       "exchange": "NASDAQ",

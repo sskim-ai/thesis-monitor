@@ -804,3 +804,8 @@ activation and first eligible session. Verify market-scoped cohort identity, exa
 duplicates, and orphans without manually running a task or replaying 2026-08-31 messages. Never
 expose recipient values or use another ticker's evidence to complete onboarding. Production Assist
 remains OFF.
+
+Final main and operating runtime are `6521d50`. The legacy provisional-first baseline P1 is closed;
+do not revert the fallback to the first assessment row. At the next natural packet, expected active
+coverage is KR 8 including 047810 and US 13 excluding pending CPNG, subject to the immutable packet
+cutoff. Test-sink evidence does not count as natural proof.

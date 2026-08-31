@@ -548,3 +548,8 @@ mutate an in-flight packet after cutoff, manufacture onboarding evidence, copy f
 or treat the isolated test sink as natural proof. CPNG remains pending until its own baseline is
 complete; 047810 eligibility begins only in a later frozen session. Price Structure, valuation,
 accepted-decision ownership, schedules, recipients, and Production Assist remain unchanged.
+
+Bounded descendant `6521d50` is required: legacy baseline fallback selects the earliest `final`
+assessment after honoring an explicit `initial_baseline`. This restores seven safe legacy US
+subjects found during operating reconciliation and must not be weakened to accept provisional
+evidence. Final operating audit is active/ready-active/incomplete `21/21/0`.

@@ -149,6 +149,11 @@ The daily monitor captures its snapshot before collection. AI packet constructio
 
 def generate(args: argparse.Namespace) -> dict[str, object]:
     audit = _read_json(args.audit)
+    initial_operating_audit = (
+        _read_json(args.initial_operating_audit)
+        if args.initial_operating_audit is not None
+        else None
+    )
     new_subjects = _read_json(args.new_subjects)
     deployment = _read_json(args.deployment)
     final_receipt = _read_json(args.final_receipt)
@@ -164,11 +169,19 @@ def generate(args: argparse.Namespace) -> dict[str, object]:
     exact = final_receipt.get("exact_payload_match") is True
     local_validation = args.local_validation
     ci_status = args.ci_status
+    initial_active_count = (
+        int(initial_operating_audit.get("active_count") or 0)
+        if initial_operating_audit is not None
+        else active_count
+    )
+    initial_provider = (
+        initial_operating_audit.get("provider_profile_calls")
+        if initial_operating_audit is not None
+        else {}
+    )
+    initial_provider = initial_provider if isinstance(initial_provider, Mapping) else {}
     ready_for_main = bool(
-        incomplete_count == 0
-        and exact
-        and local_validation == "PASS"
-        and ci_status == "PASS"
+        incomplete_count == 0 and exact and local_validation == "PASS" and ci_status == "PASS"
     )
     architecture_dir = args.docs_root / "architecture"
     reports_dir = args.docs_root / "reports"
@@ -177,6 +190,7 @@ def generate(args: argparse.Namespace) -> dict[str, object]:
     common = f"""- Master instruction commit: `{args.master_commit}`
 - Base: `{args.base_sha}`
 - Implementation: `{args.implementation_sha}`
+- Bounded operational repair: `{args.bounded_repair_sha}`
 - Active / ready-active / active-incomplete: `{active_count} / {ready_count} / {incomplete_count}`
 - 047810: `{_state_label(subject_047810)}`; blockers: `{_blockers(subject_047810)}`
 - CPNG: `{_state_label(subject_cpng)}`; blockers: `{_blockers(subject_cpng)}`
@@ -184,6 +198,8 @@ def generate(args: argparse.Namespace) -> dict[str, object]:
 - Local validation: `{local_validation}`
 - CI: `{ci_status}`
 - CI run: `{args.ci_run}`
+- Operating convergence: `{initial_active_count} -> {active_count}` active
+- Runtime activation SHA: `{args.final_main_sha}`
 """
 
     reports = {
@@ -192,6 +208,8 @@ def generate(args: argparse.Namespace) -> dict[str, object]:
 ## Finding
 
 Both registration paths set `active=true` before security, profile, baseline, and decision prerequisites were complete. The AI profile gate then evaluated the global active universe, so incomplete `047810` and `CPNG` could suppress an unrelated market and ready peers.
+
+The first operating reconciliation exposed one bounded legacy selector defect: seven US subjects began with a provisional assessment followed by a final assessment, while the fallback selected the first row. Repair `{args.bounded_repair_sha}` now selects an explicit initial baseline first and otherwise the earliest final legacy assessment. Coverage converged `{initial_active_count} -> {active_count}` without relaxing any readiness requirement.
 
 ## Repair
 
@@ -249,7 +267,7 @@ The packet ID covers the universe snapshot. A readiness transition that changes 
 """,
         "20260831-active-incomplete-universe-audit.md": f"""# Active Incomplete Universe Audit
 
-Audited subjects: `{audit.get('subject_count')}`. Monitoring requests after legacy inactive normalization: `{audit.get('requested_count')}`. Final active: `{active_count}`. Final active-incomplete: `{incomplete_count}`.
+Audited subjects: `{audit.get("subject_count")}`. Monitoring requests after legacy inactive normalization: `{audit.get("requested_count")}`. Final active: `{active_count}`. Final active-incomplete: `{incomplete_count}`.
 
 All active subjects pass the canonical validator. Historical inactive NVDA remains inactive. No assessment or thesis history was deleted.
 
@@ -261,9 +279,11 @@ Machine-readable evidence: `20260831-active-onboarding-readiness-audit.json`.
 
 Official OpenDART company profile was recovered with verified aerospace-manufacturing identity. Existing security master, investment logic, initial evidence, baseline assessment, and decision readiness passed without placeholder facts.
 
+Initial official profile population calls: `{initial_provider.get("request_count", 0)}` requests, `{initial_provider.get("success_count", 0)}` successes, `{initial_provider.get("failure_count", 0)}` failures.
+
 - Result: `{_state_label(subject_047810)}`
 - Blockers: `{_blockers(subject_047810)}`
-- First eligible session: `{_after(subject_047810).get('first_eligible_session')}`
+- First eligible session: `{_after(subject_047810).get("first_eligible_session")}`
 - Accepted decision: not fabricated; first natural V2 packet owns it.
 
 {common}
@@ -318,7 +338,7 @@ Telegram accepted the first 20 and returned HTTP 429. Continuation verified ever
 - Exact payload: `{str(exact).upper()}`
 - Production recipient sends: `0`
 - Production delivery intents: `0`
-- Rate-limit continuation: `{final_receipt.get('rate_limit_continuation')}`
+- Rate-limit continuation: `{final_receipt.get("rate_limit_continuation")}`
 
 {common}
 """,
@@ -335,11 +355,11 @@ CPNG test text says `PENDING_SAFE`, lists exact blockers, and makes no productio
 """,
         "20260831-onboarding-readiness-main-merge.md": f"""# Onboarding Readiness Main Merge
 
-Promotion gate is `{'READY_FOR_MAIN' if ready_for_main else 'PENDING_CI'}`.
+Promotion gate/state is `{args.promotion_state if ready_for_main else "PENDING_CI"}`.
 
 - Open P0: `0`
 - Open material P1: `0`
-- Local full pytest: `{local_validation}` (`1961 passed`)
+- Local full pytest: `{local_validation}` (`{args.pytest_summary}`)
 - Ruff: `PASS`
 - CI: `{ci_status}`
 - Price Structure algorithm diff: `0`
@@ -363,6 +383,11 @@ No 2026-08-31 production replay is permitted. Scheduled task timing is unchanged
     shutil.copyfile(args.audit, reports_dir / "20260831-active-onboarding-readiness-audit.json")
     shutil.copyfile(args.new_subjects, reports_dir / "20260831-new-subject-readiness.json")
     shutil.copyfile(args.deployment, reports_dir / "20260831-onboarding-readiness-deployment.json")
+    if args.initial_operating_audit is not None:
+        shutil.copyfile(
+            args.initial_operating_audit,
+            reports_dir / "20260831-onboarding-readiness-initial-operating-apply.json",
+        )
     shutil.copyfile(
         args.test_messages,
         reports_dir / "20260831-onboarding-readiness-test-messages.json",
@@ -394,6 +419,8 @@ No 2026-08-31 production replay is permitted. Scheduled task timing is unchanged
             "20260831-onboarding-readiness-test-sink-final-receipt.json",
         )
     )
+    if args.initial_operating_audit is not None:
+        generated.append(reports_dir / "20260831-onboarding-readiness-initial-operating-apply.json")
     index_lines = [
         "# Onboarding Readiness Artifact Index",
         "",
@@ -402,9 +429,7 @@ No 2026-08-31 production replay is permitted. Scheduled task timing is unchanged
         "",
     ]
     for path in sorted(generated):
-        index_lines.append(
-            f"- `{path.relative_to(args.docs_root.parent)}`: `{_sha256(path)}`"
-        )
+        index_lines.append(f"- `{path.relative_to(args.docs_root.parent)}`: `{_sha256(path)}`")
     index_path = reports_dir / "20260831-onboarding-readiness-artifact-index.md"
     _write(index_path, "\n".join(index_lines))
     return {
@@ -422,6 +447,7 @@ No 2026-08-31 production replay is permitted. Scheduled task timing is unchanged
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--audit", type=Path, required=True)
+    parser.add_argument("--initial-operating-audit", type=Path)
     parser.add_argument("--new-subjects", type=Path, required=True)
     parser.add_argument("--deployment", type=Path, required=True)
     parser.add_argument("--test-messages", type=Path, required=True)
@@ -432,9 +458,13 @@ def main() -> None:
     parser.add_argument("--master-commit", required=True)
     parser.add_argument("--base-sha", required=True)
     parser.add_argument("--implementation-sha", required=True)
+    parser.add_argument("--bounded-repair-sha", default="NONE")
     parser.add_argument("--local-validation", default="PASS")
+    parser.add_argument("--pytest-summary", default="1962 passed")
     parser.add_argument("--ci-status", default="PENDING")
     parser.add_argument("--ci-run", default="PENDING")
+    parser.add_argument("--promotion-state", default="READY_FOR_MAIN")
+    parser.add_argument("--final-main-sha", default="PENDING")
     args = parser.parse_args()
     print(json.dumps(generate(args), ensure_ascii=False, sort_keys=True))
 

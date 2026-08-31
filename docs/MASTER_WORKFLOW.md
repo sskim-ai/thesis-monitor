@@ -2153,3 +2153,10 @@ readiness are absent; none was fabricated. The isolated sink received all `22/22
 through an identity-checked rate-limit continuation with zero duplicate, orphan, production send,
 or production intent. No scheduler, Price Structure, valuation, accepted-decision ownership, or
 2026-08-31 production replay changed.
+
+The first real operating reconciliation revealed a legacy-only selector issue: seven US subjects
+had an earliest provisional assessment followed by a final one. Bounded repair `6521d50` selects an
+explicit initial baseline first and otherwise the earliest final legacy assessment. Full regression
+is `1962 passed`; Actions run `33386496321` passes Test/Lint. Final operating reconciliation is
+`21/21/0`, API health passes, 047810 is active from `2026-09-01`, and CPNG remains pending with its
+three evidence blockers. This operational convergence changed no readiness threshold.

@@ -1,6 +1,6 @@
 {
   "contract": "new-subject-onboarding-readiness-v1",
-  "generated_at": "2026-08-31T10:41:49.895733+00:00",
+  "generated_at": "2026-08-31T11:24:07.429477+00:00",
   "subjects": {
     "047810": {
       "after": {
@@ -55,14 +55,14 @@
         "state": "PENDING_ONBOARDING"
       },
       "before": {
-        "active": true,
+        "active": false,
         "blockers": [
           "INITIAL_EVIDENCE",
           "INITIAL_BASELINE_ASSESSMENT",
           "DECISION_READINESS"
         ],
         "onboarding_ready": false,
-        "state": "ACTIVE"
+        "state": "PENDING_ONBOARDING"
       },
       "company_name": "Coupang, Inc.",
       "exchange": "NYSE",
