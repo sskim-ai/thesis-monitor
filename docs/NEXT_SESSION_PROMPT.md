@@ -792,3 +792,15 @@ structure-close ownership, at most one clearly provisional Bollinger reference, 
 dynamic preservation, major-SR price anchors, SNDK/WULF no-bypass, exact receipts, duplicates, and
 orphans. Do not run a Scheduled Task or send production Telegram manually. Natural evidence alone
 may set the two natural proof fields to PASS; Production Assist remains OFF.
+
+The atomic onboarding repair starts from exact instruction commit `8da71e7` and implementation
+`2c4b973`. Read `docs/reports/20260831-onboarding-readiness-artifact-index.md`, the lifecycle and
+validator architecture, and the active-universe audit first.
+
+Next action after deployment is natural observation only. CPNG must remain excluded until its own
+initial evidence, baseline assessment, and decision readiness pass; its pending state must not block
+the 13 ready US subjects. 047810 may enter only a packet whose frozen cutoff is on or after its
+activation and first eligible session. Verify market-scoped cohort identity, exact delivery,
+duplicates, and orphans without manually running a task or replaying 2026-08-31 messages. Never
+expose recipient values or use another ticker's evidence to complete onboarding. Production Assist
+remains OFF.

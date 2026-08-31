@@ -1,0 +1,45 @@
+{
+  "contract": "onboarding-readiness-premerge-test-sink-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "TEST_ONLY_ONBOARDING_READINESS_20260831",
+  "orphan_count": 0,
+  "planned_message_count": 2,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "production_sink_alias": "production:7937bea5b823",
+  "request_retry_count": 0,
+  "rows": [
+    {
+      "character_count": 932,
+      "exact_payload_match": true,
+      "logical_identity": "TEST_ONLY_ONBOARDING_READINESS_20260831:WULF",
+      "outbound_sha256": "9d760553de1e167f531a9fba97f1980762d139b79a87a157afb11b5edc628702",
+      "received_sha256": "9d760553de1e167f531a9fba97f1980762d139b79a87a157afb11b5edc628702",
+      "remote_message_alias": "97fb01600788",
+      "rendered_sha256": "9d760553de1e167f531a9fba97f1980762d139b79a87a157afb11b5edc628702",
+      "route": "TEST_ONLY_ONBOARDING_READINESS",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "WULF"
+    },
+    {
+      "character_count": 915,
+      "exact_payload_match": true,
+      "logical_identity": "TEST_ONLY_ONBOARDING_READINESS_20260831:CPNG",
+      "outbound_sha256": "e361aa93cdca521a1deafa240516b1c97c25e61b803183ad249bcd20510d650d",
+      "received_sha256": "e361aa93cdca521a1deafa240516b1c97c25e61b803183ad249bcd20510d650d",
+      "remote_message_alias": "16ae51a1b4e6",
+      "rendered_sha256": "e361aa93cdca521a1deafa240516b1c97c25e61b803183ad249bcd20510d650d",
+      "route": "TEST_ONLY_ONBOARDING_READINESS",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "CPNG"
+    }
+  ],
+  "sent_message_count": 2,
+  "status": "sent",
+  "test_sink_alias": "test:6d6e2ff463bf",
+  "unowned_retry_count": 0
+}

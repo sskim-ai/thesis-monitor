@@ -1,0 +1,12 @@
+{
+  "active_implies_onboarding_ready": true,
+  "active_incomplete_subject_count": 0,
+  "active_subject_missing_required_prerequisite": 0,
+  "contract": "onboarding-readiness-deployment-v1",
+  "current_active_subject_count": 21,
+  "current_ready_active_subject_count": 21,
+  "generated_at": "2026-08-31T10:41:49.895733+00:00",
+  "mode": "APPLIED",
+  "open_material_p1": [],
+  "open_p0": []
+}

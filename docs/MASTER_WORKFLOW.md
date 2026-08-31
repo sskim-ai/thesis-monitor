@@ -2130,3 +2130,26 @@ Production Assist remains OFF. Schedules and LaunchAgent checksums are unchanged
 health pass. State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`, not LIVE_PASS. Review the normal KR
 2026-08-31 and US 2026-08-31 New York / 2026-09-01 KST cycles read-only. Do not manually trigger a
 task or send a production Telegram message for proof.
+
+### 40.28 Atomic Monitoring Onboarding and Scoped Readiness
+
+Exact instruction commit `8da71e7` precedes implementation `2c4b973`. Registration now records
+monitoring intent as `PENDING_ONBOARDING`; only the canonical readiness coordinator may promote a
+subject through `READY` to `ACTIVE`. The persisted invariant is
+`ACTIVE => onboarding_ready && production_eligible`, with identity, security master, official
+structured company profile, investment logic, initial evidence, baseline assessment, and decision
+readiness all evaluated subject by subject. Retry is idempotent and preserves thesis and assessment
+history.
+
+Production collection and AI packets use an immutable `production-packet-universe-v1` snapshot
+scoped by market, session, and cutoff. An incomplete subject excludes only itself; it cannot block
+ready peers or the other market. The 2026-08-31 incident replay passes, downstream numeric
+registries consume the frozen cohort, and activation after cutoff cannot mutate an in-flight packet.
+
+The full cloned operating-universe audit ends with `21` active, `21` ready-active, and `0` active
+incomplete subjects. Official read-only evidence makes 047810 `ACTIVE_READY` from the next eligible
+session. CPNG remains `PENDING_SAFE` because initial evidence, baseline assessment, and decision
+readiness are absent; none was fabricated. The isolated sink received all `22/22` exact messages
+through an identity-checked rate-limit continuation with zero duplicate, orphan, production send,
+or production intent. No scheduler, Price Structure, valuation, accepted-decision ownership, or
+2026-08-31 production replay changed.

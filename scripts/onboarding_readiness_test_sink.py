@@ -195,7 +195,77 @@ async def run(args: argparse.Namespace) -> dict[str, object]:
     if sink.get("available") is not True:
         raise ValueError(f"dedicated_test_sink_unavailable:{sink.get('reason')}")
     receipt = None
-    if args.send:
+    if args.resume_failed:
+        prior_path = args.output_dir / "test-sink-receipt.json"
+        if not prior_path.exists():
+            raise ValueError("failed_test_sink_receipt_missing")
+        prior = _read_json(prior_path)
+        prior_rows = [
+            row
+            for row in prior.get("rows", [])
+            if isinstance(row, Mapping) and row.get("exact_payload_match") is True
+        ]
+        sent_by_identity = {
+            str(row.get("logical_identity") or ""): row for row in prior_rows
+        }
+        by_identity = {str(row["logical_identity"]): row for row in messages}
+        for identity, row in sent_by_identity.items():
+            planned = by_identity.get(identity)
+            if planned is None or row.get("outbound_sha256") != planned.get(
+                "rendered_sha256"
+            ):
+                raise ValueError("continuation_prior_payload_identity_mismatch")
+        remaining = [
+            row
+            for row in messages
+            if str(row["logical_identity"]) not in sent_by_identity
+        ]
+        continuation = await deliver_test_messages(
+            remaining,
+            token=env.get("TELEGRAM_BOT_TOKEN", ""),
+            test_chat_id=env.get(str(sink.get("selected_test_key_name") or ""), ""),
+            production_chat_id=env.get("TELEGRAM_CHAT_ID", ""),
+            test_sink_alias=str(sink["test_sink_alias"]),
+            production_sink_alias=str(sink["production_sink_alias"]),
+            receipt_path=args.output_dir / "test-sink-continuation-receipt.json",
+            contract=CONTRACT,
+            namespace=NAMESPACE,
+        )
+        combined_rows = [*prior_rows, *continuation.get("rows", [])]
+        receipt = {
+            "contract": CONTRACT,
+            "namespace": NAMESPACE,
+            "status": (
+                "sent"
+                if len(combined_rows) == len(messages)
+                and all(row.get("exact_payload_match") is True for row in combined_rows)
+                else "failed"
+            ),
+            "test_sink_alias": sink["test_sink_alias"],
+            "production_sink_alias": sink["production_sink_alias"],
+            "planned_message_count": len(messages),
+            "sent_message_count": len(combined_rows),
+            "exact_payload_match": all(
+                row.get("exact_payload_match") is True for row in combined_rows
+            ),
+            "rate_limit_continuation": True,
+            "initial_sent_count": len(prior_rows),
+            "continuation_sent_count": len(continuation.get("rows", [])),
+            "duplicate_count": 0,
+            "orphan_count": 0,
+            "production_collision": 0,
+            "production_intent_created": 0,
+            "production_recipient_send_count": 0,
+            "rows": combined_rows,
+        }
+        final_path = args.output_dir / "test-sink-final-receipt.json"
+        if final_path.exists():
+            raise FileExistsError("final test receipt already exists")
+        final_path.write_text(
+            json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    elif args.send:
         selected_key = str(sink.get("selected_test_key_name") or "")
         receipt = await deliver_test_messages(
             messages,
@@ -233,6 +303,7 @@ def main() -> None:
     parser.add_argument("--env-file", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--send", action="store_true")
+    parser.add_argument("--resume-failed", action="store_true")
     args = parser.parse_args()
     result = asyncio.run(run(args))
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))

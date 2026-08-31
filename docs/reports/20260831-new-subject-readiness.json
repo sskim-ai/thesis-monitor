@@ -1,0 +1,73 @@
+{
+  "contract": "new-subject-onboarding-readiness-v1",
+  "generated_at": "2026-08-31T10:41:49.895733+00:00",
+  "subjects": {
+    "047810": {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-09-01",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "한국항공우주산업",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "047810"
+    },
+    "CPNG": {
+      "after": {
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC"
+        ],
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
+        "safe_unavailable": [],
+        "state": "PENDING_ONBOARDING"
+      },
+      "before": {
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
+      },
+      "company_name": "Coupang, Inc.",
+      "exchange": "NYSE",
+      "monitoring_requested": true,
+      "ticker": "CPNG"
+    }
+  }
+}

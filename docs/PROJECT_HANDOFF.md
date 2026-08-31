@@ -2243,3 +2243,23 @@ was manually run. State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`. Review the norm
 cycle first, then the 2026-08-31 US session delivered 2026-09-01 KST. Create natural proof reports
 only after those cycles occur. Roll back the selector to V1 only on a material live defect; never
 replay already delivered messages automatically.
+
+## 2026-08-31 Atomic Onboarding Readiness Handoff
+
+Start with `docs/reports/20260831-onboarding-readiness-artifact-index.md`. Exact instruction commit
+is `8da71e7`; canonical implementation is `2c4b973`. The lifecycle contract is
+`monitoring-onboarding-readiness-v1`, and the frozen cohort contract is
+`production-packet-universe-v1`.
+
+Registration no longer writes an incomplete subject directly to active. Every active subject must
+pass the same persisted validator, while packet selection is scoped by market/session/cutoff and
+freezes eligible and excluded subjects before downstream collection or AI processing. Do not
+restore a global active-universe profile gate or re-query a mutable watchlist after packet cutoff.
+
+The audited target state is active/ready-active/incomplete `21/21/0`. 047810 is `ACTIVE_READY` with
+official OpenDART profile evidence and first eligibility on the next session. CPNG is intentionally
+`PENDING_SAFE`, blocked by initial evidence, baseline assessment, and decision readiness; ready US
+peers continue. Do not invent those facts or copy another ticker's profile. Test-sink proof is
+`22/22 exact`, with zero production recipient send or intent. No 2026-08-31 production replay is
+authorized. After deployment, inspect the next natural US and KR cohorts read-only; Production
+Assist remains OFF.

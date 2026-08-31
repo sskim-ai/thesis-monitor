@@ -536,3 +536,15 @@ changes, subject-local NOT_READY suppression, same-evidence churn rejection, sig
 messages, and selector-based V1 rollback. Test-sink proof is not natural proof. No descendant may
 manually run a Scheduled Task, send a production Telegram proof, expose raw recipient IDs, rewrite
 accepted history, or declare LIVE_PASS before both required natural KR and US cycles.
+
+The atomic onboarding/scoped-readiness branch starts from clean main
+`ecd01297f81d0b68aaf95ecfe866721b6aa2c104`. Exact instruction commit `8da71e7` precedes
+implementation `2c4b973`.
+
+All descendants must preserve pending-first registration, the canonical activation coordinator,
+`ACTIVE => onboarding_ready && production_eligible`, immutable market/session/cutoff packet
+snapshots, and subject-local exclusion. They may not restore global-universe readiness gating,
+mutate an in-flight packet after cutoff, manufacture onboarding evidence, copy facts across tickers,
+or treat the isolated test sink as natural proof. CPNG remains pending until its own baseline is
+complete; 047810 eligibility begins only in a later frozen session. Price Structure, valuation,
+accepted-decision ownership, schedules, recipients, and Production Assist remain unchanged.

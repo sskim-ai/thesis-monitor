@@ -1,0 +1,768 @@
+{
+  "active_count": 21,
+  "active_incomplete_count": 0,
+  "active_incomplete_subjects": [],
+  "applied": true,
+  "contract": "active-onboarding-readiness-audit-v1",
+  "generated_at": "2026-08-31T10:41:49.895733+00:00",
+  "provider_profile_calls": {
+    "failure_count": 0,
+    "request_count": 2,
+    "results": [
+      {
+        "market": "kr",
+        "quality": "verified",
+        "reason": null,
+        "source": "opendart_company",
+        "status": "populated",
+        "ticker": "047810"
+      },
+      {
+        "market": "us",
+        "quality": "partial",
+        "reason": "official_description_not_mapped_to_internal_taxonomy",
+        "source": "sec_submissions",
+        "status": "populated",
+        "ticker": "CPNG"
+      }
+    ],
+    "success_count": 2
+  },
+  "ready_active_count": 21,
+  "requested_count": 22,
+  "subject_count": 23,
+  "subjects": [
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "SK하이닉스",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "000660"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "코리안리",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "003690"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "POSCO홀딩스",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "005490"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "삼성전자",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "005930"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "LS일렉트릭",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "010120"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "한화에어로스페이스",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "012450"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-09-01",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "한국항공우주산업",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "047810"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "현대글로비스",
+      "exchange": "KRX",
+      "monitoring_requested": true,
+      "ticker": "086280"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Core Scientific, Inc.",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "CORZ"
+    },
+    {
+      "after": {
+        "active": false,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC"
+        ],
+        "failure_stage": "INITIAL_EVIDENCE",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
+        "safe_unavailable": [],
+        "state": "PENDING_ONBOARDING"
+      },
+      "before": {
+        "active": true,
+        "blockers": [
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "ACTIVE"
+      },
+      "company_name": "Coupang, Inc.",
+      "exchange": "NYSE",
+      "monitoring_requested": true,
+      "ticker": "CPNG"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Circle Internet Group",
+      "exchange": "NYSE",
+      "monitoring_requested": true,
+      "ticker": "CRCL"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Alphabet Inc. Class A",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "GOOGL"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Hut 8 Corp.",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "HUT"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "IBM",
+      "exchange": "NYSE",
+      "monitoring_requested": true,
+      "ticker": "IBM"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Micron Technology",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "MU"
+    },
+    {
+      "after": {
+        "active": false,
+        "blockers": [
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "completed": [
+          "IDENTITY"
+        ],
+        "failure_stage": "SECURITY_MASTER",
+        "first_eligible_session": null,
+        "onboarding_ready": false,
+        "production_eligible": false,
+        "safe_unavailable": [],
+        "state": "INACTIVE"
+      },
+      "before": {
+        "active": false,
+        "blockers": [
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "onboarding_ready": false,
+        "state": "INACTIVE"
+      },
+      "company_name": "NVIDIA",
+      "exchange": "NASDAQ",
+      "monitoring_requested": false,
+      "ticker": "NVDA"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Recursion Pharmaceuticals",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "RXRX"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [
+          "SECURITY_MASTER:per_share_depositary_basis"
+        ],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "SK hynix Inc. ADR",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "SKHY"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "SanDisk",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "SNDK"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "Tesla, Inc.",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "TSLA"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [
+          "SECURITY_MASTER:per_share_depositary_basis"
+        ],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "TSMC",
+      "exchange": "NYSE",
+      "monitoring_requested": true,
+      "ticker": "TSM"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [
+          "SECURITY_MASTER:per_share_depositary_basis"
+        ],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "WeRide",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "WRD"
+    },
+    {
+      "after": {
+        "active": true,
+        "blockers": [],
+        "completed": [
+          "IDENTITY",
+          "SECURITY_MASTER",
+          "COMPANY_PROFILE",
+          "INVESTMENT_LOGIC",
+          "INITIAL_EVIDENCE",
+          "INITIAL_BASELINE_ASSESSMENT",
+          "DECISION_READINESS"
+        ],
+        "failure_stage": null,
+        "first_eligible_session": "2026-08-31",
+        "onboarding_ready": true,
+        "production_eligible": true,
+        "safe_unavailable": [],
+        "state": "ACTIVE"
+      },
+      "before": {
+        "active": true,
+        "blockers": [],
+        "onboarding_ready": true,
+        "state": "ACTIVE"
+      },
+      "company_name": "TeraWulf Inc.",
+      "exchange": "NASDAQ",
+      "monitoring_requested": true,
+      "ticker": "WULF"
+    }
+  ]
+}
