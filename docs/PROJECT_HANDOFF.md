@@ -2269,3 +2269,19 @@ subjects because their earliest assessment was provisional; the bounded selector
 the earliest final legacy baseline and restores the intended cohort without weakening the contract.
 Final state is active/ready-active/incomplete `21/21/0`, and API health plus the authenticated active
 cohort smoke pass. CPNG remains excluded. Continue with natural observation only.
+
+## 2026-08-31 Pending Onboarding Reconciler Handoff
+
+Start with `docs/reports/20260831-reconciler-artifact-index.md`. Exact instruction commit is
+`c95e176`; final code implementation is `5e3820456ace797450b9403386edaa2fc6af6cf1`.
+
+The generic background reconciler is loaded at a 1800-second interval and market preflight is
+bounded, cached-only, and cutoff-safe. CPNG completed through the generic `market=all` path with all
+seven readiness stages, accepted decision `HOLD`, and first eligible session `2026-09-01`. It was
+not manually resumed and has no ticker-specific exception. Current operating counts are 22
+active-ready and zero pending, retryable, or review-required subjects.
+
+The next action is read-only review of the next natural US packet. CPNG may appear only if that
+packet's frozen session and cutoff satisfy first eligibility. Do not manually trigger a Scheduled
+Task, replay the 2026-08-31 message, expose recipient values, or treat test-sink evidence as natural
+proof. Production Assist remains OFF.

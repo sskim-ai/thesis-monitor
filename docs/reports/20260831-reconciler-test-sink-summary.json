@@ -1,0 +1,14 @@
+{
+  "continuation_sent_count": 2,
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "initial_sent_count": 20,
+  "orphan_count": 0,
+  "planned_message_count": 22,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "rate_limit_continuation": true,
+  "sent_message_count": 22,
+  "status": "sent"
+}

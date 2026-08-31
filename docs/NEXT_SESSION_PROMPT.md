@@ -809,3 +809,13 @@ Final main and operating runtime are `6521d50`. The legacy provisional-first bas
 do not revert the fallback to the first assessment row. At the next natural packet, expected active
 coverage is KR 8 including 047810 and US 13 excluding pending CPNG, subject to the immutable packet
 cutoff. Test-sink evidence does not count as natural proof.
+
+The latest onboarding automation starts from exact instruction commit `c95e176` and final code
+implementation `5e3820456ace797450b9403386edaa2fc6af6cf1`. Read
+`docs/reports/20260831-reconciler-readiness.json` and its artifact index first.
+
+Next action: `WAIT_FOR_NATURAL_US_PACKET`. Inspect the naturally frozen cohort, CPNG inclusion or
+cutoff-safe exclusion, accepted-v2 ownership, exact delivery receipt, duplicates, and orphans
+read-only. Do not manually run a task or Telegram proof. The generic background reconciler and
+market preflight remain enabled; CPNG is ACTIVE_READY from `2026-09-01`. Production Assist remains
+OFF.

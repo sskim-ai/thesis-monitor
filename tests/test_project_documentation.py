@@ -134,21 +134,24 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/atomic-onboarding-scoped-readiness-repair"
+        "codex/20260831-pending-onboarding-auto-reconciler"
     )
     assert state["current_phase"] == (
-        "atomic_onboarding_deployed_awaiting_natural_cohorts"
+        "pending_onboarding_automation_ready_wait_natural_us"
     )
     assert state["last_completed_phase"] == (
-        "20260831_atomic_onboarding_scoped_readiness_repair"
+        "20260831_pending_onboarding_auto_reconciler_and_preflight_resume"
     )
-    assert state["next_default_phase"] == "review_next_natural_us_onboarding_cohort"
+    assert state["next_default_phase"] == (
+        "review_next_natural_us_packet_with_cpng_eligibility"
+    )
     v2_implementation_commit = "c0c9139babb06ead11112aea072a67ef364a9b22"
     accepted_implementation_commit = "f55605189ee0179ab4af7030b94d79d706ed32a8"
     production_base_commit = "6db9256b539e437a7067a1822237ef9c504c63fa"
     production_deployed_commit = "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee"
-    onboarding_base_commit = "ecd01297f81d0b68aaf95ecfe866721b6aa2c104"
     onboarding_runtime_commit = "6521d509c0598838543d6981f4905ebf5f8e153c"
+    pending_base_commit = "9c0e2907a5914f43e257cd886d25078288f1bba4"
+    pending_runtime_commit = "5e3820456ace797450b9403386edaa2fc6af6cf1"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -161,10 +164,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == onboarding_base_commit
-    assert state["deployed_code_commit"] == onboarding_runtime_commit
-    assert state["main_code_commit"] == onboarding_runtime_commit
-    assert state["operating_code_commit"] == onboarding_runtime_commit
+    assert state["recorded_base_commit"] == pending_base_commit
+    assert state["deployed_code_commit"] == pending_runtime_commit
+    assert state["main_code_commit"] == pending_runtime_commit
+    assert state["operating_code_commit"] == pending_runtime_commit
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -1353,7 +1356,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == onboarding_runtime_commit
+    assert state["current_commit"] == pending_runtime_commit
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")
@@ -1524,6 +1527,51 @@ def test_knowledge_checksums_and_runtime_parity_are_documented() -> None:
     guide = (ROOT / "docs" / "knowledge" / "README.md").read_text()
     assert INVESTMENT_SHA in state and INVESTMENT_SHA in guide
     assert CHART_SHA in state and CHART_SHA in guide
+
+
+def test_pending_onboarding_reconciler_reports_are_closed() -> None:
+    report_names = (
+        "20260831-pending-onboarding-reconciler-scope.md",
+        "20260831-onboarding-retry-classification.md",
+        "20260831-background-onboarding-reconciler.md",
+        "20260831-market-preflight-onboarding-resume.md",
+        "20260831-onboarding-cutoff-eligibility.md",
+        "20260831-generic-new-registration-e2e.md",
+        "20260831-pending-isolation-negative-controls.md",
+        "20260831-cpng-generic-reconciler-control.md",
+        "20260831-registration-user-facing-status.md",
+        "20260831-reconciler-test-sink.md",
+        "20260831-reconciler-main-merge.md",
+        "20260831-reconciler-readiness.md",
+        "20260831-reconciler-artifact-index.md",
+        "20260831-pending-onboarding-reconciler.json",
+        "20260831-cpng-reconciler-control.json",
+        "20260831-reconciler-readiness.json",
+    )
+    for name in report_names:
+        assert (ROOT / "docs" / "reports" / name).exists()
+
+    readiness = json.loads(
+        (
+            ROOT / "docs" / "reports" / "20260831-reconciler-readiness.json"
+        ).read_text()
+    )
+    gates = readiness["gates"]
+    assert readiness["status"] == "READY_FOR_MAIN"
+    assert gates["GENERIC_NEW_KR_REGISTRATION"] == "PASS"
+    assert gates["GENERIC_NEW_US_REGISTRATION"] == "PASS"
+    assert gates["CROSS_MARKET_PENDING_ISOLATION"] == "PASS"
+    assert gates["SAME_MARKET_PENDING_ISOLATION"] == "PASS"
+    assert gates["CPNG_RECONCILER_RESULT"] == "ACTIVE_READY"
+    assert gates["CPNG_ACCEPTED_DECISION"] == "HOLD"
+    assert gates["CPNG_FIRST_ELIGIBLE_SESSION"] == "2026-09-01"
+    assert gates["CPNG_MANUAL_ONE_OFF_RESUME_BEFORE_RECONCILER"] == 0
+    assert gates["CPNG_TICKER_SPECIFIC_BYPASS"] == 0
+    assert gates["PENDING_SUBJECT_BLOCKS_READY_PEERS"] == 0
+    assert gates["TEST_PRODUCTION_RECIPIENT_SEND"] == 0
+    assert gates["PRODUCTION_DELIVERY_INTENT_CREATED_DURING_TEST"] == 0
+    assert gates["OPEN_P0"] == 0
+    assert gates["OPEN_MATERIAL_P1"] == 0
 
 
 def test_architecture_guides_record_decisions_and_readme_navigation() -> None:

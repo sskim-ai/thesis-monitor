@@ -1,0 +1,129 @@
+{
+  "contract": "pending-onboarding-automation-readiness-v1",
+  "cpng": {
+    "after": {
+      "accepted_decision": "HOLD",
+      "active": true,
+      "decision_status": "READY",
+      "first_eligible_session": "2026-09-01",
+      "production_eligible": true,
+      "raw_candidate_grants_ready": false,
+      "remaining_blockers": [],
+      "retry_class": "NONE",
+      "state": "ACTIVE"
+    },
+    "before": {
+      "active": false,
+      "blockers": [
+        "INITIAL_EVIDENCE",
+        "DECISION_READINESS"
+      ],
+      "production_eligible": false,
+      "state": "PENDING_ONBOARDING"
+    },
+    "contract": "cpng-generic-reconciler-control-v1",
+    "manual_one_off_resume": 0,
+    "same_day_historical_packet_replay": 0,
+    "successful_generic_attempt": {
+      "attempted_stages": [
+        "INITIAL_EVIDENCE",
+        "DECISION_READINESS"
+      ],
+      "completed_stages": [
+        "IDENTITY",
+        "SECURITY_MASTER",
+        "COMPANY_PROFILE",
+        "INVESTMENT_LOGIC",
+        "INITIAL_EVIDENCE",
+        "INITIAL_BASELINE_ASSESSMENT",
+        "DECISION_READINESS"
+      ],
+      "market_argument": "all",
+      "mode": "BACKGROUND",
+      "origin": "deployment_smoke",
+      "result": "ACTIVE_READY",
+      "started_at": "2026-08-31T14:14:17.576656+00:00"
+    },
+    "ticker_specific_bypass": 0
+  },
+  "gates": {
+    "ACCEPTED_DECISION_OWNERSHIP_REGRESSION": 0,
+    "CPNG_ACCEPTED_DECISION": "HOLD",
+    "CPNG_DECISION_READINESS": "PASS",
+    "CPNG_FIRST_ELIGIBLE_SESSION": "2026-09-01",
+    "CPNG_INITIAL_EVIDENCE": "PASS",
+    "CPNG_MANUAL_ONE_OFF_RESUME_BEFORE_RECONCILER": 0,
+    "CPNG_RECONCILER_RESULT": "ACTIVE_READY",
+    "CPNG_TICKER_SPECIFIC_BYPASS": 0,
+    "CROSS_MARKET_PENDING_ISOLATION": "PASS",
+    "GENERIC_NEW_KR_REGISTRATION": "PASS",
+    "GENERIC_NEW_US_REGISTRATION": "PASS",
+    "HISTORICAL_PRODUCTION_MESSAGE_REPLAY": 0,
+    "INITIAL_EVIDENCE_PLACEHOLDER_COUNTS_AS_PASS": 0,
+    "KR_PENDING_RECONCILER_BLOCKS_US": 0,
+    "MARKET_DELIVERY_SCHEDULE_DIFF": 0,
+    "ONE_PENDING_RECONCILE_FAILURE_BLOCKS_OTHERS": 0,
+    "OPEN_MATERIAL_P1": 0,
+    "OPEN_P0": 0,
+    "PENDING_ONBOARDING_AUTOMATION": "READY_FOR_MAIN",
+    "PENDING_SUBJECT_BLOCKS_READY_PEERS": 0,
+    "PREFLIGHT_ACTIVATION_AFTER_PACKET_CUTOFF_INCLUDED": 0,
+    "PRELIVE_ONBOARDING_CAUSES_PACKET_DEADLINE_OVERRUN": 0,
+    "PRICE_STRUCTURE_NUMERIC_DIFF": 0,
+    "PRODUCTION_DELIVERY_INTENT_CREATED_DURING_TEST": 0,
+    "RAW_CANDIDATE_GRANTS_ONBOARDING_READY": 0,
+    "RECONCILER_AUTO_MONITORS_UNREQUESTED_SECURITY": 0,
+    "RECONCILER_DIRECTLY_FORCE_SETS_ACTIVE": 0,
+    "SAME_MARKET_PENDING_ISOLATION": "PASS",
+    "TEST_EXACT_PAYLOAD": "PASS",
+    "TEST_PRODUCTION_RECIPIENT_SEND": 0,
+    "UNBOUNDED_ONBOARDING_RETRY_LOOP": 0,
+    "USER_TOLD_ACTIVE_WHILE_PENDING": 0,
+    "US_PENDING_RECONCILER_BLOCKS_KR": 0,
+    "VALUATION_NUMERIC_DIFF": 0
+  },
+  "next_action": "WAIT_FOR_NATURAL_US_PACKET",
+  "open_material_p1": [],
+  "open_p0": [],
+  "p2_backlog": [
+    "optional onboarding operator dashboard wording and table polish"
+  ],
+  "repository": {
+    "base_sha": "9c0e2907a5914f43e257cd886d25078288f1bba4",
+    "branch": "codex/20260831-pending-onboarding-auto-reconciler",
+    "implementation_sha": "5e3820456ace797450b9403386edaa2fc6af6cf1",
+    "instruction_sha256": "c03e19d7630bf0eda5a685001ec6fb7e60d3f7de90cb8f18d644817d58ca85da",
+    "main_before_report": "5e3820456ace797450b9403386edaa2fc6af6cf1",
+    "master_instruction_commit": "c95e176",
+    "operating_before_report": "5e3820456ace797450b9403386edaa2fc6af6cf1",
+    "report_commit": "REPORT_COMMIT_PENDING",
+    "source_bundle_sha256": "05682213ea98ca52f0faee6fb2d9ef7647d0d090e6145c597d2477aafa81671d"
+  },
+  "runtime": {
+    "ai_review_mode": "shadow",
+    "api_health": "PASS",
+    "background_interval_seconds": 1800,
+    "background_reconciler": "enabled",
+    "current_active_ready_count": 22,
+    "current_pending_count": 0,
+    "current_retryable_count": 0,
+    "current_review_required_count": 0,
+    "market_preflight_resume": "enabled",
+    "production_assist": "OFF",
+    "public_action_operation_ids": "20/20 unique",
+    "public_action_version": "0.4.5"
+  },
+  "status": "READY_FOR_MAIN",
+  "validation": {
+    "chart_knowledge": "PASS",
+    "focused": "40 passed",
+    "full_pytest": "1975 passed, 1 warning",
+    "git_diff_check": "PASS",
+    "github_actions": "Test PASS / Lint PASS",
+    "github_actions_run": 33401029416,
+    "investment_knowledge": "PASS",
+    "operation_ids": "20/20 unique",
+    "public_action": "0.4.5 unchanged",
+    "ruff": "PASS"
+  }
+}

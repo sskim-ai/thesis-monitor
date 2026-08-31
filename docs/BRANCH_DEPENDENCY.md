@@ -553,3 +553,14 @@ Bounded descendant `6521d50` is required: legacy baseline fallback selects the e
 assessment after honoring an explicit `initial_baseline`. This restores seven safe legacy US
 subjects found during operating reconciliation and must not be weakened to accept provisional
 evidence. Final operating audit is active/ready-active/incomplete `21/21/0`.
+
+The pending-onboarding automation descendant begins at clean main
+`9c0e2907a5914f43e257cd886d25078288f1bba4`. Exact instruction commit `c95e176` precedes final code
+implementation `5e3820456ace797450b9403386edaa2fc6af6cf1`.
+
+Descendants must preserve requested-subject filtering, bounded retry classes, subject and market
+isolation, canonical initial evidence, accepted-v2-only readiness, immutable packet cutoffs, and
+first-eligible-session enforcement. They may not add ticker-specific resume paths, force-set active,
+count placeholders as evidence, let raw candidates activate, replay historical production
+messages, expose recipient values, or alter existing delivery schedules. CPNG is ACTIVE_READY from
+`2026-09-01`; its next proof must be a natural US packet.

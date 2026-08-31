@@ -2160,3 +2160,24 @@ explicit initial baseline first and otherwise the earliest final legacy assessme
 is `1962 passed`; Actions run `33386496321` passes Test/Lint. Final operating reconciliation is
 `21/21/0`, API health passes, 047810 is active from `2026-09-01`, and CPNG remains pending with its
 three evidence blockers. This operational convergence changed no readiness threshold.
+
+### 40.29 Pending Onboarding Auto-Reconciler and Preflight Resume
+
+Exact instruction commit `c95e176` precedes final implementation
+`5e3820456ace797450b9403386edaa2fc6af6cf1`. Pending onboarding now has three bounded entry points:
+immediate registration continuation, a 30-minute generic background reconciler, and cached-only
+market preflight before packet-universe freeze. All three call the existing readiness coordinator;
+none can force-set active or allow a raw decision candidate to grant readiness.
+
+Generic KR and US registration, retry classification, idempotency, cross-market and same-market
+isolation, cutoff eligibility, and ready-peer continuation pass. The dedicated sink completed
+`22/22 exact` through a `20 + 2` identity-aware continuation with zero production send, intent,
+duplicate, or orphan. Existing market delivery schedules, accepted ownership, Price Structure, and
+valuation are unchanged.
+
+The deployed generic reconciler encountered CPNG without a ticker argument. It rebuilt canonical
+initial evidence, preserved the final baseline, produced accepted-v2 `HOLD`, and activated CPNG as
+`ACTIVE_READY` with first eligible session `2026-09-01`. Current counts are active-ready `22`,
+pending/retryable/review-required `0/0/0`. Manual CPNG resume and ticker bypass are zero. Open
+P0/material P1 are `0/0`; wait for the next natural US packet and do not replay the 2026-08-31
+production message.

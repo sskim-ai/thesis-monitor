@@ -1,0 +1,46 @@
+{
+  "after": {
+    "accepted_decision": "HOLD",
+    "active": true,
+    "decision_status": "READY",
+    "first_eligible_session": "2026-09-01",
+    "production_eligible": true,
+    "raw_candidate_grants_ready": false,
+    "remaining_blockers": [],
+    "retry_class": "NONE",
+    "state": "ACTIVE"
+  },
+  "before": {
+    "active": false,
+    "blockers": [
+      "INITIAL_EVIDENCE",
+      "DECISION_READINESS"
+    ],
+    "production_eligible": false,
+    "state": "PENDING_ONBOARDING"
+  },
+  "contract": "cpng-generic-reconciler-control-v1",
+  "manual_one_off_resume": 0,
+  "same_day_historical_packet_replay": 0,
+  "successful_generic_attempt": {
+    "attempted_stages": [
+      "INITIAL_EVIDENCE",
+      "DECISION_READINESS"
+    ],
+    "completed_stages": [
+      "IDENTITY",
+      "SECURITY_MASTER",
+      "COMPANY_PROFILE",
+      "INVESTMENT_LOGIC",
+      "INITIAL_EVIDENCE",
+      "INITIAL_BASELINE_ASSESSMENT",
+      "DECISION_READINESS"
+    ],
+    "market_argument": "all",
+    "mode": "BACKGROUND",
+    "origin": "deployment_smoke",
+    "result": "ACTIVE_READY",
+    "started_at": "2026-08-31T14:14:17.576656+00:00"
+  },
+  "ticker_specific_bypass": 0
+}
