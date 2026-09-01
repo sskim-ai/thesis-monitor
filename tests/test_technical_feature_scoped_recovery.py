@@ -237,6 +237,35 @@ def test_date_without_field_semantics_is_not_finality_proof() -> None:
     assert result.state == BarFinality.UNCONFIRMED
 
 
+def test_hut_invalid_daily_weekly_preserve_independent_monthly_safe_context() -> None:
+    periods: dict[str, list[dict[str, object]]] = {}
+    for timeframe in ("daily", "weekly", "monthly"):
+        raw = _bars(80)
+        annotated = [
+            annotate_normalized_bar(
+                row,
+                provider="kiwoom",
+                market="US",
+                timeframe=timeframe,
+                has_later_chart_row=index < len(raw) - 1,
+            )
+            for index, row in enumerate(raw)
+        ]
+        periods[timeframe] = annotated
+    for timeframe in ("daily", "weekly"):
+        periods[timeframe][-1]["close"] = periods[timeframe][-1]["high"] + 10  # type: ignore[operator]
+
+    context = _context(periods)
+
+    assert context.status == TechnicalContextStatus.PARTIAL_SAFE
+    assert context.quality["D"].status == TechnicalContextStatus.INVALID
+    assert context.quality["W"].status == TechnicalContextStatus.INVALID
+    assert context.quality["M"].status == TechnicalContextStatus.PARTIAL_SAFE
+    assert context.quality["M"].usable_for_current_reasoning is True
+    assert context.features is not None
+    assert context.quality["D"].invalid_source_row_count == 0
+
+
 def test_secondary_exact_row_recovery_is_strict_and_provenance_bound() -> None:
     bad = {"date": "2023-06-05", "open": 16.35, "high": 15.8, "low": 15.43, "close": 15.66}
     safe = {"date": "2023-06-05", "open": 16.35, "high": 16.5, "low": 15.43, "close": 15.66}

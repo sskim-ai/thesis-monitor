@@ -258,6 +258,7 @@ def build_packet_owned_technical_context(
         feature_count = len(feature_set.facts)
         latest[timeframe] = feature_set.as_of
         expected = expected_daily_completed if timeframe == "daily" else None
+        source_reasons_present = bool(reasons)
         invalid_dates = tuple(
             str(row.get("date") or "")
             for row in feature_set.invalid_source_rows
@@ -284,13 +285,23 @@ def build_packet_owned_technical_context(
             reasons.append("historical_invalid_source_row")
         if feature_set.unconfirmed_count:
             reasons.append("bar_finality_unconfirmed")
-        if current_integrity_failure or current_unconfirmed:
+        if current_integrity_failure or (
+            current_unconfirmed and source_reasons_present
+        ):
             state = TechnicalContextStatus.INVALID
             freshness = TechnicalFreshnessState.INVALID
         elif feature_count == 0:
             state = TechnicalContextStatus.UNAVAILABLE
             freshness = TechnicalFreshnessState.UNAVAILABLE
             reasons.append("timeframe_unavailable")
+        elif current_unconfirmed:
+            state = TechnicalContextStatus.PARTIAL_SAFE
+            freshness = (
+                TechnicalFreshnessState.STALE
+                if timeframe == "daily"
+                else TechnicalFreshnessState.TIMEFRAME_CURRENT
+            )
+            reasons.append("latest_bar_unconfirmed_historical_features_only")
         elif timeframe == "daily" and expected and latest[timeframe] != expected:
             state = TechnicalContextStatus.PARTIAL_SAFE
             freshness = TechnicalFreshnessState.STALE
