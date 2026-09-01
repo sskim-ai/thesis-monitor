@@ -1,0 +1,24 @@
+{
+  "contract": "numeric-provenance-validator-controls-v2",
+  "date": "2026-09-01",
+  "source_packet": "2026-09-01-us-run-49-2d1bb6df1608",
+  "raw_candidate_contains_2000": false,
+  "final_validated_text_contains_russell_2000": true,
+  "phantom_2000_false_positive": 0,
+  "allowlist_hack": 0,
+  "market_context_provenance_disabled": 0,
+  "positive_structural_controls": [
+    "Russell 2000은",
+    "S&P500은",
+    "KOSPI 200은",
+    "KOSDAQ 150은",
+    "Russell 2000이었습니다"
+  ],
+  "unsupported_2000_controls": {
+    "plain": "PASS",
+    "currency": "PASS",
+    "thousands_separator": "PASS",
+    "percent": "PASS"
+  },
+  "exact_span_diagnostics": "PASS"
+}

@@ -1,0 +1,17 @@
+{
+  "contract": "ohlcv-root-cause-audit-v1",
+  "date": "2026-09-01",
+  "primary_root_cause": "PROCESS_NAMESPACE_MISMATCH",
+  "contributing_factors": [
+    "decision_stage_duplicate_local_http_fetch",
+    "packet_owned_technical_context_missing",
+    "cohort_wide_exception_propagation"
+  ],
+  "reproduced": true,
+  "service_process_alive": true,
+  "configured_base_url_matches_launch_agent": true,
+  "host_health_status": "READY",
+  "host_latest_daily_bar": "2026-08-31",
+  "restricted_python_result": "CONNECT_ERROR_OPERATION_NOT_PERMITTED",
+  "root_cause_assumed_without_reproduction": 0
+}

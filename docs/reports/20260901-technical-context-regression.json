@@ -1,0 +1,38 @@
+{
+  "contract": "technical-context-regression-v1",
+  "date": "2026-09-01",
+  "us": {
+    "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+    "cohort_count": 14,
+    "decision_context_ready_count": 14,
+    "status_counts": {
+      "FULL": 10,
+      "PARTIAL_SAFE": 0,
+      "UNAVAILABLE": 0,
+      "INVALID": 4
+    },
+    "invalid_subjects": {
+      "CPNG": "invalid_ohlc_relation",
+      "HUT": "invalid_ohlc_relation",
+      "MU": "invalid_ohlc_relation",
+      "SKHY": "invalid_ohlc_relation"
+    }
+  },
+  "kr": {
+    "packet_id": "2026-08-31-kr-run-48-a573c2a6f245",
+    "cohort_count": 8,
+    "decision_context_ready_count": 8,
+    "status_counts": {
+      "FULL": 8,
+      "PARTIAL_SAFE": 0,
+      "UNAVAILABLE": 0,
+      "INVALID": 0
+    },
+    "new_subject_047810": "FULL"
+  },
+  "feature_numeric_parity": "PASS",
+  "one_subject_failure_blocks_cohort": 0,
+  "systemic_outage_kills_all_candidates": 0,
+  "price_structure_numeric_diff": 0,
+  "valuation_numeric_diff": 0
+}
