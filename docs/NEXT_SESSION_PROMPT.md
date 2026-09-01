@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+Latest authoritative repair is the 2026-09-01 OHLCV technical-context resilience work. Read
+`docs/reports/20260901-ohlcv-v2-repair-readiness.json`, the root-cause, run-49 replay, exact test
+messages, message-quality, validation, live-guard, and artifact-index reports first. Exact
+instruction commit is `1dd691a340b4961e105371af53142c76db7385d7`; final code before report
+closure is `1e0fb9cd6e4542474c623800a805026c236f2a53`.
+
+The local ConnectError was a process namespace mismatch. V2 now consumes
+`packet-owned-technical-context-v1` without decision-stage HTTP, with bounded reconnect and
+subject-local fail-closed states. Run-49 replay is accepted-ready 14/14 and current test sink is
+14/14 exact; KR run-48 is FULL 8/8. The independent `2000` provenance false positive is closed.
+Open P0/material P1 is 0/0.
+
+Next action is `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Observe only the next normal US cycle: service and
+acquisition state, FULL/PARTIAL/UNAVAILABLE/INVALID counts, generated/accepted/explicit decision
+counts, fallback, and exactly-once delivery. Do not manually run a Scheduled Task, replay run-49,
+send a production Telegram, weaken the four INVALID OHLC controls, or expose recipient values.
+Production Assist remains OFF.
+
+---
+
 Latest authoritative work is the 2026-09-01 US V2 natural live read-only verification. Read
 `docs/reports/20260901-us-v2-natural-live-proof.json` and
 `docs/reports/20260901-us-v2-artifact-index.md` first, then the candidate/accepted,

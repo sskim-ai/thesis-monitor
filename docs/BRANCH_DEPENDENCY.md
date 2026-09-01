@@ -564,3 +564,12 @@ first-eligible-session enforcement. They may not add ticker-specific resume path
 count placeholders as evidence, let raw candidates activate, replay historical production
 messages, expose recipient values, or alter existing delivery schedules. CPNG is ACTIVE_READY from
 `2026-09-01`; its next proof must be a natural US packet.
+
+The OHLCV V2 resilience branch starts from read-only report main
+`f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7`. Exact instruction commit
+`1dd691a340b4961e105371af53142c76db7385d7` precedes packet-owned technical context, bounded
+recovery, subject isolation, and numeric-provenance repair through
+`1e0fb9cd6e4542474c623800a805026c236f2a53`. Descendants must not restore decision-stage local
+HTTP as the only technical source, weaken OHLC integrity, add ticker exceptions, retune decisions,
+or conflate the test sink with natural proof. Promotion is a clean linear fast-forward; the next
+production evidence is the next natural US cycle.

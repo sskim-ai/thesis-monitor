@@ -22,3 +22,13 @@ or unresolved candidates remain invisible.
 
 Price Structure, valuation, Public Action 0.4.5/schema 4, Telegram routes, deterministic fallback,
 accepted-decision ownership, and scheduler configuration are unchanged.
+
+## Bounded generation convergence
+
+Structured generation keeps the validator strict. A batch that fails Pydantic schema or
+cross-field validation may be regenerated once for exactly the same subjects and canonical
+evidence. A subject that then fails the semantic validator may be regenerated once with only the
+exact validator errors and original rejected candidate. The repair prompt may clarify an existing
+contract, including evidence dates not later than the assessment cutoff and the relationship
+between confirmed maturity and post-confirmation HOLD flags. A second failure suppresses the run
+safely; no JSON mutation, threshold relaxation, or decision-specific exception is allowed.

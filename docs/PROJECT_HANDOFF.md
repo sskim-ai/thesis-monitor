@@ -1,5 +1,25 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-01 OHLCV V2 Pipeline Repair Handoff
+
+Start with `docs/reports/20260901-ohlcv-v2-repair-readiness.json` and
+`docs/reports/20260901-ohlcv-v2-artifact-index.md`. Exact instruction commit is
+`1dd691a340b4961e105371af53142c76db7385d7`; final code before report closure is
+`1e0fb9cd6e4542474c623800a805026c236f2a53` on base
+`f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7`.
+
+The root cause is a process namespace mismatch, not an absent or misconfigured host OHLCV service.
+V2 now consumes validated packet-owned technical context and no longer requires a fresh local HTTP
+fetch at decision time. Retry is bounded, stale or malformed data fails closed by subject, and one
+failure cannot abort the market cohort. The `2000` provenance false positive is also closed without
+an allowlist or disabled validation.
+
+Run-49 isolated replay is 14/14 accepted-ready with explicit decisions, test sink is 14/14 exact,
+KR run-48 is FULL 8/8, and open P0/material P1 is 0/0. CPNG/HUT/MU/SKHY remain INVALID for their
+actual provider OHLC relationships; do not bypass that quality gate. Do not manually replay run-49
+or send production Telegram proof. The next action after promotion is read-only observation of the
+next naturally scheduled US cycle. Production Assist remains OFF.
+
 ## 2026-08-30 V2 Accepted Decision Ownership Handoff
 
 Start with `docs/reports/20260830-v2-accepted-migration-readiness.json`, accepted decisions JSON,

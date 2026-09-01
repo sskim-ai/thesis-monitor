@@ -136,16 +136,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260901-us-v2-natural-live-readonly-verification"
+        "codex/20260901-ohlcv-technical-context-resilient-v2-repair"
     )
     assert state["current_phase"] == (
-        "us_v2_natural_live_failed_bounded_repair_required"
+        "ohlcv_v2_pipeline_repair_ready_for_main_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
-        "20260901_us_v2_natural_live_readonly_verification"
+        "20260901_ohlcv_v2_pipeline_repair_retrospective_and_test_sink"
     )
     assert state["next_default_phase"] == (
-        "bounded_us_v2_decision_pipeline_repair"
+        "wait_for_next_natural_us_live"
     )
     natural_v2 = state["us_v2_natural_live_readonly_verification_20260901"]
     assert natural_v2["instruction_commit"] == (
@@ -171,7 +171,6 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     production_base_commit = "6db9256b539e437a7067a1822237ef9c504c63fa"
     production_deployed_commit = "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee"
     onboarding_runtime_commit = "6521d509c0598838543d6981f4905ebf5f8e153c"
-    pending_base_commit = "9c0e2907a5914f43e257cd886d25078288f1bba4"
     pending_runtime_commit = "5e3820456ace797450b9403386edaa2fc6af6cf1"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
@@ -185,7 +184,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == pending_base_commit
+    assert state["recorded_base_commit"] == (
+        "f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7"
+    )
     assert state["deployed_code_commit"] == pending_runtime_commit
     assert state["main_code_commit"] == pending_runtime_commit
     assert state["operating_code_commit"] == pending_runtime_commit
@@ -293,6 +294,23 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["contracts"]["production_packet_universe"] == (
         "production-packet-universe-v1"
     )
+    ohlcv_repair = state["ohlcv_v2_pipeline_repair_20260901"]
+    assert ohlcv_repair["status"] == "READY_FOR_MAIN_AWAITING_NATURAL_US_LIVE"
+    assert ohlcv_repair["instruction_commit"] == (
+        "1dd691a340b4961e105371af53142c76db7385d7"
+    )
+    assert ohlcv_repair["final_code_commit"] == (
+        "1e0fb9cd6e4542474c623800a805026c236f2a53"
+    )
+    assert ohlcv_repair["primary_root_cause"] == "PROCESS_NAMESPACE_MISMATCH"
+    assert ohlcv_repair["decision_stage_fresh_local_ohlcv_http_required"] is False
+    assert ohlcv_repair["run49_candidate_generated"] == 14
+    assert ohlcv_repair["run49_accepted_ready"] == 14
+    assert ohlcv_repair["run49_explicit_decisions"] == 14
+    assert ohlcv_repair["current_us_test_sink"] == "PASS_14_OF_14_EXACT"
+    assert ohlcv_repair["production_recipient_send"] == 0
+    assert ohlcv_repair["open_p0"] == []
+    assert ohlcv_repair["open_material_p1"] == []
     phase_8552 = state["phase_8_5_5_2_kr_structured_field_repetition"]
     assert phase_8552["status"] == "operating_shadow_pending_natural_proof"
     assert phase_8552["operating_shadow_promoted"] is True
@@ -1377,7 +1395,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == pending_runtime_commit
+    assert state["current_commit"] == (
+        "1e0fb9cd6e4542474c623800a805026c236f2a53"
+    )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

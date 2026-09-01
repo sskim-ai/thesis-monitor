@@ -2203,3 +2203,29 @@ controls are not visible as V2 decisions.
 Open P0/material P1/P2 are `0/2/0`. Do not replay or resend the completed cycle. The next action is
 `BOUNDED_DECISION_PIPELINE_REPAIR`, scoped to packet-bound V2 context availability/continuation and
 the independent `2000` validator false positive. Preserve all immutable proof artifacts.
+
+### 40.31 OHLCV Technical Context Resilience and Provenance Repair
+
+Exact instruction commit `1dd691a340b4961e105371af53142c76db7385d7` precedes canonical
+implementation `91180f3b00942d09d2c509e60a2a3d63c48d3951`, bounded retry cap
+`43638307a5c4b568047112fda28e4eb784ef180a`, and final generation-convergence code
+`1e0fb9cd6e4542474c623800a805026c236f2a53`. The run-49 ConnectError root cause is
+`PROCESS_NAMESPACE_MISMATCH`: the host LaunchAgent service was healthy, but the restricted decision
+process could not open loopback. Duplicate decision-stage HTTP acquisition and cohort-wide
+exception propagation amplified the incident.
+
+The repaired path validates and freezes `packet-owned-technical-context-v1` during canonical
+acquisition. V2 consumes that packet artifact without fresh local HTTP; retry/recovery is bounded,
+and malformed or missing contexts remain subject-local. Run-49 replay prepares and accepts all
+14 subjects with technical states FULL/PARTIAL_SAFE/UNAVAILABLE/INVALID `10/0/0/4`. The four
+INVALID subjects fail OHLC integrity rather than transport and do not block peers. KR run-48 is
+FULL `8/8`, including 047810 without a special case. Price Structure, valuation, decision policy,
+accepted ownership, Public Action, schedules, and fallback policy are unchanged.
+
+The numeric lexer now treats Korean particles after structural index names correctly while
+retaining exact unsupported-number rejection. Phantom `2000` is zero and real unsupported controls
+pass. The isolated signed-in xhigh replay is accepted-ready `14/14`; the dedicated sink received
+14/14 exact stock messages with zero production send or intent. Open P0/material P1 is `0/0`.
+This is `READY_FOR_MAIN`, not natural LIVE_PASS. After linear promotion, wait for the next natural
+US cycle and inspect OHLCV acquisition, technical-state counts, candidate/accepted counts,
+fallback, explicit decisions, and exactly-once delivery read-only.

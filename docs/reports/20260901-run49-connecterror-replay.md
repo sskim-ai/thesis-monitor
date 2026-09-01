@@ -17,5 +17,20 @@ The four invalid results are not transport regressions. Their provider rows inde
 OHLC bounds, including current rows for HUT/MU/SKHY and historical CPNG rows. No ticker exception
 was added. All 14 still reached decision-context preparation.
 
-Candidate generation through the external signed-in CLI is recorded separately because it requires
-explicit external-data authorization. No production replay occurred.
+After explicit authorization, the isolated replay used signed-in Codex CLI
+`gpt-5.6-sol / xhigh`. The repaired packet-owned path produced all 14 decision contexts without a
+decision-stage HTTP request. Strict candidate validation used one batch-schema repair and six
+subject-local repairs; no validator threshold changed and no candidate was manually edited.
+
+| Candidate result | Count |
+|---|---:|
+| generated | 14 |
+| accepted-ready | 14 |
+| explicit BUY/HOLD/SELL | 14 |
+| fallback | 0 |
+| raw candidate visible | 0 |
+| production send | 0 |
+
+Accepted decision distribution is BUY/HOLD/SELL `0 / 11 / 3`. The final accepted-block message
+quality receipt is `PASS`, with zero repeated substantive spans and zero manual or unresolved
+numeric claims. The original source packet remained immutable and no production replay occurred.
