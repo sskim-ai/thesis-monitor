@@ -31,6 +31,7 @@ from app.services.us_price_structure_selective_rollout_service import (
     build_us_price_structure_runtime_context,
 )
 from app.services.ohlcv_structure_service import analyze_chart_structure
+from app.services.ohlcv_completed_bar_finality_service import annotate_normalized_bar
 from app.services.ohlcv_provider_integrity_service import (
     MalformedRefetchOutcome,
     OhlcvIntegrityEvent,
@@ -565,12 +566,35 @@ class OhlcvClient:
         raw_bars = periods.get(period)
         if not isinstance(raw_bars, list):
             raise ValueError("ohlcv_provider_schema_invalid")
-        bars: list[dict[str, object]] = []
+        parsed_dates: list[date | None] = []
         for raw in raw_bars:
+            try:
+                parsed_dates.append(
+                    date.fromisoformat(str(raw.get("date") or "")[:10])
+                    if isinstance(raw, Mapping)
+                    else None
+                )
+            except ValueError:
+                parsed_dates.append(None)
+        latest_date = max((value for value in parsed_dates if value is not None), default=None)
+        bars: list[dict[str, object]] = []
+        for raw, row_date in zip(raw_bars, parsed_dates, strict=True):
             if not isinstance(raw, Mapping):
                 bars.append({"date": None, "open": None, "high": None, "low": None, "close": None})
             else:
-                bars.append(dict(raw))
+                bars.append(
+                    annotate_normalized_bar(
+                        raw,
+                        provider=provider,
+                        market="KR" if ticker.isdigit() else "US",
+                        timeframe=period,
+                        has_later_chart_row=(
+                            row_date is not None
+                            and latest_date is not None
+                            and row_date < latest_date
+                        ),
+                    )
+                )
         return bars, payload.get("supply_demand"), provider
 
     @staticmethod
