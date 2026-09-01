@@ -9,7 +9,7 @@ coverage is targeted, and the V1 rollback path remains available.
 ```text
 immutable review packet
   -> complete monitored-subject inventory
-  -> canonical decision evidence + local OHLCV
+  -> canonical decision evidence + packet-owned technical context
   -> signed-in Codex CLI (`gpt-5.6-sol`, `xhigh`)
   -> one candidate per subject
   -> adjudication for every material decision change
@@ -32,6 +32,11 @@ decision fails closed.
 The production block is analytical BUY/HOLD/SELL guidance. It must not contain trade execution,
 position sizing, invented targets or stops, or unregistered numeric calculations. Price Structure
 and valuation remain owned by their existing canonical renderers.
+
+OHLCV is acquired and validated by the source monitor. The internal review packet freezes the
+`packet-owned-technical-context-v1` artifact. Candidate preparation consumes that artifact and does
+not perform a fresh local HTTP fetch. `PARTIAL_SAFE`, `UNAVAILABLE`, and `INVALID` quality remains
+explicit and subject-local; it is neither silent neutral evidence nor a fixed `HOLD` mapping.
 
 Rollback changes the visible selector back to `v1_canary`; it does not rewrite accepted V2 audit
 artifacts or historical delivery state.

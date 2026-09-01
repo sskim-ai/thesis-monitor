@@ -1,5 +1,7 @@
 import asyncio
+import hashlib
 import math
+import time
 from collections.abc import Sequence
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -29,6 +31,9 @@ from app.services.us_price_structure_selective_rollout_service import (
     build_us_price_structure_runtime_context,
 )
 from app.services.ohlcv_structure_service import analyze_chart_structure
+from app.services.packet_owned_technical_context_service import (
+    build_packet_owned_technical_context,
+)
 from app.services.provider_telemetry_service import ProviderTelemetryService
 
 
@@ -125,9 +130,7 @@ def _bar_values(bar: dict[str, object]) -> dict[str, object]:
         values.update(indicators)
     supply_demand = bar.get("supply_demand")
     if isinstance(supply_demand, dict):
-        values.update(
-            {f"supply_{key}": value for key, value in supply_demand.items()}
-        )
+        values.update({f"supply_{key}": value for key, value in supply_demand.items()})
     return values
 
 
@@ -142,7 +145,9 @@ def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSuppl
         except ValueError:
             continue
         values = _bar_values(bar)
-        has_numeric = any(_number(values.get(field)) is not None for field in _SUPPLY_NUMERIC_FIELDS)
+        has_numeric = any(
+            _number(values.get(field)) is not None for field in _SUPPLY_NUMERIC_FIELDS
+        )
         has_text = any(
             str(values.get(field) or "").strip() for field in _SUPPLY_CONTENT_TEXT_FIELDS
         )
@@ -161,7 +166,11 @@ def _investor_supply_context(bars: Sequence[dict[str, object]]) -> InvestorSuppl
         value = str(values.get(field) or "").strip()
         return value or None
 
-    signals = [field.removeprefix("supply_") for field in _SUPPLY_SIGNAL_FIELDS if values.get(field) is True]
+    signals = [
+        field.removeprefix("supply_")
+        for field in _SUPPLY_SIGNAL_FIELDS
+        if values.get(field) is True
+    ]
     divergence = text("supply_divergence_type")
     if divergence:
         signals.append(f"divergence:{divergence}")
@@ -338,11 +347,21 @@ class OhlcvClient:
         *,
         adjusted: bool = True,
         include_indicators: bool = True,
+        acquisition_audit: dict[str, object] | None = None,
     ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
         attempts = max(1, self.settings.monitor_retry_attempts)
         provider_count = min(count, OHLCV_PROVIDER_REQUEST_LIMIT)
+        deadline = time.monotonic() + max(0.1, self.settings.ohlcv_timeout_seconds)
         for attempt in range(attempts):
+            if acquisition_audit is not None:
+                acquisition_audit["request_count"] = (
+                    int(acquisition_audit.get("request_count") or 0) + 1
+                )
+                if attempt:
+                    acquisition_audit["retry_count"] = (
+                        int(acquisition_audit.get("retry_count") or 0) + 1
+                    )
             try:
                 response = await client.get(
                     "/ohlcv",
@@ -357,6 +376,18 @@ class OhlcvClient:
                 )
                 response.raise_for_status()
                 payload = response.json()
+                resolved = payload.get("resolved_symbol")
+                if isinstance(resolved, dict):
+                    resolved_code = str(resolved.get("code") or "").upper()
+                    if resolved_code and resolved_code != ticker.upper():
+                        raise ValueError("ohlcv_security_identity_mismatch")
+                meta = payload.get("meta")
+                if (
+                    isinstance(meta, dict)
+                    and meta.get("adjusted") is not None
+                    and bool(meta.get("adjusted")) != adjusted
+                ):
+                    raise ValueError("ohlcv_adjustment_basis_mismatch")
                 bars = payload.get("periods", {}).get(period, [])
                 if not isinstance(bars, list):
                     bars = []
@@ -365,13 +396,50 @@ class OhlcvClient:
                     latest_bar = bars[-1]
                     if isinstance(latest_bar, dict):
                         bars[-1] = {**latest_bar, "supply_demand": supply_demand}
+                if acquisition_audit is not None:
+                    acquisition_audit["success_count"] = (
+                        int(acquisition_audit.get("success_count") or 0) + 1
+                    )
                 return _summarize_bars(count, bars), bars
-            except (httpx.HTTPError, ValueError) as exc:
+            except ValueError as exc:
+                if acquisition_audit is not None:
+                    failures = acquisition_audit.setdefault("failure_classes", [])
+                    if isinstance(failures, list):
+                        failures.append(str(exc) or type(exc).__name__)
+                raise
+            except httpx.HTTPError as exc:
                 last_error = exc
-                if attempt + 1 < attempts:
-                    delay = self.settings.monitor_retry_base_seconds * (2**attempt)
-                    if delay > 0:
-                        await asyncio.sleep(delay)
+                retryable = isinstance(
+                    exc,
+                    (
+                        httpx.ConnectError,
+                        httpx.ConnectTimeout,
+                        httpx.ReadTimeout,
+                        httpx.RemoteProtocolError,
+                    ),
+                ) or (isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500)
+                if acquisition_audit is not None:
+                    failures = acquisition_audit.setdefault("failure_classes", [])
+                    if isinstance(failures, list):
+                        failures.append(type(exc).__name__)
+                    if isinstance(exc, httpx.ConnectError):
+                        key = "connection_error_count"
+                    elif isinstance(exc, (httpx.ConnectTimeout, httpx.ReadTimeout)):
+                        key = "timeout_count"
+                    elif isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500:
+                        key = "server_error_count"
+                    else:
+                        key = "non_retryable_error_count"
+                    acquisition_audit[key] = int(acquisition_audit.get(key) or 0) + 1
+                if not retryable or attempt + 1 >= attempts:
+                    raise
+                jitter_seed = hashlib.sha256(f"{ticker}|{period}|{attempt}".encode()).digest()[0]
+                jitter = 0.9 + (jitter_seed / 255) * 0.2
+                delay = self.settings.monitor_retry_base_seconds * (2**attempt) * jitter
+                if time.monotonic() + delay >= deadline:
+                    raise
+                if delay > 0:
+                    await asyncio.sleep(delay)
         assert last_error is not None
         raise last_error
 
@@ -385,14 +453,23 @@ class OhlcvClient:
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext()
         adjusted_bars: dict[str, list[dict[str, object]]] = {}
+        technical_acquisition: dict[str, object] = {
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "request_count": 0,
+            "success_count": 0,
+            "retry_count": 0,
+            "connection_error_count": 0,
+            "timeout_count": 0,
+            "server_error_count": 0,
+            "cache_use_count": 0,
+            "failure_classes": [],
+        }
         price_structure_enabled = (
             self.settings.kr_price_structure_v3_enabled
             if ticker.isdigit()
             else self.settings.us_price_structure_v3_enabled
         )
-        period_counts = (
-            PRICE_STRUCTURE_PERIOD_COUNTS if price_structure_enabled else PERIOD_COUNTS
-        )
+        period_counts = PRICE_STRUCTURE_PERIOD_COUNTS if price_structure_enabled else PERIOD_COUNTS
         async with httpx.AsyncClient(
             base_url=self.settings.ohlcv_base_url.rstrip("/"),
             headers=headers,
@@ -403,7 +480,11 @@ class OhlcvClient:
                 started_at = datetime.now(timezone.utc)
                 try:
                     summary, bars = await self._request_period(
-                        client, ticker, period, count
+                        client,
+                        ticker,
+                        period,
+                        count,
+                        acquisition_audit=technical_acquisition,
                     )
                     context.periods[period] = summary
                     adjusted_bars[period] = bars
@@ -478,9 +559,7 @@ class OhlcvClient:
                         status="success",
                     )
             except (httpx.HTTPError, ValueError) as exc:
-                context.warnings.append(
-                    f"valuation_history_unadjusted: {type(exc).__name__}"
-                )
+                context.warnings.append(f"valuation_history_unadjusted: {type(exc).__name__}")
                 if session is not None:
                     ProviderTelemetryService().record(
                         session,
@@ -550,8 +629,7 @@ class OhlcvClient:
                     shifted_bars[period].append(shifted)
             adjusted_bars = shifted_bars
         is_live_bar = (
-            session_state.session == "open"
-            and latest_date == session_state.market_date.isoformat()
+            session_state.session == "open" and latest_date == session_state.market_date.isoformat()
         )
         context.decision = PriceDecisionContext(
             current_price=daily.latest_close if daily else None,
@@ -574,8 +652,7 @@ class OhlcvClient:
             "provisional"
             if is_live_bar
             else "fresh"
-            if latest_date
-            == session_state.latest_completed_regular_session_date.isoformat()
+            if latest_date == session_state.latest_completed_regular_session_date.isoformat()
             else "stale"
             if latest_date
             else "unavailable"
@@ -604,29 +681,40 @@ class OhlcvClient:
                 )
                 context.chart.structure["price_structure_v3"] = builder(
                     ticker=ticker,
-                    cutoff=(
-                        session_state.latest_completed_regular_session_date.isoformat()
-                    ),
+                    cutoff=(session_state.latest_completed_regular_session_date.isoformat()),
                     raw_by_timeframe=adjusted_bars,
                     observed_at=observed_local.isoformat(),
                     provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
                 )
             except (TypeError, ValueError) as exc:
-                context.warnings.append(
-                    f"price_structure_v3: {type(exc).__name__}"
-                )
+                context.warnings.append(f"price_structure_v3: {type(exc).__name__}")
         structure_unavailable = context.chart.structure.get("unavailable_fields", [])
         context.chart.unavailable_fields = list(
             dict.fromkeys(
                 [
                     *_UNAVAILABLE_PROVIDER_CHART_FIELDS,
-                    *(
-                        structure_unavailable
-                        if isinstance(structure_unavailable, list)
-                        else []
-                    ),
+                    *(structure_unavailable if isinstance(structure_unavailable, list) else []),
                 ]
             )
         )
         context.chart.warnings = list(context.warnings)
+        technical_acquisition["completed_at"] = datetime.now(timezone.utc).isoformat()
+        failure_classes = technical_acquisition.get("failure_classes")
+        if isinstance(failure_classes, list):
+            technical_acquisition["failure_classes"] = tuple(
+                dict.fromkeys(str(item) for item in failure_classes)
+            )
+        technical_context = build_packet_owned_technical_context(
+            ticker=ticker,
+            market="kr" if ticker.isdigit() else "us",
+            session=session_state.session,
+            as_of=observed_local.isoformat(),
+            periods=adjusted_bars,
+            cutoff=session_state.latest_completed_regular_session_date,
+            expected_daily_completed=(
+                session_state.latest_completed_regular_session_date.isoformat()
+            ),
+            acquisition=technical_acquisition,
+        )
+        context.set_technical_context_payload(technical_context.model_dump(mode="json"))
         return context

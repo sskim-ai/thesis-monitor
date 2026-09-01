@@ -12,6 +12,10 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.services.ohlcv_feature_engine_service import MultiTimeframeFeaturePacket
+from app.services.packet_owned_technical_context_service import (
+    PacketOwnedTechnicalContext,
+    TechnicalContextStatus,
+)
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -106,6 +110,9 @@ class DecisionEvidencePacket(FrozenModel):
     evidence: tuple[DecisionEvidenceRef, ...]
     prohibited_claims: tuple[str, ...]
     data_quality_cautions: tuple[str, ...] = ()
+    technical_context_id: str | None = None
+    technical_context_status: str = "LEGACY_UNSPECIFIED"
+    technical_context_quality: dict[str, object] = Field(default_factory=dict)
     evidence_sha256: str
 
 
@@ -136,9 +143,7 @@ class DecisionCandidate(FrozenModel):
     opposing_evidence: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     buy_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(default=(), max_length=3)
     sell_case_evidence: tuple[PolarityEvidenceClaim, ...] = Field(default=(), max_length=3)
-    neutral_context_evidence: tuple[PolarityEvidenceClaim, ...] = Field(
-        default=(), max_length=3
-    )
+    neutral_context_evidence: tuple[PolarityEvidenceClaim, ...] = Field(default=(), max_length=3)
     unknowns: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
     upgrade_condition: EvidenceClaim
     downgrade_condition: EvidenceClaim
@@ -267,11 +272,15 @@ def build_decision_evidence_packet(
     *,
     packet: Mapping[str, object],
     stock: Mapping[str, object],
-    technical_features: MultiTimeframeFeaturePacket,
+    technical_features: MultiTimeframeFeaturePacket | None = None,
+    technical_context: PacketOwnedTechnicalContext | None = None,
 ) -> DecisionEvidencePacket:
     ticker = str(stock.get("ticker") or "")
-    if not ticker or technical_features.ticker != ticker:
+    features = technical_context.features if technical_context is not None else technical_features
+    if not ticker or (features is not None and features.ticker != ticker):
         raise ValueError("ticker_mismatch")
+    if technical_context is not None and technical_context.ticker != ticker:
+        raise ValueError("technical_context_ticker_mismatch")
     packet_id = str(packet.get("packet_id") or "")
     market = str(packet.get("market") or "").lower()
     if market not in {"kr", "us"}:
@@ -388,30 +397,69 @@ def build_decision_evidence_packet(
                 )
             )
 
-    for timeframe in (
-        technical_features.monthly,
-        technical_features.weekly,
-        technical_features.daily,
-    ):
-        for fact in timeframe.facts:
-            refs.append(
-                DecisionEvidenceRef(
-                    ref_id=fact.fact_id,
-                    category=EvidenceCategory.TECHNICAL_FEATURE,
-                    label=f"{fact.timeframe}:{fact.semantic}",
-                    statement=f"{fact.timeframe} {fact.semantic}",
-                    as_of=fact.as_of,
-                    value=fact.value,
-                    unit=fact.unit,
-                    source_ref=f"technical_features.{fact.timeframe}.{fact.semantic}",
-                    numeric_prose_eligible=isinstance(fact.value, Decimal),
-                )
+    usable_timeframes = {"daily", "weekly", "monthly"}
+    if technical_context is not None:
+        usable_timeframes = {
+            row.timeframe
+            for row in technical_context.quality.values()
+            if row.usable_for_current_reasoning
+        }
+        refs.append(
+            DecisionEvidenceRef(
+                ref_id=technical_context.technical_context_id,
+                category=EvidenceCategory.QUALITY,
+                label="기술 컨텍스트 품질",
+                statement=(
+                    f"technical_context={technical_context.status}; "
+                    f"freshness={technical_context.freshness_state}; "
+                    f"usable_timeframes={','.join(sorted(usable_timeframes)) or 'none'}"
+                ),
+                as_of=technical_context.as_of,
+                source_ref="stock.technical_context",
             )
+        )
+    if features is not None:
+        for timeframe in (features.monthly, features.weekly, features.daily):
+            if timeframe.timeframe not in usable_timeframes:
+                continue
+            for fact in timeframe.facts:
+                refs.append(
+                    DecisionEvidenceRef(
+                        ref_id=fact.fact_id,
+                        category=EvidenceCategory.TECHNICAL_FEATURE,
+                        label=f"{fact.timeframe}:{fact.semantic}",
+                        statement=f"{fact.timeframe} {fact.semantic}",
+                        as_of=fact.as_of,
+                        value=fact.value,
+                        unit=fact.unit,
+                        source_ref=(
+                            f"technical_context.{technical_context.technical_context_id}."
+                            f"{fact.timeframe}.{fact.semantic}"
+                            if technical_context is not None
+                            else f"technical_features.{fact.timeframe}.{fact.semantic}"
+                        ),
+                        numeric_prose_eligible=isinstance(fact.value, Decimal),
+                    )
+                )
 
     unique = {ref.ref_id: ref for ref in refs}
     normalized = tuple(unique[key] for key in sorted(unique))
-    cautions = tuple(str(value) for value in stock.get("data_cautions") or ())
-    payload = [ref.model_dump(mode="json") for ref in normalized]
+    cautions = [str(value) for value in stock.get("data_cautions") or ()]
+    if technical_context is not None and technical_context.status != TechnicalContextStatus.FULL:
+        cautions.append(
+            "technical_context_limit:"
+            + technical_context.status
+            + (f":{technical_context.failure_reason}" if technical_context.failure_reason else "")
+        )
+    payload = {
+        "evidence": [ref.model_dump(mode="json") for ref in normalized],
+        "technical_context_id": (
+            technical_context.technical_context_id if technical_context is not None else None
+        ),
+        "technical_context_status": (
+            technical_context.status if technical_context is not None else "LEGACY_UNSPECIFIED"
+        ),
+    }
     return DecisionEvidencePacket(
         packet_id=packet_id,
         ticker=ticker,
@@ -427,7 +475,18 @@ def build_decision_evidence_packet(
             "valuation_from_technical_indicator",
             "future_evidence_or_lookahead",
         ),
-        data_quality_cautions=cautions,
+        data_quality_cautions=tuple(dict.fromkeys(cautions)),
+        technical_context_id=(
+            technical_context.technical_context_id if technical_context is not None else None
+        ),
+        technical_context_status=(
+            technical_context.status if technical_context is not None else "LEGACY_UNSPECIFIED"
+        ),
+        technical_context_quality=(
+            {key: value.model_dump(mode="json") for key, value in technical_context.quality.items()}
+            if technical_context is not None
+            else {}
+        ),
         evidence_sha256=_canonical_sha(payload),
     )
 
@@ -458,6 +517,9 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
             for ref in packet.evidence
         ],
         "prohibited_claims": packet.prohibited_claims,
+        "technical_context_id": packet.technical_context_id,
+        "technical_context_status": packet.technical_context_status,
+        "technical_context_quality": packet.technical_context_quality,
         "data_quality_cautions": packet.data_quality_cautions,
     }
 

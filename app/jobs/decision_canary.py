@@ -7,10 +7,8 @@ import os
 import shutil
 import subprocess
 from collections.abc import Mapping
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from pathlib import Path
-
-import httpx
 
 from app.config import get_settings
 from app.services.cross_market_decision_engine_service import (
@@ -32,8 +30,8 @@ from app.services.decision_canary_service import (
     strict_json_schema,
     validate_decision_canary_output,
 )
-from app.services.ohlcv_feature_engine_service import (
-    build_multi_timeframe_feature_packet,
+from app.services.packet_owned_technical_context_service import (
+    packet_owned_context_for_stock,
 )
 
 
@@ -79,30 +77,6 @@ def _paths(claim: Mapping[str, object], claim_id: str) -> dict[str, Path]:
     return decision_canary_paths(final_review, claim_id=claim_id)
 
 
-async def _fetch_ohlcv(
-    client: httpx.AsyncClient,
-    *,
-    ticker: str,
-    base_url: str,
-    api_key: str,
-) -> dict[str, object]:
-    response = await client.get(
-        f"{base_url.rstrip('/')}/ohlcv",
-        params={
-            "symbol": ticker,
-            "periods": "daily,weekly,monthly",
-            "count": 1000,
-            "include_indicators": "false",
-        },
-        headers={"X-API-Key": api_key},
-    )
-    response.raise_for_status()
-    value = response.json()
-    if not isinstance(value, dict) or not isinstance(value.get("periods"), dict):
-        raise ValueError(f"invalid_decision_canary_ohlcv:{ticker}")
-    return value
-
-
 async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     if not decision_canary_armed():
         return {"status": "NOT_ACTIVE", "packet_id": packet_id}
@@ -121,37 +95,17 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     missing = [ticker for ticker in subjects if ticker not in stocks]
     if missing:
         raise ValueError("decision_canary_subject_unavailable:" + ",".join(missing))
-    settings = get_settings()
-    api_key = settings.action_api_key or settings.ohlcv_api_key or ""
-    if not api_key:
-        raise ValueError("decision_canary_ohlcv_api_key_missing")
-    timeout = httpx.Timeout(settings.ohlcv_timeout_seconds, connect=10.0)
-    payloads: dict[str, dict[str, object]] = {}
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        for ticker in subjects:
-            payloads[ticker] = await _fetch_ohlcv(
-                client,
-                ticker=ticker,
-                base_url=settings.ohlcv_base_url,
-                api_key=api_key,
-            )
-    cutoff = date.fromisoformat(str(packet.get("assessment_date") or "")[:10])
     evidence_packets: list[DecisionEvidencePacket] = []
     for ticker in subjects:
-        raw_periods = payloads[ticker]["periods"]
-        assert isinstance(raw_periods, Mapping)
-        features = build_multi_timeframe_feature_packet(
-            ticker=ticker,
-            periods={
-                str(key): value for key, value in raw_periods.items() if isinstance(value, list)
-            },
-            cutoff=cutoff,
+        technical_context = packet_owned_context_for_stock(
+            packet=packet,
+            stock=stocks[ticker],
         )
         evidence_packets.append(
             build_decision_evidence_packet(
                 packet=packet,
                 stock=stocks[ticker],
-                technical_features=features,
+                technical_context=technical_context,
             )
         )
     continuity_state = load_decision_canary_state()
@@ -311,7 +265,6 @@ async def _run(args: argparse.Namespace) -> None:
         FileNotFoundError,
         ValueError,
         json.JSONDecodeError,
-        httpx.HTTPError,
         subprocess.TimeoutExpired,
     ) as exc:
         result = _safe_suppression_receipt(

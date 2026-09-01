@@ -383,6 +383,13 @@ class PriceContext(BaseModel):
     warnings: list[str] = Field(default_factory=list)
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
+    _technical_context_payload: dict[str, object] = PrivateAttr(default_factory=dict)
+
+    def set_technical_context_payload(self, payload: dict[str, object]) -> None:
+        self._technical_context_payload = dict(payload)
+
+    def technical_context_payload(self) -> dict[str, object]:
+        return dict(self._technical_context_payload)
 
 
 class HistoricalValuationStatistics(BaseModel):

@@ -5,15 +5,11 @@ import asyncio
 import hashlib
 import json
 from collections.abc import Mapping, Sequence
-from datetime import date
 from pathlib import Path
-
-import httpx
 
 from app.config import get_settings
 from app.jobs.accepted_decision_v2_runtime import (
     V2_REASONING_BATCH_SIZE,
-    _fetch_ohlcv,
     _invoke_signed_in_codex,
     _signed_in_codex_bin,
 )
@@ -35,7 +31,9 @@ from app.services.decision_canary_service import (
     insert_decision_canary_block,
     strict_json_schema,
 )
-from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
+from app.services.packet_owned_technical_context_service import (
+    packet_owned_context_for_stock,
+)
 from app.services.preconfirmation_decision_v2_service import (
     validate_preconfirmation_candidate,
 )
@@ -58,8 +56,7 @@ def _write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str)
-        + "\n",
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
     )
     temporary.replace(path)
@@ -83,41 +80,17 @@ async def _context(
 ) -> AcceptedV2ProductionContext:
     packet = _read_json(packet_path)
     stocks = [row for row in packet.get("stocks") or () if isinstance(row, Mapping)]
-    settings = get_settings()
-    api_key = settings.action_api_key or settings.ohlcv_api_key or ""
-    if not api_key:
-        raise ValueError("preflight_ohlcv_api_key_missing")
-    timeout = httpx.Timeout(settings.ohlcv_timeout_seconds, connect=10.0)
-    payloads: dict[str, dict[str, object]] = {}
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        for stock in stocks:
-            ticker = str(stock.get("ticker") or "").upper()
-            payloads[ticker] = await _fetch_ohlcv(
-                client,
-                ticker=ticker,
-                base_url=settings.ohlcv_base_url,
-                api_key=api_key,
-            )
-    cutoff = date.fromisoformat(str(packet.get("assessment_date") or "")[:10])
     evidence_packets: list[DecisionEvidencePacket] = []
     for stock in stocks:
-        ticker = str(stock.get("ticker") or "").upper()
-        periods = payloads[ticker]["periods"]
-        assert isinstance(periods, Mapping)
-        features = build_multi_timeframe_feature_packet(
-            ticker=ticker,
-            periods={
-                str(key): value
-                for key, value in periods.items()
-                if isinstance(value, list)
-            },
-            cutoff=cutoff,
+        technical_context = packet_owned_context_for_stock(
+            packet=packet,
+            stock=stock,
         )
         evidence_packets.append(
             build_decision_evidence_packet(
                 packet=packet,
                 stock=stock,
-                technical_features=features,
+                technical_context=technical_context,
             )
         )
     return build_accepted_v2_production_context(
@@ -198,9 +171,7 @@ def _codex_batch(
                 cwd=output_dir,
                 timeout=timeout,
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(
-                _read_json(repair_output)
-            )
+            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id
@@ -221,14 +192,10 @@ def _codex_batch(
                 )
             batch_candidates[ticker] = repaired.candidates[0]
             batch_adjudications.pop(ticker, None)
-            batch_adjudications.update(
-                {row.ticker: row for row in repaired.adjudications}
-            )
+            batch_adjudications.update({row.ticker: row for row in repaired.adjudications})
         candidates.extend(batch_candidates[ticker] for ticker in subjects)
         adjudications.extend(
-            batch_adjudications[ticker]
-            for ticker in subjects
-            if ticker in batch_adjudications
+            batch_adjudications[ticker] for ticker in subjects if ticker in batch_adjudications
         )
     return AcceptedV2ProductionBatchOutput(
         packet_id=context.packet_id,

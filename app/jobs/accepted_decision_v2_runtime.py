@@ -7,10 +7,8 @@ import os
 import shutil
 import subprocess
 from collections.abc import Mapping
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from pathlib import Path
-
-import httpx
 
 from app.config import get_settings
 from app.services.accepted_decision_v2_runtime_service import (
@@ -32,7 +30,10 @@ from app.services.cross_market_decision_engine_service import (
     build_decision_evidence_packet,
 )
 from app.services.decision_canary_service import strict_json_schema
-from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
+from app.services.packet_owned_technical_context_service import (
+    PacketOwnedTechnicalContext,
+    packet_owned_context_for_stock,
+)
 from app.services.preconfirmation_decision_v2_service import (
     validate_preconfirmation_candidate,
 )
@@ -52,8 +53,7 @@ def _atomic_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str)
-        + "\n",
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
     )
     os.replace(temporary, path)
@@ -112,9 +112,7 @@ def _invoke_signed_in_codex(
         str(output),
         "-",
     ]
-    with prompt.open(encoding="utf-8") as stdin, log.open(
-        "w", encoding="utf-8"
-    ) as stdout:
+    with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
         process = subprocess.run(
             command,
             cwd=cwd,
@@ -144,30 +142,6 @@ def _paths(claim: Mapping[str, object], claim_id: str) -> dict[str, Path]:
     return accepted_v2_production_paths(final_review, claim_id=claim_id)
 
 
-async def _fetch_ohlcv(
-    client: httpx.AsyncClient,
-    *,
-    ticker: str,
-    base_url: str,
-    api_key: str,
-) -> dict[str, object]:
-    response = await client.get(
-        f"{base_url.rstrip('/')}/ohlcv",
-        params={
-            "symbol": ticker,
-            "periods": "daily,weekly,monthly",
-            "count": 1000,
-            "include_indicators": "false",
-        },
-        headers={"X-API-Key": api_key},
-    )
-    response.raise_for_status()
-    value = response.json()
-    if not isinstance(value, dict) or not isinstance(value.get("periods"), dict):
-        raise ValueError(f"invalid_v2_production_ohlcv:{ticker}")
-    return value
-
-
 async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     if not v2_accepted_production_armed():
         return {"status": "NOT_ACTIVE", "packet_id": packet_id}
@@ -176,41 +150,16 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     stocks = [row for row in packet.get("stocks") or () if isinstance(row, Mapping)]
     if not stocks:
         raise ValueError("v2_production_packet_stocks_missing")
-    settings = get_settings()
-    api_key = settings.action_api_key or settings.ohlcv_api_key or ""
-    if not api_key:
-        raise ValueError("v2_production_ohlcv_api_key_missing")
-    timeout = httpx.Timeout(settings.ohlcv_timeout_seconds, connect=10.0)
-    payloads: dict[str, dict[str, object]] = {}
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        for stock in stocks:
-            ticker = str(stock.get("ticker") or "").upper()
-            payloads[ticker] = await _fetch_ohlcv(
-                client,
-                ticker=ticker,
-                base_url=settings.ohlcv_base_url,
-                api_key=api_key,
-            )
-    cutoff = date.fromisoformat(str(packet.get("assessment_date") or "")[:10])
     evidence_packets: list[DecisionEvidencePacket] = []
+    technical_contexts: list[PacketOwnedTechnicalContext] = []
     for stock in stocks:
-        ticker = str(stock.get("ticker") or "").upper()
-        periods = payloads[ticker]["periods"]
-        assert isinstance(periods, Mapping)
-        features = build_multi_timeframe_feature_packet(
-            ticker=ticker,
-            periods={
-                str(key): value
-                for key, value in periods.items()
-                if isinstance(value, list)
-            },
-            cutoff=cutoff,
-        )
+        technical_context = packet_owned_context_for_stock(packet=packet, stock=stock)
+        technical_contexts.append(technical_context)
         evidence_packets.append(
             build_decision_evidence_packet(
                 packet=packet,
                 stock=stock,
-                technical_features=features,
+                technical_context=technical_context,
             )
         )
     context = build_accepted_v2_production_context(
@@ -231,6 +180,10 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
         "claim_id": claim_id,
         "market": context.market,
         "subjects": list(context.selected_subjects),
+        "technical_context_counts": {
+            status: sum(row.status == status for row in technical_contexts)
+            for status in ("FULL", "PARTIAL_SAFE", "UNAVAILABLE", "INVALID")
+        },
         "context_path": str(paths["context"]),
         "prompt_path": str(paths["prompt"]),
         "schema_path": str(paths["schema"]),
@@ -247,9 +200,7 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     artifact = validate_accepted_v2_production_output(context, output)
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
     packet = _read_json(Path(str(claim.get("packet_path") or "")))
-    load_accepted_v2_production_artifact(
-        paths["final"], packet=packet, claim_id=claim_id
-    )
+    load_accepted_v2_production_artifact(paths["final"], packet=packet, claim_id=claim_id)
     receipt = {
         "contract": RECEIPT_CONTRACT,
         "status": artifact.status,
@@ -312,9 +263,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
         batch_output = paths["temp"].with_name(
             f"{paths['temp'].stem}.batch-{batch_number:02d}.json"
         )
-        batch_log = paths["log"].with_name(
-            f"{paths['log'].stem}.batch-{batch_number:02d}.log"
-        )
+        batch_log = paths["log"].with_name(f"{paths['log'].stem}.batch-{batch_number:02d}.log")
         _atomic_text(
             batch_prompt,
             accepted_v2_production_prompt(context, subjects=subjects),
@@ -375,9 +324,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                 cwd=paths["prompt"].parent,
                 timeout=timeout,
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(
-                _read_json(repair_output)
-            )
+            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id
@@ -400,14 +347,10 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                 )
             batch_candidates[ticker] = repaired.candidates[0]
             batch_adjudications.pop(ticker, None)
-            batch_adjudications.update(
-                {row.ticker: row for row in repaired.adjudications}
-            )
+            batch_adjudications.update({row.ticker: row for row in repaired.adjudications})
         candidates.extend(batch_candidates[ticker] for ticker in subjects)
         adjudications.extend(
-            batch_adjudications[ticker]
-            for ticker in subjects
-            if ticker in batch_adjudications
+            batch_adjudications[ticker] for ticker in subjects if ticker in batch_adjudications
         )
     output_path = Path(str(prepared["temp_output_path"]))
     _atomic_json(
@@ -436,7 +379,6 @@ async def _run(args: argparse.Namespace) -> None:
         FileNotFoundError,
         ValueError,
         json.JSONDecodeError,
-        httpx.HTTPError,
         subprocess.TimeoutExpired,
     ) as exc:
         result = _safe_suppression_receipt(

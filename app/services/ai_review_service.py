@@ -185,10 +185,10 @@ _NUMBER = re.compile(
     r"(?<![\w])[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?%?"
 )
 _STRUCTURAL_NUMBER_PATTERNS = (
-    r"\bS&P\s*500\b",
-    r"\bRussell\s*2000\b",
-    r"\bKOSPI\s*200\b",
-    r"\bKOSDAQ\s*150\b",
+    r"(?<![A-Za-z0-9_])S&P\s*500(?=$|[^A-Za-z0-9_])",
+    r"(?<![A-Za-z0-9_])Russell\s*2000(?=$|[^A-Za-z0-9_])",
+    r"(?<![A-Za-z0-9_])KOSPI\s*200(?=$|[^A-Za-z0-9_])",
+    r"(?<![A-Za-z0-9_])KOSDAQ\s*150(?=$|[^A-Za-z0-9_])",
     r"\b(?:미국\s*)?10\s*년물\b",
     r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
     r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
@@ -3326,6 +3326,10 @@ def _stock_packet(
     stock["current_price_context"] = select_current_price_context(
         _dict(assessment.price_context)
     )
+    stored_price_context = _dict(assessment.price_context)
+    technical_context = stored_price_context.get("technical_context")
+    if isinstance(technical_context, dict):
+        stock["technical_context"] = technical_context
     stock["runtime_specificity_plan"] = build_runtime_specificity_plan(stock)
     return stock
 
@@ -3738,6 +3742,53 @@ def build_ai_review_packet(
         },
         "ready_for_ai": cohort_ready,
     }
+    technical_contexts = [
+        _dict(stock.get("technical_context"))
+        for stock in stocks
+        if isinstance(stock.get("technical_context"), dict)
+    ]
+    if technical_contexts:
+        status_counts = {
+            status: sum(
+                str(context.get("status") or "") == status
+                for context in technical_contexts
+            )
+            for status in ("FULL", "PARTIAL_SAFE", "UNAVAILABLE", "INVALID")
+        }
+        body["technical_context_telemetry"] = {
+            "contract": "packet-owned-technical-context-telemetry-v1",
+            "subject_count": len(technical_contexts),
+            "status_counts": status_counts,
+            "request_count": sum(
+                int(_dict(context.get("acquisition")).get("request_count") or 0)
+                for context in technical_contexts
+            ),
+            "success_count": sum(
+                int(_dict(context.get("acquisition")).get("success_count") or 0)
+                for context in technical_contexts
+            ),
+            "retry_count": sum(
+                int(_dict(context.get("acquisition")).get("retry_count") or 0)
+                for context in technical_contexts
+            ),
+            "connection_error_count": sum(
+                int(_dict(context.get("acquisition")).get("connection_error_count") or 0)
+                for context in technical_contexts
+            ),
+            "timeout_count": sum(
+                int(_dict(context.get("acquisition")).get("timeout_count") or 0)
+                for context in technical_contexts
+            ),
+            "cache_use_count": sum(
+                int(_dict(context.get("acquisition")).get("cache_use_count") or 0)
+                for context in technical_contexts
+            ),
+            "operational_warning": (
+                status_counts["FULL"] == 0
+                or status_counts["UNAVAILABLE"] + status_counts["INVALID"]
+                == len(technical_contexts)
+            ),
+        }
     canonical = json.dumps(
         _production_packet_identity_body(body),
         ensure_ascii=False,
@@ -4121,6 +4172,27 @@ def _prose_number_occurrences(text: str) -> list[tuple[int, int, str]]:
         for match in _NUMBER.finditer(text)
         if not any(start <= match.start() and match.end() <= end for start, end in structural)
     ]
+
+
+def _prose_number_diagnostics(
+    text: str,
+    *,
+    field_path: str,
+) -> list[dict[str, object]]:
+    diagnostics: list[dict[str, object]] = []
+    for start, end, token in _prose_number_occurrences(text):
+        raw = text[start:end]
+        diagnostics.append(
+            {
+                "raw_matched_text": raw,
+                "normalized_token": token,
+                "parsed_numeric_value": float(token),
+                "character_span": {"start": start, "end": end},
+                "field_path": field_path,
+                "matching_rule": "visible_numeric_literal_v2",
+            }
+        )
+    return diagnostics
 
 
 def _usage_spans(text: str, usage: str) -> list[tuple[int, int]]:
@@ -6427,6 +6499,17 @@ def _numeric_correction_context(
                 "text_ref": text_ref,
                 "rendered_phrase": rendered_phrase,
                 "canonical_candidates": candidates,
+                "numeric_diagnostics": [
+                    {
+                        **diagnostic,
+                        "candidate_fact_binding_attempt": candidates,
+                    }
+                    for diagnostic in _prose_number_diagnostics(
+                        rendered_phrase or "",
+                        field_path=text_ref or "",
+                    )
+                    if not tokens or str(diagnostic["normalized_token"]) in tokens
+                ],
                 "allowed_actions": [
                     "correct_reference",
                     "correct_wording",
@@ -6560,7 +6643,11 @@ def finalize_ai_review_output(
                 "numeric_binding": binding_report,
                 "correction_context": _numeric_correction_context(
                     packet,
-                    candidate,
+                    (
+                        binding.output
+                        if isinstance(binding.output, dict)
+                        else normalized_candidate
+                    ),
                     errors,
                 ),
                 "fallback_eligibility_preserved": True,

@@ -191,6 +191,9 @@ def serialize_price_context_with_reconciliation(price_context: object) -> str:
     internal = supply.reconciliation_payload() if supply is not None else {}
     if internal and isinstance(payload.get("supply"), dict):
         payload["supply"].update(internal)
+    technical_context = price_context.technical_context_payload()
+    if technical_context:
+        payload["technical_context"] = technical_context
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
 
