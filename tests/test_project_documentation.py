@@ -139,7 +139,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "codex/20260901-ohlcv-technical-context-resilient-v2-repair"
     )
     assert state["current_phase"] == (
-        "ohlcv_v2_pipeline_repair_ready_for_main_awaiting_natural_us_live"
+        "ohlcv_v2_pipeline_repair_deployed_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
         "20260901_ohlcv_v2_pipeline_repair_retrospective_and_test_sink"
@@ -171,7 +171,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     production_base_commit = "6db9256b539e437a7067a1822237ef9c504c63fa"
     production_deployed_commit = "2a30bb3dcaecb40f83ca53f59982de1e18dab0ee"
     onboarding_runtime_commit = "6521d509c0598838543d6981f4905ebf5f8e153c"
-    pending_runtime_commit = "5e3820456ace797450b9403386edaa2fc6af6cf1"
+    ohlcv_promoted_commit = "3efe688bb7eaa41bc084061c9eb9de910d86423a"
     implementation_commit = "069f002437163bff1df7aa6e258918c1777d5dfa"
     kr_size_sector_implementation = "6a54db130e95e25969a5ca0a100648d4a12c3aa2"
     preenable_implementation = "7d2823c236c458cf76c77faae043c6288e46e65e"
@@ -187,9 +187,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["recorded_base_commit"] == (
         "f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7"
     )
-    assert state["deployed_code_commit"] == pending_runtime_commit
-    assert state["main_code_commit"] == pending_runtime_commit
-    assert state["operating_code_commit"] == pending_runtime_commit
+    assert state["deployed_code_commit"] == ohlcv_promoted_commit
+    assert state["main_code_commit"] == ohlcv_promoted_commit
+    assert state["operating_code_commit"] == ohlcv_promoted_commit
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -295,13 +295,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "production-packet-universe-v1"
     )
     ohlcv_repair = state["ohlcv_v2_pipeline_repair_20260901"]
-    assert ohlcv_repair["status"] == "READY_FOR_MAIN_AWAITING_NATURAL_US_LIVE"
+    assert ohlcv_repair["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert ohlcv_repair["instruction_commit"] == (
         "1dd691a340b4961e105371af53142c76db7385d7"
     )
     assert ohlcv_repair["final_code_commit"] == (
         "1e0fb9cd6e4542474c623800a805026c236f2a53"
     )
+    assert ohlcv_repair["report_promotion_commit"] == ohlcv_promoted_commit
+    assert ohlcv_repair["report_github_actions_run"] == 33464969356
+    assert ohlcv_repair["main_code_commit"] == ohlcv_promoted_commit
+    assert ohlcv_repair["operating_code_commit"] == ohlcv_promoted_commit
+    assert ohlcv_repair["promotion_method"] == "CLEAN_LINEAR_FAST_FORWARD"
+    assert ohlcv_repair["api_health"] == "PASS"
+    assert ohlcv_repair["ohlcv_health"] == "PASS"
+    assert ohlcv_repair["natural_us_live"] == "PENDING"
     assert ohlcv_repair["primary_root_cause"] == "PROCESS_NAMESPACE_MISMATCH"
     assert ohlcv_repair["decision_stage_fresh_local_ohlcv_http_required"] is False
     assert ohlcv_repair["run49_candidate_generated"] == 14
@@ -1396,7 +1404,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "1e0fb9cd6e4542474c623800a805026c236f2a53"
+        "3efe688bb7eaa41bc084061c9eb9de910d86423a"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

@@ -8,6 +8,11 @@ Start with `docs/reports/20260901-ohlcv-v2-repair-readiness.json` and
 `1e0fb9cd6e4542474c623800a805026c236f2a53` on base
 `f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7`.
 
+Complete report/promotion commit `3efe688bb7eaa41bc084061c9eb9de910d86423a` passed Actions run
+`33464969356` and was fast-forwarded to main and the operating checkout. The thesis-monitor API was
+restarted because imported runtime code changed; API and OHLCV health both passed. Documentation
+closure resolves its own final SHA from Git and changes no runtime behavior.
+
 The root cause is a process namespace mismatch, not an absent or misconfigured host OHLCV service.
 V2 now consumes validated packet-owned technical context and no longer requires a fresh local HTTP
 fetch at decision time. Retry is bounded, stale or malformed data fails closed by subject, and one

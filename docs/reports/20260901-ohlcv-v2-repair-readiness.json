@@ -5,6 +5,7 @@
   "base_sha": "f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7",
   "instruction_commit": "1dd691a340b4961e105371af53142c76db7385d7",
   "implementation_sha": "1e0fb9cd6e4542474c623800a805026c236f2a53",
+  "report_promotion_commit": "3efe688bb7eaa41bc084061c9eb9de910d86423a",
   "primary_root_cause": "PROCESS_NAMESPACE_MISMATCH",
   "contributing_factors": [
     "decision_stage_duplicate_local_http_fetch",
@@ -83,7 +84,19 @@
     "operation_ids": "20/20 unique",
     "github_actions_run": 33461651863,
     "github_actions_test": "PASS",
-    "github_actions_lint": "PASS"
+    "github_actions_lint": "PASS",
+    "report_github_actions_run": 33464969356,
+    "report_github_actions_test": "PASS",
+    "report_github_actions_lint": "PASS"
+  },
+  "promotion": {
+    "previous_main": "f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7",
+    "main_code_commit": "3efe688bb7eaa41bc084061c9eb9de910d86423a",
+    "operating_code_commit": "3efe688bb7eaa41bc084061c9eb9de910d86423a",
+    "method": "clean_linear_fast_forward",
+    "api_health": "PASS",
+    "ohlcv_health": "PASS",
+    "natural_us_live": "PENDING"
   },
   "open_p0": [],
   "open_material_p1": [],

@@ -6,6 +6,10 @@ messages, message-quality, validation, live-guard, and artifact-index reports fi
 instruction commit is `1dd691a340b4961e105371af53142c76db7385d7`; final code before report
 closure is `1e0fb9cd6e4542474c623800a805026c236f2a53`.
 
+The complete report/promotion commit is `3efe688bb7eaa41bc084061c9eb9de910d86423a` and passed Actions
+run `33464969356`. It is deployed on main/operating; API and OHLCV health passed after the required
+API restart. Natural US proof remains pending and must not be inferred from the replay or sink.
+
 The local ConnectError was a process namespace mismatch. V2 now consumes
 `packet-owned-technical-context-v1` without decision-stage HTTP, with bounded reconnect and
 subject-local fail-closed states. Run-49 replay is accepted-ready 14/14 and current test sink is

@@ -6,6 +6,11 @@
 
 `NEXT_ACTION = WAIT_FOR_NEXT_NATURAL_US_LIVE`
 
+The repair and its complete report were promoted by clean fast-forward to main/operating code SHA
+`3efe688bb7eaa41bc084061c9eb9de910d86423a`. Exact-SHA Actions run `33464969356` passed Test and
+Lint, and both the thesis-monitor API and OHLCV service passed health checks. Natural `LIVE_PASS`
+is still deliberately pending.
+
 ## Root cause and repair
 
 The primary root cause is `PROCESS_NAMESPACE_MISMATCH`: the LaunchAgent OHLCV service and host

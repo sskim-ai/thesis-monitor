@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v28`
-As of: `2026-08-30`
+Master Workflow: `v29`
+As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260830-v2-adjudicated-decision-ownership-repair`
+Latest evidence branch: `codex/20260901-ohlcv-technical-context-resilient-v2-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,23 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. OHLCV Technical Context Resilience
+
+Exact work instructions were committed first as
+`1dd691a340b4961e105371af53142c76db7385d7` on base
+`f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7`. The root cause was
+`PROCESS_NAMESPACE_MISMATCH`: the host OHLCV LaunchAgent was healthy while a restricted decision
+process could not open the loopback socket. The repaired V2 path consumes validated
+`packet-owned-technical-context-v1`, uses bounded recovery, and isolates malformed or unavailable
+technical data by subject. It does not perform a duplicate decision-stage OHLCV HTTP fetch.
+
+Run-49 isolated replay passed `14/14`, the dedicated US sink passed `14/14 exact`, KR run-48
+remained FULL `8/8`, and the Korean-particle/Russell 2000 provenance false positive is closed
+without an allowlist. Complete report commit `3efe688bb7eaa41bc084061c9eb9de910d86423a`
+passed Actions run `33464969356` and was promoted by clean fast-forward. API and OHLCV health are
+PASS; open P0/material P1 is `0/0`. Natural US `LIVE_PASS` is not inferred from replay or the test
+sink. The next action is read-only observation of the next ordinary US cycle.
 
 ## 0. V2 Accepted Decision Ownership
 

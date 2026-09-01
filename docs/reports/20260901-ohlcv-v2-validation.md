@@ -32,6 +32,11 @@
 GitHub Actions run `33461651863` on exact SHA
 `1e0fb9cd6e4542474c623800a805026c236f2a53` completed Test and Lint successfully.
 
+The complete report/promotion commit `3efe688bb7eaa41bc084061c9eb9de910d86423a`
+also completed Test and Lint successfully in GitHub Actions run `33464969356`. Main and the
+operating checkout were fast-forwarded to that SHA; both API health endpoints passed after the
+required thesis-monitor API restart.
+
 ## Safety
 
 - production recipient send: `0`
