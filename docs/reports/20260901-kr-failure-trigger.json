@@ -1,0 +1,31 @@
+{
+  "causal_classification": "CODE_REGRESSION",
+  "configured_model": "gpt-5.6-sol",
+  "configured_reasoning_effort": "xhigh",
+  "contract": "kr-natural-live-failure-trigger-v1",
+  "data_trigger": false,
+  "effective_bad_resolution": "/Users/sskim/Codex/thesis-monitor/data/ai_review/claims/data/ai_review/claims/2026-09-01-kr-run-50-44156fe0fa76--daily-review-v3.10--dc747fff8565--65f0c307-72aa-4f45-9154-25981f5a3eaf.decision-v2-schema.json",
+  "effective_bad_resolution_exists": false,
+  "first_failing_stage": "V2_GENERATION_SCHEMA_PATH_RESOLUTION_FAILED_BEFORE_MODEL_CALL",
+  "model_call_reached": false,
+  "observed_failure": "Failed to read output schema file data/ai_review/claims/2026-09-01-kr-run-50-44156fe0fa76--daily-review-v3.10--dc747fff8565--65f0c307-72aa-4f45-9154-25981f5a3eaf.decision-v2-schema.json: No such file or directory (os error 2)",
+  "passing_control_reached_model": true,
+  "primary_same_schema_failure": true,
+  "schema_argument": "data/ai_review/claims/2026-09-01-kr-run-50-44156fe0fa76--daily-review-v3.10--dc747fff8565--65f0c307-72aa-4f45-9154-25981f5a3eaf.decision-v2-schema.json",
+  "schema_file_exists_from_repository_root": true,
+  "secondary_validator_false_positive": {
+    "error_count": 12,
+    "source_text": "KF-21 / FA-50",
+    "ticker": "047810",
+    "tokens": [
+      21,
+      50
+    ]
+  },
+  "subprocess_cwd": "data/ai_review/claims",
+  "test_candidate_count": 8,
+  "test_ready_count": 8,
+  "test_schema_argument": "/private/tmp/cpng-hut-technical-recovery-preflight-final-v2/kr/output.schema.json",
+  "test_schema_argument_absolute": true,
+  "test_status": "PASS"
+}
