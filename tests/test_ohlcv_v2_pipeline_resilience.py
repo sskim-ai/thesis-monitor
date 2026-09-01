@@ -131,6 +131,20 @@ def test_malformed_single_subject_is_invalid_without_affecting_valid_peer() -> N
     assert valid.status == TechnicalContextStatus.FULL
 
 
+def test_invalid_row_values_remain_part_of_raw_lineage_fingerprint() -> None:
+    first_periods = _periods(date(2026, 8, 31))
+    second_periods = _periods(date(2026, 8, 31))
+    first_periods["daily"][5]["high"] = 1
+    second_periods["daily"][5]["high"] = 2
+
+    first = _context(ticker="BAD", periods=first_periods)
+    second = _context(ticker="BAD", periods=second_periods)
+
+    assert first.status == TechnicalContextStatus.INVALID
+    assert second.status == TechnicalContextStatus.INVALID
+    assert first.raw_bar_fingerprint != second.raw_bar_fingerprint
+
+
 def test_partial_weekly_monthly_keeps_safe_daily_features_only() -> None:
     context = _context(periods={"daily": _bars(date(2026, 8, 31)), "weekly": [], "monthly": []})
     evidence = build_decision_evidence_packet(

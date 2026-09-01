@@ -15,6 +15,7 @@ from app.services.ohlcv_feature_engine_service import (
     TIMEFRAMES,
     build_multi_timeframe_feature_packet,
 )
+from app.services.ohlcv_provider_integrity_service import OhlcvIntegrityEvent
 
 
 CONTRACT_VERSION = "packet-owned-technical-context-v1"
@@ -63,7 +64,14 @@ class OhlcvAcquisitionTelemetry(FrozenModel):
     server_error_count: int = 0
     non_retryable_error_count: int = 0
     cache_use_count: int = 0
+    raw_bars_validated_count: int = 0
+    invalid_raw_row_count: int = 0
+    malformed_refetch_count: int = 0
+    transient_malformed_recovered_count: int = 0
+    stable_malformed_unresolved_count: int = 0
+    intermittent_malformed_unresolved_count: int = 0
     failure_classes: tuple[str, ...] = ()
+    integrity_events: tuple[OhlcvIntegrityEvent, ...] = ()
 
 
 class PacketOwnedTechnicalContext(FrozenModel):
@@ -199,7 +207,7 @@ def build_packet_owned_technical_context(
         latest[timeframe] = last_bar
         raw_identity[timeframe] = [
             {key: row.get(key) for key in ("date", "open", "high", "low", "close", "volume")}
-            for row in safe_rows
+            for row in rows
         ]
     raw_fingerprint = _canonical_sha(raw_identity)
     invalid = any(errors[timeframe] for timeframe in TIMEFRAMES)

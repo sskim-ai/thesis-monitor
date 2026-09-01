@@ -15,8 +15,10 @@ currency, security identity, as-of time, last completed bars, bar/feature counts
 acquisition telemetry, cautions, and failure reason.
 
 The raw bars are not copied into the AI packet. The immutable raw-bar fingerprint proves the input
-set; the canonical computed feature packet is frozen for consumption. This avoids an oversized raw
-payload while preventing downstream recomputation.
+set, including rejected rows; the canonical computed feature packet is frozen for consumption.
+Malformed specimens and refetch outcomes live in bounded acquisition telemetry. This avoids an
+oversized raw payload while preserving enough evidence to distinguish stable, intermittent, and
+recovered provider content.
 
 ## States
 
@@ -28,6 +30,10 @@ payload while preventing downstream recomputation.
 Only facts whose timeframe quality has `usable_for_current_reasoning=true` enter V2 evidence. The
 decision packet always carries the context status and data-quality caution; missing evidence is not
 silently neutral and does not hard-map to `HOLD`.
+
+The source client applies `ohlcv-provider-integrity-v1` before this contract. One malformed-content
+refetch may recover a transient response. A repeated malformed response is stored unchanged and
+this context remains `INVALID`; invalid bars never produce the frozen feature packet.
 
 ## Compatibility
 

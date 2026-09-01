@@ -2,7 +2,7 @@ import asyncio
 import hashlib
 import math
 import time
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -31,6 +31,12 @@ from app.services.us_price_structure_selective_rollout_service import (
     build_us_price_structure_runtime_context,
 )
 from app.services.ohlcv_structure_service import analyze_chart_structure
+from app.services.ohlcv_provider_integrity_service import (
+    MalformedRefetchOutcome,
+    OhlcvIntegrityEvent,
+    OhlcvIntegrityInspection,
+    inspect_normalized_ohlcv_rows,
+)
 from app.services.packet_owned_technical_context_service import (
     build_packet_owned_technical_context,
 )
@@ -252,6 +258,43 @@ def _round(value: float | None) -> float | None:
     return round(value, 6) if value is not None else None
 
 
+def _increment(audit: dict[str, object] | None, key: str, amount: int = 1) -> None:
+    if audit is not None:
+        audit[key] = int(audit.get(key) or 0) + amount
+
+
+def _append_failure(audit: dict[str, object] | None, value: str) -> None:
+    if audit is None:
+        return
+    failures = audit.setdefault("failure_classes", [])
+    if isinstance(failures, list):
+        failures.append(value)
+
+
+def _append_integrity_event(
+    audit: dict[str, object] | None,
+    event: OhlcvIntegrityEvent,
+) -> None:
+    if audit is None:
+        return
+    events = audit.setdefault("integrity_events", [])
+    if isinstance(events, list):
+        events.append(event.model_dump(mode="json"))
+
+
+def _inspection_signature(inspection: OhlcvIntegrityInspection) -> tuple[tuple[str, str, str], ...]:
+    return tuple(
+        sorted(
+            (
+                issue.bar_date or "",
+                str(issue.violation),
+                issue.row_fingerprint,
+            )
+            for issue in inspection.issues
+        )
+    )
+
+
 def _chart_timeframe_context(
     timeframe: str,
     bars: Sequence[dict[str, object]],
@@ -353,59 +396,123 @@ class OhlcvClient:
         attempts = max(1, min(self.settings.monitor_retry_attempts, 5))
         provider_count = min(count, OHLCV_PROVIDER_REQUEST_LIMIT)
         deadline = time.monotonic() + max(0.1, self.settings.ohlcv_timeout_seconds)
+        params = {
+            "symbol": ticker,
+            "periods": period,
+            "count": provider_count,
+            "include_indicators": str(include_indicators).lower(),
+            "indicator_limit": 1 if include_indicators else 0,
+            "adjusted": str(adjusted).lower(),
+        }
         for attempt in range(attempts):
-            if acquisition_audit is not None:
-                acquisition_audit["request_count"] = (
-                    int(acquisition_audit.get("request_count") or 0) + 1
-                )
-                if attempt:
-                    acquisition_audit["retry_count"] = (
-                        int(acquisition_audit.get("retry_count") or 0) + 1
-                    )
+            _increment(acquisition_audit, "request_count")
+            if attempt:
+                _increment(acquisition_audit, "retry_count")
             try:
-                response = await client.get(
-                    "/ohlcv",
-                    params={
-                        "symbol": ticker,
-                        "periods": period,
-                        "count": provider_count,
-                        "include_indicators": str(include_indicators).lower(),
-                        "indicator_limit": 1 if include_indicators else 0,
-                        "adjusted": str(adjusted).lower(),
-                    },
-                )
+                response = await client.get("/ohlcv", params=params)
                 response.raise_for_status()
-                payload = response.json()
-                resolved = payload.get("resolved_symbol")
-                if isinstance(resolved, dict):
-                    resolved_code = str(resolved.get("code") or "").upper()
-                    if resolved_code and resolved_code != ticker.upper():
-                        raise ValueError("ohlcv_security_identity_mismatch")
-                meta = payload.get("meta")
-                if (
-                    isinstance(meta, dict)
-                    and meta.get("adjusted") is not None
-                    and bool(meta.get("adjusted")) != adjusted
-                ):
-                    raise ValueError("ohlcv_adjustment_basis_mismatch")
-                bars = payload.get("periods", {}).get(period, [])
-                if not isinstance(bars, list):
-                    bars = []
-                supply_demand = payload.get("supply_demand")
-                if period == "daily" and bars and isinstance(supply_demand, dict):
-                    latest_bar = bars[-1]
-                    if isinstance(latest_bar, dict):
-                        bars[-1] = {**latest_bar, "supply_demand": supply_demand}
-                if acquisition_audit is not None:
-                    acquisition_audit["success_count"] = (
-                        int(acquisition_audit.get("success_count") or 0) + 1
+                bars, supply_demand, provider = self._decode_period_payload(
+                    response.json(),
+                    ticker=ticker,
+                    period=period,
+                    adjusted=adjusted,
+                )
+                _increment(acquisition_audit, "success_count")
+                first_inspection = inspect_normalized_ohlcv_rows(
+                    bars,
+                    timeframe=period,
+                )
+                self._record_inspection(acquisition_audit, first_inspection)
+                if first_inspection.valid:
+                    return self._complete_period_response(
+                        count=count,
+                        period=period,
+                        bars=bars,
+                        supply_demand=supply_demand,
                     )
-                return _summarize_bars(count, bars), bars
+                _append_failure(acquisition_audit, "malformed_ohlc_content")
+                _increment(acquisition_audit, "malformed_refetch_count")
+                _increment(acquisition_audit, "request_count")
+                _increment(acquisition_audit, "retry_count")
+                try:
+                    refetch_response = await client.get("/ohlcv", params=params)
+                    refetch_response.raise_for_status()
+                    refetched_bars, refetched_supply, refetched_provider = (
+                        self._decode_period_payload(
+                            refetch_response.json(),
+                            ticker=ticker,
+                            period=period,
+                            adjusted=adjusted,
+                        )
+                    )
+                    _increment(acquisition_audit, "success_count")
+                except httpx.HTTPError as refetch_error:
+                    self._record_http_failure(acquisition_audit, refetch_error)
+                    _append_integrity_event(
+                        acquisition_audit,
+                        OhlcvIntegrityEvent(
+                            provider=provider,
+                            ticker=ticker,
+                            timeframe=period,
+                            adjustment_mode="adjusted" if adjusted else "unadjusted",
+                            first_bad_stage="provider_response_after_adapter",
+                            outcome=(
+                                MalformedRefetchOutcome.REFRESH_TRANSPORT_FAILED_RETAIN_INVALID
+                            ),
+                            first_payload_fingerprint=(
+                                first_inspection.payload_fingerprint
+                            ),
+                            issues=first_inspection.issues,
+                        ),
+                    )
+                    return self._complete_period_response(
+                        count=count,
+                        period=period,
+                        bars=bars,
+                        supply_demand=supply_demand,
+                    )
+                second_inspection = inspect_normalized_ohlcv_rows(
+                    refetched_bars,
+                    timeframe=period,
+                )
+                self._record_inspection(acquisition_audit, second_inspection)
+                if second_inspection.valid:
+                    outcome = MalformedRefetchOutcome.PROVIDER_REFETCH_RECOVERED
+                    _increment(acquisition_audit, "transient_malformed_recovered_count")
+                elif _inspection_signature(first_inspection) == _inspection_signature(
+                    second_inspection
+                ):
+                    outcome = MalformedRefetchOutcome.STABLE_BAD_SOURCE
+                    _increment(acquisition_audit, "stable_malformed_unresolved_count")
+                else:
+                    outcome = MalformedRefetchOutcome.INTERMITTENT_BAD_SOURCE
+                    _increment(acquisition_audit, "intermittent_malformed_unresolved_count")
+                _append_integrity_event(
+                    acquisition_audit,
+                    OhlcvIntegrityEvent(
+                        provider=refetched_provider or provider,
+                        ticker=ticker,
+                        timeframe=period,
+                        adjustment_mode="adjusted" if adjusted else "unadjusted",
+                        first_bad_stage="provider_response_after_adapter",
+                        outcome=outcome,
+                        first_payload_fingerprint=first_inspection.payload_fingerprint,
+                        second_payload_fingerprint=second_inspection.payload_fingerprint,
+                        issues=(
+                            first_inspection.issues
+                            if second_inspection.valid
+                            else second_inspection.issues
+                        ),
+                    ),
+                )
+                return self._complete_period_response(
+                    count=count,
+                    period=period,
+                    bars=refetched_bars,
+                    supply_demand=refetched_supply,
+                )
             except ValueError as exc:
-                if acquisition_audit is not None:
-                    failures = acquisition_audit.setdefault("failure_classes", [])
-                    if isinstance(failures, list):
-                        failures.append(str(exc) or type(exc).__name__)
+                _append_failure(acquisition_audit, str(exc) or type(exc).__name__)
                 raise
             except httpx.HTTPError as exc:
                 last_error = exc
@@ -418,19 +525,7 @@ class OhlcvClient:
                         httpx.RemoteProtocolError,
                     ),
                 ) or (isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500)
-                if acquisition_audit is not None:
-                    failures = acquisition_audit.setdefault("failure_classes", [])
-                    if isinstance(failures, list):
-                        failures.append(type(exc).__name__)
-                    if isinstance(exc, httpx.ConnectError):
-                        key = "connection_error_count"
-                    elif isinstance(exc, (httpx.ConnectTimeout, httpx.ReadTimeout)):
-                        key = "timeout_count"
-                    elif isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500:
-                        key = "server_error_count"
-                    else:
-                        key = "non_retryable_error_count"
-                    acquisition_audit[key] = int(acquisition_audit.get(key) or 0) + 1
+                self._record_http_failure(acquisition_audit, exc)
                 if not retryable or attempt + 1 >= attempts:
                     raise
                 jitter_seed = hashlib.sha256(f"{ticker}|{period}|{attempt}".encode()).digest()[0]
@@ -442,6 +537,77 @@ class OhlcvClient:
                     await asyncio.sleep(delay)
         assert last_error is not None
         raise last_error
+
+    @staticmethod
+    def _decode_period_payload(
+        payload: object,
+        *,
+        ticker: str,
+        period: str,
+        adjusted: bool,
+    ) -> tuple[list[dict[str, object]], object, str]:
+        if not isinstance(payload, Mapping):
+            raise ValueError("ohlcv_provider_schema_invalid")
+        resolved = payload.get("resolved_symbol")
+        if isinstance(resolved, Mapping):
+            resolved_code = str(resolved.get("code") or "").upper()
+            if resolved_code and resolved_code != ticker.upper():
+                raise ValueError("ohlcv_security_identity_mismatch")
+        meta = payload.get("meta")
+        provider = "ohlcv_analyst"
+        if isinstance(meta, Mapping):
+            provider = str(meta.get("provider") or provider)
+            if meta.get("adjusted") is not None and bool(meta.get("adjusted")) != adjusted:
+                raise ValueError("ohlcv_adjustment_basis_mismatch")
+        periods = payload.get("periods")
+        if not isinstance(periods, Mapping):
+            raise ValueError("ohlcv_provider_schema_invalid")
+        raw_bars = periods.get(period)
+        if not isinstance(raw_bars, list):
+            raise ValueError("ohlcv_provider_schema_invalid")
+        bars: list[dict[str, object]] = []
+        for raw in raw_bars:
+            if not isinstance(raw, Mapping):
+                bars.append({"date": None, "open": None, "high": None, "low": None, "close": None})
+            else:
+                bars.append(dict(raw))
+        return bars, payload.get("supply_demand"), provider
+
+    @staticmethod
+    def _complete_period_response(
+        *,
+        count: int,
+        period: str,
+        bars: list[dict[str, object]],
+        supply_demand: object,
+    ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
+        if period == "daily" and bars and isinstance(supply_demand, dict):
+            bars[-1] = {**bars[-1], "supply_demand": supply_demand}
+        return _summarize_bars(count, bars), bars
+
+    @staticmethod
+    def _record_inspection(
+        acquisition_audit: dict[str, object] | None,
+        inspection: OhlcvIntegrityInspection,
+    ) -> None:
+        _increment(acquisition_audit, "raw_bars_validated_count", inspection.bar_count)
+        _increment(acquisition_audit, "invalid_raw_row_count", inspection.invalid_row_count)
+
+    @staticmethod
+    def _record_http_failure(
+        acquisition_audit: dict[str, object] | None,
+        exc: httpx.HTTPError,
+    ) -> None:
+        _append_failure(acquisition_audit, type(exc).__name__)
+        if isinstance(exc, httpx.ConnectError):
+            key = "connection_error_count"
+        elif isinstance(exc, (httpx.ConnectTimeout, httpx.ReadTimeout)):
+            key = "timeout_count"
+        elif isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500:
+            key = "server_error_count"
+        else:
+            key = "non_retryable_error_count"
+        _increment(acquisition_audit, key)
 
     async def fetch_price_context(
         self,
