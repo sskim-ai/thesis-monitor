@@ -1,5 +1,27 @@
 # Next Session Prompt
 
+Latest authoritative repair is the 2026-09-01 V2 natural CLI path and product-identifier provenance
+work. Read `docs/reports/20260901-v2-runtime-repair-readiness.json`, the CLI path and identifier
+control reports, KR/US production-equivalent reports, exact test-sink report, live guard, and
+artifact index first. Exact instruction commit is
+`b2c0a4af72c5eb060dcdacd8b281e30307c717f1`; implementation is
+`b5be74439b2e8e769b1605e539599835abbc8a84` on base
+`1aa10f04016cabede492c82686b6d671b4c27f55`.
+
+Canonical repo-root CLI path resolution and exact canonical product-identifier numeric boundaries
+are closed. KR run 50 is `8/8`, the US production-equivalent replay is `14/14`, and the dedicated
+test sink is `22/22 exact` after bounded rate-limit continuation. Full pytest is `2045 PASS`, the
+implementation Actions Test/Lint run passes, and open P0/material P1 is `0/0`. Production sends,
+production intents, scheduler changes, Price Structure changes, and valuation changes are zero.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_KR_LIVE`. Observe the normal cycles read-only and verify the
+effective schema path, preflight, candidate/accepted/explicit decision counts, 047810 product
+identifier handling, fallback, message quality, and exactly-once delivery. Do not manually run a
+Scheduled Task, replay production messages, weaken numeric validation, or expose recipient values.
+Production Assist remains OFF.
+
+---
+
 Latest authoritative work is the 2026-09-01 malformed OHLC provider-integrity repair. Read
 `docs/reports/20260901-ohlc-integrity-readiness.json`, the four-ticker root-cause JSON, run-49
 replay, exact sink, validation, live-guard, and artifact-index reports first. Exact instruction

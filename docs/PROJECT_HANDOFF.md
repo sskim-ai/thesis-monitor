@@ -1,5 +1,32 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-01 V2 Natural CLI Path and Product-Identifier Handoff
+
+Start with `docs/reports/20260901-v2-runtime-repair-readiness.json` and
+`docs/reports/20260901-v2-runtime-artifact-index.md`. Exact work instructions were committed first
+as `b2c0a4af72c5eb060dcdacd8b281e30307c717f1`; implementation is
+`b5be74439b2e8e769b1605e539599835abbc8a84` on base
+`1aa10f04016cabede492c82686b6d671b4c27f55`.
+
+The path root cause was launch-CWD-dependent interpretation of relative Codex CLI inputs and
+outputs. The runtime now resolves every subprocess-bound path from the canonical repository root,
+preflights the schema before a model call, creates output/log parents, and keeps persisted claim
+paths relative. The provenance root cause was that valid evidence-owned product identifiers were
+lexed as unsupported numbers. Only exact canonical identifier spans are excluded now; adjacent
+numbers and unproven identifiers remain validated.
+
+Frozen KR run 50 passes `8/8`, the production-equivalent US replay passes `14/14`, and all 22
+accepted messages reached only the dedicated test sink exactly once after bounded 429 continuation.
+Production recipient sends/intents, duplicates, orphans, scheduler changes, valuation changes, and
+Price Structure changes are zero. Focused/full tests are `270/2045 PASS`; implementation Actions
+Test/Lint pass; open P0/material P1 is `0/0`.
+
+The next action is read-only observation of the next ordinary KR and US cycles. Confirm effective
+schema path, preflight, candidate/accepted/explicit decision counts, product-identifier diagnostics,
+fallback route, message quality, and exactly-once delivery. Do not manually invoke a Scheduled Task,
+replay production messages, expose recipient values, or treat test-sink evidence as natural proof.
+Production Assist remains OFF.
+
 ## 2026-09-01 Malformed OHLC Provider Integrity Handoff
 
 Start with `docs/reports/20260901-ohlc-integrity-readiness.json`,

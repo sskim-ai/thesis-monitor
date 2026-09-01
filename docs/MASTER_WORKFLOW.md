@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v30`
+Master Workflow: `v31`
 As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260901-malformed-ohlc-provider-integrity-repair`
+Latest evidence branch: `codex/20260901-v2-natural-cli-path-product-identifier-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,31 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. V2 Natural CLI Path and Product-Identifier Provenance Repair
+
+Exact instructions were committed first as
+`b2c0a4af72c5eb060dcdacd8b281e30307c717f1` on base
+`1aa10f04016cabede492c82686b6d671b4c27f55`. Implementation
+`b5be74439b2e8e769b1605e539599835abbc8a84` closes two independent natural-runtime defects without
+changing decision policy. All Codex CLI subprocess paths now resolve from the canonical repository
+root, the schema is preflighted before the model call, writable parents are created deterministically,
+and persisted claims retain portable relative paths. The same path contract serves primary, backup,
+KR, US, test, and natural entry points.
+
+The numeric lexer recognizes only canonical evidence-owned product identifiers as identifier spans.
+It excludes those exact spans from numeric validation while continuing to validate adjacent real
+numbers and reject unproven hyphen-number text. No `KF-21`/`FA-50` allowlist, KR-only exception, or
+validator relaxation exists. Frozen run 50 passes `8/8`, the production-equivalent US path passes
+`14/14`, and the dedicated non-production sink received `22/22 exact` after identity-aware 429
+continuation. Production recipient sends, production delivery intents, duplicate and orphan messages,
+scheduler changes, Price Structure numeric changes, and valuation numeric changes are all zero.
+
+Focused tests are `270 PASS`; full pytest is `2045 PASS`; Ruff, diff, message quality, and the
+implementation GitHub Actions Test/Lint run pass. Open P0/material P1 are `0/0`. State is
+`READY_FOR_MAIN_AWAITING_NATURAL_US_KR_LIVE`, not natural LIVE_PASS. After linear promotion, inspect
+the next ordinary KR and US cycles read-only. Do not replay an already delivered production packet,
+manually run a Scheduled Task, or use the production Telegram recipient for proof.
 
 ## 0. Malformed OHLC Provider Integrity
 
@@ -2268,3 +2293,21 @@ pass. The isolated signed-in xhigh replay is accepted-ready `14/14`; the dedicat
 This is `READY_FOR_MAIN`, not natural LIVE_PASS. After linear promotion, wait for the next natural
 US cycle and inspect OHLCV acquisition, technical-state counts, candidate/accepted counts,
 fallback, explicit decisions, and exactly-once delivery read-only.
+
+### 40.32 V2 Natural CLI Path and Product-Identifier Provenance Repair
+
+Exact instruction commit `b2c0a4af72c5eb060dcdacd8b281e30307c717f1` precedes implementation
+`b5be74439b2e8e769b1605e539599835abbc8a84`. The natural runtime no longer interprets configured
+relative schema, prompt, output, or log paths against the LaunchAgent working directory. It resolves
+them once against the canonical repository root, verifies the schema before calling Codex CLI, and
+keeps portable relative claim storage. Primary and backup use one resolver.
+
+Canonical evidence-owned product identifiers are now typed non-numeric spans. The exact identifier
+span is masked, while adjacent amounts, ratios, prices, ranges, signed values, dates, and unproven
+hyphen-number strings retain normal numeric validation. Run-50 KR natural-path replay is `8/8`, the
+production-equivalent US replay is `14/14`, and the dedicated test sink is `22/22 exact` with zero
+production send or intent. CPNG/HUT technical recovery, 000660 valuation, 005930 risk/reward, Price
+Structure, accepted ownership, schedules, and delivery boundaries remain unchanged.
+
+Open P0/material P1 is `0/0`; this repair is `READY_FOR_MAIN`. Natural proof is still pending and
+must come from the next ordinary KR and US cycles without a manual task or production resend.

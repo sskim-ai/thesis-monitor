@@ -1,0 +1,199 @@
+{
+  "adjacent_real_numeric_tokens": [
+    "21",
+    "50",
+    "5",
+    "12"
+  ],
+  "contract": "canonical-identifier-numeric-controls-v1",
+  "field_rows": [
+    {
+      "field_path": "core_judgment.text",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 5,
+            "start": 0
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 12,
+            "start": 7
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": [
+        "127200",
+        "119191"
+      ]
+    },
+    {
+      "field_path": "business_earnings.text",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 57,
+            "start": 52
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 63,
+            "start": 58
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": [
+        "484"
+      ]
+    },
+    {
+      "field_path": "price_positioning.new_observer_view",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 33,
+            "start": 28
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 39,
+            "start": 34
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": []
+    },
+    {
+      "field_path": "supply_analysis.text",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 208,
+            "start": 203
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 214,
+            "start": 209
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": [
+        "148153",
+        "143302",
+        "195485",
+        "134820",
+        "753261",
+        "486828"
+      ]
+    },
+    {
+      "field_path": "valuation_analysis.text",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 40,
+            "start": 35
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 46,
+            "start": 41
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": []
+    },
+    {
+      "field_path": "priority_watch[0]",
+      "identifiers": [
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 5,
+            "start": 0
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "KF-21",
+          "identifier_type": "product_or_model_identifier"
+        },
+        {
+          "canonical_source": "canonical_thesis",
+          "character_span": {
+            "end": 11,
+            "start": 6
+          },
+          "fact_ref_id": "thesis:canonical",
+          "full_span": "FA-50",
+          "identifier_type": "product_or_model_identifier"
+        }
+      ],
+      "unbound_numeric_tokens": []
+    }
+  ],
+  "gates": {
+    "047810_PRODUCT_IDENTIFIER_PHANTOM_NUMERIC": 0,
+    "GENERIC_HYPHEN_NUMBER_NUMERIC_VALIDATION_DISABLED": 0,
+    "IDENTIFIER_MASK_HIDES_ADJACENT_NUMERIC_CLAIM": 0,
+    "KF21_FA50_HARDCODED_ALLOWLIST": 0,
+    "PRODUCT_IDENTIFIER_ADJACENT_NUMERIC_PROVENANCE": "PASS",
+    "UNPROVEN_IDENTIFIER_DIGITS_AUTO_EXEMPT": 0,
+    "UNSUPPORTED_PRODUCT_IDENTIFIER_REJECTED": "PASS"
+  },
+  "hyphen_numeric_tokens": [
+    "-21",
+    "21",
+    "50",
+    "-50"
+  ],
+  "phantom_numeric_tokens": [],
+  "ticker": "047810",
+  "unsupported_identifier_tokens": [
+    "999"
+  ]
+}

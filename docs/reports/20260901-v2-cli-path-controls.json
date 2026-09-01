@@ -1,0 +1,23 @@
+{
+  "base_sha": "1aa10f04016cabede492c82686b6d671b4c27f55",
+  "contract": "v2-codex-cli-path-controls-v1",
+  "effective_paths_absolute": true,
+  "gates": {
+    "CLAIM_PATH_STORAGE_FORCED_TO_ABSOLUTE": 0,
+    "KR_ONLY_SCHEMA_PATH_PATCH": 0,
+    "NATURAL_PATH_NOT_COVERED_BY_TEST": 0,
+    "PATH_RESOLUTION_DEPENDS_ON_LAUNCH_CWD": 0,
+    "PREFLIGHT_ONLY_ABSOLUTE_PATH_COVERAGE_CONSIDERED_SUFFICIENT": 0,
+    "PRIMARY_BACKUP_SCHEMA_PATH_LOGIC_DIFF": 0,
+    "RUN50_NATURAL_PATH_FIXTURE": "PASS",
+    "V2_CLI_PATH_PERMUTATION_TESTS": "PASS",
+    "V2_EFFECTIVE_SCHEMA_PATH_DUPLICATION": 0,
+    "V2_SCHEMA_PRECHECK": "PASS"
+  },
+  "implementation_sha": "b5be74439b2e8e769b1605e539599835abbc8a84",
+  "master_instruction_commit": "b2c0a4af72c5eb060dcdacd8b281e30307c717f1",
+  "prompt_exists": true,
+  "schema_exists": true,
+  "schema_path_claim_segment_count": 1,
+  "stored_claim_path_relative": true
+}

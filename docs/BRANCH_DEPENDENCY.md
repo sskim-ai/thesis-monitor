@@ -5,6 +5,7 @@ self-referential.
 
 | Branch | Base / merge-base | Unique scope | Code dependency | Operating eligible | Promotion path |
 |---|---|---|---|---|---|
+| `codex/20260901-v2-natural-cli-path-product-identifier-repair` | exact instruction `b2c0a4a...` on main `1aa10f0...` | canonical repo-root Codex CLI path resolution, schema preflight, portable claim paths, and canonical product-identifier numeric boundaries | extends accepted V2 runtime and numeric provenance only; preserves OHLCV recovery, Price Structure, valuation, decision policy, schedules, DB, Public Action, Telegram production, and KRX | `READY_FOR_MAIN`; natural KR/US proof pending | implementation `b5be744...`, Actions Test/Lint PASS; clean linear fast-forward, runtime restart if required, then wait for ordinary KR/US cycles |
 | `codex/20260901-malformed-ohlc-provider-integrity-repair` | exact instruction `235cf78...` on main `813beb6...` | normalized-row integrity, one bounded content refetch, exact invalid-row lineage, four-ticker forensics and replay/sink proof | extends existing OHLCV client and packet telemetry only; no Price Structure formula, valuation, decision policy, task, DB, Public Action, Telegram production, KRX or peer dependency | promoted and deployed; natural US proof pending | implementation `a6707b8...`, report/promotion `9c6919a...`, Actions `33473079100`; API/OHLCV health PASS, then wait for next ordinary US cycle |
 | `codex/20260901-ohlcv-technical-context-resilient-v2-repair` | exact instruction `1dd691a...` on main `f7c4331...` | packet-owned technical context, bounded OHLCV recovery, subject isolation, exact numeric-span provenance and V2 convergence | extends accepted V2 runtime only; no provider formula, Price Structure, valuation, task schedule, DB, Telegram production or KRX integration change | promoted and deployed; natural US proof pending | report/promotion `3efe688...`, Actions `33464969356`; wait for the next ordinary US cycle |
 | `codex/20260830-v2-adjudicated-decision-ownership-repair` | exact instruction `4662c08` on main `29bdd4c...` | deterministic candidate + adjudication -> accepted plan authority, accepted renderer/validator, frozen 20 replay and exact sink proof | consumes immutable V2 candidate/agreement artifacts; no new AI reasoning, v1 canary, production packet, task, DB, Public Action, trading, KRX or provider dependency | shadow code/docs promotion eligible; V2 production exposure remains zero | Track A `5730f81...`, Track B `6370d3f...`, Track C `f556051...`; accepted message review then separate bounded migration instruction |
@@ -575,3 +576,13 @@ recovery, subject isolation, and numeric-provenance repair through
 HTTP as the only technical source, weaken OHLC integrity, add ticker exceptions, retune decisions,
 or conflate the test sink with natural proof. Promotion is a clean linear fast-forward; the next
 production evidence is the next natural US cycle.
+
+The V2 natural CLI path/product-identifier repair starts from clean main
+`1aa10f04016cabede492c82686b6d671b4c27f55`. Exact instruction commit
+`b2c0a4af72c5eb060dcdacd8b281e30307c717f1` precedes implementation
+`b5be74439b2e8e769b1605e539599835abbc8a84`. Descendants must preserve canonical repository-root
+subprocess path resolution, schema preflight before model invocation, portable relative claim
+storage, exact evidence-owned identifier spans, and validation of adjacent or unproven numerics.
+They may not add a KR/ticker identifier allowlist, weaken generic numeric validation, restore
+launch-CWD dependence, bypass the repaired natural path in tests, manually trigger production, or
+treat the 22-message dedicated-sink proof as natural live evidence.
