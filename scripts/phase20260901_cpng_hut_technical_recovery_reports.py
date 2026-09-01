@@ -279,7 +279,7 @@ def run(args: argparse.Namespace) -> None:
         "open_p0": 0,
         "open_material_p1": 0 if sink_pass else 1,
         "blocking_gate": None if sink_pass else "new_packet_xhigh_and_test_sink_external_approval",
-        "full_pytest": "2029 PASS",
+        "full_pytest": args.full_pytest_result,
         "ruff": "PASS",
         "git_diff_check": "PASS",
         "public_action": "0.4.5",
@@ -346,6 +346,7 @@ def main() -> None:
     parser.add_argument("--track-b-sha", required=True)
     parser.add_argument("--track-c-sha", required=True)
     parser.add_argument("--track-d-sha", required=True)
+    parser.add_argument("--full-pytest-result", required=True)
     run(parser.parse_args())
 
 
