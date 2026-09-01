@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import json
+
+from scripts import v2_production_cutover_preflight as preflight
+
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
@@ -185,6 +189,48 @@ def _candidate() -> PreconfirmationDecisionCandidate:
         upgrade_condition=_claim("ref:earnings", "경제성의 반복 증거가 쌓이면 확신을 높입니다."),
         downgrade_condition=_claim("ref:risks", "기존 사업까지 약화되면 판단을 낮춥니다."),
     )
+
+
+def test_preflight_repairs_batch_schema_before_candidate_validation(
+    monkeypatch, tmp_path
+) -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-preflight-schema-repair",
+        evidence_packets=(packet,),
+    )
+    valid = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(_candidate(),),
+    )
+    invalid = valid.model_dump(mode="json")
+    maturity = invalid["candidates"][0]["driver_maturity"][0]
+    maturity["contradicting_evidence_refs"].append(
+        maturity["supporting_evidence_refs"][0]
+    )
+
+    def fake_invoke(**kwargs) -> None:
+        output = kwargs["output"]
+        payload = valid.model_dump(mode="json") if "schema-repair" in output.name else invalid
+        output.write_text(json.dumps(payload), encoding="utf-8")
+
+    monkeypatch.setattr(preflight, "_signed_in_codex_bin", lambda: "codex")
+    monkeypatch.setattr(preflight, "_invoke_signed_in_codex", fake_invoke)
+
+    result = preflight._codex_batch(context, output_dir=tmp_path, timeout=30)
+
+    assert [candidate.ticker for candidate in result.candidates] == ["TEST"]
+    repair_prompt = (tmp_path / "batch-01.schema-repair.txt").read_text(encoding="utf-8")
+    assert "maturity_reference_polarity_overlap" in repair_prompt
 
 
 def test_partial_maturity_can_be_medium_confidence_preconfirmation_buy() -> None:

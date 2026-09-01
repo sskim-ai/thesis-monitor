@@ -7,10 +7,14 @@ import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from app.config import get_settings
 from app.jobs.accepted_decision_v2_runtime import (
+    V2_BATCH_SCHEMA_REPAIR_LIMIT,
     V2_REASONING_BATCH_SIZE,
     _invoke_signed_in_codex,
+    _schema_validation_errors,
     _signed_in_codex_bin,
 )
 from app.services.accepted_decision_v2_runtime_service import (
@@ -18,6 +22,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     REASONING_MODEL,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionContext,
+    accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
@@ -130,7 +135,36 @@ def _codex_batch(
             cwd=output_dir,
             timeout=timeout,
         )
-        batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(output))
+        raw_batch = _read_json(output)
+        try:
+            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+        except ValidationError as exc:
+            if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
+                raise
+            repair_prompt = output_dir / f"batch-{batch_number:02d}.schema-repair.txt"
+            repair_output = output_dir / f"batch-{batch_number:02d}.schema-repair.json"
+            repair_log = output_dir / f"batch-{batch_number:02d}.schema-repair.log"
+            _write_text(
+                repair_prompt,
+                accepted_v2_production_batch_schema_repair_prompt(
+                    context,
+                    subjects=subjects,
+                    rejected_output=raw_batch,
+                    validation_errors=_schema_validation_errors(exc),
+                ),
+            )
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=repair_prompt,
+                output=repair_output,
+                log=repair_log,
+                schema=schema,
+                cwd=output_dir,
+                timeout=timeout,
+            )
+            batch = AcceptedV2ProductionBatchOutput.model_validate(
+                _read_json(repair_output)
+            )
         if (
             batch.packet_id != context.packet_id
             or batch.claim_id != context.claim_id
