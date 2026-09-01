@@ -314,7 +314,124 @@ async def _send_existing_payloads(args: argparse.Namespace) -> None:
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
 
+async def _resume_test_sink(args: argparse.Namespace) -> None:
+    payload = _read_json(args.output_dir / "production-payloads.json")
+    messages = [
+        row for row in payload.get("messages") or () if isinstance(row, Mapping)
+    ]
+    failed = _read_json(args.output_dir / "test-sink-receipt.json")
+    if failed.get("status") != "failed" or failed.get("safe_error") != "http_status_429":
+        raise ValueError("only_rate_limited_preflight_receipt_may_resume")
+    failed_rows = [
+        row for row in failed.get("rows") or () if isinstance(row, Mapping)
+    ]
+    expected = {str(row.get("logical_identity") or ""): row for row in messages}
+    sent_identities = [str(row.get("logical_identity") or "") for row in failed_rows]
+    if len(expected) != len(messages) or len(set(sent_identities)) != len(failed_rows):
+        raise ValueError("preflight_resume_identity_collision")
+    if any(
+        row.get("exact_payload_match") is not True
+        or str(row.get("rendered_sha256") or "")
+        != str(expected.get(identity, {}).get("rendered_sha256") or "")
+        for row, identity in zip(failed_rows, sent_identities, strict=True)
+    ):
+        raise ValueError("preflight_resume_initial_payload_not_exact")
+    remaining = [
+        row
+        for row in messages
+        if str(row.get("logical_identity") or "") not in set(sent_identities)
+    ]
+    if len(failed_rows) + len(remaining) != len(messages) or not remaining:
+        raise ValueError("preflight_resume_set_is_not_exact_remaining_subset")
+
+    values = load_env_values(args.env_file)
+    sink = audit_test_sink(values)
+    if not sink.get("available"):
+        raise ValueError("dedicated_test_sink_unavailable")
+    continuation = await deliver_test_messages(
+        remaining,
+        token=values.get("TELEGRAM_BOT_TOKEN", ""),
+        test_chat_id=values.get(str(sink["selected_test_key_name"]), ""),
+        production_chat_id=values.get("TELEGRAM_CHAT_ID", ""),
+        test_sink_alias=str(sink["test_sink_alias"]),
+        production_sink_alias=str(sink["production_sink_alias"]),
+        receipt_path=args.output_dir / "test-sink-continuation-receipt.json",
+        contract="v2-production-premerge-test-sink-continuation-v1",
+        namespace=TEST_NAMESPACE,
+    )
+    continuation_rows = [
+        dict(row)
+        for row in continuation.get("rows") or ()
+        if isinstance(row, Mapping)
+    ]
+    for index, row in enumerate(continuation_rows, start=len(failed_rows) + 1):
+        row["sequence"] = index
+    combined_rows = [*failed_rows, *continuation_rows]
+    identities = [str(row.get("logical_identity") or "") for row in combined_rows]
+    exact = (
+        len(combined_rows) == len(messages)
+        and set(identities) == set(expected)
+        and len(identities) == len(set(identities))
+        and all(row.get("exact_payload_match") is True for row in combined_rows)
+    )
+    final_receipt = {
+        "contract": "v2-production-premerge-test-sink-reconciliation-v1",
+        "namespace": TEST_NAMESPACE,
+        "status": "sent" if exact else "failed",
+        "test_sink_alias": sink["test_sink_alias"],
+        "production_sink_alias": sink["production_sink_alias"],
+        "planned_message_count": len(messages),
+        "sent_message_count": len(combined_rows),
+        "initial_sent_count": len(failed_rows),
+        "continuation_sent_count": len(continuation_rows),
+        "rate_limit_recovery": True,
+        "exact_payload_match": exact,
+        "duplicate_count": len(identities) - len(set(identities)),
+        "orphan_count": len(set(identities) - set(expected)),
+        "production_collision": 0,
+        "production_intent_created": 0,
+        "production_recipient_send_count": 0,
+        "rows": combined_rows,
+    }
+    final_path = args.output_dir / "test-sink-final-receipt.json"
+    if final_path.exists():
+        raise FileExistsError("final test receipt already exists")
+    _write_json(final_path, final_receipt)
+    artifacts = {
+        market: _read_json(args.output_dir / market / "accepted-artifact.json")
+        for market in ("kr", "us")
+    }
+    summary = {
+        "contract": CONTRACT,
+        "status": "PASS" if exact else "FAIL",
+        "markets": {
+            market: {
+                "packet_id": artifact.get("packet_id"),
+                "subject_count": len(artifact.get("selected_subjects") or ()),
+                "ready_count": artifact.get("ready_count"),
+                "not_ready_count": artifact.get("not_ready_count"),
+                "message_quality": artifact.get("message_quality"),
+            }
+            for market, artifact in artifacts.items()
+        },
+        "subject_count": len(messages),
+        "test_sink": sink,
+        "test_sink_sent": exact,
+        "test_sink_exact_payload": final_receipt["status"],
+        "rate_limit_recovery": True,
+        "production_recipient_send": 0,
+        "production_delivery_intent_created": 0,
+        "reasoning_model": REASONING_MODEL,
+        "reasoning_effort": REASONING_EFFORT,
+    }
+    _write_json(args.output_dir / "summary.json", summary)
+    print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+
+
 async def _run(args: argparse.Namespace) -> None:
+    if args.resume_test_sink:
+        await _resume_test_sink(args)
+        return
     if args.send_existing:
         await _send_existing_payloads(args)
         return
@@ -390,6 +507,7 @@ def main() -> None:
     parser.add_argument("--timeout", type=int, default=1800)
     parser.add_argument("--send-test-sink", action="store_true")
     parser.add_argument("--send-existing", action="store_true")
+    parser.add_argument("--resume-test-sink", action="store_true")
     asyncio.run(_run(parser.parse_args()))
 
 

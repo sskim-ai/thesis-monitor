@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import argparse
+import asyncio
 import json
 
 from scripts import v2_production_cutover_preflight as preflight
@@ -231,6 +233,101 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(
     assert [candidate.ticker for candidate in result.candidates] == ["TEST"]
     repair_prompt = (tmp_path / "batch-01.schema-repair.txt").read_text(encoding="utf-8")
     assert "maturity_reference_polarity_overlap" in repair_prompt
+
+
+def test_preflight_rate_limit_resume_sends_only_exact_remaining_subset(
+    monkeypatch, tmp_path
+) -> None:
+    messages = [
+        {
+            "ticker": ticker,
+            "logical_identity": f"test:{ticker}",
+            "rendered_sha256": f"sha-{ticker}",
+            "text": ticker,
+        }
+        for ticker in ("A", "B", "C")
+    ]
+    (tmp_path / "production-payloads.json").write_text(
+        json.dumps({"messages": messages}), encoding="utf-8"
+    )
+    initial_rows = [
+        {
+            "ticker": ticker,
+            "logical_identity": f"test:{ticker}",
+            "rendered_sha256": f"sha-{ticker}",
+            "exact_payload_match": True,
+        }
+        for ticker in ("A", "B")
+    ]
+    (tmp_path / "test-sink-receipt.json").write_text(
+        json.dumps(
+            {
+                "status": "failed",
+                "safe_error": "http_status_429",
+                "rows": initial_rows,
+            }
+        ),
+        encoding="utf-8",
+    )
+    for market, tickers in (("kr", ("A",)), ("us", ("B", "C"))):
+        market_dir = tmp_path / market
+        market_dir.mkdir()
+        (market_dir / "accepted-artifact.json").write_text(
+            json.dumps(
+                {
+                    "packet_id": f"packet-{market}",
+                    "selected_subjects": tickers,
+                    "ready_count": len(tickers),
+                    "not_ready_count": 0,
+                    "message_quality": {"status": "PASS"},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    sent: list[str] = []
+
+    async def fake_deliver(remaining, **kwargs):
+        sent.extend(str(row["ticker"]) for row in remaining)
+        return {
+            "rows": [
+                {
+                    "ticker": row["ticker"],
+                    "logical_identity": row["logical_identity"],
+                    "rendered_sha256": row["rendered_sha256"],
+                    "exact_payload_match": True,
+                }
+                for row in remaining
+            ]
+        }
+
+    monkeypatch.setattr(preflight, "load_env_values", lambda path: {"token": "safe"})
+    monkeypatch.setattr(
+        preflight,
+        "audit_test_sink",
+        lambda values: {
+            "available": True,
+            "selected_test_key_name": "TEST_CHAT",
+            "test_sink_alias": "test",
+            "production_sink_alias": "production",
+        },
+    )
+    monkeypatch.setattr(preflight, "deliver_test_messages", fake_deliver)
+
+    asyncio.run(
+        preflight._resume_test_sink(
+            argparse.Namespace(output_dir=tmp_path, env_file=tmp_path / ".env")
+        )
+    )
+
+    final_receipt = json.loads(
+        (tmp_path / "test-sink-final-receipt.json").read_text(encoding="utf-8")
+    )
+    assert sent == ["C"]
+    assert final_receipt["status"] == "sent"
+    assert final_receipt["sent_message_count"] == 3
+    assert final_receipt["continuation_sent_count"] == 1
+    assert final_receipt["duplicate_count"] == 0
 
 
 def test_partial_maturity_can_be_medium_confidence_preconfirmation_buy() -> None:

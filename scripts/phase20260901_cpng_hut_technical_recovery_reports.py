@@ -154,11 +154,12 @@ def run(args: argparse.Namespace) -> None:
         if args.preflight_dir and (args.preflight_dir / "summary.json").exists()
         else None
     )
-    receipt = (
-        _read(args.preflight_dir / "test-sink-receipt.json")
-        if args.preflight_dir and (args.preflight_dir / "test-sink-receipt.json").exists()
-        else None
-    )
+    receipt_path = None
+    if args.preflight_dir:
+        final_receipt = args.preflight_dir / "test-sink-final-receipt.json"
+        initial_receipt = args.preflight_dir / "test-sink-receipt.json"
+        receipt_path = final_receipt if final_receipt.exists() else initial_receipt
+    receipt = _read(receipt_path) if receipt_path and receipt_path.exists() else None
     sink_pass = bool(
         preflight_summary
         and receipt
