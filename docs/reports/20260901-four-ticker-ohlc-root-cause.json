@@ -1,0 +1,228 @@
+{
+  "contract": "ohlcv-four-ticker-root-cause-v1",
+  "findings": {
+    "CPNG": {
+      "classification": "STABLE_BAD_SOURCE",
+      "final_state": "INVALID",
+      "first_bad_stage": "KIWOOM_RAW_RESPONSE",
+      "legacy_exact_specimen": "RETAINED",
+      "repair_category": "RAW_PROVIDER_INVALID_RETAIN_INVALID",
+      "root_cause": "Provider-native daily and weekly rows repeat high < open on 2023-06-05."
+    },
+    "HUT": {
+      "classification": "INTERMITTENT_BAD_SOURCE",
+      "final_state": "INVALID",
+      "first_bad_stage": "KIWOOM_RAW_RESPONSE",
+      "legacy_exact_specimen": "RETAINED_CURRENT_PROBES",
+      "repair_category": "RAW_PROVIDER_INVALID_RETAIN_INVALID",
+      "root_cause": "The dated daily/weekly row carries a mutable cur_prc above the row high."
+    },
+    "MU": {
+      "classification": "TRANSIENT_PROVIDER_DEFECT",
+      "final_state": "FULL",
+      "first_bad_stage": "PROVIDER_RESPONSE_INFERRED",
+      "legacy_exact_specimen": "NOT_RETAINED_BY_LEGACY_PACKET",
+      "repair_category": "PROVIDER_REFETCH_RECOVERED",
+      "root_cause": "Run-49 was invalid, while adjusted, unadjusted, and direct raw probes now agree on valid OHLC."
+    },
+    "SKHY": {
+      "classification": "TRANSIENT_PROVIDER_DEFECT",
+      "final_state": "FULL",
+      "first_bad_stage": "PROVIDER_RESPONSE_INFERRED",
+      "legacy_exact_specimen": "NOT_RETAINED_BY_LEGACY_PACKET",
+      "repair_category": "PROVIDER_REFETCH_RECOVERED",
+      "root_cause": "Run-49 was invalid, while adjusted, unadjusted, and direct raw probes now agree on valid OHLC."
+    }
+  },
+  "implementation_sha": "a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9",
+  "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+  "sanitized_raw_specimens": {
+    "CPNG": {
+      "daily": {
+        "api_id": "usa06012",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "flu_rt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "pred_pre",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "NY",
+        "period": "daily",
+        "rows_fetched": 1000,
+        "sanitized_row_sha256": "040e806e0bdc59b75272f5930c2a51d7d7ba19972f680cb8ffabf3f614f8b193",
+        "selected_values": {
+          "close": "15.6600",
+          "date": "20230605",
+          "high": "15.8000",
+          "low": "15.4300",
+          "open": "16.3500",
+          "value": "153797295",
+          "volume": "8540469"
+        },
+        "ticker": "CPNG"
+      },
+      "weekly": {
+        "api_id": "usa06013",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "NY",
+        "period": "weekly",
+        "rows_fetched": 200,
+        "sanitized_row_sha256": "ab3fb261697365bf7531f8a40790b02bd7b9391edfcc8b0cf766e702714c9939",
+        "selected_values": {
+          "close": "16.0100",
+          "date": "20230605",
+          "high": "16.2000",
+          "low": "15.4300",
+          "open": "16.3500",
+          "value": "656595258",
+          "volume": "38646007"
+        },
+        "ticker": "CPNG"
+      }
+    },
+    "HUT": {
+      "daily": {
+        "api_id": "usa06012",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "flu_rt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "pred_pre",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "ND",
+        "period": "daily",
+        "rows_fetched": 100,
+        "sanitized_row_sha256": "18aa3dc5e29ca6c0fef996945925c47d6699931cffb6434c81a409d19e438caa",
+        "selected_values": {
+          "close": "81.9400",
+          "date": "20260831",
+          "high": "79.9900",
+          "low": "75.7100",
+          "open": "79.4300",
+          "value": "326287049",
+          "volume": "4201466"
+        },
+        "ticker": "HUT"
+      },
+      "weekly": {
+        "api_id": "usa06013",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "ND",
+        "period": "weekly",
+        "rows_fetched": 100,
+        "sanitized_row_sha256": "f41b46f51f8b9719c6088aff569661eb9f4a306a2bcee7a55d6ba8a77dc40b56",
+        "selected_values": {
+          "close": "81.9400",
+          "date": "20260831",
+          "high": "79.9900",
+          "low": "75.7100",
+          "open": "79.4300",
+          "value": "326287049",
+          "volume": "4201466"
+        },
+        "ticker": "HUT"
+      }
+    },
+    "MU": {
+      "daily": {
+        "api_id": "usa06012",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "flu_rt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "pred_pre",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "ND",
+        "period": "daily",
+        "rows_fetched": 100,
+        "sanitized_row_sha256": "43df9b6de0ea05a365a0b7f3614f2edc98bc2c1fd628ebd0ee22ffcf61c4bbc6",
+        "selected_values": {
+          "close": "956.9700",
+          "date": "20260831",
+          "high": "959.9699",
+          "low": "930.7900",
+          "open": "931.3900",
+          "value": "21358656603",
+          "volume": "22569478"
+        },
+        "ticker": "MU"
+      }
+    },
+    "SKHY": {
+      "daily": {
+        "api_id": "usa06012",
+        "available_fields": [
+          "acc_trde_prica",
+          "acc_trde_qty",
+          "cur_prc",
+          "dt",
+          "flu_rt",
+          "high_pric",
+          "low_pric",
+          "open_pric",
+          "pred_pre",
+          "upd_rt",
+          "upd_stkpc_tp"
+        ],
+        "exchange": "ND",
+        "period": "daily",
+        "rows_fetched": 37,
+        "sanitized_row_sha256": "e87b9b3e008d4a9acc059107bc534d740fe24f297113dd5e02304d5589dcd38d",
+        "selected_values": {
+          "close": "164.6500",
+          "date": "20260831",
+          "high": "165.0700",
+          "low": "160.5000",
+          "open": "160.7450",
+          "value": "1991101692",
+          "volume": "12183251"
+        },
+        "ticker": "SKHY"
+      }
+    }
+  },
+  "synthetic_ohlc_repair": 0,
+  "ticker_specific_runtime_bypass": 0,
+  "validator_weakened": 0
+}

@@ -1,0 +1,27 @@
+{
+  "contract": "ohlcv-provider-integrity-readiness-v1",
+  "current_kr_test_exact_payload": "PASS",
+  "current_us_test_exact_payload": "PASS",
+  "final_main_recorded_at_generation": "813beb6345fc2c6643018b33f568702b50fab37d",
+  "implementation_sha": "a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9",
+  "kr_ohlc_integrity_regression": "PASS",
+  "natural_live_pass": "PENDING",
+  "next_action": "WAIT_FOR_NEXT_NATURAL_US_LIVE",
+  "open_material_p1": 0,
+  "open_p0": 0,
+  "previous_full_10_regression": "PASS",
+  "price_structure_numeric_diff": 0,
+  "run49_accepted_ready_count": 14,
+  "run49_candidate_generated_count": 14,
+  "run49_counts": {
+    "FULL": 12,
+    "INVALID": 2,
+    "PARTIAL_SAFE": 0,
+    "UNAVAILABLE": 0
+  },
+  "run49_explicit_v2_decision_count": 14,
+  "status": "READY_FOR_MAIN",
+  "synthetic_ohlc_repair": 0,
+  "validator_weakened": 0,
+  "valuation_numeric_diff": 0
+}

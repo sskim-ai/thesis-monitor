@@ -136,13 +136,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260901-ohlcv-technical-context-resilient-v2-repair"
+        "codex/20260901-malformed-ohlc-provider-integrity-repair"
     )
     assert state["current_phase"] == (
-        "ohlcv_v2_pipeline_repair_deployed_awaiting_natural_us_live"
+        "ohlcv_provider_integrity_repair_ready_for_main"
     )
     assert state["last_completed_phase"] == (
-        "20260901_ohlcv_v2_pipeline_repair_retrospective_and_test_sink"
+        "20260901_malformed_ohlc_provider_integrity_repair_and_test_sink"
     )
     assert state["next_default_phase"] == (
         "wait_for_next_natural_us_live"
@@ -185,11 +185,36 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["recorded_base_commit"] == (
-        "f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7"
+        "813beb6345fc2c6643018b33f568702b50fab37d"
     )
-    assert state["deployed_code_commit"] == ohlcv_promoted_commit
-    assert state["main_code_commit"] == ohlcv_promoted_commit
-    assert state["operating_code_commit"] == ohlcv_promoted_commit
+    provider_integrity_base = "813beb6345fc2c6643018b33f568702b50fab37d"
+    assert state["deployed_code_commit"] == provider_integrity_base
+    assert state["main_code_commit"] == provider_integrity_base
+    assert state["operating_code_commit"] == provider_integrity_base
+    provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
+    assert provider_integrity["status"] == "READY_FOR_MAIN"
+    assert provider_integrity["contract"] == "ohlcv-provider-integrity-v1"
+    assert provider_integrity["cpng_classification"] == "STABLE_BAD_SOURCE"
+    assert provider_integrity["cpng_final_state"] == "INVALID"
+    assert provider_integrity["hut_classification"] == "INTERMITTENT_BAD_SOURCE"
+    assert provider_integrity["hut_final_state"] == "INVALID"
+    assert provider_integrity["mu_final_state"] == "FULL"
+    assert provider_integrity["skhy_final_state"] == "FULL"
+    assert provider_integrity["run49_technical_context_counts"] == {
+        "FULL": 12,
+        "PARTIAL_SAFE": 0,
+        "UNAVAILABLE": 0,
+        "INVALID": 2,
+    }
+    assert provider_integrity["run49_accepted_ready"] == 14
+    assert provider_integrity["kr_regression"] == "PASS_8_OF_8_FULL"
+    assert provider_integrity["test_sink"] == (
+        "PASS_22_OF_22_EXACT_AFTER_RATE_LIMIT_CONTINUATION"
+    )
+    assert provider_integrity["synthetic_ohlc_repair"] == 0
+    assert provider_integrity["validator_weakened"] == 0
+    assert provider_integrity["open_p0"] == []
+    assert provider_integrity["open_material_p1"] == []
     canary = state["cross_market_decision_bounded_canary_20260829"]
     assert canary["status"] == "ENABLED_AWAITING_NATURAL_PROOF"
     assert canary["kr_subjects"] == ["003690", "000660"]
@@ -1404,7 +1429,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "3efe688bb7eaa41bc084061c9eb9de910d86423a"
+        "a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

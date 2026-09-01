@@ -1,5 +1,28 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-01 Malformed OHLC Provider Integrity Handoff
+
+Start with `docs/reports/20260901-ohlc-integrity-readiness.json`,
+`docs/reports/20260901-four-ticker-ohlc-root-cause.json`, and the artifact index. Exact instruction
+commit is `235cf78d5c386da0f5c02284b373b911ef1b7647`; implementation is
+`a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9` on base
+`813beb6345fc2c6643018b33f568702b50fab37d`.
+
+The provider contract validates the exact normalized rows before indicators, performs at most one
+content refetch, and retains repeated malformed rows as INVALID. CPNG is a stable raw provider
+defect (`high < open` in daily and weekly 2023-06-05 rows). HUT is an intermittent raw provider
+defect where a mutable `cur_prc` exceeds the fixed high in the dated daily/weekly row. MU and SKHY
+were invalid in the legacy run-49 capture but are currently valid across adjusted, unadjusted, and
+direct raw probes; their historical malformed values cannot be reconstructed because the legacy
+packet omitted them.
+
+Run-49 replay is FULL 12 / INVALID 2, all 14 decisions are accepted-ready, KR is FULL 8/8, and the
+dedicated sink is 22/22 exact after continuing only the two messages blocked by Telegram 429.
+Production sends/intents, synthetic repairs, ticker bypasses, Price Structure changes, and
+valuation changes are zero. Open P0/material P1 is 0/0. After CI and clean promotion, restart the
+API because imported runtime code changed, verify API/OHLCV health, then wait for the next ordinary
+US cycle. Do not infer `LIVE_PASS` from replay or the sink.
+
 ## 2026-09-01 OHLCV V2 Pipeline Repair Handoff
 
 Start with `docs/reports/20260901-ohlcv-v2-repair-readiness.json` and

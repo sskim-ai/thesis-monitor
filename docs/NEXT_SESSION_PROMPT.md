@@ -1,5 +1,24 @@
 # Next Session Prompt
 
+Latest authoritative work is the 2026-09-01 malformed OHLC provider-integrity repair. Read
+`docs/reports/20260901-ohlc-integrity-readiness.json`, the four-ticker root-cause JSON, run-49
+replay, exact sink, validation, live-guard, and artifact-index reports first. Exact instruction
+commit is `235cf78d5c386da0f5c02284b373b911ef1b7647`; implementation is
+`a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9` on base
+`813beb6345fc2c6643018b33f568702b50fab37d`.
+
+CPNG/HUT remain provider-invalid and fail closed; MU/SKHY currently recover to FULL. Run-49 replay
+is FULL 12 / INVALID 2 with 14/14 accepted V2 decisions, while KR remains FULL 8/8. The dedicated
+test sink passed 22/22 exact after bounded Telegram rate-limit continuation. Full pytest is 2019
+PASS, open P0/material P1 is 0/0, and the gate is `READY_FOR_MAIN` pending exact-SHA CI/promotion.
+
+After promotion, the only next action is `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Observe the normal US
+cycle read-only and report technical status counts, CPNG/HUT/MU/SKHY, candidate/accepted/explicit
+decision counts, fallback, and exactly-once delivery. Do not manually run a task, replay production
+messages, weaken validation, or synthesize provider bars. Production Assist remains OFF.
+
+---
+
 Latest authoritative repair is the 2026-09-01 OHLCV technical-context resilience work. Read
 `docs/reports/20260901-ohlcv-v2-repair-readiness.json`, the root-cause, run-49 replay, exact test
 messages, message-quality, validation, live-guard, and artifact-index reports first. Exact

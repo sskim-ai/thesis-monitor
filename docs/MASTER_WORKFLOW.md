@@ -1,10 +1,10 @@
 # Thesis Monitor Master Workflow
 
-Master Workflow: `v29`
+Master Workflow: `v30`
 As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`
 Operating branch: `main`
-Latest evidence branch: `codex/20260901-ohlcv-technical-context-resilient-v2-repair`
+Latest evidence branch: `codex/20260901-malformed-ohlc-provider-integrity-repair`
 Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
 hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
 session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
@@ -15,6 +15,25 @@ Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, p
 AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
 zero. Natural AI-assisted delivery remains `PARTIAL` independently.
 KRX 8.2A.x and peer 8.3.x also remain experimental.
+
+## 0. Malformed OHLC Provider Integrity
+
+Exact instructions were committed first as `235cf78d5c386da0f5c02284b373b911ef1b7647` on base
+`813beb6345fc2c6643018b33f568702b50fab37d`. Implementation
+`a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9` adds
+`ohlcv-provider-integrity-v1`: every normalized provider response is checked before feature
+construction, one malformed-content refetch is allowed, and repeated malformed content remains
+unchanged and INVALID. Invalid rows now remain in the packet raw fingerprint and exact integrity
+events retain sanitized row values and hashes. No clipping, swapping, ticker exception, threshold
+change, or synthetic OHLC repair exists.
+
+Direct provider probes classify CPNG as `STABLE_BAD_SOURCE` and HUT as
+`INTERMITTENT_BAD_SOURCE`; both remain INVALID. MU and SKHY are
+`TRANSIENT_PROVIDER_DEFECT` controls whose current raw responses are valid, so run-49 replay is
+FULL 12 / INVALID 2. All 14 US decisions and all 8 KR decisions are accepted-ready with message
+quality PASS. The dedicated sink passed 22/22 exact after a rate-limit continuation, with zero
+production sends or intents. Full pytest is 2019 PASS; open P0/material P1 is 0/0. The repair is
+`READY_FOR_MAIN`; a natural live pass remains pending and must be observed read-only.
 
 ## 0. OHLCV Technical Context Resilience
 

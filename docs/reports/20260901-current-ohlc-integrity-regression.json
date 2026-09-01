@@ -1,0 +1,1952 @@
+{
+  "accepted_us": {
+    "message_quality": {
+      "contract": "v2-accepted-production-message-quality-v1",
+      "errors": [],
+      "manual_numeric_count": 0,
+      "message_count": 14,
+      "numeric_claim_count": 0,
+      "repeated_substantive_span_count": 0,
+      "status": "PASS",
+      "unresolved_numeric_count": 0
+    },
+    "not_ready_count": 0,
+    "ready_count": 14,
+    "status": "PASS"
+  },
+  "contract": "ohlcv-integrity-current-regression-v1",
+  "kr": {
+    "as_of": "2026-08-31T07:50:06.417917+00:00",
+    "contract": "ohlcv-v2-repair-evidence-v1",
+    "decision_context_ready_count": 8,
+    "market": "kr",
+    "packet_id": "2026-08-31-kr-run-48-a573c2a6f245",
+    "replay_packet_copy": "/private/tmp/20260901-kr-after-integrity-repair-packet-copy.json",
+    "rows": [
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:11:33.136743+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:25.717001+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "526b3e6d2a643f8cff25f9d3c7b20337ebc1b9fbff2e18fe7ea8d5f8674e54fe",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "c90292184fd018a76d7617ad35c720d2c6167c6b8ce8f7e9e176366fa6782247",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "5c2da1e68dbc6180b07b2ee62829b3b799e40798d468c0d568b5f10ea00434dd",
+        "status": "FULL",
+        "technical_context_id": "technical-context:a6ec3ac259e6bf9242d4e059",
+        "ticker": "000660"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:11:39.298136+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:33.165115+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "924a1e95793620a81aba1ab0fc6f611cc5ba2f488156505cdb526696f2e0c916",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "2dddd9c652d31b94ef50a8c1f0c668db04486e44b952e98b8ceb5fb7f489056e",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "9d5757c0f7ed372db69d65fbbd19ec656d4714697fef78a4c172b80dc2f4ca9e",
+        "status": "FULL",
+        "technical_context_id": "technical-context:39c06da6474bb40de9f17eec",
+        "ticker": "003690"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:11:45.485837+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:39.325443+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "fb998fc9038a31907767c17c245f14064774a6d850577d0eff3fb09c5ce85a83",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "9025503d4767e0fc310dd57e880089ff0438e7d7804288c5d34fb53c6e939182",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "462f5b382d0b7acfd3bda1014c6a32c5e5422e27829663224d88f309d45a4709",
+        "status": "FULL",
+        "technical_context_id": "technical-context:8987f107647ae87cf1332b54",
+        "ticker": "005490"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:11:51.906194+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:45.514687+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "1cc8b9d5f1f41f9d66a693ef636502e7306f348cfb7a537b249a5bd0289ced92",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "9231a675332d669097082add5ed65c3fdf48253aed6d5a5366fbe83b779f4e45",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "5fc801d03ea1cc11b8a4b8e98a52122346967baeca556eeec4d2a84b9fd27caf",
+        "status": "FULL",
+        "technical_context_id": "technical-context:47808c29ad5300a6a3523eb0",
+        "ticker": "005930"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:11:58.008186+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:51.934001+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "d7e5dc1a8a694adb69ffab9ed899533eb70fe4b202509ced8f6feabd51dd45bc",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "12d81cfa30aa156aba89401cfbed38c445d3afeda5770a6ff23dd5e005b64795",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "1942edf9d226904b79704d9466e259f4b4fc7bbd9974eecc081bfa27ca4a5053",
+        "status": "FULL",
+        "technical_context_id": "technical-context:86422af7b3003b5564e774c5",
+        "ticker": "010120"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:12:04.599667+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:11:58.036324+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "ef268a15c59b7f26706c572872d122af9709cbf6612312653c7d26dba3320336",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "c64757dc8fa916c5e32a5381e5fea7aaca9d85346348857ee4f40b69760c7df5",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "ff88305581ac0b972f8f7416a070b3479654cfb087afd09ce1220b9e5bade450",
+        "status": "FULL",
+        "technical_context_id": "technical-context:17e1cdb2427c12078a6b58a1",
+        "ticker": "012450"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:12:10.178580+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1784,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:12:04.627875+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 184,
+          "W": 600
+        },
+        "evidence_sha256": "fd5d6486b8620d1470715569853ac5c60bf6515bdb6d6e3c981eae2c27a02195",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 69,
+          "W": 78
+        },
+        "feature_fingerprint": "a5d6696c9c276969b847b9f940ba4ee0a5bfc45716b249cda2c5f1391d280b2f",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 184,
+            "expected_completed_bar": null,
+            "feature_count": 69,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "ec716d39eef13bbf7c2a51df376b8566e410ca13d67e49bff7b0bca378400a92",
+        "status": "FULL",
+        "technical_context_id": "technical-context:0083680ed12f7f394d768804",
+        "ticker": "047810"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:12:16.420816+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1850,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:12:10.204860+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 250,
+          "W": 600
+        },
+        "evidence_sha256": "8291267ff98e6506f66ac9845c160a45e526caa0160e8f1d2771028e1fbee561",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 72,
+          "W": 78
+        },
+        "feature_fingerprint": "463a7f8ad4fd487488271bda22280f8cd4bc8b28f815e9c807d0b1c9d9066528",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-31",
+          "W": "2026-08-30"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 250,
+            "expected_completed_bar": null,
+            "feature_count": 72,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-30",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "809f29322a03e24dcdaac7df4ebf89031df2142f3e6f9ea3df331ca73b175091",
+        "status": "FULL",
+        "technical_context_id": "technical-context:a5ff6c29845c49ef310b7d5e",
+        "ticker": "086280"
+      }
+    ],
+    "source_packet": "/private/tmp/20260901-kr-run48-ohlcv-v2-regression-packet-copy.json",
+    "source_packet_mutated": false,
+    "source_packet_sha256": "a19a3a259ca266011a34a4e178499d151fd14b945f87605f9aa8d3edd716d38b",
+    "status_counts": {
+      "FULL": 8,
+      "INVALID": 0,
+      "PARTIAL_SAFE": 0,
+      "UNAVAILABLE": 0
+    },
+    "subject_count": 8
+  },
+  "test_sink": {
+    "exact_payload_match": true,
+    "planned_message_count": 22,
+    "production_intent_created": 0,
+    "production_recipient_send_count": 0,
+    "sent_message_count": 22,
+    "status": "sent"
+  },
+  "us": {
+    "as_of": "2026-08-31T23:20:04.289005+00:00",
+    "contract": "ohlcv-v2-repair-evidence-v1",
+    "decision_context_ready_count": 14,
+    "market": "us",
+    "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+    "replay_packet_copy": "/private/tmp/20260901-run49-after-integrity-repair-v2-packet-copy.json",
+    "rows": [
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:08.344955+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1298,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:05.333008+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 56,
+          "W": 242
+        },
+        "evidence_sha256": "3bf35661107d62bb14990fecf25d82a6a8521436fb1259f36b70d438758a4944",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 54,
+          "W": 72
+        },
+        "feature_fingerprint": "00b904b5f63b3001d94d5f9e44138fdcf621675d9be800fc9b77e05d216d3046",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 56,
+            "expected_completed_bar": null,
+            "feature_count": 54,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 242,
+            "expected_completed_bar": null,
+            "feature_count": 72,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "f7d065c7bf58739a5c945cfb3a7f72d389c180d23c04457ddedff41b6c2f638e",
+        "status": "FULL",
+        "technical_context_id": "technical-context:35471512b3fa052622ece277",
+        "ticker": "CORZ"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:14.124079+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [
+            "malformed_ohlc_content"
+          ],
+          "integrity_events": [
+            {
+              "adjustment_mode": "adjusted",
+              "first_bad_stage": "provider_response_after_adapter",
+              "first_payload_fingerprint": "48877c841c69f3a110ae4ea3845c609ddc2f7fd3cb5a51c1b753f1d811d085a2",
+              "issues": [
+                {
+                  "bar_date": "2023-06-05",
+                  "field_values": {
+                    "close": "15.66",
+                    "date": "2023-06-05",
+                    "high": "15.8",
+                    "low": "15.43",
+                    "open": "16.35",
+                    "value": "153797295.0",
+                    "volume": "8540469.0"
+                  },
+                  "row_fingerprint": "c1675848f004836f9e5d79a81164c2dcc5267364d1c877d155eedd42cbfc5b6b",
+                  "timeframe": "daily",
+                  "violation": "HIGH_LT_OPEN"
+                }
+              ],
+              "outcome": "STABLE_BAD_SOURCE",
+              "provider": "kiwoom",
+              "second_payload_fingerprint": "48877c841c69f3a110ae4ea3845c609ddc2f7fd3cb5a51c1b753f1d811d085a2",
+              "ticker": "CPNG",
+              "timeframe": "daily"
+            },
+            {
+              "adjustment_mode": "adjusted",
+              "first_bad_stage": "provider_response_after_adapter",
+              "first_payload_fingerprint": "511a580b5d14748070e88bac527a9b62ee7913e41b0390babe6e873a3981e789",
+              "issues": [
+                {
+                  "bar_date": "2023-06-05",
+                  "field_values": {
+                    "close": "16.01",
+                    "date": "2023-06-05",
+                    "high": "16.2",
+                    "low": "15.43",
+                    "open": "16.35",
+                    "value": "656595258.0",
+                    "volume": "38646007.0"
+                  },
+                  "row_fingerprint": "14e9ced1fbdd4d797c3e6b0fea4e156a2144db8c1876cf7de36b52bc66eb8fae",
+                  "timeframe": "weekly",
+                  "violation": "HIGH_LT_OPEN"
+                }
+              ],
+              "outcome": "STABLE_BAD_SOURCE",
+              "provider": "kiwoom",
+              "second_payload_fingerprint": "511a580b5d14748070e88bac527a9b62ee7913e41b0390babe6e873a3981e789",
+              "ticker": "CPNG",
+              "timeframe": "weekly"
+            }
+          ],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 4,
+          "malformed_refetch_count": 2,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 2640,
+          "request_count": 5,
+          "retry_count": 2,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 2,
+          "started_at": "2026-09-01T04:10:08.365810+00:00",
+          "success_count": 5,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 999,
+          "M": 66,
+          "W": 286
+        },
+        "evidence_sha256": "d0b1aec11e7341c28176c3652c629b4a991bcf0271eb6eed8c65b9860e20717e",
+        "failure_reason": "D:invalid_ohlc_relation,W:invalid_ohlc_relation,M:timeframe_unavailable",
+        "feature_counts": {
+          "D": 0,
+          "M": 0,
+          "W": 0
+        },
+        "feature_fingerprint": null,
+        "freshness_state": "INVALID",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 999,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 0,
+            "freshness_state": "INVALID",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [
+              "invalid_ohlc_relation"
+            ],
+            "status": "INVALID",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": false
+          },
+          "M": {
+            "bar_count": 66,
+            "expected_completed_bar": null,
+            "feature_count": 0,
+            "freshness_state": "UNAVAILABLE",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [
+              "timeframe_unavailable"
+            ],
+            "status": "UNAVAILABLE",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": false
+          },
+          "W": {
+            "bar_count": 286,
+            "expected_completed_bar": null,
+            "feature_count": 0,
+            "freshness_state": "INVALID",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [
+              "invalid_ohlc_relation"
+            ],
+            "status": "INVALID",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": false
+          }
+        },
+        "raw_bar_fingerprint": "413c34e71723ecf9edc47633b6e5d8f3d03fcc4fe026694f9b42b24cd97e5dfd",
+        "status": "INVALID",
+        "technical_context_id": "technical-context:abd2ac17ed01ef2768cbc996",
+        "ticker": "CPNG"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:15.592297+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 392,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:14.130176+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 311,
+          "M": 15,
+          "W": 66
+        },
+        "evidence_sha256": "de21faf6b6f98fa5fc5360dcb0a14c09cbf3534e324d2f575503c95c58cfe067",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 17,
+          "W": 60
+        },
+        "feature_fingerprint": "68ccc15912a894cf2413803909e905319e84ee5aeff4687561ddb10d3a6216ba",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 311,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 15,
+            "expected_completed_bar": null,
+            "feature_count": 17,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 66,
+            "expected_completed_bar": null,
+            "feature_count": 60,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "5f00598a29621b233aef9fb4d658a0600163aae5e5f1416622e44204084b4e76",
+        "status": "FULL",
+        "technical_context_id": "technical-context:e4b11b339f7b5c5062352879",
+        "ticker": "CRCL"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:19.946485+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1865,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:15.601172+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 265,
+          "W": 600
+        },
+        "evidence_sha256": "60d4e95cb1a08ddd65c0f5790a62a66b9bdd1d56269bb23bda1f5327bee1ba8f",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "d65144408f163d7f18886a5d9a3fb0750846aac90fc2a35bfd56834f638cd70a",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 265,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "c8cb951df92d2d1efebf10b22eb2b6818f49ef33679865d4d6375e0c163bdfa6",
+        "status": "FULL",
+        "technical_context_id": "technical-context:6a8bf19d4370868e0130e210",
+        "ticker": "GOOGL"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:25.592376+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [
+            "malformed_ohlc_content"
+          ],
+          "integrity_events": [
+            {
+              "adjustment_mode": "adjusted",
+              "first_bad_stage": "provider_response_after_adapter",
+              "first_payload_fingerprint": "b31f5cd60dbaede78b042ab0c0b4e522f95a7eb1dfbfd7725828cc75e2097396",
+              "issues": [
+                {
+                  "bar_date": "2026-08-31",
+                  "field_values": {
+                    "close": "81.9",
+                    "date": "2026-08-31",
+                    "high": "79.99",
+                    "low": "75.71",
+                    "open": "79.43",
+                    "value": "326287049.0",
+                    "volume": "4201466.0"
+                  },
+                  "row_fingerprint": "e7097a97c4d5f20545f147da6296453ae9955e2abb8d7e6846ffb86f902131c8",
+                  "timeframe": "daily",
+                  "violation": "HIGH_LT_CLOSE"
+                }
+              ],
+              "outcome": "STABLE_BAD_SOURCE",
+              "provider": "kiwoom",
+              "second_payload_fingerprint": "b31f5cd60dbaede78b042ab0c0b4e522f95a7eb1dfbfd7725828cc75e2097396",
+              "ticker": "HUT",
+              "timeframe": "daily"
+            },
+            {
+              "adjustment_mode": "adjusted",
+              "first_bad_stage": "provider_response_after_adapter",
+              "first_payload_fingerprint": "e08d2cf60ea28653c01949be0bd45f2cad5504031d512e1c7559c40b829f4b7e",
+              "issues": [
+                {
+                  "bar_date": "2026-08-31",
+                  "field_values": {
+                    "close": "81.9",
+                    "date": "2026-08-31",
+                    "high": "79.99",
+                    "low": "75.71",
+                    "open": "79.43",
+                    "value": "326287049.0",
+                    "volume": "4201466.0"
+                  },
+                  "row_fingerprint": "e7097a97c4d5f20545f147da6296453ae9955e2abb8d7e6846ffb86f902131c8",
+                  "timeframe": "weekly",
+                  "violation": "HIGH_LT_CLOSE"
+                }
+              ],
+              "outcome": "STABLE_BAD_SOURCE",
+              "provider": "kiwoom",
+              "second_payload_fingerprint": "e08d2cf60ea28653c01949be0bd45f2cad5504031d512e1c7559c40b829f4b7e",
+              "ticker": "HUT",
+              "timeframe": "weekly"
+            }
+          ],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 4,
+          "malformed_refetch_count": 2,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 2609,
+          "request_count": 5,
+          "retry_count": 2,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 2,
+          "started_at": "2026-09-01T04:10:19.975754+00:00",
+          "success_count": 5,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 999,
+          "M": 63,
+          "W": 272
+        },
+        "evidence_sha256": "fe99250b82ba7d9f5ec3e30a07549712eb7f990aec1ced079ee0ba1ec1128a5d",
+        "failure_reason": "D:invalid_ohlc_relation,W:invalid_ohlc_relation,M:timeframe_unavailable",
+        "feature_counts": {
+          "D": 0,
+          "M": 0,
+          "W": 0
+        },
+        "feature_fingerprint": null,
+        "freshness_state": "INVALID",
+        "last_completed_bar": {
+          "D": "2026-08-28",
+          "M": "2026-08-03",
+          "W": "2026-08-24"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 999,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 0,
+            "freshness_state": "INVALID",
+            "last_completed_bar": "2026-08-28",
+            "reasons": [
+              "invalid_ohlc_relation"
+            ],
+            "status": "INVALID",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": false
+          },
+          "M": {
+            "bar_count": 63,
+            "expected_completed_bar": null,
+            "feature_count": 0,
+            "freshness_state": "UNAVAILABLE",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [
+              "timeframe_unavailable"
+            ],
+            "status": "UNAVAILABLE",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": false
+          },
+          "W": {
+            "bar_count": 272,
+            "expected_completed_bar": null,
+            "feature_count": 0,
+            "freshness_state": "INVALID",
+            "last_completed_bar": "2026-08-24",
+            "reasons": [
+              "invalid_ohlc_relation"
+            ],
+            "status": "INVALID",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": false
+          }
+        },
+        "raw_bar_fingerprint": "904f9850fb19f9e82c440e027c83e69ec820555e3eab5db6cb92637765f551f7",
+        "status": "INVALID",
+        "technical_context_id": "technical-context:07f3c1adb2dae54b1d735aad",
+        "ticker": "HUT"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:30.233619+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:25.598185+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "cad716e8a36630a84e8b74e88169ab2f92fe1cb18dbf70edc12071073422d318",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "f820b03996250d23ab26dd20db0fa2df5276303e9e889c899ce9c05e9f116a96",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "cd024dff9b9df47c0fdcdc1d0c5e7d1c9d476811591da1f0eeea4b3a68a274b3",
+        "status": "FULL",
+        "technical_context_id": "technical-context:640cd18930acfdb6e26c7b35",
+        "ticker": "IBM"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:34.545302+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1900,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:30.263422+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 300,
+          "W": 600
+        },
+        "evidence_sha256": "3f45d8b574c5716bb562a83b4ee96f5b43ca1a798dfe5c0cd797b11075a15e3b",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "c3bc306909652d6ecd3efca60adeef79038d16819af7beb752a54caaaac0000b",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 300,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "a98704313466bdbd16137b3f2d4907980232232d4d002d570ad5d082d8c3a497",
+        "status": "FULL",
+        "technical_context_id": "technical-context:656349251576aa5ea8a1001e",
+        "ticker": "MU"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:37.944147+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1347,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:34.574890+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 65,
+          "W": 282
+        },
+        "evidence_sha256": "2496229cfa5c573a6cf9f2802d279f1368989253fcb36ec564cf7dfc09a45020",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 60,
+          "W": 78
+        },
+        "feature_fingerprint": "169259abdde695b5044d439f7fc624cb98f52895efe35bdb84aa65d082e94f77",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 65,
+            "expected_completed_bar": null,
+            "feature_count": 60,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 282,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "652455b0918974715c966ba17bc24abe252a0c70b0cb910e9ccdb167ef6181fa",
+        "status": "FULL",
+        "technical_context_id": "technical-context:96fab1e8f1e5c2c6dc28f8e3",
+        "ticker": "RXRX"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:38.894080+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 48,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:37.965963+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 37,
+          "M": 2,
+          "W": 9
+        },
+        "evidence_sha256": "1c1a900eb52084281b6a57da7d5ca0951cfacc381a4a21c297d6b9f43ac60267",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 51,
+          "M": 3,
+          "W": 7
+        },
+        "feature_fingerprint": "4a3081a2fb0ff0ce746ee5573a78b282b6d1b43076e82330bce786321fdfe93e",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 37,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 51,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 2,
+            "expected_completed_bar": null,
+            "feature_count": 3,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 9,
+            "expected_completed_bar": null,
+            "feature_count": 7,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "c90c57dc5ed8603c04caae865aa6176970ef175383494abc6bc2ea9ac5b3f2be",
+        "status": "FULL",
+        "technical_context_id": "technical-context:b64f51d10cd7d86477cb7580",
+        "ticker": "SKHY"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:40.276889+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 481,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:38.896840+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 382,
+          "M": 19,
+          "W": 80
+        },
+        "evidence_sha256": "535c7ea2567eaeee9423ac5e7f8f927d5e1154dc46211340f76c38e1240a9c07",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 19,
+          "W": 60
+        },
+        "feature_fingerprint": "837683ff7004a852e749437361698403b2ed95fac31f515d484f1b78e84226d5",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 382,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 19,
+            "expected_completed_bar": null,
+            "feature_count": 19,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 80,
+            "expected_completed_bar": null,
+            "feature_count": 60,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "f0df45af1e2438e5434718410e01605ae6ccba50da8f254922bea5ebaddfc634",
+        "status": "FULL",
+        "technical_context_id": "technical-context:5124e8f47b109dbf0c6b72ed",
+        "ticker": "SNDK"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:44.473319+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1795,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:40.286537+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 195,
+          "W": 600
+        },
+        "evidence_sha256": "0b0bd67954be7fca1162c11ac9edd8e8744d137a01197b3df12e14e21b5b3d18",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 69,
+          "W": 78
+        },
+        "feature_fingerprint": "af49cca08fee4692b41048a0bbb99e4bcca4145ede71991655e29ce6ea06372e",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 195,
+            "expected_completed_bar": null,
+            "feature_count": 69,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "6743a3a7a400185384e8a4f81eebd584e5804d258e1cf766b9112b980fb1d348",
+        "status": "FULL",
+        "technical_context_id": "technical-context:2ee605505edc35c41ff34ae9",
+        "ticker": "TSLA"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:48.662253+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1861,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:44.501968+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 261,
+          "W": 600
+        },
+        "evidence_sha256": "2359552611995ec7977c361d4affc5b48870dcb2fb7a46401b0241c390b60bda",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 78,
+          "W": 78
+        },
+        "feature_fingerprint": "2ff43bba88dec538cf458915258fe2394e84557b7b0b7f8f035dc64579f58dd4",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 261,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 600,
+            "expected_completed_bar": null,
+            "feature_count": 78,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "20c484763f37ac1a795af2ad93913212427965b643addf5a3932e78540959e18",
+        "status": "FULL",
+        "technical_context_id": "technical-context:0e80b30a9fcfccebb8a645ab",
+        "ticker": "TSM"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:50.324797+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 583,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:48.691237+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 462,
+          "M": 23,
+          "W": 98
+        },
+        "evidence_sha256": "921dccfc6b8daaab258a6677325567e3091eef1279fd2b2d2cffa76998e4a235",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 43,
+          "W": 60
+        },
+        "feature_fingerprint": "388bd6a4f1a3001ec1dffd7063268587c0e030a7714a0a0d222410558f6905c4",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 462,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 23,
+            "expected_completed_bar": null,
+            "feature_count": 43,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 98,
+            "expected_completed_bar": null,
+            "feature_count": 60,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "bbb02c654ed931c00724919f2c9a07a8d8b1dbd92602938da0bdd5f49578ce3b",
+        "status": "FULL",
+        "technical_context_id": "technical-context:d7388b335d20fb41db3af42b",
+        "ticker": "WRD"
+      },
+      {
+        "acquisition": {
+          "cache_use_count": 0,
+          "completed_at": "2026-09-01T04:10:53.232534+00:00",
+          "connection_error_count": 0,
+          "failure_classes": [],
+          "integrity_events": [],
+          "intermittent_malformed_unresolved_count": 0,
+          "invalid_raw_row_count": 0,
+          "malformed_refetch_count": 0,
+          "non_retryable_error_count": 0,
+          "raw_bars_validated_count": 1304,
+          "request_count": 3,
+          "retry_count": 0,
+          "server_error_count": 0,
+          "stable_malformed_unresolved_count": 0,
+          "started_at": "2026-09-01T04:10:50.336094+00:00",
+          "success_count": 3,
+          "timeout_count": 0,
+          "transient_malformed_recovered_count": 0
+        },
+        "bar_counts": {
+          "D": 1000,
+          "M": 57,
+          "W": 247
+        },
+        "evidence_sha256": "8a79db22c3b694bf403cd8a33eb3af217adf8d0e55a733dbacf4b1552b9c2616",
+        "failure_reason": null,
+        "feature_counts": {
+          "D": 78,
+          "M": 54,
+          "W": 72
+        },
+        "feature_fingerprint": "7618ac31a4c8cb105e8d1a5c1e9f4aed5366ac59e915c7100e3547d7ae5652ee",
+        "freshness_state": "CURRENT",
+        "last_completed_bar": {
+          "D": "2026-08-31",
+          "M": "2026-08-03",
+          "W": "2026-08-31"
+        },
+        "quality": {
+          "D": {
+            "bar_count": 1000,
+            "expected_completed_bar": "2026-08-31",
+            "feature_count": 78,
+            "freshness_state": "CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "daily",
+            "usable_for_current_reasoning": true
+          },
+          "M": {
+            "bar_count": 57,
+            "expected_completed_bar": null,
+            "feature_count": 54,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-03",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "monthly",
+            "usable_for_current_reasoning": true
+          },
+          "W": {
+            "bar_count": 247,
+            "expected_completed_bar": null,
+            "feature_count": 72,
+            "freshness_state": "TIMEFRAME_CURRENT",
+            "last_completed_bar": "2026-08-31",
+            "reasons": [],
+            "status": "FULL",
+            "timeframe": "weekly",
+            "usable_for_current_reasoning": true
+          }
+        },
+        "raw_bar_fingerprint": "72bc8980acb7713d79baafa0131770fde519cb67ce26969f51c577b2ddd5c49f",
+        "status": "FULL",
+        "technical_context_id": "technical-context:efc512c5dc088d1e10e3525f",
+        "ticker": "WULF"
+      }
+    ],
+    "source_packet": "/private/tmp/ohlcv-v2-run49-isolated/ai_review/inbox/2026-09-01-us-run-49-2d1bb6df1608.json",
+    "source_packet_mutated": false,
+    "source_packet_sha256": "b069329ef1f31a7010a655fe8158b5789c7413ce61ad4460984565bc0551a65f",
+    "status_counts": {
+      "FULL": 12,
+      "INVALID": 2,
+      "PARTIAL_SAFE": 0,
+      "UNAVAILABLE": 0
+    },
+    "subject_count": 14
+  }
+}

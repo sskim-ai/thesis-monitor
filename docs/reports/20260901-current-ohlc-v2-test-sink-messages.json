@@ -1,0 +1,232 @@
+{
+  "messages": [
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:4469d8b61e5111cb2d9e0a0fc5878df6308fd4def40784f6a49e48384c436629",
+      "base_sha256": "de8817ae70d763c390c42b57d9f3ef084792c914cda516ef9eaeccf79056d98d",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:CORZ",
+      "market": "us",
+      "rendered_sha256": "e36a4bb224101f6edc200095e5b7aafe4c9ca3f7d2c990f137a129a8b0801d07",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Core Scientific, Inc.(CORZ)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 코로케이션 전환은 상당 부분 증명됐지만 매우 높은 기대, 큰 투자 지출 부담과 약한 현재 가격 구조 때문에 추가 매수 근거가 부족하다.\n\n🔄 재평가 조건\n• 상향 재평가: 청구 전력과 현금흐름 개선이 확인되고 거래량을 동반한 가격 구조 회복까지 나타나면 BUY를 재평가한다.\n• 하향 재평가: 핵심 계약 축소나 반복적 준공 실패와 함께 부채·희석 및 현금흐름 악화가 지속되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nCore Scientific은 비트코인 채굴 중심 사업에서 AI/HPC 데이터센터 코로케이션 중심으로 전환 중이며, 2026년 2분기 매출의 약 83%가 colocation에서 발생하고 colocation gross margin이 약 59%까지 올라온 점이 핵심 근거다. 이미 437MW가 billing 중이고 총 leased customer power가 약 1.1GW, 잠재 계약가치가 240억달러 이상으로 확대되어 세 종목 중 '계약→가동→청구→매출' 전환이 가장 많이 증명됐다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-723.29M입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 가동 지연 또는 계약 변경\n• CAPEX·부채 증가 대비 매출 전환 지연\n• 대규모 희석과 내부통제 문제 지속\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $16.30\n• 가까운 지지: 약 $15.96~$16.28 · 월봉 볼린저 중첩\n• 가까운 저항: 약 $16.59~$16.96\n• 주요 구조 지지: 약 $13.32~$13.6\n• 주요 구조 저항: 약 $18.58~$18.68\n• 잠정 볼린저 지지(주봉·진행중): 약 $15.43~$15.51 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $22.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n과거 대비:\nPBR 중앙값 0.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증 가능한 현재 배수가 없어 Valuation 해석을 보류합니다.\n\n📌 다음 확인\n• colocation 매출 성장률과 gross margin\n• billing MW와 leased MW의 분기별 증가\n• 1.1GW 계약용량의 준공·가동 일정 준수 여부",
+      "ticker": "CORZ"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:579f3dc85d6c4407c93d74765269b8e1c65c48fbad5f722b68d8526f0bfc798b",
+      "base_sha256": "39324dde9616874940c7d57a9f99ffae1c222cdbbc52834b841b82a001fdaad3",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:CPNG",
+      "market": "us",
+      "rendered_sha256": "7465f8685eeb0f3f4a78bd4b4e7695d5c1835e700df7414cc2fcdfaef83fae9b",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Coupang, Inc.(CPNG)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 매출 성장 기반과 균형적인 기대는 유지되지만 수익성·현금흐름 정상화가 미확인이고 기술 컨텍스트가 무효여서 진입 시점을 판단할 수 없다.\n\n🔄 재평가 조건\n• 상향 재평가: 핵심 커머스 수익성과 현금흐름이 회복되고 신규사업 손실 축소가 지속되며 진입 시점 자료도 유효해지면 BUY를 재평가한다.\n• 하향 재평가: 핵심 커머스 경쟁력과 수익성이 회복되지 않고 신규사업 손실 및 현금흐름 부담이 함께 확대되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\n쿠팡의 핵심 투자 논리는 한국 Product Commerce의 고객·매출 성장 기반이 유지되는 가운데 2025년 데이터 사고 이후 훼손된 핵심 커머스 마진이 정상화되고, Taiwan·Coupang Eats·Farfetch 등 Developing Offerings의 성장과 손실 축소가 동시에 진행되며 EBITDA와 FCF가 회복되는지에 있다. 2026년 2분기 Product Commerce 매출은 성장했지만 Adjusted EBITDA margin은 약 5.1%로 크게 하락했고 TTM FCF도 약 1.05억달러로 축소되어 현재는 매출 성장보다 수익성과 현금흐름.\n\n👁 핵심 감시\n• 고객 성장 둔화 장기화\n• Product Commerce margin 5%대 이하 정체\n• Developing Offerings 손실 재확대\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $16.06\n• 가까운 지지: 약 $15.63~$15.99\n• 가까운 저항: 약 $16.31~$16.58\n• 주요 구조 지지: 약 $12.63~$12.98\n• 주요 구조 저항: 약 $17.57~$17.66\n• 볼린저 저항(주봉): 약 $17.05~$17.41\n• 잠정 볼린저 지지(주봉·진행중): 약 $14.12~$14.2 · 봉 마감 전 변동 가능\n• Fib/SR 겹침: 같은 구조 구간의 보조 확인 근거입니다.\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $17.90은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n📌 다음 확인\n• Product Commerce Adjusted EBITDA margin이 2026년 2분기 약 5.1%에서 7~9%대로 회복하는지\n• 활성고객 성장률과 고객당 매출 성장의 재가속 여부\n• Developing Offerings 매출 성장과 Adjusted EBITDA 손실의 분기별 축소",
+      "ticker": "CPNG"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:e1a1bf6f5dac41f0a0920367b4260cbe8effb47a7b1ce310281bf23085ef3b99",
+      "base_sha256": "d49456a630a4933f66b0682fe185205921ed0caf2daa6dbc76cb10724f980f44",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:CRCL",
+      "market": "us",
+      "rendered_sha256": "b4ef958562c2461f1eb886e704f83cde5fda8399d9fc912752a0512f84f7a597",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Circle Internet Group(CRCL)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 높음 | 증거 성숙도: 부분 확인\n\n🎯 핵심 판단\n• 사업의 장기 성장 가능성은 있으나 투기적 기대와 높은 선행 이익 배수에 비해 수익 다변화가 미확인이고 현재 가격 구조도 새 진입 근거가 부족하다.\n\n🔄 재평가 조건\n• 상향 재평가: USDC 확장과 비이자 수익 증가가 금리 하락에도 이익·현금흐름 개선으로 이어지고 진입 구조가 확보되면 BUY를 재평가한다.\n• 하향 재평가: USDC의 구조적 하락이나 규제로 사업모델이 훼손되고 금리 하락 시 정상화 수익성까지 크게 악화되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nUSDC 유통량과 온체인 사용 증가가 장기 성장의 핵심이지만, reserve income 의존도를 낮추고 비이자성 플랫폼·결제 수익이 반복 가능한 이익으로 전환되는지가 재평가의 핵심이다. 금리 하락 시 reserve yield가 낮아져도 USDC 성장과 비이자 수익 확대가 adjusted EBITDA와 FCF를 방어할 수 있어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 준비금·플랫폼 사업의 PPE 투자 후 잉여현금흐름은 $528.12M입니다. 전년 비교기간보다 늘었고 준비금 수익과 비이자 플랫폼 수익의 현금전환을 함께 봅니다.\n\n👁 핵심 감시\n• USDC 점유율 둔화\n• reserve yield 하락과 수익배분 부담으로 정상화 이익 하락\n• 현재 금리 수익을 구조적 이익으로 오인할 위험\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $95.55\n• 가까운 지지: 약 $91.07~$91.53\n• 가까운 저항: 약 $99.04~$99.71 · 일봉 볼린저 중첩\n• 주요 구조 지지: 약 $84.05~$85.24\n• 주요 구조 저항: 약 $110.92~$111.48\n• 잠정 볼린저 저항(주봉·진행중): 약 $121.4~$122.02 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 $72.70 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $95.55 ÷ $12.85 = 7.4배\n과거 대비:\nPBR 중앙값 5.5배\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• USDC 유통량과 점유율\n• 온체인 거래량\n• 비이자성 매출 비중",
+      "ticker": "CRCL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:93a2dafc22c51e79237069ae28a0c9b1a72489d20432a60ce03582d256b1c453",
+      "base_sha256": "90c715089a81ea351b741ab5a45b3316bc33e938e185b0f7fd4756d9b71fb77d",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:GOOGL",
+      "market": "us",
+      "rendered_sha256": "94c8594ad432757d09aa5f02c5bc6a9b2b3ea78ab9f11615b3819572b999fd1a",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Alphabet Inc. Class A(GOOGL)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 신규 가격 이탈과 진입 여건 악화가 확인됐고, 높은 기대와 투자 후 현금 창출 불확실성이 남아 기존 BUY보다 HOLD가 안전하다.\n\n🔄 재평가 조건\n• 상향 재평가: 검색 수익화와 클라우드 전환 성과가 확인되고 가격 구조도 회복하면 HOLD에서 BUY로 재평가한다.\n• 하향 재평가: 검색과 클라우드의 동반 부진 또는 현금흐름의 구조적 악화가 확인되면 HOLD에서 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 높음\n\n🎯 핵심\nSearch 광고의 견조한 성장과 Google Cloud의 고성장·마진 개선, AI 수요 확대가 이익 성장을 지지한다. 다만 대규모 AI CAPEX로 FCF 변동성이 커질 수 있어 Cloud 성장·backlog 확대와 CAPEX 대비 ROIC·FCF 회복이 핵심이다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 AI·Cloud 확장의 PPE 투자 후 잉여현금흐름은 $4.26B입니다. 전년 비교기간보다 줄었고 AI·Cloud 투자 회수는 Cloud 성장·마진과 함께 봅니다.\n\n👁 핵심 감시\n• Search 수익화 약화\n• CAPEX 증가가 FCF와 ROIC를 장기간 훼손\n• AI 투자비와 감가상각 시차\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $339.35\n• 가까운 지지: 약 $329.71~$331.37\n• 가까운 저항: 약 $347.69~$349.93\n• 주요 구조 저항: 약 $358.94~$360.75 · 주봉 볼린저 중첩\n• 잠정 볼린저 지지(주봉·진행중): 약 $317.98~$319.59 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $375은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $339.35 ÷ $27.90 = 12.2배\nPBR = 현재가 ÷ BVPS = $339.35 ÷ $52.37 = 6.5배\n과거 대비:\nPER 중앙값 16.1배 · 12백분위 · PBR 중앙값 6.7배 · 44백분위\n현재 Valuation: 다소 할인\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Cloud 성장률과 backlog\n• Cloud 영업이익률\n• Search monetization",
+      "ticker": "GOOGL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:a175cc225ef536d85ab00a6b43208226a34284a6a802a5613335f6225b3e3fce",
+      "base_sha256": "7a390f73857ea8d47fa71f41ba0515f4884e087f314d42d26710935fc95b7dc1",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:HUT",
+      "market": "us",
+      "rendered_sha256": "4f00646ebe4a9689fec41a35a4868eb037bbba850aac65d9ec7213fc689f002b",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Hut 8 Corp.(HUT)\n\n🧠 AI 분석 판단: SELL\n판단 확신도: 중간 | 증거 성숙도: 초기\n\n🎯 핵심 판단\n• 가격은 매우 낙관적인 사업 전환을 요구하지만 프로젝트 준공·가동과 자금조달의 실행 증거가 부족하다.\n\n🔄 재평가 조건\n• 상향 재평가: 프로젝트 준공과 계약 수익 인식이 확인되고 자본 부담이 제한되며 인프라 수익 비중이 커지면 SELL에서 HOLD로 재평가한다.\n• 하향 재평가: 계약 취소나 반복적인 준공 실패, 자본 부담 급증이 나타나면 SELL 확신을 높인다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nHut 8은 비트코인 채굴·전력 인프라 자산에서 AI/HPC 데이터센터 인프라 사업으로 확장 중이며, 2026년 8월 기준 약 949MW 계약 IT 용량, 약 266억달러 base-term 계약가치, 연간 NOI 17.5억달러 이상 기대와 investment-grade 상대방 기반의 장기 계약이 핵심 가치 근거다. 장기 기업가치 옵션은 매우 크지만 현재 손익은 여전히 Compute/채굴 비중이 높고, 대형 계약이 실제 준공·가동·NOI로 전환되는 실행 리스크가 크다.\n\n👁 핵심 감시\n• 준공 지연·전력 인입 문제\n• NOI 하향 조정\n• 과도한 모회사 자본투입 또는 희석\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $78.64\n• 가까운 지지: 약 $75.29~$75.68 · 일봉 볼린저 중첩\n• 가까운 저항: 약 $82.64~$83.06\n• 주요 구조 지지: 약 $65.9~$66.24\n• 잠정 볼린저 지지(주봉·진행중): 약 $66.91~$67.26 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $97은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $78.64 ÷ $12.26 = 6.4배\nfPER = 현재가 ÷ 시장 예상 EPS = $78.64 ÷ $0.59 = 133.3배\n과거 대비:\nPER 중앙값 5.6배 · PBR 중앙값 3.6배 · 73백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 예상 이익 배수를 사용하며, 사용할 수 없는 trailing PER은 제외합니다.\n\n📌 다음 확인\n• 계약 949MW의 준공·가동 일정과 실제 billing/NOI 발생\n• 평균 연간 NOI 17.5억달러 이상 기대치의 실현 여부\n• 프로젝트별 CAPEX·project financing·모회사 equity 투입 규모",
+      "ticker": "HUT"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:59fd97f3d3881c8c724313e4f44dd3f3ef9deddff45e64d333b9c6998c4dc422",
+      "base_sha256": "764240e54aae2375dd4b1e4edecb6df7820ffb3daf4b4a61805704a042dade8d",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:IBM",
+      "market": "us",
+      "rendered_sha256": "40fe9c48f41a194dca8651918d8ba7a72fba55d730f4907fb742fedfb3c1a95f",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 IBM(IBM)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 부분 확인\n\n🎯 핵심 판단\n• 사업 기대와 평가는 균형적이지만 전사 성장 확인이 부족하고 가격 구조도 대기 상태여서 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 소프트웨어·인공지능 성장이 전사 매출과 현금흐름 가속으로 확인되고 가격 구조도 회복하면 HOLD에서 BUY로 재평가한다.\n• 하향 재평가: 전사 매출과 현금흐름의 장기 정체 또는 부채 부담 확대가 확인되면 HOLD에서 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 균형\n\n🎯 핵심\nSoftware·Red Hat·AI 관련 성장과 반복매출 확대가 중기 성장을 지지하지만, 회사 전체 매출 성장과 FCF 가속은 아직 충분히 증명되지 않았다. Consulting 회복과 Software 성장률, FCF 증가가 핵심이며 차트상 223~230달러 지지와 250달러 안착, 258~260달러 돌파를 가격 확인 신호로 본다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 Software·Consulting 사업의 PPE 투자 후 잉여현금흐름은 $7.3B입니다. 전년 비교기간보다 늘었고 Software·Consulting 전환과 인수자금 부담을 함께 봅니다.\n\n👁 핵심 감시\n• Software 성장 둔화\n• Consulting 부진과 FCF 정체\n• 인수 관련 무형자산과 조정이익 의존\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $233.87\n• 가까운 지지: 약 $226.13~$231.55\n• 가까운 저항: 약 $237.64~$242.68\n• 주요 구조 지지: 약 $208.66~$215.03 · 월봉 볼린저 중첩\n• 주요 구조 저항: 약 $247.7~$253.91\n• 잠정 볼린저 지지(주봉·진행중): 약 $194.41~$195.4 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $250은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $233.87 ÷ $16.56 = 14.1배\nPBR = 현재가 ÷ BVPS = $233.87 ÷ $36.14 = 6.5배\nfPER: 17.4배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $233.87 ÷ $34.28 = 6.8배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 15.2배 · 41백분위 · PBR 중앙값 6.5배 · 48백분위\n현재 Valuation: 중립 범위\n해석: 현재 배수를 그 시점에 공개된 재무정보로 재구성한 역사적 분포와 비교했습니다.\n오늘 Valuation 변화: 압축\n사업 투자 논리를 바꿀 신규 근거는 없고, 오늘 할인율·위험선호의 거시 전달 경로가 Valuation에 압축 영향을 줬습니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n\n📌 다음 확인\n• Software 성장률\n• Red Hat 성장률\n• Consulting backlog와 매출",
+      "ticker": "IBM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:1a9ab956135f397a57563c0c1f6a41d08145ad50d0ede8312524bf73e93561bf",
+      "base_sha256": "90a54a6ac9f6178ebf8eeab68cce3b22764562bad0fbfc1b165e7a0a75835ad3",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:MU",
+      "market": "us",
+      "rendered_sha256": "bb6dd86a3682eb931a0754e1e8621457843f093a0aeed4a439b7e475763d0c14",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Micron Technology(MU)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 현금창출은 확인됐지만 기대와 장부가치 배수 부담이 높고 현재 가격 구조도 보유자 관점의 유지 상태여서 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 가격·믹스 강세, 신규 고객 채택과 계약의 실질 수요 전환이 함께 확인되면 BUY로 재평가한다.\n• 하향 재평가: 수요와 메모리 가격의 장기 약화가 현금창출 및 재무구조 악화로 이어지면 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI 서버·HBM·고부가 DRAM 수요가 Micron의 가격·믹스와 수익성을 구조적으로 끌어올리고 있으며, 장기 고객계약(SCA/RPO)과 대규모 FCF가 과거 메모리 사이클보다 높은 이익 가시성을 제공하는지가 핵심 투자 논리다. 2026-08-12 OHLCV 기준 MU는 월봉·주봉의 장기 상승 레짐이 유지되는 가운데 주봉 MACD와 주요 OSC가 플러스이고, 일봉 MACD histogram도 빠르게 개선되어 SKHY보다 중기 추세 구조가 안정적이다.\n\n📈 사업·실적\n2026 회계연도 3분기 누계 메모리 증설의 PPE 투자 후 잉여현금흐름은 $26.1B입니다. 전년 비교기간보다 늘었고 ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• 메모리 ASP 상승률 조기 둔화 또는 가격 하락\n• gross margin이 peak 수준에서 예상보다 빠르게 압축\n• CAPEX 급증으로 FCF가 크게 감소\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $958.73\n• 가까운 지지: 약 $948.9~$953.66\n• 볼린저 저항(월봉): 약 $1,030.02~$1,035.19\n• 잠정 볼린저 저항(주봉·진행중): 약 $1,198.34~$1,204.36 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 $950 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $958.73 ÷ $48.93 = 19.6배\nPBR = 현재가 ÷ BVPS = $958.73 ÷ $89.22 = 10.7배\nfPER: 5.9배\nfPBR = 현재가 ÷ 내부 FY1 추정 BVPS = $958.73 ÷ $163.09 = 5.9배\n※ 내부 모델 추정치이며 시장 컨센서스가 아닙니다.\n과거 대비:\nPER 중앙값 16.8배 · 70백분위 · PBR 중앙값 2.2배 · 96백분위\n현재 Valuation: 부담 구간\n해석: 사이클 기업은 낮은 trailing PER를 할인 근거로 쓰지 않고 PBR과 정상화 이익을 우선했습니다.\n\n⚠️ 데이터 주의\n• fPER는 산출 기간이 명확하지 않아 참고 수준입니다.\n\n📌 다음 확인\n• 분기 매출·gross margin·operating margin과 DRAM/NAND ASP 방향\n• HBM4 출하·고객 qualification 및 HBM4E 상용화 진행\n• Strategic Customer Agreement·RPO·고객 예치금 규모와 실제 매출 전환",
+      "ticker": "MU"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:254760e580d516722659b74a25a116f0733931bf059c41c33475d9344ea67b6c",
+      "base_sha256": "3ab4de2f79e64f4193fe342cb191d895d1f7c93e6038d194ee12058b03b19563",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:RXRX",
+      "market": "us",
+      "rendered_sha256": "96cadaec5afee1f97860ab76831ea798002e67d888f211c0c12981145dff958f",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Recursion Pharmaceuticals(RXRX)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 초기\n\n🎯 핵심 판단\n• 플랫폼의 임상·경제성은 초기 단계이고 현금 소진 위험이 큰 가운데 가격 구조도 대기 상태여서 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 긍정적 임상 데이터와 반복 가능한 파트너 수익, 현금 소진 개선이 함께 확인되면 BUY로 재평가한다.\n• 하향 재평가: 핵심 임상 실패가 반복되고 파트너 성과 정체와 대규모 희석이 동반되면 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI 기반 신약발굴 플랫폼이 실제 파트너 타깃 선택과 임상 후보 진전으로 이어지는지가 핵심이다. 최근 Genentech 공동연구 타깃 선택과 임상 진전은 초기 강화 신호지만, 높은 현금소진과 임상 실패·희석 위험이 크다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 연구개발 단계의 PPE 투자 후 잉여현금흐름은 $-187.35M입니다. 전년 비교기간보다 음수 폭이 줄었고 현금소진 근거로만 쓰며 보유현금 근거 없이 runway를 계산하지 않습니다.\n\n👁 핵심 감시\n• 임상 실패 또는 일정 지연\n• 현금소진과 희석이 예상 상회\n• 초기 파이프라인의 높은 실패확률\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $3.40\n• 가까운 지지: 약 $3.3~$3.35 · 주봉 볼린저 중첩\n• 가까운 저항: 약 $3.57~$3.6\n• 주요 구조 지지: 약 $2.76~$2.78\n• 주요 구조 저항: 약 $3.78~$3.82 · 잠정 주봉 볼린저 중첩\n\n🧭 기존 등록 가격 규칙\n• 기존 $3.36 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $3.40 ÷ $1.71 = 2.0배\nfPER: N/M\n과거 대비:\nPBR 중앙값 3.3배 · 17백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• 주요 임상 일정과 데이터\n• 파트너 타깃 선택\n• milestone·파트너 매출",
+      "ticker": "RXRX"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:be207861d5b9b12f8817ced16a5d68f98d3ef8bbd2d40bf2608eea70be1d8b1e",
+      "base_sha256": "8bfefea5fd982c6f98cd3166a9819dc07debeefe90f408f41f483886c1360286",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:SKHY",
+      "market": "us",
+      "rendered_sha256": "53b2730e066be1bab4aecf8c584a4b23d20609174c5d5d82d45872e1b46afa76",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 SK hynix Inc. ADR(SKHY)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 낮음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 사업 기대는 긍정적이지만 ADR 재무·가치평가 기반이 불충분하고 희소성 기대가 큰 데다 신규 진입 구조도 미완성이어서 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 신규 제품 채택과 장기계약, 가격 재지지 및 검증 가능한 ADR 재무 기반이 함께 확인되면 BUY로 재평가한다.\n• 하향 재평가: 고대역폭 메모리 리더십의 구조적 상실이나 ADR 희소성 프리미엄의 급격한 약화가 확인되면 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nSK hynix의 기업가치는 HBM4/HBM4E 중심의 AI 메모리 기술·공급 리더십, 장기 고객계약, DRAM/NAND 동반 업황 개선으로 지지된다. 다만 SKHY는 1 ADR=한국 보통주 0.1주 구조에서 미국 내 희소성 프리미엄이 본주 대비 크게 형성될 수 있어, 기초기업 펀더멘털과 ADR 자체의 가격·괴리 리스크를 반드시 분리해 본다.\n\n👁 핵심 감시\n• HBM4 출하 또는 고객 인증 지연\n• DRAM/NAND 가격 조기 하락\n• hyperscaler AI CAPEX 둔화\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $164.58\n• 가까운 지지: 약 $155.6~$159.29 · 일봉 볼린저 중첩\n• 가까운 저항: 약 $167.04~$167.88\n• 주요 구조 저항: 약 $174.72~$178.88\n\n🧭 기존 등록 가격 규칙\n• 기존 $163 확인선은 이번에 돌파했습니다.\n\n📐 Valuation\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n예탁증권 identity는 확인됐지만 current-security denominator·share·currency basis를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• HBM4/HBM4E 출하량·매출 비중과 주요 고객 채택\n• DRAM/NAND ASP 방향과 영업이익률\n• 영업현금흐름·FCF·CAPEX 및 순현금 추이",
+      "ticker": "SKHY"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:5dbc2123f110ebf0ef3bb3e3852cbec08d5a1119cf147380b36b154a9eaeeba1",
+      "base_sha256": "d3a95bbe7506634eb86759eb43ccedf834d7d56d91e84cbd0ba7f77241e6afac",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:SNDK",
+      "market": "us",
+      "rendered_sha256": "d6f52f5860d2f0da827bae7ed37aa9593ba5d683492a56ac208bc267f7baba6a",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 SanDisk(SNDK)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 공식 현금창출은 SELL을 막지만 투기적 기대, 핵심 전환의 미확인, 낮은 확신의 가격 구조가 BUY를 막아 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 계약 전환과 높은 마진·현금창출이 확인되고 가격 구조의 낮은 확신이 개선되면 BUY를 재평가한다.\n• 하향 재평가: 낸드 가격과 데이터센터 수요가 함께 약화하고 계약 전환 실패 또는 마진·현금창출 약화가 지속되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nAI inference와 데이터센터 SSD/NAND 수요, 장기 고객 계약과 높은 RPO가 강한 매출·마진·FCF를 지지한다. 다만 최근 초고마진의 상당 부분이 NAND 가격 상승에 의존할 가능성이 있어 가격 사이클과 계약의 실제 매출 전환을 확인해야 한다.\n\n📈 사업·실적\n2026 회계연도 연간 메모리 증설의 PPE 투자 후 잉여현금흐름은 $11.49B입니다. ASP·제품 믹스·재고 사이클과 설비투자 시점을 함께 봅니다.\n\n👁 핵심 감시\n• NAND 가격 반전\n• RPO 전환 지연 또는 재고 증가\n• 가격 상승기 마진을 영구화할 위험\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $1,566.70\n• 가까운 지지: 약 $1,529.06~$1,536.73 · 주봉 볼린저 중첩\n• 주요 구조 지지: 약 $1,469.27~$1,488.72\n• 잠정 볼린저 저항(주봉·진행중): 약 $2,165.06~$2,175.92 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 $1,310 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPBR = 현재가 ÷ BVPS = $1,566.70 ÷ $107.78 = 14.5배\n과거 대비:\nPER 중앙값 19.5배 · PBR 중앙값 9.9배 · 67백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• NAND 가격\n• 데이터센터 매출\n• RPO 매출 전환",
+      "ticker": "SNDK"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:3a3a40124d931ce9bbbff65797ac789354c0b74b23e39c38679150af2f2ce96b",
+      "base_sha256": "25ef2da004948ea0a9d767779ef14d2ddf5a49f2396921c5a6ab54633b7cee54",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:TSLA",
+      "market": "us",
+      "rendered_sha256": "1ec98eb8226a8cf8d4c64d01b7abfbae7ac9af170ed34faf149040aae023bbef",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 Tesla, Inc.(TSLA)\n\n🧠 AI 분석 판단: SELL\n판단 확신도: 높음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 핵심 수익화 증거보다 투기적 기대와 요구 수익 수준이 훨씬 앞서 있어 장기 손익 비대칭이 불리하다.\n\n🔄 재평가 조건\n• 상향 재평가: 로보택시 경제성과 완전자율주행 매출이 증명되고 자동차 마진과 현금창출이 함께 개선되면 HOLD를 재평가한다.\n• 하향 재평가: 동일 SELL 내 위험도와 확신은 자동차 수요의 구조적 하락, 지속적 자본소모, 수익화 장기 지연이 확인될 때 높인다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi/FSD/AI의 고마진 수익화가 장기 기업가치의 핵심이다. 현재는 매출·인도 회복에도 영업이익률 저하로 투자 논리에 초기 균열이 있으며, 향후 자동차·서비스 마진 회복, Robotaxi 경제성이 증명되어야 한다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 자동차 성장투자의 PPE 투자 후 잉여현금흐름은 $352M입니다. 전년 비교기간보다 줄었고 자동차 마진과 성장투자 회수를 함께 봅니다.\n\n⚠️ 기존 경고\n• 영업이익률 저하 확인\n\n👁 핵심 감시\n• Robotaxi 규제·상용화 지연\n• 자동차 마진과 FCF 부진 장기화\n• 먼 미래 현금흐름에 대한 과도한 종단가치\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $367.95\n• 가까운 지지: 약 $356.63~$365.37\n• 가까운 저항: 약 $376.33~$384.72 · 주봉 볼린저 중첩\n• 주요 구조 지지: 약 $298.54~$300.88\n• 잠정 볼린저 지지(주봉·진행중): 약 $307.3~$308.85 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 $342 확인선은 이미 돌파한 상태입니다.\n\n📐 Valuation\nPER = 현재가 ÷ TTM EPS = $367.95 ÷ $1.92 = 191.6배\nPBR = 현재가 ÷ BVPS = $367.95 ÷ $21.99 = 16.7배\n과거 대비:\nPER 중앙값 68.7배 · 97백분위 · PBR 중앙값 16.5배 · 51백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PER/PBR과 과거 배수 분포를 함께 확인합니다.\n\n📌 다음 확인\n• Robotaxi 유료 운행과 단위경제성\n• FSD 구독자와 매출\n• 자동차 영업이익률",
+      "ticker": "TSLA"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:9df14d1bfb2801606ee2dd18ce43ab29de26d979dd88ded9d1497003dff2a7ab",
+      "base_sha256": "9b3915028488d08eeb82224028f6706d350018e16fa746dd5530db3bfcec62c5",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:TSM",
+      "market": "us",
+      "rendered_sha256": "eaa9682ab371a81d776148bf37788cd1e94ea1c410c55e24981b068158fa40bd",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 TSMC(TSM)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 예비 실적은 사업 강도를 지지하지만 매우 높은 기대, 사용할 수 없는 배수 기준과 불리한 가격 시점 때문에 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 정식 현금흐름과 증권 기준이 확인되고 수요·마진이 높은 기대를 넘으며 가격 구조도 개선되면 BUY를 재평가한다.\n• 하향 재평가: 인공지능 수요와 선단공정 주문이 구조적으로 줄고 경쟁력 또는 마진·현금창출 약화가 지속되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 보통\n\n시장 기대: 매우 높음\n\n🎯 핵심\nAI/HPC 수요와 첨단공정 지배력, 높은 가동률과 가격결정력이 높은 gross margin과 현금창출을 지지한다. 핵심 변수는 hyperscaler CAPEX 지속성, 첨단공정 가동률, 해외 팹 비용에 따른 마진 희석이다.\n\n👁 핵심 감시\n• hyperscaler CAPEX 둔화\n• 해외 팹 비용과 감가상각으로 마진 하락\n• 지정학 할인\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $415.32\n• 가까운 지지: 약 $406.23~$408.28\n• 가까운 저항: 약 $418.57~$427.36\n• 볼린저 저항(주봉): 약 $450.54~$452.81\n• 잠정 볼린저 지지(주봉·진행중): 약 $385.83~$387.78 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $432은 아직 도달하지 않았습니다.\n\n📐 Valuation\n※ 최근 분기 잠정실적의 매출·영업이익을 반영했습니다.\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 최근 공식 잠정실적의 매출·영업이익은 반영했지만 주당 기준을 확인하지 못해 자체 PER 계산은 보류했습니다.\n\n📌 다음 확인\n• hyperscaler CAPEX\n• 첨단공정 가동률\n• wafer ASP",
+      "ticker": "TSM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:d97f27ff8c0746a35aa89b55f776417fe5a9d19be04aa2435c71c1ff268d01f0",
+      "base_sha256": "85d4a6ae3a348ea1ec958fb4cea200e1c8a10da377f1ec78a13b2ab46d3f09de",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:WRD",
+      "market": "us",
+      "rendered_sha256": "2de1d2cc80931f91e98757cd4fe2334728f3f3560ca483039c074b673e3f7f25",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 WeRide(WRD)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 초기\n\n🎯 핵심 판단\n• 상용화 경제성은 초기 단계이고 기대는 투기적이며 가치평가 기준도 불안전한 가운데 가격 구조가 약해 관망이 타당하다.\n\n🔄 재평가 조건\n• 상향 재평가: 이용률·매출과 마진·손실 개선이 함께 확인되고 등록된 가격 확인 구조가 회복되면 BUY로 재평가한다.\n• 하향 재평가: 희석과 현금소진이 지속되거나 규제·안전 및 단위경제성 실패가 확인되면 SELL로 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nRobotaxi 기술과 규제 승인, fleet 확대가 실제 유료 이용률과 매출 성장으로 이어지고 있으나 아직 operating loss가 크다. 핵심은 Robotaxi revenue·fleet utilization·gross margin·operating loss 축소와 현금소진이다.\n\n👁 핵심 감시\n• 승인·상용화 지연\n• fleet 확대에도 손실과 현금소진 증가\n• 초기 매출의 낮은 품질\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $5.76\n• 가까운 지지: 약 $5.64~$5.68 · 일봉 볼린저 중첩\n• 가까운 저항: 약 $5.92~$6.05\n• 주요 구조 지지: 약 $5.16~$5.2\n• 잠정 볼린저 지지(주봉·진행중): 약 $4.8~$4.83 · 봉 마감 전 변동 가능\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $6.68은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nfPER: N/M\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n증권 유형과 주당 기준의 일치 여부를 확인하지 못해 배수 해석을 보류합니다.\n\n⚠️ 데이터 주의\n• 최신 정식 재무 반영이 지연돼 현재 Valuation 신뢰도를 낮춰 봅니다.\n• 현재 거래 증권의 주당 기준을 확인하지 못해 자체 PER/PBR 계산을 보류했습니다.\n\n📌 다음 확인\n• 유료 서비스 지역\n• fleet 규모\n• 차량당 이용률",
+      "ticker": "WRD"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:939cee91c6a82f72f4ef7279409b8946842ee49ef77f4d78cd0f1e30e70f164a",
+      "base_sha256": "1427f73f98e00ea3b1467c00a6cc84a259da6ed04d91dddb1cdc5a9aa9735896",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-09-01-us-run-49-2d1bb6df1608:WULF",
+      "market": "us",
+      "rendered_sha256": "842e700172a77f4a7d805fef6ec063a8e51e862460aa93bbee4bda2d6a30c7b5",
+      "route": "V2_ACCEPTED",
+      "text": "🏢 TeraWulf Inc.(WULF)\n\n🧠 AI 분석 판단: SELL\n판단 확신도: 높음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 사업 전환 증거에도 현재 현금창출은 약하고 자본 부담은 크며, 투기적 기대와 역사적 상단 평가 및 불리한 가격 구조가 SELL을 지지한다.\n\n🔄 재평가 조건\n• 상향 재평가: 실제 청구와 시설 가동이 확대되고 수익성·영업현금흐름이 개선되며 추가 희석 필요성이 낮아지면 HOLD 이상으로 재평가한다.\n• 하향 재평가: 핵심 계약 축소, 반복적 준공 실패 또는 추가 희석과 경제성 부정이 현실화되면 SELL 확신을 높인다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.\n\n투자 논리: 유지 · 오늘 중요한 신규 변화 없음\n\n구조적 위험: 높아진 상태\n\n시장 기대: 투기적 기대\n\n🎯 핵심\nTeraWulf는 비트코인 채굴 사업에서 AI/HPC 데이터센터 임대사업으로 빠르게 전환 중이며, 2026년 2분기 매출의 약 71%가 HPC lease revenue에서 발생하고 102MW가 가동된 상태에서 추가 336MW를 건설 중인 점이 핵심 근거다. Anthropic 관련 약 401MW, 20년, 초기 계약가치 약 190억달러의 장기 계약은 큰 성장 옵션이지만, 현재 Adjusted EBITDA 적자, 대규모 CAPEX, 높은 주식보상과 2026년 신규 주식발행 등으로 주주가치 전환은 아직 증명이 필요하다.\n\n📈 사업·실적\n2026 회계연도 상반기 누계 build-out 단계의 PPE 투자 후 잉여현금흐름은 $-1.53B입니다. 전년 비교기간보다 음수 폭이 커졌고 build-out 재투자는 가동·청구 전환과 자금조달을 함께 봅니다.\n\n👁 핵심 감시\n• 준공 지연·고객 인도 차질\n• Adjusted EBITDA 적자 장기화\n• 대규모 추가 증자·주식보상·부채 증가\n\n📐 현재 가격 구조\n• 현재가(정규장 종가): $15.13\n• 가까운 지지: 약 $14.54~$14.62 · 일봉 볼린저 중첩\n• 가까운 저항: 약 $15.38~$15.64\n• 주요 구조 지지: 약 $12.98~$13.23 · 잠정 주봉 볼린저 중첩\n• 주요 구조 저항: 약 $17~$17.1\n\n🧭 기존 등록 가격 규칙\n• 기존 확인선 $18.40은 아직 도달하지 않았습니다.\n\n📐 Valuation\nPER: N/M\nPBR = 현재가 ÷ BVPS = $15.13 ÷ $0.30 = 51.3배\n과거 대비:\nPBR 중앙값 3.2배 · 100백분위\n현재 Valuation: 판단 자료 부족\n오늘 Valuation 변화: 판단 자료 부족\n검증된 현재 PBR과 과거 장부가 배수 분포를 함께 확인하며, 이익 기반 배수는 사용하지 않습니다.\n\n📌 다음 확인\n• HPC lease revenue 성장률과 전체 매출 내 비중\n• 가동 MW·건설 MW·준공 일정\n• Adjusted EBITDA의 흑자 전환 여부",
+      "ticker": "WULF"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:289a2b023e1f67610c3821568a3071b8d4489409863aa6def0d575652df4de2f",
+      "base_sha256": "3b46485a19b0ddd703cbbfa8e0ad3639a0f043ef1609f315121492b5c66ef74c",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:000660",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "6a2cea322acfb8936be40a83b3a08c4c1d89a3311a1547945ee1b8eb3a8b8983",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 SK하이닉스(000660)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 높음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 기대는 매우 높은 반면 핵심 실행은 부분 확인에 그치고 최근 재무 수치도 판단에 사용할 수 없어 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 고객 채택과 장기계약 확대가 신뢰 가능한 실적으로 확인되고 기대 부담이 완화되면 BUY를 재평가한다.\n• 하향 재평가: 핵심 고객 상실이나 구조적 기술 열위, 중기 수익성 훼손이 확인되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "000660"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:d67c85a580107c824ac29e24165423f5576b6a539125655e7afe0b0e243e0866",
+      "base_sha256": "21c9be1909cecaed0a32e864d6b800b20bed2f8ed9d521e72940b21723d4f458",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:003690",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "f59a69bca08398d526b7e9370afae717e2173a86f0eb1fdea36a4d574a341f15",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 코리안리(003690)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 부분 확인\n\n🎯 핵심 판단\n• 기대는 균형적이고 가치 여지는 있으나 보험영업의 지속성과 자본 여력이 부분 확인에 그쳤고 가격 확인도 실패해 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 보험영업 개선과 건전한 환원 확대가 지속되고 가격 확인도 회복되면 BUY를 재평가한다.\n• 하향 재평가: 자본적정성이 크게 훼손되거나 언더라이팅 적자가 구조화되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "003690"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:fac152903e3364b15ae9a603a4d07f27f0de6008d2f9d297361eccf80123c9fe",
+      "base_sha256": "aabab216b0b9d52c6a7d53a49d4b30a88c0680f9adbaaa246621f32362bff70a",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:005490",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "64c3f87240115621bd735b435f8aff97a0b9cbe7d4e7ce9232f5776b9af5eedb",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 POSCO홀딩스(005490)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 부분 확인\n\n🎯 핵심 판단\n• 기대와 가치는 과도하지 않고 가격 타이밍도 유리하지만 철강·소재 회복의 반복성과 희석 후 주당가치가 아직 입증되지 않아 HOLD가 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 소재 이익의 반복성과 희석 후 주당가치 개선이 확인되고 가격 확인도 회복되면 BUY를 재평가한다.\n• 하향 재평가: 소재 사업의 장기 수익성 실패, 철강·소재의 구조적 적자 또는 지속적 희석이 확인되면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "005490"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:f4251441d41972a0f7f1edb8fc7f9132428e3c90a64dcf6e458e43fbefd7f681",
+      "base_sha256": "14cd4842a668e0ae00ce74d5b37b86fb370100776e90a7ac204a8ece87ffd93f",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:005930",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "50ff5b62ea2be7137791fca59c6de6b2ea639c7b6e6623e1496f378e64dcc4b5",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 삼성전자(005930)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 영업 실적의 안전한 근거는 있으나 매우 높은 기대와 불리한 현재 가격 구조가 선행 매수의 비대칭을 제한한다.\n\n🔄 재평가 조건\n• 상향 재평가: 고객 채택, 수익성, 영업현금흐름의 동반 개선과 추격 위험 완화가 확인되면 자동 전환이 아니라 매수 판단을 재평가한다.\n• 하향 재평가: 고객 채택 실패나 서버 메모리 수요 둔화와 수익성·영업현금흐름 악화가 확인되면 자동 전환이 아니라 매도 판단을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "005930"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:27eba20c6b6b43b818f2fd46b026e9c0c04075c604600207685cc42164c8bb5e",
+      "base_sha256": "7b5bb68238d60e71a7e1ef0695fc0e98e01d92b87db906f29b653f438684b0e0",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:010120",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "2a693eefc4153d9fbbe71c64f4c3e0b93479163dd811e4a97ae660a45325ff95",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 LS일렉트릭(010120)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 낮음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 성장 방향은 설득력 있지만 높아진 기대, 불리한 진입 구조, 재무·가치평가 근거의 제한 때문에 관망이 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 반복 수주와 수익성·영업현금흐름 개선이 확인되고 진입 구조가 개선되면 자동 전환이 아니라 매수 판단을 재평가한다.\n• 하향 재평가: 반복 수주 감소와 프로젝트 전환 실패가 수익성·영업현금흐름 악화로 이어지면 자동 전환이 아니라 매도 판단을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "010120"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:62992b2d6f9d9dd6836fbe6f2fa1699868f46e24dca7400215742212e2baec5d",
+      "base_sha256": "273a3be7414299c2afc113a1a6584943ca2a81ce08a29eaeef2cbf0000abeb76",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:012450",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "8062bc3fc6c28121c63338181d46c3c9a0fb35df7213f2561738cb4c98a9abdd",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 한화에어로스페이스(012450)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 낮음 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 수주 기반의 성장 논리는 유지되지만 높아진 기대, 추격에 불리한 가격 구조, 재무·가치평가 제한 때문에 관망이 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 대형 신규 계약과 높은 수익성·영업현금흐름의 동반 개선이 확인되고 진입 구조가 개선되면 자동 전환이 아니라 매수 판단을 재평가한다.\n• 하향 재평가: 수주잔고가 구조적으로 축소되거나 수익성·영업현금흐름 악화와 해외 확장 부담이 확인되면 자동 전환이 아니라 매도 판단을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "012450"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:b7c7f6770c236735461a1cce81c65f1caed309a1a30f3c8a15e7aa6b320d4607",
+      "base_sha256": "480506f883eb4092a3a0ecb0854ee256d0e4e8b16fc82d76219bd7736b768755",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:047810",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "2d81fadf51ce488376639921b0820fac6d8288aa3792fe923af4472c64c4e58b",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 한국항공우주산업(047810)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 높은 시장 기대와 미확인 사업 성과, 불리한 현재 가격 구조가 겹쳐 보유 관찰이 적절하다.\n\n🔄 재평가 조건\n• 상향 재평가: 인도·수출 계약과 수익성 회복이 확인되고 가격 및 중기 수급도 회복되면 BUY를 재평가한다.\n• 하향 재평가: 양산·인도 지연과 수출 기회 무산, 수주잔고 감소, 수익성 부진이 구조적으로 이어지면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "047810"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:5d5ffc27056d7f14415476bbb8e7f05b51f4c0173f06a16cdcc1afe23707525c",
+      "base_sha256": "84051365f424ba3e9cc1bc3a3e0cee49d003ff8c0939b94846b3ace972cbe8c2",
+      "logical_identity": "OHLC_INTEGRITY_TEST_ONLY:2026-08-31-kr-run-48-a573c2a6f245:086280",
+      "market": "kr",
+      "production_intent": false,
+      "rendered_sha256": "2aff7b0fdf8dd5a65ccdbd42acb9cd6142f9b0f5b9b28c39e494b2d59a635ab4",
+      "route": "V2_ACCEPTED_BLOCK_COHORT",
+      "text": "🏢 현대글로비스(086280)\n\n🧠 AI 분석 판단: HOLD\n판단 확신도: 중간 | 증거 성숙도: 혼재\n\n🎯 핵심 판단\n• 가격 확인에도 높은 기대와 평가 수준을 정당화할 사업 실행 증거가 부족해 기존 HOLD가 유지된다.\n\n🔄 재평가 조건\n• 상향 재평가: 비계열 화주와 운임·물량·마진 개선이 확인되고 선박 가동이 투자 부담을 흡수하면 BUY를 재평가한다.\n• 하향 재평가: 핵심 마진이 구조적으로 하락하고 수출·운임 부진, 고객 집중, 투자 부담에 따른 현금흐름 약화가 이어지면 SELL을 재평가한다.\n\n※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
+      "ticker": "086280"
+    }
+  ]
+}
