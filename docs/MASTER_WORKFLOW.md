@@ -2181,3 +2181,25 @@ initial evidence, preserved the final baseline, produced accepted-v2 `HOLD`, and
 pending/retryable/review-required `0/0/0`. Manual CPNG resume and ticker bypass are zero. Open
 P0/material P1 are `0/0`; wait for the next natural US packet and do not replay the 2026-08-31
 production message.
+
+### 40.30 2026-09-01 US V2 Natural Live Read-Only Verification
+
+Exact instruction commit `e6c11cff168fa430d7ddc7095d8c407d80948553` precedes the immutable
+run-49 proof. The 2026-08-31 New York session froze all 14 eligible US/foreign subjects, including
+CPNG, and delivered market `1` plus stock `14` exactly once at 08:40 KST. Market-message quality,
+macro temporal safety, safe night-futures omission, Price Structure, valuation, exact payload, and
+delivery gates pass. No manual task, send, retry, recipient access, or production-state mutation
+occurred.
+
+V2 natural live itself is `FAIL`. Both natural primary and backup automations stopped in
+`accepted_decision_v2_runtime.prepare_context` when the local OHLCV request raised
+`httpcore.ConnectError`. No packet-bound candidate, adjudication, or accepted plan was created for
+any of the 14 subjects. The backup AI prose path then retained a false-positive
+`numbers_without_provenance:market_context.text:2000` rejection, so deterministic fallback was the
+terminal route. Explicit BUY/HOLD/SELL visibility is `0/14`; CPNG is
+`MISSING_UNEXPECTED`, CORZ is `FALLBACK_RENDERER_ROUTE`, and the prior GOOGL BUY plus three SELL
+controls are not visible as V2 decisions.
+
+Open P0/material P1/P2 are `0/2/0`. Do not replay or resend the completed cycle. The next action is
+`BOUNDED_DECISION_PIPELINE_REPAIR`, scoped to packet-bound V2 context availability/continuation and
+the independent `2000` validator false positive. Preserve all immutable proof artifacts.

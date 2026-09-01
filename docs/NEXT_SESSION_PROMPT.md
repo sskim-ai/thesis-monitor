@@ -1,5 +1,24 @@
 # Next Session Prompt
 
+Latest authoritative work is the 2026-09-01 US V2 natural live read-only verification. Read
+`docs/reports/20260901-us-v2-natural-live-proof.json` and
+`docs/reports/20260901-us-v2-artifact-index.md` first, then the candidate/accepted,
+renderer-route, CORZ/CPNG/GOOGL/SELL controls, exact-message, and delivery reports. Exact
+instruction commit is `e6c11cff168fa430d7ddc7095d8c407d80948553`; runtime remained
+`5b3e6e1a721b84db72c7b277bf53ff55880a1819` during proof.
+
+Run 49 delivered 15/15 once and all non-V2 safety gates pass, but
+`US_V2_NATURAL_LIVE=FAIL`. Both natural V2 generators failed before candidate creation on the
+local OHLCV dependency, all 14 stock messages used deterministic fallback, and explicit accepted
+BUY/HOLD/SELL visibility was 0/14. A separate backup validator false positive on `2000` also kept
+the AI prose path rejected. Open P0/material P1/P2 are 0/2/0.
+
+Next action is a separately instructed `BOUNDED_DECISION_PIPELINE_REPAIR`. Preserve run 49 as
+immutable evidence. Do not manually run a Scheduled Task, replay or resend Telegram, weaken
+validators, change accepted decisions, or expose recipient values. Production Assist remains OFF.
+
+---
+
 Latest authoritative state is the V2 accepted production cutover. Read
 `docs/reports/20260830-v2-production-rollout-readiness.json`,
 `docs/reports/20260830-v2-production-artifact-index.md`, exact provenance, subject inventory,

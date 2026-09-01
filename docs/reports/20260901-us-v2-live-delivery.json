@@ -1,0 +1,432 @@
+{
+  "delivery_mode": "deterministic_fallback",
+  "dispatched_at": "2026-09-01T08:40:05.140617+09:00",
+  "exact_payload_rows": [
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "de8817ae70d763c390c42b57d9f3ef084792c914cda516ef9eaeccf79056d98d",
+      "ticker": "CORZ"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "39324dde9616874940c7d57a9f99ffae1c222cdbbc52834b841b82a001fdaad3",
+      "ticker": "CPNG"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "d49456a630a4933f66b0682fe185205921ed0caf2daa6dbc76cb10724f980f44",
+      "ticker": "CRCL"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "90c715089a81ea351b741ab5a45b3316bc33e938e185b0f7fd4756d9b71fb77d",
+      "ticker": "GOOGL"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "7a390f73857ea8d47fa71f41ba0515f4884e087f314d42d26710935fc95b7dc1",
+      "ticker": "HUT"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "764240e54aae2375dd4b1e4edecb6df7820ffb3daf4b4a61805704a042dade8d",
+      "ticker": "IBM"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "90a54a6ac9f6178ebf8eeab68cce3b22764562bad0fbfc1b165e7a0a75835ad3",
+      "ticker": "MU"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "3ab4de2f79e64f4193fe342cb191d895d1f7c93e6038d194ee12058b03b19563",
+      "ticker": "RXRX"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "8bfefea5fd982c6f98cd3166a9819dc07debeefe90f408f41f483886c1360286",
+      "ticker": "SKHY"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "d3a95bbe7506634eb86759eb43ccedf834d7d56d91e84cbd0ba7f77241e6afac",
+      "ticker": "SNDK"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "25ef2da004948ea0a9d767779ef14d2ddf5a49f2396921c5a6ab54633b7cee54",
+      "ticker": "TSLA"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "9b3915028488d08eeb82224028f6706d350018e16fa746dd5530db3bfcec62c5",
+      "ticker": "TSM"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "85d4a6ae3a348ea1ec958fb4cea200e1c8a10da377f1ec78a13b2ab46d3f09de",
+      "ticker": "WRD"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "1427f73f98e00ea3b1467c00a6cc84a259da6ed04d91dddb1cdc5a9aa9735896",
+      "ticker": "WULF"
+    },
+    {
+      "archive_fallback_match": true,
+      "delivery_text_match": true,
+      "exact": true,
+      "recorded_render_match": true,
+      "text_sha256": "7dd1595687cd4e6e5821661a66a6a353385797575be29372a61d1df1763324a6",
+      "ticker": "__DAILY_DIGEST__"
+    }
+  ],
+  "expected": 15,
+  "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+  "recorded_complete": 15,
+  "rows": [
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "7dd1595687cd4e6e5821661a66a6a353385797575be29372a61d1df1763324a6",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 425,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "7dd1595687cd4e6e5821661a66a6a353385797575be29372a61d1df1763324a6",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:07.048116+09:00",
+      "status": "sent",
+      "text_sha256": "7dd1595687cd4e6e5821661a66a6a353385797575be29372a61d1df1763324a6",
+      "ticker": "__DAILY_DIGEST__"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "de8817ae70d763c390c42b57d9f3ef084792c914cda516ef9eaeccf79056d98d",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 426,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "de8817ae70d763c390c42b57d9f3ef084792c914cda516ef9eaeccf79056d98d",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:08.208829+09:00",
+      "status": "sent",
+      "text_sha256": "de8817ae70d763c390c42b57d9f3ef084792c914cda516ef9eaeccf79056d98d",
+      "ticker": "CORZ"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "39324dde9616874940c7d57a9f99ffae1c222cdbbc52834b841b82a001fdaad3",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 427,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "39324dde9616874940c7d57a9f99ffae1c222cdbbc52834b841b82a001fdaad3",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:09.293992+09:00",
+      "status": "sent",
+      "text_sha256": "39324dde9616874940c7d57a9f99ffae1c222cdbbc52834b841b82a001fdaad3",
+      "ticker": "CPNG"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "d49456a630a4933f66b0682fe185205921ed0caf2daa6dbc76cb10724f980f44",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 428,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "d49456a630a4933f66b0682fe185205921ed0caf2daa6dbc76cb10724f980f44",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:10.382106+09:00",
+      "status": "sent",
+      "text_sha256": "d49456a630a4933f66b0682fe185205921ed0caf2daa6dbc76cb10724f980f44",
+      "ticker": "CRCL"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "90c715089a81ea351b741ab5a45b3316bc33e938e185b0f7fd4756d9b71fb77d",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 429,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "90c715089a81ea351b741ab5a45b3316bc33e938e185b0f7fd4756d9b71fb77d",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:11.540995+09:00",
+      "status": "sent",
+      "text_sha256": "90c715089a81ea351b741ab5a45b3316bc33e938e185b0f7fd4756d9b71fb77d",
+      "ticker": "GOOGL"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "7a390f73857ea8d47fa71f41ba0515f4884e087f314d42d26710935fc95b7dc1",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 430,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "7a390f73857ea8d47fa71f41ba0515f4884e087f314d42d26710935fc95b7dc1",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:12.679663+09:00",
+      "status": "sent",
+      "text_sha256": "7a390f73857ea8d47fa71f41ba0515f4884e087f314d42d26710935fc95b7dc1",
+      "ticker": "HUT"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "764240e54aae2375dd4b1e4edecb6df7820ffb3daf4b4a61805704a042dade8d",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 431,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "764240e54aae2375dd4b1e4edecb6df7820ffb3daf4b4a61805704a042dade8d",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:13.925006+09:00",
+      "status": "sent",
+      "text_sha256": "764240e54aae2375dd4b1e4edecb6df7820ffb3daf4b4a61805704a042dade8d",
+      "ticker": "IBM"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "90a54a6ac9f6178ebf8eeab68cce3b22764562bad0fbfc1b165e7a0a75835ad3",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 432,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "90a54a6ac9f6178ebf8eeab68cce3b22764562bad0fbfc1b165e7a0a75835ad3",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:15.085524+09:00",
+      "status": "sent",
+      "text_sha256": "90a54a6ac9f6178ebf8eeab68cce3b22764562bad0fbfc1b165e7a0a75835ad3",
+      "ticker": "MU"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "3ab4de2f79e64f4193fe342cb191d895d1f7c93e6038d194ee12058b03b19563",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 433,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "3ab4de2f79e64f4193fe342cb191d895d1f7c93e6038d194ee12058b03b19563",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:16.165596+09:00",
+      "status": "sent",
+      "text_sha256": "3ab4de2f79e64f4193fe342cb191d895d1f7c93e6038d194ee12058b03b19563",
+      "ticker": "RXRX"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "8bfefea5fd982c6f98cd3166a9819dc07debeefe90f408f41f483886c1360286",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 434,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "8bfefea5fd982c6f98cd3166a9819dc07debeefe90f408f41f483886c1360286",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:17.202684+09:00",
+      "status": "sent",
+      "text_sha256": "8bfefea5fd982c6f98cd3166a9819dc07debeefe90f408f41f483886c1360286",
+      "ticker": "SKHY"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "d3a95bbe7506634eb86759eb43ccedf834d7d56d91e84cbd0ba7f77241e6afac",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 435,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "d3a95bbe7506634eb86759eb43ccedf834d7d56d91e84cbd0ba7f77241e6afac",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:18.290624+09:00",
+      "status": "sent",
+      "text_sha256": "d3a95bbe7506634eb86759eb43ccedf834d7d56d91e84cbd0ba7f77241e6afac",
+      "ticker": "SNDK"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "25ef2da004948ea0a9d767779ef14d2ddf5a49f2396921c5a6ab54633b7cee54",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 436,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "25ef2da004948ea0a9d767779ef14d2ddf5a49f2396921c5a6ab54633b7cee54",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:19.381323+09:00",
+      "status": "sent",
+      "text_sha256": "25ef2da004948ea0a9d767779ef14d2ddf5a49f2396921c5a6ab54633b7cee54",
+      "ticker": "TSLA"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "9b3915028488d08eeb82224028f6706d350018e16fa746dd5530db3bfcec62c5",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 437,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "9b3915028488d08eeb82224028f6706d350018e16fa746dd5530db3bfcec62c5",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:20.478717+09:00",
+      "status": "sent",
+      "text_sha256": "9b3915028488d08eeb82224028f6706d350018e16fa746dd5530db3bfcec62c5",
+      "ticker": "TSM"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "85d4a6ae3a348ea1ec958fb4cea200e1c8a10da377f1ec78a13b2ab46d3f09de",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 438,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "85d4a6ae3a348ea1ec958fb4cea200e1c8a10da377f1ec78a13b2ab46d3f09de",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:21.613492+09:00",
+      "status": "sent",
+      "text_sha256": "85d4a6ae3a348ea1ec958fb4cea200e1c8a10da377f1ec78a13b2ab46d3f09de",
+      "ticker": "WRD"
+    },
+    {
+      "ai_validation_errors": [
+        "market_review:numbers_without_provenance:market_context.text:2000"
+      ],
+      "ai_validation_state": "rejected",
+      "attempt_count": 1,
+      "chunk_count": 1,
+      "content_sha256": "1427f73f98e00ea3b1467c00a6cc84a259da6ed04d91dddb1cdc5a9aa9735896",
+      "fallback_started_at": "2026-09-01T08:40:05.140617+09:00",
+      "id": 439,
+      "next_chunk_index": 1,
+      "packet_id": "2026-09-01-us-run-49-2d1bb6df1608",
+      "pilot_state": "fallback_sent",
+      "rendered_text_sha256": "1427f73f98e00ea3b1467c00a6cc84a259da6ed04d91dddb1cdc5a9aa9735896",
+      "renderer_version": "ai-assisted-pilot-renderer-v3",
+      "sent_at_kst": "2026-09-01T08:40:22.687324+09:00",
+      "status": "sent",
+      "text_sha256": "1427f73f98e00ea3b1467c00a6cc84a259da6ed04d91dddb1cdc5a9aa9735896",
+      "ticker": "WULF"
+    }
+  ],
+  "sent": 15
+}

@@ -2285,3 +2285,23 @@ The next action is read-only review of the next natural US packet. CPNG may appe
 packet's frozen session and cutoff satisfy first eligibility. Do not manually trigger a Scheduled
 Task, replay the 2026-08-31 message, expose recipient values, or treat test-sink evidence as natural
 proof. Production Assist remains OFF.
+
+## 2026-09-01 US V2 Natural Live Verification Handoff
+
+Start with `docs/reports/20260901-us-v2-natural-live-proof.json`, then read the run identity,
+candidate/accepted, renderer-route, CORZ, CPNG, GOOGL, SELL-control, exact-message, delivery, and
+artifact-index reports. Exact instruction commit is
+`e6c11cff168fa430d7ddc7095d8c407d80948553`; runtime lineage is the unchanged operating SHA
+`5b3e6e1a721b84db72c7b277bf53ff55880a1819`.
+
+Run 49 froze 14/14 eligible stocks and delivered 15/15 deterministic fallback messages exactly
+once. Market, macro, safe night-futures omission, Price Structure, valuation, payload parity, and
+delivery all pass. The V2 decision proof fails systemically: both natural V2 generator attempts
+raised `httpcore.ConnectError` before candidate creation, so packet-bound accepted-ready is `0`,
+explicit BUY/HOLD/SELL is `0/14`, and all 14 stock messages use deterministic fallback. CPNG was
+ready before cutoff and included, but its V2 status is `MISSING_UNEXPECTED`.
+
+Open P0/material P1/P2 are `0/2/0`. The bounded repair must first decouple or safely continue V2
+candidate preparation when the local OHLCV dependency is unavailable, then close the separate
+market-context `2000` provenance false positive. Do not repair by replaying run 49, exposing a raw
+candidate, weakening validators, or resending Telegram. Production Assist remains OFF.

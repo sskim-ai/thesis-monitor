@@ -114,6 +114,8 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260829-repaired-20-stock-decisions.json",
     ROOT / "docs" / "reports" / "20260829-decision-polarity-readiness.json",
     ROOT / "docs" / "reports" / "20260831-onboarding-readiness-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260901-us-v2-natural-live-proof.json",
+    ROOT / "docs" / "reports" / "20260901-us-v2-artifact-index.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -134,17 +136,36 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260831-pending-onboarding-auto-reconciler"
+        "codex/20260901-us-v2-natural-live-readonly-verification"
     )
     assert state["current_phase"] == (
-        "pending_onboarding_automation_ready_wait_natural_us"
+        "us_v2_natural_live_failed_bounded_repair_required"
     )
     assert state["last_completed_phase"] == (
-        "20260831_pending_onboarding_auto_reconciler_and_preflight_resume"
+        "20260901_us_v2_natural_live_readonly_verification"
     )
     assert state["next_default_phase"] == (
-        "review_next_natural_us_packet_with_cpng_eligibility"
+        "bounded_us_v2_decision_pipeline_repair"
     )
+    natural_v2 = state["us_v2_natural_live_readonly_verification_20260901"]
+    assert natural_v2["instruction_commit"] == (
+        "e6c11cff168fa430d7ddc7095d8c407d80948553"
+    )
+    assert natural_v2["runtime_sha"] == (
+        "5b3e6e1a721b84db72c7b277bf53ff55880a1819"
+    )
+    assert natural_v2["cutoff_eligible_stocks"] == 14
+    assert natural_v2["sent_production_messages"] == 15
+    assert natural_v2["delivery_exactly_once"] == "PASS"
+    assert natural_v2["packet_bound_accepted_ready"] == 0
+    assert natural_v2["explicit_decision_visible"] == 0
+    assert natural_v2["fallback_stock_messages"] == 14
+    assert natural_v2["primary_v2_absence_root_cause"] == "CANDIDATE_NOT_GENERATED"
+    assert natural_v2["absence_scope"] == "SYSTEMIC"
+    assert natural_v2["open_p0"] == 0
+    assert natural_v2["open_material_p1"] == 2
+    assert natural_v2["result"] == "FAIL"
+    assert natural_v2["production_state_mutation"] == 0
     v2_implementation_commit = "c0c9139babb06ead11112aea072a67ef364a9b22"
     accepted_implementation_commit = "f55605189ee0179ab4af7030b94d79d706ed32a8"
     production_base_commit = "6db9256b539e437a7067a1822237ef9c504c63fa"

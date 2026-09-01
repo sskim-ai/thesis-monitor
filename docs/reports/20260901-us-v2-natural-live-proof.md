@@ -1,0 +1,79 @@
+# US V2 Natural Live Proof
+
+## Decision
+
+`US_V2_NATURAL_LIVE = FAIL`
+
+## Earliest break
+
+Both natural primary and backup runs failed at packet-bound V2 candidate preparation while fetching local OHLCV. No candidate, adjudication, or accepted plan was produced. The separate AI prose path also rejected its final candidate, so the safe deterministic fallback delivered 15/15 once.
+
+This is operationally safe but not a V2 natural-live proof.
+
+## Severity
+
+- P0: `0`
+- Material P1: `2`
+  - V2 candidate generation has a systemic local OHLCV availability dependency with no packet-safe accepted-plan continuation.
+  - Backup AI validation retained a false-positive `numbers_without_provenance:market_context.text:2000`, forcing fallback despite no literal `2000` in the repaired market sentence.
+- P2: `0`
+
+## Gates
+
+- `MANUAL_US_PRODUCTION_JOB_TRIGGER = 0`
+- `MANUAL_US_PRODUCTION_SEND = 0`
+- `US_PRODUCTION_STATE_MUTATION = 0`
+- `US_CANONICAL_SESSION_DATE = 2026-08-31`
+- `US_RUNTIME_LINEAGE = PASS`
+- `US_ACTIVE_US_FOREIGN_COUNT = 14`
+- `US_CUTOFF_ELIGIBLE_STOCK_COUNT = 14`
+- `CPNG_CUTOFF_STATUS = ACTIVE_READY_BEFORE_CUTOFF`
+- `CPNG_V2_LIVE_STATUS = MISSING_UNEXPECTED`
+- `CPNG_BLOCKS_OTHER_US_SUBJECTS = 0`
+- `US_PACKET_UNIVERSE_MUTATED_AFTER_CUTOFF = 0`
+- `US_MARKET_MESSAGE_QUALITY = PASS`
+- `US_MACRO_TEMPORAL_SAFETY = PASS`
+- `US_NIGHT_FUTURES = SOURCE_LIMITATION_SAFE`
+- `US_SAME_EVIDENCE_UNEXPLAINED_DECISION_CHURN = 0`
+- `US_UNADJUDICATED_MATERIAL_CHANGE_VISIBLE = 0`
+- `US_ACCEPTED_READY_COUNT = 0`
+- `US_NOT_READY_COUNT = 14`
+- `US_ACCEPTED_BUY_COUNT = 0`
+- `US_ACCEPTED_HOLD_COUNT = 0`
+- `US_ACCEPTED_SELL_COUNT = 0`
+- `US_PRIOR_ACCEPTED_BUY_CONTROL_COUNT = 1`
+- `US_PRIOR_ACCEPTED_HOLD_CONTROL_COUNT = 10`
+- `US_PRIOR_ACCEPTED_SELL_CONTROL_COUNT = 3`
+- `US_RENDERER_ROUTE_IDENTIFIED_COUNT = 14`
+- `US_EXPLICIT_DECISION_BLOCK_VISIBLE_COUNT = 0`
+- `US_OLD_OR_FALLBACK_STOCK_MESSAGE_COUNT = 14`
+- `US_RAW_CANDIDATE_VISIBLE = 0`
+- `CORZ_V2_STATUS = FALLBACK_RENDERER_ROUTE`
+- `GOOGL_V2_LIVE_CONTROL = FAIL`
+- `US_SELL_PATH_VISIBILITY = FAIL`
+- `PRIMARY_V2_ABSENCE_ROOT_CAUSE = CANDIDATE_NOT_GENERATED`
+- `V2_ABSENCE_SCOPE = SYSTEMIC`
+- `US_PRICE_STRUCTURE_CONTRACT = PASS`
+- `US_VALUATION_CONTRACT = PASS`
+- `US_EXPECTED_STOCK_MESSAGE_COUNT = 14`
+- `US_EXPECTED_PRODUCTION_MESSAGE_COUNT = 15`
+- `US_SENT_PRODUCTION_MESSAGE_COUNT = 15`
+- `US_RECEIVED_PRODUCTION_MESSAGE_COUNT = 15`
+- `US_LIVE_EXACT_PAYLOAD = PASS`
+- `US_EXACTLY_ONCE_DELIVERY = PASS`
+- `US_DUPLICATE = 0`
+- `US_ORPHAN = 0`
+- `US_UNOWNED_RETRY = 0`
+- `US_EMPTY_VISIBLE_SECTION_COUNT = 0`
+- `US_V2_MESSAGE_QUALITY = FAIL`
+- `OPEN_P0 = 0`
+- `OPEN_MATERIAL_P1 = 2`
+- `OPEN_P2 = 0`
+- `US_V2_NATURAL_LIVE = FAIL`
+- `NEXT_ACTION = BOUNDED_DECISION_PIPELINE_REPAIR`
+
+## Next action
+
+`BOUNDED_DECISION_PIPELINE_REPAIR`
+
+Repair was intentionally not performed during this proof.
