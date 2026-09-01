@@ -19,13 +19,13 @@
 | 20260901-kr-ohlc-integrity-regression.md | 4688b91976f1421b545cbcd3c0e5fb9a2664f4379b356b1f63778786f70e5f31 |
 | 20260901-ohlc-negative-positive-controls.md | 76fcd49877d6658f133be6d9017a732419d31d12449ddeb18e14f4848310d371 |
 | 20260901-current-ohlc-v2-test-sink.md | c568fbba8d4cb779c61260dd26f86d3d5785471a1630f4f90b6fc6d2c24fffed |
-| 20260901-ohlc-integrity-main-merge.md | ed59e65a87f25e420cc18d8aa743ae5c23f1ee2855945875892ae089a35863c8 |
+| 20260901-ohlc-integrity-main-merge.md | 73511b867d412a36fadb4f3a7d7bc9960fc2e96be38e4aa9c8d8cfe5026eefc3 |
 | 20260901-ohlc-integrity-live-guard.md | 619e497b8ebab8b705f8cf556c30dce316d1ab51365ac5bd3f65f1947c9cb367 |
-| 20260901-ohlc-integrity-validation.md | bd4a94e2cc338c35aba90c78d46f0ce33b3b687516ad476dfb0b3abdb3e08ab4 |
+| 20260901-ohlc-integrity-validation.md | 6a321363a32ac69e0d76a7f0a362b7485b3bab6a1da9c58e87c4f673c8915196 |
 | 20260901-four-ticker-ohlc-root-cause.json | 972ac4f0c9550e3e2b35f4f773fcb0dc036ae23f15e3579e77ccb0f30ae78fe9 |
 | 20260901-run49-technical-context-after-integrity-repair.json | a16381fad36ce88fcb24120af33ac394e20c88bfd99050bc1da1c53f7f097093 |
 | 20260901-current-ohlc-integrity-regression.json | 3c667cbac07a12492be6cfe9db9749dabb31f08dfd518539807e18e37c00fd7a |
-| 20260901-ohlc-integrity-readiness.json | 69bdfb9e656dd12e636255011a60e857cb020742835d95bdfb2a8a9ccb3af63d |
+| 20260901-ohlc-integrity-readiness.json | 1e141ffb719193dcfc7ab94fa62e4e8be6b9ac98eb88d798b716ed30924f40e8 |
 | 20260901-current-ohlc-v2-test-sink-messages.json | 367734c3b8d26abb532901569a89ac65c7ad062cad9ee42769afaf69ed7ae8af |
 
 Architecture contracts: `OHLCV_PROVIDER_INTEGRITY.md`, `OHLCV_ADJUSTMENT_BASIS.md`, `OHLCV_CORPORATE_ACTION_NORMALIZATION.md`, `OHLCV_CACHE_VERSIONING.md`, and `PACKET_OWNED_TECHNICAL_CONTEXT.md`.

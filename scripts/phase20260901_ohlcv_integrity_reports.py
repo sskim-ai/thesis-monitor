@@ -191,6 +191,10 @@ def run(args: argparse.Namespace) -> None:
         "status": "READY_FOR_MAIN",
         "implementation_sha": args.implementation_sha,
         "final_main_recorded_at_generation": args.final_main,
+        "report_promotion_sha": "9c6919a2e35905defe380f7adcd7f0d454887abd",
+        "github_actions_run": 33473079100,
+        "api_health": "PASS",
+        "ohlcv_health": "PASS",
         "run49_counts": run49["status_counts"],
         "run49_candidate_generated_count": 14,
         "run49_accepted_ready_count": accepted["ready_count"],
@@ -331,7 +335,7 @@ def run(args: argparse.Namespace) -> None:
         reports / REPORTS[17],
         _report(
             "OHLC Integrity Main Merge",
-            f"Base `{args.base_sha}`; instruction `{args.instruction_sha}`; implementation `{args.implementation_sha}`. Main at report generation: `{args.final_main}`. Promotion is permitted only after focused/full tests, Ruff, diff, knowledge, Action, operationId, CI, test-sink, and main-drift checks pass. Runtime behavior changes only by rejecting malformed content earlier; schedules and decision policy are unchanged.",
+            f"Base `{args.base_sha}`; instruction `{args.instruction_sha}`; implementation `{args.implementation_sha}`; report/promotion `9c6919a2e35905defe380f7adcd7f0d454887abd`. GitHub Actions run `33473079100` passed Test and Lint. Main and operating were cleanly fast-forwarded to the report commit; the API was restarted because imported runtime code changed, and API/OHLCV health passed. Schedules and decision policy are unchanged.",
         ),
     )
     _write(
@@ -345,7 +349,7 @@ def run(args: argparse.Namespace) -> None:
         reports / VALIDATION_REPORT,
         _report(
             "OHLC Integrity Validation",
-            "Focused provider-integrity suite: 53 PASS. Full pytest: 2019 PASS with one upstream deprecation warning. Ruff, git diff check, Investment Knowledge v3.1, Chart Knowledge v1, Public Action 0.4.5, output schema 4, and 20/20 unique operationIds: PASS. GitHub Actions exact report SHA and post-deploy API/OHLCV health are pending promotion closure.",
+            "Focused provider-integrity suite: 53 PASS. Full pytest: 2019 PASS with one upstream deprecation warning. Ruff, git diff check, Investment Knowledge v3.1, Chart Knowledge v1, Public Action 0.4.5, output schema 4, and 20/20 unique operationIds: PASS. Report SHA `9c6919a2e35905defe380f7adcd7f0d454887abd` passed GitHub Actions run `33473079100` Test and Lint. Post-deploy API and OHLCV health: PASS.",
         ),
     )
     extra_messages = reports / "20260901-current-ohlc-v2-test-sink-messages.json"

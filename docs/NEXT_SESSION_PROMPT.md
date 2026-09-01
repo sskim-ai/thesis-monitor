@@ -10,9 +10,12 @@ commit is `235cf78d5c386da0f5c02284b373b911ef1b7647`; implementation is
 CPNG/HUT remain provider-invalid and fail closed; MU/SKHY currently recover to FULL. Run-49 replay
 is FULL 12 / INVALID 2 with 14/14 accepted V2 decisions, while KR remains FULL 8/8. The dedicated
 test sink passed 22/22 exact after bounded Telegram rate-limit continuation. Full pytest is 2019
-PASS, open P0/material P1 is 0/0, and the gate is `READY_FOR_MAIN` pending exact-SHA CI/promotion.
+PASS and open P0/material P1 is 0/0. Report commit
+`9c6919a2e35905defe380f7adcd7f0d454887abd` passed GitHub Actions run `33473079100`, was
+promoted to main and operating, and passed API/OHLCV health. State is
+`DEPLOYED_AWAITING_NATURAL_US_LIVE`.
 
-After promotion, the only next action is `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Observe the normal US
+The only next action is `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Observe the normal US
 cycle read-only and report technical status counts, CPNG/HUT/MU/SKHY, candidate/accepted/explicit
 decision counts, fallback, and exactly-once delivery. Do not manually run a task, replay production
 messages, weaken validation, or synthesize provider bars. Production Assist remains OFF.

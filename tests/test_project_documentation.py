@@ -139,7 +139,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "codex/20260901-malformed-ohlc-provider-integrity-repair"
     )
     assert state["current_phase"] == (
-        "ohlcv_provider_integrity_repair_ready_for_main"
+        "ohlcv_provider_integrity_repair_deployed_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
         "20260901_malformed_ohlc_provider_integrity_repair_and_test_sink"
@@ -187,12 +187,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["recorded_base_commit"] == (
         "813beb6345fc2c6643018b33f568702b50fab37d"
     )
-    provider_integrity_base = "813beb6345fc2c6643018b33f568702b50fab37d"
-    assert state["deployed_code_commit"] == provider_integrity_base
-    assert state["main_code_commit"] == provider_integrity_base
-    assert state["operating_code_commit"] == provider_integrity_base
+    provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
+    assert state["deployed_code_commit"] == provider_integrity_promotion
+    assert state["main_code_commit"] == provider_integrity_promotion
+    assert state["operating_code_commit"] == provider_integrity_promotion
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
-    assert provider_integrity["status"] == "READY_FOR_MAIN"
+    assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
+    assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
+    assert provider_integrity["report_github_actions_run"] == 33473079100
+    assert provider_integrity["promotion_method"] == "CLEAN_LINEAR_FAST_FORWARD"
+    assert provider_integrity["api_health"] == "PASS"
+    assert provider_integrity["ohlcv_health"] == "PASS"
     assert provider_integrity["contract"] == "ohlcv-provider-integrity-v1"
     assert provider_integrity["cpng_classification"] == "STABLE_BAD_SOURCE"
     assert provider_integrity["cpng_final_state"] == "INVALID"
@@ -1429,7 +1434,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     assert state["current_commit"] == (
-        "a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9"
+        "9c6919a2e35905defe380f7adcd7f0d454887abd"
     )
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"

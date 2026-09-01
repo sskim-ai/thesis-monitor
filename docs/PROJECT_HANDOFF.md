@@ -19,9 +19,11 @@ packet omitted them.
 Run-49 replay is FULL 12 / INVALID 2, all 14 decisions are accepted-ready, KR is FULL 8/8, and the
 dedicated sink is 22/22 exact after continuing only the two messages blocked by Telegram 429.
 Production sends/intents, synthetic repairs, ticker bypasses, Price Structure changes, and
-valuation changes are zero. Open P0/material P1 is 0/0. After CI and clean promotion, restart the
-API because imported runtime code changed, verify API/OHLCV health, then wait for the next ordinary
-US cycle. Do not infer `LIVE_PASS` from replay or the sink.
+valuation changes are zero. Open P0/material P1 is 0/0. Report commit
+`9c6919a2e35905defe380f7adcd7f0d454887abd` passed GitHub Actions run `33473079100`, was
+cleanly fast-forwarded to main and operating, and passed API/OHLCV health after the required API
+restart. The next action is the next ordinary US cycle. Do not infer `LIVE_PASS` from replay or the
+sink.
 
 ## 2026-09-01 OHLCV V2 Pipeline Repair Handoff
 

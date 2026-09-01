@@ -32,8 +32,11 @@ Direct provider probes classify CPNG as `STABLE_BAD_SOURCE` and HUT as
 `TRANSIENT_PROVIDER_DEFECT` controls whose current raw responses are valid, so run-49 replay is
 FULL 12 / INVALID 2. All 14 US decisions and all 8 KR decisions are accepted-ready with message
 quality PASS. The dedicated sink passed 22/22 exact after a rate-limit continuation, with zero
-production sends or intents. Full pytest is 2019 PASS; open P0/material P1 is 0/0. The repair is
-`READY_FOR_MAIN`; a natural live pass remains pending and must be observed read-only.
+production sends or intents. Full pytest is 2019 PASS; open P0/material P1 is 0/0. Report commit
+`9c6919a2e35905defe380f7adcd7f0d454887abd` passed GitHub Actions run `33473079100`, was
+fast-forwarded to main and operating, and passed API/OHLCV health. The deployed state is
+`DEPLOYED_AWAITING_NATURAL_US_LIVE`; the natural pass remains pending and must be observed
+read-only.
 
 ## 0. OHLCV Technical Context Resilience
 
