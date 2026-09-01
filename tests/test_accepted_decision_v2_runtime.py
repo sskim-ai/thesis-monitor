@@ -4,6 +4,7 @@ from pathlib import Path
 
 from app.jobs.accepted_decision_v2_runtime import _signed_in_codex_bin
 from app.services.accepted_decision_v2_runtime_service import (
+    accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
@@ -93,6 +94,34 @@ def test_bounded_repair_prompt_names_errors_and_keeps_exact_identity() -> None:
 
     assert "BOUNDED_VALIDATOR_REPAIR" in prompt
     assert "unsupported_metric_or_inference" in prompt
+    assert '"claim_id":"claim-v2-runtime"' in prompt
+
+
+def test_bounded_batch_schema_repair_keeps_scope_and_strict_errors() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-runtime",
+        evidence_packets=(packet,),
+    )
+
+    prompt = accepted_v2_production_batch_schema_repair_prompt(
+        context,
+        subjects=(packet.ticker,),
+        rejected_output={"candidates": [{"ticker": packet.ticker}]},
+        validation_errors=(
+            "candidates.0.driver_maturity.2:value_error:maturity_reference_polarity_overlap",
+        ),
+    )
+
+    assert "BOUNDED_BATCH_SCHEMA_REPAIR" in prompt
+    assert "maturity_reference_polarity_overlap" in prompt
+    assert '"subjects":["TEST"]' in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
 
 

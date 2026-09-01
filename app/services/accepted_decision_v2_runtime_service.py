@@ -361,6 +361,40 @@ def accepted_v2_production_repair_prompt(
             default=str,
         )
     )
+
+
+def accepted_v2_production_batch_schema_repair_prompt(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str],
+    rejected_output: Mapping[str, object],
+    validation_errors: Sequence[str],
+) -> str:
+    selected = tuple(str(ticker).upper() for ticker in subjects)
+    if not selected or any(ticker not in context.selected_subjects for ticker in selected):
+        raise ValueError("v2_production_batch_repair_subject_mismatch")
+    return (
+        accepted_v2_production_prompt(context, subjects=selected)
+        + "\n\nBOUNDED_BATCH_SCHEMA_REPAIR:\n"
+        + json.dumps(
+            {
+                "subjects": list(selected),
+                "validation_errors": list(validation_errors),
+                "rejected_output": dict(rejected_output),
+                "instructions": (
+                    "Repair only the listed schema or cross-field contract violations. "
+                    "Return the complete batch for exactly the supplied subjects. Preserve each "
+                    "analytical decision unless correcting the violation requires a change, and "
+                    "use only exact supplied evidence ref IDs."
+                ),
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+            default=str,
+        )
+    )
+
+
 def _production_message_quality(
     rendered: Sequence[RenderedProductionAcceptedDecision],
 ) -> dict[str, object]:

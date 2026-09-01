@@ -10,6 +10,8 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from app.config import get_settings
 from app.services.accepted_decision_v2_runtime_service import (
     RECEIPT_CONTRACT,
@@ -17,6 +19,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     REASONING_MODEL,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionContext,
+    accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_paths,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
@@ -40,6 +43,7 @@ from app.services.preconfirmation_decision_v2_service import (
 
 
 V2_REASONING_BATCH_SIZE = 3
+V2_BATCH_SCHEMA_REPAIR_LIMIT = 1
 
 
 def _read_json(path: Path) -> dict[str, object]:
@@ -140,6 +144,19 @@ def _paths(claim: Mapping[str, object], claim_id: str) -> dict[str, Path]:
     if not final_review.name:
         raise ValueError("v2_production_final_review_path_missing")
     return accepted_v2_production_paths(final_review, claim_id=claim_id)
+
+
+def _schema_validation_errors(exc: ValidationError) -> tuple[str, ...]:
+    return tuple(
+        ":".join(
+            (
+                ".".join(str(part) for part in error["loc"]),
+                str(error["type"]),
+                str(error["msg"]),
+            )
+        )
+        for error in exc.errors()
+    )
 
 
 async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
@@ -254,6 +271,8 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
     candidates = []
     adjudications = []
+    batch_schema_repair_count = 0
+    candidate_repair_count = 0
     for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
         subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
         batch_number = index // V2_REASONING_BATCH_SIZE + 1
@@ -277,7 +296,43 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             cwd=paths["prompt"].parent,
             timeout=timeout,
         )
-        batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(batch_output))
+        raw_batch = _read_json(batch_output)
+        try:
+            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+        except ValidationError as exc:
+            if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
+                raise
+            schema_repair_prompt = paths["prompt"].with_name(
+                f"{paths['prompt'].stem}.batch-{batch_number:02d}.schema-repair.txt"
+            )
+            schema_repair_output = paths["temp"].with_name(
+                f"{paths['temp'].stem}.batch-{batch_number:02d}.schema-repair.json"
+            )
+            schema_repair_log = paths["log"].with_name(
+                f"{paths['log'].stem}.batch-{batch_number:02d}.schema-repair.log"
+            )
+            _atomic_text(
+                schema_repair_prompt,
+                accepted_v2_production_batch_schema_repair_prompt(
+                    context,
+                    subjects=subjects,
+                    rejected_output=raw_batch,
+                    validation_errors=_schema_validation_errors(exc),
+                ),
+            )
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=schema_repair_prompt,
+                output=schema_repair_output,
+                log=schema_repair_log,
+                schema=Path(str(prepared["schema_path"])),
+                cwd=paths["prompt"].parent,
+                timeout=timeout,
+            )
+            batch = AcceptedV2ProductionBatchOutput.model_validate(
+                _read_json(schema_repair_output)
+            )
+            batch_schema_repair_count += 1
         if (
             batch.packet_id != context.packet_id
             or batch.claim_id != context.claim_id
@@ -346,6 +401,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                     + ",".join(repaired_validation.errors)
                 )
             batch_candidates[ticker] = repaired.candidates[0]
+            candidate_repair_count += 1
             batch_adjudications.pop(ticker, None)
             batch_adjudications.update({row.ticker: row for row in repaired.adjudications})
         candidates.extend(batch_candidates[ticker] for ticker in subjects)
@@ -364,7 +420,11 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             adjudications=tuple(adjudications),
         ).model_dump(mode="json"),
     )
-    return validate_output(packet_id, claim_id)
+    receipt = validate_output(packet_id, claim_id)
+    receipt["batch_schema_repair_count"] = batch_schema_repair_count
+    receipt["candidate_repair_count"] = candidate_repair_count
+    _atomic_json(paths["receipt"], receipt)
+    return receipt
 
 
 async def _run(args: argparse.Namespace) -> None:
