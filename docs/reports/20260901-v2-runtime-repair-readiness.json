@@ -44,6 +44,17 @@
   },
   "implementation_sha": "b5be74439b2e8e769b1605e539599835abbc8a84",
   "master_instruction_commit": "b2c0a4af72c5eb060dcdacd8b281e30307c717f1",
+  "operating_state": "DEPLOYED_AWAITING_NATURAL_US_KR_LIVE",
+  "promotion": {
+    "api_health": "PASS",
+    "branch_github_actions_run": 33507836260,
+    "main_github_actions_run": 33508187986,
+    "method": "CLEAN_LINEAR_FAST_FORWARD",
+    "origin_main": "26004d926247c4ef053e49b74dc8fb9654353199",
+    "operating_sha": "26004d926247c4ef053e49b74dc8fb9654353199",
+    "public_action": "0.4.5",
+    "operation_ids": "20/20 unique"
+  },
   "run50": {
     "accepted_ready_count": 8,
     "candidate_generated_count": 8,

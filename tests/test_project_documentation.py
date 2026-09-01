@@ -139,7 +139,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "codex/20260901-v2-natural-cli-path-product-identifier-repair"
     )
     assert state["current_phase"] == (
-        "v2_natural_cli_path_product_identifier_repair_ready_for_main"
+        "v2_natural_cli_path_product_identifier_repair_deployed_awaiting_natural_us_kr_live"
     )
     assert state["last_completed_phase"] == (
         "20260901_v2_natural_cli_path_product_identifier_repair"
@@ -187,9 +187,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     )
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
-    assert state["deployed_code_commit"] == natural_runtime_implementation
-    assert state["main_code_commit"] == natural_runtime_implementation
-    assert state["operating_code_commit"] == natural_runtime_implementation
+    natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
+    assert state["deployed_code_commit"] == natural_runtime_promotion
+    assert state["main_code_commit"] == natural_runtime_promotion
+    assert state["operating_code_commit"] == natural_runtime_promotion
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -201,7 +202,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "v2_natural_cli_path_product_identifier_repair_20260901"
     ]
     assert natural_runtime_repair["status"] == (
-        "READY_FOR_MAIN_AWAITING_NATURAL_US_KR_LIVE"
+        "DEPLOYED_AWAITING_NATURAL_US_KR_LIVE"
     )
     assert natural_runtime_repair["instruction_commit"] == (
         "b2c0a4af72c5eb060dcdacd8b281e30307c717f1"
@@ -209,6 +210,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert natural_runtime_repair["implementation_commit"] == (
         natural_runtime_implementation
     )
+    assert natural_runtime_repair["report_promotion_commit"] == (
+        natural_runtime_promotion
+    )
+    assert natural_runtime_repair["branch_github_actions_run"] == 33507836260
+    assert natural_runtime_repair["main_github_actions_run"] == 33508187986
+    assert natural_runtime_repair["promotion_method"] == "CLEAN_LINEAR_FAST_FORWARD"
+    assert natural_runtime_repair["api_health"] == "PASS"
     assert natural_runtime_repair["kr_run50"] == "PASS_8_OF_8"
     assert natural_runtime_repair["us_production_equivalent"] == "PASS_14_OF_14"
     assert natural_runtime_repair["test_sink"] == (
@@ -1454,7 +1462,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == natural_runtime_implementation
+    assert state["current_commit"] == natural_runtime_promotion
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

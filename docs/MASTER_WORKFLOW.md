@@ -36,10 +36,12 @@ continuation. Production recipient sends, production delivery intents, duplicate
 scheduler changes, Price Structure numeric changes, and valuation numeric changes are all zero.
 
 Focused tests are `270 PASS`; full pytest is `2045 PASS`; Ruff, diff, message quality, and the
-implementation GitHub Actions Test/Lint run pass. Open P0/material P1 are `0/0`. State is
-`READY_FOR_MAIN_AWAITING_NATURAL_US_KR_LIVE`, not natural LIVE_PASS. After linear promotion, inspect
-the next ordinary KR and US cycles read-only. Do not replay an already delivered production packet,
-manually run a Scheduled Task, or use the production Telegram recipient for proof.
+implementation GitHub Actions Test/Lint run pass. Open P0/material P1 are `0/0`. Clean linear
+promotion completed through `26004d926247c4ef053e49b74dc8fb9654353199`; branch Actions
+`33507836260`, main Actions `33508187986`, API health, and operating parity pass. State is
+`DEPLOYED_AWAITING_NATURAL_US_KR_LIVE`, not natural LIVE_PASS. Inspect the next ordinary KR and US
+cycles read-only. Do not replay an already delivered production packet, manually run a Scheduled
+Task, or use the production Telegram recipient for proof.
 
 ## 0. Malformed OHLC Provider Integrity
 
@@ -2309,5 +2311,7 @@ production-equivalent US replay is `14/14`, and the dedicated test sink is `22/2
 production send or intent. CPNG/HUT technical recovery, 000660 valuation, 005930 risk/reward, Price
 Structure, accepted ownership, schedules, and delivery boundaries remain unchanged.
 
-Open P0/material P1 is `0/0`; this repair is `READY_FOR_MAIN`. Natural proof is still pending and
-must come from the next ordinary KR and US cycles without a manual task or production resend.
+Open P0/material P1 is `0/0`; the repair passed `READY_FOR_MAIN` and was deployed by clean linear
+fast-forward through `26004d926247c4ef053e49b74dc8fb9654353199`. Branch/main Actions and API
+health pass. Natural proof is still pending and must come from the next ordinary KR and US cycles
+without a manual task or production resend.

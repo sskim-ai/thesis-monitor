@@ -14,6 +14,10 @@ test sink is `22/22 exact` after bounded rate-limit continuation. Full pytest is
 implementation Actions Test/Lint run passes, and open P0/material P1 is `0/0`. Production sends,
 production intents, scheduler changes, Price Structure changes, and valuation changes are zero.
 
+Validated promotion `26004d926247c4ef053e49b74dc8fb9654353199` passed branch Actions
+`33507836260`, main Actions `33508187986`, main/origin/main/operating parity, and host API health.
+State is `DEPLOYED_AWAITING_NATURAL_US_KR_LIVE`, not natural LIVE_PASS.
+
 Next action: `WAIT_FOR_NEXT_NATURAL_US_KR_LIVE`. Observe the normal cycles read-only and verify the
 effective schema path, preflight, candidate/accepted/explicit decision counts, 047810 product
 identifier handling, fallback, message quality, and exactly-once delivery. Do not manually run a

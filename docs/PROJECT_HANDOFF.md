@@ -21,6 +21,11 @@ Production recipient sends/intents, duplicates, orphans, scheduler changes, valu
 Price Structure changes are zero. Focused/full tests are `270/2045 PASS`; implementation Actions
 Test/Lint pass; open P0/material P1 is `0/0`.
 
+Validated promotion commit `26004d926247c4ef053e49b74dc8fb9654353199` passed branch Actions
+`33507836260` and main Actions `33508187986`, then main/origin/main/operating parity and host API
+health passed. Public Action remains `0.4.5` with `20/20` unique operationIds. Runtime state is
+`DEPLOYED_AWAITING_NATURAL_US_KR_LIVE`; the documentation closure SHA is resolved from Git.
+
 The next action is read-only observation of the next ordinary KR and US cycles. Confirm effective
 schema path, preflight, candidate/accepted/explicit decision counts, product-identifier diagnostics,
 fallback route, message quality, and exactly-once delivery. Do not manually invoke a Scheduled Task,
