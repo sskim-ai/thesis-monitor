@@ -267,6 +267,15 @@ def run(args: argparse.Namespace) -> None:
         "kr_decision_context_count": kr["decision_context_ready_count"],
         "current_kr_candidate_count": candidate_kr,
         "test_sink_exact_22": sink_pass,
+        "test_sink_initial_sent": int((receipt or {}).get("initial_sent_count") or 0),
+        "test_sink_continuation_sent": int(
+            (receipt or {}).get("continuation_sent_count") or 0
+        ),
+        "test_sink_rate_limit_recovery": bool(
+            (receipt or {}).get("rate_limit_recovery")
+        ),
+        "test_sink_duplicate_count": int((receipt or {}).get("duplicate_count") or 0),
+        "test_sink_orphan_count": int((receipt or {}).get("orphan_count") or 0),
         "test_sink_external_approval": "PASS" if sink_pass else "PENDING",
         "test_production_recipient_send": 0,
         "production_delivery_intent_created_during_test": 0,
@@ -323,7 +332,7 @@ def run(args: argparse.Namespace) -> None:
     _write(reports / REPORTS[9], f"# CPNG/HUT Run-49 Replay\n\nImmutable packet `{run49['packet_id']}` produced `{json.dumps(run49['status_counts'], sort_keys=True)}` and `{run49['decision_context_ready_count']}/14` decision contexts. CPNG/HUT are `PARTIAL_SAFE`; component invalidity remains explicit. Historical production replay: 0.\n")
     _write(reports / REPORTS[10], f"# Current US Technical Recovery Regression\n\nUS/foreign subjects: `{run49['subject_count']}`. Contexts: `{run49['decision_context_ready_count']}`. Candidate generation: `{candidate_us if candidate_us else 'PENDING EXPLICIT EXTERNAL APPROVAL'}`. No subject-level technical failure blocks context preparation.\n")
     _write(reports / REPORTS[11], f"# KR Technical Recovery Regression\n\nKR subjects: `{kr['subject_count']}`. Status counts: `{json.dumps(kr['status_counts'], sort_keys=True)}`. Contexts: `{kr['decision_context_ready_count']}/8`. Mandatory 000660 and 047810 are present. Candidate generation: `{candidate_kr if candidate_kr else 'PENDING EXPLICIT EXTERNAL APPROVAL'}`.\n\n`KR_TECHNICAL_RECOVERY_REGRESSION = PASS`\n")
-    _write(reports / REPORTS[12], f"# Technical Recovery Test Sink\n\nCurrent packet result: `{'22/22 exact PASS' if sink_pass else 'PENDING EXPLICIT EXTERNAL APPROVAL'}`. Existing dedicated sink remains distinct from production, but prior delivery is not claimed as proof for the new packet. Production recipient sends and delivery intents created by this task: 0.\n")
+    _write(reports / REPORTS[12], f"# Technical Recovery Test Sink\n\nCurrent packet result: `{'22/22 exact PASS' if sink_pass else 'PENDING EXPLICIT EXTERNAL APPROVAL'}`. The initial delivery sent `{(receipt or {}).get('initial_sent_count', 0)}` exact messages before Telegram rate limiting; the idempotent continuation sent the remaining `{(receipt or {}).get('continuation_sent_count', 0)}`. Duplicate/orphan: `{(receipt or {}).get('duplicate_count', 0)}/{(receipt or {}).get('orphan_count', 0)}`. Existing dedicated sink remains distinct from production, but prior delivery is not claimed as proof for the new packet. Production recipient sends and delivery intents created by this task: 0.\n")
     _write(reports / REPORTS[13], f"# Technical Recovery Message Quality\n\nCandidate/message validation is `{'PASS' if sink_pass else 'PENDING'}`. Local evidence confirms CPNG/HUT expose only monthly safe facts, blocked D/W numerics are absent, and explicit status cautions are available. No provider name or raw error is added to normal messages.\n")
     _write(reports / REPORTS[14], f"# Technical Recovery Main Merge\n\nImplementation SHA: `{args.implementation_sha}`. Main merge: `{'READY' if sink_pass else 'BLOCKED_PENDING_TEST_SINK'}`. Promotion requires exact new-packet xhigh candidates, 22/22 test-sink receipt, P0/material P1 0/0, and final CI.\n")
     _write(reports / REPORTS[15], "# Technical Recovery Live Guard\n\nNatural live proof is `PENDING`. After promotion, observe the next ordinary US cycle read-only: CPNG/HUT aggregate and feature counts, 14 candidates, accepted-ready and explicit decision counts, fallback, and exactly-once. No historical production replay is allowed.\n")
