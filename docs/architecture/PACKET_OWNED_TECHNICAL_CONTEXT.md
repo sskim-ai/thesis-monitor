@@ -23,7 +23,8 @@ recovered provider content.
 ## States
 
 - `FULL`: configured D/W/M features are valid and current for their timeframe semantics.
-- `PARTIAL_SAFE`: at least one safe usable timeframe exists, while another is missing or stale.
+- `PARTIAL_SAFE`: at least one safe usable timeframe exists, while another is missing, stale,
+  unconfirmed, or source-invalid.
 - `UNAVAILABLE`: no safe technical facts were acquired after bounded recovery.
 - `INVALID`: supplied bars violate integrity or comparability requirements.
 
@@ -32,8 +33,15 @@ decision packet always carries the context status and data-quality caution; miss
 silently neutral and does not hard-map to `HOLD`.
 
 The source client applies `ohlcv-provider-integrity-v1` before this contract. One malformed-content
-refetch may recover a transient response. A repeated malformed response is stored unchanged and
-this context remains `INVALID`; invalid bars never produce the frozen feature packet.
+refetch may recover a transient response. Repeated malformed rows remain unchanged, but they no
+longer erase independently safe timeframes or feature windows. Each timeframe records raw invalid,
+final/provisional/unconfirmed, safe/blocked feature, and secondary-recovery counts. The aggregate is
+`PARTIAL_SAFE` only when at least one independently safe timeframe is usable; its invalid component
+states remain explicit.
+
+The raw fingerprint includes quote/candle semantics and recovery provenance. Feature facts include
+their exact dependency window and dependency SHA, so facts derived from different recovery rows are
+not indistinguishable.
 
 ## Compatibility
 
