@@ -341,6 +341,19 @@ def accepted_v2_production_repair_prompt(
 ) -> str:
     if ticker != rejected_candidate.ticker:
         raise ValueError("v2_production_repair_ticker_mismatch")
+    repair_hints: list[str] = []
+    if any(error.startswith("future_maturity_evidence:") for error in validation_errors):
+        repair_hints.append(
+            "For every future_maturity_evidence driver, set driver_maturity.as_of to the "
+            "actual date of its cited canonical evidence and never later than assessment_date; "
+            "do not invent or preserve a future date."
+        )
+    if "postconfirmation_hold_without_confirmed_maturity" in validation_errors:
+        repair_hints.append(
+            "A HOLD candidate with overall_maturity other than CONFIRMED must set "
+            "post_confirmation_hold=false and postconfirmation_hold_explanation=null. Preserve "
+            "the HOLD decision unless canonical evidence independently requires a change."
+        )
     return (
         accepted_v2_production_prompt(context, subjects=(ticker,))
         + "\n\nBOUNDED_VALIDATOR_REPAIR:\n"
@@ -355,6 +368,7 @@ def accepted_v2_production_repair_prompt(
                     "Return exactly one complete candidate and any adjudication required by "
                     "the prior accepted decision. Use only exact supplied evidence ref IDs."
                 ),
+                "error_specific_repair_hints": repair_hints,
             },
             ensure_ascii=False,
             separators=(",", ":"),

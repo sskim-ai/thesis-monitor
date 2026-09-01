@@ -97,6 +97,35 @@ def test_bounded_repair_prompt_names_errors_and_keeps_exact_identity() -> None:
     assert '"claim_id":"claim-v2-runtime"' in prompt
 
 
+def test_bounded_repair_prompt_explains_temporal_and_hold_contracts() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-runtime",
+        evidence_packets=(packet,),
+    )
+    candidate = PreconfirmationDecisionCandidate.model_construct(ticker=packet.ticker)
+
+    prompt = accepted_v2_production_repair_prompt(
+        context,
+        ticker=packet.ticker,
+        rejected_candidate=candidate,
+        validation_errors=(
+            "future_maturity_evidence:cash conversion",
+            "postconfirmation_hold_without_confirmed_maturity",
+        ),
+    )
+
+    assert "never later than assessment_date" in prompt
+    assert "post_confirmation_hold=false" in prompt
+    assert "postconfirmation_hold_explanation=null" in prompt
+
+
 def test_bounded_batch_schema_repair_keeps_scope_and_strict_errors() -> None:
     packet = _packet()
     context = build_accepted_v2_production_context(
