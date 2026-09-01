@@ -118,15 +118,16 @@ def test_stale_daily_is_partial_and_not_exposed_as_current_technical_evidence() 
     )
 
 
-def test_malformed_single_subject_is_invalid_without_affecting_valid_peer() -> None:
+def test_malformed_current_timeframe_is_invalid_without_affecting_valid_peer() -> None:
     malformed = _periods(date(2026, 8, 31))
-    malformed["daily"][5]["high"] = 1
+    malformed["daily"][-1]["high"] = 1
 
     invalid = _context(ticker="BAD", periods=malformed)
     valid = _context(ticker="GOOD")
 
-    assert invalid.status == TechnicalContextStatus.INVALID
-    assert invalid.features is None
+    assert invalid.status == TechnicalContextStatus.PARTIAL_SAFE
+    assert invalid.quality["D"].status == TechnicalContextStatus.INVALID
+    assert invalid.features is not None
     assert "D:invalid_ohlc_relation" in invalid.cautions
     assert valid.status == TechnicalContextStatus.FULL
 
@@ -134,14 +135,14 @@ def test_malformed_single_subject_is_invalid_without_affecting_valid_peer() -> N
 def test_invalid_row_values_remain_part_of_raw_lineage_fingerprint() -> None:
     first_periods = _periods(date(2026, 8, 31))
     second_periods = _periods(date(2026, 8, 31))
-    first_periods["daily"][5]["high"] = 1
-    second_periods["daily"][5]["high"] = 2
+    first_periods["daily"][-1]["high"] = 1
+    second_periods["daily"][-1]["high"] = 2
 
     first = _context(ticker="BAD", periods=first_periods)
     second = _context(ticker="BAD", periods=second_periods)
 
-    assert first.status == TechnicalContextStatus.INVALID
-    assert second.status == TechnicalContextStatus.INVALID
+    assert first.status == TechnicalContextStatus.PARTIAL_SAFE
+    assert second.status == TechnicalContextStatus.PARTIAL_SAFE
     assert first.raw_bar_fingerprint != second.raw_bar_fingerprint
 
 

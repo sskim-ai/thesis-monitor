@@ -50,6 +50,16 @@ class TimeframeTechnicalQuality(FrozenModel):
     bar_count: int = 0
     feature_count: int = 0
     usable_for_current_reasoning: bool = False
+    source_integrity_state: str = "VALID"
+    bar_finality_state: str = "FINAL"
+    final_bar_count: int = 0
+    provisional_bar_count: int = 0
+    unconfirmed_bar_count: int = 0
+    invalid_source_row_count: int = 0
+    safe_feature_count: int = 0
+    invalid_feature_count: int = 0
+    dependency_blocked_count: int = 0
+    secondary_recovery_count: int = 0
     reasons: tuple[str, ...] = ()
 
 
@@ -124,16 +134,18 @@ def _validate_rows(
     rows: Sequence[Mapping[str, object]],
     *,
     cutoff: date,
-) -> tuple[list[Mapping[str, object]], tuple[str, ...], str | None]:
+) -> tuple[list[Mapping[str, object]], tuple[str, ...], str | None, str | None]:
     reasons: list[str] = []
     valid: list[Mapping[str, object]] = []
     observed_dates: list[date] = []
+    all_dates: list[date] = []
     for row in rows:
         try:
             bar_date = date.fromisoformat(str(row.get("date") or "")[:10])
         except ValueError:
             reasons.append("invalid_bar_date")
             continue
+        all_dates.append(bar_date)
         if bar_date > cutoff:
             reasons.append("future_bar")
             continue
@@ -165,6 +177,7 @@ def _validate_rows(
         valid,
         tuple(dict.fromkeys(reasons)),
         (max(observed_dates).isoformat() if observed_dates else None),
+        (max(all_dates).isoformat() if all_dates else None),
     )
 
 
@@ -195,41 +208,86 @@ def build_packet_owned_technical_context(
     source: str = "ohlcv_analyst",
     source_version: str = "ohlcv-http-v1",
 ) -> PacketOwnedTechnicalContext:
-    validated: dict[str, list[Mapping[str, object]]] = {}
     errors: dict[str, tuple[str, ...]] = {}
     latest: dict[str, str | None] = {}
+    latest_observed: dict[str, str | None] = {}
     raw_identity: dict[str, object] = {}
     for timeframe in TIMEFRAMES:
         rows = [row for row in periods.get(timeframe, ()) if isinstance(row, Mapping)]
-        safe_rows, reasons, last_bar = _validate_rows(rows, cutoff=cutoff)
-        validated[timeframe] = safe_rows
+        _, reasons, last_bar, last_observed = _validate_rows(rows, cutoff=cutoff)
         errors[timeframe] = reasons
         latest[timeframe] = last_bar
+        latest_observed[timeframe] = last_observed
         raw_identity[timeframe] = [
-            {key: row.get(key) for key in ("date", "open", "high", "low", "close", "volume")}
+            {
+                key: row.get(key)
+                for key in (
+                    "date",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "_source_field_semantics",
+                    "_current_quote_value",
+                    "_completed_bar_close_value",
+                    "_recovery_provenance",
+                )
+            }
             for row in rows
         ]
     raw_fingerprint = _canonical_sha(raw_identity)
-    invalid = any(errors[timeframe] for timeframe in TIMEFRAMES)
-    features = None
-    if not invalid:
-        features = build_multi_timeframe_feature_packet(
-            ticker=ticker,
-            periods=validated,
-            cutoff=cutoff,
-        )
+    features = build_multi_timeframe_feature_packet(
+        ticker=ticker,
+        periods={
+            timeframe: [
+                row
+                for row in periods.get(timeframe, ())
+                if isinstance(row, Mapping)
+            ]
+            for timeframe in TIMEFRAMES
+        },
+        cutoff=cutoff,
+    )
     quality: dict[str, TimeframeTechnicalQuality] = {}
     cautions: list[str] = []
     for timeframe in TIMEFRAMES:
         key = TIMEFRAME_KEYS[timeframe]
         reasons = list(errors[timeframe])
-        feature_set = getattr(features, timeframe) if features is not None else None
-        feature_count = len(feature_set.facts) if feature_set is not None else 0
+        feature_set = getattr(features, timeframe)
+        feature_count = len(feature_set.facts)
+        latest[timeframe] = feature_set.as_of
         expected = expected_daily_completed if timeframe == "daily" else None
-        if reasons:
+        invalid_dates = tuple(
+            str(row.get("date") or "")
+            for row in feature_set.invalid_source_rows
+            if row.get("date")
+        )
+        current_integrity_failure = bool(
+            invalid_dates
+            and (
+                feature_set.as_of is None
+                or max(invalid_dates) > feature_set.as_of
+            )
+        )
+        current_unconfirmed = bool(
+            feature_set.unconfirmed_count
+            and latest_observed[timeframe]
+            and (
+                feature_set.as_of is None
+                or latest_observed[timeframe] > feature_set.as_of
+            )
+        )
+        if feature_set.dependency_blocked_count:
+            reasons.append("feature_dependency_blocked")
+        if feature_set.invalid_source_row_count and not current_integrity_failure:
+            reasons.append("historical_invalid_source_row")
+        if feature_set.unconfirmed_count:
+            reasons.append("bar_finality_unconfirmed")
+        if current_integrity_failure or current_unconfirmed:
             state = TechnicalContextStatus.INVALID
             freshness = TechnicalFreshnessState.INVALID
-        elif not validated[timeframe] or feature_count == 0:
+        elif feature_count == 0:
             state = TechnicalContextStatus.UNAVAILABLE
             freshness = TechnicalFreshnessState.UNAVAILABLE
             reasons.append("timeframe_unavailable")
@@ -237,6 +295,13 @@ def build_packet_owned_technical_context(
             state = TechnicalContextStatus.PARTIAL_SAFE
             freshness = TechnicalFreshnessState.STALE
             reasons.append("daily_last_completed_session_mismatch")
+        elif reasons:
+            state = TechnicalContextStatus.PARTIAL_SAFE
+            freshness = (
+                TechnicalFreshnessState.CURRENT
+                if timeframe == "daily"
+                else TechnicalFreshnessState.TIMEFRAME_CURRENT
+            )
         else:
             state = TechnicalContextStatus.FULL
             freshness = (
@@ -244,43 +309,61 @@ def build_packet_owned_technical_context(
                 if timeframe == "daily"
                 else TechnicalFreshnessState.TIMEFRAME_CURRENT
             )
-        usable = state == TechnicalContextStatus.FULL
+        usable = state in {
+            TechnicalContextStatus.FULL,
+            TechnicalContextStatus.PARTIAL_SAFE,
+        } and freshness != TechnicalFreshnessState.STALE
+        if feature_set.unconfirmed_count:
+            finality_state = "UNCONFIRMED_PRESENT"
+        elif feature_set.provisional_count:
+            finality_state = "PROVISIONAL_PRESENT"
+        else:
+            finality_state = "FINAL"
         quality[key] = TimeframeTechnicalQuality(
             timeframe=timeframe,  # type: ignore[arg-type]
             status=state,
             freshness_state=freshness,
             last_completed_bar=latest[timeframe],
             expected_completed_bar=expected,
-            bar_count=len(validated[timeframe]),
+            bar_count=feature_set.completed_count,
             feature_count=feature_count,
             usable_for_current_reasoning=usable,
+            source_integrity_state=feature_set.source_integrity_state,
+            bar_finality_state=finality_state,
+            final_bar_count=feature_set.final_bar_count,
+            provisional_bar_count=feature_set.provisional_count,
+            unconfirmed_bar_count=feature_set.unconfirmed_count,
+            invalid_source_row_count=feature_set.invalid_source_row_count,
+            safe_feature_count=feature_set.safe_feature_count,
+            invalid_feature_count=feature_set.invalid_feature_count,
+            dependency_blocked_count=feature_set.dependency_blocked_count,
+            secondary_recovery_count=len(feature_set.recovery_provenance),
             reasons=tuple(dict.fromkeys(reasons)),
         )
         cautions.extend(f"{key}:{reason}" for reason in reasons)
     states = {row.status for row in quality.values()}
-    if TechnicalContextStatus.INVALID in states:
-        status = TechnicalContextStatus.INVALID
-        freshness_state = TechnicalFreshnessState.INVALID
-        features = None
-    elif states == {TechnicalContextStatus.FULL}:
+    if states == {TechnicalContextStatus.FULL}:
         status = TechnicalContextStatus.FULL
         freshness_state = TechnicalFreshnessState.CURRENT
     elif states == {TechnicalContextStatus.UNAVAILABLE}:
         status = TechnicalContextStatus.UNAVAILABLE
         freshness_state = TechnicalFreshnessState.UNAVAILABLE
-    else:
+    elif any(row.usable_for_current_reasoning for row in quality.values()):
         status = TechnicalContextStatus.PARTIAL_SAFE
         freshness_state = (
             TechnicalFreshnessState.STALE
             if quality["D"].freshness_state == TechnicalFreshnessState.STALE
             else TechnicalFreshnessState.TIMEFRAME_CURRENT
         )
+    else:
+        status = TechnicalContextStatus.INVALID
+        freshness_state = TechnicalFreshnessState.INVALID
     telemetry = (
         acquisition
         if isinstance(acquisition, OhlcvAcquisitionTelemetry)
         else OhlcvAcquisitionTelemetry.model_validate(acquisition or {})
     )
-    feature_fingerprint = features.packet_sha256 if features is not None else None
+    feature_fingerprint = features.packet_sha256
     reason = ",".join(dict.fromkeys(cautions)) or None
     return PacketOwnedTechnicalContext(
         technical_context_id=_context_id(
@@ -301,7 +384,10 @@ def build_packet_owned_technical_context(
         status=status,
         freshness_state=freshness_state,
         last_completed_bar={TIMEFRAME_KEYS[key]: value for key, value in latest.items()},
-        bar_counts={TIMEFRAME_KEYS[key]: len(value) for key, value in validated.items()},
+        bar_counts={
+            TIMEFRAME_KEYS[key]: getattr(features, key).completed_count
+            for key in TIMEFRAMES
+        },
         quality=quality,
         features=features,
         raw_bar_fingerprint=raw_fingerprint,

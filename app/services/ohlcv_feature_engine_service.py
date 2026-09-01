@@ -10,6 +10,17 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict
 
+from app.services.ohlcv_completed_bar_finality_service import (
+    BarFinality,
+    SEMANTICS_KEY,
+    assess_completed_bar_finality,
+)
+from app.services.technical_feature_dependency_service import (
+    DependencyClassification,
+    DependencyKind,
+    assess_feature_dependency,
+)
+
 
 CONTRACT_VERSION = "ohlcv-multi-timeframe-feature-engine-v1"
 TIMEFRAMES = ("daily", "weekly", "monthly")
@@ -40,6 +51,12 @@ class TechnicalFeatureFact(FrozenModel):
     input_basis: str
     completed_bar_only: bool = True
     source_sha256: str
+    dependency_kind: DependencyKind = DependencyKind.FINITE
+    dependency_start: str | None = None
+    dependency_end: str | None = None
+    dependency_bar_count: int = 0
+    dependency_source_sha256: str | None = None
+    dependency_classification: DependencyClassification = DependencyClassification.SAFE
 
 
 class TimeframeFeatureSet(FrozenModel):
@@ -53,6 +70,16 @@ class TimeframeFeatureSet(FrozenModel):
     provisional_count: int
     source_limitation: str | None
     facts: tuple[TechnicalFeatureFact, ...] = ()
+    source_integrity_state: str = "VALID"
+    final_bar_count: int = 0
+    unconfirmed_count: int = 0
+    invalid_source_row_count: int = 0
+    safe_feature_count: int = 0
+    invalid_feature_count: int = 0
+    dependency_blocked_count: int = 0
+    invalid_source_rows: tuple[dict[str, object], ...] = ()
+    blocked_features: tuple[str, ...] = ()
+    recovery_provenance: tuple[dict[str, object], ...] = ()
 
 
 class MultiTimeframeFeaturePacket(FrozenModel):
@@ -76,6 +103,16 @@ class _Bar:
     volume: Decimal | None
 
 
+@dataclass(frozen=True)
+class _NormalizedBarSet:
+    bars: tuple[_Bar, ...]
+    provisional_count: int
+    unconfirmed_count: int
+    invalid_rows: tuple[dict[str, object], ...]
+    invalid_dates: tuple[date, ...]
+    recovery_provenance: tuple[dict[str, object], ...]
+
+
 def _decimal(value: object) -> Decimal | None:
     if value is None or isinstance(value, bool):
         return None
@@ -96,7 +133,13 @@ def _stable_id(*parts: object) -> str:
 
 
 def _canonical_sha(value: object) -> str:
-    payload = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    payload = json.dumps(
+        value,
+        ensure_ascii=True,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
@@ -114,17 +157,36 @@ def _is_completed(row: Mapping[str, object]) -> bool:
 
 def _normalize_bars(
     rows: Sequence[Mapping[str, object]], cutoff: date
-) -> tuple[list[_Bar], int]:
+) -> _NormalizedBarSet:
     completed: dict[date, _Bar] = {}
     provisional = 0
+    unconfirmed = 0
+    invalid_rows: list[dict[str, object]] = []
+    invalid_dates: list[date] = []
+    recovery: list[dict[str, object]] = []
+    observed: dict[date, str] = {}
+
+    def reject(row: Mapping[str, object], reason: str, bar_date: date | None) -> None:
+        invalid_rows.append(
+            {
+                "date": bar_date.isoformat() if bar_date is not None else row.get("date"),
+                "reason": reason,
+                "row_fingerprint": _canonical_sha(
+                    {key: row.get(key) for key in ("date", "open", "high", "low", "close", "volume")}
+                ),
+            }
+        )
+        if bar_date is not None:
+            invalid_dates.append(bar_date)
+            completed.pop(bar_date, None)
+
     for row in rows:
         try:
             as_of = date.fromisoformat(str(row.get("date") or "")[:10])
         except ValueError:
+            reject(row, "invalid_bar_date", None)
             continue
         if as_of > cutoff:
-            continue
-        if not _is_completed(row):
             provisional += 1
             continue
         open_value = _decimal(row.get("open"))
@@ -132,19 +194,64 @@ def _normalize_bars(
         low = _decimal(row.get("low"))
         close = _decimal(row.get("close"))
         if None in {open_value, high, low, close}:
+            reject(row, "missing_or_invalid_ohlc", as_of)
             continue
         assert open_value is not None and high is not None and low is not None and close is not None
-        if min(open_value, high, low, close) <= 0 or high < low:
+        if SEMANTICS_KEY in row:
+            finality = assess_completed_bar_finality(row, cutoff=cutoff)
+            if finality.state == BarFinality.INVALID:
+                reject(row, "bar_finality_invalid", as_of)
+                continue
+            if finality.state == BarFinality.PROVISIONAL:
+                provisional += 1
+                continue
+            if finality.state == BarFinality.UNCONFIRMED:
+                unconfirmed += 1
+                continue
+            if finality.completed_close_value is not None:
+                close = finality.completed_close_value
+        elif not _is_completed(row):
+            provisional += 1
             continue
+        if (
+            min(open_value, high, low, close) <= 0
+            or high < low
+            or not low <= open_value <= high
+            or not low <= close <= high
+        ):
+            reject(row, "invalid_ohlc_relation", as_of)
+            continue
+        volume = _decimal(row.get("volume"))
+        if volume is not None and volume < 0:
+            reject(row, "negative_volume", as_of)
+            continue
+        row_sha = _canonical_sha(
+            {key: row.get(key) for key in ("date", "open", "high", "low", "close", "volume")}
+        )
+        if as_of in observed:
+            if observed[as_of] != row_sha:
+                reject(row, "duplicate_bar_conflict", as_of)
+            continue
+        observed[as_of] = row_sha
         completed[as_of] = _Bar(
             as_of=as_of,
             open=open_value,
             high=high,
             low=low,
             close=close,
-            volume=_decimal(row.get("volume")),
+            volume=volume,
         )
-    return [completed[key] for key in sorted(completed)], provisional
+        provenance = row.get("_recovery_provenance")
+        if isinstance(provenance, Mapping):
+            recovery.append(dict(provenance))
+    return _NormalizedBarSet(
+        bars=tuple(completed[key] for key in sorted(completed)),
+        provisional_count=provisional,
+        unconfirmed_count=unconfirmed,
+        invalid_rows=tuple(invalid_rows),
+        invalid_dates=tuple(sorted(set(invalid_dates))),
+        recovery_provenance=tuple(recovery),
+    )
 
 
 def _mean(values: Sequence[Decimal]) -> Decimal:
@@ -279,6 +386,12 @@ def _fact(
     as_of: date,
     input_basis: str,
     source_sha256: str,
+    dependency_kind: DependencyKind,
+    dependency_start: str,
+    dependency_end: str,
+    dependency_bar_count: int,
+    dependency_source_sha256: str,
+    dependency_classification: DependencyClassification,
 ) -> TechnicalFeatureFact:
     normalized = _rounded(value) if isinstance(value, Decimal) else value
     return TechnicalFeatureFact(
@@ -295,6 +408,12 @@ def _fact(
         as_of=as_of.isoformat(),
         input_basis=input_basis,
         source_sha256=source_sha256,
+        dependency_kind=dependency_kind,
+        dependency_start=dependency_start,
+        dependency_end=dependency_end,
+        dependency_bar_count=dependency_bar_count,
+        dependency_source_sha256=dependency_source_sha256,
+        dependency_classification=dependency_classification,
     )
 
 
@@ -303,9 +422,10 @@ def _feature_facts(
     timeframe: str,
     bars: Sequence[_Bar],
     adjustment_basis: str,
-) -> tuple[TechnicalFeatureFact, ...]:
+    invalid_dates: Sequence[date] = (),
+) -> tuple[tuple[TechnicalFeatureFact, ...], tuple[str, ...]]:
     if not bars:
-        return ()
+        return (), ()
     closes = [bar.close for bar in bars]
     highs = [bar.high for bar in bars]
     lows = [bar.low for bar in bars]
@@ -318,6 +438,7 @@ def _feature_facts(
         ]
     )
     facts: list[TechnicalFeatureFact] = []
+    blocked: list[str] = []
 
     def add(
         semantic: str,
@@ -328,6 +449,34 @@ def _feature_facts(
     ) -> None:
         if value is None:
             return
+        dependency = assess_feature_dependency(
+            semantic=semantic,
+            minimum_history=minimum_history,
+            row_dates=[bar.as_of for bar in bars],
+            invalid_dates=invalid_dates,
+        )
+        if dependency.classification in {
+            DependencyClassification.UNSAFE_DEPENDS_ON_BAD_ROW,
+            DependencyClassification.UNAVAILABLE_OTHER_REASON,
+        }:
+            blocked.append(semantic)
+            return
+        dependency_bars = bars[-dependency.dependency_bar_count :]
+        dependency_sha = _canonical_sha(
+            [
+                [
+                    bar.as_of.isoformat(),
+                    str(bar.open),
+                    str(bar.high),
+                    str(bar.low),
+                    str(bar.close),
+                    str(bar.volume),
+                ]
+                for bar in dependency_bars
+            ]
+        )
+        assert dependency.dependency_start is not None
+        assert dependency.dependency_end is not None
         facts.append(
             _fact(
                 ticker=ticker,
@@ -340,6 +489,12 @@ def _feature_facts(
                 as_of=as_of,
                 input_basis=adjustment_basis,
                 source_sha256=source_sha,
+                dependency_kind=dependency.dependency_kind,
+                dependency_start=dependency.dependency_start,
+                dependency_end=dependency.dependency_end,
+                dependency_bar_count=dependency.dependency_bar_count,
+                dependency_source_sha256=dependency_sha,
+                dependency_classification=dependency.classification,
             )
         )
 
@@ -558,7 +713,7 @@ def _feature_facts(
         add("donchian_low_20", prior_low, "price", "min(low, prior 20 completed bars)", 21)
         add("donchian_breakout_20", "UPSIDE" if close > prior_high else "DOWNSIDE" if close < prior_low else "INSIDE", "state", "close versus prior 20-bar Donchian channel", 21)
 
-    return tuple(facts)
+    return tuple(facts), tuple(dict.fromkeys(blocked))
 
 
 def build_multi_timeframe_feature_packet(
@@ -571,7 +726,8 @@ def build_multi_timeframe_feature_packet(
     values: dict[str, TimeframeFeatureSet] = {}
     for timeframe in TIMEFRAMES:
         raw = periods.get(timeframe) or ()
-        bars, provisional = _normalize_bars(raw, cutoff)
+        normalized = _normalize_bars(raw, cutoff)
+        bars = normalized.bars
         requested = REQUESTED_COUNTS[timeframe]
         provider_request = min(requested, PROVIDER_REQUEST_LIMIT)
         limitation = (
@@ -579,9 +735,21 @@ def build_multi_timeframe_feature_packet(
             if requested > PROVIDER_REQUEST_LIMIT
             else None
         )
-        facts = _feature_facts(ticker, timeframe, bars, adjustment_basis)
+        facts, blocked = _feature_facts(
+            ticker,
+            timeframe,
+            bars,
+            adjustment_basis,
+            normalized.invalid_dates,
+        )
         status = FeatureStatus.ELIGIBLE if facts else FeatureStatus.UNAVAILABLE
-        if facts and (len(bars) < requested or limitation):
+        if facts and (
+            len(bars) < requested
+            or limitation
+            or normalized.invalid_rows
+            or normalized.provisional_count
+            or normalized.unconfirmed_count
+        ):
             status = FeatureStatus.PARTIAL
         values[timeframe] = TimeframeFeatureSet(
             timeframe=timeframe,
@@ -591,9 +759,21 @@ def build_multi_timeframe_feature_packet(
             provider_request_count=provider_request,
             actual_count=len(raw),
             completed_count=len(bars),
-            provisional_count=provisional,
+            provisional_count=normalized.provisional_count,
             source_limitation=limitation,
             facts=facts,
+            source_integrity_state=(
+                "INVALID_ROWS_PRESENT" if normalized.invalid_rows else "VALID"
+            ),
+            final_bar_count=len(bars),
+            unconfirmed_count=normalized.unconfirmed_count,
+            invalid_source_row_count=len(normalized.invalid_rows),
+            safe_feature_count=len(facts),
+            invalid_feature_count=len(blocked),
+            dependency_blocked_count=len(blocked),
+            invalid_source_rows=normalized.invalid_rows,
+            blocked_features=blocked,
+            recovery_provenance=normalized.recovery_provenance,
         )
     hash_payload = {
         key: values[key].model_dump(mode="json") for key in TIMEFRAMES
