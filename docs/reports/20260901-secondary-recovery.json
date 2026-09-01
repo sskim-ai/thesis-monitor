@@ -1,0 +1,19 @@
+{
+  "approved_runtime_sources": [],
+  "contract": "ohlcv-secondary-exact-row-recovery-v1",
+  "controls": {
+    "adjustment_mismatch": "REJECT",
+    "date_mismatch": "REJECT",
+    "exact_comparable": "PASS",
+    "provider_unapproved": "REJECT",
+    "scale_mismatch": "REJECT",
+    "secondary_malformed": "REJECT",
+    "security_mismatch": "REJECT"
+  },
+  "cpng": "NO_APPROVED_SECONDARY_SOURCE",
+  "cross_provider_averaging": 0,
+  "hut": "NO_APPROVED_SECONDARY_SOURCE",
+  "status": "NO_APPROVED_SOURCE",
+  "unapproved_source_used": 0,
+  "whole_series_swap": 0
+}
