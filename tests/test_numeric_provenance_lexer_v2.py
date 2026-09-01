@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from app.services.ai_review_service import (
+    _canonical_identifier_spans,
     _numeric_correction_context,
     _prose_number_diagnostics,
     _prose_number_occurrences,
@@ -75,3 +76,89 @@ def test_correction_context_uses_validated_visible_text_for_diagnostics() -> Non
         "end": 10,
     }
     assert contexts[0]["numeric_diagnostics"][0]["candidate_fact_binding_attempt"] == []
+
+
+@pytest.fixture
+def canonical_identifier_context() -> dict[str, object]:
+    return {
+        "thesis": {
+            "core_thesis": (
+                "KF-21, FA-50, F-35, B-21, A320neo는 검증된 제품·모델 식별자입니다."
+            )
+        }
+    }
+
+
+def test_canonical_product_identifier_digits_are_not_numeric_claims(
+    canonical_identifier_context: dict[str, object],
+) -> None:
+    text = "KF-21·FA-50과 F-35, B-21, A320neo를 확인합니다."
+
+    assert _prose_number_occurrences(text, canonical_identifier_context) == []
+    diagnostics = _canonical_identifier_spans(text, canonical_identifier_context)
+    assert {str(item["full_span"]) for item in diagnostics} == {
+        "KF-21",
+        "FA-50",
+        "F-35",
+        "B-21",
+        "A320neo",
+    }
+    assert all(item["canonical_source"] == "canonical_thesis" for item in diagnostics)
+    assert all(item["fact_ref_id"] == "thesis:canonical" for item in diagnostics)
+
+
+def test_product_identifier_mask_preserves_adjacent_real_numbers(
+    canonical_identifier_context: dict[str, object],
+) -> None:
+    text = "KF-21 21대, FA-50 50대, KF-21 수출 5조원, FA-50 마진 12%"
+
+    assert [
+        token
+        for _, _, token in _prose_number_occurrences(
+            text,
+            canonical_identifier_context,
+        )
+    ] == ["21", "50", "5", "12"]
+
+
+def test_unproven_identifier_and_plain_hyphen_numbers_remain_numeric() -> None:
+    text = "ZZ-999, -21%, 21-50, $-50"
+
+    tokens = [token for _, _, token in _prose_number_occurrences(text, {})]
+
+    assert "999" in tokens
+    assert "-21" in tokens
+    assert "21" in tokens
+    assert "50" in tokens
+    assert "-50" in tokens
+
+
+def test_product_identifier_evidence_does_not_change_date_handling(
+    canonical_identifier_context: dict[str, object],
+) -> None:
+    assert _prose_number_occurrences(
+        "2026-09-01과 2023-06-05",
+        canonical_identifier_context,
+    ) == []
+
+
+def test_run50_047810_fields_have_zero_product_identifier_phantom_numbers() -> None:
+    context = {
+        "thesis": {
+            "core_thesis": (
+                "KF-21 양산·인도·수출과 FA-50 해외 수주가 매출·이익·현금흐름으로 "
+                "전환되는지가 핵심입니다."
+            )
+        }
+    }
+    fields = (
+        "KF-21과 FA-50의 인도 확대가 수주잔고의 매출 전환으로 이어지는지 봅니다.",
+        "이익 규모를 KF-21·FA-50 인도 확대와 연결하려면 현금 회수가 필요합니다.",
+        "동적 지지 유지와 함께 KF-21·FA-50 인도를 확인합니다.",
+        "수급 부담과 KF-21·FA-50 인도 여부는 별도 근거로 판단합니다.",
+        "배수보다 KF-21·FA-50 인도가 마진과 현금으로 전환되는지 봅니다.",
+        "KF-21·FA-50의 인도 일정과 신규 수주를 감시합니다.",
+        "KF-21·FA-50 양산·인도 물량의 현금전환은 아직 확인되지 않았습니다.",
+    )
+
+    assert all(_prose_number_occurrences(text, context) == [] for text in fields)

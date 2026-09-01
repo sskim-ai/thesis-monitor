@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -45,6 +46,12 @@ from app.services.preconfirmation_decision_v2_service import (
 V2_REASONING_BATCH_SIZE = 3
 V2_BATCH_SCHEMA_REPAIR_LIMIT = 1
 
+logger = logging.getLogger(__name__)
+
+
+class V2CLIPathPreconditionError(ValueError):
+    """Raised before Codex starts when a local invocation path is invalid."""
+
 
 def _read_json(path: Path) -> dict[str, object]:
     value = json.loads(path.read_text(encoding="utf-8"))
@@ -70,8 +77,18 @@ def _atomic_text(path: Path, value: str) -> None:
     os.replace(temporary, path)
 
 
+def _repository_root() -> Path:
+    return Path(__file__).resolve().parents[2]
+
+
+def _repository_path(path: Path) -> Path:
+    if path.is_absolute():
+        return path.resolve()
+    return (_repository_root() / path).resolve()
+
+
 def _root() -> Path:
-    return Path(get_settings().data_dir) / "ai_review"
+    return _repository_path(Path(get_settings().data_dir)) / "ai_review"
 
 
 def _signed_in_codex_bin() -> str:
@@ -97,6 +114,32 @@ def _invoke_signed_in_codex(
     cwd: Path,
     timeout: int,
 ) -> None:
+    invocation_paths = {
+        "cwd": _repository_path(cwd),
+        "prompt": _repository_path(prompt),
+        "output": _repository_path(output),
+        "log": _repository_path(log),
+        "schema": _repository_path(schema),
+    }
+    invocation_paths["output"].parent.mkdir(parents=True, exist_ok=True)
+    invocation_paths["log"].parent.mkdir(parents=True, exist_ok=True)
+    checks = {
+        "cwd_is_absolute": invocation_paths["cwd"].is_absolute(),
+        "cwd_exists": invocation_paths["cwd"].is_dir(),
+        "schema_is_absolute": invocation_paths["schema"].is_absolute(),
+        "schema_exists": invocation_paths["schema"].is_file(),
+        "prompt_exists": invocation_paths["prompt"].is_file(),
+        "output_parent_exists": invocation_paths["output"].parent.is_dir(),
+        "log_parent_exists": invocation_paths["log"].parent.is_dir(),
+    }
+    logger.info(
+        "v2_codex_cli_path_preflight %s",
+        " ".join(f"{key}={str(value).lower()}" for key, value in checks.items()),
+    )
+    if not all(checks.values()):
+        failed = ",".join(key for key, value in checks.items() if not value)
+        raise V2CLIPathPreconditionError(f"v2_cli_path_precondition_failed:{failed}")
+
     command = [
         codex_bin,
         "exec",
@@ -111,15 +154,17 @@ def _invoke_signed_in_codex(
         "-c",
         f'model_reasoning_effort="{REASONING_EFFORT}"',
         "--output-schema",
-        str(schema),
+        str(invocation_paths["schema"]),
         "-o",
-        str(output),
+        str(invocation_paths["output"]),
         "-",
     ]
-    with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
+    with invocation_paths["prompt"].open(encoding="utf-8") as stdin, invocation_paths[
+        "log"
+    ].open("w", encoding="utf-8") as stdout:
         process = subprocess.run(
             command,
-            cwd=cwd,
+            cwd=invocation_paths["cwd"],
             env=dict(os.environ),
             stdin=stdin,
             stdout=stdout,
@@ -128,7 +173,11 @@ def _invoke_signed_in_codex(
             check=False,
             text=True,
         )
-    if process.returncode != 0 or not output.exists() or not output.stat().st_size:
+    if (
+        process.returncode != 0
+        or not invocation_paths["output"].exists()
+        or not invocation_paths["output"].stat().st_size
+    ):
         raise ValueError("signed_in_codex_cli_v2_production_generation_failed")
 
 
@@ -143,7 +192,10 @@ def _paths(claim: Mapping[str, object], claim_id: str) -> dict[str, Path]:
     final_review = Path(str(claim.get("final_output_path") or ""))
     if not final_review.name:
         raise ValueError("v2_production_final_review_path_missing")
-    return accepted_v2_production_paths(final_review, claim_id=claim_id)
+    return accepted_v2_production_paths(
+        _repository_path(final_review),
+        claim_id=claim_id,
+    )
 
 
 def _schema_validation_errors(exc: ValidationError) -> tuple[str, ...]:
@@ -163,7 +215,7 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     if not v2_accepted_production_armed():
         return {"status": "NOT_ACTIVE", "packet_id": packet_id}
     claim = _claim(packet_id, claim_id)
-    packet = _read_json(Path(str(claim.get("packet_path") or "")))
+    packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
     stocks = [row for row in packet.get("stocks") or () if isinstance(row, Mapping)]
     if not stocks:
         raise ValueError("v2_production_packet_stocks_missing")
@@ -216,7 +268,7 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     output = AcceptedV2ProductionBatchOutput.model_validate(_read_json(paths["temp"]))
     artifact = validate_accepted_v2_production_output(context, output)
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
-    packet = _read_json(Path(str(claim.get("packet_path") or "")))
+    packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
     load_accepted_v2_production_artifact(paths["final"], packet=packet, claim_id=claim_id)
     receipt = {
         "contract": RECEIPT_CONTRACT,

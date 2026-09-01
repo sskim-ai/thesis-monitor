@@ -23,6 +23,13 @@ or unresolved candidates remain invisible.
 Price Structure, valuation, Public Action 0.4.5/schema 4, Telegram routes, deterministic fallback,
 accepted-decision ownership, and scheduler configuration are unchanged.
 
+## CLI filesystem boundary
+
+Natural claims may store repository-relative artifact paths, but the runtime resolves them against
+the module-owned repository root. Prompt, output, log, schema, and subprocess cwd are absolute and
+prechecked before Codex starts. A local path defect fails as a deterministic precondition error;
+primary, backup, schema repair, and candidate repair all use the same invocation helper.
+
 ## Bounded generation convergence
 
 Structured generation keeps the validator strict. A batch that fails Pydantic schema or

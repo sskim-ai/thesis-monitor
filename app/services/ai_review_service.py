@@ -184,13 +184,20 @@ _INTERNAL_KEYS = {
 _NUMBER = re.compile(
     r"(?<![\w])[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?%?"
 )
+_CANONICAL_IDENTIFIER_TOKEN = re.compile(
+    r"(?<![A-Za-z0-9])"
+    r"(?=[A-Za-z0-9&./\-‐‑]*[A-Za-z])"
+    r"(?=[A-Za-z0-9&./\-‐‑]*\d)"
+    r"[A-Za-z][A-Za-z0-9]*(?:[&./\-‐‑][A-Za-z0-9]+)*"
+    r"(?![A-Za-z0-9])"
+)
 _STRUCTURAL_NUMBER_PATTERNS = (
     r"(?<![A-Za-z0-9_])S&P\s*500(?=$|[^A-Za-z0-9_])",
     r"(?<![A-Za-z0-9_])Russell\s*2000(?=$|[^A-Za-z0-9_])",
     r"(?<![A-Za-z0-9_])KOSPI\s*200(?=$|[^A-Za-z0-9_])",
     r"(?<![A-Za-z0-9_])KOSDAQ\s*150(?=$|[^A-Za-z0-9_])",
     r"\b(?:미국\s*)?10\s*년물\b",
-    r"\b(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}\b",
+    r"(?<!\d)(?:19|20)\d{2}[-./]\d{1,2}[-./]\d{1,2}(?!\d)",
     r"\b(?:19|20)\d{2}\s*년(?:\s*[1-4]\s*분기)?",
     r"\b(?:19|20)\d{2}\s*회계연도(?:\s*[1-4]\s*분기)?",
     r"\bQ[1-4]\b|\b[1-4]Q\b",
@@ -4105,10 +4112,109 @@ def _numeric_tokens(value: object) -> set[str]:
     return tokens
 
 
-def _provenance_tokens(text: str) -> set[str]:
+def _canonical_identifier_type(source: str, fact_ref_id: str) -> str:
+    normalized = f"{source}:{fact_ref_id}".lower()
+    if "security" in normalized:
+        return "security_identifier"
+    if any(marker in normalized for marker in ("market", "product", "series", "index")):
+        return "instrument_or_index_identifier"
+    return "product_or_model_identifier"
+
+
+def _canonical_identifier_evidence(
+    canonical_context_value: object,
+) -> dict[str, tuple[dict[str, str], ...]]:
+    if not isinstance(canonical_context_value, dict):
+        return {}
+    sources: list[tuple[str, str, object]] = []
+    thesis = canonical_context_value.get("thesis")
+    if thesis is not None:
+        sources.append(("canonical_thesis", "thesis:canonical", thesis))
+    for key in ("company_profile", "business_model", "revenue_sources"):
+        value = canonical_context_value.get(key)
+        if value is not None:
+            sources.append((f"structured_{key}", f"{key}:canonical", value))
+    for index, row in enumerate(canonical_context_value.get("evidence") or ()):
+        if not isinstance(row, dict):
+            continue
+        ref_id = str(
+            row.get("event_fingerprint")
+            or row.get("fact_id")
+            or f"evidence:{index}"
+        )
+        sources.append(("canonical_evidence", ref_id, row))
+    for index, row in enumerate(canonical_context_value.get("fact_catalog") or ()):
+        if not isinstance(row, dict):
+            continue
+        ref_id = str(row.get("fact_id") or f"fact_catalog:{index}")
+        sources.append(("canonical_fact", ref_id, row))
+    for key in ("products", "numeric_registry"):
+        for index, row in enumerate(canonical_context_value.get(key) or ()):
+            if not isinstance(row, dict):
+                continue
+            ref_id = str(
+                row.get("fact_id")
+                or row.get("series_code")
+                or row.get("ref_id")
+                or f"{key}:{index}"
+            )
+            sources.append((f"registered_{key}", ref_id, row))
+
+    evidence: dict[str, list[dict[str, str]]] = {}
+    for canonical_source, fact_ref_id, value in sources:
+        serialized = json.dumps(value, ensure_ascii=False, default=str)
+        for match in _CANONICAL_IDENTIFIER_TOKEN.finditer(serialized):
+            identifier = match.group(0)
+            diagnostic = {
+                "full_span": identifier,
+                "identifier_type": _canonical_identifier_type(
+                    canonical_source,
+                    fact_ref_id,
+                ),
+                "canonical_source": canonical_source,
+                "fact_ref_id": fact_ref_id,
+            }
+            bucket = evidence.setdefault(identifier.casefold(), [])
+            if diagnostic not in bucket:
+                bucket.append(diagnostic)
+    return {key: tuple(value) for key, value in evidence.items()}
+
+
+def _canonical_identifier_spans(
+    text: str,
+    canonical_context_value: object = None,
+) -> list[dict[str, object]]:
+    evidence = _canonical_identifier_evidence(canonical_context_value)
+    spans: list[dict[str, object]] = []
+    for match in _CANONICAL_IDENTIFIER_TOKEN.finditer(text):
+        owners = evidence.get(match.group(0).casefold(), ())
+        for owner in owners:
+            spans.append(
+                {
+                    **owner,
+                    "full_span": match.group(0),
+                    "character_span": {
+                        "start": match.start(),
+                        "end": match.end(),
+                    },
+                }
+            )
+    return spans
+
+
+def _provenance_tokens(
+    text: str,
+    canonical_context_value: object = None,
+) -> set[str]:
     cleaned = text
     for pattern in _STRUCTURAL_NUMBER_PATTERNS:
         cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
+    identifier_spans = {
+        (int(item["character_span"]["start"]), int(item["character_span"]["end"]))
+        for item in _canonical_identifier_spans(cleaned, canonical_context_value)
+    }
+    for start, end in sorted(identifier_spans, reverse=True):
+        cleaned = cleaned[:start] + cleaned[end:]
     cleaned = re.sub(r"\b(?:thesis\s*)?version\s*\d+\b", "", cleaned, flags=re.IGNORECASE)
     return _numeric_tokens(cleaned)
 
@@ -4157,16 +4263,27 @@ def _normalized_prose(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _structural_number_spans(text: str) -> list[tuple[int, int]]:
-    return [
+def _structural_number_spans(
+    text: str,
+    canonical_context_value: object = None,
+) -> list[tuple[int, int]]:
+    spans = [
         match.span()
         for pattern in _STRUCTURAL_NUMBER_PATTERNS
         for match in re.finditer(pattern, text, flags=re.IGNORECASE)
     ]
+    spans.extend(
+        (int(item["character_span"]["start"]), int(item["character_span"]["end"]))
+        for item in _canonical_identifier_spans(text, canonical_context_value)
+    )
+    return spans
 
 
-def _prose_number_occurrences(text: str) -> list[tuple[int, int, str]]:
-    structural = _structural_number_spans(text)
+def _prose_number_occurrences(
+    text: str,
+    canonical_context_value: object = None,
+) -> list[tuple[int, int, str]]:
+    structural = _structural_number_spans(text, canonical_context_value)
     return [
         (match.start(), match.end(), next(iter(_numeric_tokens(match.group(0)))))
         for match in _NUMBER.finditer(text)
@@ -4178,9 +4295,13 @@ def _prose_number_diagnostics(
     text: str,
     *,
     field_path: str,
+    canonical_context_value: object = None,
 ) -> list[dict[str, object]]:
     diagnostics: list[dict[str, object]] = []
-    for start, end, token in _prose_number_occurrences(text):
+    for start, end, token in _prose_number_occurrences(
+        text,
+        canonical_context_value,
+    ):
         raw = text[start:end]
         diagnostics.append(
             {
@@ -4209,6 +4330,7 @@ def _validate_numeric_claims(
     review: object,
     registry_value: object,
     fact_catalog_value: object = None,
+    canonical_context_value: object = None,
 ) -> list[str]:
     errors: list[str] = []
     registry = {
@@ -4333,12 +4455,15 @@ def _validate_numeric_claims(
                 f"{claim.fact_id}:{claim.field_path}"
             )
             claim_is_valid = False
-        display_tokens = _provenance_tokens(claim.usage)
+        display_tokens = _provenance_tokens(
+            claim.usage,
+            canonical_context_value,
+        )
         approved_variants = source.get("approved_display_variants")
         allowed_display_tokens = (
             set().union(
                 *(
-                    _provenance_tokens(str(variant))
+                    _provenance_tokens(str(variant), canonical_context_value)
                     for variant in approved_variants
                 )
             )
@@ -4373,7 +4498,10 @@ def _validate_numeric_claims(
             )
     for path, text in prose.items():
         uncovered = []
-        for start, end, token in _prose_number_occurrences(text):
+        for start, end, token in _prose_number_occurrences(
+            text,
+            canonical_context_value,
+        ):
             if not any(
                 claim_start <= start
                 and end <= claim_end
@@ -5602,6 +5730,7 @@ def _validate_stock_review(
             review,
             stock.get("numeric_registry"),
             stock.get("fact_catalog"),
+            stock,
         )
     )
     errors.extend(_cash_flow_user_visible_errors(review, stock))
@@ -5945,6 +6074,7 @@ def _validate_bound_ai_review_output(
             market_context.get("fact_catalog")
             if isinstance(market_context, dict)
             else None,
+            market_context,
         )
     )
     market_registry = (
@@ -6440,9 +6570,11 @@ def _numeric_correction_context(
     contexts: list[dict[str, object]] = []
     for error in errors:
         prefix = error.split(":", maxsplit=1)[0]
+        canonical_context: object = None
         if prefix == "market_review":
             review = candidate.get("market_review")
             market_context = packet.get("market_context")
+            canonical_context = market_context
             registry = (
                 market_context.get("numeric_registry", [])
                 if isinstance(market_context, dict)
@@ -6451,6 +6583,7 @@ def _numeric_correction_context(
         else:
             review = candidate_stocks.get(prefix)
             stock = packet_stocks.get(prefix)
+            canonical_context = stock
             registry = stock.get("numeric_registry", []) if isinstance(stock, dict) else []
         text_ref = None
         tokens: set[str] = set()
@@ -6507,6 +6640,7 @@ def _numeric_correction_context(
                     for diagnostic in _prose_number_diagnostics(
                         rendered_phrase or "",
                         field_path=text_ref or "",
+                        canonical_context_value=canonical_context,
                     )
                     if not tokens or str(diagnostic["normalized_token"]) in tokens
                 ],
@@ -6657,9 +6791,21 @@ def finalize_ai_review_output(
             status="rejected", packet_id=packet_id, errors=tuple(errors)
         )
     validated_candidate = output.model_dump(mode="json")
+    packet_stocks = {
+        str(item.get("ticker") or ""): item
+        for item in packet.get("stocks", [])
+        if isinstance(item, dict)
+    }
+    review_contexts = [
+        (output.market_review, packet.get("market_context")),
+        *(
+            (review, packet_stocks.get(review.ticker))
+            for review in output.stock_reviews
+        ),
+    ]
     binding_report["user_visible_numeric_tokens"] = sum(
-        len(_prose_number_occurrences(text))
-        for review in (output.market_review, *output.stock_reviews)
+        len(_prose_number_occurrences(text, canonical_context))
+        for review, canonical_context in review_contexts
         for text in _prose_fields(review).values()
     )
     validated_at = (now or datetime.now(UTC)).astimezone(UTC)
