@@ -350,7 +350,7 @@ class OhlcvClient:
         acquisition_audit: dict[str, object] | None = None,
     ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
-        attempts = max(1, self.settings.monitor_retry_attempts)
+        attempts = max(1, min(self.settings.monitor_retry_attempts, 5))
         provider_count = min(count, OHLCV_PROVIDER_REQUEST_LIMIT)
         deadline = time.monotonic() + max(0.1, self.settings.ohlcv_timeout_seconds)
         for attempt in range(attempts):

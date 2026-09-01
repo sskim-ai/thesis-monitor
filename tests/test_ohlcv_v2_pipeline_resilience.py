@@ -227,6 +227,27 @@ async def test_source_client_timeout_is_bounded_and_subject_safe(
 
 
 @pytest.mark.anyio
+async def test_source_client_caps_excessive_retry_configuration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("unreachable", request=request)
+
+    client = OhlcvClient(transport=httpx.MockTransport(handler))
+    monkeypatch.setattr(client.settings, "monitor_retry_attempts", 50)
+    monkeypatch.setattr(client.settings, "monitor_retry_base_seconds", 0)
+    context = await client.fetch_price_context(
+        "CPNG",
+        as_of=datetime(2026, 8, 31, 18, 0, tzinfo=ZoneInfo("America/New_York")),
+    )
+    technical = context.technical_context_payload()
+
+    assert technical["status"] == "UNAVAILABLE"
+    assert technical["acquisition"]["request_count"] == 15
+    assert technical["acquisition"]["connection_error_count"] == 15
+
+
+@pytest.mark.anyio
 async def test_service_health_distinguishes_transport_and_data_freshness() -> None:
     def healthy(request: httpx.Request) -> httpx.Response:
         if request.url.path == "/health":
