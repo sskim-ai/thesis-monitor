@@ -105,6 +105,7 @@ class AcceptedV2ProductionArtifact(FrozenModel):
     ready_count: int
     not_ready_count: int
     message_quality: dict[str, object]
+    decision_consistency: dict[str, object] = Field(default_factory=dict)
     validated_at: str
 
 
@@ -532,6 +533,31 @@ def validate_accepted_v2_production_output(
     quality = _production_message_quality(rendered)
     if quality["status"] != "PASS":
         raise ValueError("v2_production_message_quality_failed")
+    from app.services.accepted_decision_consistency_service import (
+        audit_accepted_decision_consistency,
+    )
+
+    consistency = audit_accepted_decision_consistency(
+        evidence_packets=context.evidence_packets,
+        prior_accepted=context.prior_accepted,
+        accepted_plans=tuple(plans),
+        blocks=tuple(blocks),
+    )
+    if consistency.status != "PASS":
+        changed_without_evidence = next(
+            (
+                row.ticker
+                for row in consistency.diagnostics
+                if "same_evidence_accepted_decision_drift" in row.errors
+            ),
+            None,
+        )
+        if changed_without_evidence is not None:
+            raise ValueError(
+                "v2_production_same_evidence_unexplained_churn:"
+                + changed_without_evidence
+            )
+        raise ValueError("v2_production_unexplained_accepted_decision_drift")
     ready_count = len(blocks)
     not_ready_count = len(context.selected_subjects) - ready_count
     return AcceptedV2ProductionArtifact(
@@ -549,6 +575,7 @@ def validate_accepted_v2_production_output(
         ready_count=ready_count,
         not_ready_count=not_ready_count,
         message_quality=quality,
+        decision_consistency=consistency.model_dump(mode="json"),
         validated_at=(validated_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
     )
 

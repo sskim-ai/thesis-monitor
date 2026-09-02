@@ -203,7 +203,7 @@ def test_context_output_and_continuity_are_evidence_bound(tmp_path) -> None:
     assert all(not row.selected_numeric_fact_refs for row in artifact.decisions)
     assert artifact.message_quality["status"] == "PASS"
     assert "natural Korean" in decision_canary_prompt(context)
-    assert all("주문·자동매매" in block.text for block in artifact.blocks)
+    assert all("주문·자동매매" not in block.text for block in artifact.blocks)
     assert all("실적 근거는 장기 선택지를 지지합니다" in block.text for block in artifact.blocks)
     assert all("기대 부담은 하방 위험을 높입니다" in block.text for block in artifact.blocks)
 

@@ -642,8 +642,6 @@ def render_accepted_v2_production(
         "🔄 재평가 조건",
         f"• 상향 재평가: {plan.accepted_upgrade_condition.text}",
         f"• 하향 재평가: {plan.accepted_downgrade_condition.text}",
-        "",
-        "※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
     ]
     text = "\n".join(lines)
     validation = validate_accepted_v2_render(

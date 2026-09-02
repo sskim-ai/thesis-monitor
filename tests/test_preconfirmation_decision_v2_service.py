@@ -4,6 +4,8 @@ import argparse
 import asyncio
 import json
 
+import pytest
+
 from scripts import v2_production_cutover_preflight as preflight
 
 from app.services.cross_market_decision_engine_service import (
@@ -57,8 +59,13 @@ from app.services.accepted_decision_v2_service import (
 from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionBaseline,
     AcceptedV2ProductionBatchOutput,
+    AcceptedV2ProductionBlock,
     build_accepted_v2_production_context,
     validate_accepted_v2_production_output,
+)
+from app.services.accepted_decision_consistency_service import (
+    MaterialEvidenceDelta,
+    audit_accepted_decision_consistency,
 )
 
 
@@ -604,6 +611,44 @@ def test_production_renderer_consumes_only_ready_accepted_plan() -> None:
     assert "SHADOW" not in rendered.text
     assert "후보" not in rendered.text
     assert "AI 분석 판단: BUY" not in rendered.text
+    assert "분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다" not in rendered.text
+    assert rendered.validation.valid is True
+
+
+@pytest.mark.parametrize("market", ("kr", "us"))
+@pytest.mark.parametrize("decision", ("BUY", "HOLD", "SELL"))
+def test_production_renderer_omits_common_disclaimer_for_every_decision(
+    market: str,
+    decision: str,
+) -> None:
+    packet = _packet().model_copy(update={"market": market})
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="BUY",
+        material_disagreement=False,
+        adjudication=None,
+    ).model_copy(
+        update={
+            "candidate_decision": decision,
+            "accepted_decision": decision,
+            "accepted_asymmetry": Asymmetry.UNKNOWN,
+            "accepted_preconfirmation_buy": False,
+            "accepted_postconfirmation_hold": False,
+            "accepted_confirmation_cost_basis": None,
+            "accepted_upgrade_condition": _claim(
+                "ref:thesis", "사업 근거가 달라지면 상향 가능성을 다시 점검한다."
+            ),
+            "accepted_downgrade_condition": _claim(
+                "ref:risks", "위험 근거가 달라지면 하향 가능성을 다시 점검한다."
+            ),
+        }
+    )
+
+    rendered = render_accepted_v2_production(packet, plan)
+
+    assert f"AI 분석 판단: {decision}" in rendered.text
+    assert "분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다" not in rendered.text
     assert rendered.validation.valid is True
 
 
@@ -634,6 +679,12 @@ def test_v2_production_output_resolves_ready_plan_for_complete_scope() -> None:
     assert artifact.accepted_plans[0].accepted_decision == "BUY"
     assert artifact.blocks[0].decision == "BUY"
     assert "SHADOW" not in artifact.blocks[0].text
+    assert artifact.decision_consistency["status"] == "PASS"
+    assert artifact.decision_consistency["raw_candidate_used_as_final"] == 0
+    assert (
+        artifact.decision_consistency["daily_review_overrides_valid_v2_accepted"]
+        == 0
+    )
 
 
 def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -> None:
@@ -717,3 +768,47 @@ def test_same_evidence_v2_decision_churn_fails_closed() -> None:
         assert "same_evidence_unexplained_churn:TEST" in str(exc)
     else:
         raise AssertionError("same-evidence decision churn must fail closed")
+
+
+def test_decision_consistency_records_valid_adjudicated_change() -> None:
+    packet = _packet()
+    baseline = AcceptedV2ProductionBaseline(
+        ticker="TEST",
+        market="us",
+        accepted_decision="HOLD",
+        evidence_sha256="prior-evidence",
+        accepted_decision_id="prior-accepted-id",
+        source="fixture",
+    )
+    plan = resolve_accepted_v2_decision(
+        packet,
+        _candidate(),
+        v1_decision="HOLD",
+        material_disagreement=True,
+        adjudication=_adjudication(recommendation="KEEP_V2", accepted_decision="BUY"),
+    )
+    rendered = render_accepted_v2_production(packet, plan)
+    audit = audit_accepted_decision_consistency(
+        evidence_packets=(packet,),
+        prior_accepted=(baseline,),
+        accepted_plans=(plan,),
+        blocks=(
+            AcceptedV2ProductionBlock(
+                ticker="TEST",
+                decision="BUY",
+                accepted_decision_id=str(plan.accepted_decision_id),
+                text=rendered.text,
+            ),
+        ),
+    )
+
+    row = audit.diagnostics[0]
+    assert audit.status == "PASS"
+    assert row.prior_accepted == "HOLD"
+    assert row.fresh_candidate == "BUY"
+    assert row.fresh_accepted == "BUY"
+    assert row.valid_adjudication is True
+    assert row.material_evidence_delta == (
+        MaterialEvidenceDelta.FINGERPRINT_CHANGED_UNCLASSIFIED
+    )
+    assert audit.unexplained_accepted_decision_drift == 0

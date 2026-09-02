@@ -617,7 +617,6 @@ def render_decision_canary_block(
             *(f"• {claim.text}" for claim in candidate.sell_case_evidence),
             f"🔼 상향 조건: {candidate.upgrade_condition.text}",
             f"🔽 하향 조건: {candidate.downgrade_condition.text}",
-            "※ 분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다.",
         ]
     )
     return DecisionCanaryBlock(
