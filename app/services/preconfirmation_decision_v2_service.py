@@ -241,6 +241,8 @@ def validate_preconfirmation_candidate(
         errors.append("decision_directional_balance_mismatch")
     if not _KOREAN.search(candidate.balance_summary):
         errors.append("balance_summary_not_korean")
+    if _EXACT_NUMBER.search(candidate.balance_summary):
+        errors.append("directional_balance_unregistered_numeric")
     errors.extend(
         directional_balance_language_errors(
             (
@@ -252,6 +254,21 @@ def validate_preconfirmation_candidate(
     )
     if len({row.driver for row in candidate.driver_maturity}) != len(candidate.driver_maturity):
         errors.append("duplicate_maturity_driver")
+
+    directional_categories = _claim_categories(
+        packet, (*candidate.buy_drivers, *candidate.sell_drivers)
+    )
+    directional_fundamental_categories = {
+        EvidenceCategory.THESIS,
+        EvidenceCategory.EARNINGS,
+        EvidenceCategory.EARNINGS_QUALITY,
+        EvidenceCategory.EXPECTATIONS,
+        EvidenceCategory.VALUATION,
+        EvidenceCategory.RISKS,
+        EvidenceCategory.QUALITY,
+    }
+    if not directional_categories & directional_fundamental_categories:
+        errors.append("directional_balance_without_fundamental_or_valuation_driver")
 
     claims = candidate_claims(candidate)
     for claim in claims:

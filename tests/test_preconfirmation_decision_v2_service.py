@@ -61,6 +61,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionBaseline,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionBlock,
+    AcceptedV2ProductionContext,
     build_accepted_v2_production_context,
     validate_accepted_v2_production_output,
 )
@@ -300,6 +301,25 @@ def test_directional_balance_rejects_probability_and_fixed_score_language(
     candidate = _candidate().model_copy(update={field: text})
 
     assert expected_error in validate_preconfirmation_candidate(_packet(), candidate).errors
+
+
+def test_directional_balance_rejects_unregistered_number_and_technical_only_ownership() -> None:
+    numeric = _candidate().model_copy(
+        update={"balance_summary": "매출 30%를 균형의 직접 근거로 사용했습니다."}
+    )
+    technical_only = _candidate().model_copy(
+        update={
+            "buy_drivers": (_claim("ref:price", "가격 구조가 매수 방향을 지지합니다."),),
+            "sell_drivers": (_claim("ref:market", "시장 흐름이 매도 방향 근거입니다."),),
+        }
+    )
+
+    assert "directional_balance_unregistered_numeric" in (
+        validate_preconfirmation_candidate(_packet(), numeric).errors
+    )
+    assert "directional_balance_without_fundamental_or_valuation_driver" in (
+        validate_preconfirmation_candidate(_packet(), technical_only).errors
+    )
 
 
 def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch, tmp_path) -> None:
@@ -894,6 +914,107 @@ def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -
     )
 
 
+def _same_evidence_buy_balance_context() -> AcceptedV2ProductionContext:
+    packet = _packet()
+    return build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-balance",
+        evidence_packets=(packet,),
+    ).model_copy(
+        update={
+            "prior_accepted": (
+                AcceptedV2ProductionBaseline(
+                    ticker="TEST",
+                    market="us",
+                    accepted_decision="BUY",
+                    accepted_directional_balance=DirectionalBalance(buy=6, sell=4),
+                    evidence_sha256=packet.evidence_sha256,
+                    accepted_decision_id="prior-accepted-id",
+                    source="fixture",
+                ),
+            )
+        }
+    )
+
+
+def test_same_evidence_material_balance_move_requires_adjudication() -> None:
+    context = _same_evidence_buy_balance_context()
+    candidate = _candidate_with_balance(8)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(candidate,),
+    )
+
+    artifact = validate_accepted_v2_production_output(context, output)
+
+    assert artifact.status == "PARTIAL_SAFE"
+    assert artifact.blocks == ()
+    assert artifact.accepted_plans[0].denial_reason == (
+        "material_disagreement_without_final_adjudication"
+    )
+
+
+def test_same_evidence_material_candidate_move_can_keep_prior_balance() -> None:
+    context = _same_evidence_buy_balance_context()
+    candidate = _candidate_with_balance(8)
+    adjudication = _adjudication(
+        recommendation="KEEP_V1",
+        accepted_decision="BUY",
+        candidate=candidate,
+        v1_decision="BUY",
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(candidate,),
+        adjudications=(adjudication,),
+    )
+
+    artifact = validate_accepted_v2_production_output(context, output)
+
+    assert artifact.status == "PASS"
+    assert artifact.accepted_plans[0].accepted_decision == "BUY"
+    assert artifact.accepted_plans[0].accepted_directional_balance == DirectionalBalance(
+        buy=6, sell=4
+    )
+    assert artifact.decision_consistency["unexplained_accepted_balance_drift"] == 0
+
+
+def test_same_evidence_material_accepted_balance_drift_fails_closed() -> None:
+    context = _same_evidence_buy_balance_context()
+    candidate = _candidate_with_balance(8)
+    adjudication = _adjudication(
+        recommendation="KEEP_V2",
+        accepted_decision="BUY",
+        candidate=candidate,
+        v1_decision="BUY",
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        candidates=(candidate,),
+        adjudications=(adjudication,),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_same_evidence_unexplained_balance_drift:TEST",
+    ):
+        validate_accepted_v2_production_output(context, output)
+
+
 def test_same_evidence_v2_decision_churn_fails_closed() -> None:
     packet = _packet()
     context = build_accepted_v2_production_context(
@@ -962,6 +1083,8 @@ def test_decision_consistency_records_valid_adjudicated_change() -> None:
                 ticker="TEST",
                 decision="BUY",
                 accepted_decision_id=str(plan.accepted_decision_id),
+                buy_balance=plan.accepted_directional_balance.buy,
+                sell_balance=plan.accepted_directional_balance.sell,
                 text=rendered.text,
             ),
         ),

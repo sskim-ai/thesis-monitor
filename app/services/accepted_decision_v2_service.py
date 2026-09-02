@@ -290,6 +290,10 @@ def resolve_accepted_v2_decision(
     v1_decision: Decision,
     material_disagreement: bool,
     adjudication: AcceptedV2Adjudication | None,
+    v1_directional_balance: DirectionalBalance | None = None,
+    v1_buy_drivers: tuple[EvidenceClaim, ...] = (),
+    v1_sell_drivers: tuple[EvidenceClaim, ...] = (),
+    v1_balance_summary: str | None = None,
 ) -> AcceptedDecisionPlan:
     candidate_payload = candidate.model_dump(mode="json")
     candidate_decision_id = _canonical_fingerprint(
@@ -399,6 +403,7 @@ def resolve_accepted_v2_decision(
         accepted_directional_balance != candidate.directional_balance
         or accepted_buy_drivers != candidate.buy_drivers
         or accepted_sell_drivers != candidate.sell_drivers
+        or accepted_balance_summary != candidate.balance_summary
     ):
         return _not_ready_plan(
             packet=packet,
@@ -410,10 +415,36 @@ def resolve_accepted_v2_decision(
             adjudication=adjudication,
             denial_reason="keep_v2_balance_or_driver_mismatch",
         )
+    if accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V1:
+        prior_mismatch = bool(
+            v1_directional_balance is not None
+            and accepted_directional_balance != v1_directional_balance
+        )
+        prior_mismatch = prior_mismatch or bool(
+            v1_buy_drivers and accepted_buy_drivers != v1_buy_drivers
+        )
+        prior_mismatch = prior_mismatch or bool(
+            v1_sell_drivers and accepted_sell_drivers != v1_sell_drivers
+        )
+        prior_mismatch = prior_mismatch or bool(
+            v1_balance_summary is not None and accepted_balance_summary != v1_balance_summary
+        )
+        if prior_mismatch:
+            return _not_ready_plan(
+                packet=packet,
+                candidate=candidate,
+                candidate_decision_id=candidate_decision_id,
+                material_disagreement=material_disagreement,
+                adjudication_id=adjudication_id,
+                adjudication_status="INVALID",
+                adjudication=adjudication,
+                denial_reason="keep_v1_balance_or_driver_mismatch",
+            )
 
     accepted_preconfirmation_buy = bool(
         accepted_decision == "BUY"
         and candidate.decision == accepted_decision
+        and accepted_source != AcceptedDecisionSource.ADJUDICATION_KEEP_V1
         and candidate.pre_confirmation_buy
     )
     accepted_postconfirmation_hold = bool(
@@ -524,6 +555,8 @@ def validate_accepted_v2_decision(
     if not plan.accepted_balance_summary:
         errors.append("accepted_balance_summary_missing")
     else:
+        if _EXACT_NUMBER.search(plan.accepted_balance_summary):
+            errors.append("adjudication_introduced_unregistered_numeric")
         errors.extend(
             directional_balance_language_errors(
                 (
@@ -542,8 +575,9 @@ def validate_accepted_v2_decision(
     if (
         plan.accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V1
         and plan.accepted_decision == plan.candidate_decision
+        and plan.accepted_directional_balance == plan.candidate_directional_balance
     ):
-        errors.append("keep_v1_did_not_replace_candidate")
+        errors.append("keep_v1_did_not_replace_candidate_or_balance")
     claims = tuple(
         claim
         for claim in (

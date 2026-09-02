@@ -111,6 +111,7 @@ def _codex_batch(
     *,
     output_dir: Path,
     timeout: int,
+    state_namespace: str | None = None,
 ) -> AcceptedV2ProductionBatchOutput:
     codex_bin = _signed_in_codex_bin()
     schema = output_dir / "output.schema.json"
@@ -135,7 +136,7 @@ def _codex_batch(
             schema=schema,
             cwd=output_dir,
             timeout=timeout,
-            state_namespace=context.claim_id,
+            state_namespace=state_namespace or context.claim_id,
         )
         raw_batch = _read_json(output)
         try:
@@ -163,11 +164,9 @@ def _codex_batch(
                 schema=schema,
                 cwd=output_dir,
                 timeout=timeout,
-                state_namespace=context.claim_id,
+                state_namespace=state_namespace or context.claim_id,
             )
-            batch = AcceptedV2ProductionBatchOutput.model_validate(
-                _read_json(repair_output)
-            )
+            batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
         if (
             batch.packet_id != context.packet_id
             or batch.claim_id != context.claim_id
@@ -207,7 +206,7 @@ def _codex_batch(
                 schema=schema,
                 cwd=output_dir,
                 timeout=timeout,
-                state_namespace=context.claim_id,
+                state_namespace=state_namespace or context.claim_id,
             )
             repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
@@ -320,15 +319,11 @@ async def _send_existing_payloads(args: argparse.Namespace) -> None:
 
 async def _resume_test_sink(args: argparse.Namespace) -> None:
     payload = _read_json(args.output_dir / "production-payloads.json")
-    messages = [
-        row for row in payload.get("messages") or () if isinstance(row, Mapping)
-    ]
+    messages = [row for row in payload.get("messages") or () if isinstance(row, Mapping)]
     failed = _read_json(args.output_dir / "test-sink-receipt.json")
     if failed.get("status") != "failed" or failed.get("safe_error") != "http_status_429":
         raise ValueError("only_rate_limited_preflight_receipt_may_resume")
-    failed_rows = [
-        row for row in failed.get("rows") or () if isinstance(row, Mapping)
-    ]
+    failed_rows = [row for row in failed.get("rows") or () if isinstance(row, Mapping)]
     expected = {str(row.get("logical_identity") or ""): row for row in messages}
     sent_identities = [str(row.get("logical_identity") or "") for row in failed_rows]
     if len(expected) != len(messages) or len(set(sent_identities)) != len(failed_rows):
@@ -364,9 +359,7 @@ async def _resume_test_sink(args: argparse.Namespace) -> None:
         namespace=TEST_NAMESPACE,
     )
     continuation_rows = [
-        dict(row)
-        for row in continuation.get("rows") or ()
-        if isinstance(row, Mapping)
+        dict(row) for row in continuation.get("rows") or () if isinstance(row, Mapping)
     ]
     for index, row in enumerate(continuation_rows, start=len(failed_rows) + 1):
         row["sequence"] = index

@@ -427,8 +427,11 @@ async def test_v2_accepted_block_is_visible_without_raw_candidate_fallback(
                 ticker="PILOT",
                 decision="HOLD",
                 accepted_decision_id="accepted-plan-id",
+                buy_balance=5,
+                sell_balance=5,
                 text=(
                     "🧠 AI 분석 판단: HOLD\n"
+                    "판단 균형: BUY 5 : SELL 5\n"
                     "판단 확신도: 중간 | 증거 성숙도: 부분 확인\n\n"
                     "🎯 핵심 판단\n• 검증된 근거는 보유 판단을 지지합니다.\n\n"
                     "🔄 재평가 조건\n"
@@ -442,9 +445,7 @@ async def test_v2_accepted_block_is_visible_without_raw_candidate_fallback(
         message_quality={"status": "PASS"},
         validated_at="2026-08-30T00:00:00+00:00",
     )
-    monkeypatch.setattr(
-        delivery_service, "v2_accepted_production_armed", lambda **kwargs: True
-    )
+    monkeypatch.setattr(delivery_service, "v2_accepted_production_armed", lambda **kwargs: True)
     monkeypatch.setattr(
         delivery_service,
         "_load_delivery_accepted_v2",

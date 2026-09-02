@@ -38,6 +38,9 @@ from app.services.directional_balance_service import (
     DirectionalBalance,
     directional_balance_matches_decision,
 )
+from app.services.directional_balance_variance_service import (
+    requires_directional_balance_adjudication,
+)
 from app.services.preconfirmation_decision_v2_service import (
     validate_preconfirmation_candidate,
 )
@@ -343,13 +346,25 @@ def generate_onboarding_accepted_decision(
         raise ValueError("onboarding_decision_validation_failed:" + ",".join(validation.errors))
     prior = next((row for row in context.prior_accepted if row.ticker == item.ticker), None)
     material_disagreement = bool(
-        prior is not None and candidate.decision != prior.accepted_decision
+        prior is not None
+        and requires_directional_balance_adjudication(
+            prior_decision=prior.accepted_decision,
+            prior_balance=prior.accepted_directional_balance,
+            prior_evidence_sha256=prior.evidence_sha256,
+            candidate_decision=candidate.decision,
+            candidate_balance=candidate.directional_balance,
+            current_evidence_sha256=packet.evidence_sha256,
+        )
     )
     adjudication = adjudications.get(item.ticker)
     plan = resolve_accepted_v2_decision(
         packet,
         candidate,
         v1_decision=prior.accepted_decision if prior else candidate.decision,
+        v1_directional_balance=(prior.accepted_directional_balance if prior else None),
+        v1_buy_drivers=(prior.accepted_buy_drivers if prior else ()),
+        v1_sell_drivers=(prior.accepted_sell_drivers if prior else ()),
+        v1_balance_summary=(prior.accepted_balance_summary if prior else None),
         material_disagreement=material_disagreement,
         adjudication=adjudication,
     )

@@ -18,6 +18,12 @@ Renderers never read the raw candidate balance as final authority.
 HOLD is derived from the current neutral balance band. Prior BUY or SELL state is continuity
 evidence and cannot force a current neutral candidate back to the old label.
 
+Same-evidence diagnostics compare prior, candidate, and accepted balances. A label boundary cross
+or a BUY-balance move of at least 1.5 requires adjudication. Minor ratio movement does not. A
+material accepted-balance jump under unchanged evidence remains unexplained and blocks readiness,
+even when the raw candidate itself is schema-valid. Repeated model execution is diagnostic only;
+no majority result may replace accepted-plan ownership.
+
 ## Evidence Drift
 
 The integration diagnostic compares prior and current evidence fingerprints. Fingerprint change is

@@ -15,6 +15,11 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     FrozenModel,
 )
+from app.services.directional_balance_service import DirectionalBalance
+from app.services.directional_balance_variance_service import (
+    MATERIAL_BALANCE_DISTANCE,
+    balance_distance,
+)
 
 
 CONTRACT_VERSION = "accepted-decision-consistency-v1"
@@ -31,14 +36,20 @@ class AcceptedDecisionConsistencyDiagnostic(FrozenModel):
     evidence_fingerprint: str
     prior_evidence_fingerprint: str | None
     prior_accepted: str | None
+    prior_accepted_balance: DirectionalBalance | None
     fresh_candidate: str
+    fresh_candidate_balance: DirectionalBalance | None
     adjudication_status: str
     adjudication_recommendation: str | None
     fresh_accepted: str | None
+    fresh_accepted_balance: DirectionalBalance | None
+    candidate_balance_distance: float | None
+    accepted_balance_distance: float | None
     evidence_fingerprint_changed: bool | None
     material_evidence_delta: MaterialEvidenceDelta
     valid_adjudication: bool
     accepted_decision_changed: bool
+    accepted_balance_changed_materially: bool
     explained: bool
     errors: tuple[str, ...]
 
@@ -48,6 +59,7 @@ class AcceptedDecisionConsistencyAudit(FrozenModel):
     status: str
     diagnostics: tuple[AcceptedDecisionConsistencyDiagnostic, ...]
     unexplained_accepted_decision_drift: int
+    unexplained_accepted_balance_drift: int
     raw_candidate_used_as_final: int
     daily_review_overrides_valid_v2_accepted: int
 
@@ -76,6 +88,7 @@ def audit_accepted_decision_consistency(
     diagnostics: list[AcceptedDecisionConsistencyDiagnostic] = []
     raw_candidate_used_as_final = 0
     accepted_ownership_overrides = 0
+    unexplained_balance_drift = 0
 
     for ticker in packets:
         packet = packets[ticker]
@@ -83,9 +96,7 @@ def audit_accepted_decision_consistency(
         plan = plans[ticker]
         block = rendered.get(ticker)
         fingerprint_changed = (
-            None
-            if baseline is None
-            else baseline.evidence_sha256 != packet.evidence_sha256
+            None if baseline is None else baseline.evidence_sha256 != packet.evidence_sha256
         )
         material_delta = (
             MaterialEvidenceDelta.NO_PRIOR
@@ -102,14 +113,51 @@ def audit_accepted_decision_consistency(
             and plan.accepted_decision != baseline.accepted_decision
         )
         valid_adjudication = _valid_adjudication(plan)
+        candidate_balance_distance = (
+            balance_distance(
+                baseline.accepted_directional_balance,
+                plan.candidate_directional_balance,
+            )
+            if baseline is not None
+            and baseline.accepted_directional_balance is not None
+            and plan.candidate_directional_balance is not None
+            else None
+        )
+        accepted_balance_distance = (
+            balance_distance(
+                baseline.accepted_directional_balance,
+                plan.accepted_directional_balance,
+            )
+            if baseline is not None
+            and baseline.accepted_directional_balance is not None
+            and plan.accepted_directional_balance is not None
+            else None
+        )
+        accepted_balance_changed_materially = bool(
+            accepted_balance_distance is not None
+            and accepted_balance_distance >= MATERIAL_BALANCE_DISTANCE
+        )
         errors: list[str] = []
         if accepted_changed and not valid_adjudication:
             errors.append("accepted_decision_change_without_valid_adjudication")
         if accepted_changed and not fingerprint_changed:
             errors.append("same_evidence_accepted_decision_drift")
+        if accepted_balance_changed_materially and fingerprint_changed is False:
+            unexplained_balance_drift += 1
+            errors.append("same_evidence_accepted_balance_drift")
         if block is not None and block.decision != plan.accepted_decision:
             accepted_ownership_overrides += 1
             errors.append("final_block_does_not_match_accepted_plan")
+        if (
+            block is not None
+            and plan.accepted_directional_balance is not None
+            and (
+                block.buy_balance != plan.accepted_directional_balance.buy
+                or block.sell_balance != plan.accepted_directional_balance.sell
+            )
+        ):
+            accepted_ownership_overrides += 1
+            errors.append("final_block_balance_does_not_match_accepted_plan")
         if (
             block is not None
             and plan.candidate_decision != plan.accepted_decision
@@ -129,7 +177,11 @@ def audit_accepted_decision_consistency(
                     baseline.evidence_sha256 if baseline is not None else None
                 ),
                 prior_accepted=(baseline.accepted_decision if baseline is not None else None),
+                prior_accepted_balance=(
+                    baseline.accepted_directional_balance if baseline is not None else None
+                ),
                 fresh_candidate=plan.candidate_decision,
+                fresh_candidate_balance=plan.candidate_directional_balance,
                 adjudication_status=plan.adjudication_status,
                 adjudication_recommendation=(
                     str(plan.adjudication_recommendation)
@@ -137,10 +189,14 @@ def audit_accepted_decision_consistency(
                     else None
                 ),
                 fresh_accepted=plan.accepted_decision,
+                fresh_accepted_balance=plan.accepted_directional_balance,
+                candidate_balance_distance=candidate_balance_distance,
+                accepted_balance_distance=accepted_balance_distance,
                 evidence_fingerprint_changed=fingerprint_changed,
                 material_evidence_delta=material_delta,
                 valid_adjudication=valid_adjudication,
                 accepted_decision_changed=accepted_changed,
+                accepted_balance_changed_materially=accepted_balance_changed_materially,
                 explained=not errors,
                 errors=tuple(errors),
             )
@@ -157,6 +213,7 @@ def audit_accepted_decision_consistency(
         ),
         diagnostics=tuple(diagnostics),
         unexplained_accepted_decision_drift=unexplained,
+        unexplained_accepted_balance_drift=unexplained_balance_drift,
         raw_candidate_used_as_final=raw_candidate_used_as_final,
         daily_review_overrides_valid_v2_accepted=accepted_ownership_overrides,
     )

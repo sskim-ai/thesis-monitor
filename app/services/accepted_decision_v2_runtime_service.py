@@ -28,6 +28,9 @@ from app.services.cross_market_decision_engine_service import (
     compact_ai_context,
 )
 from app.services.directional_balance_service import DirectionalBalance
+from app.services.directional_balance_variance_service import (
+    requires_directional_balance_adjudication,
+)
 from app.services.decision_canary_service import canonical_sha256
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
@@ -54,6 +57,7 @@ class AcceptedV2ProductionBaseline(FrozenModel):
     accepted_directional_balance: DirectionalBalance | None = None
     accepted_buy_drivers: tuple[EvidenceClaim, ...] = ()
     accepted_sell_drivers: tuple[EvidenceClaim, ...] = ()
+    accepted_balance_summary: str | None = None
 
 
 class AcceptedV2ProductionContext(FrozenModel):
@@ -221,6 +225,7 @@ def effective_prior_accepted(
                 accepted_directional_balance=plan.accepted_directional_balance,
                 accepted_buy_drivers=plan.accepted_buy_drivers,
                 accepted_sell_drivers=plan.accepted_sell_drivers,
+                accepted_balance_summary=plan.accepted_balance_summary,
             )
     return baselines
 
@@ -316,7 +321,7 @@ Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from th
 
 Read technical_context_status and technical_context_quality explicitly. PARTIAL_SAFE or UNAVAILABLE is a documented evidence limit, never a neutral technical signal and never an automatic HOLD. When the missing technical evidence materially prevents entry-timing assessment, use timing=INSUFFICIENT and cite the technical-context quality ref; otherwise explain which packet-owned price or non-technical evidence safely supports timing. Never invent a missing timeframe.
 
-The prior accepted decision and balance are continuity evidence, not a target distribution. Fresh evidence may justify a different candidate. If candidate.decision differs from prior_accepted.accepted_decision, emit one AcceptedV2Adjudication for that ticker. In this legacy-compatible adjudication schema, v1_decision means prior accepted decision and v2_decision means the new candidate. KEEP_V1 means keep the prior label; KEEP_V2 means accept the new candidate. Every adjudication must emit its accepted balance and accepted directional drivers. NEEDS_REPAIR is allowed when no final accepted result is safe. Explain the decisive basis with canonical refs. If evidence is unchanged, do not change the accepted top-level decision.
+The prior accepted decision and balance are continuity evidence, not a target distribution. Fresh evidence may justify a different candidate. Emit one AcceptedV2Adjudication when the candidate label differs from prior accepted, or when unchanged evidence produces an absolute BUY-balance move of at least 1.5. Do not adjudicate trivial ratio movement. In this legacy-compatible adjudication schema, v1_decision means prior accepted decision and v2_decision means the new candidate. KEEP_V1 preserves the prior accepted label, balance, and directional drivers when those prior fields are available; KEEP_V2 accepts the new candidate label, balance, and directional drivers exactly. Every adjudication must emit its accepted balance and accepted directional drivers. NEEDS_REPAIR is allowed when no final accepted result is safe. Explain the decisive basis with canonical refs. If evidence is unchanged, do not change the accepted top-level decision or make a materially unexplained accepted balance jump.
 
 Change conditions are reassessment conditions, not automatic trades. Never describe a self transition: BUY must not be raised to BUY, HOLD must not be lowered to HOLD, and SELL must not be lowered to SELL. Refer to confidence/timing/risk when staying inside the same top-level decision.
 
@@ -477,12 +482,20 @@ def validate_accepted_v2_production_output(
     adjudications = {row.ticker: row for row in output.adjudications}
     if len(adjudications) != len(output.adjudications):
         raise ValueError("v2_production_duplicate_adjudication")
-    changed = {
+    adjudication_required = {
         ticker
         for ticker, candidate in candidates.items()
-        if ticker in prior and candidate.decision != prior[ticker].accepted_decision
+        if ticker in prior
+        and requires_directional_balance_adjudication(
+            prior_decision=prior[ticker].accepted_decision,
+            prior_balance=prior[ticker].accepted_directional_balance,
+            prior_evidence_sha256=prior[ticker].evidence_sha256,
+            candidate_decision=candidate.decision,
+            candidate_balance=candidate.directional_balance,
+            current_evidence_sha256=packets[ticker].evidence_sha256,
+        )
     }
-    if set(adjudications) - changed:
+    if set(adjudications) - adjudication_required:
         raise ValueError("v2_production_unrequired_adjudication")
     plans: list[AcceptedDecisionPlan] = []
     rendered: list[RenderedProductionAcceptedDecision] = []
@@ -491,11 +504,15 @@ def validate_accepted_v2_production_output(
         packet = packets[ticker]
         candidate = candidates[ticker]
         baseline = prior.get(ticker)
-        material_disagreement = ticker in changed
+        material_disagreement = ticker in adjudication_required
         plan = resolve_accepted_v2_decision(
             packet,
             candidate,
             v1_decision=(baseline.accepted_decision if baseline else candidate.decision),
+            v1_directional_balance=(baseline.accepted_directional_balance if baseline else None),
+            v1_buy_drivers=(baseline.accepted_buy_drivers if baseline else ()),
+            v1_sell_drivers=(baseline.accepted_sell_drivers if baseline else ()),
+            v1_balance_summary=(baseline.accepted_balance_summary if baseline else None),
             material_disagreement=material_disagreement,
             adjudication=adjudications.get(ticker),
         )
@@ -561,6 +578,19 @@ def validate_accepted_v2_production_output(
         if changed_without_evidence is not None:
             raise ValueError(
                 "v2_production_same_evidence_unexplained_churn:" + changed_without_evidence
+            )
+        balance_drift_without_evidence = next(
+            (
+                row.ticker
+                for row in consistency.diagnostics
+                if "same_evidence_accepted_balance_drift" in row.errors
+            ),
+            None,
+        )
+        if balance_drift_without_evidence is not None:
+            raise ValueError(
+                "v2_production_same_evidence_unexplained_balance_drift:"
+                + balance_drift_without_evidence
             )
         raise ValueError("v2_production_unexplained_accepted_decision_drift")
     ready_count = len(blocks)
