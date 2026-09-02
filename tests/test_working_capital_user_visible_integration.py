@@ -13,6 +13,7 @@ from app.services.ai_assisted_delivery_service import (
 from app.services.ai_review_service import _working_capital_user_visible_errors
 from app.services.numeric_semantic_registry import (
     build_numeric_registry,
+    relation_usage_context,
     usage_direction_matches,
     usage_relation_matches,
 )
@@ -276,7 +277,7 @@ def test_positive_signed_gap_requires_higher_wording() -> None:
     assert usage_direction_matches(
         "inventory_growth_signed_gap_pct_point",
         12.3,
-        "재고 증가율은 매출원가 증가율을 12.3%p 앞섰습니다.",
+        "재고 증가율은 매출원가 증가율을 12.3%p 웃돌았습니다.",
         source,
     )
     assert not usage_direction_matches(
@@ -285,6 +286,34 @@ def test_positive_signed_gap_requires_higher_wording() -> None:
         "재고 증가율은 매출원가 증가율을 12.3%p 밑돌았습니다.",
         source,
     )
+
+
+def test_directional_relation_uses_own_sentence_not_unrelated_quality_word() -> None:
+    text = (
+        "재고 증가율은 매출원가 증가율을 15.7%p 밑돌았습니다. "
+        "다만 높은 수익성의 지속성은 별도 확인합니다."
+    )
+    local = relation_usage_context(text, "15.7%p")
+    source = next(
+        item
+        for item in _stock()["numeric_registry"]
+        if item["field_path"] == "fields.gap_percentage_points_signed"
+    )
+
+    assert local == "재고 증가율은 매출원가 증가율을 15.7%p 밑돌았습니다."
+    assert usage_direction_matches(
+        "inventory_growth_signed_gap_pct_point",
+        -15.7339,
+        local,
+        source,
+    )
+
+
+def test_inventory_validator_ignores_unrelated_direction_word_in_later_sentence() -> None:
+    review = _review()
+    review.business_earnings.text += " 높은 수익성의 지속성은 별도 확인합니다."
+
+    assert _working_capital_user_visible_errors(review, _stock()) == []
 
 
 def test_absolute_gap_cannot_validate_directional_wording() -> None:

@@ -133,6 +133,7 @@ from app.services.numeric_semantic_registry import (
     build_numeric_registry,
     numeric_declaration_fact_ids,
     numeric_registry_coverage,
+    relation_usage_context,
     usage_direction_matches,
     usage_matches_semantic,
     usage_relation_matches,
@@ -4244,7 +4245,11 @@ def _validate_numeric_claims(
             "inventory_growth_signed_gap_pct_point",
             "inventory_growth_absolute_gap_pct_point",
         }
-        semantic_usage = target if relation_semantic else claim.usage
+        semantic_usage = (
+            relation_usage_context(target, claim.usage)
+            if relation_semantic
+            else claim.usage
+        )
         if not _usage_semantic_matches(expected_semantic, semantic_usage):
             errors.append(
                 f"{prefix}:numeric_usage_semantic_mismatch:{claim.fact_id}:{claim.field_path}"
@@ -5269,16 +5274,20 @@ def _working_capital_user_visible_errors(
         if source is None:
             errors.append(f"{review.ticker}:inventory_signed_relation_source_missing")
             continue
+        relation_context = relation_usage_context(
+            review.business_earnings.text,
+            claim.usage,
+        )
         if not usage_direction_matches(
             claim.semantic_type,
             float(claim.value),
-            review.business_earnings.text,
+            relation_context,
             source,
         ):
             errors.append(f"{review.ticker}:inventory_direction_wording_mismatch")
         if not usage_relation_matches(
             claim.semantic_type,
-            review.business_earnings.text,
+            relation_context,
             source,
         ):
             errors.append(f"{review.ticker}:inventory_comparator_mismatch")
@@ -5574,6 +5583,8 @@ def _validate_bound_ai_review_output(
     session: Session,
     packet: dict[str, object],
     output_value: object,
+    *,
+    enforce_current_monitoring: bool = True,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
     try:
         output = AIDailyReviewOutput.model_validate(output_value)
@@ -5615,7 +5626,10 @@ def _validate_bound_ai_review_output(
             continue
         if review.thesis_version != stock.get("thesis_version"):
             errors.append(f"{ticker}:thesis_version_mismatch")
-        if _current_thesis_version(session, ticker) != review.thesis_version:
+        if (
+            enforce_current_monitoring
+            and _current_thesis_version(session, ticker) != review.thesis_version
+        ):
             errors.append(f"{ticker}:not_currently_monitored_at_version")
         errors.extend(
             _validate_stock_review(

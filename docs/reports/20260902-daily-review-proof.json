@@ -1,0 +1,36 @@
+{
+  "candidate_count": 2,
+  "contract": "four-track-daily-review-frozen-replay-v1",
+  "gates": {
+    "daily_review_correction_changes_v2_accepted": 0,
+    "daily_review_repair_loop_unbounded": 0,
+    "daily_review_unbound_numeric_after_correction": 0,
+    "market_breadth_authored_label_conflict": 0,
+    "validator_threshold_changes": 0
+  },
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "results": [
+    {
+      "binding_error_count": 0,
+      "candidate": "1788336400",
+      "ownership_handoff_count": 3,
+      "ownership_suppression_count": 2,
+      "prior_error_count": 2,
+      "status": "PASS",
+      "typed_valuation_error_count": 0,
+      "validation_error_count": 0
+    },
+    {
+      "binding_error_count": 0,
+      "candidate": "1788336493",
+      "ownership_handoff_count": 3,
+      "ownership_suppression_count": 0,
+      "prior_error_count": 15,
+      "status": "PASS",
+      "typed_valuation_error_count": 0,
+      "validation_error_count": 0
+    }
+  ],
+  "status": "PASS",
+  "track_b_daily_review": "PASS"
+}

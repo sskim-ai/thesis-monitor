@@ -420,6 +420,30 @@ def _inject_valuation_owners(
     refs = refs if isinstance(refs, list) else []
     typed = review.get("valuation_interpretation_refs")
     typed = list(typed) if isinstance(typed, list) else []
+    handoffs: list[dict[str, object]] = []
+    catalog = _fact_catalog(stock)
+    for item in typed:
+        if not isinstance(item, dict):
+            continue
+        fact = catalog.get(str(item.get("fact_id") or ""))
+        if (
+            item.get("interpretation_type") != "quality_unknown"
+            or item.get("basis_status") != "insufficient_metadata"
+            or fact is None
+            or str(fact.get("valuation_scope") or "unknown") != "unknown"
+            or item.get("economic_scope") == "unknown"
+        ):
+            continue
+        item["economic_scope"] = "unknown"
+        handoffs.append(
+            {
+                "ticker": str(review.get("ticker") or ""),
+                "ref_id": str(item.get("ref_id") or ""),
+                "fact_id": str(item.get("fact_id") or ""),
+                "owner": "valuation_analysis",
+                "reason": "quality_unknown_scope_normalized_to_canonical_unknown",
+            }
+        )
     already_owned = {
         str(ref_id)
         for item in typed
@@ -428,7 +452,6 @@ def _inject_valuation_owners(
         if isinstance(item.get("comparison_numeric_ref_ids"), list)
     }
     text = str(valuation.get("text") or "")
-    handoffs: list[dict[str, object]] = []
     unresolved: list[dict[str, object]] = []
     mapped_ref_ids: set[str] = set()
     valuation_ref_ids: set[str] = set()
@@ -570,6 +593,74 @@ def _inject_valuation_owners(
     return handoffs, unresolved
 
 
+def _remove_market_authored_numeric_labels(
+    packet: Mapping[str, object],
+    output: dict[str, object],
+) -> list[dict[str, object]]:
+    market_context = packet.get("market_context")
+    market_review = output.get("market_review")
+    if not isinstance(market_context, Mapping) or not isinstance(market_review, dict):
+        return []
+    registry = {
+        (str(item.get("fact_id") or ""), str(item.get("field_path") or "")): item
+        for item in market_context.get("numeric_registry", [])
+        if isinstance(item, Mapping)
+    }
+    refs = market_review.get("numeric_fact_refs")
+    if not isinstance(refs, list):
+        return []
+    suppressions: list[dict[str, object]] = []
+    for ref in refs:
+        if not isinstance(ref, Mapping):
+            continue
+        source = registry.get(
+            (str(ref.get("fact_id") or ""), str(ref.get("field_path") or ""))
+        )
+        if source is None or source.get("semantic_type") != "market_advance_ratio":
+            continue
+        ref_id = str(ref.get("ref_id") or "")
+        text_ref = str(ref.get("text_ref") or "")
+        node = _text_node(market_review, text_ref)
+        if node is None:
+            continue
+        parent, key = node
+        text = parent.get(key)
+        placeholder = f"{{{{numeric:{ref_id}}}}}"
+        if not isinstance(text, str) or text.count(placeholder) != 1:
+            continue
+        placeholder_start = text.index(placeholder)
+        prefix = text[:placeholder_start]
+        labels = source.get("approved_labels")
+        candidates = sorted(
+            (str(label) for label in labels if str(label).strip()),
+            key=len,
+            reverse=True,
+        ) if isinstance(labels, list) else []
+        for label in candidates:
+            match = re.search(
+                rf"{re.escape(label)}(?:은|는|이|가|을|를)?\s*$",
+                prefix,
+            )
+            if match is None:
+                continue
+            parent[key] = (
+                prefix[: match.start()].rstrip()
+                + " "
+                + text[placeholder_start:]
+            ).strip()
+            suppressions.append(
+                {
+                    "scope": "market_review",
+                    "ref_id": ref_id,
+                    "text_ref": text_ref,
+                    "suppressed_label": label,
+                    "reason": "canonical_market_numeric_label_ownership",
+                }
+            )
+            break
+    return suppressions
+
+
 def _apply_market_plan_ownership(
     packet: Mapping[str, object], output: dict[str, object]
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
@@ -709,6 +800,7 @@ def apply_candidate_ownership_contracts(
     handoffs: list[dict[str, object]] = []
     unresolved: list[dict[str, object]] = []
     market_handoffs, market_unresolved = _apply_market_plan_ownership(packet, output)
+    suppressions.extend(_remove_market_authored_numeric_labels(packet, output))
     handoffs.extend(market_handoffs)
     unresolved.extend(market_unresolved)
     for review in reviews:

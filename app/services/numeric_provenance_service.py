@@ -60,7 +60,8 @@ _VALUATION_DIRECTION_LANGUAGE = re.compile(
     re.IGNORECASE,
 )
 _VALUATION_UNKNOWN_LANGUAGE = re.compile(
-    r"보류|확인하지\s*못|확인되지\s*않|확인\s*불가|불충분|부족|미확인|unknown",
+    r"보류|확인하지\s*못|확인되지\s*않|확인\s*불가|불충분|부족|미확인|"
+    r"품질.{0,16}(?:통과하지\s*못|미통과|미달|부적합)|unknown",
     re.IGNORECASE,
 )
 _VALUATION_GENERIC_LANGUAGE = re.compile(

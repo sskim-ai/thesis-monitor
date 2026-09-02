@@ -283,6 +283,34 @@ def test_earnings_based_valuation_unknown_phrase_matches_typed_metric() -> None:
     assert accepted[0]["metric"] == "earnings"
 
 
+def test_financial_quality_gate_failure_is_valid_unknown_evidence() -> None:
+    fact_id = "financial_quality:2026-06-30"
+    text = (
+        "최신 재무 이익 계열이 품질 기준을 통과하지 못해 "
+        "이익 배수는 제시하지 않습니다."
+    )
+    review = _review(text, fact_id)
+    review["valuation_interpretation_refs"] = [
+        _typed(
+            interpretation_type="quality_unknown",
+            metric="earnings",
+            fact_id=fact_id,
+            numeric_refs=[],
+            exact_span=text,
+        )
+    ]
+
+    errors, accepted = _typed_valuation_reference_errors(
+        review,
+        _stock(fact_id, fact_type="financial_quality"),
+        [],
+        prefix="TEST",
+    )
+
+    assert errors == []
+    assert accepted[0]["interpretation_type"] == "quality_unknown"
+
+
 def test_valid_historical_pbr_span_cannot_cover_denied_per_occurrence() -> None:
     fact_id = "valuation:historical_pb"
     text = (

@@ -56,7 +56,7 @@ NUMERIC_SEMANTICS = {
         ("pct_point",),
         ("재고 증가율 방향 격차", "Directional inventory growth gap"),
         (
-            r"재고\s*증가율.*(?:매출|매출원가)\s*증가율.*(?:앞섰|밑돌)",
+            r"재고\s*증가율.*(?:매출|매출원가)\s*증가율.*(?:앞섰|웃돌|밑돌)",
             r"inventory growth.*(?:revenue|cogs).*(?:higher|lower|above|below|trails?|exceeds?)",
         ),
         "directional_percentage_point",
@@ -2332,9 +2332,27 @@ _WORKING_CAPITAL_LOWER = re.compile(
     re.IGNORECASE,
 )
 _WORKING_CAPITAL_HIGHER = re.compile(
-    r"앞섰|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b",
+    r"앞섰|웃돌|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b",
     re.IGNORECASE,
 )
+
+
+def relation_usage_context(text: str, usage: str) -> str:
+    """Return the single sentence that owns a directional relation value."""
+    spans = [match.span() for match in re.finditer(re.escape(usage), text)]
+    if len(spans) != 1:
+        return text
+    usage_start, usage_end = spans[0]
+    boundaries = list(re.finditer(r"[.!?](?=\s|$)|\n+", text))
+    sentence_start = max(
+        (match.end() for match in boundaries if match.end() <= usage_start),
+        default=0,
+    )
+    sentence_end = min(
+        (match.end() for match in boundaries if match.start() >= usage_end),
+        default=len(text),
+    )
+    return text[sentence_start:sentence_end].strip()
 
 
 def usage_direction_matches(

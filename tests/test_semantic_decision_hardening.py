@@ -287,6 +287,18 @@ def test_observer_holder_cash_generation_and_asymmetry_variables_pass() -> None:
     assert error is None
 
 
+def test_reinsurance_holder_variables_are_supported() -> None:
+    error = observer_holder_semantic_error(
+        "신규 관찰자는 현재 손익비와 가까운 저항을 봅니다.",
+        (
+            "보유자는 차트 이탈과 합산비율 악화 또는 대형재해 손실에 따른 "
+            "펀더멘털 훼손을 별개 조건으로 관리합니다."
+        ),
+    )
+
+    assert error is None
+
+
 @pytest.mark.parametrize(
     (
         "historical_status",

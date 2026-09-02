@@ -317,6 +317,108 @@ def test_candidate_owner_normalizer_consumes_canonical_market_plan() -> None:
     assert report["status"] == "passed"
 
 
+def test_candidate_owner_normalizer_removes_market_breadth_authored_label() -> None:
+    fact_id = "market:breadth:kr:KOSPI:returns"
+    packet = {
+        "market_context": {
+            "numeric_registry": [
+                {
+                    "fact_id": fact_id,
+                    "field_path": "fields.advance_ratio_pct",
+                    "semantic_type": "market_advance_ratio",
+                    "approved_labels": ["상승 종목 비율"],
+                }
+            ]
+        },
+        "stocks": [],
+    }
+    candidate = {
+        "market_review": {
+            "core_judgment": {
+                "text": "KOSPI 상승 종목 비율은 {{numeric:breadth}} 수준입니다.",
+                "fact_ids": [fact_id],
+            },
+            "numeric_fact_refs": [
+                {
+                    "ref_id": "breadth",
+                    "fact_id": fact_id,
+                    "field_path": "fields.advance_ratio_pct",
+                    "text_ref": "core_judgment.text",
+                }
+            ],
+        },
+        "stock_reviews": [],
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+
+    assert output["market_review"]["core_judgment"]["text"] == (
+        "KOSPI {{numeric:breadth}} 수준입니다."
+    )
+    assert report["suppressions"] == [
+        {
+            "scope": "market_review",
+            "ref_id": "breadth",
+            "text_ref": "core_judgment.text",
+            "suppressed_label": "상승 종목 비율",
+            "reason": "canonical_market_numeric_label_ownership",
+        }
+    ]
+
+
+def test_candidate_owner_normalizer_uses_unknown_scope_for_quality_unknown() -> None:
+    fact_id = "financial_quality:2026-06-30"
+    packet = {
+        "stocks": [
+            {
+                "ticker": "GENERIC",
+                "fact_catalog": [
+                    {
+                        "fact_id": fact_id,
+                        "fact_type": "financial_quality",
+                    }
+                ],
+            }
+        ]
+    }
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "GENERIC",
+                "valuation_analysis": {
+                    "text": "품질 기준 미통과로 이익 배수는 제시하지 않습니다.",
+                    "fact_ids": [fact_id],
+                },
+                "valuation_interpretation_refs": [
+                    {
+                        "ref_id": "quality_unknown",
+                        "interpretation_type": "quality_unknown",
+                        "metric": "earnings",
+                        "fact_id": fact_id,
+                        "text_ref": "valuation_analysis.text",
+                        "exact_text_span": (
+                            "품질 기준 미통과로 이익 배수는 제시하지 않습니다."
+                        ),
+                        "comparison_numeric_ref_ids": [],
+                        "direction": "unknown",
+                        "basis_status": "insufficient_metadata",
+                        "source_type": "full_statement",
+                        "economic_scope": "listed_security",
+                    }
+                ],
+            }
+        ]
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+    typed = output["stock_reviews"][0]["valuation_interpretation_refs"][0]
+
+    assert typed["economic_scope"] == "unknown"
+    assert report["handoffs"][0]["reason"] == (
+        "quality_unknown_scope_normalized_to_canonical_unknown"
+    )
+
+
 def test_candidate_owner_normalizer_only_removes_known_stale_rr_declaration() -> None:
     packet = {
         "stocks": [

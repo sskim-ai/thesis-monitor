@@ -1104,7 +1104,10 @@ def ensure_relation_semantics(packet: Mapping[str, object]) -> dict[str, object]
 
 
 _LOWER_WORDING = re.compile(r"밑돌|낮(?:았|은|다)|하회|\b(?:lower|below|trails?)\b", re.I)
-_HIGHER_WORDING = re.compile(r"앞섰|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b", re.I)
+_HIGHER_WORDING = re.compile(
+    r"앞섰|웃돌|높(?:았|은|다)|상회|\b(?:higher|above|exceeds?)\b",
+    re.I,
+)
 
 
 def _directional_text_matches_context(
