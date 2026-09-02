@@ -39,7 +39,10 @@ SESSION_BOUND_SERIES = {
     "XLY",
 }
 RELEASE_BOUND_SERIES = {
+    "DGS3",
+    "DGS5",
     "DGS10",
+    "DGS30",
     "DFII10",
     "T10YIE",
     "BAMLH0A0HYM2",

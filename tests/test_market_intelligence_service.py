@@ -109,7 +109,10 @@ def _observations() -> list[dict[str, object]]:
         _observation("QQQ", "market_index", 722.33, 0.5296),
         _observation("IWM", "market_index", 302.92, 0.6446),
         _observation("SOXX", "sector", 546.9, 2.1422),
+        _observation("DGS3", "rates", 4.4, -0.2268, change_value=-0.01),
+        _observation("DGS5", "rates", 4.5, -0.2217, change_value=-0.01),
         _observation("DGS10", "rates", 4.7, -0.4237, change_value=-0.02),
+        _observation("DGS30", "rates", 4.9, -0.2037, change_value=-0.01),
         _observation("DFII10", "real_rates", 2.43, 0.0, change_value=0.0),
         _observation("T10YIE", "inflation", 2.26, -0.4405, change_value=-0.01),
         _observation(
@@ -467,6 +470,12 @@ def test_fx_yield_and_oil_level_change_semantics_are_distinct() -> None:
     assert registry[("market:nominal_yield:DGS10", "fields.change_bp")][
         "semantic_type"
     ] == "nominal_yield_change_bp"
+    assert registry[("market:nominal_yield:DGS3", "fields.level_pct")][
+        "canonical_label"
+    ] == "미국 3년물 금리"
+    assert registry[("market:nominal_yield:DGS30", "fields.change_bp")][
+        "canonical_label"
+    ] == "미국 30년물 금리 변동"
     assert registry[("market:oil:DCOILWTICO", "fields.price_usd_per_barrel")][
         "semantic_type"
     ] == "oil_price"

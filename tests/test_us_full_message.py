@@ -212,6 +212,19 @@ def _timeframe(
         "missing_dates": [],
         "future_expected_dates": [] if status == "FINAL" else ["2026-09-02"],
         "aggregation_start_date": "2026-09-01",
+        "gap_value": open_ - (close - 1.0) if timeframe == "DAILY" else None,
+        "gap_pct": (
+            (open_ - (close - 1.0)) / (close - 1.0) * 100
+            if timeframe == "DAILY"
+            else None
+        ),
+        "gap_baseline_date": "2026-08-31" if timeframe == "DAILY" else None,
+        "gap_baseline_close": close - 1.0 if timeframe == "DAILY" else None,
+        "gap_baseline_semantic": (
+            "night_open_minus_validated_preceding_regular_day_close"
+            if timeframe == "DAILY"
+            else None
+        ),
         "change_value": 1.0,
         "return_pct": return_pct,
         "return_baseline_date": "2026-08-31",
@@ -305,11 +318,14 @@ def test_full_message_renders_two_same_contract_daily_weekly_monthly_blocks() ->
     assert rendered.text.count("- 주봉(진행중):") == 2
     assert rendered.text.count("- 월봉(진행중):") == 2
     assert "KOSPI200 최근월물 (202609)" in rendered.text
-    assert "O 1,067.00 · H 1,072.45 · L 1,053.80 · C 1,064.50" in rendered.text
+    assert "🌙 한국 야간선물 · 기준 09/01" in rendered.text
+    assert "시가 1,067.00 · 종가 1,064.50 · 갭 +0.33% · 등락 -0.31%" in rendered.text
+    assert "H 1,072.45" not in rendered.text
+    assert "L 1,053.80" not in rendered.text
     assert len(rendered.night_fact_ids) == 6
 
 
-def test_real_yield_level_previous_observation_and_delta_are_date_qualified() -> None:
+def test_real_yield_is_not_the_primary_user_facing_rate_block() -> None:
     context = _context()
     context["fact_catalog"].append(
         {
@@ -334,10 +350,74 @@ def test_real_yield_level_previous_observation_and_delta_are_date_qualified() ->
     rendered = render_us_full_market_message(context)
 
     assert rendered.status == "PASS"
-    assert (
-        "미 10년 실질금리 2.44% (08/31 관측) · 직전 2.42% (08/28) 대비 +0.02%p (+2bp)"
-    ) in rendered.text
-    assert "오늘 +2bp" not in rendered.text
+    assert "미 10년 실질금리" not in rendered.text
+    assert "🌐 미국 국채금리" not in rendered.text
+
+
+def test_nominal_treasury_curve_uses_same_series_observation_pairs() -> None:
+    context = _context()
+    values = {
+        "DGS3": (3.72, 3.74),
+        "DGS5": (3.84, 3.83),
+        "DGS10": (4.21, 4.17),
+        "DGS30": (4.86, 4.80),
+    }
+    for series, (current, previous) in values.items():
+        context["fact_catalog"].append(
+            {
+                "fact_id": f"market:nominal_yield:{series}",
+                "fact_type": "market_nominal_yield",
+                "as_of_date": "2026-09-01",
+                "fields": {
+                    "series_code": series,
+                    "label": f"미국 {series.removeprefix('DGS')}년물 금리",
+                    "level_pct": current,
+                    "previous_level_pct": previous,
+                    "previous_observation_date": "2026-08-31",
+                    "change_bp": (current - previous) * 100,
+                    "temporal_role": "CURRENT_OBSERVATION",
+                    "today_signal_eligible": True,
+                    "structured_state": "CURRENT_DIRECTIONAL",
+                },
+            }
+        )
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert "🌐 미국 국채금리 · 09/01 관측" in rendered.text
+    for line in (
+        "• 3년: 3.72% · -2bp",
+        "• 5년: 3.84% · +1bp",
+        "• 10년: 4.21% · +4bp",
+        "• 30년: 4.86% · +6bp",
+    ):
+        assert line in rendered.text
+    assert len(rendered.treasury_fact_ids) == 4
+
+
+def test_treasury_curve_reports_exact_partial_pair_cause() -> None:
+    context = _context()
+    context["fact_catalog"].append(
+        {
+            "fact_id": "market:nominal_yield:DGS10",
+            "fact_type": "market_nominal_yield",
+            "as_of_date": "2026-09-01",
+            "fields": {
+                "series_code": "DGS10",
+                "label": "미국 10년물 금리",
+                "level_pct": 4.21,
+                "change_bp": 4.0,
+            },
+        }
+    )
+
+    rendered = render_us_full_market_message(context)
+
+    assert "• 3년: 공식 관측 없음" in rendered.text
+    assert "• 5년: 공식 관측 없음" in rendered.text
+    assert "• 10년: 직전 유효 관측쌍 불충분" in rendered.text
+    assert "• 30년: 공식 관측 없음" in rendered.text
 
 
 def test_full_message_suppresses_noncanonical_night_futures_sidecar() -> None:
@@ -471,7 +551,7 @@ def test_generic_zero_change_macro_is_omitted_by_plan() -> None:
     assert "🌐 보조 시장환경" not in rendered.text
 
 
-def test_specific_neutral_yield_uses_grammar_safe_claim() -> None:
+def test_incomplete_nominal_yield_moves_to_primary_curve_block() -> None:
     context = _context()
     fact = _macro_fact(
         "DGS10",
@@ -484,8 +564,9 @@ def test_specific_neutral_yield_uses_grammar_safe_claim() -> None:
 
     rendered = render_us_full_market_message(context)
 
-    assert "🌐 보조 시장환경" in rendered.text
-    assert "미국 10년물 금리는 전 세션과 큰 변화가 없었습니다." in rendered.text
+    assert "🌐 미국 국채금리" in rendered.text
+    assert "• 10년: 직전 유효 관측쌍 불충분" in rendered.text
+    assert "🌐 보조 시장환경" not in rendered.text
     assert "변화 없음했습니다" not in rendered.text
 
 
@@ -505,7 +586,7 @@ def test_specific_neutral_vix_uses_grammar_safe_claim() -> None:
     assert "VIX는 전 세션과 큰 변화가 없었습니다." in rendered.text
 
 
-def test_prior_session_neutral_macro_is_date_qualified() -> None:
+def test_lagging_nominal_yield_is_not_labeled_same_day() -> None:
     context = _context()
     fact = _macro_fact(
         "DGS10",
@@ -520,9 +601,8 @@ def test_prior_session_neutral_macro_is_date_qualified() -> None:
 
     rendered = render_us_full_market_message(context)
 
-    assert (
-        "공식 관측(2026-08-26) 기준, 미국 10년물 금리는 전 세션과 큰 변화가 없었습니다."
-    ) in rendered.text
+    assert "• 10년: 직전 유효 관측쌍 불충분" in rendered.text
+    assert "오늘" not in rendered.text
 
 
 def test_lagging_zero_change_wti_is_omitted_by_plan() -> None:

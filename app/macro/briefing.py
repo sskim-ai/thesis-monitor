@@ -30,7 +30,10 @@ MARKET_DISPLAY = {
     "XLU": "유틸리티",
     "XLV": "헬스케어",
     "XLY": "경기소비재",
+    "DGS3": "미3Y",
+    "DGS5": "미5Y",
     "DGS10": "미10Y",
+    "DGS30": "미30Y",
     "DFII10": "실질10Y",
     "T10YIE": "미10Y 기대인플레이션",
     "BAMLH0A0HYM2": "미 하이일드 스프레드",
@@ -158,6 +161,7 @@ def _format_move(row: MacroObservation) -> str:
 def market_observation_to_dict(
     item: MacroObservation,
     temporal_decision: dict[str, object] | None = None,
+    previous_observation_date: date | None = None,
 ) -> dict[str, object]:
     value: dict[str, object] = {
         "series_code": item.series_code,
@@ -175,6 +179,8 @@ def market_observation_to_dict(
         "quality_status": item.quality_status,
         "source_url": item.source_url,
     }
+    if previous_observation_date is not None:
+        value["previous_observation_date"] = previous_observation_date.isoformat()
     if temporal_decision:
         value["temporal"] = temporal_decision
     if item.category == "kr_night_futures":
@@ -211,6 +217,22 @@ def market_observation_to_dict(
     return value
 
 
+def _previous_observation_date(
+    session: Session,
+    item: MacroObservation,
+) -> date | None:
+    previous = session.exec(
+        select(MacroObservation)
+        .where(
+            MacroObservation.series_code == item.series_code,
+            MacroObservation.provider == item.provider,
+            MacroObservation.observed_at < item.observed_at,
+        )
+        .order_by(MacroObservation.observed_at.desc())
+    ).first()
+    return previous.observed_at.date() if previous is not None else None
+
+
 def build_macro_briefing(
     session: Session,
     briefing_date: date,
@@ -222,6 +244,10 @@ def build_macro_briefing(
     temporal_context: dict[str, object] | None = None,
 ) -> MacroBriefing:
     observations = _latest_observations(session)
+    previous_dates = {
+        item.series_code: _previous_observation_date(session, item)
+        for item in observations
+    }
     temporal_context = temporal_context or {}
     decisions = temporal_context.get("decisions", {})
     decisions = decisions if isinstance(decisions, dict) else {}
@@ -342,6 +368,7 @@ def build_macro_briefing(
                         decisions.get(item.series_code)
                         if isinstance(decisions.get(item.series_code), dict)
                         else None,
+                        previous_dates.get(item.series_code),
                     )
                     for item in observations
                 ],

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import math
 from typing import Iterable, Mapping
 
 from app.services.krx_night_history_service import (
@@ -29,6 +30,12 @@ DWM_LABELS = {
     "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
 }
+TREASURY_CURVE = (
+    ("DGS3", "3년"),
+    ("DGS5", "5년"),
+    ("DGS10", "10년"),
+    ("DGS30", "30년"),
+)
 
 
 @dataclass(frozen=True)
@@ -38,6 +45,7 @@ class UsFullMessageRender:
     index_fact_ids: tuple[str, ...]
     sector_fact_ids: tuple[str, ...]
     night_fact_ids: tuple[str, ...]
+    treasury_fact_ids: tuple[str, ...]
     section_order: tuple[str, ...]
     validation_errors: tuple[str, ...]
 
@@ -94,26 +102,29 @@ def _format_pct(value: float) -> str:
     return f"{value:+.2f}%"
 
 
-def _night_return(frame: KrxNightAggregateBar) -> str:
-    if frame.return_pct is None:
-        return " · 수익률 산출 불가"
-    label = {
-        "DAILY": "주간장 대비",
-        "WEEKLY": "주간",
-        "MONTHLY": "월간",
-    }[frame.timeframe]
-    return f" · {label} {frame.return_pct:+.2f}%"
-
-
 def _night_timeframe_line(frame: KrxNightAggregateBar, label: str) -> str:
-    status = {
-        "IN_PROGRESS": "진행중",
-        "SAME_CONTRACT_PARTIAL_PERIOD": "동일만기 일부",
-    }.get(frame.status)
+    status = (
+        "진행중"
+        if frame.status in {"IN_PROGRESS", "SAME_CONTRACT_PARTIAL_PERIOD"}
+        else None
+    )
     heading = f"{label}({status})" if status else label
+    if frame.timeframe == "DAILY":
+        if frame.gap_pct is None or frame.return_pct is None:
+            return (
+                f"  - {heading}: 시가 {frame.open:,.2f} · 종가 {frame.close:,.2f} · "
+                "갭/등락 자료 부족"
+            )
+        return (
+            f"  - {heading}: 시가 {frame.open:,.2f} · 종가 {frame.close:,.2f} · "
+            f"갭 {frame.gap_pct:+.2f}% · 등락 {frame.return_pct:+.2f}%"
+        )
+    if frame.return_pct is None:
+        return f"  - {heading}: 자료 부족"
     return (
-        f"  - {heading}: O {frame.open:,.2f} · H {frame.high:,.2f} · "
-        f"L {frame.low:,.2f} · C {frame.close:,.2f}{_night_return(frame)}"
+        f"  - {heading}: 시가 {frame.open:,.2f} · 종가 {frame.close:,.2f} · "
+        f"{'주간' if frame.timeframe == 'WEEKLY' else '월간'} "
+        f"{frame.return_pct:+.2f}%"
     )
 
 
@@ -156,6 +167,59 @@ def _night_timeframe_block(
         frames.weekly.fact_id,
         frames.monthly.fact_id,
     )
+
+
+def _treasury_curve_block(
+    by_series: Mapping[str, Mapping[str, object]],
+) -> tuple[str, tuple[str, ...]] | None:
+    if not any(series in by_series for series, _label in TREASURY_CURVE):
+        return None
+    lines: list[str] = []
+    fact_ids: list[str] = []
+    observation_dates: list[str] = []
+    for series, label in TREASURY_CURVE:
+        fact = by_series.get(series)
+        if (
+            fact is None
+            or fact.get("fact_type") != "market_nominal_yield"
+            or _fact_id(fact) != f"market:nominal_yield:{series}"
+        ):
+            lines.append(f"• {label}: 공식 관측 없음")
+            continue
+        fields = _fields(fact)
+        level = _number(fields.get("level_pct"))
+        previous = _number(fields.get("previous_level_pct"))
+        delta_bp = _number(fields.get("change_bp"))
+        observed = str(fact.get("as_of_date") or "")
+        previous_date = str(fields.get("previous_observation_date") or "")
+        if (
+            level is None
+            or previous is None
+            or delta_bp is None
+            or not observed
+            or not previous_date
+        ):
+            lines.append(f"• {label}: 직전 유효 관측쌍 불충분")
+            continue
+        if previous_date >= observed or not math.isclose(
+            delta_bp,
+            (level - previous) * 100,
+            rel_tol=0,
+            abs_tol=0.011,
+        ):
+            lines.append(f"• {label}: 관측쌍 검증 실패")
+            continue
+        date_label = observed[5:].replace("-", "/")
+        lines.append(f"• {label}: {level:.2f}% · {delta_bp:+.0f}bp ({date_label} 관측)")
+        fact_ids.append(_fact_id(fact))
+        observation_dates.append(observed)
+    common_date = observation_dates[0] if observation_dates and len(set(observation_dates)) == 1 else ""
+    heading = "🌐 미국 국채금리"
+    if common_date:
+        date_label = common_date[5:].replace("-", "/")
+        heading += f" · {date_label} 관측"
+        lines = [line.replace(f" ({date_label} 관측)", "") for line in lines]
+    return heading + "\n" + "\n".join(lines), tuple(fact_ids)
 
 
 def _plan(value: object) -> UsMarketDigestPlan | None:
@@ -318,19 +382,17 @@ def render_us_full_market_message(
             night_fact_ids.append(str(row["fact_id"]))
 
     macro_lines: list[str] = []
-    real_yield_fact = by_series.get("DFII10")
-    real_yield_claim = (
-        render_specific_macro_claim(real_yield_fact) if real_yield_fact is not None else ""
-    )
-    if "직전" in real_yield_claim and "%p" in real_yield_claim:
-        macro_lines.append(f"• {real_yield_claim}")
+    treasury_block = _treasury_curve_block(by_series)
+    treasury_fact_ids: tuple[str, ...] = ()
+    if treasury_block is not None:
+        _treasury_text, treasury_fact_ids = treasury_block
     macro = _plan_item(plan, UsMarketDigestSlot.MACRO_CONTEXT)
     macro_fact = _safe_macro_fact(macro, by_id) if macro is not None else None
     if (
         macro is not None
         and macro.omission_reason == DigestOmissionReason.SELECTED
         and macro_fact is not None
-        and _fact_id(macro_fact) != _fact_id(real_yield_fact or {})
+        and _series(macro_fact) not in {"DGS3", "DGS5", "DGS10", "DGS30", "DFII10"}
     ):
         macro_claim = render_specific_macro_claim(macro_fact)
         macro_role = str(_fields(macro_fact).get("temporal_role") or "")
@@ -349,8 +411,22 @@ def render_us_full_market_message(
     blocks.append("🔎 시장 내부\n" + "\n".join(internal_lines))
     section_order.append("MARKET_INTERNAL")
     if night_lines:
-        blocks.append("🌙 한국 야간선물\n" + "\n".join(night_lines))
+        night_date = next(
+            (
+                str(row.get("session_date") or "")
+                for row in night_rows
+                if isinstance(row, Mapping) and row.get("night_timeframes")
+            ),
+            "",
+        )
+        night_heading = "🌙 한국 야간선물"
+        if night_date:
+            night_heading += f" · 기준 {night_date[5:].replace('-', '/')}"
+        blocks.append(night_heading + "\n" + "\n".join(night_lines))
         section_order.append("NIGHT_FUTURES")
+    if treasury_block is not None:
+        blocks.append(treasury_block[0])
+        section_order.append("TREASURY_CURVE")
     if macro_lines:
         blocks.append("🌐 보조 시장환경\n" + "\n".join(macro_lines))
         section_order.append("MACRO_CONTEXT")
@@ -371,6 +447,7 @@ def render_us_full_market_message(
         index_fact_ids=tuple(index_fact_ids),
         sector_fact_ids=tuple(sector_fact_ids),
         night_fact_ids=tuple(night_fact_ids),
+        treasury_fact_ids=treasury_fact_ids,
         section_order=tuple(section_order),
         validation_errors=tuple(dict.fromkeys(errors)),
     )

@@ -134,6 +134,11 @@ class KrxNightAggregateBar(BaseModel):
     missing_dates: tuple[date, ...]
     future_expected_dates: tuple[date, ...]
     aggregation_start_date: date
+    gap_value: float | None = None
+    gap_pct: float | None = None
+    gap_baseline_date: date | None = None
+    gap_baseline_close: float | None = None
+    gap_baseline_semantic: str | None = None
     change_value: float | None = None
     return_pct: float | None = None
     return_baseline_date: date | None = None
@@ -640,6 +645,56 @@ def build_same_contract_timeframes(
     selected = resolve_near_month(all_bars, reference_date=reference_date)
     if selected is None:
         return None
+    daily_baseline_valid = bool(
+        daily_baseline_date is not None
+        and daily_baseline_close is not None
+        and math.isfinite(daily_baseline_close)
+        and daily_baseline_close > 0
+    )
+    canonical_daily_change = (
+        selected.close - daily_baseline_close if daily_baseline_valid else None
+    )
+    canonical_daily_return = (
+        canonical_daily_change / daily_baseline_close * 100
+        if canonical_daily_change is not None and daily_baseline_close is not None
+        else None
+    )
+    canonical_daily_gap = (
+        selected.open - daily_baseline_close if daily_baseline_valid else None
+    )
+    canonical_daily_gap_pct = (
+        canonical_daily_gap / daily_baseline_close * 100
+        if canonical_daily_gap is not None and daily_baseline_close is not None
+        else None
+    )
+    daily_baseline_valid = bool(
+        daily_baseline_valid
+        and (
+            daily_change_value is None
+            or canonical_daily_change is not None
+            and math.isclose(
+                daily_change_value,
+                canonical_daily_change,
+                rel_tol=0,
+                abs_tol=0.011,
+            )
+        )
+        and (
+            daily_change_pct is None
+            or canonical_daily_return is not None
+            and math.isclose(
+                daily_change_pct,
+                canonical_daily_return,
+                rel_tol=0,
+                abs_tol=0.011,
+            )
+        )
+    )
+    if not daily_baseline_valid:
+        canonical_daily_change = None
+        canonical_daily_return = None
+        canonical_daily_gap = None
+        canonical_daily_gap_pct = None
     same_contract = {
         bar.reference_date: bar
         for bar in all_bars
@@ -668,13 +723,22 @@ def build_same_contract_timeframes(
         missing_dates=(),
         future_expected_dates=(),
         aggregation_start_date=reference_date,
-        change_value=daily_change_value,
-        return_pct=daily_change_pct,
-        return_baseline_date=daily_baseline_date,
-        return_baseline_close=daily_baseline_close,
+        gap_value=canonical_daily_gap,
+        gap_pct=canonical_daily_gap_pct,
+        gap_baseline_date=daily_baseline_date if daily_baseline_valid else None,
+        gap_baseline_close=daily_baseline_close if daily_baseline_valid else None,
+        gap_baseline_semantic=(
+            "night_open_minus_validated_preceding_regular_day_close"
+            if daily_baseline_valid
+            else None
+        ),
+        change_value=canonical_daily_change,
+        return_pct=canonical_daily_return,
+        return_baseline_date=daily_baseline_date if daily_baseline_valid else None,
+        return_baseline_close=daily_baseline_close if daily_baseline_valid else None,
         return_baseline_semantic=(
             "completed_night_close_minus_immediately_preceding_day_close"
-            if daily_change_pct is not None
+            if daily_baseline_valid
             else None
         ),
         source_fact_ids=(selected.fact_id,),

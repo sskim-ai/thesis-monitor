@@ -258,6 +258,11 @@ def test_same_contract_weekly_monthly_use_xkrx_constituents_only(
     assert frames is not None
     assert frames.contract_code == "A0169000"
     assert frames.daily.close == 1064.5
+    assert frames.daily.gap_baseline_date == date(2026, 8, 31)
+    assert frames.daily.gap_baseline_close == 1067.85
+    assert frames.daily.gap_pct == pytest.approx((1067.0 - 1067.85) / 1067.85 * 100)
+    assert frames.daily.return_pct == pytest.approx((1064.5 - 1067.85) / 1067.85 * 100)
+    assert frames.daily.gap_baseline_close == frames.daily.return_baseline_close
     assert frames.weekly.status == "IN_PROGRESS"
     assert frames.weekly.included_dates == (
         date(2026, 8, 31),
@@ -285,6 +290,27 @@ def test_missing_elapsed_constituent_is_partial_safe(tmp_path: Path) -> None:
     assert frames is not None
     assert frames.weekly.quality == "PARTIAL_SAFE"
     assert frames.weekly.missing_dates == (date(2026, 8, 31),)
+
+
+def test_daily_gap_and_return_fail_closed_on_provider_baseline_mismatch(
+    tmp_path: Path,
+) -> None:
+    store_normalized_bar(tmp_path, _bar(date(2026, 9, 1), open_=100, close=101))
+
+    frames = build_same_contract_timeframes(
+        tmp_path,
+        instrument_root="KOSPI200",
+        reference_date=date(2026, 9, 1),
+        daily_change_value=99.0,
+        daily_change_pct=99.0,
+        daily_baseline_date=date(2026, 8, 31),
+        daily_baseline_close=100.0,
+    )
+
+    assert frames is not None
+    assert frames.daily.gap_pct is None
+    assert frames.daily.return_pct is None
+    assert frames.daily.gap_baseline_close is None
 
 
 def test_persist_response_stores_both_products_and_raw_receipt(tmp_path: Path) -> None:

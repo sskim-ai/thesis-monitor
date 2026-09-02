@@ -35,7 +35,10 @@ _SERIES = {
     "XLU": ("sectors", "market_sector", "유틸리티"),
     "XLV": ("sectors", "market_sector", "헬스케어"),
     "XLY": ("sectors", "market_sector", "경기소비재"),
+    "DGS3": ("rates", "market_nominal_yield", "미국 3년물 금리"),
+    "DGS5": ("rates", "market_nominal_yield", "미국 5년물 금리"),
     "DGS10": ("rates", "market_nominal_yield", "미국 10년물 금리"),
+    "DGS30": ("rates", "market_nominal_yield", "미국 30년물 금리"),
     "DFII10": ("rates", "market_real_yield", "미국 10년물 실질금리"),
     "T10YIE": ("rates", "market_breakeven_inflation", "미국 기대인플레이션"),
     "BAMLH0A0HYM2": ("credit", "market_credit_spread", "미국 하이일드 신용스프레드"),
@@ -62,7 +65,7 @@ _EXPECTED_SERIES = {
         "XLV",
         "XLY",
     },
-    "rates": {"DGS10", "DFII10", "T10YIE"},
+    "rates": {"DGS3", "DGS5", "DGS10", "DGS30", "DFII10", "T10YIE"},
     "credit": {"BAMLH0A0HYM2"},
     "liquidity": {"DTWEXBGS"},
     "fx": {"USDKRW"},
@@ -173,6 +176,8 @@ def _observation_fact(
         "label": label,
         "quality": str(item.get("quality_status") or "fresh"),
         "observed_at": str(item.get("observed_at") or run_date),
+        "provider": str(item.get("provider") or ""),
+        "source_url": str(item.get("source_url") or ""),
     }
     temporal = item.get("temporal")
     if isinstance(temporal, dict):
@@ -224,13 +229,20 @@ def _observation_fact(
             fields["level_pct"] = value
         if change_value is not None:
             fields["change_bp"] = change_value * 100.0
-        if fact_type == "market_real_yield":
+        if fact_type in {"market_nominal_yield", "market_real_yield"}:
             previous_value = _number(item, "previous_value")
             if previous_value is not None:
                 fields["previous_level_pct"] = previous_value
-            if change_value is not None:
+            if fact_type == "market_real_yield" and change_value is not None:
                 fields["change_pp"] = change_value
-            if isinstance(temporal, dict) and temporal.get("prior_observation_date"):
+            previous_date = item.get("previous_observation_date")
+            if previous_date:
+                fields["previous_observation_date"] = str(previous_date)
+            elif (
+                fact_type == "market_real_yield"
+                and isinstance(temporal, dict)
+                and temporal.get("prior_observation_date")
+            ):
                 fields["previous_observation_date"] = str(temporal["prior_observation_date"])
     elif fact_type == "market_fx":
         if value is not None:

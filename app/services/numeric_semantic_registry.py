@@ -397,6 +397,14 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="market",
     ),
+    "futures_gap_pct": _spec(
+        "futures_gap_pct",
+        ("pct",),
+        ("야간선물 갭", "futures gap"),
+        (r"야간선물.*갭", r"futures.*gap"),
+        "signed_percentage",
+        scope="market",
+    ),
     "fx_rate": _spec(
         "fx_rate",
         ("KRW",),
@@ -682,17 +690,43 @@ NUMERIC_SEMANTICS = {
     "nominal_yield_level": _spec(
         "nominal_yield_level",
         ("pct",),
-        ("미국 10년물 금리", "US 10-year yield"),
-        (r"(?:미국|us).*10년물.*(?:금리|yield)",),
+        (
+            "미국 3년물 금리",
+            "미국 5년물 금리",
+            "미국 10년물 금리",
+            "미국 30년물 금리",
+            "US Treasury yield",
+        ),
+        (r"(?:미국|us).*(?:3|5|10|30)년물.*(?:금리|yield)",),
         "percentage",
         scope="both",
     ),
     "nominal_yield_change_bp": _spec(
         "nominal_yield_change_bp",
         ("bp",),
-        ("미국 10년물 금리 변동", "US 10-year yield change"),
-        (r"(?:미국|us).*10년물.*(?:금리|yield)",),
+        (
+            "미국 3년물 금리 변동",
+            "미국 5년물 금리 변동",
+            "미국 10년물 금리 변동",
+            "미국 30년물 금리 변동",
+            "US Treasury yield change",
+        ),
+        (r"(?:미국|us).*(?:3|5|10|30)년물.*(?:금리|yield)",),
         "signed_basis_points",
+        scope="both",
+    ),
+    "nominal_yield_previous_level": _spec(
+        "nominal_yield_previous_level",
+        ("pct",),
+        (
+            "미국 3년물 직전 금리",
+            "미국 5년물 직전 금리",
+            "미국 10년물 직전 금리",
+            "미국 30년물 직전 금리",
+            "previous US Treasury yield",
+        ),
+        (r"(?:미국|us).*(?:3|5|10|30)년물.*직전.*(?:금리|yield)",),
+        "percentage",
         scope="both",
     ),
     "real_yield_level": _spec(
@@ -1776,6 +1810,12 @@ _FIELD_RULES = (
     ),
     NumericFieldRule(
         ("night_futures_timeframe",),
+        r"fields\.gap_pct",
+        "futures_gap_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
         r"fields\.return_baseline_close",
         "futures_close",
         "points",
@@ -1934,6 +1974,12 @@ _FIELD_RULES = (
         "bp",
     ),
     NumericFieldRule(
+        ("market_nominal_yield",),
+        r"fields\.previous_level_pct",
+        "nominal_yield_previous_level",
+        "pct",
+    ),
+    NumericFieldRule(
         ("market_real_yield",),
         r"fields\.level_pct",
         "real_yield_level",
@@ -2070,8 +2116,18 @@ _NIGHT_FUTURES_LABELS = {
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
 }
 _MARKET_SERIES_LABELS = {
+    ("nominal_yield_level", "DGS3"): "미국 3년물 금리",
+    ("nominal_yield_change_bp", "DGS3"): "미국 3년물 금리 변동",
+    ("nominal_yield_previous_level", "DGS3"): "미국 3년물 직전 금리",
+    ("nominal_yield_level", "DGS5"): "미국 5년물 금리",
+    ("nominal_yield_change_bp", "DGS5"): "미국 5년물 금리 변동",
+    ("nominal_yield_previous_level", "DGS5"): "미국 5년물 직전 금리",
     ("nominal_yield_level", "DGS10"): "미국 10년물 금리",
     ("nominal_yield_change_bp", "DGS10"): "미국 10년물 금리 변동",
+    ("nominal_yield_previous_level", "DGS10"): "미국 10년물 직전 금리",
+    ("nominal_yield_level", "DGS30"): "미국 30년물 금리",
+    ("nominal_yield_change_bp", "DGS30"): "미국 30년물 금리 변동",
+    ("nominal_yield_previous_level", "DGS30"): "미국 30년물 직전 금리",
     ("real_yield_level", "DFII10"): "미국 10년물 실질금리",
     ("real_yield_change_bp", "DFII10"): "미국 10년물 실질금리 변동",
     ("real_yield_change_pp", "DFII10"): "미국 10년물 실질금리 변동폭",
@@ -2126,6 +2182,7 @@ _INSTRUMENT_LABEL_SEMANTICS = {
     "futures_close",
     "futures_point_change",
     "futures_return_pct",
+    "futures_gap_pct",
     "sector_listed_issue_count",
     "sector_advance_count",
     "sector_decline_count",
@@ -2256,6 +2313,7 @@ def _source_aware_label(
         "futures_close",
         "futures_point_change",
         "futures_return_pct",
+        "futures_gap_pct",
     }:
         product = _NIGHT_FUTURES_LABELS.get(str(fields.get("series_code") or ""))
         if product:
@@ -2266,6 +2324,7 @@ def _source_aware_label(
                 "futures_close": "종가",
                 "futures_point_change": "등락폭",
                 "futures_return_pct": "등락률",
+                "futures_gap_pct": "갭",
             }[semantic_type]
             return f"{product} {suffix}"
     return None
@@ -2467,7 +2526,7 @@ def canonical_display_value(
             return _compact_amount(value, prefix)
         return f"{prefix}{_fixed_number(value, 2)}"
     if unit == "pct":
-        digits = 2 if spec.semantic_type == "futures_return_pct" else 1
+        digits = 2 if spec.semantic_type in {"futures_return_pct", "futures_gap_pct"} else 1
         rendered = _fixed_number(value, digits)
         if formatter == "signed_percentage" and value > 0:
             rendered = f"+{rendered}"
