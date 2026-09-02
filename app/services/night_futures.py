@@ -4,7 +4,13 @@ import math
 import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from typing import Mapping
 
+from app.services.krx_night_history_service import (
+    KRX_NIGHT_DWM_CONTRACT,
+    KrxNightAggregateBar,
+    KrxNightTimeframes,
+)
 from app.services.market_session import preceding_exchange_session_date
 
 
@@ -22,12 +28,8 @@ NIGHT_FUTURES_FACT_IDS = {
     "KRX_KOSDAQ150_NIGHT_FUT": "market:night_futures:2",
 }
 NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
-NIGHT_FUTURES_SUMMARY_PROJECTION_CONTRACT = (
-    "night-futures-summary-canonical-projection-v1"
-)
-NIGHT_COMPARISON_SEMANTIC = (
-    "completed_night_close_minus_immediately_preceding_day_close"
-)
+NIGHT_FUTURES_SUMMARY_PROJECTION_CONTRACT = "night-futures-summary-canonical-projection-v1"
+NIGHT_COMPARISON_SEMANTIC = "completed_night_close_minus_immediately_preceding_day_close"
 _SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
@@ -57,6 +59,8 @@ class NightFuturesItem:
     provider_raw_bas_dd: date
     reference_date_match: bool
     finality_valid: bool
+    contract_maturity: str | None = None
+    timeframes: KrxNightTimeframes | None = None
 
 
 @dataclass(frozen=True)
@@ -104,20 +108,13 @@ def _gate_ready_products(market: object) -> tuple[set[str], date | None] | None:
     if not isinstance(gate, dict):
         return None
     if not any(
-        key in gate
-        for key in ("expected_session", "ready_products", "query_attempted", "state")
+        key in gate for key in ("expected_session", "ready_products", "query_attempted", "state")
     ):
         return None
     raw_ready = gate.get("ready_products")
     ready_values = raw_ready if isinstance(raw_ready, list) else []
-    ready = {
-        str(item)
-        for item in ready_values
-        if str(item) in NIGHT_FUTURES_SERIES
-    }
-    return ready, _date_value(
-        gate.get("expected_reference_date") or gate.get("expected_session")
-    )
+    ready = {str(item) for item in ready_values if str(item) in NIGHT_FUTURES_SERIES}
+    return ready, _date_value(gate.get("expected_reference_date") or gate.get("expected_session"))
 
 
 def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
@@ -127,8 +124,7 @@ def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
         or _date_value(item.get("observed_at"))
     )
     expected_date = _date_value(
-        item.get("expected_reference_date")
-        or item.get("expected_latest_session_date")
+        item.get("expected_reference_date") or item.get("expected_latest_session_date")
     )
     session_freshness = str(item.get("session_freshness") or "").lower()
     quality_status = str(item.get("quality_status") or "").lower()
@@ -160,21 +156,16 @@ def _verified_session_basis(
     provider_change = _number(item.get("provider_change_point"))
     provider_change_match = item.get("provider_change_match")
     expected_product_reference_date = _date_value(
-        item.get("expected_reference_date")
-        or item.get("expected_latest_session_date")
+        item.get("expected_reference_date") or item.get("expected_latest_session_date")
     )
     provider_raw_bas_dd = _date_value(
-        item.get("provider_raw_bas_dd")
-        or item.get("trade_date")
-        or item.get("session_date")
+        item.get("provider_raw_bas_dd") or item.get("trade_date") or item.get("session_date")
     )
     night_sha = str(item.get("night_source_payload_sha256") or "")
     reference_sha = str(item.get("reference_source_payload_sha256") or "")
     expected_change_pct = (
         (current_price - reference_price) / reference_price * 100
-        if current_price is not None
-        and reference_price is not None
-        and reference_price != 0
+        if current_price is not None and reference_price is not None and reference_price != 0
         else None
     )
     expected_comparison_date = preceding_exchange_session_date("XKRX", session_date)
@@ -189,8 +180,7 @@ def _verified_session_basis(
         )
     )
     valid = bool(
-        item.get("session_basis_contract")
-        == NIGHT_FUTURES_SESSION_BASIS_CONTRACT
+        item.get("session_basis_contract") == NIGHT_FUTURES_SESSION_BASIS_CONTRACT
         and str(item.get("exchange") or "") == "XKRX"
         and str(item.get("market_session") or "").lower() == "kr_night"
         and str(item.get("session_type") or "").upper() == "NIGHT"
@@ -230,16 +220,42 @@ def _verified_session_basis(
             or expected_product_reference_date == session_date
         )
         and provider_raw_bas_dd == session_date
-        and (
-            "reference_date_match" not in item
-            or item.get("reference_date_match") is True
-        )
-        and (
-            "finality_valid" not in item
-            or item.get("finality_valid") is True
-        )
+        and ("reference_date_match" not in item or item.get("reference_date_match") is True)
+        and ("finality_valid" not in item or item.get("finality_valid") is True)
     )
     return valid, reference_date, reference_price
+
+
+def _validated_timeframes(
+    value: object,
+    *,
+    series_code: str,
+    contract_code: str,
+    session_date: date,
+    close: float,
+) -> KrxNightTimeframes | None:
+    if not isinstance(value, Mapping):
+        return None
+    try:
+        frames = KrxNightTimeframes.model_validate(value)
+    except ValueError:
+        return None
+    if (
+        frames.contract != KRX_NIGHT_DWM_CONTRACT
+        or frames.series_code != series_code
+        or frames.contract_code != contract_code
+        or frames.reference_date != session_date
+        or frames.daily.reference_date != session_date
+        or not math.isclose(frames.daily.close, close, rel_tol=0, abs_tol=1e-8)
+        or any(
+            frame.series_code != series_code
+            or frame.contract_code != contract_code
+            or frame.reference_date != session_date
+            for frame in (frames.daily, frames.weekly, frames.monthly)
+        )
+    ):
+        return None
+    return frames
 
 
 def summarize_night_futures(
@@ -293,6 +309,14 @@ def summarize_night_futures(
         if not verified or reference_date is None or reference_price is None:
             excluded.append(series_code)
             continue
+        contract_code = str(row.get("contract_code"))
+        timeframes = _validated_timeframes(
+            row.get("night_timeframes"),
+            series_code=series_code,
+            contract_code=contract_code,
+            session_date=session_date,
+            close=value,
+        )
         items.append(
             NightFuturesItem(
                 series_code=series_code,
@@ -301,7 +325,7 @@ def summarize_night_futures(
                 change_value=_number(row.get("change_value")),
                 change_pct=_number(row.get("change_pct")),
                 session_date=session_date,
-                contract_code=str(row.get("contract_code")),
+                contract_code=contract_code,
                 exchange=str(row.get("exchange")),
                 session_type="NIGHT",
                 reference_session="DAY",
@@ -311,18 +335,11 @@ def summarize_night_futures(
                 as_of=str(row.get("retrieved_at") or row.get("session_close") or ""),
                 source=str(row.get("source_url") or row.get("provider") or ""),
                 night_source_record_id=str(row.get("night_source_record_id")),
-                reference_source_record_id=str(
-                    row.get("reference_source_record_id")
-                ),
-                night_source_payload_sha256=str(
-                    row.get("night_source_payload_sha256")
-                ),
-                reference_source_payload_sha256=str(
-                    row.get("reference_source_payload_sha256")
-                ),
+                reference_source_record_id=str(row.get("reference_source_record_id")),
+                night_source_payload_sha256=str(row.get("night_source_payload_sha256")),
+                reference_source_payload_sha256=str(row.get("reference_source_payload_sha256")),
                 reference_date_contract=str(
-                    row.get("reference_date_contract")
-                    or "legacy-night-reference-date-contract"
+                    row.get("reference_date_contract") or "legacy-night-reference-date-contract"
                 ),
                 expected_reference_date=(
                     _date_value(
@@ -340,15 +357,17 @@ def summarize_night_futures(
                     or session_date
                 ),
                 reference_date_match=(
-                    bool(row.get("reference_date_match"))
-                    if "reference_date_match" in row
-                    else True
+                    bool(row.get("reference_date_match")) if "reference_date_match" in row else True
                 ),
                 finality_valid=(
-                    bool(row.get("finality_valid"))
-                    if "finality_valid" in row
-                    else True
+                    bool(row.get("finality_valid")) if "finality_valid" in row else True
                 ),
+                contract_maturity=(
+                    str(row.get("contract_maturity") or row.get("expiry"))
+                    if row.get("contract_maturity") or row.get("expiry")
+                    else None
+                ),
+                timeframes=timeframes,
             )
         )
 
@@ -367,11 +386,44 @@ def summarize_night_futures(
 
 def night_futures_context_row(item: NightFuturesItem) -> dict[str, object]:
     return {
-        **item.__dict__,
+        **{key: value for key, value in item.__dict__.items() if key != "timeframes"},
+        "night_timeframes": (
+            item.timeframes.model_dump(mode="json") if item.timeframes is not None else None
+        ),
         "fact_id": NIGHT_FUTURES_FACT_IDS[item.series_code],
         "field_path": "fields.change_pct",
         "state": "CURRENT_DIRECTIONAL",
     }
+
+
+def night_futures_timeframe_facts(
+    item: NightFuturesItem,
+) -> list[dict[str, object]]:
+    if item.timeframes is None:
+        return []
+    result: list[dict[str, object]] = []
+    for frame in (
+        item.timeframes.daily,
+        item.timeframes.weekly,
+        item.timeframes.monthly,
+    ):
+        fields = frame.model_dump(mode="json")
+        fields.update(
+            {
+                "label": NIGHT_FUTURES_LABELS[item.series_code],
+                "state": "CURRENT_DIRECTIONAL",
+            }
+        )
+        result.append(
+            {
+                "fact_id": frame.fact_id,
+                "fact_type": "night_futures_timeframe",
+                "as_of_date": frame.reference_date.isoformat(),
+                "source": "official_krx_same_contract_history",
+                "fields": fields,
+            }
+        )
+    return result
 
 
 def _is_night_futures_summary_item(value: object) -> bool:
@@ -423,13 +475,36 @@ def render_night_futures(summary: NightFuturesSummary) -> str:
         return ""
     source_date = summary.source_date
     reference_date = summary.reference_date
-    date_label = (
-        f" · {source_date:%m/%d} 새벽 종료 · {reference_date:%m/%d} 주간장 대비"
-        if source_date is not None and reference_date is not None
-        else ""
-    )
+    detailed = bool(summary.items) and all(item.timeframes for item in summary.items)
+    if detailed:
+        date_label = f" · 기준 {source_date:%m/%d}" if source_date is not None else ""
+    else:
+        date_label = (
+            f" · {source_date:%m/%d} 새벽 종료 · {reference_date:%m/%d} 주간장 대비"
+            if source_date is not None and reference_date is not None
+            else ""
+        )
     lines: list[str] = []
     for item in summary.items:
+        if item.timeframes is not None:
+            maturity = item.timeframes.contract_maturity.replace("-", "")
+            lines.append(f"• {item.label} ({maturity})")
+            for frame, label in (
+                (item.timeframes.daily, "일봉"),
+                (item.timeframes.weekly, "주봉"),
+                (item.timeframes.monthly, "월봉"),
+            ):
+                status = {
+                    "IN_PROGRESS": "진행중",
+                    "SAME_CONTRACT_PARTIAL_PERIOD": "동일만기 일부",
+                }.get(frame.status)
+                heading = f"{label}({status})" if status else label
+                return_text = _timeframe_return_text(frame)
+                lines.append(
+                    f"  - {heading}: O {frame.open:,.2f} · H {frame.high:,.2f} · "
+                    f"L {frame.low:,.2f} · C {frame.close:,.2f}{return_text}"
+                )
+            continue
         line = f"• {item.label} {item.value:,.2f}"
         if item.change_value is not None:
             line += f" · {item.change_value:+,.2f}pt"
@@ -437,6 +512,17 @@ def render_night_futures(summary: NightFuturesSummary) -> str:
             line += f" ({item.change_pct:+.2f}%)"
         lines.append(line)
     return f"🌙 한국 야간선물{date_label}\n" + "\n".join(lines)
+
+
+def _timeframe_return_text(frame: KrxNightAggregateBar) -> str:
+    if frame.return_pct is None:
+        return " · 수익률 산출 불가"
+    label = {
+        "DAILY": "주간장 대비",
+        "WEEKLY": "주간",
+        "MONTHLY": "월간",
+    }[frame.timeframe]
+    return f" · {label} {frame.return_pct:+.2f}%"
 
 
 def is_night_futures_warning(value: object) -> bool:

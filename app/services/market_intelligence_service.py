@@ -15,10 +15,8 @@ USABLE_QUALITY = {"fresh", "revised"}
 def market_cross_section_sector_fact_id(sector: MarketSectorFact) -> str:
     scope = sector.market_scope or "UNSCOPED"
     occurrence = sector.sector_code or sector.sector
-    return (
-        f"market:cross-section:sector:{sector.taxonomy}:"
-        f"{scope}:{occurrence}"
-    )
+    return f"market:cross-section:sector:{sector.taxonomy}:{scope}:{occurrence}"
+
 
 _SERIES = {
     "SPY": ("indices", "market_index", "S&P500"),
@@ -134,9 +132,7 @@ def _market_summary_view(
         previous_briefing.market_summary if previous_briefing is not None else None,
         as_of=_briefing_as_of(briefing),
         previous_cutoff=(
-            _briefing_as_of(previous_briefing)
-            if previous_briefing is not None
-            else None
+            _briefing_as_of(previous_briefing) if previous_briefing is not None else None
         ),
     )
 
@@ -183,15 +179,9 @@ def _observation_fact(
         fields.update(
             {
                 "temporal_contract": "macro-digest-temporal-eligibility-v1",
-                "temporal_role": str(
-                    temporal.get("temporal_role") or "REFERENCE_LAGGING"
-                ),
-                "today_signal_eligible": bool(
-                    temporal.get("today_signal_eligible", False)
-                ),
-                "important_change_eligible": bool(
-                    temporal.get("important_change_eligible", False)
-                ),
+                "temporal_role": str(temporal.get("temporal_role") or "REFERENCE_LAGGING"),
+                "today_signal_eligible": bool(temporal.get("today_signal_eligible", False)),
+                "important_change_eligible": bool(temporal.get("important_change_eligible", False)),
                 "temporal_reason": str(temporal.get("reason") or ""),
                 "structured_state": str(
                     temporal.get("structured_state")
@@ -234,6 +224,14 @@ def _observation_fact(
             fields["level_pct"] = value
         if change_value is not None:
             fields["change_bp"] = change_value * 100.0
+        if fact_type == "market_real_yield":
+            previous_value = _number(item, "previous_value")
+            if previous_value is not None:
+                fields["previous_level_pct"] = previous_value
+            if change_value is not None:
+                fields["change_pp"] = change_value
+            if isinstance(temporal, dict) and temporal.get("prior_observation_date"):
+                fields["previous_observation_date"] = str(temporal["prior_observation_date"])
     elif fact_type == "market_fx":
         if value is not None:
             fields["value"] = value
@@ -339,8 +337,7 @@ def _coverage(
             code
             for code in expected
             if code in observations
-            and str(observations[code].get("quality_status") or "fresh")
-            in USABLE_QUALITY
+            and str(observations[code].get("quality_status") or "fresh") in USABLE_QUALITY
         }
         status = "available" if present == expected else "partial" if present else "unavailable"
         coverage[category] = {
@@ -378,13 +375,10 @@ def _coverage(
     stale = sorted(
         code
         for code, item in observations.items()
-        if code in _SERIES
-        and str(item.get("quality_status") or "fresh") not in USABLE_QUALITY
+        if code in _SERIES and str(item.get("quality_status") or "fresh") not in USABLE_QUALITY
     )
     if stale:
-        unknowns.append(
-            "최신성이 부족해 핵심 판단에서 제외한 시장 지표: " + ", ".join(stale)
-        )
+        unknowns.append("최신성이 부족해 핵심 판단에서 제외한 시장 지표: " + ", ".join(stale))
     return coverage, unknowns
 
 
@@ -484,9 +478,7 @@ def _portfolio_transmission(
                     "horizon": str(exposure.get("horizon") or ""),
                     "materiality": str(item.get("materiality") or "unknown"),
                     "earnings_link_validated": bool(item.get("earnings_link_validated")),
-                    "valuation_context_eligible": bool(
-                        item.get("eligible_for_valuation_context")
-                    ),
+                    "valuation_context_eligible": bool(item.get("eligible_for_valuation_context")),
                     "not_fundamental_confirmation": True,
                 }
             )
@@ -570,8 +562,7 @@ def build_market_intelligence(
     facts_by_series = {
         code: _observation_fact(code, item, run_date)
         for code, item in observations.items()
-        if code in _SERIES
-        and str(item.get("quality_status") or "fresh") in USABLE_QUALITY
+        if code in _SERIES and str(item.get("quality_status") or "fresh") in USABLE_QUALITY
     }
     facts = list(facts_by_series.values())
     for subject, benchmark in (
@@ -647,9 +638,7 @@ def build_market_intelligence(
                 cross_section_facts.extend(
                     [
                         {
-                            "fact_id": (
-                                f"market:breadth:{market}:{scoped.scope}:counts"
-                            ),
+                            "fact_id": (f"market:breadth:{market}:{scoped.scope}:counts"),
                             "fact_type": "market_breadth_counts",
                             "as_of_date": run_date.isoformat(),
                             "source": cross_section.quality.provider,
@@ -662,9 +651,7 @@ def build_market_intelligence(
                             },
                         },
                         {
-                            "fact_id": (
-                                f"market:breadth:{market}:{scoped.scope}:returns"
-                            ),
+                            "fact_id": (f"market:breadth:{market}:{scoped.scope}:returns"),
                             "fact_type": "market_breadth_returns",
                             "as_of_date": run_date.isoformat(),
                             "source": cross_section.quality.provider,
@@ -676,18 +663,10 @@ def build_market_intelligence(
                                     else None
                                 ),
                                 "ad_ratio": scoped_breadth.ad_ratio,
-                                "median_return_pct": (
-                                    scoped_breadth.median_return_pct
-                                ),
-                                "equal_weight_return_pct": (
-                                    scoped_breadth.equal_weight_return_pct
-                                ),
-                                "positive_return_pct": (
-                                    scoped_breadth.positive_return_pct
-                                ),
-                                "negative_return_pct": (
-                                    scoped_breadth.negative_return_pct
-                                ),
+                                "median_return_pct": (scoped_breadth.median_return_pct),
+                                "equal_weight_return_pct": (scoped_breadth.equal_weight_return_pct),
+                                "positive_return_pct": (scoped_breadth.positive_return_pct),
+                                "negative_return_pct": (scoped_breadth.negative_return_pct),
                             },
                         },
                     ]
@@ -743,9 +722,7 @@ def build_market_intelligence(
                     continue
                 cross_section_facts.append(
                     {
-                        "fact_id": (
-                            f"market:flow-concentration:{market_scope}:{actor}"
-                        ),
+                        "fact_id": (f"market:flow-concentration:{market_scope}:{actor}"),
                         "fact_type": "market_flow_concentration",
                         "as_of_date": run_date.isoformat(),
                         "source": cross_section.quality.provider,
@@ -762,9 +739,7 @@ def build_market_intelligence(
                     "fields": {
                         **sector.model_dump(mode="json", exclude={"advance_ratio"}),
                         "advance_ratio_pct": (
-                            sector.advance_ratio * 100
-                            if sector.advance_ratio is not None
-                            else None
+                            sector.advance_ratio * 100 if sector.advance_ratio is not None else None
                         ),
                     },
                 }
@@ -803,18 +778,14 @@ def build_market_intelligence(
                 "status": "available",
                 "provider": cross_section.quality.provider,
             }
-            unknowns = [
-                item for item in unknowns if not item.startswith("시장 전체 투자주체")
-            ]
+            unknowns = [item for item in unknowns if not item.startswith("시장 전체 투자주체")]
         if cross_section.indices and market.lower() == "kr":
             coverage["local_market_indices"] = {
                 "status": "available",
                 "provider": cross_section.quality.provider,
                 "available_series": [item.symbol for item in cross_section.indices],
             }
-    groups, transmissions, stock_transmissions = _portfolio_transmission(
-        stocks, impacts, facts
-    )
+    groups, transmissions, stock_transmissions = _portfolio_transmission(stocks, impacts, facts)
     current_fact_ids = sorted(
         str(item["fact_id"])
         for item in facts
@@ -835,9 +806,7 @@ def build_market_intelligence(
         in {"REFERENCE_LAGGING", "STALE_FOR_DAILY_SIGNAL", "UNAVAILABLE"}
     )
     return {
-        "macro_temporal_eligibility": market_summary.get(
-            "temporal_eligibility", {}
-        ),
+        "macro_temporal_eligibility": market_summary.get("temporal_eligibility", {}),
         "fact_catalog": facts,
         "key_change_fact_ids": _selected_change_fact_ids(facts),
         "current_observation_fact_ids": current_fact_ids,

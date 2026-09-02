@@ -137,12 +137,11 @@ def test_current_close_renders_material_iwm_soxx_without_overloading_roles() -> 
     rendered = render_us_full_market_message(context)
 
     assert rendered.status == "PASS"
-    assert rendered.text.count(
-        "소형주 IWM도 SPY보다 약해 위험선호는 제한적이었습니다."
-    ) == 1
-    assert rendered.text.count(
-        "반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다."
-    ) == 1
+    assert rendered.text.count("소형주 IWM도 SPY보다 약해 위험선호는 제한적이었습니다.") == 1
+    assert (
+        rendered.text.count("반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다.")
+        == 1
+    )
     assert "동일가중 S&P500은 하락해" in rendered.text
     assert "breadth" not in rendered.text
     assert rendered.text.count("• 업종 강세:") == 1
@@ -179,6 +178,168 @@ def test_full_message_renders_verified_night_returns_without_levels() -> None:
     )
 
 
+def _timeframe(
+    series: str,
+    contract: str,
+    timeframe: str,
+    *,
+    open_: float,
+    high: float,
+    low: float,
+    close: float,
+    return_pct: float,
+) -> dict[str, object]:
+    suffix = timeframe.lower()
+    status = "FINAL" if timeframe == "DAILY" else "IN_PROGRESS"
+    return {
+        "contract": "krx-night-same-contract-dwm-v1",
+        "fact_id": f"market:night_futures:{suffix}:{series}:{contract}:2026-09-01",
+        "instrument_root": "KOSPI200" if "KOSPI" in series else "KOSDAQ150",
+        "series_code": series,
+        "contract_code": contract,
+        "contract_maturity": "2026-09",
+        "timeframe": timeframe,
+        "bar_start_date": "2026-09-01",
+        "reference_date": "2026-09-01",
+        "open": open_,
+        "high": high,
+        "low": low,
+        "close": close,
+        "status": status,
+        "quality": "VALID",
+        "expected_dates": ["2026-09-01"],
+        "included_dates": ["2026-09-01"],
+        "missing_dates": [],
+        "future_expected_dates": [] if status == "FINAL" else ["2026-09-02"],
+        "aggregation_start_date": "2026-09-01",
+        "change_value": 1.0,
+        "return_pct": return_pct,
+        "return_baseline_date": "2026-08-31",
+        "return_baseline_close": close - 1.0,
+        "return_baseline_semantic": "verified_same_contract_baseline",
+        "source_fact_ids": [f"source:{series}:{timeframe}"],
+        "source_raw_sha256": ["a" * 64],
+        "source_fingerprints": ["b" * 64],
+    }
+
+
+def _dwm_row(
+    series: str,
+    contract: str,
+    values: tuple[float, float, float, float],
+) -> dict[str, object]:
+    open_, high, low, close = values
+    frames = {
+        "contract": "krx-night-same-contract-dwm-v1",
+        "instrument_root": "KOSPI200" if "KOSPI" in series else "KOSDAQ150",
+        "series_code": series,
+        "contract_code": contract,
+        "contract_maturity": "2026-09",
+        "reference_date": "2026-09-01",
+        "daily": _timeframe(
+            series,
+            contract,
+            "DAILY",
+            open_=open_,
+            high=high,
+            low=low,
+            close=close,
+            return_pct=-0.31,
+        ),
+        "weekly": _timeframe(
+            series,
+            contract,
+            "WEEKLY",
+            open_=open_ + 1,
+            high=high + 10,
+            low=low,
+            close=close,
+            return_pct=-1.60,
+        ),
+        "monthly": _timeframe(
+            series,
+            contract,
+            "MONTHLY",
+            open_=open_,
+            high=high,
+            low=low,
+            close=close,
+            return_pct=0.03,
+        ),
+    }
+    return {
+        "fact_id": (
+            "market:night_futures:1"
+            if series == "KRX_KOSPI200_NIGHT_FUT"
+            else "market:night_futures:2"
+        ),
+        "field_path": "fields.change_pct",
+        "state": "CURRENT_DIRECTIONAL",
+        "series_code": series,
+        "change_pct": -0.31,
+        "contract_code": contract,
+        "session_date": "2026-09-01",
+        "night_timeframes": frames,
+    }
+
+
+def test_full_message_renders_two_same_contract_daily_weekly_monthly_blocks() -> None:
+    context = _context()
+    context["night_futures"] = [
+        _dwm_row(
+            "KRX_KOSPI200_NIGHT_FUT",
+            "A0169000",
+            (1067.0, 1072.45, 1053.8, 1064.5),
+        ),
+        _dwm_row(
+            "KRX_KOSDAQ150_NIGHT_FUT",
+            "A0669000",
+            (1440.0, 1447.0, 1415.5, 1432.8),
+        ),
+    ]
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.text.count("- 일봉:") == 2
+    assert rendered.text.count("- 주봉(진행중):") == 2
+    assert rendered.text.count("- 월봉(진행중):") == 2
+    assert "KOSPI200 최근월물 (202609)" in rendered.text
+    assert "O 1,067.00 · H 1,072.45 · L 1,053.80 · C 1,064.50" in rendered.text
+    assert len(rendered.night_fact_ids) == 6
+
+
+def test_real_yield_level_previous_observation_and_delta_are_date_qualified() -> None:
+    context = _context()
+    context["fact_catalog"].append(
+        {
+            "fact_id": "market:real_yield:DFII10",
+            "fact_type": "market_real_yield",
+            "as_of_date": "2026-08-31",
+            "fields": {
+                "series_code": "DFII10",
+                "label": "미국 10년물 실질금리",
+                "level_pct": 2.44,
+                "previous_level_pct": 2.42,
+                "previous_observation_date": "2026-08-28",
+                "change_pp": 0.02,
+                "change_bp": 2.0,
+                "temporal_role": "CURRENT_OBSERVATION",
+                "today_signal_eligible": True,
+                "structured_state": "CURRENT_DIRECTIONAL",
+            },
+        }
+    )
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert (
+        "미 10년 실질금리 2.44% (08/31 관측) · 직전 2.42% (08/28) 대비 +0.02%p (+2bp)"
+    ) in rendered.text
+    assert "오늘 +2bp" not in rendered.text
+
+
 def test_full_message_suppresses_noncanonical_night_futures_sidecar() -> None:
     context = _context()
     context["night_futures"] = [
@@ -199,9 +360,7 @@ def test_full_message_suppresses_noncanonical_night_futures_sidecar() -> None:
 def test_incomplete_index_tuple_fails_closed_for_new_layout() -> None:
     context = _context()
     context["fact_catalog"] = [
-        row
-        for row in context["fact_catalog"]
-        if row["fields"]["series_code"] != "RSP"
+        row for row in context["fact_catalog"] if row["fields"]["series_code"] != "RSP"
     ]
     context["us_market_digest_plan"] = build_us_market_digest_plan(context).to_dict()
 
@@ -362,8 +521,7 @@ def test_prior_session_neutral_macro_is_date_qualified() -> None:
     rendered = render_us_full_market_message(context)
 
     assert (
-        "공식 관측(2026-08-26) 기준, 미국 10년물 금리는 전 세션과 큰 변화가 "
-        "없었습니다."
+        "공식 관측(2026-08-26) 기준, 미국 10년물 금리는 전 세션과 큰 변화가 없었습니다."
     ) in rendered.text
 
 

@@ -294,37 +294,43 @@ NUMERIC_SEMANTICS = {
         "signed_shares",
     ),
     "foreign_net_buy_qty_5d": _spec(
-        "foreign_net_buy_qty_5d", ("shares",),
+        "foreign_net_buy_qty_5d",
+        ("shares",),
         ("외국인 5일 순매수", "외국인 5일 순매도"),
         (r"외국인.*5일.*(?:순매수|순매도)", r"5일.*외국인.*(?:순매수|순매도)"),
         "signed_shares",
     ),
     "institution_net_buy_qty_5d": _spec(
-        "institution_net_buy_qty_5d", ("shares",),
+        "institution_net_buy_qty_5d",
+        ("shares",),
         ("기관 5일 순매수", "기관 5일 순매도"),
         (r"기관.*5일.*(?:순매수|순매도)", r"5일.*기관.*(?:순매수|순매도)"),
         "signed_shares",
     ),
     "individual_net_buy_qty_5d": _spec(
-        "individual_net_buy_qty_5d", ("shares",),
+        "individual_net_buy_qty_5d",
+        ("shares",),
         ("개인 5일 순매수", "개인 5일 순매도"),
         (r"개인.*5일.*(?:순매수|순매도)", r"5일.*개인.*(?:순매수|순매도)"),
         "signed_shares",
     ),
     "foreign_net_buy_qty_20d": _spec(
-        "foreign_net_buy_qty_20d", ("shares",),
+        "foreign_net_buy_qty_20d",
+        ("shares",),
         ("외국인 20일 순매수", "외국인 20일 순매도"),
         (r"외국인.*20일.*(?:순매수|순매도)", r"20일.*외국인.*(?:순매수|순매도)"),
         "signed_shares",
     ),
     "institution_net_buy_qty_20d": _spec(
-        "institution_net_buy_qty_20d", ("shares",),
+        "institution_net_buy_qty_20d",
+        ("shares",),
         ("기관 20일 순매수", "기관 20일 순매도"),
         (r"기관.*20일.*(?:순매수|순매도)", r"20일.*기관.*(?:순매수|순매도)"),
         "signed_shares",
     ),
     "individual_net_buy_qty_20d": _spec(
-        "individual_net_buy_qty_20d", ("shares",),
+        "individual_net_buy_qty_20d",
+        ("shares",),
         ("개인 20일 순매수", "개인 20일 순매도"),
         (r"개인.*20일.*(?:순매수|순매도)", r"20일.*개인.*(?:순매수|순매도)"),
         "signed_shares",
@@ -348,6 +354,30 @@ NUMERIC_SEMANTICS = {
         ("points",),
         ("야간선물 종가", "최근월물", "futures close"),
         (r"(?:야간선물\s*종가|최근월물)", r"futures close"),
+        "points",
+        scope="market",
+    ),
+    "futures_open": _spec(
+        "futures_open",
+        ("points",),
+        ("야간선물 시가", "futures open"),
+        (r"야간선물.*시가", r"futures open"),
+        "points",
+        scope="market",
+    ),
+    "futures_high": _spec(
+        "futures_high",
+        ("points",),
+        ("야간선물 고가", "futures high"),
+        (r"야간선물.*고가", r"futures high"),
+        "points",
+        scope="market",
+    ),
+    "futures_low": _spec(
+        "futures_low",
+        ("points",),
+        ("야간선물 저가", "futures low"),
+        (r"야간선물.*저가", r"futures low"),
         "points",
         scope="market",
     ),
@@ -459,103 +489,195 @@ NUMERIC_SEMANTICS = {
         "style_relative_return_pct",
         ("pct",),
         ("S&P500 대비 동일가중 상대수익률", "RSP 상대수익률"),
-        (
-            r"(?:s&p\s*500.*대비.*동일가중|rsp.*상대수익률|동일가중.*(?:웃돌|밑돌))",
-        ),
+        (r"(?:s&p\s*500.*대비.*동일가중|rsp.*상대수익률|동일가중.*(?:웃돌|밑돌))",),
         "signed_percentage",
         scope="market",
     ),
     "market_index_close": _spec(
-        "market_index_close", ("index",), ("시장 지수 종가", "index close"),
-        (r"(?:시장|지수).*종가", r"index close"), "index", scope="market",
+        "market_index_close",
+        ("index",),
+        ("시장 지수 종가", "index close"),
+        (r"(?:시장|지수).*종가", r"index close"),
+        "index",
+        scope="market",
     ),
     "market_eligible_count": _spec(
-        "market_eligible_count", ("count",), ("적격 종목 수",),
-        (r"적격.*종목.*수", r"eligible.*count"), "count", scope="market",
+        "market_eligible_count",
+        ("count",),
+        ("적격 종목 수",),
+        (r"적격.*종목.*수", r"eligible.*count"),
+        "count",
+        scope="market",
     ),
     "market_advance_count": _spec(
-        "market_advance_count", ("count",), ("상승 종목 수",),
-        (r"상승.*종목.*수", r"advance.*count"), "count", scope="market",
+        "market_advance_count",
+        ("count",),
+        ("상승 종목 수",),
+        (r"상승.*종목.*수", r"advance.*count"),
+        "count",
+        scope="market",
     ),
     "market_decline_count": _spec(
-        "market_decline_count", ("count",), ("하락 종목 수",),
-        (r"하락.*종목.*수", r"decline.*count"), "count", scope="market",
+        "market_decline_count",
+        ("count",),
+        ("하락 종목 수",),
+        (r"하락.*종목.*수", r"decline.*count"),
+        "count",
+        scope="market",
     ),
     "market_unchanged_count": _spec(
-        "market_unchanged_count", ("count",), ("보합 종목 수",),
-        (r"보합.*종목.*수", r"unchanged.*count"), "count", scope="market",
+        "market_unchanged_count",
+        ("count",),
+        ("보합 종목 수",),
+        (r"보합.*종목.*수", r"unchanged.*count"),
+        "count",
+        scope="market",
     ),
     "sector_listed_issue_count": _spec(
-        "sector_listed_issue_count", ("count",), ("업종 상장 종목 수",),
-        (r"(?:업종|섹터).*상장.*종목.*수", r"sector.*listed.*count"), "count", scope="market",
+        "sector_listed_issue_count",
+        ("count",),
+        ("업종 상장 종목 수",),
+        (r"(?:업종|섹터).*상장.*종목.*수", r"sector.*listed.*count"),
+        "count",
+        scope="market",
     ),
     "sector_advance_count": _spec(
-        "sector_advance_count", ("count",), ("업종 상승 종목 수",),
-        (r"(?:업종|섹터).*상승.*종목.*수", r"sector.*advance.*count"), "count", scope="market",
+        "sector_advance_count",
+        ("count",),
+        ("업종 상승 종목 수",),
+        (r"(?:업종|섹터).*상승.*종목.*수", r"sector.*advance.*count"),
+        "count",
+        scope="market",
     ),
     "sector_decline_count": _spec(
-        "sector_decline_count", ("count",), ("업종 하락 종목 수",),
-        (r"(?:업종|섹터).*하락.*종목.*수", r"sector.*decline.*count"), "count", scope="market",
+        "sector_decline_count",
+        ("count",),
+        ("업종 하락 종목 수",),
+        (r"(?:업종|섹터).*하락.*종목.*수", r"sector.*decline.*count"),
+        "count",
+        scope="market",
     ),
     "sector_unchanged_count": _spec(
-        "sector_unchanged_count", ("count",), ("업종 보합 종목 수",),
-        (r"(?:업종|섹터).*보합.*종목.*수", r"sector.*unchanged.*count"), "count", scope="market",
+        "sector_unchanged_count",
+        ("count",),
+        ("업종 보합 종목 수",),
+        (r"(?:업종|섹터).*보합.*종목.*수", r"sector.*unchanged.*count"),
+        "count",
+        scope="market",
     ),
     "sector_limit_up_count_audit": _spec(
-        "sector_limit_up_count_audit", ("count",), (), (), "count",
-        prose_allowed=False, scope="market",
+        "sector_limit_up_count_audit",
+        ("count",),
+        (),
+        (),
+        "count",
+        prose_allowed=False,
+        scope="market",
     ),
     "sector_limit_down_count_audit": _spec(
-        "sector_limit_down_count_audit", ("count",), (), (), "count",
-        prose_allowed=False, scope="market",
+        "sector_limit_down_count_audit",
+        ("count",),
+        (),
+        (),
+        "count",
+        prose_allowed=False,
+        scope="market",
     ),
     "market_advance_ratio": _spec(
-        "market_advance_ratio", ("pct",), ("상승 종목 비율",),
-        (r"상승.*종목.*비율", r"advance.*ratio"), "percentage", scope="market",
+        "market_advance_ratio",
+        ("pct",),
+        ("상승 종목 비율",),
+        (r"상승.*종목.*비율", r"advance.*ratio"),
+        "percentage",
+        scope="market",
     ),
     "market_positive_return_pct": _spec(
-        "market_positive_return_pct", ("pct",), ("양의 수익률 종목 비율",),
-        (r"양의.*수익률.*종목.*비율", r"positive.*return.*pct"), "percentage", scope="market",
+        "market_positive_return_pct",
+        ("pct",),
+        ("양의 수익률 종목 비율",),
+        (r"양의.*수익률.*종목.*비율", r"positive.*return.*pct"),
+        "percentage",
+        scope="market",
     ),
     "market_negative_return_pct": _spec(
-        "market_negative_return_pct", ("pct",), ("음의 수익률 종목 비율",),
-        (r"음의.*수익률.*종목.*비율", r"negative.*return.*pct"), "percentage", scope="market",
+        "market_negative_return_pct",
+        ("pct",),
+        ("음의 수익률 종목 비율",),
+        (r"음의.*수익률.*종목.*비율", r"negative.*return.*pct"),
+        "percentage",
+        scope="market",
     ),
     "market_ad_ratio": _spec(
-        "market_ad_ratio", ("x",), ("상승/하락 종목 비율", "A/D ratio"),
-        (r"(?:상승/하락|a/d).*비율", r"a/d ratio"), "multiple", scope="market",
+        "market_ad_ratio",
+        ("x",),
+        ("상승/하락 종목 비율", "A/D ratio"),
+        (r"(?:상승/하락|a/d).*비율", r"a/d ratio"),
+        "multiple",
+        scope="market",
     ),
     "market_median_return_pct": _spec(
-        "market_median_return_pct", ("pct",), ("종목 수익률 중앙값",),
-        (r"종목.*수익률.*중앙값", r"median.*return"), "signed_percentage", scope="market",
+        "market_median_return_pct",
+        ("pct",),
+        ("종목 수익률 중앙값",),
+        (r"종목.*수익률.*중앙값", r"median.*return"),
+        "signed_percentage",
+        scope="market",
     ),
     "market_equal_weight_return_pct": _spec(
-        "market_equal_weight_return_pct", ("pct",), ("동일가중 수익률",),
-        (r"동일가중.*수익률", r"equal.weight.*return"), "signed_percentage", scope="market",
+        "market_equal_weight_return_pct",
+        ("pct",),
+        ("동일가중 수익률",),
+        (r"동일가중.*수익률", r"equal.weight.*return"),
+        "signed_percentage",
+        scope="market",
     ),
     "market_concentration_gap_pct": _spec(
-        "market_concentration_gap_pct", ("pct",), ("집중도 격차",),
-        (r"집중도.*격차", r"concentration.*gap"), "signed_percentage", scope="market",
+        "market_concentration_gap_pct",
+        ("pct",),
+        ("집중도 격차",),
+        (r"집중도.*격차", r"concentration.*gap"),
+        "signed_percentage",
+        scope="market",
     ),
     "market_total_volume": _spec(
-        "market_total_volume", ("shares",), ("시장 총거래량",),
-        (r"시장.*총거래량", r"market.*total volume"), "shares", scope="market",
+        "market_total_volume",
+        ("shares",),
+        ("시장 총거래량",),
+        (r"시장.*총거래량", r"market.*total volume"),
+        "shares",
+        scope="market",
     ),
     "market_total_trading_value": _spec(
-        "market_total_trading_value", ("KRW", "USD"), ("시장 총거래대금",),
-        (r"시장.*총거래대금", r"market.*trading value"), "currency_amount", scope="market",
+        "market_total_trading_value",
+        ("KRW", "USD"),
+        ("시장 총거래대금",),
+        (r"시장.*총거래대금", r"market.*trading value"),
+        "currency_amount",
+        scope="market",
     ),
     "market_foreign_net_buy_amount": _spec(
-        "market_foreign_net_buy_amount", ("KRW", "USD"), ("시장 외국인 순매수",),
-        (r"시장.*외국인.*순매수",), "currency_amount", scope="market",
+        "market_foreign_net_buy_amount",
+        ("KRW", "USD"),
+        ("시장 외국인 순매수",),
+        (r"시장.*외국인.*순매수",),
+        "currency_amount",
+        scope="market",
     ),
     "market_institution_net_buy_amount": _spec(
-        "market_institution_net_buy_amount", ("KRW", "USD"), ("시장 기관 순매수",),
-        (r"시장.*기관.*순매수",), "currency_amount", scope="market",
+        "market_institution_net_buy_amount",
+        ("KRW", "USD"),
+        ("시장 기관 순매수",),
+        (r"시장.*기관.*순매수",),
+        "currency_amount",
+        scope="market",
     ),
     "market_retail_net_buy_amount": _spec(
-        "market_retail_net_buy_amount", ("KRW", "USD"), ("시장 개인 순매수",),
-        (r"시장.*개인.*순매수",), "currency_amount", scope="market",
+        "market_retail_net_buy_amount",
+        ("KRW", "USD"),
+        ("시장 개인 순매수",),
+        (r"시장.*개인.*순매수",),
+        "currency_amount",
+        scope="market",
     ),
     "nominal_yield_level": _spec(
         "nominal_yield_level",
@@ -590,6 +712,25 @@ NUMERIC_SEMANTICS = {
             r"|real yield.*change",
         ),
         "signed_basis_points",
+        scope="both",
+    ),
+    "real_yield_change_pp": _spec(
+        "real_yield_change_pp",
+        ("pct_point",),
+        ("미국 10년물 실질금리 변동폭", "US 10-year real-yield delta"),
+        (
+            r"(?:미국|us).*(?:10년물|장기).*실질금리.*(?:변동폭|%p)"
+            r"|real yield.*delta",
+        ),
+        "signed_percentage_points",
+        scope="both",
+    ),
+    "real_yield_previous_level": _spec(
+        "real_yield_previous_level",
+        ("pct",),
+        ("미국 10년물 직전 실질금리", "previous US 10-year real yield"),
+        (r"(?:미국|us).*직전.*실질금리|previous.*real yield",),
+        "percentage",
         scope="both",
     ),
     "breakeven_inflation_level": _spec(
@@ -673,171 +814,285 @@ NUMERIC_SEMANTICS = {
         scope="both",
     ),
     "chart_open_price": _spec(
-        "chart_open_price", ("KRW", "USD"), ("시가", "open"),
+        "chart_open_price",
+        ("KRW", "USD"),
+        ("시가", "open"),
         (r"(?:일봉|주봉|월봉)?\s*시가", r"(?:daily|weekly|monthly)?\s*open"),
         "currency",
     ),
     "chart_high_price": _spec(
-        "chart_high_price", ("KRW", "USD"), ("고가", "high"),
+        "chart_high_price",
+        ("KRW", "USD"),
+        ("고가", "high"),
         (r"(?:일봉|주봉|월봉)?\s*고가", r"(?:daily|weekly|monthly)?\s*high"),
         "currency",
     ),
     "chart_low_price": _spec(
-        "chart_low_price", ("KRW", "USD"), ("저가", "low"),
+        "chart_low_price",
+        ("KRW", "USD"),
+        ("저가", "low"),
         (r"(?:일봉|주봉|월봉)?\s*저가", r"(?:daily|weekly|monthly)?\s*low"),
         "currency",
     ),
     "chart_close_price": _spec(
-        "chart_close_price", ("KRW", "USD"), ("종가", "close"),
+        "chart_close_price",
+        ("KRW", "USD"),
+        ("종가", "close"),
         (r"(?:일봉|주봉|월봉)?\s*종가", r"(?:daily|weekly|monthly)?\s*close"),
         "currency",
     ),
     "chart_volume": _spec(
-        "chart_volume", ("shares",), ("거래량", "volume"),
-        (r"거래량", r"\bvolume\b"), "shares",
+        "chart_volume",
+        ("shares",),
+        ("거래량", "volume"),
+        (r"거래량", r"\bvolume\b"),
+        "shares",
     ),
     "chart_trading_value": _spec(
-        "chart_trading_value", ("provider_value",), (), (), "decimal",
+        "chart_trading_value",
+        ("provider_value",),
+        (),
+        (),
+        "decimal",
         prose_allowed=False,
     ),
     "candle_body_pct": _spec(
-        "candle_body_pct", ("pct",), ("캔들 몸통", "candle body"),
-        (r"캔들.*몸통", r"candle body"), "percentage",
+        "candle_body_pct",
+        ("pct",),
+        ("캔들 몸통", "candle body"),
+        (r"캔들.*몸통", r"candle body"),
+        "percentage",
     ),
     "candle_range_pct": _spec(
-        "candle_range_pct", ("pct",), ("캔들 변동폭", "candle range"),
-        (r"캔들.*(?:변동폭|범위)", r"candle range"), "percentage",
+        "candle_range_pct",
+        ("pct",),
+        ("캔들 변동폭", "candle range"),
+        (r"캔들.*(?:변동폭|범위)", r"candle range"),
+        "percentage",
     ),
     "candle_close_location_pct": _spec(
-        "candle_close_location_pct", ("pct",), ("종가 위치", "close location"),
-        (r"종가.*위치", r"close location"), "percentage",
+        "candle_close_location_pct",
+        ("pct",),
+        ("종가 위치", "close location"),
+        (r"종가.*위치", r"close location"),
+        "percentage",
     ),
     "candle_upper_wick_pct": _spec(
-        "candle_upper_wick_pct", ("pct",), ("윗꼬리", "upper wick"),
-        (r"윗꼬리", r"upper wick"), "percentage",
+        "candle_upper_wick_pct",
+        ("pct",),
+        ("윗꼬리", "upper wick"),
+        (r"윗꼬리", r"upper wick"),
+        "percentage",
     ),
     "candle_lower_wick_pct": _spec(
-        "candle_lower_wick_pct", ("pct",), ("아랫꼬리", "lower wick"),
-        (r"아랫꼬리", r"lower wick"), "percentage",
+        "candle_lower_wick_pct",
+        ("pct",),
+        ("아랫꼬리", "lower wick"),
+        (r"아랫꼬리", r"lower wick"),
+        "percentage",
     ),
     "chart_period_return_pct": _spec(
-        "chart_period_return_pct", ("pct",), ("기간 수익률", "period return"),
-        (r"(?:일봉|주봉|월봉)?.*수익률", r"period return"), "signed_percentage",
+        "chart_period_return_pct",
+        ("pct",),
+        ("기간 수익률", "period return"),
+        (r"(?:일봉|주봉|월봉)?.*수익률", r"period return"),
+        "signed_percentage",
     ),
     "chart_range_position_pct": _spec(
-        "chart_range_position_pct", ("pct",), ("가격 범위 위치", "range position"),
-        (r"가격.*범위.*위치", r"range position"), "percentage",
+        "chart_range_position_pct",
+        ("pct",),
+        ("가격 범위 위치", "range position"),
+        (r"가격.*범위.*위치", r"range position"),
+        "percentage",
     ),
     "bollinger_upper_price": _spec(
-        "bollinger_upper_price", ("KRW", "USD"), ("볼린저 상단선", "Bollinger upper"),
-        (r"(?:3|5|6|12|24|54)개월.*상단선", r"bollinger.*upper"), "currency",
+        "bollinger_upper_price",
+        ("KRW", "USD"),
+        ("볼린저 상단선", "Bollinger upper"),
+        (r"(?:3|5|6|12|24|54)개월.*상단선", r"bollinger.*upper"),
+        "currency",
     ),
     "bollinger_distance_pct": _spec(
-        "bollinger_distance_pct", ("pct",), ("볼린저 이격", "Bollinger distance"),
-        (r"(?:3|5|6|12|24|54)개월.*이격", r"bollinger.*distance"), "signed_percentage",
+        "bollinger_distance_pct",
+        ("pct",),
+        ("볼린저 이격", "Bollinger distance"),
+        (r"(?:3|5|6|12|24|54)개월.*이격", r"bollinger.*distance"),
+        "signed_percentage",
     ),
     "volume_ratio_20": _spec(
-        "volume_ratio_20", ("x",), ("20일 거래량비", "20-day volume ratio"),
-        (r"20일.*거래량비", r"20[- ]day volume ratio"), "multiple",
+        "volume_ratio_20",
+        ("x",),
+        ("20일 거래량비", "20-day volume ratio"),
+        (r"20일.*거래량비", r"20[- ]day volume ratio"),
+        "multiple",
     ),
     "rsi_14": _spec(
-        "rsi_14", ("index",), ("RSI14", "RSI"),
-        (r"\brsi\s*14?\b",), "decimal",
+        "rsi_14",
+        ("index",),
+        ("RSI14", "RSI"),
+        (r"\brsi\s*14?\b",),
+        "decimal",
     ),
     "macd": _spec(
-        "macd", ("KRW", "USD"), ("MACD",), (r"\bmacd\b",), "currency",
+        "macd",
+        ("KRW", "USD"),
+        ("MACD",),
+        (r"\bmacd\b",),
+        "currency",
     ),
     "macd_signal": _spec(
-        "macd_signal", ("KRW", "USD"), ("MACD signal",),
-        (r"macd.*signal", r"macd.*시그널"), "currency",
+        "macd_signal",
+        ("KRW", "USD"),
+        ("MACD signal",),
+        (r"macd.*signal", r"macd.*시그널"),
+        "currency",
     ),
     "macd_histogram": _spec(
-        "macd_histogram", ("KRW", "USD"), ("MACD histogram",),
-        (r"macd.*histogram", r"macd.*히스토그램"), "currency",
+        "macd_histogram",
+        ("KRW", "USD"),
+        ("MACD histogram",),
+        (r"macd.*histogram", r"macd.*히스토그램"),
+        "currency",
     ),
     "stored_confirmation_price": _spec(
-        "stored_confirmation_price", ("KRW", "USD"), ("상향 확인 가격",),
-        (r"상향.*확인.*가격", r"confirmation price"), "currency",
+        "stored_confirmation_price",
+        ("KRW", "USD"),
+        ("상향 확인 가격",),
+        (r"상향.*확인.*가격", r"confirmation price"),
+        "currency",
     ),
     "stored_support_price": _spec(
-        "stored_support_price", ("KRW", "USD"), ("저장 지지 가격", "지지구간"),
-        (r"(?:저장.*)?지지(?:구간|가격)", r"stored support"), "currency",
+        "stored_support_price",
+        ("KRW", "USD"),
+        ("저장 지지 가격", "지지구간"),
+        (r"(?:저장.*)?지지(?:구간|가격)", r"stored support"),
+        "currency",
     ),
     "stored_warning_price": _spec(
-        "stored_warning_price", ("KRW", "USD"), ("재점검 시작 가격", "경고 가격"),
-        (r"(?:재점검.*시작|경고).*가격", r"warning price"), "currency",
+        "stored_warning_price",
+        ("KRW", "USD"),
+        ("재점검 시작 가격", "경고 가격"),
+        (r"(?:재점검.*시작|경고).*가격", r"warning price"),
+        "currency",
     ),
     "stored_invalidation_price": _spec(
-        "stored_invalidation_price", ("KRW", "USD"), ("재점검 가격", "무효화 가격"),
-        (r"(?:재점검|무효화).*가격", r"invalidation price"), "currency",
+        "stored_invalidation_price",
+        ("KRW", "USD"),
+        ("재점검 가격", "무효화 가격"),
+        (r"(?:재점검|무효화).*가격", r"invalidation price"),
+        "currency",
     ),
     "price_rule_distance_pct": _spec(
-        "price_rule_distance_pct", ("pct",), ("가격 기준 이격",),
+        "price_rule_distance_pct",
+        ("pct",),
+        ("가격 기준 이격",),
         (r"(?:확인|지지|경고|무효화|재점검).*이격", r"price rule distance"),
         "signed_percentage",
     ),
     "chart_atr": _spec(
-        "chart_atr", ("KRW", "USD"), ("ATR14", "Wilder ATR14"),
-        (r"(?:일봉|주봉|월봉)?\s*(?:wilder\s*)?atr\s*14?",), "currency",
+        "chart_atr",
+        ("KRW", "USD"),
+        ("ATR14", "Wilder ATR14"),
+        (r"(?:일봉|주봉|월봉)?\s*(?:wilder\s*)?atr\s*14?",),
+        "currency",
     ),
     "support_zone_price": _spec(
-        "support_zone_price", ("KRW", "USD"), ("동적 지지구간", "지지구간"),
-        (r"(?:동적\s*)?지지(?:구간|대)", r"support zone"), "currency",
+        "support_zone_price",
+        ("KRW", "USD"),
+        ("동적 지지구간", "지지구간"),
+        (r"(?:동적\s*)?지지(?:구간|대)", r"support zone"),
+        "currency",
     ),
     "resistance_zone_price": _spec(
-        "resistance_zone_price", ("KRW", "USD"), ("동적 저항구간", "저항구간"),
-        (r"(?:동적\s*)?저항(?:구간|대)", r"resistance zone"), "currency",
+        "resistance_zone_price",
+        ("KRW", "USD"),
+        ("동적 저항구간", "저항구간"),
+        (r"(?:동적\s*)?저항(?:구간|대)", r"resistance zone"),
+        "currency",
     ),
     "active_zone_price": _spec(
-        "active_zone_price", ("KRW", "USD"), ("현재 활성구간", "활성구간"),
-        (r"(?:현재\s*)?활성구간", r"active zone"), "currency",
+        "active_zone_price",
+        ("KRW", "USD"),
+        ("현재 활성구간", "활성구간"),
+        (r"(?:현재\s*)?활성구간", r"active zone"),
+        "currency",
     ),
     "distance_to_zone_pct": _spec(
-        "distance_to_zone_pct", ("pct",), ("구간 이격", "지지 이격", "저항 이격"),
-        (r"(?:구간|지지|저항).*이격", r"distance.*zone"), "percentage",
+        "distance_to_zone_pct",
+        ("pct",),
+        ("구간 이격", "지지 이격", "저항 이격"),
+        (r"(?:구간|지지|저항).*이격", r"distance.*zone"),
+        "percentage",
     ),
     "box_boundary_price": _spec(
-        "box_boundary_price", ("KRW", "USD"), ("박스 하단", "박스 상단"),
-        (r"박스.*(?:하단|상단)", r"box.*(?:low|high)"), "currency",
+        "box_boundary_price",
+        ("KRW", "USD"),
+        ("박스 하단", "박스 상단"),
+        (r"박스.*(?:하단|상단)", r"box.*(?:low|high)"),
+        "currency",
     ),
     "box_width_pct": _spec(
-        "box_width_pct", ("pct",), ("박스 폭",),
-        (r"박스.*폭", r"box width"), "percentage",
+        "box_width_pct",
+        ("pct",),
+        ("박스 폭",),
+        (r"박스.*폭", r"box width"),
+        "percentage",
     ),
     "major_swing_price": _spec(
-        "major_swing_price", ("KRW", "USD"), ("Major Swing", "주요 스윙"),
-        (r"(?:major swing|주요 스윙).*(?:고점|저점|high|low)?",), "currency",
+        "major_swing_price",
+        ("KRW", "USD"),
+        ("Major Swing", "주요 스윙"),
+        (r"(?:major swing|주요 스윙).*(?:고점|저점|high|low)?",),
+        "currency",
     ),
     "fibonacci_anchor_price": _spec(
-        "fibonacci_anchor_price", ("KRW", "USD"), ("Fibonacci 앵커", "피보나치 앵커"),
-        (r"(?:fibonacci|피보나치).*앵커",), "currency",
+        "fibonacci_anchor_price",
+        ("KRW", "USD"),
+        ("Fibonacci 앵커", "피보나치 앵커"),
+        (r"(?:fibonacci|피보나치).*앵커",),
+        "currency",
     ),
     "fibonacci_retracement_price": _spec(
-        "fibonacci_retracement_price", ("KRW", "USD"),
+        "fibonacci_retracement_price",
+        ("KRW", "USD"),
         ("Fibonacci 되돌림", "피보나치 되돌림"),
-        (r"(?:fibonacci|피보나치).*되돌림",), "currency",
+        (r"(?:fibonacci|피보나치).*되돌림",),
+        "currency",
     ),
     "fibonacci_extension_price": _spec(
-        "fibonacci_extension_price", ("KRW", "USD"),
+        "fibonacci_extension_price",
+        ("KRW", "USD"),
         ("Fibonacci 확장", "피보나치 확장"),
-        (r"(?:fibonacci|피보나치).*확장",), "currency",
+        (r"(?:fibonacci|피보나치).*확장",),
+        "currency",
     ),
     "scenario_entry_price": _spec(
-        "scenario_entry_price", ("KRW", "USD"), ("시나리오 진입가", "시나리오 기준가"),
-        (r"시나리오.*(?:진입가|기준가)", r"scenario entry"), "currency",
+        "scenario_entry_price",
+        ("KRW", "USD"),
+        ("시나리오 진입가", "시나리오 기준가"),
+        (r"시나리오.*(?:진입가|기준가)", r"scenario entry"),
+        "currency",
     ),
     "chart_target_price": _spec(
-        "chart_target_price", ("KRW", "USD"), ("가까운 저항 목표", "차트 목표"),
-        (r"(?:가까운\s*저항\s*목표|차트\s*목표)", r"chart target"), "currency",
+        "chart_target_price",
+        ("KRW", "USD"),
+        ("가까운 저항 목표", "차트 목표"),
+        (r"(?:가까운\s*저항\s*목표|차트\s*목표)", r"chart target"),
+        "currency",
     ),
     "chart_invalidation_price": _spec(
-        "chart_invalidation_price", ("KRW", "USD"),
+        "chart_invalidation_price",
+        ("KRW", "USD"),
         ("차트 무효화 가격", "가격 시나리오 무효화"),
-        (r"(?:차트|가격\s*시나리오).*무효화", r"chart invalidation"), "currency",
+        (r"(?:차트|가격\s*시나리오).*무효화", r"chart invalidation"),
+        "currency",
     ),
     "chart_price_risk": _spec(
-        "chart_price_risk", ("KRW", "USD"), ("차트 하방 위험", "차트 상승 여지"),
-        (r"차트.*(?:하방\s*위험|상승\s*여지)", r"chart.*(?:upside|downside)"), "currency",
+        "chart_price_risk",
+        ("KRW", "USD"),
+        ("차트 하방 위험", "차트 상승 여지"),
+        (r"차트.*(?:하방\s*위험|상승\s*여지)", r"chart.*(?:upside|downside)"),
+        "currency",
     ),
     "risk_reward_ratio": _spec(
         "risk_reward_ratio",
@@ -864,12 +1119,18 @@ NUMERIC_SEMANTICS = {
         "multiple",
     ),
     "previous_risk_reward_ratio": _spec(
-        "previous_risk_reward_ratio", ("x",), ("이전 차트 손익비",),
-        (r"이전.*(?:차트\s*)?손익비", r"previous.*risk.?reward"), "multiple",
+        "previous_risk_reward_ratio",
+        ("x",),
+        ("이전 차트 손익비",),
+        (r"이전.*(?:차트\s*)?손익비", r"previous.*risk.?reward"),
+        "multiple",
     ),
     "current_risk_reward_ratio": _spec(
-        "current_risk_reward_ratio", ("x",), ("현재 차트 손익비",),
-        (r"현재.*(?:차트\s*)?손익비", r"current.*risk.?reward"), "multiple",
+        "current_risk_reward_ratio",
+        ("x",),
+        ("현재 차트 손익비",),
+        (r"현재.*(?:차트\s*)?손익비", r"current.*risk.?reward"),
+        "multiple",
     ),
     "historical_pe_multiple": _spec(
         "historical_pe_multiple",
@@ -989,9 +1250,7 @@ _INVESTOR_FLOW_RECONCILIATION_RULES: list[NumericFieldRule] = []
 
 for _window in _INVESTOR_FLOW_WINDOWS:
     for _participant in _INVESTOR_FLOW_PARTICIPANTS:
-        _semantic_type = (
-            f"investor_flow_{_participant}_net_buy_qty_{_window}_audit"
-        )
+        _semantic_type = f"investor_flow_{_participant}_net_buy_qty_{_window}_audit"
         NUMERIC_SEMANTICS[_semantic_type] = _spec(
             _semantic_type,
             ("shares",),
@@ -1238,7 +1497,9 @@ _FIELD_RULES = (
         "market_cap_ratio",
         "pct",
     ),
-    NumericFieldRule(("positioning",), r"fields\.foreign_net_buy_qty", "foreign_net_buy_qty", "shares"),
+    NumericFieldRule(
+        ("positioning",), r"fields\.foreign_net_buy_qty", "foreign_net_buy_qty", "shares"
+    ),
     NumericFieldRule(
         ("positioning",),
         r"fields\.institution_net_buy_qty",
@@ -1263,41 +1524,117 @@ _FIELD_RULES = (
         "foreign_holding_ratio",
         "pct",
     ),
-    NumericFieldRule(("positioning",), r"fields\.foreign_net_buy_qty_5", "foreign_net_buy_qty_5d", "shares"),
-    NumericFieldRule(("positioning",), r"fields\.institution_net_buy_qty_5", "institution_net_buy_qty_5d", "shares"),
-    NumericFieldRule(("positioning",), r"fields\.individual_net_buy_qty_5", "individual_net_buy_qty_5d", "shares"),
-    NumericFieldRule(("positioning",), r"fields\.foreign_net_buy_qty_20", "foreign_net_buy_qty_20d", "shares"),
-    NumericFieldRule(("positioning",), r"fields\.institution_net_buy_qty_20", "institution_net_buy_qty_20d", "shares"),
-    NumericFieldRule(("positioning",), r"fields\.individual_net_buy_qty_20", "individual_net_buy_qty_20d", "shares"),
+    NumericFieldRule(
+        ("positioning",), r"fields\.foreign_net_buy_qty_5", "foreign_net_buy_qty_5d", "shares"
+    ),
+    NumericFieldRule(
+        ("positioning",),
+        r"fields\.institution_net_buy_qty_5",
+        "institution_net_buy_qty_5d",
+        "shares",
+    ),
+    NumericFieldRule(
+        ("positioning",), r"fields\.individual_net_buy_qty_5", "individual_net_buy_qty_5d", "shares"
+    ),
+    NumericFieldRule(
+        ("positioning",), r"fields\.foreign_net_buy_qty_20", "foreign_net_buy_qty_20d", "shares"
+    ),
+    NumericFieldRule(
+        ("positioning",),
+        r"fields\.institution_net_buy_qty_20",
+        "institution_net_buy_qty_20d",
+        "shares",
+    ),
+    NumericFieldRule(
+        ("positioning",),
+        r"fields\.individual_net_buy_qty_20",
+        "individual_net_buy_qty_20d",
+        "shares",
+    ),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.open", "chart_open_price", "currency"),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.high", "chart_high_price", "currency"),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.low", "chart_low_price", "currency"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.candle\.close", "chart_close_price", "currency"),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.candle\.close", "chart_close_price", "currency"
+    ),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.volume", "chart_volume", "shares"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.candle\.trading_value", "chart_trading_value", "provider_value"),
+    NumericFieldRule(
+        ("chart_timeframe",),
+        r"fields\.candle\.trading_value",
+        "chart_trading_value",
+        "provider_value",
+    ),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.body_pct", "candle_body_pct", "pct"),
     NumericFieldRule(("chart_timeframe",), r"fields\.candle\.range_pct", "candle_range_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.candle\.close_location_pct", "candle_close_location_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.candle\.upper_wick_pct", "candle_upper_wick_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.candle\.lower_wick_pct", "candle_lower_wick_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.period_return_pct", "chart_period_return_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.range_position_pct", "chart_range_position_pct", "pct"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.bollinger_upper\.[^.]+", "bollinger_upper_price", "currency"),
-    NumericFieldRule(("chart_timeframe",), r"fields\.bollinger_distance_pct\.[^.]+", "bollinger_distance_pct", "pct"),
+    NumericFieldRule(
+        ("chart_timeframe",),
+        r"fields\.candle\.close_location_pct",
+        "candle_close_location_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.candle\.upper_wick_pct", "candle_upper_wick_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.candle\.lower_wick_pct", "candle_lower_wick_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.period_return_pct", "chart_period_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.range_position_pct", "chart_range_position_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",), r"fields\.bollinger_upper\.[^.]+", "bollinger_upper_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_timeframe",),
+        r"fields\.bollinger_distance_pct\.[^.]+",
+        "bollinger_distance_pct",
+        "pct",
+    ),
     NumericFieldRule(("chart_timeframe",), r"fields\.volume_ratio_20", "volume_ratio_20", "x"),
     NumericFieldRule(("chart_timeframe",), r"fields\.rsi_14", "rsi_14", "index"),
     NumericFieldRule(("chart_timeframe",), r"fields\.macd", "macd", "currency"),
     NumericFieldRule(("chart_timeframe",), r"fields\.macd_signal", "macd_signal", "currency"),
     NumericFieldRule(("chart_timeframe",), r"fields\.macd_histogram", "macd_histogram", "currency"),
-    NumericFieldRule(("chart_price_rules",), r"fields\.confirmation_price", "stored_confirmation_price", "currency"),
-    NumericFieldRule(("chart_price_rules",), r"fields\.support_zone_(?:low|high)", "stored_support_price", "currency"),
-    NumericFieldRule(("chart_price_rules",), r"fields\.warning_price", "stored_warning_price", "currency"),
-    NumericFieldRule(("chart_price_rules",), r"fields\.invalidation_price", "stored_invalidation_price", "currency"),
-    NumericFieldRule(("chart_price_rules",), r"fields\.distance_pct\.[^.]+", "price_rule_distance_pct", "pct"),
+    NumericFieldRule(
+        ("chart_price_rules",),
+        r"fields\.confirmation_price",
+        "stored_confirmation_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_price_rules",),
+        r"fields\.support_zone_(?:low|high)",
+        "stored_support_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_price_rules",), r"fields\.warning_price", "stored_warning_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_price_rules",),
+        r"fields\.invalidation_price",
+        "stored_invalidation_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_price_rules",), r"fields\.distance_pct\.[^.]+", "price_rule_distance_pct", "pct"
+    ),
     NumericFieldRule(("chart_structure_atr",), r"fields\.value", "chart_atr", "currency"),
-    NumericFieldRule(("chart_support_zone",), r"fields\.zone_(?:low|high)", "support_zone_price", "currency"),
-    NumericFieldRule(("chart_resistance_zone",), r"fields\.zone_(?:low|high)", "resistance_zone_price", "currency"),
-    NumericFieldRule(("chart_active_zone",), r"fields\.zone_(?:low|high)", "active_zone_price", "currency"),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.zone_(?:low|high)", "support_zone_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_resistance_zone",),
+        r"fields\.zone_(?:low|high)",
+        "resistance_zone_price",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("chart_active_zone",), r"fields\.zone_(?:low|high)", "active_zone_price", "currency"
+    ),
     NumericFieldRule(
         ("chart_support_zone", "chart_resistance_zone", "chart_active_zone"),
         r"fields\.(?:distance_pct|distance_to_(?:lower|upper)_pct)",
@@ -1337,12 +1674,8 @@ _FIELD_RULES = (
         "support_zone_price",
         "currency",
     ),
-    NumericFieldRule(
-        ("chart_invalidation",), r"fields\.entry", "scenario_entry_price", "currency"
-    ),
-    NumericFieldRule(
-        ("chart_invalidation",), r"fields\.buffer", "chart_price_risk", "currency"
-    ),
+    NumericFieldRule(("chart_invalidation",), r"fields\.entry", "scenario_entry_price", "currency"),
+    NumericFieldRule(("chart_invalidation",), r"fields\.buffer", "chart_price_risk", "currency"),
     NumericFieldRule(
         ("chart_risk_reward_current_price", "chart_risk_reward_support_entry"),
         r"fields\.entry",
@@ -1367,9 +1700,7 @@ _FIELD_RULES = (
         "chart_price_risk",
         "currency",
     ),
-    NumericFieldRule(
-        ("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"
-    ),
+    NumericFieldRule(("chart_risk_reward",), r"fields\.ratio", "risk_reward_ratio", "x"),
     NumericFieldRule(
         ("chart_risk_reward_current_price",),
         r"fields\.ratio",
@@ -1407,6 +1738,48 @@ _FIELD_RULES = (
         "futures_return_pct",
         "pct",
     ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.open",
+        "futures_open",
+        "points",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.high",
+        "futures_high",
+        "points",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.low",
+        "futures_low",
+        "points",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.close",
+        "futures_close",
+        "points",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.change_value",
+        "futures_point_change",
+        "points",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.return_pct",
+        "futures_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("night_futures_timeframe",),
+        r"fields\.return_baseline_close",
+        "futures_close",
+        "points",
+    ),
     NumericFieldRule(("fx",), r"fields\.value", "fx_rate", "KRW"),
     NumericFieldRule(("fx",), r"fields\.change_value", "fx_point_change", "KRW"),
     NumericFieldRule(("fx",), r"fields\.change_pct", "fx_return_pct", "pct"),
@@ -1416,21 +1789,11 @@ _FIELD_RULES = (
         "market_return_pct",
         "pct",
     ),
-    NumericFieldRule(
-        ("market_index",), r"fields\.return_pct", "index_return_pct", "pct"
-    ),
-    NumericFieldRule(
-        ("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"
-    ),
-    NumericFieldRule(
-        ("market_sector",), r"fields\.level", "sector_proxy_level", "index"
-    ),
-    NumericFieldRule(
-        ("market_style",), r"fields\.return_pct", "style_return_pct", "pct"
-    ),
-    NumericFieldRule(
-        ("market_style",), r"fields\.level", "style_proxy_level", "index"
-    ),
+    NumericFieldRule(("market_index",), r"fields\.return_pct", "index_return_pct", "pct"),
+    NumericFieldRule(("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
+    NumericFieldRule(("market_sector",), r"fields\.level", "sector_proxy_level", "index"),
+    NumericFieldRule(("market_style",), r"fields\.return_pct", "style_return_pct", "pct"),
+    NumericFieldRule(("market_style",), r"fields\.level", "style_proxy_level", "index"),
     NumericFieldRule(
         ("market_growth_relative",),
         r"fields\.relative_return_pct",
@@ -1449,31 +1812,115 @@ _FIELD_RULES = (
         "style_relative_return_pct",
         "pct",
     ),
-    NumericFieldRule(("market_cross_section_index",), r"fields\.close", "market_index_close", "index"),
-    NumericFieldRule(("market_cross_section_index",), r"fields\.return_pct", "index_return_pct", "pct"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.relative_return_pct", "sector_relative_return_pct", "pct"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.listed_count", "sector_listed_issue_count", "count"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.advance_count", "sector_advance_count", "count"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.decline_count", "sector_decline_count", "count"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.unchanged_count", "sector_unchanged_count", "count"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.limit_up_count", "sector_limit_up_count_audit", "count"),
-    NumericFieldRule(("market_cross_section_sector",), r"fields\.limit_down_count", "sector_limit_down_count_audit", "count"),
-    NumericFieldRule(("market_breadth_counts",), r"fields\.eligible_count", "market_eligible_count", "count"),
-    NumericFieldRule(("market_breadth_counts",), r"fields\.advance_count", "market_advance_count", "count"),
-    NumericFieldRule(("market_breadth_counts",), r"fields\.decline_count", "market_decline_count", "count"),
-    NumericFieldRule(("market_breadth_counts",), r"fields\.unchanged_count", "market_unchanged_count", "count"),
-    NumericFieldRule(("market_breadth_returns",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"),
+    NumericFieldRule(
+        ("market_cross_section_index",), r"fields\.close", "market_index_close", "index"
+    ),
+    NumericFieldRule(
+        ("market_cross_section_index",), r"fields\.return_pct", "index_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",), r"fields\.return_pct", "sector_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.advance_ratio_pct",
+        "market_advance_ratio",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.relative_return_pct",
+        "sector_relative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.listed_count",
+        "sector_listed_issue_count",
+        "count",
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",), r"fields\.advance_count", "sector_advance_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",), r"fields\.decline_count", "sector_decline_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.unchanged_count",
+        "sector_unchanged_count",
+        "count",
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.limit_up_count",
+        "sector_limit_up_count_audit",
+        "count",
+    ),
+    NumericFieldRule(
+        ("market_cross_section_sector",),
+        r"fields\.limit_down_count",
+        "sector_limit_down_count_audit",
+        "count",
+    ),
+    NumericFieldRule(
+        ("market_breadth_counts",), r"fields\.eligible_count", "market_eligible_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_breadth_counts",), r"fields\.advance_count", "market_advance_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_breadth_counts",), r"fields\.decline_count", "market_decline_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_breadth_counts",), r"fields\.unchanged_count", "market_unchanged_count", "count"
+    ),
+    NumericFieldRule(
+        ("market_breadth_returns",), r"fields\.advance_ratio_pct", "market_advance_ratio", "pct"
+    ),
     NumericFieldRule(("market_breadth_returns",), r"fields\.ad_ratio", "market_ad_ratio", "x"),
-    NumericFieldRule(("market_breadth_returns",), r"fields\.median_return_pct", "market_median_return_pct", "pct"),
-    NumericFieldRule(("market_breadth_returns",), r"fields\.equal_weight_return_pct", "market_equal_weight_return_pct", "pct"),
-    NumericFieldRule(("market_breadth_returns",), r"fields\.positive_return_pct", "market_positive_return_pct", "pct"),
-    NumericFieldRule(("market_breadth_returns",), r"fields\.negative_return_pct", "market_negative_return_pct", "pct"),
-    NumericFieldRule(("market_breadth_activity",), r"fields\.total_trading_volume", "market_total_volume", "shares"),
-    NumericFieldRule(("market_breadth_activity",), r"fields\.total_trading_value", "market_total_trading_value", "currency"),
-    NumericFieldRule(("market_concentration",), r"fields\.concentration_gap_pct", "market_concentration_gap_pct", "pct"),
-    NumericFieldRule(("market_flow",), r"fields\.net_buy_amount", "market_foreign_net_buy_amount", "currency"),
+    NumericFieldRule(
+        ("market_breadth_returns",), r"fields\.median_return_pct", "market_median_return_pct", "pct"
+    ),
+    NumericFieldRule(
+        ("market_breadth_returns",),
+        r"fields\.equal_weight_return_pct",
+        "market_equal_weight_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_breadth_returns",),
+        r"fields\.positive_return_pct",
+        "market_positive_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_breadth_returns",),
+        r"fields\.negative_return_pct",
+        "market_negative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_breadth_activity",),
+        r"fields\.total_trading_volume",
+        "market_total_volume",
+        "shares",
+    ),
+    NumericFieldRule(
+        ("market_breadth_activity",),
+        r"fields\.total_trading_value",
+        "market_total_trading_value",
+        "currency",
+    ),
+    NumericFieldRule(
+        ("market_concentration",),
+        r"fields\.concentration_gap_pct",
+        "market_concentration_gap_pct",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_flow",), r"fields\.net_buy_amount", "market_foreign_net_buy_amount", "currency"
+    ),
     NumericFieldRule(
         ("market_nominal_yield",),
         r"fields\.level_pct",
@@ -1497,6 +1944,18 @@ _FIELD_RULES = (
         r"fields\.change_bp",
         "real_yield_change_bp",
         "bp",
+    ),
+    NumericFieldRule(
+        ("market_real_yield",),
+        r"fields\.previous_level_pct",
+        "real_yield_previous_level",
+        "pct",
+    ),
+    NumericFieldRule(
+        ("market_real_yield",),
+        r"fields\.change_pp",
+        "real_yield_change_pp",
+        "pct_point",
     ),
     NumericFieldRule(
         ("market_breakeven_inflation",),
@@ -1523,15 +1982,11 @@ _FIELD_RULES = (
         "bp",
     ),
     NumericFieldRule(("market_fx",), r"fields\.value", "fx_rate", "KRW"),
-    NumericFieldRule(
-        ("market_fx",), r"fields\.change_pct", "fx_return_pct", "pct"
-    ),
+    NumericFieldRule(("market_fx",), r"fields\.change_pct", "fx_return_pct", "pct"),
     NumericFieldRule(
         ("market_oil",), r"fields\.price_usd_per_barrel", "oil_price", "USD_per_barrel"
     ),
-    NumericFieldRule(
-        ("market_oil",), r"fields\.return_pct", "oil_return_pct", "pct"
-    ),
+    NumericFieldRule(("market_oil",), r"fields\.return_pct", "oil_return_pct", "pct"),
     NumericFieldRule(
         ("market_volatility",),
         r"fields\.level",
@@ -1579,9 +2034,8 @@ def resolve_numeric_semantic(
             return None, "number"
         return semantic_spec(semantic_type), str(fields.get("currency") or "unknown")
     for rule in _FIELD_RULES:
-        if (
-            (fact_type in rule.fact_types or "*" in rule.fact_types)
-            and re.fullmatch(rule.field_pattern, field_path)
+        if (fact_type in rule.fact_types or "*" in rule.fact_types) and re.fullmatch(
+            rule.field_pattern, field_path
         ):
             spec = semantic_spec(rule.semantic_type)
             if spec is None:
@@ -1620,6 +2074,8 @@ _MARKET_SERIES_LABELS = {
     ("nominal_yield_change_bp", "DGS10"): "미국 10년물 금리 변동",
     ("real_yield_level", "DFII10"): "미국 10년물 실질금리",
     ("real_yield_change_bp", "DFII10"): "미국 10년물 실질금리 변동",
+    ("real_yield_change_pp", "DFII10"): "미국 10년물 실질금리 변동폭",
+    ("real_yield_previous_level", "DFII10"): "미국 10년물 직전 실질금리",
     ("breakeven_inflation_level", "T10YIE"): "미국 기대인플레이션",
     ("breakeven_inflation_change_bp", "T10YIE"): "미국 기대인플레이션 변동",
     ("credit_spread_level", "BAMLH0A0HYM2"): "하이일드 신용스프레드",
@@ -1790,12 +2246,13 @@ def _source_aware_label(
         "style_relative_return_pct",
     }:
         subject = _RELATIVE_SERIES_LABELS.get(str(fields.get("subject") or ""))
-        benchmark = _RELATIVE_SERIES_LABELS.get(
-            str(fields.get("benchmark") or "")
-        )
+        benchmark = _RELATIVE_SERIES_LABELS.get(str(fields.get("benchmark") or ""))
         if subject and benchmark:
             return f"{benchmark} 대비 {subject} 상대수익률"
     if semantic_type in {
+        "futures_open",
+        "futures_high",
+        "futures_low",
         "futures_close",
         "futures_point_change",
         "futures_return_pct",
@@ -1803,6 +2260,9 @@ def _source_aware_label(
         product = _NIGHT_FUTURES_LABELS.get(str(fields.get("series_code") or ""))
         if product:
             suffix = {
+                "futures_open": "시가",
+                "futures_high": "고가",
+                "futures_low": "저가",
                 "futures_close": "종가",
                 "futures_point_change": "등락폭",
                 "futures_return_pct": "등락률",
@@ -1862,11 +2322,7 @@ def usage_matches_semantic(semantic_type: str, usage: str) -> bool:
         "real_yield_level",
         "breakeven_inflation_level",
         "credit_spread_level",
-    } and (
-        "bp" in lowered
-        or "베이시스포인트" in usage
-        or change_markers.search(usage)
-    ):
+    } and ("bp" in lowered or "베이시스포인트" in usage or change_markers.search(usage)):
         return False
     return any(re.search(pattern, lowered) for pattern in spec.usage_patterns)
 
@@ -1891,10 +2347,7 @@ def usage_direction_matches(
     if spec is None:
         return False
     if semantic_type == "inventory_growth_absolute_gap_pct_point":
-        return not (
-            _WORKING_CAPITAL_LOWER.search(usage)
-            or _WORKING_CAPITAL_HIGHER.search(usage)
-        )
+        return not (_WORKING_CAPITAL_LOWER.search(usage) or _WORKING_CAPITAL_HIGHER.search(usage))
     if semantic_type == "inventory_growth_signed_gap_pct_point":
         lower = bool(_WORKING_CAPITAL_LOWER.search(usage))
         higher = bool(_WORKING_CAPITAL_HIGHER.search(usage))
@@ -1943,9 +2396,8 @@ def usage_relation_matches(
     if family == "inventory_vs_cogs" and rhs == "cogs_growth":
         return "매출원가" in usage or bool(re.search(r"\bcogs?\b", lowered))
     if family == "inventory_vs_revenue" and rhs == "revenue_growth":
-        return (
-            ("매출" in usage and "매출원가" not in usage)
-            or bool(re.search(r"\brevenue\b", lowered))
+        return ("매출" in usage and "매출원가" not in usage) or bool(
+            re.search(r"\brevenue\b", lowered)
         )
     return False
 
@@ -2065,9 +2517,7 @@ def approved_display_variants(
         for digits in (1, 2, 4):
             variants.append(f"{_plain_number(float(round(value, digits)))}배")
     elif unit == "points":
-        variants.extend(
-            (f"{_plain_number(value)}pt", f"{_plain_number(value)}포인트")
-        )
+        variants.extend((f"{_plain_number(value)}pt", f"{_plain_number(value)}포인트"))
     elif unit == "bp":
         variants.extend((f"{_plain_number(value)}bp", f"{_plain_number(value)}bp 변동"))
     elif unit == "USD_per_barrel":
@@ -2118,9 +2568,7 @@ def _registry_contract_metadata(
             "allowed_sections": [],
         }
     registry_class = (
-        "REGISTERED_PROSE_ELIGIBLE"
-        if registered and prose_allowed
-        else "REGISTERED_AUDIT_ONLY"
+        "REGISTERED_PROSE_ELIGIBLE" if registered and prose_allowed else "REGISTERED_AUDIT_ONLY"
     )
     metadata: dict[str, object] = {
         "registry_class": registry_class,
@@ -2220,9 +2668,7 @@ def build_numeric_registry(
         if not fact_id or not isinstance(fields, dict):
             continue
         field_quality = (
-            fact.get("field_quality")
-            if isinstance(fact.get("field_quality"), dict)
-            else {}
+            fact.get("field_quality") if isinstance(fact.get("field_quality"), dict) else {}
         )
 
         def quality_for_path(path: str) -> dict[str, object]:
@@ -2258,9 +2704,7 @@ def build_numeric_registry(
                     else None
                 )
                 source_label_kind = (
-                    _source_label_kind(spec.semantic_type, fields)
-                    if spec is not None
-                    else None
+                    _source_label_kind(spec.semantic_type, fields) if spec is not None else None
                 )
                 quality = quality_for_path(path)
                 quality_state = str(quality.get("state") or "verified_usable")
@@ -2290,9 +2734,7 @@ def build_numeric_registry(
                         "prose_allowed": prose_allowed,
                         "formatter": spec.formatter if spec is not None else None,
                         "scope": spec.scope if spec is not None else None,
-                        "approved_labels": (
-                            list(spec.approved_labels) if spec is not None else []
-                        ),
+                        "approved_labels": (list(spec.approved_labels) if spec is not None else []),
                         "canonical_label": canonical_label,
                         "canonical_label_required": source_label_kind is not None,
                         "canonical_label_kind": source_label_kind,
@@ -2300,19 +2742,13 @@ def build_numeric_registry(
                         "financial_quality_reason_codes": list(
                             quality.get("quality_reason_codes") or []
                         ),
-                        "dependency_fields": list(
-                            quality.get("dependency_fields") or []
-                        ),
-                        "dependency_periods": list(
-                            quality.get("dependency_periods") or []
-                        ),
+                        "dependency_fields": list(quality.get("dependency_fields") or []),
+                        "dependency_periods": list(quality.get("dependency_periods") or []),
                         "denominator_period": quality.get("denominator_period"),
                         "financial_source_period": quality.get("source_period"),
                         "financial_source_type": quality.get("source_type"),
                         "financial_source_provider": quality.get("provider"),
-                        "lineage_verification_status": quality.get(
-                            "lineage_verification_status"
-                        ),
+                        "lineage_verification_status": quality.get("lineage_verification_status"),
                         "denial_reason": quality.get("denial_reason"),
                         "quality_decision_version": quality.get("decision_version"),
                         "approved_display_variants": (
@@ -2325,9 +2761,7 @@ def build_numeric_registry(
                             if spec is not None and prose_allowed
                             else None
                         ),
-                        "declaration_fact_ids": sorted(
-                            {fact_id, *declaration_aliases}
-                        ),
+                        "declaration_fact_ids": sorted({fact_id, *declaration_aliases}),
                         **_registry_contract_metadata(
                             fact_type,
                             path,

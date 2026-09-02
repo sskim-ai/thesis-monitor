@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from enum import StrEnum
+import math
 from typing import Iterable, Mapping
 
 
@@ -66,22 +67,16 @@ class UsMarketDigestPlan:
         return tuple(item for item in self.items if item.selected)
 
     def required_items(self) -> tuple[UsMarketDigestPlanItem, ...]:
-        return tuple(
-            item for item in self.items if item.selected and item.required_consumption
-        )
+        return tuple(item for item in self.items if item.selected and item.required_consumption)
 
     def primary_claims(self) -> tuple[UsMarketDigestPlanItem, ...]:
         return tuple(
-            item
-            for item in self.required_items()
-            if item.slot != UsMarketDigestSlot.MACRO_CONTEXT
+            item for item in self.required_items() if item.slot != UsMarketDigestSlot.MACRO_CONTEXT
         )
 
     def required_evidence_refs(self) -> tuple[str, ...]:
         return tuple(
-            dict.fromkeys(
-                ref for item in self.required_items() for ref in item.evidence_refs
-            )
+            dict.fromkeys(ref for item in self.required_items() for ref in item.evidence_refs)
         )
 
     def to_dict(self) -> dict[str, object]:
@@ -109,9 +104,7 @@ class UsMarketDigestPlan:
                         observation_dates=_strings(raw.get("observation_dates")),
                         temporal_roles=_strings(raw.get("temporal_roles")),
                         materiality=str(raw.get("materiality") or ""),
-                        omission_reason=DigestOmissionReason(
-                            str(raw["omission_reason"])
-                        ),
+                        omission_reason=DigestOmissionReason(str(raw["omission_reason"])),
                         required_consumption=bool(raw.get("required_consumption")),
                     )
                 )
@@ -193,6 +186,30 @@ def render_specific_macro_claim(fact: Mapping[str, object]) -> str:
     change = macro_fact_change(fact)
     fields = _fields(fact)
     label = str(fields.get("label") or "").strip()
+    if fact.get("fact_type") == "market_real_yield":
+        level = _number(fields.get("level_pct"))
+        previous = _number(fields.get("previous_level_pct"))
+        delta_pp = _number(fields.get("change_pp"))
+        delta_bp = _number(fields.get("change_bp"))
+        current_date = _date(fact)
+        previous_date = str(fields.get("previous_observation_date") or "")
+        if (
+            level is not None
+            and previous is not None
+            and delta_pp is not None
+            and delta_bp is not None
+            and current_date
+            and previous_date
+            and math.isclose(delta_pp, level - previous, rel_tol=0, abs_tol=1e-10)
+            and math.isclose(delta_bp, delta_pp * 100, rel_tol=0, abs_tol=1e-8)
+        ):
+            current_label = current_date[5:].replace("-", "/")
+            previous_label = previous_date[5:].replace("-", "/")
+            return (
+                f"미 10년 실질금리 {level:.2f}% ({current_label} 관측) · "
+                f"직전 {previous:.2f}% ({previous_label}) 대비 "
+                f"{delta_pp:+.2f}%p ({delta_bp:+.0f}bp)"
+            )
     if change is None or not label or label in {"거시 지표", "보조 거시 맥락"}:
         return ""
     _field, value = change
@@ -259,16 +276,10 @@ def _item(
         slot=slot,
         priority=priority,
         claim_text=claim_text,
-        evidence_refs=tuple(
-            dict.fromkeys(ref for fact in rows if (ref := _fact_ref(fact)))
-        ),
+        evidence_refs=tuple(dict.fromkeys(ref for fact in rows if (ref := _fact_ref(fact)))),
         numeric_refs=_numeric_refs(rows, numeric_field),
-        observation_dates=tuple(
-            dict.fromkeys(value for fact in rows if (value := _date(fact)))
-        ),
-        temporal_roles=tuple(
-            dict.fromkeys(value for fact in rows if (value := _role(fact)))
-        ),
+        observation_dates=tuple(dict.fromkeys(value for fact in rows if (value := _date(fact)))),
+        temporal_roles=tuple(dict.fromkeys(value for fact in rows if (value := _role(fact)))),
         materiality=materiality,
         omission_reason=omission_reason,
         required_consumption=required_consumption,
@@ -278,11 +289,7 @@ def _item(
 def _current_market_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
     order = {symbol: index for index, symbol in enumerate(("SPY", "QQQ", "IWM", "SOXX"))}
     current = sorted(
-        (
-            fact
-            for fact in facts
-            if _series(fact) in order and _current_directional(fact)
-        ),
+        (fact for fact in facts if _series(fact) in order and _current_directional(fact)),
         key=lambda fact: order[_series(fact)],
     )
     if not current:
@@ -348,10 +355,7 @@ def _style_item(facts: list[dict[str, object]]) -> UsMarketDigestPlanItem:
             else rsp_value == spx_value
         )
         relation = "같았습니다" if aligned else "엇갈렸습니다"
-        text = (
-            f"동일가중 S&P500은 {rsp_direction}해 시가총액가중 S&P500과 "
-            f"방향이 {relation}."
-        )
+        text = f"동일가중 S&P500은 {rsp_direction}해 시가총액가중 S&P500과 방향이 {relation}."
     return _item(
         UsMarketDigestSlot.PARTICIPATION_STYLE,
         2,
@@ -522,11 +526,7 @@ def _breadth_item(
             required_consumption=False,
         )
     relation = (
-        "많았습니다"
-        if advance > decline
-        else "적었습니다"
-        if advance < decline
-        else "같았습니다"
+        "많았습니다" if advance > decline else "적었습니다" if advance < decline else "같았습니다"
     )
     return _item(
         UsMarketDigestSlot.BREADTH_STATE,
@@ -549,8 +549,7 @@ def _macro_item(
         (
             by_id[ref]
             for ref in key_change_fact_ids
-            if ref in by_id
-            and by_id[ref].get("fact_type") in SUPPORTED_MACRO_FACT_TYPES
+            if ref in by_id and by_id[ref].get("fact_type") in SUPPORTED_MACRO_FACT_TYPES
         ),
         None,
     )
@@ -600,11 +599,7 @@ def build_us_market_digest_plan(value: object) -> UsMarketDigestPlan:
     context = value if isinstance(value, Mapping) else {}
     facts = _facts(value)
     key_changes = _strings(context.get("key_change_fact_ids"))
-    coverage = (
-        context.get("coverage")
-        if isinstance(context.get("coverage"), Mapping)
-        else None
-    )
+    coverage = context.get("coverage") if isinstance(context.get("coverage"), Mapping) else None
     items = (
         _current_market_item(facts),
         _style_item(facts),

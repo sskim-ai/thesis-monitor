@@ -6,6 +6,11 @@ from app.macro.providers.base import (
     CollectedObservation,
     MacroProviderResult,
 )
+from app.services.krx_night_history_service import (
+    build_same_contract_timeframes,
+    default_krx_night_history_directory,
+    persist_live_probe_history,
+)
 
 
 KST = ZoneInfo("Asia/Seoul")
@@ -24,15 +29,33 @@ class KrxNightFuturesProvider:
             run_date=run_date,
             observation_time=as_of,
         )
+        history_update = persist_live_probe_history(probe)
+        history_warnings = [
+            "krx_night_history_update_failed:" + error for error in history_update.errors
+        ]
+        telemetry = probe.compact_summary()
+        telemetry["history_update"] = history_update.model_dump(mode="json")
         if not probe.night_session_usable:
             return MacroProviderResult(
                 provider=self.name,
-                warnings=[probe.reason or "night_session_unavailable"],
-                telemetry=probe.compact_summary(),
+                warnings=[
+                    probe.reason or "night_session_unavailable",
+                    *history_warnings,
+                ],
+                telemetry=telemetry,
             )
         observations: list[CollectedObservation] = []
         for item in probe.observations:
             observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
+            timeframes = build_same_contract_timeframes(
+                default_krx_night_history_directory(),
+                instrument_root=item.product,
+                reference_date=item.session_date,
+                daily_change_value=item.point_change,
+                daily_change_pct=item.change_pct,
+                daily_baseline_date=item.reference_date,
+                daily_baseline_close=item.reference_price,
+            )
             observations.append(
                 CollectedObservation(
                     series_code=SERIES_CODES[item.product],
@@ -53,10 +76,9 @@ class KrxNightFuturesProvider:
                         "contract_code": item.contract_code,
                         "contract_name": item.contract_name,
                         "expiry": item.maturity,
+                        "contract_maturity": item.maturity,
                         "exchange": item.exchange,
-                        "session_basis_contract": (
-                            "night-futures-session-basis-v1"
-                        ),
+                        "session_basis_contract": ("night-futures-session-basis-v1"),
                         "session_type": item.session_type,
                         "session_date": item.session_date.isoformat(),
                         "trade_date": item.session_date.isoformat(),
@@ -97,19 +119,21 @@ class KrxNightFuturesProvider:
                         "provider_change_match": item.provider_change_match,
                         "night_source_record_id": item.night_source_record_id,
                         "reference_source_record_id": item.reference_source_record_id,
-                        "night_source_payload_sha256": (
-                            item.night_source_payload_sha256
-                        ),
-                        "reference_source_payload_sha256": (
-                            item.reference_source_payload_sha256
-                        ),
+                        "night_source_payload_sha256": (item.night_source_payload_sha256),
+                        "reference_source_payload_sha256": (item.reference_source_payload_sha256),
                         "session_evidence": item.session_evidence,
+                        "night_timeframes": (
+                            timeframes.model_dump(mode="json") if timeframes is not None else None
+                        ),
                     },
                 )
             )
         return MacroProviderResult(
             provider=self.name,
             observations=observations,
-            warnings=(probe.warnings if probe.session_freshness != "fresh" else []),
-            telemetry=probe.compact_summary(),
+            warnings=[
+                *(probe.warnings if probe.session_freshness != "fresh" else []),
+                *history_warnings,
+            ],
+            telemetry=telemetry,
         )

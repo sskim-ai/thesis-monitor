@@ -3,6 +3,11 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Iterable, Mapping
 
+from app.services.krx_night_history_service import (
+    KRX_NIGHT_DWM_CONTRACT,
+    KrxNightAggregateBar,
+    KrxNightTimeframes,
+)
 from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
 from app.services.us_market_digest_plan_service import (
     DigestOmissionReason,
@@ -19,6 +24,10 @@ INDEX_SYMBOLS = ("SPY", "QQQ", "IWM", "SOXX", "RSP")
 NIGHT_LABELS = {
     "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 야간선물",
     "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
+}
+DWM_LABELS = {
+    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
+    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
 }
 
 
@@ -83,6 +92,70 @@ def _current_return(fact: Mapping[str, object]) -> float | None:
 
 def _format_pct(value: float) -> str:
     return f"{value:+.2f}%"
+
+
+def _night_return(frame: KrxNightAggregateBar) -> str:
+    if frame.return_pct is None:
+        return " · 수익률 산출 불가"
+    label = {
+        "DAILY": "주간장 대비",
+        "WEEKLY": "주간",
+        "MONTHLY": "월간",
+    }[frame.timeframe]
+    return f" · {label} {frame.return_pct:+.2f}%"
+
+
+def _night_timeframe_line(frame: KrxNightAggregateBar, label: str) -> str:
+    status = {
+        "IN_PROGRESS": "진행중",
+        "SAME_CONTRACT_PARTIAL_PERIOD": "동일만기 일부",
+    }.get(frame.status)
+    heading = f"{label}({status})" if status else label
+    return (
+        f"  - {heading}: O {frame.open:,.2f} · H {frame.high:,.2f} · "
+        f"L {frame.low:,.2f} · C {frame.close:,.2f}{_night_return(frame)}"
+    )
+
+
+def _night_timeframe_block(
+    row: Mapping[str, object],
+    *,
+    series: str,
+) -> tuple[str, tuple[str, ...]] | None:
+    raw = row.get("night_timeframes")
+    if not isinstance(raw, Mapping):
+        return None
+    try:
+        frames = KrxNightTimeframes.model_validate(raw)
+    except ValueError:
+        return None
+    if (
+        frames.contract != KRX_NIGHT_DWM_CONTRACT
+        or frames.series_code != series
+        or frames.contract_code != row.get("contract_code")
+        or frames.reference_date.isoformat() != str(row.get("session_date"))
+        or any(
+            frame.series_code != series
+            or frame.contract_code != frames.contract_code
+            or frame.reference_date != frames.reference_date
+            for frame in (frames.daily, frames.weekly, frames.monthly)
+        )
+    ):
+        return None
+    maturity = frames.contract_maturity.replace("-", "")
+    lines = [f"• {DWM_LABELS[series]} ({maturity})"]
+    lines.extend(
+        (
+            _night_timeframe_line(frames.daily, "일봉"),
+            _night_timeframe_line(frames.weekly, "주봉"),
+            _night_timeframe_line(frames.monthly, "월봉"),
+        )
+    )
+    return "\n".join(lines), (
+        frames.daily.fact_id,
+        frames.weekly.fact_id,
+        frames.monthly.fact_id,
+    )
 
 
 def _plan(value: object) -> UsMarketDigestPlan | None:
@@ -164,9 +237,7 @@ def render_us_full_market_message(
     small_cap = _plan_item(plan, UsMarketDigestSlot.SMALL_CAP_RELATIVE)
     breadth = _plan_item(plan, UsMarketDigestSlot.BREADTH_STATE)
     style_claim = (
-        style.claim_text
-        if style is not None and style.selected and style.claim_text
-        else ""
+        style.claim_text if style is not None and style.selected and style.claim_text else ""
     )
     small_cap_claim = (
         small_cap.claim_text
@@ -181,9 +252,7 @@ def render_us_full_market_message(
     if style_claim and small_cap_claim and breadth_claim:
         internal_lines.append(f"• {style_claim} {small_cap_claim}")
     else:
-        internal_lines.extend(
-            f"• {claim}" for claim in (style_claim, small_cap_claim) if claim
-        )
+        internal_lines.extend(f"• {claim}" for claim in (style_claim, small_cap_claim) if claim)
     if breadth is not None and breadth.selected and breadth.claim_text:
         internal_lines.append(f"• {breadth.claim_text}")
 
@@ -197,8 +266,7 @@ def render_us_full_market_message(
         sector_facts = [
             fact
             for ref in sector.evidence_refs
-            if (fact := next((row for row in facts if _fact_id(row) == ref), None))
-            is not None
+            if (fact := next((row for row in facts if _fact_id(row) == ref), None)) is not None
         ]
         sector_values = [
             (fact, _current_return(fact))
@@ -208,9 +276,7 @@ def render_us_full_market_message(
         if len(sector_values) == 2:
             leader, laggard = sector_values
             leader_label = str(_fields(leader[0]).get("label") or _series(leader[0]))
-            laggard_label = str(
-                _fields(laggard[0]).get("label") or _series(laggard[0])
-            )
+            laggard_label = str(_fields(laggard[0]).get("label") or _series(laggard[0]))
             internal_lines.extend(
                 (
                     f"• 업종 강세: {leader_label} {_format_pct(leader[1])}",
@@ -242,16 +308,29 @@ def render_us_full_market_message(
                 or row.get("state") != "CURRENT_DIRECTIONAL"
             ):
                 continue
+            timeframe_block = _night_timeframe_block(row, series=series)
+            if timeframe_block is not None:
+                text, fact_ids = timeframe_block
+                night_lines.append(text)
+                night_fact_ids.extend(fact_ids)
+                continue
             night_lines.append(f"• {label} {_format_pct(value)}")
             night_fact_ids.append(str(row["fact_id"]))
 
     macro_lines: list[str] = []
+    real_yield_fact = by_series.get("DFII10")
+    real_yield_claim = (
+        render_specific_macro_claim(real_yield_fact) if real_yield_fact is not None else ""
+    )
+    if "직전" in real_yield_claim and "%p" in real_yield_claim:
+        macro_lines.append(f"• {real_yield_claim}")
     macro = _plan_item(plan, UsMarketDigestSlot.MACRO_CONTEXT)
     macro_fact = _safe_macro_fact(macro, by_id) if macro is not None else None
     if (
         macro is not None
         and macro.omission_reason == DigestOmissionReason.SELECTED
         and macro_fact is not None
+        and _fact_id(macro_fact) != _fact_id(real_yield_fact or {})
     ):
         macro_claim = render_specific_macro_claim(macro_fact)
         macro_role = str(_fields(macro_fact).get("temporal_role") or "")
@@ -263,9 +342,7 @@ def render_us_full_market_message(
 
     checks = _safe_next_checks(next_checks)
     if not checks:
-        checks = (
-            "다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",
-        )
+        checks = ("다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",)
 
     blocks = ["🇺🇸 미국시장 마감", "📈 주요 지수\n" + "\n".join(index_lines)]
     section_order = ["HEADER", "INDEX_BLOCK"]
