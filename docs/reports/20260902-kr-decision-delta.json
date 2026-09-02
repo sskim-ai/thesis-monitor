@@ -1,0 +1,88 @@
+{
+  "contract": "kr-natural-live-decision-delta-v1",
+  "decision_change_without_material_evidence_or_adjudication": 0,
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "rows": [
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "68d9789116edc1ce3be8a5cc487549cf3c2c748df3d81b847391bde7f607dbae",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "899971b974ad32c206398254e726d48c7c92079bd6ce96af5274d95ce7e9fb41",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "000660",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "997723d5d805b55a426f03184f2cd5d37b7069091768e7be9c1b97edc2f31c70",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "510a7b157d4247a9c611e38dfd96dd34851434323907b1bc10955299d8c92b6b",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "003690",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "45fa1282a0aadbcd82b1153711f2669191a8a78d71a4814aa33bc38cb6200a40",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "4a336cbd94e784b5471c6ebf61663c8ec77504bc348ef40eb8563099b5bcff7f",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "005490",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "a0f70e5e2cff356c34f35bda72e549691184c0ae6a23f4f38688f82e285c772f",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "b8f9bac5252d86b303e36f1a4547fc817b87da721ef187bc6b89d79d1abc7702",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "005930",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "f8d6098d48adf5f91368992399977320f0874c6be46ae659a427e6feb9c3b9b7",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "cb11a4f88ab030d9c4279d38480c20dd9268e12a495e9cf3fa309cac63a6ca93",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "010120",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "91148787a2e405b9d370ff8b7089deb9e20559c7c959d57b40671b1c0fcb2970",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "f90677f02d6d2a6222e754fd47ace9e1ba4682f53729e4a0fcaac32f0de5dd0f",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "012450",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "FINGERPRINT_NOT_COMPARABLE",
+      "current_evidence_sha256": "e0d7d5f72e94a33b6f3375323186bd4630c2b4c7ac00aa8ee0170a516d005ba2",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": null,
+      "reason": "new subject has no prior accepted V2 decision",
+      "ticker": "047810",
+      "unexplained_accepted_decision_drift": false
+    },
+    {
+      "accepted_decision_change": false,
+      "classification": "EVIDENCE_CHANGED_NONMATERIALLY",
+      "current_evidence_sha256": "a9a7adda3c5c3d56b3c79a592185a480377e63363e22cc3d25bbfe483e93d419",
+      "material_business_evidence_delta": false,
+      "prior_evidence_sha256": "beaa8badfed18996b874c983bad2989b92c6222371124ba8fd7f0a435870dd4b",
+      "reason": "price, supply, and packet-owned technical observations refreshed; deterministic business assessment remained no_material_change",
+      "ticker": "086280",
+      "unexplained_accepted_decision_drift": false
+    }
+  ],
+  "unexplained_accepted_decision_drift": 0
+}

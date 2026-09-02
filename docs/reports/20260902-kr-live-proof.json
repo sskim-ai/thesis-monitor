@@ -1,0 +1,139 @@
+{
+  "ai_review": {
+    "bundle_candidate_generated_count": 2,
+    "final_validation_pass_count": 0,
+    "final_validation_reject_count": 2,
+    "production_terminal_messages": {
+      "FALLBACK": 9,
+      "PASS": 0,
+      "REJECTED": 0,
+      "REPAIRED_PASS": 0
+    },
+    "stock_review_count_per_candidate": 8,
+    "validation_attempts": [
+      {
+        "artifact": "2026-09-02-kr-run-52-d077cd42b44c--daily-review-v3.10--dc747fff8565.json.1788336400.validation.json",
+        "automatic_numeric_bindings": 134,
+        "error_count": 2,
+        "errors": [
+          "market_review:numeric_fact_ref_redundant_authored_label:m_kospi_breadth:core_judgment.text:market_advance_ratio",
+          "market_review:numeric_fact_ref_redundant_authored_label:m_kosdaq_breadth:core_judgment.text:market_advance_ratio"
+        ],
+        "fallback_eligibility_preserved": true,
+        "manual_numeric_bindings": 0,
+        "status": "rejected"
+      },
+      {
+        "artifact": "2026-09-02-kr-run-52-d077cd42b44c--daily-review-v3.10--dc747fff8565.json.1788336493.validation.json",
+        "automatic_numeric_bindings": 136,
+        "error_count": 15,
+        "errors": [
+          "000660:numeric_usage_direction_mismatch:working-capital-relation:38a9a0707d38e538ccdb2e7e:fields.gap_percentage_points_signed",
+          "000660:numbers_without_provenance:business_earnings.text:2.1",
+          "000660:inventory_direction_wording_mismatch",
+          "003690:holder_decision_variable_missing",
+          "005490:numeric_usage_semantic_mismatch:working-capital-relation:ab1a9a616bcd8d6023b2db06:fields.gap_percentage_points_signed",
+          "005490:numeric_usage_direction_mismatch:working-capital-relation:ab1a9a616bcd8d6023b2db06:fields.gap_percentage_points_signed",
+          "005490:numbers_without_provenance:business_earnings.text:7.1",
+          "005490:inventory_direction_wording_mismatch",
+          "005930:numeric_usage_semantic_mismatch:working-capital-relation:4b43f129a5c3b9dbca52fa29:fields.gap_percentage_points_signed",
+          "005930:numeric_usage_direction_mismatch:working-capital-relation:4b43f129a5c3b9dbca52fa29:fields.gap_percentage_points_signed",
+          "005930:numbers_without_provenance:business_earnings.text:35.8",
+          "005930:inventory_direction_wording_mismatch",
+          "000660:valuation_interpretation_scope_economic_scope_mismatch:v_quality_earnings",
+          "010120:valuation_interpretation_scope_economic_scope_mismatch:v_unknown_pe",
+          "012450:valuation_interpretation_scope_economic_scope_mismatch:v_unknown_pe"
+        ],
+        "fallback_eligibility_preserved": true,
+        "manual_numeric_bindings": 0,
+        "status": "rejected"
+      }
+    ]
+  },
+  "common_disclaimer_owner": "app/services/accepted_decision_v2_service.py",
+  "contract": "kr-natural-live-proof-v1",
+  "delivery": {
+    "contract": "kr-natural-live-delivery-proof-v1",
+    "delivery_mode": "deterministic_fallback",
+    "dispatched_at": "2026-09-02T17:10:07.514760+09:00",
+    "duplicate_count": 0,
+    "exact_payload_match": true,
+    "expected_count": 9,
+    "intent_count": 9,
+    "orphan_count": 0,
+    "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+    "pending_count": 0,
+    "recipient_identifiers_included": false,
+    "sent_count": 9,
+    "status": "sent",
+    "unique_delivery_id_count": 9,
+    "unowned_retry_count": 0
+  },
+  "disclaimer_occurrence_count": 0,
+  "exactly_once_delivery": "PASS",
+  "explicit_v2_decision_count": 0,
+  "fallback_stock_count": 8,
+  "functional_delivery": "PASS",
+  "guards": {
+    "kr_decision_stage_local_ohlcv_http": 0,
+    "kr_packet_cohort_mutated_after_cutoff": 0,
+    "kr_production_state_mutation": 0,
+    "kr_repair_during_review": 0,
+    "kr_unowned_retry": 0,
+    "manual_kr_production_send": 0,
+    "manual_kr_production_trigger": 0,
+    "multiple_kr_producers_owned_packet": 0,
+    "one_kr_technical_failure_blocks_cohort": 0,
+    "raw_candidate_used_as_final": 0,
+    "supply_alone_changed_business_decision": 0
+  },
+  "identity_language_quality": "PASS_WITH_P2_NOTES",
+  "kr_v2_natural_live": "FAIL",
+  "live_exact_payload": "PASS",
+  "market_message_status": "PARTIAL_SAFE",
+  "middle_packet_id": "2026-09-02-kr-run-52-1b83c3e7e18e",
+  "next_repair_class": "COMBINED_BOUNDED_REPAIR",
+  "no_internal_contradiction": "PASS",
+  "p0_open": 0,
+  "p1_open": [
+    "Codex V2 model transport did not return candidates before fallback",
+    "AI review correction attempt retained 15 working-capital, holder-variable, and valuation-scope errors"
+  ],
+  "p2_backlog": [
+    "remove common accepted-decision disclaimer for KR and US",
+    "compact US night-futures D/W/M display",
+    "add US nominal Treasury 3Y/5Y/10Y/30Y with prior valid bp delta",
+    "replace standalone 10Y real-yield primary block",
+    "consider exact KOSPI/KOSDAQ and breadth values in KR market digest"
+  ],
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "price_structure_validation": "PASS",
+  "primary_packet_id": "2026-09-02-kr-run-52-fb35c544f33a",
+  "production_universe_cutoff": "2026-09-02T07:05:32.720669+00:00",
+  "run_id": "52",
+  "runtime_lineage": "PASS",
+  "runtime_sha": "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9",
+  "session_date": "2026-09-02",
+  "source_ready_count": 8,
+  "technical_counts": {
+    "FULL": 8,
+    "INVALID": 0,
+    "PARTIAL_SAFE": 0,
+    "UNAVAILABLE": 0
+  },
+  "v2": {
+    "accepted_ready_count": 0,
+    "adjudication_completed_count": 0,
+    "adjudication_required_count": 0,
+    "candidate_generated_count": 0,
+    "candidate_validation_pass_count": 0,
+    "context_ready_count": 8,
+    "failure": "network_dns_transport_failure",
+    "model": "gpt-5.6-sol",
+    "model_call_reached": true,
+    "model_covered_count": 8,
+    "reasoning_effort": "xhigh"
+  },
+  "valuation_semantic_validation": "PASS",
+  "work_instruction_sha": "00038ad95fb7cab6a03175e1139547492a1ff585"
+}

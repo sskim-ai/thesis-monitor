@@ -1,0 +1,98 @@
+{
+  "contract": "kr-natural-live-decisions-v1",
+  "distribution": {
+    "BUY": 0,
+    "HOLD": 0,
+    "NOT_READY": 8,
+    "SELL": 0
+  },
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "prior_distribution": {
+    "BUY": 0,
+    "HOLD": 7,
+    "NOT_READY": 1,
+    "SELL": 0
+  },
+  "rows": [
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "SK하이닉스",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "000660"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "코리안리",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "003690"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "POSCO홀딩스",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "005490"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "삼성전자",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "005930"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "LS일렉트릭",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "010120"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "한화에어로스페이스",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "012450"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "한국항공우주산업",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "NOT_READY",
+      "ticker": "047810"
+    },
+    {
+      "adjudication": "NOT_REACHED",
+      "candidate_reason": "decision_v2_model_transport_failed",
+      "company_name": "현대글로비스",
+      "current_accepted": "NOT_READY",
+      "current_candidate": "NOT_READY",
+      "deterministic_assessment": "no_material_change",
+      "prior_accepted": "HOLD",
+      "ticker": "086280"
+    }
+  ]
+}

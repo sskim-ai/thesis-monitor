@@ -1,0 +1,99 @@
+{
+  "all_message_average_character_count": 1148.3333333333333,
+  "contract": "kr-natural-live-message-quality-v1",
+  "disclaimer_occurrence_count": 0,
+  "duplication_density": "LOW",
+  "explicit_v2_decision_count": 0,
+  "fallback_stock_count": 8,
+  "internal_contradiction_status": "PASS",
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "rows": [
+    {
+      "character_count": 1145,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [
+        "• HBM4 출하·수율·LTA",
+        "• HBM·DRAM ASP와 영업이익률"
+      ],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "000660"
+    },
+    {
+      "character_count": 1140,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "003690"
+    },
+    {
+      "character_count": 1144,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "005490"
+    },
+    {
+      "character_count": 1106,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "005930"
+    },
+    {
+      "character_count": 953,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "010120"
+    },
+    {
+      "character_count": 1014,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "012450"
+    },
+    {
+      "character_count": 1011,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "047810"
+    },
+    {
+      "character_count": 1193,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "086280"
+    },
+    {
+      "character_count": 1629,
+      "classification": "GOOD",
+      "disclaimer_present": false,
+      "duplicate_substantive_lines": [
+        "→ 현재 신호: 약한 부정"
+      ],
+      "explicit_v2_decision": false,
+      "renderer": "DETERMINISTIC_FALLBACK",
+      "ticker": "__DAILY_DIGEST_KR__"
+    }
+  ],
+  "stock_average_character_count": 1088.25
+}

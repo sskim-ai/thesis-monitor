@@ -1,0 +1,17 @@
+{
+  "contract": "kr-natural-live-delivery-proof-v1",
+  "delivery_mode": "deterministic_fallback",
+  "dispatched_at": "2026-09-02T17:10:07.514760+09:00",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "expected_count": 9,
+  "intent_count": 9,
+  "orphan_count": 0,
+  "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+  "pending_count": 0,
+  "recipient_identifiers_included": false,
+  "sent_count": 9,
+  "status": "sent",
+  "unique_delivery_id_count": 9,
+  "unowned_retry_count": 0
+}
