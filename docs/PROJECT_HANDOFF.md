@@ -2406,3 +2406,20 @@ Production-equivalent KR/US is `8/8 + 14/14`; the dedicated sink is `22/22 exact
 of the next ordinary US and KR cycles for natural runtime-state, accepted-decision, daily-review,
 night-futures visibility/safe omission, and exactly-once delivery proof. Production Assist remains
 OFF.
+
+## 2026-09-02 Previous-XKRX Night Reference Handoff
+
+Start with `docs/reports/20260902-night-reference-repair-readiness.json` and the artifact index.
+Exact instruction commit is `46c6707325fe214a7d686095b940cabb55911006`; implementation is
+`7efc07bb0a9c635b78bb63ec642b50656b01b0b4`.
+
+The old US-session-owned target was the root cause of run-51's false stale classification. Under
+`us-morning-night-reference-date-v3`, the 2026-09-02 KST observation expects the previous valid
+XKRX business date, `2026-09-01`, matching provider raw `BAS_DD`. Both required contracts are
+ready/rendered `2/2`; non-night market numeric and selection diff are `0/0`.
+
+The previous run-51 `SOURCE_LIMITATION_SAFE` record is preserved as old-contract history and is
+superseded only for current night-reference readiness. V2, daily review, technical recovery,
+KR/US production-equivalent behavior, schedules, and recipients are unchanged. No send or delivery
+intent occurred. Wait for the next ordinary US morning cycle and review it read-only; Production
+Assist remains OFF.

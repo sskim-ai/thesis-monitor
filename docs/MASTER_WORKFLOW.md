@@ -2341,3 +2341,21 @@ orphan, production send, or production intent. Full regression is `2062 passed`;
 Actions Test/Lint pass. Open P0/material P1/P2 are `0/0/0`, and the bounded repair is
 `READY_FOR_MAIN`. This is not natural LIVE_PASS. Wait for the next ordinary US and KR cycles and
 inspect the repaired paths read-only.
+
+### 40.34 US Morning Previous-XKRX Night Reference Contract
+
+Exact instruction commit `46c6707325fe214a7d686095b940cabb55911006` precedes implementation
+`7efc07bb0a9c635b78bb63ec642b50656b01b0b4`. The US-morning product target now uses
+`us-morning-night-reference-date-v3`: for KST date `D`, the expected night reference is the latest
+valid XKRX business date strictly before `D`. US regular-session dates no longer own the product
+mapping; provider raw `BAS_DD` and the independent 06:00 finality gate remain explicit.
+
+Run-51 now expects `2026-09-01`, exactly matching both official provider rows. Date, instrument,
+same-contract DAY comparison, finality, and provenance gates pass at ready/rendered `2/2`. The
+renderer adds those two packet-owned facts with non-night numeric/selection diff `0/0`. Frozen V2
+accepted-ready remains `14/14`, daily-review quality passes, and KR/US production-equivalent proof
+remains `8/8 + 14/14`. Full regression is `2077 passed`; implementation Actions Test/Lint pass.
+
+Open P0/material P1/P2 are `0/0/0`. The next dependency is the next ordinary US morning cycle,
+reviewed read-only. Do not manually run a task, resend production, expose recipient values, or treat
+retrospective replay as natural proof. Production Assist remains OFF.

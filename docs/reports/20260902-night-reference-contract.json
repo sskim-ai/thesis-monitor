@@ -1,0 +1,67 @@
+{
+  "calendar_day_subtraction": false,
+  "calendar_results": [
+    {
+      "actual_reference_date": "2026-09-01",
+      "case": "ordinary_weekday_0800",
+      "expected_reference_date": "2026-09-01",
+      "observation_time_kst": "2026-09-02T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-09-01",
+      "case": "ordinary_weekday_0820",
+      "expected_reference_date": "2026-09-01",
+      "observation_time_kst": "2026-09-02T08:20:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-08-07",
+      "case": "monday",
+      "expected_reference_date": "2026-08-07",
+      "observation_time_kst": "2026-08-10T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-08-14",
+      "case": "krx_holiday",
+      "expected_reference_date": "2026-08-14",
+      "observation_time_kst": "2026-08-18T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-09-23",
+      "case": "consecutive_holidays",
+      "expected_reference_date": "2026-09-23",
+      "observation_time_kst": "2026-09-28T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-08-31",
+      "case": "month_boundary",
+      "expected_reference_date": "2026-08-31",
+      "observation_time_kst": "2026-09-01T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-12-30",
+      "case": "year_boundary",
+      "expected_reference_date": "2026-12-30",
+      "observation_time_kst": "2027-01-04T08:00:00+09:00",
+      "status": "PASS"
+    },
+    {
+      "actual_reference_date": "2026-09-07",
+      "case": "us_holiday_xkrx_open",
+      "expected_reference_date": "2026-09-07",
+      "observation_time_kst": "2026-09-08T08:00:00+09:00",
+      "status": "PASS"
+    }
+  ],
+  "calendar_status": "PASS",
+  "contract": "us-morning-night-reference-date-v3",
+  "date_owner": "XKRX",
+  "finality_rule": "independent_06_00_kst_gate",
+  "rule": "latest_valid_xkrx_business_date_strictly_before_kst_date",
+  "us_regular_session_is_mapping_input": false
+}

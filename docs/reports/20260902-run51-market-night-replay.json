@@ -1,0 +1,17 @@
+{
+  "baseline_market_message": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.69%\n• QQQ -1.27%\n• IWM -1.14%\n• SOXX -2.10%\n• RSP -0.82%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다.\n• 업종 강세: 에너지 +1.27%\n• 업종 약세: 경기소비재 -1.72%\n\n📌 다음 확인\n• 다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",
+  "baseline_sha256": "5f66d74ce7f7ce8198fecb7018fbe2baab90efdd35c56680865343e12dc19f41",
+  "contract": "run51-market-night-replay-v1",
+  "night_fact_ids": [
+    "market:night_futures:1",
+    "market:night_futures:2"
+  ],
+  "night_section": "🌙 한국 야간선물 · 09/01 새벽 종료 · 08/31 주간장 대비\n• KOSPI200 최근월물 1,064.50 · -3.35pt (-0.31%)\n• KOSDAQ150 최근월물 1,432.80 · -7.30pt (-0.51%)",
+  "non_night_market_numeric_diff": 0,
+  "non_night_market_selection_diff": 0,
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "ready_night_fact_not_in_packet": 0,
+  "ready_night_fact_omitted_by_renderer": 0,
+  "replay_sha256": "32a538f4e27c0ac9aeb1e0a35def14af572ddd21221a8a810d533cd9ef30cffa",
+  "replayed_market_message": "🇺🇸 미국시장 마감\n\n📈 주요 지수\n• SPY -0.69%\n• QQQ -1.27%\n• IWM -1.14%\n• SOXX -2.10%\n• RSP -0.82%\n\n🔎 시장 내부\n• 동일가중 S&P500은 하락해 시가총액가중 S&P500과 방향이 같았습니다.\n• 반도체 SOXX가 SPY를 크게 밑돌아 반도체 상대약세가 두드러졌습니다.\n• 업종 강세: 에너지 +1.27%\n• 업종 약세: 경기소비재 -1.72%\n\n🌙 한국 야간선물 · 09/01 새벽 종료 · 08/31 주간장 대비\n• KOSPI200 최근월물 1,064.50 · -3.35pt (-0.31%)\n• KOSDAQ150 최근월물 1,432.80 · -7.30pt (-0.51%)\n\n📌 다음 확인\n• 다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다."
+}

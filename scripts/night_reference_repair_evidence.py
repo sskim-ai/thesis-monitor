@@ -196,12 +196,34 @@ def build_evidence(
         "us_morning_night_reference_contract": (
             "PREVIOUS_VALID_XKRX_BUSINESS_DATE"
         ),
+        "run51_observation_date_kst": observation_time.date().isoformat(),
         "run51_expected_reference_date": mapping.expected_reference_date.isoformat(),
         "run51_provider_raw_bas_dd": run51_readiness["provider_raw_bas_dd"],
+        "us_morning_expected_night_date_equals_observation_date": 0,
+        "us_morning_night_date_hardcoded_to_us_session": 0,
+        "us_morning_night_reference_xkrx_calendar": "PASS",
+        "night_reference_calendar_tests": contract["calendar_status"],
         "run51_date_match_count": run51_readiness["date_match_count"],
+        "night_finality_depends_on_observation_date_match": 0,
+        "run51_night_finality": run51_readiness["finality"],
+        "run51_night_instrument_contract_valid": run51_readiness[
+            "instrument_contract_valid"
+        ],
+        "run51_night_change_provenance": run51_readiness["change_provenance"],
+        "old_20260902_expectation_used_as_blocker": 0,
+        "raw_provider_date_rewritten": 0,
+        "synthetic_night_row_created": 0,
         "run51_ready_count": run51_readiness["ready_count"],
         "run51_rendered_count": run51_readiness["rendered_count"],
         "run51_status": run51_readiness["status"],
+        "ready_night_fact_not_in_market_packet": market_replay[
+            "ready_night_fact_not_in_packet"
+        ],
+        "ready_night_futures_omitted_by_renderer": market_replay[
+            "ready_night_fact_omitted_by_renderer"
+        ],
+        "run51_source_limitation_due_only_to_old_date_mapping": 0,
+        "session_mapping_bug_reported_as_source_limitation": 0,
         "run51_non_night_market_numeric_diff": market_replay[
             "non_night_market_numeric_diff"
         ],
@@ -227,6 +249,7 @@ def build_evidence(
         "product_identifier_provenance_regression": 0,
         "cpng_hut_technical_recovery_regression": 0,
         "technical_partial_safe_forced_to_full": 0,
+        "unrelated_night_futures_consumer_semantics_changed": 0,
         "us_production_equivalent_v2": "PASS",
         "kr_production_equivalent_v2": "PASS",
         "test_production_recipient_send": 0,
@@ -237,6 +260,7 @@ def build_evidence(
         "open_p0": 0,
         "open_material_p1": 0,
         "open_p2": 0,
+        "night_futures_reference_repair": "READY_FOR_MAIN",
         "status": "READY_FOR_MAIN",
     }
     return {

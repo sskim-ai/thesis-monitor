@@ -599,3 +599,14 @@ not use world-writable state, root execution, plaintext auth copies, ticker exce
 quality thresholds, forced night rows, manual production tasks, production Telegram proof, or raw
 recipient values. The dedicated `22/22` sink result is production-equivalent evidence only; the
 next dependency is ordinary natural US/KR observation.
+
+The previous-XKRX night-reference repair starts from clean main
+`ec616105f69aea3ba561ea9a6eea0835801d9a07`. Exact instruction commit
+`46c6707325fe214a7d686095b940cabb55911006` precedes implementation
+`7efc07bb0a9c635b78bb63ec642b50656b01b0b4`.
+
+Descendants must preserve XKRX ownership of the US-morning night-reference target, the latest valid
+XKRX business date strictly before KST date `D`, raw provider `BAS_DD`, independent 06:00 finality,
+same-contract DAY comparison, and fail-closed stale/future handling. They may not restore US-session
+ownership, use naive calendar subtraction, force rows ready, weaken validators, alter schedules,
+manually replay production, expose recipient values, or treat run-51 replay as natural live proof.

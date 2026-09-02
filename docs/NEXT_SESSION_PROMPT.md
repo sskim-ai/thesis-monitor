@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+Latest authoritative repair is the 2026-09-02 previous-XKRX night-reference contract. Read
+`docs/reports/20260902-night-reference-repair-readiness.json`, the contract, run-51 readiness,
+renderer replay, parity, live guard, and artifact index first. Exact instruction commit is
+`46c6707325fe214a7d686095b940cabb55911006`; implementation is
+`7efc07bb0a9c635b78bb63ec642b50656b01b0b4` on base
+`ec616105f69aea3ba561ea9a6eea0835801d9a07`.
+
+The US morning expected reference is now the latest valid XKRX business date strictly before the
+KST observation date. Run-51 expected/raw date is `2026-09-01`, date match and independent gates
+pass `2/2`, ready/rendered is `2/2`, and non-night market numeric/selection diff is `0/0`. Full
+pytest is `2077 passed`; implementation Actions `33588024877` passes Test/Lint. Open
+P0/material P1/P2 are `0/0/0`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Inspect the ordinary US morning packet read-only for
+v3 expected/raw dates, both night rows, exact one-time rendering or safe omission, V2 decisions,
+daily-review quality, and exactly-once delivery. Do not run a Scheduled Task manually, replay a
+production message, expose recipient values, or enable Production Assist.
+
+---
+
 Latest authoritative repair is the 2026-09-01 V2 natural CLI path and product-identifier provenance
 work. Read `docs/reports/20260901-v2-runtime-repair-readiness.json`, the CLI path and identifier
 control reports, KR/US production-equivalent reports, exact test-sink report, live guard, and

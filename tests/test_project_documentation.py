@@ -98,6 +98,10 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "EXACT_PAYLOAD_MESSAGE_QUALITY_VALIDATION.md",
     ROOT / "docs" / "architecture" / "US_MARKET_DIGEST_EVIDENCE_OWNERSHIP.md",
     ROOT / "docs" / "architecture" / "KOREA_NIGHT_FUTURES_IN_US_MORNING.md",
+    ROOT
+    / "docs"
+    / "architecture"
+    / "US_MORNING_NIGHT_FUTURES_REFERENCE_DATE_CONTRACT.md",
     ROOT / "docs" / "architecture" / "US_FULL_MESSAGE_REFINEMENT_POLICY.md",
     ROOT / "docs" / "architecture" / "CROSS_MARKET_AI_DECISION_ENGINE.md",
     ROOT / "docs" / "architecture" / "OHLCV_MULTI_TIMEFRAME_FEATURE_ENGINE.md",
@@ -116,6 +120,11 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260831-onboarding-readiness-artifact-index.md",
     ROOT / "docs" / "reports" / "20260901-us-v2-natural-live-proof.json",
     ROOT / "docs" / "reports" / "20260901-us-v2-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260902-night-reference-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260902-night-reference-contract.json",
+    ROOT / "docs" / "reports" / "20260902-run51-night-readiness.json",
+    ROOT / "docs" / "reports" / "20260902-run51-market-night-replay.json",
+    ROOT / "docs" / "reports" / "20260902-night-reference-repair-readiness.json",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -136,15 +145,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260902-us-run51-three-p1-repair"
+        "codex/20260902-night-futures-previous-xkrx-business-day"
     )
     assert state["current_phase"] == (
-        "run51_three_p1_repair_ready_for_main_awaiting_natural_us_kr_live"
+        "night_reference_v3_ready_for_main_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
-        "20260902_run51_runtime_state_daily_review_night_futures_repair"
+        "20260902_night_futures_previous_xkrx_business_day_contract_repair"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_kr_live"
+    assert state["next_default_phase"] == "wait_for_next_natural_us_live"
     run51 = state["run51_three_p1_repair_20260902"]
     assert run51["work_instruction_commit"] == (
         "ff255fc710a3b86b0496cdedca505a7a4a5323e7"
@@ -165,6 +174,31 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert run51["open_material_p1"] == 0
     assert run51["open_p2"] == 0
     assert run51["result"] == "READY_FOR_MAIN"
+    assert run51["superseded_for_night_reference_readiness_by"] == (
+        "us-morning-night-reference-date-v3"
+    )
+    night_reference = state[
+        "night_reference_previous_xkrx_business_day_repair_20260902"
+    ]
+    assert night_reference["work_instruction_commit"] == (
+        "46c6707325fe214a7d686095b940cabb55911006"
+    )
+    assert night_reference["implementation_commit"] == (
+        "7efc07bb0a9c635b78bb63ec642b50656b01b0b4"
+    )
+    assert night_reference["reference_date_contract"] == (
+        "us-morning-night-reference-date-v3"
+    )
+    assert night_reference["run51_expected_reference_date"] == "2026-09-01"
+    assert night_reference["run51_provider_raw_bas_dd"] == "2026-09-01"
+    assert night_reference["run51_date_match"] == "PASS_2_OF_2"
+    assert night_reference["run51_ready_rendered"] == "2/2"
+    assert night_reference["run51_non_night_numeric_diff"] == 0
+    assert night_reference["run51_non_night_selection_diff"] == 0
+    assert night_reference["open_p0"] == 0
+    assert night_reference["open_material_p1"] == 0
+    assert night_reference["open_p2"] == 0
+    assert night_reference["result"] == "READY_FOR_MAIN"
     natural_v2 = state["us_v2_natural_live_readonly_verification_20260901"]
     assert natural_v2["instruction_commit"] == (
         "e6c11cff168fa430d7ddc7095d8c407d80948553"
@@ -203,15 +237,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["recorded_base_commit"] == (
-        "2a6bbc449d6802490560cb89d83e0d1fc3e88b24"
+        "ec616105f69aea3ba561ea9a6eea0835801d9a07"
     )
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    run51_implementation = "16fa1222136b300d900682904f8391ef5c4b482a"
-    assert state["deployed_code_commit"] == run51_implementation
-    assert state["main_code_commit"] == run51_implementation
-    assert state["operating_code_commit"] == run51_implementation
+    night_reference_implementation = "7efc07bb0a9c635b78bb63ec642b50656b01b0b4"
+    assert state["deployed_code_commit"] == night_reference_implementation
+    assert state["main_code_commit"] == night_reference_implementation
+    assert state["operating_code_commit"] == night_reference_implementation
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1483,7 +1517,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == run51_implementation
+    assert state["current_commit"] == night_reference_implementation
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")
