@@ -5,6 +5,7 @@ import asyncio
 import json
 
 import pytest
+from pydantic import ValidationError
 
 from scripts import v2_production_cutover_preflight as preflight
 
@@ -67,6 +68,11 @@ from app.services.accepted_decision_consistency_service import (
     MaterialEvidenceDelta,
     audit_accepted_decision_consistency,
 )
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    decision_from_directional_balance,
+    render_directional_balance,
+)
 
 
 def _claim(ref: str, text: str = "검증된 근거가 이 해석을 지지합니다.") -> EvidenceClaim:
@@ -121,6 +127,10 @@ def _candidate() -> PreconfirmationDecisionCandidate:
     return PreconfirmationDecisionCandidate(
         ticker="TEST",
         decision="BUY",
+        directional_balance=DirectionalBalance(buy=6, sell=4),
+        buy_drivers=(_claim("ref:valuation", "보수적 평가가 매수 방향을 지지합니다."),),
+        sell_drivers=(_claim("ref:risks", "실행 위험이 매도 방향의 반대 근거입니다."),),
+        balance_summary="낮은 기대와 실행 위험을 함께 반영해 매수 우위가 있습니다.",
         reasoning_grade="VERY_HIGH",
         confidence="MEDIUM",
         timing="NEUTRAL",
@@ -174,14 +184,20 @@ def _candidate() -> PreconfirmationDecisionCandidate:
         ),
         preconfirmation_error_cost=PreconfirmationErrorCostAssessment(
             cost=PreconfirmationErrorCost.MEDIUM,
-            basis=_claim("ref:risks", "초기 가정 실패의 손실 경로는 관리 가능하지만 남아 있습니다."),
+            basis=_claim(
+                "ref:risks", "초기 가정 실패의 손실 경로는 관리 가능하지만 남아 있습니다."
+            ),
             capital_loss_channel=_claim("ref:quality", "사업 내구성 훼손이 영구 손실 경로입니다."),
         ),
         pre_confirmation_buy=True,
         preconfirmation_buy_explanation=PreconfirmationBuyExplanation(
             not_yet_confirmed=_claim("ref:unknown", "신규 수익화의 반복성은 아직 미확인입니다."),
-            directionally_credible=_claim("ref:earnings", "현재 실적 방향은 초기 논리와 일치합니다."),
-            market_already_prices=_claim("ref:expectations", "시장은 상당한 불확실성을 반영합니다."),
+            directionally_credible=_claim(
+                "ref:earnings", "현재 실적 방향은 초기 논리와 일치합니다."
+            ),
+            market_already_prices=_claim(
+                "ref:expectations", "시장은 상당한 불확실성을 반영합니다."
+            ),
             favorable_asymmetry=_claim("ref:valuation", "현재 평가는 보수적 결과도 수용합니다."),
             thesis_break_risk=_claim("ref:risks", "기존 사업 훼손은 초기 논리를 깨뜨립니다."),
             buy_to_hold_or_sell=_claim("ref:risks", "방향성 증거가 반전되면 판단을 낮춥니다."),
@@ -200,9 +216,93 @@ def _candidate() -> PreconfirmationDecisionCandidate:
     )
 
 
-def test_preflight_repairs_batch_schema_before_candidate_validation(
-    monkeypatch, tmp_path
+def _candidate_with_balance(buy: float) -> PreconfirmationDecisionCandidate:
+    balance = DirectionalBalance(buy=buy, sell=10 - buy)
+    decision = decision_from_directional_balance(balance)
+    baseline = _candidate()
+    return baseline.model_copy(
+        update={
+            "decision": decision,
+            "directional_balance": balance,
+            "pre_confirmation_buy": decision == "BUY",
+            "preconfirmation_buy_explanation": (
+                baseline.preconfirmation_buy_explanation if decision == "BUY" else None
+            ),
+            "post_confirmation_hold": False,
+            "postconfirmation_hold_explanation": None,
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    ("buy", "expected_decision", "expected_render"),
+    (
+        (6, "BUY", "BUY 6 : SELL 4"),
+        (5, "HOLD", "BUY 5 : SELL 5"),
+        (4, "SELL", "BUY 4 : SELL 6"),
+        (5.5, "HOLD", "BUY 5.5 : SELL 4.5"),
+    ),
+)
+def test_directional_balance_derives_required_label_anchors(
+    buy: float,
+    expected_decision: str,
+    expected_render: str,
 ) -> None:
+    candidate = _candidate_with_balance(buy)
+
+    assert candidate.decision == expected_decision
+    assert render_directional_balance(candidate.directional_balance) == expected_render
+    assert validate_preconfirmation_candidate(_packet(), candidate).valid is True
+
+
+@pytest.mark.parametrize(
+    ("buy", "sell", "error"),
+    (
+        (6, 3, "directional_balance_sum_not_10"),
+        (5.25, 4.75, "directional_balance_false_precision"),
+        (float("nan"), 5, "directional_balance_non_finite"),
+    ),
+)
+def test_directional_balance_rejects_invalid_sum_precision_and_non_finite_values(
+    buy: float,
+    sell: float,
+    error: str,
+) -> None:
+    with pytest.raises(ValidationError, match=error):
+        DirectionalBalance(buy=buy, sell=sell)
+
+
+@pytest.mark.parametrize(
+    ("field", "text", "expected_error"),
+    (
+        (
+            "balance_summary",
+            "BUY 확률은 높지만 위험도 남아 있습니다.",
+            "directional_balance_probability_language",
+        ),
+        (
+            "balance_summary",
+            "고정 점수 합산으로 매수 우위를 정했습니다.",
+            "directional_balance_fixed_score_language",
+        ),
+        (
+            "buy_drivers",
+            (_claim("ref:valuation", "매수 승률이 높습니다."),),
+            "directional_balance_probability_language",
+        ),
+    ),
+)
+def test_directional_balance_rejects_probability_and_fixed_score_language(
+    field: str,
+    text: object,
+    expected_error: str,
+) -> None:
+    candidate = _candidate().model_copy(update={field: text})
+
+    assert expected_error in validate_preconfirmation_candidate(_packet(), candidate).errors
+
+
+def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch, tmp_path) -> None:
     packet = _packet()
     context = build_accepted_v2_production_context(
         packet={
@@ -223,9 +323,7 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(
     )
     invalid = valid.model_dump(mode="json")
     maturity = invalid["candidates"][0]["driver_maturity"][0]
-    maturity["contradicting_evidence_refs"].append(
-        maturity["supporting_evidence_refs"][0]
-    )
+    maturity["contradicting_evidence_refs"].append(maturity["supporting_evidence_refs"][0])
 
     def fake_invoke(**kwargs) -> None:
         output = kwargs["output"]
@@ -356,17 +454,20 @@ def test_confirmed_business_can_be_postconfirmation_hold() -> None:
     candidate = _candidate().model_copy(
         update={
             "decision": "HOLD",
+            "directional_balance": DirectionalBalance(buy=5, sell=5),
             "pre_confirmation_buy": False,
             "preconfirmation_buy_explanation": None,
             "post_confirmation_hold": True,
             "postconfirmation_hold_explanation": PostconfirmationHoldExplanation(
                 business_proof=_claim("ref:earnings", "사업 증거는 충분히 확인됐습니다."),
-                price_repricing=_claim("ref:valuation", "가격도 함께 재평가돼 상방 여유가 줄었습니다."),
+                price_repricing=_claim(
+                    "ref:valuation", "가격도 함께 재평가돼 상방 여유가 줄었습니다."
+                ),
             ),
             "driver_maturity": (
-                _candidate().driver_maturity[0].model_copy(
-                    update={"maturity": EvidenceMaturity.CONFIRMED}
-                ),
+                _candidate()
+                .driver_maturity[0]
+                .model_copy(update={"maturity": EvidenceMaturity.CONFIRMED}),
             ),
             "overall_maturity": OverallMaturityAssessment(
                 maturity=EvidenceMaturity.CONFIRMED,
@@ -381,9 +482,7 @@ def test_confirmed_business_can_be_postconfirmation_hold() -> None:
 
 
 def test_factual_safety_block_cannot_be_priced_as_investment_uncertainty() -> None:
-    candidate = _candidate().model_copy(
-        update={"factual_safety_state": FactualSafetyState.BLOCKED}
-    )
+    candidate = _candidate().model_copy(update={"factual_safety_state": FactualSafetyState.BLOCKED})
     errors = validate_preconfirmation_candidate(_packet(), candidate).errors
     assert "preconfirmation_logic_bypasses_data_safety" in errors
     assert "blocked_safety_with_pricing_requirement" in errors
@@ -399,16 +498,18 @@ def test_technical_evidence_cannot_own_asymmetry() -> None:
         }
     )
     candidate = _candidate().model_copy(update={"asymmetry": technical})
-    assert "technical_feature_owns_asymmetry" in validate_preconfirmation_candidate(
-        _packet(), candidate
-    ).errors
+    assert (
+        "technical_feature_owns_asymmetry"
+        in validate_preconfirmation_candidate(_packet(), candidate).errors
+    )
 
 
 def test_target_price_fixed_score_and_order_language_are_rejected() -> None:
     candidate = _candidate().model_copy(
         update={
             "decisive_reason": _claim(
-                "ref:valuation", "목표가를 고정 점수 합산으로 정했으니 시장가 매수 주문이 적절합니다."
+                "ref:valuation",
+                "목표가를 고정 점수 합산으로 정했으니 시장가 매수 주문이 적절합니다.",
             )
         }
     )
@@ -419,12 +520,23 @@ def test_target_price_fixed_score_and_order_language_are_rejected() -> None:
 
 
 def _adjudication(
-    *, recommendation: str, accepted_decision: str
+    *,
+    recommendation: str,
+    accepted_decision: str,
+    candidate: PreconfirmationDecisionCandidate | None = None,
+    v1_decision: str = "HOLD",
 ) -> AcceptedV2Adjudication:
+    candidate = candidate or _candidate()
+    keep_v2 = recommendation == "KEEP_V2"
+    prior_balance = {
+        "BUY": DirectionalBalance(buy=6, sell=4),
+        "HOLD": DirectionalBalance(buy=5, sell=5),
+        "SELL": DirectionalBalance(buy=4, sell=6),
+    }[v1_decision]
     return AcceptedV2Adjudication(
         ticker="TEST",
-        v1_decision="HOLD",
-        v2_decision="BUY",
+        v1_decision=v1_decision,
+        v2_decision=candidate.decision,
         accepted_decision=accepted_decision,
         recommendation=recommendation,
         v1_overrequired_confirmation="NO",
@@ -433,19 +545,67 @@ def _adjudication(
         v2_overstated_favorable_asymmetry="YES",
         valuation_or_expectation_misuse="NEITHER",
         data_quality_comparison_safe=True,
-        decisive_basis=_claim(
-            "ref:risks", "실행 위험이 남아 현재는 보유 판단이 더 적절합니다."
+        accepted_directional_balance=(candidate.directional_balance if keep_v2 else prior_balance),
+        accepted_buy_drivers=(
+            candidate.buy_drivers
+            if keep_v2
+            else (_claim("ref:valuation", "보수적 평가가 매수 근거입니다."),)
         ),
+        accepted_sell_drivers=(
+            candidate.sell_drivers
+            if keep_v2
+            else (_claim("ref:risks", "실행 위험이 매도 근거입니다."),)
+        ),
+        accepted_balance_summary=(
+            candidate.balance_summary
+            if keep_v2
+            else "평가 매력과 실행 위험을 함께 반영한 최종 균형입니다."
+        ),
+        decisive_basis=_claim("ref:risks", "실행 위험이 남아 현재는 보유 판단이 더 적절합니다."),
         bounded_repair="NONE",
     )
+
+
+@pytest.mark.parametrize("prior_decision", ("BUY", "SELL"))
+def test_current_neutral_balance_is_hold_regardless_of_prior_decision(
+    prior_decision: str,
+) -> None:
+    packet = _packet()
+    candidate = _candidate_with_balance(5)
+    adjudication = _adjudication(
+        recommendation="KEEP_V2",
+        accepted_decision="HOLD",
+        candidate=candidate,
+        v1_decision=prior_decision,
+    )
+
+    plan = resolve_accepted_v2_decision(
+        packet,
+        candidate,
+        v1_decision=prior_decision,
+        material_disagreement=True,
+        adjudication=adjudication,
+    )
+
+    assert plan.status == AcceptedDecisionStatus.READY
+    assert plan.accepted_decision == "HOLD"
+    assert plan.accepted_directional_balance == DirectionalBalance(buy=5, sell=5)
+    assert plan.accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V2
+    assert validate_accepted_v2_decision(packet, plan).valid is True
 
 
 def test_no_disagreement_accepts_candidate_as_single_authority() -> None:
     packet = _packet()
     plan = resolve_accepted_v2_decision(
         packet,
-        _candidate().model_copy(update={"decision": "HOLD", "pre_confirmation_buy": False,
-                                        "preconfirmation_buy_explanation": None}),
+        _candidate().model_copy(
+            update={
+                "decision": "HOLD",
+                "directional_balance": DirectionalBalance(buy=5, sell=5),
+                "pre_confirmation_buy": False,
+                "preconfirmation_buy_explanation": None,
+            }
+        ),
         v1_decision="HOLD",
         material_disagreement=False,
         adjudication=None,
@@ -572,11 +732,14 @@ def test_hold_change_condition_removes_impossible_hold_to_hold_downgrade() -> No
     assert "HOLD 확신을 낮추고" in normalized.text
     assert "매도 판단으로 전환" in normalized.text
     assert normalized.evidence_refs == claim.evidence_refs
-    assert decision_change_condition_errors(
-        "HOLD",
-        upgrade_text="사업 증거가 확인되면 매수 판단을 재검토한다.",
-        downgrade_text=normalized.text,
-    ) == ()
+    assert (
+        decision_change_condition_errors(
+            "HOLD",
+            upgrade_text="사업 증거가 확인되면 매수 판단을 재검토한다.",
+            downgrade_text=normalized.text,
+        )
+        == ()
+    )
 
 
 def test_self_transition_validator_covers_buy_hold_and_sell() -> None:
@@ -608,6 +771,7 @@ def test_production_renderer_consumes_only_ready_accepted_plan() -> None:
     )
     rendered = render_accepted_v2_production(packet, plan)
     assert "🧠 AI 분석 판단: HOLD" in rendered.text
+    assert "판단 균형: BUY 5 : SELL 5" in rendered.text
     assert "SHADOW" not in rendered.text
     assert "후보" not in rendered.text
     assert "AI 분석 판단: BUY" not in rendered.text
@@ -632,6 +796,10 @@ def test_production_renderer_omits_common_disclaimer_for_every_decision(
         update={
             "candidate_decision": decision,
             "accepted_decision": decision,
+            "accepted_directional_balance": DirectionalBalance(
+                buy=6 if decision == "BUY" else 5 if decision == "HOLD" else 4,
+                sell=4 if decision == "BUY" else 5 if decision == "HOLD" else 6,
+            ),
             "accepted_asymmetry": Asymmetry.UNKNOWN,
             "accepted_preconfirmation_buy": False,
             "accepted_postconfirmation_hold": False,
@@ -681,10 +849,7 @@ def test_v2_production_output_resolves_ready_plan_for_complete_scope() -> None:
     assert "SHADOW" not in artifact.blocks[0].text
     assert artifact.decision_consistency["status"] == "PASS"
     assert artifact.decision_consistency["raw_candidate_used_as_final"] == 0
-    assert (
-        artifact.decision_consistency["daily_review_overrides_valid_v2_accepted"]
-        == 0
-    )
+    assert artifact.decision_consistency["daily_review_overrides_valid_v2_accepted"] == 0
 
 
 def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -> None:
@@ -808,7 +973,5 @@ def test_decision_consistency_records_valid_adjudicated_change() -> None:
     assert row.fresh_candidate == "BUY"
     assert row.fresh_accepted == "BUY"
     assert row.valid_adjudication is True
-    assert row.material_evidence_delta == (
-        MaterialEvidenceDelta.FINGERPRINT_CHANGED_UNCLASSIFIED
-    )
+    assert row.material_evidence_delta == (MaterialEvidenceDelta.FINGERPRINT_CHANGED_UNCLASSIFIED)
     assert audit.unexplained_accepted_decision_drift == 0

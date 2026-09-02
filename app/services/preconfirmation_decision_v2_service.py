@@ -25,6 +25,12 @@ from app.services.evidence_maturity_pricing_service import (
     PricingRequirementAssessment,
     decisive_maturities,
 )
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_language_errors,
+    directional_balance_matches_decision,
+    render_directional_balance,
+)
 from app.services.scenario_asymmetry_service import (
     Asymmetry,
     AsymmetryAssessment,
@@ -63,6 +69,10 @@ class PostconfirmationHoldExplanation(FrozenModel):
 class PreconfirmationDecisionCandidate(FrozenModel):
     ticker: str
     decision: Decision
+    directional_balance: DirectionalBalance
+    buy_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    sell_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    balance_summary: str = Field(min_length=1, max_length=500)
     reasoning_grade: Literal["VERY_HIGH"]
     confidence: Confidence
     timing: Timing
@@ -184,6 +194,8 @@ def candidate_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[Evide
         *candidate.unknowns,
         candidate.upgrade_condition,
         candidate.downgrade_condition,
+        *candidate.buy_drivers,
+        *candidate.sell_drivers,
     ]
     for row in candidate.driver_maturity:
         claims.append(row.what_remains_unproven)
@@ -225,6 +237,19 @@ def validate_preconfirmation_candidate(
     refs = {row.ref_id: row for row in packet.evidence}
     if candidate.ticker != packet.ticker:
         errors.append("ticker_mismatch")
+    if not directional_balance_matches_decision(candidate.directional_balance, candidate.decision):
+        errors.append("decision_directional_balance_mismatch")
+    if not _KOREAN.search(candidate.balance_summary):
+        errors.append("balance_summary_not_korean")
+    errors.extend(
+        directional_balance_language_errors(
+            (
+                candidate.balance_summary,
+                *(claim.text for claim in candidate.buy_drivers),
+                *(claim.text for claim in candidate.sell_drivers),
+            )
+        )
+    )
     if len({row.driver for row in candidate.driver_maturity}) != len(candidate.driver_maturity):
         errors.append("duplicate_maturity_driver")
 
@@ -354,6 +379,7 @@ def render_preconfirmation_shadow(
         "🧪 SHADOW V2 · 비대칭/증거성숙도 검증",
         f"🏢 {packet.company_name}({packet.ticker})",
         f"🧠 AI 종합 판단: {candidate.decision}",
+        f"판단 균형: {render_directional_balance(candidate.directional_balance)}",
         f"추론등급: 매우 높음 | 판단 확신도: {confidence[candidate.confidence]}",
         (
             "증거 성숙도: "
@@ -432,9 +458,7 @@ def preconfirmation_message_quality(
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
         "message_count": len(texts),
-        "average_character_count": round(sum(map(len, texts)) / len(texts), 2)
-        if texts
-        else 0,
+        "average_character_count": round(sum(map(len, texts)) / len(texts), 2) if texts else 0,
         "max_character_count": max(map(len, texts), default=0),
         "numeric_claim_count": 0,
         "automatically_bound_numeric_count": 0,

@@ -23,9 +23,11 @@ from app.services.accepted_decision_v2_service import (
 from app.services.cross_market_decision_engine_service import (
     Decision,
     DecisionEvidencePacket,
+    EvidenceClaim,
     FrozenModel,
     compact_ai_context,
 )
+from app.services.directional_balance_service import DirectionalBalance
 from app.services.decision_canary_service import canonical_sha256
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
@@ -49,6 +51,9 @@ class AcceptedV2ProductionBaseline(FrozenModel):
     evidence_sha256: str
     accepted_decision_id: str
     source: str
+    accepted_directional_balance: DirectionalBalance | None = None
+    accepted_buy_drivers: tuple[EvidenceClaim, ...] = ()
+    accepted_sell_drivers: tuple[EvidenceClaim, ...] = ()
 
 
 class AcceptedV2ProductionContext(FrozenModel):
@@ -60,9 +65,7 @@ class AcceptedV2ProductionContext(FrozenModel):
     source_packet_sha256: str
     selected_subjects: tuple[str, ...] = Field(min_length=1, max_length=20)
     evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=1, max_length=20)
-    prior_accepted: tuple[AcceptedV2ProductionBaseline, ...] = Field(
-        default=(), max_length=20
-    )
+    prior_accepted: tuple[AcceptedV2ProductionBaseline, ...] = Field(default=(), max_length=20)
     prepared_at: str
 
 
@@ -72,9 +75,7 @@ class AcceptedV2ProductionBatchOutput(FrozenModel):
     claim_id: str
     market: Literal["kr", "us"]
     assessment_date: str
-    candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(
-        min_length=1, max_length=20
-    )
+    candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(min_length=1, max_length=20)
     adjudications: tuple[AcceptedV2Adjudication, ...] = Field(default=(), max_length=20)
 
 
@@ -82,6 +83,8 @@ class AcceptedV2ProductionBlock(FrozenModel):
     ticker: str
     decision: Decision
     accepted_decision_id: str
+    buy_balance: float | None = None
+    sell_balance: float | None = None
     text: str = Field(min_length=1, max_length=2200)
 
 
@@ -97,9 +100,7 @@ class AcceptedV2ProductionArtifact(FrozenModel):
     reasoning_model: Literal["gpt-5.6-sol"] = REASONING_MODEL
     reasoning_effort: Literal["xhigh"] = REASONING_EFFORT
     evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=1, max_length=20)
-    candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(
-        min_length=1, max_length=20
-    )
+    candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(min_length=1, max_length=20)
     accepted_plans: tuple[AcceptedDecisionPlan, ...] = Field(min_length=1, max_length=20)
     blocks: tuple[AcceptedV2ProductionBlock, ...] = Field(default=(), max_length=20)
     ready_count: int
@@ -158,9 +159,7 @@ def accepted_v2_state_path(*, settings: Settings | None = None) -> Path:
     return Path(current.data_dir) / "ai_review" / "decision_v2" / "state.json"
 
 
-def load_accepted_v2_state(
-    *, settings: Settings | None = None
-) -> AcceptedV2ProductionState | None:
+def load_accepted_v2_state(*, settings: Settings | None = None) -> AcceptedV2ProductionState | None:
     path = accepted_v2_state_path(settings=settings)
     if not path.exists():
         return None
@@ -219,6 +218,9 @@ def effective_prior_accepted(
                 evidence_sha256=row.evidence_sha256,
                 accepted_decision_id=plan.accepted_decision_id,
                 source="runtime_accepted_state",
+                accepted_directional_balance=plan.accepted_directional_balance,
+                accepted_buy_drivers=plan.accepted_buy_drivers,
+                accepted_sell_drivers=plan.accepted_sell_drivers,
             )
     return baselines
 
@@ -301,9 +303,7 @@ def accepted_v2_production_prompt(
                     }
                 )
             ),
-            "prior_accepted": (
-                prior[ticker].model_dump(mode="json") if ticker in prior else None
-            ),
+            "prior_accepted": (prior[ticker].model_dump(mode="json") if ticker in prior else None),
         }
         for ticker in selected
     ]
@@ -312,9 +312,11 @@ def accepted_v2_production_prompt(
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Preserve exact complete evidence ref IDs. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
+Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
+
 Read technical_context_status and technical_context_quality explicitly. PARTIAL_SAFE or UNAVAILABLE is a documented evidence limit, never a neutral technical signal and never an automatic HOLD. When the missing technical evidence materially prevents entry-timing assessment, use timing=INSUFFICIENT and cite the technical-context quality ref; otherwise explain which packet-owned price or non-technical evidence safely supports timing. Never invent a missing timeframe.
 
-The prior accepted decision is continuity evidence, not a target distribution. Fresh evidence may justify a different candidate. If and only if candidate.decision differs from prior_accepted.accepted_decision, emit one AcceptedV2Adjudication for that ticker. In this legacy-compatible adjudication schema, v1_decision means prior accepted decision and v2_decision means the new candidate. KEEP_V1 means keep prior accepted; KEEP_V2 means accept the new candidate. NEEDS_REPAIR is allowed when no final accepted result is safe. Explain the decisive basis with canonical refs. If evidence is unchanged, do not change the top-level decision.
+The prior accepted decision and balance are continuity evidence, not a target distribution. Fresh evidence may justify a different candidate. If candidate.decision differs from prior_accepted.accepted_decision, emit one AcceptedV2Adjudication for that ticker. In this legacy-compatible adjudication schema, v1_decision means prior accepted decision and v2_decision means the new candidate. KEEP_V1 means keep the prior label; KEEP_V2 means accept the new candidate. Every adjudication must emit its accepted balance and accepted directional drivers. NEEDS_REPAIR is allowed when no final accepted result is safe. Explain the decisive basis with canonical refs. If evidence is unchanged, do not change the accepted top-level decision.
 
 Change conditions are reassessment conditions, not automatic trades. Never describe a self transition: BUY must not be raised to BUY, HOLD must not be lowered to HOLD, and SELL must not be lowered to SELL. Refer to confidence/timing/risk when staying inside the same top-level decision.
 
@@ -469,10 +471,7 @@ def validate_accepted_v2_production_output(
         validation = validate_preconfirmation_candidate(packets[ticker], candidate)
         if not validation.valid:
             raise ValueError(
-                "v2_production_candidate_invalid:"
-                + ticker
-                + ":"
-                + ",".join(validation.errors)
+                "v2_production_candidate_invalid:" + ticker + ":" + ",".join(validation.errors)
             )
     prior = {row.ticker: row for row in context.prior_accepted}
     adjudications = {row.ticker: row for row in output.adjudications}
@@ -513,10 +512,7 @@ def validate_accepted_v2_production_output(
         validation = validate_accepted_v2_decision(packet, plan)
         if not validation.valid:
             raise ValueError(
-                "v2_production_accepted_plan_invalid:"
-                + ticker
-                + ":"
-                + ",".join(validation.errors)
+                "v2_production_accepted_plan_invalid:" + ticker + ":" + ",".join(validation.errors)
             )
         rendered_row = render_accepted_v2_production(packet, plan)
         rendered.append(rendered_row)
@@ -527,6 +523,16 @@ def validate_accepted_v2_production_output(
                 ticker=ticker,
                 decision=plan.accepted_decision,
                 accepted_decision_id=plan.accepted_decision_id,
+                buy_balance=(
+                    plan.accepted_directional_balance.buy
+                    if plan.accepted_directional_balance is not None
+                    else None
+                ),
+                sell_balance=(
+                    plan.accepted_directional_balance.sell
+                    if plan.accepted_directional_balance is not None
+                    else None
+                ),
                 text=rendered_row.text,
             )
         )
@@ -554,8 +560,7 @@ def validate_accepted_v2_production_output(
         )
         if changed_without_evidence is not None:
             raise ValueError(
-                "v2_production_same_evidence_unexplained_churn:"
-                + changed_without_evidence
+                "v2_production_same_evidence_unexplained_churn:" + changed_without_evidence
             )
         raise ValueError("v2_production_unexplained_accepted_decision_drift")
     ready_count = len(blocks)
@@ -586,9 +591,7 @@ def load_accepted_v2_production_artifact(
     packet: Mapping[str, object],
     claim_id: str,
 ) -> AcceptedV2ProductionArtifact:
-    artifact = AcceptedV2ProductionArtifact.model_validate_json(
-        path.read_text(encoding="utf-8")
-    )
+    artifact = AcceptedV2ProductionArtifact.model_validate_json(path.read_text(encoding="utf-8"))
     subjects = tuple(
         str(row.get("ticker") or "").upper()
         for row in packet.get("stocks") or ()
@@ -619,6 +622,9 @@ def load_accepted_v2_production_artifact(
             block is None
             or block.decision != plan.accepted_decision
             or block.accepted_decision_id != plan.accepted_decision_id
+            or plan.accepted_directional_balance is None
+            or block.buy_balance != plan.accepted_directional_balance.buy
+            or block.sell_balance != plan.accepted_directional_balance.sell
             or block.text != expected.text
         ):
             raise ValueError("v2_production_artifact_block_mismatch")
@@ -648,20 +654,15 @@ def advance_accepted_v2_state(
             updated_at=timestamp,
         )
     return write_accepted_v2_state(
-        AcceptedV2ProductionState(
-            entries=tuple(entries[ticker] for ticker in sorted(entries))
-        ),
+        AcceptedV2ProductionState(entries=tuple(entries[ticker] for ticker in sorted(entries))),
         settings=settings,
     )
 
 
-def accepted_v2_runtime_preconditions(
-    *, settings: Settings | None = None
-) -> dict[str, object]:
+def accepted_v2_runtime_preconditions(*, settings: Settings | None = None) -> dict[str, object]:
     current = settings or get_settings()
     checks = {
-        "visible_engine_v2_accepted": current.visible_stock_decision_engine
-        == "v2_accepted",
+        "visible_engine_v2_accepted": current.visible_stock_decision_engine == "v2_accepted",
         "v2_production_enabled": current.v2_production_enabled,
         "full_coverage_target": current.v2_full_monitored_stock_coverage_target,
         "v1_rollback_available": current.v1_decision_rollback_available,

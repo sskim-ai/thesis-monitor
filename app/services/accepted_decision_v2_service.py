@@ -7,6 +7,8 @@ from collections import Counter
 from enum import StrEnum
 from typing import Literal
 
+from pydantic import Field
+
 from app.services.cross_market_decision_engine_service import (
     Confidence,
     Decision,
@@ -17,6 +19,12 @@ from app.services.cross_market_decision_engine_service import (
 from app.services.evidence_maturity_pricing_service import (
     EvidenceMaturity,
     PricingRequirement,
+)
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_language_errors,
+    directional_balance_matches_decision,
+    render_directional_balance,
 )
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
@@ -57,10 +65,12 @@ class AcceptedV2Adjudication(FrozenModel):
     v2_underweighted_execution_risk: Literal["YES", "NO", "UNCERTAIN"]
     v1_ignored_confirmation_cost: Literal["YES", "NO", "UNCERTAIN"]
     v2_overstated_favorable_asymmetry: Literal["YES", "NO", "UNCERTAIN"]
-    valuation_or_expectation_misuse: Literal[
-        "V1", "V2", "BOTH", "NEITHER", "UNCERTAIN"
-    ]
+    valuation_or_expectation_misuse: Literal["V1", "V2", "BOTH", "NEITHER", "UNCERTAIN"]
     data_quality_comparison_safe: bool
+    accepted_directional_balance: DirectionalBalance
+    accepted_buy_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    accepted_sell_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    accepted_balance_summary: str = Field(min_length=1, max_length=500)
     decisive_basis: EvidenceClaim
     bounded_repair: str
 
@@ -93,6 +103,14 @@ class AcceptedDecisionPlan(FrozenModel):
     accepted_upgrade_condition: EvidenceClaim | None
     accepted_downgrade_condition: EvidenceClaim | None
     denial_reason: str | None
+    candidate_directional_balance: DirectionalBalance | None = None
+    candidate_buy_drivers: tuple[EvidenceClaim, ...] = ()
+    candidate_sell_drivers: tuple[EvidenceClaim, ...] = ()
+    candidate_balance_summary: str | None = None
+    accepted_directional_balance: DirectionalBalance | None = None
+    accepted_buy_drivers: tuple[EvidenceClaim, ...] = ()
+    accepted_sell_drivers: tuple[EvidenceClaim, ...] = ()
+    accepted_balance_summary: str | None = None
 
 
 class AcceptedDecisionValidationResult(FrozenModel):
@@ -113,6 +131,7 @@ class RenderedAcceptedDecision(FrozenModel):
     candidate_decision: Decision
     accepted_decision: Decision
     accepted_source: AcceptedDecisionSource
+    accepted_directional_balance: DirectionalBalance
     text: str
     validation: AcceptedRenderValidationResult
 
@@ -122,6 +141,7 @@ class RenderedProductionAcceptedDecision(FrozenModel):
     ticker: str
     accepted_decision: Decision
     accepted_source: AcceptedDecisionSource
+    accepted_directional_balance: DirectionalBalance
     text: str
     validation: AcceptedRenderValidationResult
 
@@ -256,6 +276,10 @@ def _not_ready_plan(
         accepted_upgrade_condition=None,
         accepted_downgrade_condition=None,
         denial_reason=denial_reason,
+        candidate_directional_balance=candidate.directional_balance,
+        candidate_buy_drivers=candidate.buy_drivers,
+        candidate_sell_drivers=candidate.sell_drivers,
+        candidate_balance_summary=candidate.balance_summary,
     )
 
 
@@ -298,6 +322,10 @@ def resolve_accepted_v2_decision(
         accepted_decision = candidate.decision
         accepted_source = AcceptedDecisionSource.CANDIDATE
         accepted_reason = candidate.decisive_reason
+        accepted_directional_balance = candidate.directional_balance
+        accepted_buy_drivers = candidate.buy_drivers
+        accepted_sell_drivers = candidate.sell_drivers
+        accepted_balance_summary = candidate.balance_summary
         adjudication_status = "NOT_REQUIRED"
     else:
         if adjudication is None:
@@ -350,7 +378,38 @@ def resolve_accepted_v2_decision(
             else AcceptedDecisionSource.ADJUDICATION_KEEP_V2
         )
         accepted_reason = adjudication.decisive_basis
+        accepted_directional_balance = adjudication.accepted_directional_balance
+        accepted_buy_drivers = adjudication.accepted_buy_drivers
+        accepted_sell_drivers = adjudication.accepted_sell_drivers
+        accepted_balance_summary = adjudication.accepted_balance_summary
         adjudication_status = "FINAL"
+
+    if not directional_balance_matches_decision(accepted_directional_balance, accepted_decision):
+        return _not_ready_plan(
+            packet=packet,
+            candidate=candidate,
+            candidate_decision_id=candidate_decision_id,
+            material_disagreement=material_disagreement,
+            adjudication_id=adjudication_id,
+            adjudication_status="INVALID",
+            adjudication=adjudication,
+            denial_reason="accepted_decision_balance_mismatch",
+        )
+    if accepted_source == AcceptedDecisionSource.ADJUDICATION_KEEP_V2 and (
+        accepted_directional_balance != candidate.directional_balance
+        or accepted_buy_drivers != candidate.buy_drivers
+        or accepted_sell_drivers != candidate.sell_drivers
+    ):
+        return _not_ready_plan(
+            packet=packet,
+            candidate=candidate,
+            candidate_decision_id=candidate_decision_id,
+            material_disagreement=material_disagreement,
+            adjudication_id=adjudication_id,
+            adjudication_status="INVALID",
+            adjudication=adjudication,
+            denial_reason="keep_v2_balance_or_driver_mismatch",
+        )
 
     accepted_preconfirmation_buy = bool(
         accepted_decision == "BUY"
@@ -374,6 +433,13 @@ def resolve_accepted_v2_decision(
             "candidate_decision_id": candidate_decision_id,
             "adjudication_id": adjudication_id,
             "accepted_reason_refs": accepted_reason.evidence_refs,
+            "accepted_balance": accepted_directional_balance.model_dump(mode="json"),
+            "accepted_buy_driver_refs": [
+                list(claim.evidence_refs) for claim in accepted_buy_drivers
+            ],
+            "accepted_sell_driver_refs": [
+                list(claim.evidence_refs) for claim in accepted_sell_drivers
+            ],
         },
     )
     accepted_decision_id = _canonical_fingerprint(
@@ -384,6 +450,7 @@ def resolve_accepted_v2_decision(
             "accepted_source": accepted_source,
             "accepted_evidence_fingerprint": accepted_evidence_fingerprint,
             "accepted_as_of": packet.assessment_date,
+            "accepted_balance": accepted_directional_balance.model_dump(mode="json"),
         },
     )
     return AcceptedDecisionPlan(
@@ -419,6 +486,14 @@ def resolve_accepted_v2_decision(
             accepted_decision, "DOWNGRADE", candidate.downgrade_condition
         ),
         denial_reason=None,
+        candidate_directional_balance=candidate.directional_balance,
+        candidate_buy_drivers=candidate.buy_drivers,
+        candidate_sell_drivers=candidate.sell_drivers,
+        candidate_balance_summary=candidate.balance_summary,
+        accepted_directional_balance=accepted_directional_balance,
+        accepted_buy_drivers=accepted_buy_drivers,
+        accepted_sell_drivers=accepted_sell_drivers,
+        accepted_balance_summary=accepted_balance_summary,
     )
 
 
@@ -438,6 +513,26 @@ def validate_accepted_v2_decision(
         errors.append("accepted_lineage_missing")
     if plan.accepted_confidence is None:
         errors.append("accepted_confidence_missing")
+    if plan.accepted_directional_balance is None:
+        errors.append("accepted_directional_balance_missing")
+    elif plan.accepted_decision is not None and not directional_balance_matches_decision(
+        plan.accepted_directional_balance, plan.accepted_decision
+    ):
+        errors.append("accepted_decision_balance_mismatch")
+    if not plan.accepted_buy_drivers or not plan.accepted_sell_drivers:
+        errors.append("accepted_directional_drivers_missing")
+    if not plan.accepted_balance_summary:
+        errors.append("accepted_balance_summary_missing")
+    else:
+        errors.extend(
+            directional_balance_language_errors(
+                (
+                    plan.accepted_balance_summary,
+                    *(claim.text for claim in plan.accepted_buy_drivers),
+                    *(claim.text for claim in plan.accepted_sell_drivers),
+                )
+            )
+        )
     if plan.accepted_preconfirmation_buy and plan.accepted_decision != "BUY":
         errors.append("rejected_preconfirmation_buy_leaked_to_accepted")
     if plan.accepted_postconfirmation_hold and plan.accepted_decision != "HOLD":
@@ -456,6 +551,8 @@ def validate_accepted_v2_decision(
             plan.accepted_confirmation_cost_basis,
             plan.accepted_upgrade_condition,
             plan.accepted_downgrade_condition,
+            *plan.accepted_buy_drivers,
+            *plan.accepted_sell_drivers,
         )
         if claim is not None
     )
@@ -472,7 +569,9 @@ def validate_accepted_v2_decision(
         errors.extend(
             decision_change_condition_errors(
                 plan.accepted_decision,
-                upgrade_text=(plan.accepted_upgrade_condition.text if plan.accepted_upgrade_condition else ""),
+                upgrade_text=(
+                    plan.accepted_upgrade_condition.text if plan.accepted_upgrade_condition else ""
+                ),
                 downgrade_text=(
                     plan.accepted_downgrade_condition.text
                     if plan.accepted_downgrade_condition
@@ -499,14 +598,16 @@ def validate_accepted_v2_render(
     elif rendered_decision != plan.accepted_decision:
         errors.append("rendered_decision_not_accepted_decision")
     required_label = (
-        "🧪 SHADOW V2 · accepted decision 검증"
-        if render_mode == "shadow"
-        else "🧠 AI 분석 판단:"
+        "🧪 SHADOW V2 · accepted decision 검증" if render_mode == "shadow" else "🧠 AI 분석 판단:"
     )
     if required_label not in text:
         errors.append(f"accepted_{render_mode}_label_missing")
     if plan.accepted_reason is not None and plan.accepted_reason.text not in text:
         errors.append("accepted_reason_missing")
+    if plan.accepted_directional_balance is None:
+        errors.append("accepted_directional_balance_missing")
+    elif f"판단 균형: {render_directional_balance(plan.accepted_directional_balance)}" not in text:
+        errors.append("accepted_directional_balance_missing_from_render")
     if _ORDER_LANGUAGE.search(text):
         errors.append("order_command_language")
     return AcceptedRenderValidationResult(
@@ -545,6 +646,8 @@ def render_accepted_v2_shadow(
         raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
     if plan.accepted_source is None or plan.accepted_reason is None:
         raise ValueError("accepted_decision_lineage_missing")
+    if plan.accepted_directional_balance is None:
+        raise ValueError("accepted_directional_balance_missing")
     confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
     maturity = {
         "EARLY": "초기",
@@ -563,6 +666,7 @@ def render_accepted_v2_shadow(
         "🧪 SHADOW V2 · accepted decision 검증",
         f"🏢 {packet.company_name}({packet.ticker})",
         f"🧠 AI 수용 판단: {plan.accepted_decision}",
+        f"판단 균형: {render_directional_balance(plan.accepted_directional_balance)}",
         f"추론등급: 매우 높음 | 판단 확신도: {confidence[str(plan.accepted_confidence)]}",
         (
             "증거 성숙도: "
@@ -604,6 +708,7 @@ def render_accepted_v2_shadow(
         candidate_decision=plan.candidate_decision,
         accepted_decision=plan.accepted_decision,
         accepted_source=plan.accepted_source,
+        accepted_directional_balance=plan.accepted_directional_balance,
         text=text,
         validation=validation,
     )
@@ -619,6 +724,8 @@ def render_accepted_v2_production(
         raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
     if plan.accepted_source is None or plan.accepted_reason is None:
         raise ValueError("accepted_decision_lineage_missing")
+    if plan.accepted_directional_balance is None:
+        raise ValueError("accepted_directional_balance_missing")
     if plan.accepted_upgrade_condition is None or plan.accepted_downgrade_condition is None:
         raise ValueError("accepted_change_condition_missing")
     confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
@@ -631,6 +738,7 @@ def render_accepted_v2_production(
     }
     lines = [
         f"🧠 AI 분석 판단: {plan.accepted_decision}",
+        f"판단 균형: {render_directional_balance(plan.accepted_directional_balance)}",
         (
             f"판단 확신도: {confidence[str(plan.accepted_confidence)]} | "
             f"증거 성숙도: {maturity[str(plan.accepted_overall_maturity)]}"
@@ -656,6 +764,7 @@ def render_accepted_v2_production(
         ticker=packet.ticker,
         accepted_decision=plan.accepted_decision,
         accepted_source=plan.accepted_source,
+        accepted_directional_balance=plan.accepted_directional_balance,
         text=text,
         validation=validation,
     )
@@ -686,9 +795,7 @@ def accepted_message_quality(
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
         "message_count": len(texts),
-        "average_character_count": (
-            round(sum(map(len, texts)) / len(texts), 2) if texts else 0
-        ),
+        "average_character_count": (round(sum(map(len, texts)) / len(texts), 2) if texts else 0),
         "max_character_count": max(map(len, texts), default=0),
         "numeric_claim_count": 0,
         "manual_numeric_count": 0,

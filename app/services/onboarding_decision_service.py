@@ -34,6 +34,10 @@ from app.services.cross_market_decision_engine_service import (
 )
 from app.services.codex_runtime_state_service import prepare_codex_runtime_state
 from app.services.decision_canary_service import strict_json_schema
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_matches_decision,
+)
 from app.services.preconfirmation_decision_v2_service import (
     validate_preconfirmation_candidate,
 )
@@ -46,8 +50,7 @@ def _atomic_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
-        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str)
-        + "\n",
+        json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
     )
     os.replace(temporary, path)
@@ -77,8 +80,10 @@ def _stable_ref(ticker: str, category: EvidenceCategory, label: str, value: obje
 
 
 def _compact(value: object, limit: int = 900) -> str:
-    text = value.strip() if isinstance(value, str) else json.dumps(
-        value, ensure_ascii=False, sort_keys=True, default=str
+    text = (
+        value.strip()
+        if isinstance(value, str)
+        else json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
     )
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
@@ -134,7 +139,11 @@ def build_onboarding_decision_evidence_packet(
         (EvidenceCategory.CATALYSTS, "relevant_events", evidence.get("relevant_events")),
         (EvidenceCategory.VALUATION, "valuation_context", evidence.get("valuation_context")),
         (EvidenceCategory.PRICE_STRUCTURE, "price_structure", evidence.get("price_structure")),
-        (EvidenceCategory.MARKET, "material_market_context", evidence.get("material_market_context")),
+        (
+            EvidenceCategory.MARKET,
+            "material_market_context",
+            evidence.get("material_market_context"),
+        ),
         (EvidenceCategory.UNKNOWN, "material_unknowns", evidence.get("material_unknowns")),
     )
     refs = tuple(
@@ -226,9 +235,7 @@ def _invoke_signed_in_codex(
         str(output),
         "-",
     ]
-    with prompt.open(encoding="utf-8") as stdin, log.open(
-        "w", encoding="utf-8"
-    ) as stdout:
+    with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
         process = subprocess.run(
             command,
             cwd=prompt.parent,
@@ -333,9 +340,7 @@ def generate_onboarding_accepted_decision(
         validation = validate_preconfirmation_candidate(packet, candidate)
         adjudications = {row.ticker: row for row in repaired.adjudications}
     if not validation.valid:
-        raise ValueError(
-            "onboarding_decision_validation_failed:" + ",".join(validation.errors)
-        )
+        raise ValueError("onboarding_decision_validation_failed:" + ",".join(validation.errors))
     prior = next((row for row in context.prior_accepted if row.ticker == item.ticker), None)
     material_disagreement = bool(
         prior is not None and candidate.decision != prior.accepted_decision
@@ -351,8 +356,7 @@ def generate_onboarding_accepted_decision(
     accepted_validation = validate_accepted_v2_decision(packet, plan)
     if plan.status != AcceptedDecisionStatus.READY or not accepted_validation.valid:
         raise ValueError(
-            "onboarding_accepted_decision_not_ready:"
-            + ",".join(accepted_validation.errors)
+            "onboarding_accepted_decision_not_ready:" + ",".join(accepted_validation.errors)
         )
     result = {
         "contract": ONBOARDING_DECISION_CONTRACT,
@@ -365,6 +369,17 @@ def generate_onboarding_accepted_decision(
         "accepted_evidence_fingerprint": plan.accepted_evidence_fingerprint,
         "accepted_source": plan.accepted_source,
         "accepted_as_of": plan.accepted_as_of,
+        "accepted_directional_balance": (
+            plan.accepted_directional_balance.model_dump(mode="json")
+            if plan.accepted_directional_balance is not None
+            else None
+        ),
+        "accepted_buy_drivers": [
+            claim.model_dump(mode="json") for claim in plan.accepted_buy_drivers
+        ],
+        "accepted_sell_drivers": [
+            claim.model_dump(mode="json") for claim in plan.accepted_sell_drivers
+        ],
         "candidate_validation": validation.model_dump(mode="json"),
         "accepted_validation": accepted_validation.model_dump(mode="json"),
         "accepted_plan": plan.model_dump(mode="json"),
@@ -389,10 +404,18 @@ def validate_onboarding_decision_readiness(
         return False, "accepted_decision_evidence_mismatch"
     if payload.get("accepted_decision") not in {"BUY", "HOLD", "SELL"}:
         return False, "accepted_decision_value_missing"
-    if not payload.get("accepted_decision_id") or not payload.get(
-        "accepted_evidence_fingerprint"
-    ):
+    if not payload.get("accepted_decision_id") or not payload.get("accepted_evidence_fingerprint"):
         return False, "accepted_decision_lineage_missing"
     if payload.get("raw_candidate_grants_ready") is not False:
         return False, "raw_candidate_grants_ready"
+    balance = payload.get("accepted_directional_balance")
+    if balance is not None:
+        if not isinstance(balance, Mapping):
+            return False, "accepted_directional_balance_invalid"
+        try:
+            parsed_balance = DirectionalBalance.model_validate(balance)
+        except (TypeError, ValueError):
+            return False, "accepted_directional_balance_invalid"
+        if not directional_balance_matches_decision(parsed_balance, payload["accepted_decision"]):
+            return False, "accepted_decision_balance_mismatch"
     return True, None
