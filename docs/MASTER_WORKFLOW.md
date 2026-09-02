@@ -2386,3 +2386,28 @@ Open P0/material P1/P2 are `0/0/2`; the P2 items are screenshot convention recon
 optional rejection-report presentation polish. `RUN51_KRX_NIGHT_LIVE_PATH_ACTUAL_SEND = PASS`, but
 this controlled TEST proof is not natural LIVE_PASS. The next dependency remains the next ordinary
 US morning cycle, reviewed read-only. Production Assist remains OFF.
+
+### 40.36 Four-Track Network, Daily-Review, Market, and Renderer Stabilization
+
+Exact instruction commit `87887dbf9d42a841f27b6344694ce03bfe34c092` precedes four isolated
+implementation commits: network transport `20c80b6d968b5770947a6621fa4867d51967dbe0`, daily-review
+semantics `70d60e4ba100ad140b9aef6e26cfda0acf4f1a8f`, US market renderer
+`4407cd11a78579e11681b503b2d4e72ee3c3d60f`, and accepted-renderer consistency
+`ee4e4688816d35f7a5ade7630eac07e6edd215eb`.
+
+The natural failure is classified at the first boundary as `LOCAL_DNS_RESOLUTION_FAILURE`. The
+shared scheduler path now performs bounded DNS/TCP/TLS readiness and at most one Codex transport
+retry under the original deadline. No public DNS, hosts, TLS, root, credential, scheduler timing,
+or ownership workaround exists. The signed-in `gpt-5.6-sol / xhigh` host smoke passes.
+
+KR daily-review frozen errors converge without threshold changes. The US market renderer exposes
+same-contract NIGHT daily/weekly/monthly values with in-progress finality and a dated nominal
+3Y/5Y/10Y/30Y Treasury curve. The common V2 stock disclaimer is removed for KR/US BUY/HOLD/SELL,
+while accepted-plan authority and new evidence-fingerprint diagnostics prevent unexplained drift.
+
+Production-equivalent KR/US is `8/8 + 14/14`; the dedicated sink is `22/22 exact`, with zero
+duplicate, orphan, production send, intent, or production-state mutation. Full regression is
+`2119 passed`; integration Actions Test/Lint pass. Open P0/material P1 are `0/0`; two carried P2
+presentation items do not block promotion. State is `READY_FOR_MAIN`, not natural `LIVE_PASS`.
+After clean linear deployment, wait for the next ordinary KR and US cycles and review them
+read-only. Production Assist remains OFF.

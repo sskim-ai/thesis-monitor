@@ -162,16 +162,18 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == (
-        "codex/20260902-run51-live-path-krx-night-ohlc-history"
-    )
+    assert state["experimental_branch"] == "codex/20260902-four-track-stabilization"
     assert state["current_phase"] == (
-        "run51_krx_night_controlled_live_path_pass_awaiting_natural_us_live"
+        "four_track_stabilization_ready_for_main_awaiting_natural_kr_us_live"
     )
     assert state["last_completed_phase"] == (
-        "20260902_run51_live_path_with_krx_night_ohlc_history_dwm_real_yield"
+        "20260902_four_track_stabilization_network_dailyreview_market_renderer"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_live"
+    assert state["next_default_phase"] == (
+        "promote_four_track_then_wait_for_natural_kr_us_live"
+    )
+    four_track_base = "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9"
+    four_track_integration = "c0a4d66616eb775415b602e58ddf2c8198cf4962"
     live_path_implementation = "4341d352b8402a16dcd66d34504fc39a17acc61b"
     live_path = state["run51_krx_night_live_path_20260902"]
     assert live_path["status"] == "PASS_CONTROLLED_TEST_AWAITING_NATURAL_US_LIVE"
@@ -276,13 +278,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == "d0039e6c84ccb8fd74c743b0ceec033760499229"
+    assert state["recorded_base_commit"] == four_track_base
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == live_path_implementation
-    assert state["main_code_commit"] == live_path_implementation
-    assert state["operating_code_commit"] == live_path_implementation
+    assert state["deployed_code_commit"] == four_track_base
+    assert state["main_code_commit"] == four_track_base
+    assert state["operating_code_commit"] == four_track_base
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1554,7 +1556,23 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == live_path_implementation
+    four_track = state["four_track_stabilization_20260902"]
+    assert state["current_commit"] == four_track_integration
+    assert four_track["status"] == "READY_FOR_MAIN_AWAITING_NATURAL_KR_US_LIVE"
+    assert four_track["base_commit"] == four_track_base
+    assert four_track["integration_commit"] == four_track_integration
+    assert four_track["track_a_network_runtime"] == "PASS"
+    assert four_track["track_b_daily_review"] == "PASS"
+    assert four_track["track_c_us_market"] == "PASS"
+    assert four_track["kr_production_equivalent"] == "PASS_8_OF_8"
+    assert four_track["us_production_equivalent"] == "PASS_14_OF_14"
+    assert four_track["test_sink"] == (
+        "PASS_22_OF_22_EXACT_AFTER_RATE_LIMIT_CONTINUATION"
+    )
+    assert four_track["production_recipient_send"] == 0
+    assert four_track["production_delivery_intent_created"] == 0
+    assert four_track["open_p0"] == []
+    assert four_track["open_material_p1"] == []
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

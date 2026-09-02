@@ -2449,3 +2449,24 @@ superseded only for current night-reference readiness. V2, daily review, technic
 KR/US production-equivalent behavior, schedules, and recipients are unchanged. No send or delivery
 intent occurred. Wait for the next ordinary US morning cycle and review it read-only; Production
 Assist remains OFF.
+
+## 2026-09-02 Four-Track Stabilization Handoff
+
+Start with `docs/reports/20260902-four-track-readiness.json`, the validation report, natural-live
+guard, and artifact index. Exact instruction commit is
+`87887dbf9d42a841f27b6344694ce03bfe34c092`; Track A/B/C/D are
+`20c80b6d968b5770947a6621fa4867d51967dbe0`,
+`70d60e4ba100ad140b9aef6e26cfda0acf4f1a8f`,
+`4407cd11a78579e11681b503b2d4e72ee3c3d60f`, and
+`ee4e4688816d35f7a5ade7630eac07e6edd215eb`.
+
+The scheduler-context network contract is bounded and shared by primary/backup. KR frozen
+daily-review semantics pass without validator relaxation. The US market message owns compact NIGHT
+D/W/M and dated nominal Treasury 3Y/5Y/10Y/30Y output. V2 accepted ownership remains unchanged;
+the common disclaimer is gone and unexplained accepted-decision drift is zero.
+
+KR/US production-equivalent proof is `8/8 + 14/14`, and the dedicated test sink is `22/22 exact`
+after a bounded `20 + 2` rate-limit continuation. Production send/intent and state mutations are
+zero. This is promotion evidence, not natural proof. Do not run a task or resend production.
+Observe the next ordinary KR and US cycles read-only for network/model reach, V2 counts, fallback
+zero, enriched US market output, and exactly-once delivery. Production Assist remains OFF.

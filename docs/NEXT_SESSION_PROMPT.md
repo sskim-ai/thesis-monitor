@@ -1,5 +1,28 @@
 # Next Session Prompt
 
+Latest authoritative work is the 2026-09-02 four-track stabilization. Read
+`docs/reports/20260902-four-track-readiness.json`, the validation report, natural-live guard, and
+artifact index first. Exact instruction commit is
+`87887dbf9d42a841f27b6344694ce03bfe34c092`; Track A/B/C/D are
+`20c80b6d968b5770947a6621fa4867d51967dbe0`,
+`70d60e4ba100ad140b9aef6e26cfda0acf4f1a8f`,
+`4407cd11a78579e11681b503b2d4e72ee3c3d60f`, and
+`ee4e4688816d35f7a5ade7630eac07e6edd215eb`.
+
+Bounded scheduler-context network readiness, frozen KR daily-review convergence, compact KRX NIGHT
+D/W/M, the dated nominal Treasury 3Y/5Y/10Y/30Y block, disclaimer removal, and accepted-decision
+consistency all pass. KR/US production-equivalent is `8/8 + 14/14`; the dedicated sink is `22/22
+exact`; production send/intent and production-state mutation are zero. Full pytest is `2119 PASS`,
+and open P0/material P1 is `0/0`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_KR_LIVE` and `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Inspect only the
+ordinary scheduled cycles for network preflight, model reach, candidate/accepted/explicit counts,
+fallback zero, enriched US market output, and exactly-once delivery. Do not manually run a task,
+replay or resend production, expose recipient values, or treat test-sink evidence as natural
+`LIVE_PASS`. Production Assist remains OFF.
+
+---
+
 Latest authoritative controlled proof is the 2026-09-02 Run-51 official KRX NIGHT OHLC history,
 same-contract D/W/M, real-yield pair, and TEST-only live path. Read
 `docs/reports/20260902-run51-live-path-with-krx-night-proof.json` and

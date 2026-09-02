@@ -611,3 +611,18 @@ XKRX business date strictly before KST date `D`, raw provider `BAS_DD`, independ
 same-contract DAY comparison, and fail-closed stale/future handling. They may not restore US-session
 ownership, use naive calendar subtraction, force rows ready, weaken validators, alter schedules,
 manually replay production, expose recipient values, or treat run-51 replay as natural live proof.
+
+The four-track stabilization branch starts from clean main
+`89d3dc7ea350564c2b55b36b0c9ef9406330b3f9`. Exact instruction commit
+`87887dbf9d42a841f27b6344694ce03bfe34c092` precedes independently reviewable Track A/B/C/D
+commits `20c80b6d968b5770947a6621fa4867d51967dbe0`,
+`70d60e4ba100ad140b9aef6e26cfda0acf4f1a8f`,
+`4407cd11a78579e11681b503b2d4e72ee3c3d60f`, and
+`ee4e4688816d35f7a5ade7630eac07e6edd215eb`.
+
+Descendants must preserve bounded DNS/TCP/TLS and Codex transport retry limits, unchanged task
+timing/ownership, strict daily-review validators, same-contract NIGHT D/W/M, dated official nominal
+Treasury observations, and accepted-plan-only rendering. They may not add DNS/TLS/root shortcuts,
+retune decisions, restore common stock disclaimers, use raw candidates as final, expose recipient
+values, manually trigger production, or treat the dedicated `22/22` sink as natural proof. The next
+dependency is ordinary natural KR/US observation; Production Assist remains OFF.
