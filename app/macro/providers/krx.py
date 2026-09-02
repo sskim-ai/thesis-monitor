@@ -20,7 +20,10 @@ class KrxNightFuturesProvider:
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         run_date = as_of.astimezone(KST).date()
-        probe = await fetch_live_probe(run_date=run_date)
+        probe = await fetch_live_probe(
+            run_date=run_date,
+            observation_time=as_of,
+        )
         if not probe.night_session_usable:
             return MacroProviderResult(
                 provider=self.name,
@@ -71,6 +74,16 @@ class KrxNightFuturesProvider:
                             if probe.expected_latest_session_date
                             else None
                         ),
+                        "reference_date_contract": probe.reference_date_contract,
+                        "expected_reference_date": (
+                            probe.expected_reference_date.isoformat()
+                            if probe.expected_reference_date
+                            else None
+                        ),
+                        "provider_raw_bas_dd": item.session_date.isoformat(),
+                        "reference_date_match": item.reference_date_match,
+                        "reference_date_relation": item.reference_date_relation,
+                        "finality_valid": item.finality_valid,
                         "session_freshness": probe.session_freshness,
                         "queried_dates": [value.isoformat() for value in probe.queried_dates],
                         "date_statuses": [

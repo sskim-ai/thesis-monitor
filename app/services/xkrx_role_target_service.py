@@ -78,14 +78,18 @@ def resolve_xkrx_role_target(
         )
         evidence.update(
             {
-                "target_basis": "night-futures-session-basis-v1",
+                "target_basis": "us-morning-night-reference-date-v3",
+                "reference_rule": (
+                    "latest_valid_xkrx_business_date_strictly_before_kst_date"
+                ),
+                "comparison_day_basis": "preceding_eligible_xkrx_day",
                 "night_session_end_time_kst": "06:00",
             }
         )
         return XkrxRoleTarget(
             role=role,
             observed_at_kst=current,
-            target_kind="NIGHT_BAS_DD",
+            target_kind="US_MORNING_NIGHT_REFERENCE_DATE",
             target_session_date=target,
             target_xkrx_business_date=business_date,
             target_completed=completed,

@@ -52,6 +52,11 @@ class NightFuturesItem:
     reference_source_record_id: str
     night_source_payload_sha256: str
     reference_source_payload_sha256: str
+    reference_date_contract: str
+    expected_reference_date: date
+    provider_raw_bas_dd: date
+    reference_date_match: bool
+    finality_valid: bool
 
 
 @dataclass(frozen=True)
@@ -110,7 +115,9 @@ def _gate_ready_products(market: object) -> tuple[set[str], date | None] | None:
         for item in ready_values
         if str(item) in NIGHT_FUTURES_SERIES
     }
-    return ready, _date_value(gate.get("expected_session"))
+    return ready, _date_value(
+        gate.get("expected_reference_date") or gate.get("expected_session")
+    )
 
 
 def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
@@ -119,7 +126,10 @@ def _session_is_fresh(item: dict[str, object]) -> tuple[bool, date | None]:
         or _date_value(item.get("trade_date"))
         or _date_value(item.get("observed_at"))
     )
-    expected_date = _date_value(item.get("expected_latest_session_date"))
+    expected_date = _date_value(
+        item.get("expected_reference_date")
+        or item.get("expected_latest_session_date")
+    )
     session_freshness = str(item.get("session_freshness") or "").lower()
     quality_status = str(item.get("quality_status") or "").lower()
 
@@ -149,6 +159,15 @@ def _verified_session_basis(
     change_pct = _number(item.get("change_pct"))
     provider_change = _number(item.get("provider_change_point"))
     provider_change_match = item.get("provider_change_match")
+    expected_product_reference_date = _date_value(
+        item.get("expected_reference_date")
+        or item.get("expected_latest_session_date")
+    )
+    provider_raw_bas_dd = _date_value(
+        item.get("provider_raw_bas_dd")
+        or item.get("trade_date")
+        or item.get("session_date")
+    )
     night_sha = str(item.get("night_source_payload_sha256") or "")
     reference_sha = str(item.get("reference_source_payload_sha256") or "")
     expected_change_pct = (
@@ -158,7 +177,7 @@ def _verified_session_basis(
         and reference_price != 0
         else None
     )
-    expected_reference_date = preceding_exchange_session_date("XKRX", session_date)
+    expected_comparison_date = preceding_exchange_session_date("XKRX", session_date)
     provider_cross_check_valid = provider_change is None or bool(
         provider_change_match is True
         and change_value is not None
@@ -176,8 +195,8 @@ def _verified_session_basis(
         and str(item.get("market_session") or "").lower() == "kr_night"
         and str(item.get("session_type") or "").upper() == "NIGHT"
         and str(item.get("reference_session") or "").upper() == "DAY"
-        and expected_reference_date is not None
-        and reference_date == expected_reference_date
+        and expected_comparison_date is not None
+        and reference_date == expected_comparison_date
         and str(item.get("contract_code") or "").strip()
         and str(item.get("retrieved_at") or item.get("session_close") or "").strip()
         and str(item.get("source_url") or item.get("provider") or "").strip()
@@ -206,6 +225,19 @@ def _verified_session_basis(
             abs_tol=1e-6,
         )
         and provider_cross_check_valid
+        and (
+            expected_product_reference_date is None
+            or expected_product_reference_date == session_date
+        )
+        and provider_raw_bas_dd == session_date
+        and (
+            "reference_date_match" not in item
+            or item.get("reference_date_match") is True
+        )
+        and (
+            "finality_valid" not in item
+            or item.get("finality_valid") is True
+        )
     )
     return valid, reference_date, reference_price
 
@@ -288,6 +320,35 @@ def summarize_night_futures(
                 reference_source_payload_sha256=str(
                     row.get("reference_source_payload_sha256")
                 ),
+                reference_date_contract=str(
+                    row.get("reference_date_contract")
+                    or "legacy-night-reference-date-contract"
+                ),
+                expected_reference_date=(
+                    _date_value(
+                        row.get("expected_reference_date")
+                        or row.get("expected_latest_session_date")
+                    )
+                    or session_date
+                ),
+                provider_raw_bas_dd=(
+                    _date_value(
+                        row.get("provider_raw_bas_dd")
+                        or row.get("trade_date")
+                        or row.get("session_date")
+                    )
+                    or session_date
+                ),
+                reference_date_match=(
+                    bool(row.get("reference_date_match"))
+                    if "reference_date_match" in row
+                    else True
+                ),
+                finality_valid=(
+                    bool(row.get("finality_valid"))
+                    if "finality_valid" in row
+                    else True
+                ),
             )
         )
 
@@ -346,6 +407,10 @@ def canonicalize_night_futures_market_summary(
                 "label": f"{NIGHT_FUTURES_LABELS[item.series_code]} 야간선물",
                 "value": item.change_pct,
                 "session": item.session_date.isoformat(),
+                "expected_reference_date": item.expected_reference_date.isoformat(),
+                "provider_raw_bas_dd": item.provider_raw_bas_dd.isoformat(),
+                "reference_date_match": item.reference_date_match,
+                "finality_valid": item.finality_valid,
                 "state": "CURRENT_DIRECTIONAL",
             }
         )

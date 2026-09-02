@@ -14,7 +14,9 @@ from app.config import get_settings
 from app.services.market_session import preceding_exchange_session_date
 from app.services.night_futures_session_mapping_service import (
     KST,
-    map_latest_completed_krx_night_session,
+    US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT,
+    classify_provider_reference_date,
+    resolve_us_morning_night_reference_date,
 )
 
 
@@ -32,11 +34,11 @@ _MATURITY_YYMM_RE = re.compile(r"(?<!\d)(\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 
 
 def expected_latest_completed_krx_session(run_date: date) -> date | None:
-    """Return the latest completed KRX night session by its 06:00 end date."""
-    mapping = map_latest_completed_krx_night_session(
+    """Return the US morning digest's previous valid XKRX reference date."""
+    mapping = resolve_us_morning_night_reference_date(
         datetime.combine(run_date, time(8, 0), tzinfo=KST)
     )
-    return mapping.provider_night_bas_dd if mapping is not None else None
+    return mapping.expected_reference_date if mapping is not None else None
 
 
 class KrxFuturesRow(BaseModel):
@@ -77,6 +79,11 @@ class KrxNightFutureObservation(BaseModel):
     night_source_payload_sha256: str | None = None
     reference_source_payload_sha256: str | None = None
     session_evidence: str = "MKT_NM:정규/야간"
+    expected_reference_date: date | None = None
+    provider_raw_bas_dd: date | None = None
+    reference_date_match: bool = False
+    reference_date_relation: str = "UNVERIFIED"
+    finality_valid: bool = False
 
 
 class KrxProbeDateStatus(BaseModel):
@@ -101,6 +108,11 @@ class KrxProbeProductStatus(BaseModel):
     readiness: str
     rejection_reason: str | None = None
     provider_change_crosscheck_status: str = "NOT_OBSERVED"
+    expected_reference_date: date | None = None
+    provider_raw_bas_dd: date | None = None
+    reference_date_match: bool = False
+    reference_date_relation: str = "UNVERIFIED"
+    finality_valid: bool = False
 
 
 class KrxNightFuturesProbeResult(BaseModel):
@@ -125,6 +137,11 @@ class KrxNightFuturesProbeResult(BaseModel):
     canonicalization_status: str = "NOT_OBSERVED"
     provider_change_crosscheck_status: str = "NOT_OBSERVED"
     expected_latest_session_date: date | None = None
+    reference_date_contract: str = US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT
+    expected_reference_date: date | None = None
+    provider_raw_bas_dd: date | None = None
+    reference_date_match_count: int = 0
+    finality_valid: bool = False
     session_freshness: str = "unverified"
     warnings: list[str] = Field(default_factory=list)
 
@@ -139,6 +156,11 @@ class KrxNightFuturesProbeResult(BaseModel):
             "session_values": self.session_values,
             "night_session_usable": self.night_session_usable,
             "expected_latest_session_date": self.expected_latest_session_date,
+            "reference_date_contract": self.reference_date_contract,
+            "expected_reference_date": self.expected_reference_date,
+            "provider_raw_bas_dd": self.provider_raw_bas_dd,
+            "reference_date_match_count": self.reference_date_match_count,
+            "finality_valid": self.finality_valid,
             "session_freshness": self.session_freshness,
             "date_statuses": [item.model_dump(mode="json") for item in self.date_statuses],
             "returned_business_dates": self.returned_business_dates,
@@ -440,6 +462,8 @@ def _product_statuses(
     payloads: dict[date, object],
     expected_session: date | None,
     result: KrxNightFuturesProbeResult,
+    *,
+    finality_valid: bool,
 ) -> list[KrxProbeProductStatus]:
     parsed = [
         row
@@ -463,7 +487,29 @@ def _product_statuses(
         ]
         latest = max(nights, key=lambda item: item.business_date, default=None)
         observation = ready.get(product)
-        if observation is not None and observation.session_date == expected_session:
+        returned_date = (
+            observation.session_date
+            if observation is not None
+            else latest.business_date
+            if latest is not None
+            else None
+        )
+        date_relation = classify_provider_reference_date(
+            returned_date,
+            expected_session,
+        )
+        common = {
+            "expected_reference_date": expected_session,
+            "provider_raw_bas_dd": returned_date,
+            "reference_date_match": date_relation == "DATE_MATCH",
+            "reference_date_relation": date_relation,
+            "finality_valid": finality_valid,
+        }
+        if (
+            observation is not None
+            and observation.session_date == expected_session
+            and finality_valid
+        ):
             statuses.append(
                 KrxProbeProductStatus(
                     product=product,
@@ -479,6 +525,7 @@ def _product_statuses(
                         if observation.provider_change_match is not False
                         else "FAILED"
                     ),
+                    **common,
                 )
             )
             continue
@@ -491,14 +538,44 @@ def _product_statuses(
                     contract_code=(latest.contract_code if latest else None),
                     maturity=(latest.maturity if latest else None),
                     row_state=(
-                        "STALE_PRIOR_SESSION_PRESENT" if latest else "NO_NIGHT_ROW"
+                        "STALE_PRIOR_REFERENCE"
+                        if date_relation == "STALE_PRIOR_REFERENCE"
+                        else "UNEXPECTED_FUTURE_REFERENCE"
+                        if date_relation == "UNEXPECTED_FUTURE_REFERENCE"
+                        else "NO_NIGHT_ROW"
                     ),
                     readiness="NOT_READY",
                     rejection_reason=(
-                        "expected_session_absent"
-                        if latest
+                        "stale_prior_reference"
+                        if date_relation == "STALE_PRIOR_REFERENCE"
+                        else "unexpected_future_reference"
+                        if date_relation == "UNEXPECTED_FUTURE_REFERENCE"
+                        else "expected_reference_absent"
+                        if latest is not None
                         else "night_rows_absent"
                     ),
+                    **common,
+                )
+            )
+            continue
+        if observation is not None and observation.session_date == expected_session:
+            statuses.append(
+                KrxProbeProductStatus(
+                    product=product,
+                    expected_night_bas_dd=expected_session,
+                    returned_night_bas_dd=observation.session_date,
+                    matched_day_bas_dd=observation.reference_date,
+                    contract_code=observation.contract_code,
+                    maturity=observation.maturity,
+                    row_state="EXPECTED_REFERENCE_PRESENT_UNFINALIZED",
+                    readiness="NOT_READY",
+                    rejection_reason="session_not_final",
+                    provider_change_crosscheck_status=(
+                        "PASS"
+                        if observation.provider_change_match is not False
+                        else "FAILED"
+                    ),
+                    **common,
                 )
             )
             continue
@@ -551,6 +628,7 @@ def _product_statuses(
                 provider_change_crosscheck_status=(
                     "FAILED" if conflict else "NOT_OBSERVED"
                 ),
+                **common,
             )
         )
     return statuses
@@ -561,9 +639,39 @@ def _attach_fetch_telemetry(
     *,
     payloads: dict[date, object],
     expected_session: date | None,
+    observation_time: datetime | None = None,
 ) -> KrxNightFuturesProbeResult:
+    observed = observation_time or result.fetched_at
+    observed_kst = (
+        observed.replace(tzinfo=KST)
+        if observed.tzinfo is None
+        else observed.astimezone(KST)
+    )
+    finality_valid = observed_kst.timetz().replace(tzinfo=None) >= time(6, 0)
     result.expected_latest_session_date = expected_session
-    result.product_statuses = _product_statuses(payloads, expected_session, result)
+    result.expected_reference_date = expected_session
+    result.provider_raw_bas_dd = result.source_date
+    result.finality_valid = finality_valid
+    result.product_statuses = _product_statuses(
+        payloads,
+        expected_session,
+        result,
+        finality_valid=finality_valid,
+    )
+    for item in result.observations:
+        relation = classify_provider_reference_date(
+            item.session_date,
+            expected_session,
+        )
+        item.expected_reference_date = expected_session
+        item.provider_raw_bas_dd = item.session_date
+        item.reference_date_match = relation == "DATE_MATCH"
+        item.reference_date_relation = relation
+        item.finality_valid = finality_valid
+    result.reference_date_match_count = sum(
+        item.reference_date_match and item.finality_valid
+        for item in result.observations
+    )
     return result
 
 
@@ -589,13 +697,17 @@ def parse_krx_futures_payload(
 async def fetch_live_probe(
     *,
     run_date: date | None = None,
+    observation_time: datetime | None = None,
     api_key: str | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     max_lookback_days: int = 7,
 ) -> KrxNightFuturesProbeResult:
     run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
-    fetched_at = datetime.now(timezone.utc)
+    observed = observation_time or datetime.now(timezone.utc)
+    if observed.tzinfo is None:
+        observed = observed.replace(tzinfo=KST)
+    fetched_at = observed.astimezone(timezone.utc)
     if not api_key:
         return _attach_fetch_telemetry(
             KrxNightFuturesProbeResult(
@@ -702,6 +814,11 @@ async def fetch_live_probe(
                 )
                 if intervening_errors:
                     result.session_freshness = "unverified"
+                elif not (
+                    fetched_at.astimezone(KST).timetz().replace(tzinfo=None)
+                    >= time(6, 0)
+                ):
+                    result.session_freshness = "unfinalized"
                 elif result.source_date == result.expected_latest_session_date:
                     result.session_freshness = "fresh"
                 else:

@@ -26,6 +26,9 @@ from app.services.night_futures import (
 from app.services.night_futures_publication_telemetry_service import (
     record_attempt_best_effort,
 )
+from app.services.night_futures_session_mapping_service import (
+    US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT,
+)
 from app.services.ai_review_service import try_write_ai_review_packet
 from app.services.ai_assisted_delivery_service import (
     ai_assisted_pilot_active,
@@ -161,6 +164,8 @@ def initialize_morning_gate(
         **current,
         "state": "waiting",
         "expected_session": expected.isoformat() if expected else None,
+        "reference_date_contract": US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT,
+        "expected_reference_date": expected.isoformat() if expected else None,
         "initialized_at": _as_kst(as_of).isoformat(),
         "query_attempted": False,
         "first_query_at": None,
@@ -399,6 +404,14 @@ async def run_morning_night_futures_gate(
             serialized = market_observation_to_dict(row)
             serialized["expected_latest_session_date"] = (
                 expected_session.isoformat() if expected_session else None
+            )
+            serialized["expected_reference_date"] = (
+                expected_session.isoformat() if expected_session else None
+            )
+            serialized["provider_raw_bas_dd"] = serialized.get("trade_date")
+            serialized["reference_date_match"] = bool(
+                expected_session
+                and serialized.get("trade_date") == expected_session.isoformat()
             )
             if (
                 expected_session is None

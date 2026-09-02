@@ -19,6 +19,7 @@ from app.macro.providers.krx import KrxNightFuturesProvider
 from app.macro.providers.base import CollectedObservation
 from app.macro.storage import persist_observation
 from app.services.market_session import preceding_exchange_session_date
+from app.services.night_futures_session_mapping_service import KST
 
 
 def _row(
@@ -219,7 +220,7 @@ def test_provider_change_conflict_is_fail_closed() -> None:
     assert any("provider change conflicts" in item for item in result.warnings)
 
 
-def test_current_empty_does_not_promote_older_holiday_pair_as_fresh() -> None:
+def test_previous_xkrx_business_date_pair_is_fresh_for_us_morning() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         target = request.url.params["basDd"]
         if target == "20260818":
@@ -258,8 +259,9 @@ def test_current_empty_does_not_promote_older_holiday_pair_as_fresh() -> None:
     )
 
     assert result.source_date == date(2026, 8, 18)
-    assert result.expected_latest_session_date == date(2026, 8, 19)
-    assert result.session_freshness == "stale"
+    assert result.expected_latest_session_date == date(2026, 8, 18)
+    assert result.session_freshness == "fresh"
+    assert result.reference_date_match_count == 1
     assert result.observations[0].reference_date == date(2026, 8, 14)
 
 
@@ -540,6 +542,106 @@ def test_live_probe_uses_auth_header_and_never_query_string_for_secret() -> None
     assert secret not in json.dumps(result.model_dump(mode="json"))
 
 
+def _run51_handler(request: httpx.Request) -> httpx.Response:
+    target = request.url.params["basDd"]
+    if target == "20260901":
+        rows = [
+            _row(
+                "KOSPI 200 선물",
+                "야간",
+                "A0169000",
+                "코스피200 F 202609 야간",
+                "1064.5",
+                target,
+                "-3.35",
+            ),
+            _row(
+                "KOSDAQ 150 선물",
+                "야간",
+                "A0669000",
+                "코스닥150 F 202609 야간",
+                "1432.8",
+                target,
+                "-7.3",
+            ),
+        ]
+    elif target == "20260831":
+        rows = [
+            _row(
+                "KOSPI 200 선물",
+                "정규",
+                "A0169000",
+                "코스피200 F 202609",
+                "1067.85",
+                target,
+            ),
+            _row(
+                "KOSDAQ 150 선물",
+                "정규",
+                "A0669000",
+                "코스닥150 F 202609",
+                "1440.1",
+                target,
+            ),
+        ]
+    else:
+        rows = []
+    return httpx.Response(200, json={"OutBlock_1": rows})
+
+
+def test_run51_previous_xkrx_reference_is_ready_two_of_two() -> None:
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 9, 2),
+            observation_time=datetime(2026, 9, 2, 8, 20, tzinfo=KST),
+            api_key="dummy",
+            transport=httpx.MockTransport(_run51_handler),
+            max_lookback_days=3,
+        )
+    )
+
+    assert result.expected_reference_date == date(2026, 9, 1)
+    assert result.provider_raw_bas_dd == date(2026, 9, 1)
+    assert result.reference_date_match_count == 2
+    assert result.finality_valid is True
+    assert result.session_freshness == "fresh"
+    assert [item.readiness for item in result.product_statuses] == ["READY", "READY"]
+    assert all(item.reference_date_match for item in result.product_statuses)
+    assert all(item.finality_valid for item in result.product_statuses)
+    by_product = {item.product: item for item in result.observations}
+    assert by_product["KOSPI200"].night_close == 1064.5
+    assert by_product["KOSPI200"].regular_close == 1067.85
+    assert by_product["KOSPI200"].point_change == -3.35
+    assert by_product["KOSPI200"].change_pct == pytest.approx(-0.31371447)
+    assert by_product["KOSDAQ150"].night_close == 1432.8
+    assert by_product["KOSDAQ150"].regular_close == 1440.1
+    assert by_product["KOSDAQ150"].point_change == -7.3
+    assert by_product["KOSDAQ150"].change_pct == pytest.approx(-0.50690924)
+
+
+def test_matching_run51_reference_before_finality_is_not_ready() -> None:
+    result = asyncio.run(
+        fetch_live_probe(
+            run_date=date(2026, 9, 2),
+            observation_time=datetime(2026, 9, 2, 5, 30, tzinfo=KST),
+            api_key="dummy",
+            transport=httpx.MockTransport(_run51_handler),
+            max_lookback_days=3,
+        )
+    )
+
+    assert result.expected_reference_date == date(2026, 9, 1)
+    assert result.session_freshness == "unfinalized"
+    assert result.reference_date_match_count == 0
+    assert all(item.reference_date_match for item in result.product_statuses)
+    assert all(item.finality_valid is False for item in result.product_statuses)
+    assert all(item.readiness == "NOT_READY" for item in result.product_statuses)
+    assert all(
+        item.rejection_reason == "session_not_final"
+        for item in result.product_statuses
+    )
+
+
 def test_live_probe_continues_past_nonempty_unusable_date() -> None:
     requests: list[httpx.Request] = []
 
@@ -647,7 +749,7 @@ def test_newer_market_rows_make_older_verified_pair_stale() -> None:
     )
 
     assert result.source_date == date(2026, 8, 11)
-    assert result.expected_latest_session_date == date(2026, 8, 13)
+    assert result.expected_latest_session_date == date(2026, 8, 12)
     assert result.session_freshness == "stale"
     assert [item.result for item in result.date_statuses] == [
         "empty",
@@ -695,17 +797,17 @@ def test_empty_expected_business_date_is_refresh_due_not_a_holiday() -> None:
         )
     )
 
-    assert expected_latest_completed_krx_session(date(2026, 8, 13)) == date(2026, 8, 13)
+    assert expected_latest_completed_krx_session(date(2026, 8, 13)) == date(2026, 8, 12)
     assert result.source_date == date(2026, 8, 11)
-    assert result.expected_latest_session_date == date(2026, 8, 13)
+    assert result.expected_latest_session_date == date(2026, 8, 12)
     assert result.session_freshness == "stale"
 
 
 @pytest.mark.parametrize(
     ("run_date", "source_date"),
     [
-        (date(2026, 8, 10), date(2026, 8, 8)),
-        (date(2026, 8, 18), date(2026, 8, 15)),
+        (date(2026, 8, 10), date(2026, 8, 7)),
+        (date(2026, 8, 18), date(2026, 8, 14)),
     ],
 )
 def test_empty_weekend_or_holiday_dates_keep_latest_verified_session_fresh(
@@ -1063,7 +1165,7 @@ def test_provider_marks_older_pair_stale_and_storage_refreshes_existing_quality(
     assert provider_result.observations[0].quality_status == "stale"
     assert (
         provider_result.observations[0].raw_payload["expected_latest_session_date"]
-        == "2026-08-13"
+        == "2026-08-12"
     )
     assert provider_result.warnings
 

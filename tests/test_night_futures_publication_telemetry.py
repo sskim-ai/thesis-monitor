@@ -358,7 +358,7 @@ async def test_saturday_observer_reaches_role_target_and_same_slot_is_idempotent
     )
 
     assert first["status"] == "RECORDED"
-    assert first["expected_night_bas_dd"] == "2026-08-22"
+    assert first["expected_night_bas_dd"] == "2026-08-21"
     assert second["reason"] == "target_already_observed"
     assert provider.calls == 1
 

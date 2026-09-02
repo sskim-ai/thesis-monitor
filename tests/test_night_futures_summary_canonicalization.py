@@ -5,6 +5,7 @@ from app.services.night_futures import (
     NIGHT_FUTURES_SESSION_BASIS_CONTRACT,
     canonicalize_night_futures_market_summary,
     night_futures_context_row,
+    render_night_futures,
     summarize_night_futures,
 )
 
@@ -137,3 +138,87 @@ def test_partial_kosdaq_availability_preserves_fact_identity_two() -> None:
     assert context["fact_id"] == "market:night_futures:2"
     assert context["field_path"] == "fields.change_pct"
     assert context["state"] == "CURRENT_DIRECTIONAL"
+
+
+def _run51_row(
+    series_code: str,
+    *,
+    value: float,
+    reference: float,
+    change: float,
+    contract: str,
+) -> dict[str, object]:
+    row = _row(series_code, session="2026-09-01", expected="2026-09-01")
+    row.update(
+        {
+            "value": value,
+            "change_value": change,
+            "change_pct": change / reference * 100,
+            "reference_date": "2026-08-31",
+            "reference_price": reference,
+            "current_session_price": value,
+            "contract_code": contract,
+            "reference_date_contract": "us-morning-night-reference-date-v3",
+            "expected_reference_date": "2026-09-01",
+            "provider_raw_bas_dd": "2026-09-01",
+            "reference_date_match": True,
+            "finality_valid": True,
+            "provider_change_point": change,
+            "provider_change_match": True,
+            "night_source_record_id": f"2026-09-01:NIGHT:{contract}",
+            "reference_source_record_id": f"2026-08-31:REGULAR:{contract}",
+            "night_source_payload_sha256": (
+                "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+            ),
+            "reference_source_payload_sha256": (
+                "e996ba90366370a95ab9315dffe074676f426426bbfab27fadd6d6d84a9d46e7"
+            ),
+        }
+    )
+    return row
+
+
+def test_run51_ready_two_of_two_adds_only_night_projection_and_rendering() -> None:
+    non_night_items = ["S&P -0.7%", "Nasdaq -1.3%", "SOXX -2.1%"]
+    rows = [
+        _run51_row(
+            "KRX_KOSPI200_NIGHT_FUT",
+            value=1064.5,
+            reference=1067.85,
+            change=-3.35,
+            contract="A0169000",
+        ),
+        _run51_row(
+            "KRX_KOSDAQ150_NIGHT_FUT",
+            value=1432.8,
+            reference=1440.1,
+            change=-7.3,
+            contract="A0669000",
+        ),
+    ]
+    market = {
+        "items": list(non_night_items),
+        "observations": rows,
+        "night_futures_gate": {
+            "query_attempted": True,
+            "reference_date_contract": "us-morning-night-reference-date-v3",
+            "expected_reference_date": "2026-09-01",
+            "expected_session": "2026-09-01",
+            "ready_products": [row["series_code"] for row in rows],
+            "state": "ready",
+        },
+    }
+
+    canonical = canonicalize_night_futures_market_summary(market)
+    summary = summarize_night_futures(canonical)
+    rendered = render_night_futures(summary)
+
+    assert canonical["items"][: len(non_night_items)] == non_night_items
+    assert len(summary.items) == 2
+    assert all(item.reference_date_match for item in summary.items)
+    assert all(item.finality_valid for item in summary.items)
+    assert {item.provider_raw_bas_dd.isoformat() for item in summary.items} == {
+        "2026-09-01"
+    }
+    assert "KOSPI200 최근월물 1,064.50 · -3.35pt (-0.31%)" in rendered
+    assert "KOSDAQ150 최근월물 1,432.80 · -7.30pt (-0.51%)" in rendered

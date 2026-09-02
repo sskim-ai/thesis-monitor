@@ -29,6 +29,7 @@ NightFuturesAttemptClassification = Literal[
     "PARSER_ERROR",
     "CANONICALIZATION_ERROR",
     "STALE_PRIOR_SESSION_PRESENT",
+    "UNEXPECTED_FUTURE_REFERENCE_PRESENT",
     "EXPECTED_SESSION_ABSENT",
     "EXPECTED_SESSION_PRESENT_NO_MATCHING_DAY",
     "EXPECTED_SESSION_PRESENT_CONTRACT_MISMATCH",
@@ -50,6 +51,11 @@ class NightFuturesProductAttempt(BaseModel):
     readiness: str
     rejection_reason: str | None = None
     provider_change_crosscheck_status: str = "NOT_OBSERVED"
+    expected_reference_date: date | None = None
+    provider_raw_bas_dd: date | None = None
+    reference_date_match: bool = False
+    reference_date_relation: str = "UNVERIFIED"
+    finality_valid: bool = False
 
 
 class NightFuturesAttemptRecord(BaseModel):
@@ -69,6 +75,8 @@ class NightFuturesAttemptRecord(BaseModel):
     role: str
     production_or_observer: Literal["production", "observer"]
     expected_night_bas_dd: date | None
+    reference_date_contract: str = "us-morning-night-reference-date-v3"
+    expected_reference_date: date | None = None
     expected_preceding_day_bas_dd: date | None
     xkrx_calendar_basis: str = "preceding-eligible-XKRX-DAY-v1"
     provider_http_statuses: list[int] = Field(default_factory=list)
@@ -195,6 +203,19 @@ def _product_attempts(
                 provider_change_crosscheck_status=str(
                     item.get("provider_change_crosscheck_status") or "NOT_OBSERVED"
                 ),
+                expected_reference_date=(
+                    item.get("expected_reference_date")
+                    or item.get("expected_night_bas_dd")
+                ),
+                provider_raw_bas_dd=(
+                    item.get("provider_raw_bas_dd")
+                    or item.get("returned_night_bas_dd")
+                ),
+                reference_date_match=bool(item.get("reference_date_match")),
+                reference_date_relation=str(
+                    item.get("reference_date_relation") or "UNVERIFIED"
+                ),
+                finality_valid=bool(item.get("finality_valid")),
             )
     return [
         by_product.get(product)
@@ -288,6 +309,8 @@ def classify_attempt(
     if "matching_preceding_day_contract_unavailable" in reasons:
         return "EXPECTED_SESSION_PRESENT_NO_MATCHING_DAY"
     night_dates = _date_values(telemetry.get("returned_night_session_dates"))
+    if expected_session and night_dates and min(night_dates) > expected_session:
+        return "UNEXPECTED_FUTURE_REFERENCE_PRESENT"
     if expected_session and night_dates and max(night_dates) < expected_session:
         return "STALE_PRIOR_SESSION_PRESENT"
     if expected_session not in night_dates:
@@ -326,6 +349,11 @@ def build_attempt_record(
         role=role,
         production_or_observer=production_or_observer,
         expected_night_bas_dd=expected_session,
+        reference_date_contract=str(
+            telemetry.get("reference_date_contract")
+            or "us-morning-night-reference-date-v3"
+        ),
+        expected_reference_date=expected_session,
         expected_preceding_day_bas_dd=(
             preceding_exchange_session_date("XKRX", expected_session)
             if expected_session

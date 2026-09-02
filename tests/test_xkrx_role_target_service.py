@@ -33,7 +33,8 @@ def test_saturday_roles_resolve_target_before_wallclock_session_gate() -> None:
     assert night.target_session_date == expected_latest_completed_krx_session(
         date(2026, 8, 22)
     )
-    assert night.target_xkrx_business_date == date(2026, 8, 21)
+    assert night.target_session_date == date(2026, 8, 21)
+    assert night.target_xkrx_business_date == date(2026, 8, 20)
     assert night.observation_eligible is True
     assert night.calendar_evidence["wallclock_is_xkrx_session"] is False
     assert publication.target_session_date == date(2026, 8, 21)
@@ -56,7 +57,8 @@ def test_sunday_and_monday_roles_use_exchange_calendar_not_date_subtraction() ->
         "krx_next_morning_publication",
     )
 
-    assert sunday_night.target_session_date == date(2026, 8, 22)
+    assert sunday_night.target_session_date == date(2026, 8, 21)
+    assert sunday_night.target_xkrx_business_date == date(2026, 8, 20)
     assert sunday_publication.target_session_date == date(2026, 8, 21)
     assert monday_publication.target_session_date == date(2026, 8, 21)
 
@@ -122,6 +124,7 @@ def test_night_production_and_observer_share_canonical_target_resolver() -> None
 
     assert production.target_session_date == observer.target_session_date
     assert production.target_xkrx_business_date == observer.target_xkrx_business_date
+    assert production.target_kind == "US_MORNING_NIGHT_REFERENCE_DATE"
     assert production.calendar_evidence["target_basis"] == (
-        "night-futures-session-basis-v1"
+        "us-morning-night-reference-date-v3"
     )
