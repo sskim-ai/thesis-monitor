@@ -1,0 +1,67 @@
+{
+  "contract": "directional-balance-us-natural-live-v1",
+  "assessment_date": "2026-09-03",
+  "completed_us_session": "2026-09-02",
+  "packet": {
+    "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+    "sha256": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1",
+    "source_run_id": 53,
+    "source_run_status": "success",
+    "ticker_count": 14,
+    "success_count": 14,
+    "failure_count": 0,
+    "production_persistence_eligible": true,
+    "ready_for_ai": false,
+    "readiness_reason": "shadow_numeric_semantic_gate_not_ready",
+    "unsupported_numeric_semantics": [
+      "market:night_futures:1:fields.reference_price",
+      "market:night_futures:2:fields.reference_price"
+    ]
+  },
+  "automation": {
+    "primary": {
+      "started_at_kst": "2026-09-03T08:15:28.903000+09:00",
+      "finished_at_kst": "2026-09-03T08:21:14.558000+09:00",
+      "status": "PENDING_REVIEW",
+      "outcome": "no_pending_review_packet"
+    },
+    "backup": {
+      "started_at_kst": "2026-09-03T08:31:54.604000+09:00",
+      "finished_at_kst": "2026-09-03T08:32:34.214000+09:00",
+      "status": "PENDING_REVIEW",
+      "outcome": "no_pending_review_packet"
+    },
+    "model_call_reached": false,
+    "claim_created": false
+  },
+  "v2": {
+    "candidate_count": 0,
+    "accepted_ready_count": 0,
+    "explicit_v2_count": 0,
+    "balance_visible_count": 0,
+    "unexplained_balance_jump": 0
+  },
+  "market": {
+    "quality_status": "PASS",
+    "payload_sha256": "c3fe77e8a075a3d94403fc2653f29c6434686a471852cd41c0f9650327d16fda",
+    "treasury_3y_5y_10y_30y_present": true,
+    "night_futures_section_absent": true
+  },
+  "delivery": {
+    "mode": "deterministic_fallback",
+    "status": "sent",
+    "message_count": 15,
+    "sent_count": 15,
+    "pending_count": 0,
+    "attempt_count_exactly_one": 15,
+    "archive_ledger_exact_match": 15,
+    "duplicate_count": 0
+  },
+  "classification": {
+    "status": "FAIL_SAFE_FALLBACK",
+    "open_p0": 0,
+    "open_material_p1": 1,
+    "p1": "suppressed_night_reference_price_blocks_packet_numeric_semantic_readiness",
+    "repair_during_observation": 0
+  }
+}
