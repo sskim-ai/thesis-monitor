@@ -437,9 +437,12 @@ async def _run(args: argparse.Namespace) -> None:
     artifacts = []
     for market, packet_path in (("kr", args.kr_packet), ("us", args.us_packet)):
         market_dir = args.output_dir / market
+        reuse_path = (
+            args.reuse_kr_artifact if market == "kr" else args.reuse_us_artifact
+        )
         reused_artifact = (
-            AcceptedV2ProductionArtifact.model_validate(_read_json(args.reuse_us_artifact))
-            if market == "us" and args.reuse_us_artifact is not None
+            AcceptedV2ProductionArtifact.model_validate(_read_json(reuse_path))
+            if reuse_path is not None
             else None
         )
         context = await _context(
@@ -464,9 +467,19 @@ async def _run(args: argparse.Namespace) -> None:
                 or artifact.selected_subjects != context.selected_subjects
                 or actual_evidence != expected_evidence
             ):
-                raise ValueError("preflight_reused_us_artifact_identity_mismatch")
+                raise ValueError(
+                    f"preflight_reused_{market}_artifact_identity_mismatch"
+                )
         else:
-            output = _codex_batch(context, output_dir=market_dir, timeout=args.timeout)
+            state_namespace = getattr(args, "state_namespace", None)
+            output = _codex_batch(
+                context,
+                output_dir=market_dir,
+                timeout=args.timeout,
+                state_namespace=(
+                    f"{state_namespace}:{market}" if state_namespace else None
+                ),
+            )
             _write_json(
                 market_dir / "candidate-output.json",
                 output.model_dump(mode="json"),
@@ -532,6 +545,8 @@ def main() -> None:
     parser.add_argument("--env-file", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument("--state-namespace")
+    parser.add_argument("--reuse-kr-artifact", type=Path)
     parser.add_argument("--reuse-us-artifact", type=Path)
     parser.add_argument("--send-test-sink", action="store_true")
     parser.add_argument("--send-existing", action="store_true")

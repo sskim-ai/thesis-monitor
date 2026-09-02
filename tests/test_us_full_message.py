@@ -5,6 +5,7 @@ from app.services.us_full_message_service import (
     render_us_full_market_message,
 )
 from app.services.us_market_digest_plan_service import build_us_market_digest_plan
+from scripts.directional_balance_dual_market_test_delivery import _us_market_message
 
 
 def _fact(
@@ -389,6 +390,38 @@ def test_nominal_treasury_curve_uses_same_series_observation_pairs() -> None:
     ):
         assert line in rendered.text
     assert len(rendered.treasury_fact_ids) == 4
+
+
+def test_dual_market_test_message_keeps_treasury_and_suppresses_night() -> None:
+    context = _context()
+    context["night_futures"] = [
+        {
+            "fact_id": "market:night_futures:1",
+            "field_path": "fields.change_pct",
+            "state": "CURRENT_DIRECTIONAL",
+            "series_code": "KRX_KOSPI200_NIGHT_FUT",
+            "change_pct": 0.67,
+        }
+    ]
+    fixture = {
+        "observations": [
+            {
+                "series_code": series,
+                "label": f"미국 {years}년물 금리",
+                "current_date": "2026-09-01",
+                "current_pct": 4.0 + years / 100,
+                "previous_date": "2026-08-31",
+                "previous_pct": 4.0,
+            }
+            for series, years in (("DGS3", 3), ("DGS5", 5), ("DGS10", 10), ("DGS30", 30))
+        ]
+    }
+
+    text = _us_market_message({"market_context": context}, fixture)
+
+    assert "🌙 한국 야간선물" not in text
+    assert "🌐 미국 국채금리 · 09/01 관측" in text
+    assert all(f"• {years}년:" in text for years in (3, 5, 10, 30))
 
 
 def test_treasury_curve_reports_exact_partial_pair_cause() -> None:

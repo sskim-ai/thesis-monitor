@@ -7,6 +7,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from scripts import kr_final_preenable_test_delivery as test_delivery
 from scripts.kr_final_preenable_test_delivery import deliver_test_messages
 
 
@@ -75,6 +76,40 @@ def test_test_delivery_blocks_production_collision(tmp_path: Path) -> None:
                 receipt_path=tmp_path / "receipt.json",
             )
         )
+
+
+def test_test_delivery_can_pace_messages(monkeypatch, tmp_path: Path) -> None:
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={"ok": True, "result": {"message_id": 1, "text": body["text"]}},
+        )
+
+    monkeypatch.setattr(test_delivery.asyncio, "sleep", fake_sleep)
+    asyncio.run(
+        deliver_test_messages(
+            [
+                {"ticker": "A", "text": "one", "logical_identity": "pace:A"},
+                {"ticker": "B", "text": "two", "logical_identity": "pace:B"},
+            ],
+            token="test-token",
+            test_chat_id="test-chat",
+            production_chat_id="production-chat",
+            test_sink_alias="test:alias",
+            production_sink_alias="production:alias",
+            receipt_path=tmp_path / "paced-receipt.json",
+            transport=httpx.MockTransport(handler),
+            inter_message_delay_seconds=3.2,
+        )
+    )
+
+    assert sleeps == [3.2]
 
 
 def test_existing_receipt_blocks_duplicate_send(tmp_path: Path) -> None:

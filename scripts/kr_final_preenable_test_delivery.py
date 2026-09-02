@@ -156,6 +156,7 @@ async def deliver_test_messages(
     contract: str = CONTRACT,
     namespace: str = NAMESPACE,
     received_payload_validator: Callable[[str], Mapping[str, object]] | None = None,
+    inter_message_delay_seconds: float = 0.0,
 ) -> dict[str, object]:
     if not token or not test_chat_id or not production_chat_id:
         raise ValueError("Telegram credentials or recipient missing")
@@ -245,6 +246,8 @@ async def deliver_test_messages(
                 receipt["safe_error"] = "received_payload_quality_failed"
                 _write_json(receipt_path, receipt)
                 raise RuntimeError("Telegram received payload failed quality validation")
+            if inter_message_delay_seconds > 0 and index < len(messages):
+                await asyncio.sleep(inter_message_delay_seconds)
 
     rows = receipt["rows"]
     assert isinstance(rows, list)

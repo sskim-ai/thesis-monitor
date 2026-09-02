@@ -1,0 +1,407 @@
+{
+  "contract": "directional-balance-dual-market-test-delivery-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY",
+  "orphan_count": 0,
+  "planned_message_count": 24,
+  "production_collision": 0,
+  "production_intent_created": 0,
+  "production_recipient_send_count": 0,
+  "request_retry_count": 0,
+  "rows": [
+    {
+      "character_count": 376,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:MARKET",
+      "outbound_sha256": "22a16e3d3a4a11b375302ff2fb335013f60f9fd5f7d040d682d8473c1d75dbe7",
+      "received_payload_quality": {
+        "contract": "us-morning-exact-payload-quality-v1",
+        "errors": [],
+        "generic_macro_without_specific_evidence_visible": 0,
+        "generic_no_change_macro_section_visible": 0,
+        "malformed_zero_change_korean": 0,
+        "payload_sha256": "22a16e3d3a4a11b375302ff2fb335013f60f9fd5f7d040d682d8473c1d75dbe7",
+        "required_layout_valid": true,
+        "status": "PASS"
+      },
+      "received_sha256": "22a16e3d3a4a11b375302ff2fb335013f60f9fd5f7d040d682d8473c1d75dbe7",
+      "rendered_sha256": "22a16e3d3a4a11b375302ff2fb335013f60f9fd5f7d040d682d8473c1d75dbe7",
+      "route": "MARKET_CURRENT_RENDER",
+      "send_attempts": 1,
+      "sequence": 1,
+      "ticker": "MARKET_US"
+    },
+    {
+      "character_count": 1209,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CORZ",
+      "outbound_sha256": "df2682521b26e5c3e1cf48a3ff34e13b2574bc0ccdf08025c19c0e80bf85c829",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "df2682521b26e5c3e1cf48a3ff34e13b2574bc0ccdf08025c19c0e80bf85c829",
+      "rendered_sha256": "df2682521b26e5c3e1cf48a3ff34e13b2574bc0ccdf08025c19c0e80bf85c829",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 2,
+      "ticker": "CORZ"
+    },
+    {
+      "character_count": 1322,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CPNG",
+      "outbound_sha256": "67ee21b097ee4f363b00c125048481684c6025f964bed8e5e8481b4306985da5",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "67ee21b097ee4f363b00c125048481684c6025f964bed8e5e8481b4306985da5",
+      "rendered_sha256": "67ee21b097ee4f363b00c125048481684c6025f964bed8e5e8481b4306985da5",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 3,
+      "ticker": "CPNG"
+    },
+    {
+      "character_count": 1093,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CRCL",
+      "outbound_sha256": "5426fe5e25c5c4e8cc5f2b081d1a27611b7ffd78159d716d7fa4ca825686d5fd",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "5426fe5e25c5c4e8cc5f2b081d1a27611b7ffd78159d716d7fa4ca825686d5fd",
+      "rendered_sha256": "5426fe5e25c5c4e8cc5f2b081d1a27611b7ffd78159d716d7fa4ca825686d5fd",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 4,
+      "ticker": "CRCL"
+    },
+    {
+      "character_count": 1216,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:GOOGL",
+      "outbound_sha256": "2a88777e2833ed81fc000e3dcf3454ab01691d88d29c7af24183ed794c699eef",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "2a88777e2833ed81fc000e3dcf3454ab01691d88d29c7af24183ed794c699eef",
+      "rendered_sha256": "2a88777e2833ed81fc000e3dcf3454ab01691d88d29c7af24183ed794c699eef",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 5,
+      "ticker": "GOOGL"
+    },
+    {
+      "character_count": 1295,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:HUT",
+      "outbound_sha256": "fc87507b86d1de1a1b5e089819be9a12cbd93bfd2de2f7553327b75497f2fbed",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "fc87507b86d1de1a1b5e089819be9a12cbd93bfd2de2f7553327b75497f2fbed",
+      "rendered_sha256": "fc87507b86d1de1a1b5e089819be9a12cbd93bfd2de2f7553327b75497f2fbed",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 6,
+      "ticker": "HUT"
+    },
+    {
+      "character_count": 1299,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:IBM",
+      "outbound_sha256": "c40398719188585798482716941340b15f8b652e13282667f4aad9dd61ac5007",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "c40398719188585798482716941340b15f8b652e13282667f4aad9dd61ac5007",
+      "rendered_sha256": "c40398719188585798482716941340b15f8b652e13282667f4aad9dd61ac5007",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 7,
+      "ticker": "IBM"
+    },
+    {
+      "character_count": 1577,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:MU",
+      "outbound_sha256": "8a8a9e3a8c0ed56990fab7578f43c36156c92e614286cb0d25f5cfdbdcc5af14",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "8a8a9e3a8c0ed56990fab7578f43c36156c92e614286cb0d25f5cfdbdcc5af14",
+      "rendered_sha256": "8a8a9e3a8c0ed56990fab7578f43c36156c92e614286cb0d25f5cfdbdcc5af14",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 8,
+      "ticker": "MU"
+    },
+    {
+      "character_count": 1065,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:RXRX",
+      "outbound_sha256": "bcafd6a04db22047b5de4c2be1c32871f057b753151b32d5714b1301b794a26d",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "bcafd6a04db22047b5de4c2be1c32871f057b753151b32d5714b1301b794a26d",
+      "rendered_sha256": "bcafd6a04db22047b5de4c2be1c32871f057b753151b32d5714b1301b794a26d",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 9,
+      "ticker": "RXRX"
+    },
+    {
+      "character_count": 1149,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:SKHY",
+      "outbound_sha256": "e25afe7e901be33a2c454b656117cf9c6fdf19be6d58e7fff28d1b02e2c555df",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "e25afe7e901be33a2c454b656117cf9c6fdf19be6d58e7fff28d1b02e2c555df",
+      "rendered_sha256": "e25afe7e901be33a2c454b656117cf9c6fdf19be6d58e7fff28d1b02e2c555df",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 10,
+      "ticker": "SKHY"
+    },
+    {
+      "character_count": 1094,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:SNDK",
+      "outbound_sha256": "022240f96385a9c18a5841e62ce5b928892e0f253fa5c1ecc9fafd4e3733edcc",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "022240f96385a9c18a5841e62ce5b928892e0f253fa5c1ecc9fafd4e3733edcc",
+      "rendered_sha256": "022240f96385a9c18a5841e62ce5b928892e0f253fa5c1ecc9fafd4e3733edcc",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 11,
+      "ticker": "SNDK"
+    },
+    {
+      "character_count": 1256,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:TSLA",
+      "outbound_sha256": "14208c6871ff0eb422b32843d7e88dfcff9ae79a6f1075d509d5ac602373bae2",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "14208c6871ff0eb422b32843d7e88dfcff9ae79a6f1075d509d5ac602373bae2",
+      "rendered_sha256": "14208c6871ff0eb422b32843d7e88dfcff9ae79a6f1075d509d5ac602373bae2",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 12,
+      "ticker": "TSLA"
+    },
+    {
+      "character_count": 1083,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:TSM",
+      "outbound_sha256": "00ad4e89868e91b762ecf6627ef5651a00e91812f57301fbb6a1f5792c83b321",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "00ad4e89868e91b762ecf6627ef5651a00e91812f57301fbb6a1f5792c83b321",
+      "rendered_sha256": "00ad4e89868e91b762ecf6627ef5651a00e91812f57301fbb6a1f5792c83b321",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 13,
+      "ticker": "TSM"
+    },
+    {
+      "character_count": 1084,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:WRD",
+      "outbound_sha256": "fc1724729a171f2df326ad105e6e8ab424b52bfc029be287b358ce9a3cf34bff",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "fc1724729a171f2df326ad105e6e8ab424b52bfc029be287b358ce9a3cf34bff",
+      "rendered_sha256": "fc1724729a171f2df326ad105e6e8ab424b52bfc029be287b358ce9a3cf34bff",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 14,
+      "ticker": "WRD"
+    },
+    {
+      "character_count": 1301,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:WULF",
+      "outbound_sha256": "0787631c454b005ea87ecc4f245beaf4313641ee0cdb9472b785af69e3cfac38",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "0787631c454b005ea87ecc4f245beaf4313641ee0cdb9472b785af69e3cfac38",
+      "rendered_sha256": "0787631c454b005ea87ecc4f245beaf4313641ee0cdb9472b785af69e3cfac38",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 15,
+      "ticker": "WULF"
+    },
+    {
+      "character_count": 1629,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:MARKET",
+      "outbound_sha256": "a97f70195ce3f70bff975902a756acdf58f1ec077462db686e972c9ae496886d",
+      "received_payload_quality": {
+        "contract": "kr-market-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "a97f70195ce3f70bff975902a756acdf58f1ec077462db686e972c9ae496886d",
+      "rendered_sha256": "a97f70195ce3f70bff975902a756acdf58f1ec077462db686e972c9ae496886d",
+      "route": "MARKET_CURRENT_RENDER",
+      "send_attempts": 1,
+      "sequence": 16,
+      "ticker": "MARKET_KR"
+    },
+    {
+      "character_count": 1437,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:000660",
+      "outbound_sha256": "c0dd4307dff75e2eb33a845ddf756e35549d9e5aff0552a58aae764e030a906d",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "c0dd4307dff75e2eb33a845ddf756e35549d9e5aff0552a58aae764e030a906d",
+      "rendered_sha256": "c0dd4307dff75e2eb33a845ddf756e35549d9e5aff0552a58aae764e030a906d",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 17,
+      "ticker": "000660"
+    },
+    {
+      "character_count": 1407,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:003690",
+      "outbound_sha256": "96642a92244db280b7afd4311c364d45dfc2d449d2ef1046854ae0d17304becc",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "96642a92244db280b7afd4311c364d45dfc2d449d2ef1046854ae0d17304becc",
+      "rendered_sha256": "96642a92244db280b7afd4311c364d45dfc2d449d2ef1046854ae0d17304becc",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 18,
+      "ticker": "003690"
+    },
+    {
+      "character_count": 1437,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:005490",
+      "outbound_sha256": "51c74d9e82080cae04a4baecba3ccb3744e8f44cf65b876735100d8332d16fad",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "51c74d9e82080cae04a4baecba3ccb3744e8f44cf65b876735100d8332d16fad",
+      "rendered_sha256": "51c74d9e82080cae04a4baecba3ccb3744e8f44cf65b876735100d8332d16fad",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 19,
+      "ticker": "005490"
+    },
+    {
+      "character_count": 1390,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:005930",
+      "outbound_sha256": "9f9ca45c2a67c78dd3216de5851a67b32c4d171c633bc7656f93566458a0c48d",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "9f9ca45c2a67c78dd3216de5851a67b32c4d171c633bc7656f93566458a0c48d",
+      "rendered_sha256": "9f9ca45c2a67c78dd3216de5851a67b32c4d171c633bc7656f93566458a0c48d",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 20,
+      "ticker": "005930"
+    },
+    {
+      "character_count": 1240,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:010120",
+      "outbound_sha256": "9f788dee73ace1a094d8e71aade183c665aa7a522c6e8599b554080020206821",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "9f788dee73ace1a094d8e71aade183c665aa7a522c6e8599b554080020206821",
+      "rendered_sha256": "9f788dee73ace1a094d8e71aade183c665aa7a522c6e8599b554080020206821",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 21,
+      "ticker": "010120"
+    },
+    {
+      "character_count": 1312,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:012450",
+      "outbound_sha256": "5af03a12bcb30dfa52cd69e2415b80966b292aff90d084d60d4e0ba284e94c8d",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "5af03a12bcb30dfa52cd69e2415b80966b292aff90d084d60d4e0ba284e94c8d",
+      "rendered_sha256": "5af03a12bcb30dfa52cd69e2415b80966b292aff90d084d60d4e0ba284e94c8d",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 22,
+      "ticker": "012450"
+    },
+    {
+      "character_count": 1287,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:047810",
+      "outbound_sha256": "b643d4682be5c95dc1363b7652884b7f4d6fba96dfa53887541ed9d73e38e128",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "b643d4682be5c95dc1363b7652884b7f4d6fba96dfa53887541ed9d73e38e128",
+      "rendered_sha256": "b643d4682be5c95dc1363b7652884b7f4d6fba96dfa53887541ed9d73e38e128",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 23,
+      "ticker": "047810"
+    },
+    {
+      "character_count": 1489,
+      "exact_payload_match": true,
+      "logical_identity": "DIRECTIONAL_BALANCE_DUAL_MARKET_TEST_ONLY:2026-09-02-kr-run-52-d077cd42b44c:086280",
+      "outbound_sha256": "cb613a49ff71a59ac6d49a75bcc01e3079e29e94707e7447be4ea3f33899ace2",
+      "received_payload_quality": {
+        "contract": "directional-balance-received-v1",
+        "status": "PASS"
+      },
+      "received_sha256": "cb613a49ff71a59ac6d49a75bcc01e3079e29e94707e7447be4ea3f33899ace2",
+      "rendered_sha256": "cb613a49ff71a59ac6d49a75bcc01e3079e29e94707e7447be4ea3f33899ace2",
+      "route": "V2_ACCEPTED",
+      "send_attempts": 1,
+      "sequence": 24,
+      "ticker": "086280"
+    }
+  ],
+  "sent_message_count": 24,
+  "status": "sent",
+  "unowned_retry_count": 0
+}

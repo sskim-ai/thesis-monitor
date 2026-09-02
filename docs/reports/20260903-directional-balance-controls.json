@@ -1,0 +1,45 @@
+{
+  "anchors": [
+    {
+      "buy": 6,
+      "decision": "BUY",
+      "sell": 4
+    },
+    {
+      "buy": 5,
+      "decision": "HOLD",
+      "sell": 5
+    },
+    {
+      "buy": 4,
+      "decision": "SELL",
+      "sell": 6
+    },
+    {
+      "buy": 5.5,
+      "decision": "HOLD",
+      "sell": 4.5
+    }
+  ],
+  "contract": "v2-directional-balance-v1",
+  "gates": {
+    "balance_sum_not_10": 0,
+    "false_balance_precision": 0,
+    "fixed_factor_weighted_score_introduced": 0,
+    "hold_means_prior_decision_carry_forward": 0,
+    "prior_buy_forces_current_hold_to_buy": 0,
+    "prior_sell_forces_current_hold_to_sell": 0,
+    "raw_candidate_balance_used_as_final": 0
+  },
+  "increment": 0.5,
+  "range": {
+    "maximum": 10,
+    "minimum": 0
+  },
+  "status": "PASS",
+  "sum": 10,
+  "thresholds": {
+    "buy": 6,
+    "sell": 6
+  }
+}

@@ -19,3 +19,13 @@ The harness script is `scripts/directional_balance_variance_evidence.py`. Frozen
 ## Focused Controls
 
 Synthetic controls cover minor, moderate, and material distance; candidate BUY/HOLD boundary variance with stable accepted BUY; material accepted drift rejection; frozen identity mismatch; three-run minimum; minor-movement non-adjudication; and major thesis-condition conflict adjudication.
+
+## Fresh Execution Result
+
+GOOGL and four KR controls each completed three fresh `xhigh` executions. All
+candidate and accepted balances were label-stable with maximum distance `0.0`.
+Combined label boundary crossings, unexplained accepted drift, production sends,
+production state mutations, and production majority voting were all `0`.
+
+Machine-readable result:
+`docs/reports/20260903-same-evidence-variance.json`.

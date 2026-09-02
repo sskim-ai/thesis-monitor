@@ -1,0 +1,477 @@
+{
+  "contract": "directional-balance-variance-evidence-v1",
+  "fresh_execution_count_per_control": 3,
+  "markets": {
+    "kr": {
+      "audits": {
+        "000660": {
+          "accepted_label_boundary_cross_count": 0,
+          "accepted_label_variance": "LABEL_STABLE",
+          "accepted_max_balance_distance": 0.0,
+          "accepted_variance": "MINOR_VARIANCE",
+          "candidate_label_boundary_cross_count": 0,
+          "candidate_label_variance": "LABEL_STABLE",
+          "candidate_max_balance_distance": 0.0,
+          "candidate_variance": "MINOR_VARIANCE",
+          "contract": "v2-same-evidence-balance-variance-v1",
+          "errors": [],
+          "identities_consistent": true,
+          "production_model_majority_voting": false,
+          "run_count": 3,
+          "status": "PASS",
+          "ticker": "000660",
+          "unexplained_same_evidence_accepted_drift": 0
+        },
+        "003690": {
+          "accepted_label_boundary_cross_count": 0,
+          "accepted_label_variance": "LABEL_STABLE",
+          "accepted_max_balance_distance": 0.0,
+          "accepted_variance": "MINOR_VARIANCE",
+          "candidate_label_boundary_cross_count": 0,
+          "candidate_label_variance": "LABEL_STABLE",
+          "candidate_max_balance_distance": 0.0,
+          "candidate_variance": "MINOR_VARIANCE",
+          "contract": "v2-same-evidence-balance-variance-v1",
+          "errors": [],
+          "identities_consistent": true,
+          "production_model_majority_voting": false,
+          "run_count": 3,
+          "status": "PASS",
+          "ticker": "003690",
+          "unexplained_same_evidence_accepted_drift": 0
+        },
+        "005930": {
+          "accepted_label_boundary_cross_count": 0,
+          "accepted_label_variance": "LABEL_STABLE",
+          "accepted_max_balance_distance": 0.0,
+          "accepted_variance": "MINOR_VARIANCE",
+          "candidate_label_boundary_cross_count": 0,
+          "candidate_label_variance": "LABEL_STABLE",
+          "candidate_max_balance_distance": 0.0,
+          "candidate_variance": "MINOR_VARIANCE",
+          "contract": "v2-same-evidence-balance-variance-v1",
+          "errors": [],
+          "identities_consistent": true,
+          "production_model_majority_voting": false,
+          "run_count": 3,
+          "status": "PASS",
+          "ticker": "005930",
+          "unexplained_same_evidence_accepted_drift": 0
+        },
+        "047810": {
+          "accepted_label_boundary_cross_count": 0,
+          "accepted_label_variance": "LABEL_STABLE",
+          "accepted_max_balance_distance": 0.0,
+          "accepted_variance": "MINOR_VARIANCE",
+          "candidate_label_boundary_cross_count": 0,
+          "candidate_label_variance": "LABEL_STABLE",
+          "candidate_max_balance_distance": 0.0,
+          "candidate_variance": "MINOR_VARIANCE",
+          "contract": "v2-same-evidence-balance-variance-v1",
+          "errors": [],
+          "identities_consistent": true,
+          "production_model_majority_voting": false,
+          "run_count": 3,
+          "status": "PASS",
+          "ticker": "047810",
+          "unexplained_same_evidence_accepted_drift": 0
+        }
+      },
+      "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+      "controls": [
+        "000660",
+        "003690",
+        "005930",
+        "047810"
+      ],
+      "observations": {
+        "000660": [
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "68d9789116edc1ce3be8a5cc487549cf3c2c748df3d81b847391bde7f607dbae",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-1",
+            "ticker": "000660",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "68d9789116edc1ce3be8a5cc487549cf3c2c748df3d81b847391bde7f607dbae",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-2",
+            "ticker": "000660",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "68d9789116edc1ce3be8a5cc487549cf3c2c748df3d81b847391bde7f607dbae",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-3",
+            "ticker": "000660",
+            "valid_adjudication": false
+          }
+        ],
+        "003690": [
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "997723d5d805b55a426f03184f2cd5d37b7069091768e7be9c1b97edc2f31c70",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-1",
+            "ticker": "003690",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "997723d5d805b55a426f03184f2cd5d37b7069091768e7be9c1b97edc2f31c70",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-2",
+            "ticker": "003690",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 5.0,
+              "sell": 5.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "997723d5d805b55a426f03184f2cd5d37b7069091768e7be9c1b97edc2f31c70",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-3",
+            "ticker": "003690",
+            "valid_adjudication": false
+          }
+        ],
+        "005930": [
+          {
+            "accepted_decision": "SELL",
+            "accepted_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "SELL",
+            "candidate_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "a0f70e5e2cff356c34f35bda72e549691184c0ae6a23f4f38688f82e285c772f",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-1",
+            "ticker": "005930",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "SELL",
+            "accepted_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "SELL",
+            "candidate_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "a0f70e5e2cff356c34f35bda72e549691184c0ae6a23f4f38688f82e285c772f",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-2",
+            "ticker": "005930",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "SELL",
+            "accepted_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "SELL",
+            "candidate_directional_balance": {
+              "buy": 4.0,
+              "sell": 6.0
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "a0f70e5e2cff356c34f35bda72e549691184c0ae6a23f4f38688f82e285c772f",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-3",
+            "ticker": "005930",
+            "valid_adjudication": false
+          }
+        ],
+        "047810": [
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "e0d7d5f72e94a33b6f3375323186bd4630c2b4c7ac00aa8ee0170a516d005ba2",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-1",
+            "ticker": "047810",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "e0d7d5f72e94a33b6f3375323186bd4630c2b4c7ac00aa8ee0170a516d005ba2",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-2",
+            "ticker": "047810",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "fe1c504c1101683775d51fb6c955536bacc2e4d5001b245f3135b92a75a774c2",
+            "evidence_sha256": "e0d7d5f72e94a33b6f3375323186bd4630c2b4c7ac00aa8ee0170a516d005ba2",
+            "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+            "run_id": "fresh-3",
+            "ticker": "047810",
+            "valid_adjudication": false
+          }
+        ]
+      },
+      "packet_id": "2026-09-02-kr-run-52-d077cd42b44c",
+      "runs": [
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 4,
+          "run_id": "fresh-1"
+        },
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 4,
+          "run_id": "fresh-2"
+        },
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 4,
+          "run_id": "fresh-3"
+        }
+      ]
+    },
+    "us": {
+      "audits": {
+        "GOOGL": {
+          "accepted_label_boundary_cross_count": 0,
+          "accepted_label_variance": "LABEL_STABLE",
+          "accepted_max_balance_distance": 0.0,
+          "accepted_variance": "MINOR_VARIANCE",
+          "candidate_label_boundary_cross_count": 0,
+          "candidate_label_variance": "LABEL_STABLE",
+          "candidate_max_balance_distance": 0.0,
+          "candidate_variance": "MINOR_VARIANCE",
+          "contract": "v2-same-evidence-balance-variance-v1",
+          "errors": [],
+          "identities_consistent": true,
+          "production_model_majority_voting": false,
+          "run_count": 3,
+          "status": "PASS",
+          "ticker": "GOOGL",
+          "unexplained_same_evidence_accepted_drift": 0
+        }
+      },
+      "candidate_input_sha256": "2956825fe4b7182d152747b7113d64e2c320420d20eb8df6493deb62adb36ecf",
+      "controls": [
+        "GOOGL"
+      ],
+      "observations": {
+        "GOOGL": [
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "2956825fe4b7182d152747b7113d64e2c320420d20eb8df6493deb62adb36ecf",
+            "evidence_sha256": "8ebfae54be61075a933a3957c3e1e43927f012f444338f31e06b6027b219c51c",
+            "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+            "run_id": "fresh-1",
+            "ticker": "GOOGL",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "2956825fe4b7182d152747b7113d64e2c320420d20eb8df6493deb62adb36ecf",
+            "evidence_sha256": "8ebfae54be61075a933a3957c3e1e43927f012f444338f31e06b6027b219c51c",
+            "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+            "run_id": "fresh-2",
+            "ticker": "GOOGL",
+            "valid_adjudication": false
+          },
+          {
+            "accepted_decision": "HOLD",
+            "accepted_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "adjudication_id": null,
+            "adjudication_required": false,
+            "candidate_decision": "HOLD",
+            "candidate_directional_balance": {
+              "buy": 4.5,
+              "sell": 5.5
+            },
+            "candidate_input_sha256": "2956825fe4b7182d152747b7113d64e2c320420d20eb8df6493deb62adb36ecf",
+            "evidence_sha256": "8ebfae54be61075a933a3957c3e1e43927f012f444338f31e06b6027b219c51c",
+            "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+            "run_id": "fresh-3",
+            "ticker": "GOOGL",
+            "valid_adjudication": false
+          }
+        ]
+      },
+      "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+      "runs": [
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 1,
+          "run_id": "fresh-1"
+        },
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 1,
+          "run_id": "fresh-2"
+        },
+        {
+          "artifact_status": "PASS",
+          "not_ready_count": 0,
+          "ready_count": 1,
+          "run_id": "fresh-3"
+        }
+      ]
+    }
+  },
+  "production_delivery_state_mutation": 0,
+  "production_model_majority_voting": 0,
+  "production_recipient_send": 0,
+  "same_evidence_label_boundary_cross_count": 0,
+  "status": "PASS",
+  "unexplained_same_evidence_accepted_drift": 0
+}
