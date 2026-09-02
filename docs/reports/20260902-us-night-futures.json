@@ -1,0 +1,280 @@
+{
+  "attempts": [
+    {
+      "attempt_id": "attempt-715379b5d3c4f5c804f9",
+      "candidate_product_count": 0,
+      "expected_night_bas_dd": "2026-09-02",
+      "parsed_row_count": 20,
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_http_statuses": [
+        200
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "39fff1232b66a8ff3fc464d35d21f300ba63595391df440cc2289d2f50fd6d28",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_3",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-09-02T08:15:08.026577+09:00",
+      "timestamp_start": "2026-09-02T08:15:06.748799+09:00",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_id": "attempt-7eeafeba92ac58f144f7",
+      "candidate_product_count": 0,
+      "expected_night_bas_dd": "2026-09-02",
+      "parsed_row_count": 20,
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "observer",
+      "production_state_mutation": false,
+      "provider_http_statuses": [
+        200
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "39fff1232b66a8ff3fc464d35d21f300ba63595391df440cc2289d2f50fd6d28",
+      "ready_product_count": 0,
+      "role": "observer_post_deadline_0845",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-09-02T08:45:07.741448+09:00",
+      "timestamp_start": "2026-09-02T08:45:06.350257+09:00",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_id": "attempt-90d5ce2c9657e3071310",
+      "candidate_product_count": 0,
+      "expected_night_bas_dd": "2026-09-02",
+      "parsed_row_count": 20,
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_http_statuses": [
+        200
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "39fff1232b66a8ff3fc464d35d21f300ba63595391df440cc2289d2f50fd6d28",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_1",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-09-02T08:06:51.056225+09:00",
+      "timestamp_start": "2026-09-02T08:06:49.595589+09:00",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_id": "attempt-ab383ff193cf2532874c",
+      "candidate_product_count": 0,
+      "expected_night_bas_dd": "2026-09-02",
+      "parsed_row_count": 20,
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_http_statuses": [
+        200
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "39fff1232b66a8ff3fc464d35d21f300ba63595391df440cc2289d2f50fd6d28",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_2",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-09-02T08:10:11.285366+09:00",
+      "timestamp_start": "2026-09-02T08:10:07.717614+09:00",
+      "user_visible_integration": false
+    },
+    {
+      "attempt_id": "attempt-ea4b1e888c84345a855e",
+      "candidate_product_count": 0,
+      "expected_night_bas_dd": "2026-09-02",
+      "parsed_row_count": 20,
+      "per_product": [
+        {
+          "contract": "A0169000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSPI200",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSPI200",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        },
+        {
+          "contract": "A0669000",
+          "expected_night_bas_dd": "2026-09-02",
+          "instrument": "KOSDAQ150",
+          "matched_day_bas_dd": null,
+          "maturity": "2026-09",
+          "product": "KOSDAQ150",
+          "provider_change_crosscheck_status": "NOT_OBSERVED",
+          "readiness": "NOT_READY",
+          "rejection_reason": "expected_session_absent",
+          "returned_night_bas_dd": "2026-09-01",
+          "row_state": "STALE_PRIOR_SESSION_PRESENT"
+        }
+      ],
+      "production_or_observer": "production",
+      "production_state_mutation": false,
+      "provider_http_statuses": [
+        200
+      ],
+      "raw_row_count": 770,
+      "raw_sha256": "39fff1232b66a8ff3fc464d35d21f300ba63595391df440cc2289d2f50fd6d28",
+      "ready_product_count": 0,
+      "role": "production_gate_attempt_4",
+      "terminal_classification": "STALE_PRIOR_SESSION_PRESENT",
+      "timestamp_end": "2026-09-02T08:20:09.500628+09:00",
+      "timestamp_start": "2026-09-02T08:20:07.631395+09:00",
+      "user_visible_integration": false
+    }
+  ],
+  "contract": "us-natural-live-night-futures-proof-v1",
+  "expected_count": 2,
+  "packet_audit": {
+    "expected_session": "2026-09-02",
+    "products": [
+      {
+        "ai_fact_catalog_included": false,
+        "ai_facts_used": false,
+        "fact_id": null,
+        "freshness": "unavailable",
+        "market_packet_included": false,
+        "query_time": null,
+        "rendered_in_telegram": false,
+        "selected_for_market_packet": false,
+        "series_code": "KRX_KOSPI200_NIGHT_FUT",
+        "source_session": null,
+        "verified_contract": false
+      },
+      {
+        "ai_fact_catalog_included": false,
+        "ai_facts_used": false,
+        "fact_id": null,
+        "freshness": "unavailable",
+        "market_packet_included": false,
+        "query_time": null,
+        "rendered_in_telegram": false,
+        "selected_for_market_packet": false,
+        "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+        "source_session": null,
+        "verified_contract": false
+      }
+    ],
+    "query_time": "2026-09-02T08:20:06.564458+09:00"
+  },
+  "packet_cautions": [
+    "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 오늘 개장 전 신호에서 제외했습니다."
+  ],
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "ready_count": 0,
+  "rendered_count": 0,
+  "status": "SOURCE_LIMITATION_SAFE"
+}
