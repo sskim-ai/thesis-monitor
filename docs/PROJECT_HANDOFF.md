@@ -2469,4 +2469,6 @@ KR/US production-equivalent proof is `8/8 + 14/14`, and the dedicated test sink 
 after a bounded `20 + 2` rate-limit continuation. Production send/intent and state mutations are
 zero. This is promotion evidence, not natural proof. Do not run a task or resend production.
 Observe the next ordinary KR and US cycles read-only for network/model reach, V2 counts, fallback
-zero, enriched US market output, and exactly-once delivery. Production Assist remains OFF.
+zero, enriched US market output, and exactly-once delivery. Report/runtime commit
+`deab50a122075b5fc710e97b74d9fbb63f2ac1e4` passed Actions run `33629221858`, clean linear main and
+operating parity, and post-restart API health. Production Assist remains OFF.

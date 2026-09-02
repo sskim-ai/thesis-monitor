@@ -34,8 +34,11 @@ repairs. The four tracks remain independently reviewable.
 - Public Action: `0.4.5`, operation IDs `20/20` unique;
 - integration commit `c0a4d66616eb775415b602e58ddf2c8198cf4962`: Actions Test/Lint PASS,
   run `33627236776`;
-- API health before promotion: PASS;
+- report commit `deab50a122075b5fc710e97b74d9fbb63f2ac1e4`: Actions Test/Lint PASS,
+  run `33629221858`;
+- operating/main parity at the report commit: PASS;
+- API health after the required thesis-monitor-only restart on port `8766`: PASS;
 - scheduler timing and ownership diff: `0/0`.
 
-The report-containing commit must also pass Actions before promotion. No validator threshold was
-relaxed.
+No validator threshold was relaxed. The docs-only deployment-closure commit must pass the same
+Actions workflow before final completion.

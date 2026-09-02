@@ -13,7 +13,9 @@ Bounded scheduler-context network readiness, frozen KR daily-review convergence,
 D/W/M, the dated nominal Treasury 3Y/5Y/10Y/30Y block, disclaimer removal, and accepted-decision
 consistency all pass. KR/US production-equivalent is `8/8 + 14/14`; the dedicated sink is `22/22
 exact`; production send/intent and production-state mutation are zero. Full pytest is `2119 PASS`,
-and open P0/material P1 is `0/0`.
+and open P0/material P1 is `0/0`. Report/runtime commit
+`deab50a122075b5fc710e97b74d9fbb63f2ac1e4` passed Actions run `33629221858`, clean linear main and
+operating parity, and post-restart API health.
 
 Next action: `WAIT_FOR_NEXT_NATURAL_KR_LIVE` and `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Inspect only the
 ordinary scheduled cycles for network preflight, model reach, candidate/accepted/explicit counts,

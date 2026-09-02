@@ -1,5 +1,5 @@
 {
-  "actions": "PASS_INTEGRATION_COMMIT_REPORT_TARGET_PENDING",
+  "actions": "PASS_INTEGRATION_AND_REPORT_COMMIT",
   "all_tracks_collapsed_into_one_unreviewable_commit": 0,
   "base_contains_previous_safe_repairs": "PASS",
   "base_sha": "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9",
@@ -15,7 +15,7 @@
     "010120_VALUATION_SCOPE": "PASS",
     "012450_VALUATION_SCOPE": "PASS",
     "047810_IDENTIFIER_PROVENANCE": "PASS",
-    "ACTIONS": "PASS_INTEGRATION_COMMIT_REPORT_TARGET_PENDING",
+    "ACTIONS": "PASS",
     "ALL_TRACKS_COLLAPSED_INTO_ONE_UNREVIEWABLE_COMMIT": 0,
     "BASE_CONTAINS_PREVIOUS_SAFE_REPAIRS": "PASS",
     "BASE_SHA": "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9",
@@ -100,6 +100,16 @@
   "hardcoded_public_dns": 0,
   "hosts_file_chatgpt_override": 0,
   "integration_commit": "c0a4d66616eb775415b602e58ddf2c8198cf4962",
+  "deployment": {
+    "api_health": "PASS_8766",
+    "main": "deab50a122075b5fc710e97b74d9fbb63f2ac1e4",
+    "operating": "deab50a122075b5fc710e97b74d9fbb63f2ac1e4",
+    "origin_main": "deab50a122075b5fc710e97b74d9fbb63f2ac1e4",
+    "promotion_method": "CLEAN_LINEAR_FAST_FORWARD",
+    "report_actions_run": 33629221858,
+    "report_commit": "deab50a122075b5fc710e97b74d9fbb63f2ac1e4",
+    "runtime_code_sha": "deab50a122075b5fc710e97b74d9fbb63f2ac1e4"
+  },
   "kr": {
     "accepted": 8,
     "candidate": 8,
@@ -140,7 +150,7 @@
   "scheduler_ownership_diff": 0,
   "scheduler_runtime_env_diff": "DOCUMENTED_BOUNDED_DIFF",
   "scheduler_timing_diff": 0,
-  "status": "READY_FOR_MAIN",
+  "status": "DEPLOYED_AWAITING_NATURAL_KR_US_LIVE",
   "test_recipient_delivery": "PASS_22_OF_22_EXACT",
   "tls_verification_disabled": 0,
   "track_a_commit": "20c80b6d968b5770947a6621fa4867d51967dbe0",

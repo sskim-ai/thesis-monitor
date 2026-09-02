@@ -2408,6 +2408,8 @@ while accepted-plan authority and new evidence-fingerprint diagnostics prevent u
 Production-equivalent KR/US is `8/8 + 14/14`; the dedicated sink is `22/22 exact`, with zero
 duplicate, orphan, production send, intent, or production-state mutation. Full regression is
 `2119 passed`; integration Actions Test/Lint pass. Open P0/material P1 are `0/0`; two carried P2
-presentation items do not block promotion. State is `READY_FOR_MAIN`, not natural `LIVE_PASS`.
-After clean linear deployment, wait for the next ordinary KR and US cycles and review them
-read-only. Production Assist remains OFF.
+presentation items do not block promotion. Report/runtime commit
+`deab50a122075b5fc710e97b74d9fbb63f2ac1e4` passed Actions run `33629221858`, was promoted by clean
+linear fast-forward, synchronized to operating, and passed API health after a thesis-monitor-only
+restart. State is `DEPLOYED_AWAITING_NATURAL_KR_US_LIVE`, not natural `LIVE_PASS`. Wait for the next
+ordinary KR and US cycles and review them read-only. Production Assist remains OFF.

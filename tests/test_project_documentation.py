@@ -164,16 +164,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["branch"] == "main"
     assert state["experimental_branch"] == "codex/20260902-four-track-stabilization"
     assert state["current_phase"] == (
-        "four_track_stabilization_ready_for_main_awaiting_natural_kr_us_live"
+        "four_track_stabilization_deployed_awaiting_natural_kr_us_live"
     )
     assert state["last_completed_phase"] == (
         "20260902_four_track_stabilization_network_dailyreview_market_renderer"
     )
     assert state["next_default_phase"] == (
-        "promote_four_track_then_wait_for_natural_kr_us_live"
+        "wait_for_next_natural_kr_us_live"
     )
     four_track_base = "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9"
     four_track_integration = "c0a4d66616eb775415b602e58ddf2c8198cf4962"
+    four_track_report = "deab50a122075b5fc710e97b74d9fbb63f2ac1e4"
     live_path_implementation = "4341d352b8402a16dcd66d34504fc39a17acc61b"
     live_path = state["run51_krx_night_live_path_20260902"]
     assert live_path["status"] == "PASS_CONTROLLED_TEST_AWAITING_NATURAL_US_LIVE"
@@ -282,9 +283,9 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == four_track_base
-    assert state["main_code_commit"] == four_track_base
-    assert state["operating_code_commit"] == four_track_base
+    assert state["deployed_code_commit"] == four_track_report
+    assert state["main_code_commit"] == four_track_report
+    assert state["operating_code_commit"] == four_track_report
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1557,10 +1558,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     four_track = state["four_track_stabilization_20260902"]
-    assert state["current_commit"] == four_track_integration
-    assert four_track["status"] == "READY_FOR_MAIN_AWAITING_NATURAL_KR_US_LIVE"
+    assert state["current_commit"] == four_track_report
+    assert four_track["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_LIVE"
     assert four_track["base_commit"] == four_track_base
     assert four_track["integration_commit"] == four_track_integration
+    assert four_track["report_promotion_commit"] == four_track_report
+    assert four_track["report_github_actions_run"] == 33629221858
+    assert four_track["api_health"] == "PASS_8766"
     assert four_track["track_a_network_runtime"] == "PASS"
     assert four_track["track_b_daily_review"] == "PASS"
     assert four_track["track_c_us_market"] == "PASS"

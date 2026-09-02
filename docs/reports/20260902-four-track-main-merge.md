@@ -9,7 +9,7 @@
 - Track C: `4407cd11a78579e11681b503b2d4e72ee3c3d60f`
 - Track D: `ee4e4688816d35f7a5ade7630eac07e6edd215eb`
 - integration evidence: `c0a4d66616eb775415b602e58ddf2c8198cf4962`
-- report/promotion target: the commit containing this report
+- report/promotion commit: `deab50a122075b5fc710e97b74d9fbb63f2ac1e4`
 
 ## Gate
 
@@ -28,7 +28,14 @@ reconciliation and optional historical rejection-report polish.
 
 `FOUR_TRACK_REPAIR = READY_FOR_MAIN`
 
-Promotion is allowed only after the report/promotion target passes GitHub Actions Test/Lint and
-`origin/main` remains the recorded base. The merge method must be a clean linear fast-forward.
-Runtime restart is limited to the thesis-monitor service because imported runtime code changed;
-scheduler times, ownership, recipient configuration, and Production Assist do not change.
+## Promotion Result
+
+The report commit passed GitHub Actions Test/Lint in run `33629221858`. `origin/main` remained the
+recorded base, so promotion used a clean linear fast-forward to
+`deab50a122075b5fc710e97b74d9fbb63f2ac1e4`. The clean operating checkout was synchronized to the
+same SHA. Only the thesis-monitor LaunchAgent was restarted; API health on its actual port `8766`
+is PASS. Scheduler times, ownership, recipient configuration, and Production Assist did not
+change.
+
+The subsequent docs-only closure commit records this result and does not require another runtime
+restart.
