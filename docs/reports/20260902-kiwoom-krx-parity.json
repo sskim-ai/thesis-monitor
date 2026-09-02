@@ -1,0 +1,64 @@
+{
+  "contract": "kiwoom-krx-night-parity-v1",
+  "kiwoom_visual_control": {
+    "instrument_root": "KOSPI200",
+    "contract_maturity": "2026-09",
+    "chart_label": "2026/09/01",
+    "open": "1061.00",
+    "high": "1061.40",
+    "low": "1031.30",
+    "close": "1040.50",
+    "displayed_percent": {
+      "open": "-0.33",
+      "high": "-0.29",
+      "low": "-3.12",
+      "close": "-2.25"
+    }
+  },
+  "comparisons": {
+    "KRX_20260901_NIGHT": {
+      "status": "FAIL",
+      "krx_open": "1067.00",
+      "krx_high": "1072.45",
+      "krx_low": "1053.80",
+      "krx_close": "1064.50",
+      "kiwoom_minus_krx": {
+        "open": "-6.00",
+        "high": "-11.05",
+        "low": "-22.50",
+        "close": "-24.00"
+      },
+      "signed_percent_difference_vs_krx": {
+        "open": "-0.562324",
+        "high": "-1.030351",
+        "low": "-2.135130",
+        "close": "-2.254580"
+      }
+    },
+    "KRX_20260902_NIGHT": {
+      "status": "FAIL",
+      "reason": "Official HTTP 200 response contained zero rows; exact parity cannot be established.",
+      "krx_open": null,
+      "krx_high": null,
+      "krx_low": null,
+      "krx_close": null
+    }
+  },
+  "reverse_baseline": {
+    "formula": "price / (1 + displayed_percent / 100)",
+    "open": "1064.512892545399819404033310",
+    "high": "1064.487012335773743857185839",
+    "low": "1064.512799339388934764657308",
+    "close": "1064.450127877237851662404092",
+    "mean": "1064.490708024450087422070137",
+    "minimum": "1064.450127877237851662404092",
+    "maximum": "1064.512892545399819404033310",
+    "krx_20260901_night_close": "1064.50",
+    "baseline_parity": "PASS",
+    "basis": "Each displayed percentage is reproduced to two decimals when 1064.50 is the baseline."
+  },
+  "controls": {
+    "loose_tolerance_used": 0,
+    "reverse_calculation_substituted_for_missing_raw_row": 0
+  }
+}

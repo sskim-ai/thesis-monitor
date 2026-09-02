@@ -1,0 +1,141 @@
+{
+  "contract": "krx-night-date-row-proof-v1",
+  "investigation_date": "2026-09-02",
+  "source": {
+    "provider": "KRX",
+    "service": "fut_bydd_trd",
+    "endpoint": "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
+  },
+  "provider_calls": {
+    "request_count": 3,
+    "success_count": 3,
+    "failure_count": 0,
+    "cache_hit_count": 0,
+    "ledger": [
+      {
+        "purpose": "primary_20260901",
+        "query_bas_dd": "20260901",
+        "fetched_at_utc": "2026-09-02T13:15:00.199508+00:00",
+        "http_status": 200,
+        "raw_bytes": 120255,
+        "raw_row_count": 385,
+        "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+      },
+      {
+        "purpose": "primary_20260902",
+        "query_bas_dd": "20260902",
+        "fetched_at_utc": "2026-09-02T13:15:00.847761+00:00",
+        "http_status": 200,
+        "raw_bytes": 17,
+        "raw_row_count": 0,
+        "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90"
+      },
+      {
+        "purpose": "supplemental_20260901_row_extraction",
+        "query_bas_dd": "20260901",
+        "fetched_at_utc": "2026-09-02T13:17:25.786868+00:00",
+        "http_status": 200,
+        "raw_bytes": 120255,
+        "raw_row_count": 385,
+        "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881",
+        "reason": "The temporary primary selector omitted spaces in PROD_NM; the response was re-read once with repository-equivalent normalization."
+      }
+    ]
+  },
+  "dates": {
+    "20260901": {
+      "row_found": true,
+      "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881",
+      "rows": [
+        {
+          "instrument_root": "KOSPI200",
+          "contract_maturity": "2026-09",
+          "session": "NIGHT",
+          "BAS_DD": "20260901",
+          "PROD_NM": "코스피200 선물",
+          "MKT_NM": "야간",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (야간)",
+          "open": "1067.00",
+          "high": "1072.45",
+          "low": "1053.80",
+          "close": "1064.50",
+          "provider_change_point": "-3.35",
+          "volume": "22349",
+          "open_interest": "156205",
+          "source_row_identity": "2026-09-01:NIGHT:A0169000",
+          "normalized_fingerprint": "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc",
+          "safe_raw_row_fingerprint": "df185bdf75c8b6604947a7d73f759a752abca60ca96478bdc289e1a35a1a9372"
+        },
+        {
+          "instrument_root": "KOSPI200",
+          "contract_maturity": "2026-09",
+          "session": "DAY_CONTROL_ONLY",
+          "BAS_DD": "20260901",
+          "PROD_NM": "코스피200 선물",
+          "MKT_NM": "정규",
+          "ISU_CD": "A0169000",
+          "ISU_NM": "코스피200 F 202609 (주간)",
+          "open": "1068.65",
+          "high": "1080.25",
+          "low": "1056.95",
+          "close": "1078.15",
+          "provider_change_point": "10.30",
+          "volume": "101957",
+          "open_interest": "155736",
+          "safe_raw_row_fingerprint": "35d80182213759bc96443c4b28384166876ab1e2ef74c2dd47211e669a9d90ef"
+        },
+        {
+          "instrument_root": "KOSDAQ150",
+          "contract_maturity": "2026-09",
+          "session": "NIGHT",
+          "BAS_DD": "20260901",
+          "PROD_NM": "코스닥150 선물",
+          "MKT_NM": "야간",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (야간)",
+          "open": "1440.00",
+          "high": "1447.00",
+          "low": "1415.50",
+          "close": "1432.80",
+          "provider_change_point": "-7.30",
+          "volume": "1885",
+          "open_interest": "421415",
+          "source_row_identity": "2026-09-01:NIGHT:A0669000",
+          "normalized_fingerprint": "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567",
+          "safe_raw_row_fingerprint": "20619a5411f7acb5a80b0592f4bcfe30e40ce2dbfa0e4306f0b2351cc276a2aa"
+        },
+        {
+          "instrument_root": "KOSDAQ150",
+          "contract_maturity": "2026-09",
+          "session": "DAY_CONTROL_ONLY",
+          "BAS_DD": "20260901",
+          "PROD_NM": "코스닥150 선물",
+          "MKT_NM": "정규",
+          "ISU_CD": "A0669000",
+          "ISU_NM": "코스닥150 F 202609 (주간)",
+          "open": "1439.50",
+          "high": "1445.30",
+          "low": "1396.80",
+          "close": "1402.50",
+          "provider_change_point": "-37.60",
+          "volume": "167402",
+          "open_interest": "431072",
+          "safe_raw_row_fingerprint": "f3a3caa23ec549a9e7ce7f733308968006ab21fcbfb95b4f3cd22ae517a6178a"
+        }
+      ]
+    },
+    "20260902": {
+      "row_found": false,
+      "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+      "raw_row_count": 0,
+      "rows": []
+    }
+  },
+  "controls": {
+    "cross_contract_comparison": 0,
+    "day_row_compared_as_night": 0,
+    "provider_cache_altered": 0,
+    "production_mutation": 0
+  }
+}

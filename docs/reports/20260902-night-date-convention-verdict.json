@@ -1,0 +1,26 @@
+{
+  "contract": "krx-night-date-convention-verdict-v1",
+  "gates": {
+    "KRX_SOURCE_SERVICE": "fut_bydd_trd",
+    "KRX_0901_NIGHT_ROW_FOUND": "PASS",
+    "KRX_0902_NIGHT_ROW_FOUND": "FAIL",
+    "KRX_0901_NIGHT_OHLC": "O 1067.00 / H 1072.45 / L 1053.80 / C 1064.50",
+    "KRX_0902_NIGHT_OHLC": "UNAVAILABLE",
+    "KIWOOM_0901_OHLC": "O 1061.00 / H 1061.40 / L 1031.30 / C 1040.50",
+    "KIWOOM_0901_MATCHES_KRX_0901": "FAIL",
+    "KIWOOM_0901_MATCHES_KRX_0902": "FAIL",
+    "KIWOOM_PERCENT_BASELINE_IMPLIED": "mean 1064.490708; range 1064.450128-1064.512893",
+    "KRX_0901_NIGHT_CLOSE": "1064.50",
+    "BASELINE_PARITY": "PASS",
+    "PROVIDER_SEMANTICS_DOC_SUPPORT": "PARTIAL",
+    "KOSDAQ150_DATE_MAPPING_CONSISTENT": "NOT_ENOUGH_EVIDENCE",
+    "CROSS_CONTRACT_COMPARISON": 0,
+    "DAY_ROW_COMPARED_AS_NIGHT": 0,
+    "CODE_CHANGE_DURING_DATE_PROOF": 0,
+    "NIGHT_DATE_CONVENTION_VERDICT": "INSUFFICIENT_EVIDENCE",
+    "NEXT_REPAIR_CLASS": "MORE_EVIDENCE_REQUIRED"
+  },
+  "reason": "The decisive KRX BAS_DD=20260902 response was HTTP 200 with zero rows. The Kiwoom percentage baseline strongly links its displayed candle to the prior KRX NIGHT close, but cannot replace the missing official row.",
+  "production_contract_change_authorized": false,
+  "main_merge": 0
+}
