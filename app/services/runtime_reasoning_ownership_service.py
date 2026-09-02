@@ -33,6 +33,46 @@ _VALUATION_FACT_BY_FIELD = {
 
 _PATH_PART = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(?:\[([0-9]+)\])?$")
 
+_CANONICAL_SINGLE_NUMERIC_WRAPPERS = (
+    re.compile(
+        r"(?P<placeholder>\{\{numeric:[A-Za-z][A-Za-z0-9_-]{0,63}\}\})"
+        r"\s*수준의 현재 가격을 기준으로 봅니다\."
+    ),
+    re.compile(
+        r"(?P<placeholder>\{\{numeric:[A-Za-z][A-Za-z0-9_-]{0,63}\}\})"
+        r"\s*수준의 거래량 참여입니다\."
+    ),
+)
+
+_UNSUPPORTED_PEAK_MULTIPLE_DIRECTION = re.compile(r"피크\s*이익(?:의)?\s*(?:낮은|높은)\s*배수")
+
+_REPEATED_SECONDARY_PROSE = {
+    "price_positioning.text": {
+        "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.": (
+            "new_observer_view_primary_ownership"
+        ),
+    },
+    "valuation_analysis.text": {
+        "이는 현재 이익 배수의 절대 수준을 보여 줍니다.": (
+            "canonical_valuation_fact_is_primary"
+        ),
+        "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.": (
+            "canonical_valuation_fact_is_primary"
+        ),
+        "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.": (
+            "canonical_valuation_fact_is_primary"
+        ),
+    },
+    "core_judgment.text": {
+        "오늘 자료는 사업 논리를 바꾸지 않았습니다.": (
+            "entity_specific_core_judgment_is_primary"
+        ),
+        "오늘 자료만으로 사업 논리는 변하지 않았습니다.": (
+            "entity_specific_core_judgment_is_primary"
+        ),
+    },
+}
+
 
 def _registry_semantics(packet: Mapping[str, object]) -> dict[str, dict[tuple[str, str], str]]:
     result: dict[str, dict[tuple[str, str], str]] = {}
@@ -108,6 +148,45 @@ def _placeholder_sentence(text: str, ref_id: str) -> str | None:
     return None
 
 
+def _sync_exact_text_spans(value: object, old: str, new: str) -> None:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key == "exact_text_span" and isinstance(item, str) and old in item:
+                updated = item.replace(old, new)
+                updated = re.sub(r"\s+([.!?])", r"\1", updated)
+                value[key] = re.sub(r"\s{2,}", " ", updated).strip()
+            else:
+                _sync_exact_text_spans(item, old, new)
+    elif isinstance(value, list):
+        for item in value:
+            _sync_exact_text_spans(item, old, new)
+
+
+def _canonicalize_single_numeric_wrappers(
+    review: dict[str, object],
+    section_name: str,
+    text: str,
+) -> tuple[str, list[dict[str, object]]]:
+    ticker = str(review.get("ticker") or "")
+    handoffs: list[dict[str, object]] = []
+    for pattern in _CANONICAL_SINGLE_NUMERIC_WRAPPERS:
+        while match := pattern.search(text):
+            old = match.group(0)
+            placeholder = match.group("placeholder")
+            new = f"{placeholder}입니다."
+            text = f"{text[: match.start()]}{new}{text[match.end() :]}"
+            _sync_exact_text_spans(review, old, new)
+            handoffs.append(
+                {
+                    "ticker": ticker,
+                    "section": section_name,
+                    "numeric_ref_id": placeholder[10:-2],
+                    "reason": "canonical_single_numeric_fact_ownership",
+                }
+            )
+    return text, handoffs
+
+
 def _canonicalize_standalone_numeric_sentences(
     review: dict[str, object],
 ) -> list[dict[str, object]]:
@@ -123,13 +202,31 @@ def _canonicalize_standalone_numeric_sentences(
         section = _section(review, section_name)
         if section is None or not isinstance(section.get("text"), str):
             continue
-        text = str(section["text"])
+        text, wrapper_handoffs = _canonicalize_single_numeric_wrappers(
+            review,
+            section_name,
+            str(section["text"]),
+        )
+        handoffs.extend(wrapper_handoffs)
+        if section_name == "valuation_analysis":
+            for unsupported in _UNSUPPORTED_PEAK_MULTIPLE_DIRECTION.findall(text):
+                text = text.replace(unsupported, "피크 이익 배수")
+                _sync_exact_text_spans(review, unsupported, "피크 이익 배수")
+                handoffs.append(
+                    {
+                        "ticker": ticker,
+                        "section": section_name,
+                        "reason": "unsupported_peak_multiple_direction_removed",
+                    }
+                )
         for ref_id in re.findall(r"\{\{numeric:([A-Za-z][A-Za-z0-9_-]{0,63})\}\}", text):
             placeholder = f"{{{{numeric:{ref_id}}}}}"
             sentence = _placeholder_sentence(text, ref_id)
             if sentence != f"{placeholder}.":
                 continue
-            text = text.replace(sentence, f"{placeholder}입니다.", 1)
+            replacement = f"{placeholder}입니다."
+            text = text.replace(sentence, replacement, 1)
+            _sync_exact_text_spans(review, sentence, replacement)
             handoffs.append(
                 {
                     "ticker": ticker,
@@ -140,6 +237,47 @@ def _canonicalize_standalone_numeric_sentences(
             )
         section["text"] = text
     return handoffs
+
+
+def _remove_repeated_secondary_prose(
+    reviews: list[object],
+) -> list[dict[str, object]]:
+    occurrences: dict[tuple[str, str], list[dict[str, object]]] = {}
+    for review in reviews:
+        if not isinstance(review, dict):
+            continue
+        for text_ref, phrases in _REPEATED_SECONDARY_PROSE.items():
+            section_name, _ = text_ref.split(".", 1)
+            section = _section(review, section_name)
+            text = str(section.get("text") or "") if section is not None else ""
+            for phrase in phrases:
+                if phrase in text:
+                    occurrences.setdefault((text_ref, phrase), []).append(review)
+
+    suppressions: list[dict[str, object]] = []
+    for (text_ref, phrase), owners in occurrences.items():
+        if len(owners) < 3:
+            continue
+        section_name, _ = text_ref.split(".", 1)
+        for review in owners:
+            section = _section(review, section_name)
+            if section is None:
+                continue
+            old_text = str(section.get("text") or "")
+            updated = re.sub(r"\s{2,}", " ", old_text.replace(phrase, "")).strip()
+            if not updated:
+                continue
+            section["text"] = updated
+            _sync_exact_text_spans(review, phrase, "")
+            suppressions.append(
+                {
+                    "ticker": str(review.get("ticker") or ""),
+                    "text_ref": text_ref,
+                    "suppressed_span": phrase,
+                    "reason": _REPEATED_SECONDARY_PROSE[text_ref][phrase],
+                }
+            )
+    return suppressions
 
 
 def _remove_stale_rr_transition(
@@ -677,6 +815,7 @@ def apply_candidate_ownership_contracts(
                 if not isinstance(item, dict)
                 or str(item.get("ref_id") or "") not in removed_ids
             ]
+    suppressions.extend(_remove_repeated_secondary_prose(reviews))
     return output, {
         "contract": NUMERIC_PRIMARY_OWNER_CONTRACT,
         "status": "passed" if not unresolved else "unresolved",

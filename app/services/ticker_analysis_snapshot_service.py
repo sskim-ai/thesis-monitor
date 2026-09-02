@@ -180,7 +180,7 @@ class TickerAnalysisSnapshotService:
             valuation_snapshot.forward_pe_reference_caution
             and valuation_snapshot.forward_pe is not None
         ):
-            cautions.append("fPER는 산출 기간이나 이익 기준이 명확하지 않아 참고 수준입니다.")
+            cautions.append("fPER은 산출 기간이나 이익 기준이 명확하지 않아 참고 수준입니다.")
         if coverage.full_financial_freshness == "stale":
             cautions.append("정식 재무제표가 오래되어 PBR 판단 강도를 낮춥니다.")
         if (

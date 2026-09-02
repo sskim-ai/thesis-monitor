@@ -557,7 +557,9 @@ def fail_closed_canary_selection(
                 canary_candidate=row.canary_candidate,
                 canary_selected=False,
                 selection_reason=reason,
-                final_simulated_delivery_mode="deterministic_fallback",
+                final_simulated_delivery_mode=(
+                    "current_ai_existing" if row.canary_candidate else "deterministic_fallback"
+                ),
             )
             for row in selection.rows
         ),

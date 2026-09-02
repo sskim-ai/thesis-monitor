@@ -353,3 +353,125 @@ def test_candidate_owner_normalizer_only_removes_known_stale_rr_declaration() ->
     assert report["suppressions"][0]["reason"] == (
         "unavailable_rr_transition_declaration_without_claim"
     )
+
+
+def test_candidate_owner_normalizer_keeps_typed_span_in_sync() -> None:
+    packet = {"stocks": [{"ticker": "AAA", "numeric_registry": []}]}
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "AAA",
+                "valuation_analysis": {
+                    "text": (
+                        "{{numeric:v1}}. 이는 현재 이익 배수의 절대 수준을 "
+                        "보여 줍니다. 업종 이익을 함께 봅니다."
+                    ),
+                    "fact_ids": ["valuation:current"],
+                },
+                "valuation_interpretation_refs": [
+                    {
+                        "ref_id": "vi_aaa",
+                        "exact_text_span": (
+                            "{{numeric:v1}}. 이는 현재 이익 배수의 절대 수준을 보여 줍니다."
+                        ),
+                    }
+                ],
+            },
+            {
+                "ticker": "BBB",
+                "valuation_analysis": {
+                    "text": (
+                        "{{numeric:v2}}. 이는 현재 이익 배수의 절대 수준을 "
+                        "보여 줍니다. 다른 업종 근거입니다."
+                    ),
+                    "fact_ids": ["valuation:current"],
+                },
+                "valuation_interpretation_refs": [],
+            },
+            {
+                "ticker": "CCC",
+                "valuation_analysis": {
+                    "text": (
+                        "{{numeric:v3}}. 이는 현재 이익 배수의 절대 수준을 "
+                        "보여 줍니다. 별도 사업 근거입니다."
+                    ),
+                    "fact_ids": ["valuation:current"],
+                },
+                "valuation_interpretation_refs": [],
+            },
+        ]
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+    first = output["stock_reviews"][0]
+
+    assert first["valuation_analysis"]["text"] == (
+        "{{numeric:v1}}입니다. 업종 이익을 함께 봅니다."
+    )
+    assert first["valuation_interpretation_refs"][0]["exact_text_span"] == (
+        "{{numeric:v1}}입니다."
+    )
+    assert (
+        sum(
+            item.get("reason") == "canonical_valuation_fact_is_primary"
+            for item in report["suppressions"]
+        )
+        == 3
+    )
+
+
+def test_candidate_owner_normalizer_canonicalizes_single_numeric_wrappers() -> None:
+    packet = {"stocks": [{"ticker": "AAA", "numeric_registry": []}]}
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "AAA",
+                "price_positioning": {
+                    "text": "{{numeric:p1}} 수준의 현재 가격을 기준으로 봅니다.",
+                    "fact_ids": [],
+                },
+                "supply_analysis": {
+                    "text": "{{numeric:u1}} 수준의 거래량 참여입니다.",
+                    "fact_ids": [],
+                },
+            }
+        ]
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+    review = output["stock_reviews"][0]
+
+    assert review["price_positioning"]["text"] == "{{numeric:p1}}입니다."
+    assert review["supply_analysis"]["text"] == "{{numeric:u1}}입니다."
+    assert (
+        sum(
+            item.get("reason") == "canonical_single_numeric_fact_ownership"
+            for item in report["handoffs"]
+        )
+        == 2
+    )
+
+
+def test_candidate_owner_normalizer_removes_unsupported_peak_multiple_direction() -> None:
+    packet = {"stocks": [{"ticker": "AAA", "numeric_registry": []}]}
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "AAA",
+                "valuation_analysis": {
+                    "text": "피크 이익의 낮은 배수만으로 판단하지 않습니다.",
+                    "fact_ids": [],
+                },
+            }
+        ]
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+
+    assert output["stock_reviews"][0]["valuation_analysis"]["text"] == (
+        "피크 이익 배수만으로 판단하지 않습니다."
+    )
+    assert any(
+        item.get("reason") == "unsupported_peak_multiple_direction_removed"
+        for item in report["handoffs"]
+    )

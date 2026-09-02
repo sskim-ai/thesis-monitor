@@ -489,6 +489,13 @@ def test_quality_audit_classifies_required_structural_templates() -> None:
         )
         == "kr_actor_horizon_numeric_pair"
     )
+    assert (
+        _structural_template_exception(
+            "현재가 손익비는 필요한 동적 구조가 완성되지 않아 제공되지 않습니다.",
+            "현재가 손익비는 필요한 동적 구조가 완성되지 않아 제공되지 않습니다.",
+        )
+        == "canonical_current_price_rr_unavailable_state"
+    )
 
 
 @pytest.mark.parametrize(
@@ -712,6 +719,39 @@ def test_quality_audit_checks_identity_across_final_rendered_payload() -> None:
 
     assert report["rendered_identity_prose_mismatch_count"] == 1
     assert report["rendered_identity_prose_mismatches"][0]["ticker"] == "AAA"
+
+
+def test_quality_audit_allows_verified_depositary_underlying_share_ratio() -> None:
+    output = _output()
+    packet = {
+        "market_context": {"numeric_registry": []},
+        "stocks": [
+            {
+                "ticker": review.ticker,
+                "numeric_registry": [],
+                "valuation": {
+                    "security_identity_state": (
+                        "verified_depositary" if review.ticker == "AAA" else "unknown"
+                    )
+                },
+            }
+            for review in output.stock_reviews
+        ],
+    }
+    messages = [
+        "market",
+        "📊 거래량·포지셔닝\n1 ADR=한국 보통주 0.1주 구조입니다.",
+        "📊 거래량·포지셔닝\n현재 거래 증권 가격 기준입니다.",
+        "📊 거래량·포지셔닝\n현재 거래 증권 가격 기준입니다.",
+    ]
+
+    report = relational_reasoning_quality_report(
+        output,
+        packet=packet,
+        rendered_messages=messages,
+    )
+
+    assert report["rendered_identity_prose_mismatch_count"] == 0
 
 
 def test_quality_gate_rejects_final_rendered_particle_duplicate_and_internal_terms() -> None:

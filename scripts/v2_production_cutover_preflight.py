@@ -20,6 +20,7 @@ from app.jobs.accepted_decision_v2_runtime import (
 from app.services.accepted_decision_v2_runtime_service import (
     REASONING_EFFORT,
     REASONING_MODEL,
+    AcceptedV2ProductionArtifact,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionContext,
     accepted_v2_production_batch_schema_repair_prompt,
@@ -134,6 +135,7 @@ def _codex_batch(
             schema=schema,
             cwd=output_dir,
             timeout=timeout,
+            state_namespace=context.claim_id,
         )
         raw_batch = _read_json(output)
         try:
@@ -161,6 +163,7 @@ def _codex_batch(
                 schema=schema,
                 cwd=output_dir,
                 timeout=timeout,
+                state_namespace=context.claim_id,
             )
             batch = AcceptedV2ProductionBatchOutput.model_validate(
                 _read_json(repair_output)
@@ -204,6 +207,7 @@ def _codex_batch(
                 schema=schema,
                 cwd=output_dir,
                 timeout=timeout,
+                state_namespace=context.claim_id,
             )
             repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
@@ -440,11 +444,41 @@ async def _run(args: argparse.Namespace) -> None:
     artifacts = []
     for market, packet_path in (("kr", args.kr_packet), ("us", args.us_packet)):
         market_dir = args.output_dir / market
-        context = await _context(packet_path, claim_id=f"preflight-{market}-20260830")
+        reused_artifact = (
+            AcceptedV2ProductionArtifact.model_validate(_read_json(args.reuse_us_artifact))
+            if market == "us" and args.reuse_us_artifact is not None
+            else None
+        )
+        context = await _context(
+            packet_path,
+            claim_id=(
+                reused_artifact.claim_id
+                if reused_artifact is not None
+                else f"preflight-{market}-20260902"
+            ),
+        )
         _write_json(market_dir / "context.json", context.model_dump(mode="json"))
-        output = _codex_batch(context, output_dir=market_dir, timeout=args.timeout)
-        _write_json(market_dir / "candidate-output.json", output.model_dump(mode="json"))
-        artifact = validate_accepted_v2_production_output(context, output)
+        if reused_artifact is not None:
+            artifact = reused_artifact
+            expected_evidence = [row.model_dump(mode="json") for row in context.evidence_packets]
+            actual_evidence = [row.model_dump(mode="json") for row in artifact.evidence_packets]
+            if (
+                artifact.packet_id != context.packet_id
+                or artifact.claim_id != context.claim_id
+                or artifact.market != context.market
+                or artifact.assessment_date != context.assessment_date
+                or artifact.source_packet_sha256 != context.source_packet_sha256
+                or artifact.selected_subjects != context.selected_subjects
+                or actual_evidence != expected_evidence
+            ):
+                raise ValueError("preflight_reused_us_artifact_identity_mismatch")
+        else:
+            output = _codex_batch(context, output_dir=market_dir, timeout=args.timeout)
+            _write_json(
+                market_dir / "candidate-output.json",
+                output.model_dump(mode="json"),
+            )
+            artifact = validate_accepted_v2_production_output(context, output)
         _write_json(market_dir / "accepted-artifact.json", artifact.model_dump(mode="json"))
         contexts.append(context)
         artifacts.append(artifact)
@@ -505,6 +539,7 @@ def main() -> None:
     parser.add_argument("--env-file", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument("--reuse-us-artifact", type=Path)
     parser.add_argument("--send-test-sink", action="store_true")
     parser.add_argument("--send-existing", action="store_true")
     parser.add_argument("--resume-test-sink", action="store_true")

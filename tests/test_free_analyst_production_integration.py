@@ -9,6 +9,7 @@ from app.services.free_analyst_production_integration_service import (
     CommonAIAnalysisMode,
     build_production_candidate,
     candidate_provenance,
+    fail_closed_canary_selection,
     free_analyst_adaptive_canary_armed,
     free_analyst_adaptive_kill_switch_open,
     restrict_canary_selection,
@@ -200,6 +201,22 @@ def test_runtime_restriction_falls_back_only_rejected_canary_message() -> None:
     assert rejected.canary_selected is False
     assert rejected.final_simulated_delivery_mode == "deterministic_fallback"
     assert set(permitted) == set(restricted.selected_keys)
+
+
+def test_set_level_canary_failure_preserves_current_validated_ai() -> None:
+    candidates = [_candidate("market:packet", market=True), _candidate("stock:AAA")]
+    selection = fail_closed_canary_selection(select_limited_canary(candidates))
+
+    assert selection.total_selected == 0
+    assert all(
+        row.final_simulated_delivery_mode
+        == (
+            "current_ai_existing"
+            if row.canary_candidate
+            else "deterministic_fallback"
+        )
+        for row in selection.rows
+    )
 
 
 def test_candidate_provenance_contains_required_audit_fields() -> None:

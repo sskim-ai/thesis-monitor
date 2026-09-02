@@ -23,6 +23,18 @@ or unresolved candidates remain invisible.
 Price Structure, valuation, Public Action 0.4.5/schema 4, Telegram routes, deterministic fallback,
 accepted-decision ownership, and scheduler configuration are unchanged.
 
+## Claim-scoped Codex runtime state
+
+Natural primary, backup, schema-repair, candidate-repair, and onboarding invocations use
+`codex-runtime-state-v1`. Before transport, the helper creates owner-only claim-scoped
+`CODEX_HOME` and `CODEX_SQLITE_HOME` directories, references the existing signed-in auth through
+an owner-safe symlink, and verifies SQLite WAL write/read/rename behavior. Local state failure is
+reported as `LOCAL_CODEX_RUNTIME_STATE_NOT_READY`, separately from model transport.
+
+The runtime state namespace is derived from the claim ID. This prevents primary/backup writable
+state collisions without changing packet identity, model (`gpt-5.6-sol`), reasoning effort
+(`xhigh`), read-only sandboxing, accepted-decision validation, or delivery ownership.
+
 ## CLI filesystem boundary
 
 Natural claims may store repository-relative artifact paths, but the runtime resolves them against

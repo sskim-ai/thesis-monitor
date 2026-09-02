@@ -32,6 +32,7 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidenceRef,
     EvidenceCategory,
 )
+from app.services.codex_runtime_state_service import prepare_codex_runtime_state
 from app.services.decision_canary_service import strict_json_schema
 from app.services.preconfirmation_decision_v2_service import (
     validate_preconfirmation_candidate,
@@ -196,11 +197,16 @@ def _invoke_signed_in_codex(
     log: Path,
     schema: Path,
     timeout: int,
+    state_namespace: str,
 ) -> None:
     prompt = prompt.resolve()
     output = output.resolve()
     log = log.resolve()
     schema = schema.resolve()
+    runtime_state = prepare_codex_runtime_state(
+        Path(get_settings().data_dir).resolve() / "codex_runtime_state" / "onboarding",
+        namespace=state_namespace,
+    )
     command = [
         _signed_in_codex_bin(),
         "exec",
@@ -226,7 +232,7 @@ def _invoke_signed_in_codex(
         process = subprocess.run(
             command,
             cwd=prompt.parent,
-            env=dict(os.environ),
+            env=runtime_state.environment(),
             stdin=stdin,
             stdout=stdout,
             stderr=subprocess.STDOUT,
@@ -283,6 +289,7 @@ def generate_onboarding_accepted_decision(
         log=paths["log"],
         schema=paths["schema"],
         timeout=timeout,
+        state_namespace=claim_id,
     )
     output = AcceptedV2ProductionBatchOutput.model_validate_json(
         paths["output"].read_text(encoding="utf-8")
@@ -315,6 +322,7 @@ def generate_onboarding_accepted_decision(
             log=paths["repair_log"],
             schema=paths["schema"],
             timeout=timeout,
+            state_namespace=claim_id,
         )
         repaired = AcceptedV2ProductionBatchOutput.model_validate_json(
             paths["repair_output"].read_text(encoding="utf-8")

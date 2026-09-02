@@ -1220,7 +1220,7 @@ def _data_cautions(
     ):
         reason = str(snapshot.get("forward_pe_reference_caution_reason") or "")
         cautions.append(
-            "fPER는 산출 기간이 명확하지 않아 참고 수준입니다."
+            "fPER은 산출 기간이 명확하지 않아 참고 수준입니다."
             if reason == "horizon_unknown"
             else "예상 이익 기준이 서로 달라 fPER는 참고 수준입니다."
         )

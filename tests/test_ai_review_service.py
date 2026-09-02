@@ -615,8 +615,8 @@ def _valid_output(
                 },
                 "price_positioning": {
                     "text": f"{price_usage}은 기업의 질과 별도인 가격 맥락입니다.",
-                    "new_observer_view": "Separate company quality from entry valuation.",
-                    "holder_view": "Track price confirmation without changing the thesis status.",
+                    "new_observer_view": "신규 관찰자는 지지 재시험 후 진입을 판단합니다.",
+                    "holder_view": "기존 보유자는 실적과 마진 확인 전 논리 변경을 보류합니다.",
                     "fact_ids": ["price:current"],
                 },
                 "supply_analysis": {
@@ -687,6 +687,15 @@ def test_packet_is_immutable_version_isolated_and_sanitized(monkeypatch, tmp_pat
 
     stock = packet["stocks"][0]
     facts = {item["fact_id"]: item for item in stock["fact_catalog"]}
+    assert stock["semantic_scope_contract"] == (
+        "semantic-scope-and-decision-hierarchy-v1"
+    )
+    assert all(
+        item["valuation_scope"] == "listed_security"
+        for item in facts.values()
+        if str(item.get("fact_type") or "").startswith("valuation")
+        or str(item.get("fact_id") or "").startswith("valuation:")
+    )
     assert facts["security_basis:current"]["fields"][
         "security_identity_state"
     ] == stock["valuation"]["security_identity_state"]
@@ -3198,6 +3207,7 @@ def test_modeled_forward_binding_uses_source_aware_label(
                         "{{numeric:modeled_fper}} 내부 정상화 가정의 결과입니다."
                     ),
                     "comparison_numeric_ref_ids": ["modeled_fper"],
+                    "economic_scope": "listed_security",
                 "basis_status": "verified",
                 "source_type": "modeled_forward",
                 "direction": "neutral",
@@ -6334,3 +6344,28 @@ def test_skill_fixture_and_output_schema_are_present() -> None:
     assert market_review["portfolio_transmission"]["maxItems"] == 4
     assert market_review["next_checks"]["maxItems"] == 3
     assert market_review["unknowns"]["maxItems"] == 3
+
+
+def test_legacy_packet_semantic_scope_is_upgraded_in_memory(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        packet = build_ai_review_packet(session, RUN_DATE, "us")
+        assert packet is not None
+        stock = packet["stocks"][0]
+        stock.pop("semantic_scope_contract")
+        for fact in stock["fact_catalog"]:
+            if str(fact.get("fact_id") or "").startswith("valuation:"):
+                fact.pop("valuation_scope", None)
+        output, errors = validate_ai_review_output(
+            session,
+            packet,
+            _valid_output(packet),
+        )
+
+    assert output is not None
+    assert errors == []
+    assert "semantic_scope_contract" not in packet["stocks"][0]

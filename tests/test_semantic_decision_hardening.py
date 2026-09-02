@@ -278,6 +278,15 @@ def test_observer_holder_distinct_decision_variables_pass() -> None:
     assert error is None
 
 
+def test_observer_holder_cash_generation_and_asymmetry_variables_pass() -> None:
+    error = observer_holder_semantic_error(
+        "신규 관찰자는 지지 접근과 가격 비대칭을 평가합니다.",
+        "보유자는 현금창출과 플랫폼 수익 반복성을 점검합니다.",
+    )
+
+    assert error is None
+
+
 @pytest.mark.parametrize(
     (
         "historical_status",

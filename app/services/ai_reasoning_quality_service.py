@@ -331,7 +331,26 @@ def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
         return "chart_vs_thesis_invalidation_safety"
     if "가장 가까운 적격 저항" in sentence and "차트 손익비" in sentence:
         return "canonical_nearest_resistance_rr_contract"
+    if skeleton == "현재가 손익비는 필요한 동적 구조가 완성되지 않아 제공되지 않습니다.":
+        return "canonical_current_price_rr_unavailable_state"
     return None
+
+
+def _common_stock_identity_asserted(message: str) -> bool:
+    for sentence in re.split(r"(?<=[.!?])\s+|\n", message):
+        if _COMMON_STOCK_PROSE.search(sentence) is None:
+            continue
+        underlying_ratio_context = bool(
+            _DEPOSITARY_PROSE.search(sentence)
+            and re.search(
+                r"(?:=|당|기초|underlying|구조)",
+                sentence,
+                flags=re.IGNORECASE,
+            )
+        )
+        if not underlying_ratio_context:
+            return True
+    return False
 
 
 def _typed_structural_template_exception(
@@ -1070,7 +1089,7 @@ def relational_reasoning_quality_report(
                 _DEPOSITARY_PROSE.search(message) or _COMMON_STOCK_PROSE.search(message)
             ):
                 issue = "unverified_security_type_in_rendered_payload"
-            elif state == "verified_depositary" and _COMMON_STOCK_PROSE.search(message):
+            elif state == "verified_depositary" and _common_stock_identity_asserted(message):
                 issue = "depositary_rendered_as_common_stock"
             elif state == "verified_non_depositary" and _DEPOSITARY_PROSE.search(message):
                 issue = "non_depositary_rendered_as_depositary"

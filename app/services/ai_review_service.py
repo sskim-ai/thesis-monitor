@@ -40,6 +40,8 @@ from app.services.industry_reasoning_service import (
 )
 from app.services.semantic_decision_service import (
     SEMANTIC_SCOPE_CONTRACT,
+    assign_listed_security_valuation_scope,
+    ensure_semantic_scope_contract,
     observer_holder_semantic_error,
 )
 from app.services.canonical_fact_service import (
@@ -3319,11 +3321,13 @@ def _stock_packet(
     )
     facts.extend(cash_flow_fact_catalog_entries(cash_flow_selection))
     facts.extend(working_capital_fact_catalog_entries(working_capital_context))
+    assign_listed_security_valuation_scope(facts)
     stock["fact_catalog"] = facts
     stock["numeric_registry"] = _numeric_registry(facts)
     stock["typed_valuation_interpretation_contract"] = (
         TYPED_VALUATION_CONTRACT
     )
+    stock["semantic_scope_contract"] = SEMANTIC_SCOPE_CONTRACT
     stock["state_grounding_requirements"] = _state_grounding_requirements(
         monitoring_state,
         facts,
@@ -6111,7 +6115,7 @@ def validate_ai_review_output(
     packet: dict[str, object],
     output_value: object,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
-    packet = ensure_relation_semantics(packet)
+    packet = ensure_semantic_scope_contract(ensure_relation_semantics(packet))
     directional_output, _ = normalize_directional_numeric_refs(packet, output_value)
     normalized_output, _ = apply_candidate_ownership_contracts(
         packet, directional_output

@@ -625,6 +625,12 @@ def test_signed_in_codex_uses_absolute_artifact_paths(
         return type("Result", (), {"returncode": 0})()
 
     monkeypatch.chdir(tmp_path)
+    codex_home = tmp_path / "signed-in-codex-home"
+    codex_home.mkdir()
+    auth = codex_home / "auth.json"
+    auth.write_text("{}\n", encoding="utf-8")
+    auth.chmod(0o600)
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
     monkeypatch.setattr(
         onboarding_decision_service, "_signed_in_codex_bin", lambda: "/tmp/codex"
     )
@@ -636,6 +642,7 @@ def test_signed_in_codex_uses_absolute_artifact_paths(
         log=log.relative_to(tmp_path),
         schema=schema.relative_to(tmp_path),
         timeout=30,
+        state_namespace="onboarding-test",
     )
 
     command = captured["command"]

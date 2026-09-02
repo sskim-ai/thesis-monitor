@@ -4,15 +4,18 @@ import hashlib
 import json
 import math
 import re
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
-import exchange_calendars as exchange_calendar
 import httpx
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.services.market_session import preceding_exchange_session_date
+from app.services.night_futures_session_mapping_service import (
+    KST,
+    map_latest_completed_krx_night_session,
+)
 
 
 KRX_FUTURES_DAILY_URL = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
@@ -30,16 +33,10 @@ _MATURITY_YYMM_RE = re.compile(r"(?<!\d)(\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 
 def expected_latest_completed_krx_session(run_date: date) -> date | None:
     """Return the latest completed KRX night session by its 06:00 end date."""
-    try:
-        calendar = exchange_calendar.get_calendar("XKRX")
-        for days_back in range(8):
-            session_date = run_date - timedelta(days=days_back)
-            start_date = session_date - timedelta(days=1)
-            if calendar.is_session(start_date):
-                return session_date
-    except (ValueError, IndexError, TypeError):
-        return None
-    return None
+    mapping = map_latest_completed_krx_night_session(
+        datetime.combine(run_date, time(8, 0), tzinfo=KST)
+    )
+    return mapping.provider_night_bas_dd if mapping is not None else None
 
 
 class KrxFuturesRow(BaseModel):

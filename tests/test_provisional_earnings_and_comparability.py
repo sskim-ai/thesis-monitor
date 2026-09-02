@@ -1222,7 +1222,7 @@ def test_forward_different_horizon_does_not_create_consensus_conflict() -> None:
     assert snapshot.forward_pe_reference_caution is True
     assert snapshot.consensus_disagreement is False
     cautions = _data_cautions(snapshot.model_dump(), {})
-    assert "fPER는 산출 기간이 명확하지 않아 참고 수준입니다." in cautions
+    assert "fPER은 산출 기간이 명확하지 않아 참고 수준입니다." in cautions
 
 
 def test_single_forward_source_does_not_create_reference_caution() -> None:

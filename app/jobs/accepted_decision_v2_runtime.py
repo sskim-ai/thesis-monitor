@@ -33,6 +33,11 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     build_decision_evidence_packet,
 )
+from app.services.codex_runtime_state_service import (
+    RUNTIME_STATE_NOT_READY,
+    CodexRuntimeStateError,
+    prepare_codex_runtime_state,
+)
 from app.services.decision_canary_service import strict_json_schema
 from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
@@ -91,6 +96,10 @@ def _root() -> Path:
     return _repository_path(Path(get_settings().data_dir)) / "ai_review"
 
 
+def _runtime_state_root() -> Path:
+    return _root().parent / "codex_runtime_state" / "v2"
+
+
 def _signed_in_codex_bin() -> str:
     candidates = (
         os.environ.get("CODEX_CLI_BIN"),
@@ -113,6 +122,7 @@ def _invoke_signed_in_codex(
     schema: Path,
     cwd: Path,
     timeout: int,
+    state_namespace: str,
 ) -> None:
     invocation_paths = {
         "cwd": _repository_path(cwd),
@@ -140,6 +150,21 @@ def _invoke_signed_in_codex(
         failed = ",".join(key for key, value in checks.items() if not value)
         raise V2CLIPathPreconditionError(f"v2_cli_path_precondition_failed:{failed}")
 
+    runtime_state = prepare_codex_runtime_state(
+        _runtime_state_root(),
+        namespace=state_namespace,
+    )
+    logger.info(
+        "v2_codex_runtime_state_preflight contract=%s namespace_hash=%s "
+        "ownership=%s mode=%s sqlite_wal_probe=%s auth_reference=%s",
+        runtime_state.contract,
+        runtime_state.namespace_hash,
+        runtime_state.ownership,
+        runtime_state.mode,
+        runtime_state.sqlite_wal_probe,
+        runtime_state.signed_in_auth_reference,
+    )
+
     command = [
         codex_bin,
         "exec",
@@ -165,7 +190,7 @@ def _invoke_signed_in_codex(
         process = subprocess.run(
             command,
             cwd=invocation_paths["cwd"],
-            env=dict(os.environ),
+            env=runtime_state.environment(),
             stdin=stdin,
             stdout=stdout,
             stderr=subprocess.STDOUT,
@@ -178,6 +203,23 @@ def _invoke_signed_in_codex(
         or not invocation_paths["output"].exists()
         or not invocation_paths["output"].stat().st_size
     ):
+        try:
+            log_text = invocation_paths["log"].read_text(
+                encoding="utf-8", errors="replace"
+            )
+        except OSError:
+            log_text = ""
+        if any(
+            marker in log_text.casefold()
+            for marker in (
+                "readonly database",
+                "failed to open state db",
+                "failed to initialize in-process app-server client",
+            )
+        ):
+            raise CodexRuntimeStateError(
+                f"{RUNTIME_STATE_NOT_READY}:codex_app_server_initialization_failed"
+            )
         raise ValueError("signed_in_codex_cli_v2_production_generation_failed")
 
 
@@ -347,6 +389,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             schema=Path(str(prepared["schema_path"])),
             cwd=paths["prompt"].parent,
             timeout=timeout,
+            state_namespace=claim_id,
         )
         raw_batch = _read_json(batch_output)
         try:
@@ -380,6 +423,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                 schema=Path(str(prepared["schema_path"])),
                 cwd=paths["prompt"].parent,
                 timeout=timeout,
+                state_namespace=claim_id,
             )
             batch = AcceptedV2ProductionBatchOutput.model_validate(
                 _read_json(schema_repair_output)
@@ -430,6 +474,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                 schema=Path(str(prepared["schema_path"])),
                 cwd=paths["prompt"].parent,
                 timeout=timeout,
+                state_namespace=claim_id,
             )
             repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
@@ -488,15 +533,21 @@ async def _run(args: argparse.Namespace) -> None:
         else:
             result = await generate(args.packet_id, args.claim_id, timeout=args.timeout)
     except (
+        CodexRuntimeStateError,
         FileNotFoundError,
         ValueError,
         json.JSONDecodeError,
         subprocess.TimeoutExpired,
     ) as exc:
+        reason = (
+            str(exc)
+            if isinstance(exc, CodexRuntimeStateError)
+            else type(exc).__name__
+        )
         result = _safe_suppression_receipt(
             args.packet_id,
             args.claim_id,
-            reason=type(exc).__name__,
+            reason=reason,
         )
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
 

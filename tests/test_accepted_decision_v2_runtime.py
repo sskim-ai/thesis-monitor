@@ -18,6 +18,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
 )
+
+
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
@@ -26,6 +28,16 @@ from app.services.cross_market_decision_engine_service import (
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
 )
+
+
+@pytest.fixture(autouse=True)
+def _signed_in_codex_auth_reference(monkeypatch, tmp_path: Path) -> None:
+    codex_home = tmp_path / "signed-in-codex-home"
+    codex_home.mkdir()
+    auth = codex_home / "auth.json"
+    auth.write_text("{}\n", encoding="utf-8")
+    auth.chmod(0o600)
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
 
 
 def _packet() -> DecisionEvidencePacket:
@@ -218,6 +230,7 @@ def test_signed_in_codex_invocation_normalizes_path_permutations(
         schema=(relative_dir / schema_absolute.name) if schema_relative else schema_absolute,
         cwd=relative_dir if cwd_relative else absolute_dir,
         timeout=30,
+        state_namespace="test-path-normalization",
     )
 
     command = captured["command"]
@@ -258,6 +271,7 @@ def test_signed_in_codex_missing_schema_fails_before_subprocess(
             schema=relative_dir / "missing.schema.json",
             cwd=relative_dir,
             timeout=30,
+            state_namespace="test-missing-schema",
         )
 
     assert called is False
@@ -289,6 +303,7 @@ def test_signed_in_codex_invocation_creates_canonical_write_directories(
         schema=relative_claims / "claim.schema.json",
         cwd=relative_claims,
         timeout=30,
+        state_namespace="test-write-directories",
     )
 
     assert (tmp_path / relative_outbox / "claim.output.json").is_file()
@@ -338,6 +353,7 @@ def test_run50_natural_claim_paths_use_one_canonical_repository_root(
         schema=paths["schema"],
         cwd=Path("data/ai_review/claims"),
         timeout=30,
+        state_namespace=claim_id,
     )
 
     command = captured["command"]
