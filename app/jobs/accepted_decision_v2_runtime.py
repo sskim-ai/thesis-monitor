@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import subprocess
+import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -38,6 +39,13 @@ from app.services.codex_runtime_state_service import (
     CodexRuntimeStateError,
     prepare_codex_runtime_state,
 )
+from app.services.codex_network_transport_service import (
+    NETWORK_READINESS_CONTRACT,
+    CodexTransportError,
+    classify_codex_transport_failure,
+    probe_codex_network_readiness,
+    retryable_codex_transport_failure,
+)
 from app.services.decision_canary_service import strict_json_schema
 from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
@@ -50,6 +58,8 @@ from app.services.preconfirmation_decision_v2_service import (
 
 V2_REASONING_BATCH_SIZE = 3
 V2_BATCH_SCHEMA_REPAIR_LIMIT = 1
+V2_TRANSPORT_ATTEMPT_LIMIT = 2
+V2_TRANSPORT_BACKOFF_SECONDS = 2.0
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +133,7 @@ def _invoke_signed_in_codex(
     cwd: Path,
     timeout: int,
     state_namespace: str,
-) -> None:
+) -> dict[str, object]:
     invocation_paths = {
         "cwd": _repository_path(cwd),
         "prompt": _repository_path(prompt),
@@ -184,31 +194,85 @@ def _invoke_signed_in_codex(
         str(invocation_paths["output"]),
         "-",
     ]
-    with invocation_paths["prompt"].open(encoding="utf-8") as stdin, invocation_paths[
-        "log"
-    ].open("w", encoding="utf-8") as stdout:
-        process = subprocess.run(
-            command,
-            cwd=invocation_paths["cwd"],
-            env=runtime_state.environment(),
-            stdin=stdin,
-            stdout=stdout,
-            stderr=subprocess.STDOUT,
-            timeout=timeout,
-            check=False,
-            text=True,
+    invocation_paths["log"].unlink(missing_ok=True)
+    deadline = time.monotonic() + timeout
+    total_network_probe_attempts = 0
+    for transport_attempt in range(1, V2_TRANSPORT_ATTEMPT_LIMIT + 1):
+        readiness = probe_codex_network_readiness()
+        total_network_probe_attempts += readiness.attempts
+        logger.info(
+            "v2_codex_network_preflight contract=%s ready=%s attempts=%s "
+            "resolved_address_count=%s failure_type=%s",
+            readiness.contract,
+            str(readiness.ready).lower(),
+            readiness.attempts,
+            readiness.resolved_address_count,
+            readiness.failure_type.value if readiness.failure_type else "none",
         )
-    if (
-        process.returncode != 0
-        or not invocation_paths["output"].exists()
-        or not invocation_paths["output"].stat().st_size
-    ):
-        try:
-            log_text = invocation_paths["log"].read_text(
-                encoding="utf-8", errors="replace"
+        if not readiness.ready:
+            assert readiness.failure_type is not None
+            raise CodexTransportError(
+                readiness.failure_type,
+                attempts=total_network_probe_attempts,
             )
+
+        remaining_timeout = int(deadline - time.monotonic())
+        if remaining_timeout < 1:
+            raise CodexTransportError(
+                classify_codex_transport_failure("", timed_out=True),
+                attempts=transport_attempt,
+            )
+        invocation_paths["output"].unlink(missing_ok=True)
+        attempt_log = invocation_paths["log"].with_name(
+            f"{invocation_paths['log'].name}.attempt-{transport_attempt:02d}.tmp"
+        )
+        timed_out = False
+        try:
+            with (
+                invocation_paths["prompt"].open(encoding="utf-8") as stdin,
+                attempt_log.open("w", encoding="utf-8") as stdout,
+            ):
+                process = subprocess.run(
+                    command,
+                    cwd=invocation_paths["cwd"],
+                    env=runtime_state.environment(),
+                    stdin=stdin,
+                    stdout=stdout,
+                    stderr=subprocess.STDOUT,
+                    timeout=remaining_timeout,
+                    check=False,
+                    text=True,
+                )
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            process = None
+
+        try:
+            log_text = attempt_log.read_text(encoding="utf-8", errors="replace")
         except OSError:
             log_text = ""
+        with invocation_paths["log"].open("a", encoding="utf-8") as combined_log:
+            combined_log.write(
+                f"\n--- codex transport attempt {transport_attempt}/"
+                f"{V2_TRANSPORT_ATTEMPT_LIMIT} ---\n"
+            )
+            combined_log.write(log_text)
+        attempt_log.unlink(missing_ok=True)
+
+        if (
+            not timed_out
+            and process is not None
+            and process.returncode == 0
+            and invocation_paths["output"].exists()
+            and invocation_paths["output"].stat().st_size
+        ):
+            return {
+                "contract": NETWORK_READINESS_CONTRACT,
+                "network_probe_attempts": total_network_probe_attempts,
+                "transport_attempts": transport_attempt,
+                "retry_recovered": transport_attempt > 1,
+            }
+
         if any(
             marker in log_text.casefold()
             for marker in (
@@ -220,7 +284,31 @@ def _invoke_signed_in_codex(
             raise CodexRuntimeStateError(
                 f"{RUNTIME_STATE_NOT_READY}:codex_app_server_initialization_failed"
             )
-        raise ValueError("signed_in_codex_cli_v2_production_generation_failed")
+
+        failure_type = classify_codex_transport_failure(
+            log_text,
+            timed_out=timed_out,
+        )
+        can_retry = (
+            retryable_codex_transport_failure(failure_type)
+            and transport_attempt < V2_TRANSPORT_ATTEMPT_LIMIT
+            and deadline - time.monotonic() > V2_TRANSPORT_BACKOFF_SECONDS + 1
+        )
+        if can_retry:
+            logger.warning(
+                "v2_codex_transport_retry failure_type=%s attempt=%s max_attempts=%s",
+                failure_type.value,
+                transport_attempt,
+                V2_TRANSPORT_ATTEMPT_LIMIT,
+            )
+            time.sleep(V2_TRANSPORT_BACKOFF_SECONDS)
+            continue
+        raise CodexTransportError(failure_type, attempts=transport_attempt)
+
+    raise CodexTransportError(
+        classify_codex_transport_failure(""),
+        attempts=V2_TRANSPORT_ATTEMPT_LIMIT,
+    )
 
 
 def _claim(packet_id: str, claim_id: str) -> dict[str, object]:
@@ -367,6 +455,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     adjudications = []
     batch_schema_repair_count = 0
     candidate_repair_count = 0
+    transport_telemetry: list[dict[str, object]] = []
     for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
         subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
         batch_number = index // V2_REASONING_BATCH_SIZE + 1
@@ -381,15 +470,17 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             batch_prompt,
             accepted_v2_production_prompt(context, subjects=subjects),
         )
-        _invoke_signed_in_codex(
-            codex_bin=codex_bin,
-            prompt=batch_prompt,
-            output=batch_output,
-            log=batch_log,
-            schema=Path(str(prepared["schema_path"])),
-            cwd=paths["prompt"].parent,
-            timeout=timeout,
-            state_namespace=claim_id,
+        transport_telemetry.append(
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=batch_prompt,
+                output=batch_output,
+                log=batch_log,
+                schema=Path(str(prepared["schema_path"])),
+                cwd=paths["prompt"].parent,
+                timeout=timeout,
+                state_namespace=claim_id,
+            )
         )
         raw_batch = _read_json(batch_output)
         try:
@@ -415,15 +506,17 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                     validation_errors=_schema_validation_errors(exc),
                 ),
             )
-            _invoke_signed_in_codex(
-                codex_bin=codex_bin,
-                prompt=schema_repair_prompt,
-                output=schema_repair_output,
-                log=schema_repair_log,
-                schema=Path(str(prepared["schema_path"])),
-                cwd=paths["prompt"].parent,
-                timeout=timeout,
-                state_namespace=claim_id,
+            transport_telemetry.append(
+                _invoke_signed_in_codex(
+                    codex_bin=codex_bin,
+                    prompt=schema_repair_prompt,
+                    output=schema_repair_output,
+                    log=schema_repair_log,
+                    schema=Path(str(prepared["schema_path"])),
+                    cwd=paths["prompt"].parent,
+                    timeout=timeout,
+                    state_namespace=claim_id,
+                )
             )
             batch = AcceptedV2ProductionBatchOutput.model_validate(
                 _read_json(schema_repair_output)
@@ -466,15 +559,17 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
                     validation_errors=tuple(dict.fromkeys(validation.errors)),
                 ),
             )
-            _invoke_signed_in_codex(
-                codex_bin=codex_bin,
-                prompt=repair_prompt,
-                output=repair_output,
-                log=repair_log,
-                schema=Path(str(prepared["schema_path"])),
-                cwd=paths["prompt"].parent,
-                timeout=timeout,
-                state_namespace=claim_id,
+            transport_telemetry.append(
+                _invoke_signed_in_codex(
+                    codex_bin=codex_bin,
+                    prompt=repair_prompt,
+                    output=repair_output,
+                    log=repair_log,
+                    schema=Path(str(prepared["schema_path"])),
+                    cwd=paths["prompt"].parent,
+                    timeout=timeout,
+                    state_namespace=claim_id,
+                )
             )
             repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
             if (
@@ -520,6 +615,16 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     receipt = validate_output(packet_id, claim_id)
     receipt["batch_schema_repair_count"] = batch_schema_repair_count
     receipt["candidate_repair_count"] = candidate_repair_count
+    receipt["network_readiness_contract"] = NETWORK_READINESS_CONTRACT
+    receipt["network_probe_attempts"] = sum(
+        int(row["network_probe_attempts"]) for row in transport_telemetry
+    )
+    receipt["codex_transport_attempts"] = sum(
+        int(row["transport_attempts"]) for row in transport_telemetry
+    )
+    receipt["transport_retry_recovered_count"] = sum(
+        bool(row["retry_recovered"]) for row in transport_telemetry
+    )
     _atomic_json(paths["receipt"], receipt)
     return receipt
 
@@ -541,7 +646,7 @@ async def _run(args: argparse.Namespace) -> None:
     ) as exc:
         reason = (
             str(exc)
-            if isinstance(exc, CodexRuntimeStateError)
+            if isinstance(exc, (CodexRuntimeStateError, CodexTransportError))
             else type(exc).__name__
         )
         result = _safe_suppression_receipt(

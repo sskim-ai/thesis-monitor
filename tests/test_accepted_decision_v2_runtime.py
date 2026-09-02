@@ -18,8 +18,12 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
 )
-
-
+from app.services.codex_network_transport_service import (
+    NETWORK_READINESS_CONTRACT,
+    CodexNetworkReadiness,
+    CodexTransportError,
+    CodexTransportFailureType,
+)
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
@@ -38,6 +42,18 @@ def _signed_in_codex_auth_reference(monkeypatch, tmp_path: Path) -> None:
     auth.write_text("{}\n", encoding="utf-8")
     auth.chmod(0o600)
     monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    monkeypatch.setattr(
+        runtime,
+        "probe_codex_network_readiness",
+        lambda: CodexNetworkReadiness(
+            contract=NETWORK_READINESS_CONTRACT,
+            ready=True,
+            host="chatgpt.com",
+            port=443,
+            attempts=1,
+            resolved_address_count=2,
+        ),
+    )
 
 
 def _packet() -> DecisionEvidencePacket:
@@ -308,6 +324,110 @@ def test_signed_in_codex_invocation_creates_canonical_write_directories(
 
     assert (tmp_path / relative_outbox / "claim.output.json").is_file()
     assert (tmp_path / relative_outbox / "logs" / "claim.log").is_file()
+
+
+def test_signed_in_codex_retries_one_transient_transport_failure(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    claims = tmp_path / "data/ai_review/claims"
+    claims.mkdir(parents=True)
+    prompt = claims / "claim.prompt.txt"
+    schema = claims / "claim.schema.json"
+    output = claims / "claim.output.json"
+    log = claims / "claim.log"
+    prompt.write_text("prompt", encoding="utf-8")
+    schema.write_text("{}", encoding="utf-8")
+    run_count = 0
+
+    def fake_run(command, **kwargs):
+        nonlocal run_count
+        run_count += 1
+        if run_count == 1:
+            kwargs["stdout"].write(
+                "failed to connect to websocket: stream disconnected before completion"
+            )
+            return SimpleNamespace(returncode=1)
+        Path(command[command.index("-o") + 1]).write_text("{}", encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(runtime, "_repository_root", lambda: tmp_path)
+    monkeypatch.setattr(runtime.subprocess, "run", fake_run)
+    monkeypatch.setattr(runtime.time, "sleep", lambda _: None)
+
+    telemetry = _invoke_signed_in_codex(
+        codex_bin="/bin/echo",
+        prompt=prompt,
+        output=output,
+        log=log,
+        schema=schema,
+        cwd=claims,
+        timeout=30,
+        state_namespace="test-transport-retry",
+    )
+
+    assert run_count == 2
+    assert telemetry == {
+        "contract": NETWORK_READINESS_CONTRACT,
+        "network_probe_attempts": 2,
+        "transport_attempts": 2,
+        "retry_recovered": True,
+    }
+    assert "transport attempt 1/2" in log.read_text(encoding="utf-8")
+
+
+def test_signed_in_codex_network_preflight_failure_never_starts_subprocess(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    claims = tmp_path / "data/ai_review/claims"
+    claims.mkdir(parents=True)
+    prompt = claims / "claim.prompt.txt"
+    schema = claims / "claim.schema.json"
+    prompt.write_text("prompt", encoding="utf-8")
+    schema.write_text("{}", encoding="utf-8")
+    called = False
+
+    def fake_run(*args, **kwargs):
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr(runtime, "_repository_root", lambda: tmp_path)
+    monkeypatch.setattr(runtime.subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        runtime,
+        "probe_codex_network_readiness",
+        lambda: CodexNetworkReadiness(
+            contract=NETWORK_READINESS_CONTRACT,
+            ready=False,
+            host="chatgpt.com",
+            port=443,
+            attempts=3,
+            resolved_address_count=0,
+            failure_type=CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+            failure_history=(
+                CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+            )
+            * 3,
+        ),
+    )
+
+    with pytest.raises(
+        CodexTransportError,
+        match="LOCAL_DNS_RESOLUTION_FAILURE:attempts=3",
+    ):
+        _invoke_signed_in_codex(
+            codex_bin="/bin/echo",
+            prompt=prompt,
+            output=claims / "claim.output.json",
+            log=claims / "claim.log",
+            schema=schema,
+            cwd=claims,
+            timeout=30,
+            state_namespace="test-network-preflight-failure",
+        )
+
+    assert called is False
 
 
 def test_run50_natural_claim_paths_use_one_canonical_repository_root(

@@ -46,7 +46,7 @@ def run_probe(output_dir: Path, *, timeout: int = 180) -> dict[str, object]:
             sort_keys=True,
         ),
     )
-    _invoke_signed_in_codex(
+    transport = _invoke_signed_in_codex(
         codex_bin=_signed_in_codex_bin(),
         prompt=prompt,
         output=output,
@@ -66,6 +66,10 @@ def run_probe(output_dir: Path, *, timeout: int = 180) -> dict[str, object]:
         "production_send": 0,
         "telegram_imported": 0,
         "database_mutation": 0,
+        "network_readiness_contract": transport["contract"],
+        "network_probe_attempts": transport["network_probe_attempts"],
+        "codex_transport_attempts": transport["transport_attempts"],
+        "transport_retry_recovered": transport["retry_recovered"],
         "completed_at": datetime.now(UTC).isoformat(),
     }
     _write(root / "receipt.json", json.dumps(receipt, indent=2, sort_keys=True) + "\n")

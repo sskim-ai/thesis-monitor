@@ -1,0 +1,36 @@
+{
+  "contract": "codex-network-readiness-proof-v1",
+  "date": "2026-09-02",
+  "failure_taxonomy": {
+    "dns_failure_misclassified_as_generic_model_failure": 0,
+    "natural_first_failure_boundary": "LOCAL_DNS_RESOLUTION_FAILURE"
+  },
+  "host_safe_model_smoke": {
+    "app_server_model": "PASS",
+    "codex_transport_attempts": 1,
+    "database_mutation": 0,
+    "network_probe_attempts": 1,
+    "network_readiness": "PASS",
+    "production_send": 0,
+    "telegram_imported": 0
+  },
+  "negative_control": {
+    "model_subprocess_started": 0,
+    "network_probe_attempts": 3,
+    "terminal_reason": "LOCAL_DNS_RESOLUTION_FAILURE"
+  },
+  "retry": {
+    "codex_transport_attempt_limit": 2,
+    "network_probe_attempt_limit": 3,
+    "retry_storm": 0,
+    "unbounded_network_retry": 0
+  },
+  "safety": {
+    "global_security_disable": 0,
+    "hardcoded_public_dns": 0,
+    "hosts_file_chatgpt_override": 0,
+    "run_scheduler_as_root": 0,
+    "tls_verification_disabled": 0
+  },
+  "track_a_network_runtime": "PASS"
+}
