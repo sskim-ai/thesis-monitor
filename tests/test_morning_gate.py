@@ -292,9 +292,7 @@ async def test_gate_dispatches_immediately_when_both_contracts_are_ready(
         "daily_monitoring_digest",
         "daily_stock_analysis",
     ]
-    assert "🌙 한국 야간선물 · 08/13 새벽 종료 · 08/12 주간장 대비" in str(
-        notifier.payloads[0]["text"]
-    )
+    assert "🌙 한국 야간선물" not in str(notifier.payloads[0]["text"])
     assert metadata["first_query_at"].endswith("08:05:00+09:00")
     assert metadata["first_complete_at"].endswith("08:05:00+09:00")
     assert metadata["dispatch_at"].endswith("08:05:00+09:00")
@@ -398,7 +396,9 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
 
 
 @pytest.mark.anyio
-async def test_deadline_dispatches_partial_contract_with_caution(monkeypatch) -> None:
+async def test_deadline_dispatches_partial_contract_without_user_night_block(
+    monkeypatch,
+) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",
         lambda run_date: EXPECTED_SESSION,
@@ -421,13 +421,13 @@ async def test_deadline_dispatches_partial_contract_with_caution(monkeypatch) ->
     digest = str(notifier.payloads[0]["text"])
     assert result.status == "dispatched"
     assert result.deadline_reached is True
-    assert "KOSPI200 최근월물" in digest
+    assert "KOSPI200 최근월물" not in digest
     assert "KOSDAQ150 최근월물" not in digest
-    assert "KOSDAQ150 야간선물은 최신 세션 확인이 되지 않아 제외했습니다." in digest
+    assert "KOSDAQ150 야간선물은 최신 세션 확인이 되지 않아 제외했습니다." not in digest
 
 
 @pytest.mark.anyio
-async def test_deadline_excludes_all_stale_values_with_one_caution(monkeypatch) -> None:
+async def test_deadline_excludes_all_stale_values_without_user_caution(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",
         lambda run_date: EXPECTED_SESSION,
@@ -448,7 +448,7 @@ async def test_deadline_excludes_all_stale_values_with_one_caution(monkeypatch) 
     digest = str(notifier.payloads[0]["text"])
     assert result.status == "dispatched"
     assert "🌙 한국 야간선물" not in digest
-    assert digest.count("한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해") == 1
+    assert "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해" not in digest
 
 
 @pytest.mark.anyio

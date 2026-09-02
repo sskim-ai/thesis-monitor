@@ -1268,7 +1268,7 @@ def test_pilot_v3_stops_market_after_five_successful_packets(monkeypatch, tmp_pa
     assert ai_assisted_pilot_active("us") is True
 
 
-def test_us_market_renderer_v3_integrates_night_futures_without_duplication() -> None:
+def test_us_market_renderer_v3_temporarily_suppresses_night_futures() -> None:
     raw_review = _output()["market_review"]
     raw_review["facts_used"].append("market:night_futures:1")
     raw_review["important_changes"].append(
@@ -1297,14 +1297,15 @@ def test_us_market_renderer_v3_integrates_night_futures_without_duplication() ->
     )
 
     assert "🤖 AI 보조 미국시장 점검 · US Pilot 1/5" in text
-    assert "🌙 한국 개장 전 신호" in text
+    assert "🌙 한국 개장 전 신호" not in text
+    assert "KOSPI200 야간선물" not in text
+    assert "431.25" not in text
     assert "🎯 오늘 시장 한 줄" in text
     assert "📈 실제 변화" in text
     assert "🧭 시장 구조" in text
     assert "🔗 모니터링 종목에 미치는 영향" in text
     assert "📌 다음 확인" in text
     assert "⚠️ 데이터 주의" in text
-    assert text.count("🌙 한국 개장 전 신호") == 1
     assert "기존 deterministic 전체 블록" not in text
     assert "추가 확정 근거를 기다립니다" not in text
 

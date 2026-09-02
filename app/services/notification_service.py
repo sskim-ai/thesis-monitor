@@ -67,6 +67,9 @@ from app.services.night_futures import (
     render_night_futures,
     summarize_night_futures,
 )
+from app.services.night_futures_visibility_service import (
+    night_futures_user_facing_visibility,
+)
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     canonical_display_value,
@@ -2637,6 +2640,7 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
     calendar_items = calendar if isinstance(calendar, list) else []
     quality_items = quality if isinstance(quality, list) else []
     night_futures = summarize_night_futures(market)
+    night_visibility = night_futures_user_facing_visibility("us")
     calendar_text = (
         ", ".join(
             str(item.get("title", "일정")) for item in calendar_items[:5] if isinstance(item, dict)
@@ -2649,7 +2653,7 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
             continue
         if item.get("warning"):
             if is_night_futures_warning(item["warning"]):
-                if not night_futures.cautions:
+                if night_visibility.visible and not night_futures.cautions:
                     line = (
                         "• 한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해 "
                         "오늘 개장 전 신호에서 제외했습니다."
@@ -2674,9 +2678,10 @@ def _macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
             f"• {label}({series_code}): {status} · 최신 관측 {observed_at or '확인 불가'}. "
             f"{explanation}최신 관측일이 오래되어 당일 방향 판단에는 사용하지 않습니다."
         )
-    quality_lines.extend(f"• {item}" for item in night_futures.cautions)
+    if night_visibility.visible:
+        quality_lines.extend(f"• {item}" for item in night_futures.cautions)
     quality_text = "\n".join(quality_lines) or "• 특이사항 없음"
-    night_futures_text = _night_futures_section(market)
+    night_futures_text = _night_futures_section(market) if night_visibility.visible else ""
     night_futures_block = f"\n\n{night_futures_text}" if night_futures_text else ""
     change_heading = (
         "오늘 가장 중요한 변화"

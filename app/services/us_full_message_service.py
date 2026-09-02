@@ -10,6 +10,9 @@ from app.services.krx_night_history_service import (
     KrxNightTimeframes,
 )
 from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
+from app.services.night_futures_visibility_service import (
+    night_futures_user_facing_visibility,
+)
 from app.services.us_market_digest_plan_service import (
     DigestOmissionReason,
     SUPPORTED_MACRO_FACT_TYPES,
@@ -356,7 +359,8 @@ def render_us_full_market_message(
     night_lines: list[str] = []
     night_fact_ids: list[str] = []
     night_rows = _mapping(context).get("night_futures", [])
-    if isinstance(night_rows, list):
+    night_visibility = night_futures_user_facing_visibility("us")
+    if night_visibility.visible and isinstance(night_rows, list):
         for row in night_rows:
             if not isinstance(row, Mapping):
                 continue

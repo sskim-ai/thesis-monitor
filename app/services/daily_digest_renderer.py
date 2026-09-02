@@ -4,7 +4,10 @@ from app.services.daily_digest import (
     VALUATION_LABELS,
 )
 from app.services.kr_close_fx import render_kr_close_fx
-from app.services.night_futures import render_night_futures
+from app.services.night_futures import is_night_futures_warning, render_night_futures
+from app.services.night_futures_visibility_service import (
+    night_futures_user_facing_visibility,
+)
 from app.services.us_full_message_service import render_us_full_market_message
 
 
@@ -82,9 +85,11 @@ def render_daily_digest(
         *_bullet_lines(macro.key_changes[:3], "임계치를 넘은 핵심 시장 변화가 없습니다."),
         ]
     )
-    night_futures = render_night_futures(digest.night_futures)
-    if night_futures:
-        lines.extend(["", night_futures])
+    night_visibility = night_futures_user_facing_visibility(digest.market_scope)
+    if night_visibility.visible:
+        night_futures = render_night_futures(digest.night_futures)
+        if night_futures:
+            lines.extend(["", night_futures])
     lines.extend(["", "🧭 현재 시장 상황"])
     for label, explanation in macro.axis_explanations[:3]:
         lines.extend([f"• {label}: {explanation}"])
@@ -153,7 +158,14 @@ def render_daily_digest(
             lines.extend(["오늘:", *_bullet_lines(digest.schedule.today, "")])
         if digest.schedule.next_seven_days:
             lines.extend(["향후 7일:", *_bullet_lines(digest.schedule.next_seven_days, "")])
-    if digest.data_quality.items:
-        lines.extend(["", "⚠️ 데이터 주의", *_bullet_lines(digest.data_quality.items, "")])
+    data_quality_items = digest.data_quality.items
+    if not night_visibility.visible:
+        data_quality_items = [
+            item
+            for item in data_quality_items
+            if not is_night_futures_warning(item) and "야간선물" not in str(item)
+        ]
+    if data_quality_items:
+        lines.extend(["", "⚠️ 데이터 주의", *_bullet_lines(data_quality_items, "")])
         lines.append(digest.data_quality.conclusion)
     return "\n".join(lines).strip()

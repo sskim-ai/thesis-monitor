@@ -47,6 +47,9 @@ from app.services.free_analyst_production_integration_service import (
 from app.services.market_evidence_utilization_validator_service import (
     validate_us_market_evidence_utilization,
 )
+from app.services.night_futures_visibility_service import (
+    night_futures_user_facing_visibility,
+)
 from app.services.kr_price_structure_selective_rollout_service import (
     preserve_current_price_structure_section,
     preserve_price_structure_sections,
@@ -1008,6 +1011,7 @@ def _render_ai_market_message(
     required_market_fact_ids = {
         str(item) for item in market_context.get("required_market_fact_ids", [])
     }
+    night_visibility = night_futures_user_facing_visibility(market)
     night_changes = [
         item for item in review.important_changes if set(item.fact_ids) & required_market_fact_ids
     ]
@@ -1047,7 +1051,7 @@ def _render_ai_market_message(
             else "실제 변화"
         )
         sections.append(f"📈 {heading}\n{changes}")
-    if market == "us":
+    if market == "us" and night_visibility.visible:
         rendered_night_changes = _bullets(
             [item.text.strip() for item in night_changes if item.text.strip()]
         )

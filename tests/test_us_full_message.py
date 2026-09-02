@@ -148,7 +148,7 @@ def test_current_close_renders_material_iwm_soxx_without_overloading_roles() -> 
     assert rendered.text.count("• 업종 약세:") == 1
 
 
-def test_full_message_renders_verified_night_returns_without_levels() -> None:
+def test_full_message_temporarily_suppresses_verified_night_returns() -> None:
     context = _context()
     context["night_futures"] = [
         {
@@ -170,12 +170,10 @@ def test_full_message_renders_verified_night_returns_without_levels() -> None:
     rendered = render_us_full_market_message(context)
 
     assert rendered.status == "PASS"
-    assert "🌙 한국 야간선물\n• KOSPI200 야간선물 +0.67%" in rendered.text
-    assert "• KOSDAQ150 야간선물 -0.28%" in rendered.text
-    assert rendered.night_fact_ids == (
-        "market:night_futures:1",
-        "market:night_futures:2",
-    )
+    assert "🌙 한국 야간선물" not in rendered.text
+    assert "KOSPI200 야간선물" not in rendered.text
+    assert "KOSDAQ150 야간선물" not in rendered.text
+    assert rendered.night_fact_ids == ()
 
 
 def _timeframe(
@@ -296,7 +294,7 @@ def _dwm_row(
     }
 
 
-def test_full_message_renders_two_same_contract_daily_weekly_monthly_blocks() -> None:
+def test_full_message_suppresses_night_dwm_but_preserves_internal_evidence() -> None:
     context = _context()
     context["night_futures"] = [
         _dwm_row(
@@ -314,15 +312,12 @@ def test_full_message_renders_two_same_contract_daily_weekly_monthly_blocks() ->
     rendered = render_us_full_market_message(context)
 
     assert rendered.status == "PASS"
-    assert rendered.text.count("- 일봉:") == 2
-    assert rendered.text.count("- 주봉(진행중):") == 2
-    assert rendered.text.count("- 월봉(진행중):") == 2
-    assert "KOSPI200 최근월물 (202609)" in rendered.text
-    assert "🌙 한국 야간선물 · 기준 09/01" in rendered.text
-    assert "시가 1,067.00 · 종가 1,064.50 · 갭 +0.33% · 등락 -0.31%" in rendered.text
-    assert "H 1,072.45" not in rendered.text
-    assert "L 1,053.80" not in rendered.text
-    assert len(rendered.night_fact_ids) == 6
+    assert "🌙 한국 야간선물" not in rendered.text
+    assert "KOSPI200 최근월물" not in rendered.text
+    assert "- 일봉:" not in rendered.text
+    assert rendered.night_fact_ids == ()
+    assert len(context["night_futures"]) == 2
+    assert all(row.get("night_timeframes") for row in context["night_futures"])
 
 
 def test_real_yield_is_not_the_primary_user_facing_rate_block() -> None:

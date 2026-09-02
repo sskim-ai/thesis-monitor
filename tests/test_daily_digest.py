@@ -343,7 +343,7 @@ def test_fourteen_stock_digest_is_deterministic_and_hides_axis_scores() -> None:
         ]
 
 
-def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
+def test_us_digest_temporarily_suppresses_both_fresh_night_futures() -> None:
     init_db()
     run_date = date(2041, 8, 13)
     source_date = date(2041, 8, 12)
@@ -370,11 +370,10 @@ def test_us_digest_renders_both_fresh_night_futures_between_sections() -> None:
             build_daily_digest(session, run_date, market_scope="us")
         )
 
-    assert "🌙 한국 야간선물 · 08/12 새벽 종료 · 08/09 주간장 대비" in report
-    assert "KOSPI200 최근월물 1,002.50 · -32.80pt (-3.17%)" in report
-    assert "KOSDAQ150 최근월물 1,482.40 · +4.10pt (+0.28%)" in report
-    assert report.index("📈 직전 거래일 맥락") < report.index("🌙 한국 야간선물")
-    assert report.index("🌙 한국 야간선물") < report.index("🧭 현재 시장 상황")
+    assert "🌙 한국 야간선물" not in report
+    assert "KOSPI200 최근월물" not in report
+    assert "KOSDAQ150 최근월물" not in report
+    assert "SESSION_DATE_CONVENTION_PENDING" not in report
 
 
 def test_night_futures_use_explicit_trade_date_not_provider_timestamp_date() -> None:
@@ -484,7 +483,7 @@ def test_us_digest_excludes_both_stale_night_futures_with_one_caution() -> None:
         )
 
     assert "🌙 한국 야간선물" not in report
-    assert report.count("한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해") == 1
+    assert "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해" not in report
     assert "1,002.50" not in report
 
 
@@ -495,7 +494,7 @@ def test_us_digest_excludes_both_stale_night_futures_with_one_caution() -> None:
         ("KRX_KOSDAQ150_NIGHT_FUT", "KOSPI200 야간선물"),
     ],
 )
-def test_us_digest_renders_only_fresh_night_future_with_partial_caution(
+def test_us_digest_suppresses_partial_night_future_and_caution(
     fresh_series: str,
     stale_label: str,
 ) -> None:
@@ -531,9 +530,9 @@ def test_us_digest_renders_only_fresh_night_future_with_partial_caution(
             build_daily_digest(session, run_date, market_scope="us")
         )
 
-    assert "🌙 한국 야간선물" in report
-    assert stale_label in report
-    assert "최신 세션 확인이 되지 않아 제외했습니다." in report
+    assert "🌙 한국 야간선물" not in report
+    assert stale_label not in report
+    assert "최신 세션 확인이 되지 않아 제외했습니다." not in report
     assert "series_code" not in report
     assert "session_freshness" not in report
 

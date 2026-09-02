@@ -619,7 +619,7 @@ def test_morning_and_kr_close_notifications_have_independent_markers() -> None:
     assert context["analysis_type"] == "macro_kr_close"
 
 
-def test_morning_report_renders_verified_night_futures_as_context() -> None:
+def test_morning_report_temporarily_suppresses_verified_night_futures() -> None:
     briefing = MacroBriefing(
         briefing_date=date(2026, 8, 12),
         briefing_type="morning",
@@ -695,10 +695,9 @@ def test_morning_report_renders_verified_night_futures_as_context() -> None:
 
     message, _context = _macro_report(briefing)
 
-    assert "🌙 한국 야간선물 · 08/11 새벽 종료 · 08/10 주간장 대비" in message
-    assert "KOSPI200 최근월물 974.95 · -14.85pt (-1.50%)" in message
-    assert "KOSDAQ150 최근월물 1,489.00 · +3.70pt (+0.25%)" in message
-    assert message.index("📈 직전 거래일 맥락") < message.index("🌙 한국 야간선물")
+    assert "🌙 한국 야간선물" not in message
+    assert "KOSPI200 최근월물" not in message
+    assert "KOSDAQ150 최근월물" not in message
 
 
 def test_morning_report_excludes_stale_night_futures_with_compact_caution() -> None:
@@ -742,6 +741,6 @@ def test_morning_report_excludes_stale_night_futures_with_compact_caution() -> N
     message, _context = _macro_report(briefing)
 
     assert "🌙 한국 야간선물" not in message
-    assert message.count("한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해") == 1
+    assert "한국 야간선물은 최신 완료 세션 데이터를 확인하지 못해" not in message
     assert "KRX_KOSPI200_NIGHT_FUT" not in message
     assert "session_freshness" not in message

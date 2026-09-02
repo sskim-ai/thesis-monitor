@@ -253,6 +253,7 @@ def test_previous_xkrx_business_date_pair_is_fresh_for_us_morning() -> None:
     result = asyncio.run(
         fetch_live_probe(
             run_date=date(2026, 8, 19),
+            observation_time=datetime(2026, 8, 19, 8, 20, tzinfo=KST),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
         )
@@ -743,6 +744,7 @@ def test_newer_market_rows_make_older_verified_pair_stale() -> None:
     result = asyncio.run(
         fetch_live_probe(
             run_date=date(2026, 8, 13),
+            observation_time=datetime(2026, 8, 13, 8, 20, tzinfo=KST),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
         )
@@ -792,6 +794,7 @@ def test_empty_expected_business_date_is_refresh_due_not_a_holiday() -> None:
     result = asyncio.run(
         fetch_live_probe(
             run_date=date(2026, 8, 13),
+            observation_time=datetime(2026, 8, 13, 8, 20, tzinfo=KST),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
         )
@@ -846,6 +849,14 @@ def test_empty_weekend_or_holiday_dates_keep_latest_verified_session_fresh(
     result = asyncio.run(
         fetch_live_probe(
             run_date=run_date,
+            observation_time=datetime(
+                run_date.year,
+                run_date.month,
+                run_date.day,
+                8,
+                20,
+                tzinfo=KST,
+            ),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
         )
@@ -1151,6 +1162,7 @@ def test_provider_marks_older_pair_stale_and_storage_refreshes_existing_quality(
     async def fake_probe(**kwargs):
         return await fetch_live_probe(
             run_date=date(2026, 8, 13),
+            observation_time=datetime(2026, 8, 13, 8, 20, tzinfo=KST),
             api_key="dummy",
             transport=httpx.MockTransport(handler),
         )
