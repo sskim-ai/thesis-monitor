@@ -136,15 +136,35 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260901-v2-natural-cli-path-product-identifier-repair"
+        "codex/20260902-us-run51-three-p1-repair"
     )
     assert state["current_phase"] == (
-        "v2_natural_cli_path_product_identifier_repair_deployed_awaiting_natural_us_kr_live"
+        "run51_three_p1_repair_ready_for_main_awaiting_natural_us_kr_live"
     )
     assert state["last_completed_phase"] == (
-        "20260901_v2_natural_cli_path_product_identifier_repair"
+        "20260902_run51_runtime_state_daily_review_night_futures_repair"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_us_kr_live"
+    run51 = state["run51_three_p1_repair_20260902"]
+    assert run51["work_instruction_commit"] == (
+        "ff255fc710a3b86b0496cdedca505a7a4a5323e7"
+    )
+    assert run51["implementation_commit"] == (
+        "16fa1222136b300d900682904f8391ef5c4b482a"
+    )
+    assert run51["scheduler_context_probe"] == "PASS"
+    assert run51["us_v2_accepted_ready"] == 14
+    assert run51["daily_review_messages"] == 15
+    assert run51["daily_review_quality"] == "PASS"
+    assert run51["night_futures_status"] == "SOURCE_LIMITATION_SAFE"
+    assert run51["night_futures_ready_rendered"] == "0/0"
+    assert run51["kr_production_equivalent_ready"] == 8
+    assert run51["test_sink_exact"] == 22
+    assert run51["test_sink_production_send"] == 0
+    assert run51["open_p0"] == 0
+    assert run51["open_material_p1"] == 0
+    assert run51["open_p2"] == 0
+    assert run51["result"] == "READY_FOR_MAIN"
     natural_v2 = state["us_v2_natural_live_readonly_verification_20260901"]
     assert natural_v2["instruction_commit"] == (
         "e6c11cff168fa430d7ddc7095d8c407d80948553"
@@ -183,14 +203,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["recorded_base_commit"] == (
-        "1aa10f04016cabede492c82686b6d671b4c27f55"
+        "2a6bbc449d6802490560cb89d83e0d1fc3e88b24"
     )
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == natural_runtime_promotion
-    assert state["main_code_commit"] == natural_runtime_promotion
-    assert state["operating_code_commit"] == natural_runtime_promotion
+    run51_implementation = "16fa1222136b300d900682904f8391ef5c4b482a"
+    assert state["deployed_code_commit"] == run51_implementation
+    assert state["main_code_commit"] == run51_implementation
+    assert state["operating_code_commit"] == run51_implementation
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1462,7 +1483,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == natural_runtime_promotion
+    assert state["current_commit"] == run51_implementation
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

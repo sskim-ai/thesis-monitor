@@ -1,0 +1,772 @@
+{
+  "after": {
+    "auto_bound": 124,
+    "final_rendered_language": {
+      "details": [],
+      "duplicate_canonical_label_count": 0,
+      "hard_checks_passed": true,
+      "incomplete_predicate_count": 0,
+      "internal_implementation_term_count": 0,
+      "korean_particle_error_count": 0,
+      "malformed_actor_flow_count": 0,
+      "price_particle_error_count": 0
+    },
+    "manual_legacy": 0,
+    "message_count": 15,
+    "numeric_binding_errors": [],
+    "observer_holder_distinct_count": 14,
+    "quality_status": "passed",
+    "quality_verified": true,
+    "rendered_heading_quality": {
+      "expected_heading": "📊 거래량·포지셔닝",
+      "message_indexes": [],
+      "mismatch_count": 0
+    },
+    "rendered_identity_prose_mismatch_count": 0,
+    "schema_and_semantic_errors": [],
+    "stock_count": 14,
+    "substantive_repeated_sentence_count": 0,
+    "template_skeleton_repeat_count": 0,
+    "typed_valuation_errors": [],
+    "valuation_evidence_error_count": 0
+  },
+  "contract": "run51-daily-review-quality-proof-v1",
+  "messages": [
+    {
+      "character_count": 342,
+      "sha256": "107f1eeae7012febc5907243c32a84f0a91a8ec6e6291684ffbd763c7e6b9d31",
+      "ticker": "__DAILY_DIGEST__"
+    },
+    {
+      "character_count": 935,
+      "sha256": "716b3c871bdfaff6f9407d3b1422a0ae295aeb0944107342f8cc8d0500e84a67",
+      "ticker": "CORZ"
+    },
+    {
+      "character_count": 922,
+      "sha256": "be20e5cd4c298a1007faf758022b20af8e8a28f280a4689cce18a3af27058dfc",
+      "ticker": "CPNG"
+    },
+    {
+      "character_count": 885,
+      "sha256": "245b535d9b1c61d85d584000af1ac543b40592ae16e662e5a197278788336104",
+      "ticker": "CRCL"
+    },
+    {
+      "character_count": 965,
+      "sha256": "10e71a009a46b2b7e0fa3336da5fbe96a7ca04a071432a4a03e94481f8603741",
+      "ticker": "GOOGL"
+    },
+    {
+      "character_count": 934,
+      "sha256": "05a4cdac729a9dfc9f44d5a12bd9e684d121690f94990e58f47d8df922f79ba5",
+      "ticker": "HUT"
+    },
+    {
+      "character_count": 975,
+      "sha256": "721d4032885609936f6ec146ace34381399a7558761b0081bc53db781f57f9d1",
+      "ticker": "IBM"
+    },
+    {
+      "character_count": 1038,
+      "sha256": "0fdb9459df017359f77dec2c932e057cfe58428dad576a6b56f54d57e97e8477",
+      "ticker": "MU"
+    },
+    {
+      "character_count": 970,
+      "sha256": "5ad88e634ba15fe99d6e97c1280123c72bad6cd83a6436a04d5a43ea403f4fe3",
+      "ticker": "RXRX"
+    },
+    {
+      "character_count": 905,
+      "sha256": "035a0924a9870893efd6050ffde9086166884bfd73dda6b1185468a98456e847",
+      "ticker": "SKHY"
+    },
+    {
+      "character_count": 990,
+      "sha256": "341b6c7d96964d99b72f04e7e1c23c843f5bfd2be23071424eac24f907d89408",
+      "ticker": "SNDK"
+    },
+    {
+      "character_count": 1045,
+      "sha256": "07cfc8f77af4efde3c11bac917830dcf3d7073dc45c7ef341abbb680c03b3b6b",
+      "ticker": "TSLA"
+    },
+    {
+      "character_count": 1173,
+      "sha256": "f03e0eb2b894ad33a013375d7cc735ffd91f28b57e0f8c4da6e0b46724acecfb",
+      "ticker": "TSM"
+    },
+    {
+      "character_count": 987,
+      "sha256": "798c63b4e60e382cb20ff2ff3d05fafcb935a942c406fb0280c00c671213f510",
+      "ticker": "WRD"
+    },
+    {
+      "character_count": 852,
+      "sha256": "9ad6ff870a71720d0242e3ee2f345608871aeaa393268b04e2f1bab885262917",
+      "ticker": "WULF"
+    }
+  ],
+  "ownership": {
+    "handoff_count": 73,
+    "handoffs": [
+      {
+        "evidence_refs": [
+          "market:index:SPY",
+          "market:index:QQQ",
+          "market:index:IWM",
+          "market:sector:SOXX"
+        ],
+        "owner": "market_context",
+        "reason": "canonical_market_plan_owner_handoff",
+        "slot": "CURRENT_MARKET"
+      },
+      {
+        "evidence_refs": [
+          "market:style:RSP",
+          "market:index:SPY"
+        ],
+        "owner": "market_context",
+        "reason": "canonical_market_plan_owner_handoff",
+        "slot": "PARTICIPATION_STYLE"
+      },
+      {
+        "evidence_refs": [
+          "market:sector:SOXX",
+          "market:index:SPY"
+        ],
+        "owner": "market_context",
+        "reason": "canonical_market_plan_owner_handoff",
+        "slot": "SEMICONDUCTOR_RELATIVE"
+      },
+      {
+        "evidence_refs": [
+          "market:sector:XLE",
+          "market:sector:XLY"
+        ],
+        "owner": "market_context",
+        "reason": "canonical_market_plan_owner_handoff",
+        "slot": "SECTOR_DISPERSION"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "CORZ"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "CORZ"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "CORZ"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "CORZ"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "CPNG"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "CPNG"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "CPNG"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "CPNG"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "CRCL"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "CRCL"
+      },
+      {
+        "numeric_ref_id": "u5",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "CRCL"
+      },
+      {
+        "numeric_ref_id": "v6",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "CRCL"
+      },
+      {
+        "numeric_ref_id": "v7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "CRCL"
+      },
+      {
+        "fact_id": "valuation:current",
+        "reason": "mixed_aggregate_interpretation_replaced_by_typed_facts",
+        "ticker": "CRCL"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "GOOGL"
+      },
+      {
+        "numeric_ref_id": "p6",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "GOOGL"
+      },
+      {
+        "numeric_ref_id": "u7",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "GOOGL"
+      },
+      {
+        "numeric_ref_id": "v8",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "GOOGL"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "GOOGL"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "HUT"
+      },
+      {
+        "numeric_ref_id": "p6",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "HUT"
+      },
+      {
+        "numeric_ref_id": "u7",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "HUT"
+      },
+      {
+        "numeric_ref_id": "v8",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "HUT"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "HUT"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "v10",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "IBM"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "MU"
+      },
+      {
+        "reason": "unsupported_peak_multiple_direction_removed",
+        "section": "valuation_analysis",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "v10",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "MU"
+      },
+      {
+        "owner": "business_earnings",
+        "reason": "selected_inventory_relation_owner_handoff",
+        "relation_family": "inventory_vs_cogs",
+        "relation_id": "working-capital-relation:dbdfd04e725e83528d8fdd31",
+        "ticker": "MU"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "RXRX"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "RXRX"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "RXRX"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "RXRX"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "RXRX"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "SKHY"
+      },
+      {
+        "numeric_ref_id": "u4",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "SKHY"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "p2",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "p7",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "u8",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "v10",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "SNDK"
+      },
+      {
+        "fact_id": "valuation:current",
+        "reason": "mixed_aggregate_interpretation_replaced_by_typed_facts",
+        "ticker": "SNDK"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "TSLA"
+      },
+      {
+        "numeric_ref_id": "p6",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "TSLA"
+      },
+      {
+        "numeric_ref_id": "u7",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "TSLA"
+      },
+      {
+        "numeric_ref_id": "v8",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "TSLA"
+      },
+      {
+        "numeric_ref_id": "v9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "TSLA"
+      },
+      {
+        "owner": "business_earnings",
+        "reason": "selected_inventory_relation_owner_handoff",
+        "relation_family": "inventory_vs_revenue",
+        "relation_id": "working-capital-relation:36181e61768dfd580d9ede01",
+        "ticker": "TSLA"
+      },
+      {
+        "numeric_ref_id": "b1",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "b2",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "b3",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "business_earnings",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "p4",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "p9",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "price_positioning",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "u10",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "TSM"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "WRD"
+      },
+      {
+        "numeric_ref_id": "u4",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "WRD"
+      },
+      {
+        "numeric_ref_id": "p1",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "price_positioning",
+        "ticker": "WULF"
+      },
+      {
+        "numeric_ref_id": "u4",
+        "reason": "canonical_single_numeric_fact_ownership",
+        "section": "supply_analysis",
+        "ticker": "WULF"
+      },
+      {
+        "numeric_ref_id": "v5",
+        "reason": "canonical_numeric_sentence_completion",
+        "section": "valuation_analysis",
+        "ticker": "WULF"
+      }
+    ],
+    "status": "passed",
+    "suppression_count": 32,
+    "suppressions": [
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "CORZ"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "CPNG"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "GOOGL"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "HUT"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "IBM"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "MU"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "RXRX"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "SNDK"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "TSLA"
+      },
+      {
+        "reason": "new_observer_view_primary_ownership",
+        "suppressed_span": "이 현재가 비대칭은 신규 관찰자의 추격 판단에 우호적이지 않습니다.",
+        "text_ref": "price_positioning.text",
+        "ticker": "TSM"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "CRCL"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "GOOGL"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "HUT"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "IBM"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "MU"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "SNDK"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 공급된 향후 이익 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "TSLA"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "CRCL"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "HUT"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "RXRX"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "SNDK"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 장부가 기준 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "WULF"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료만으로 사업 논리는 변하지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "CRCL"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료만으로 사업 논리는 변하지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "IBM"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료만으로 사업 논리는 변하지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "WULF"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 이익 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "GOOGL"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 이익 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "IBM"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 이익 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "MU"
+      },
+      {
+        "reason": "canonical_valuation_fact_is_primary",
+        "suppressed_span": "이는 현재 이익 배수의 절대 수준을 보여 줍니다.",
+        "text_ref": "valuation_analysis.text",
+        "ticker": "TSLA"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료는 사업 논리를 바꾸지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "MU"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료는 사업 논리를 바꾸지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "SKHY"
+      },
+      {
+        "reason": "entity_specific_core_judgment_is_primary",
+        "suppressed_span": "오늘 자료는 사업 논리를 바꾸지 않았습니다.",
+        "text_ref": "core_judgment.text",
+        "ticker": "TSM"
+      }
+    ],
+    "unresolved": []
+  },
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "production_send": 0,
+  "source": {
+    "candidate_sha256": "f474f971829aa600e4c0aa8b57965af8e6e284d106eb421226967389d92a7604",
+    "original_error_count": 47,
+    "original_validation_sha256": "62af2fde4e250ba054c564d1b2e5a5b19e5aa45bbc91681d00b194d9f86da4d9",
+    "packet_sha256": "2b5a9be665a1b42a2f3d5e960ae4d42a57ec4b5e52cebfdfb9e71f8c51747bfb"
+  }
+}

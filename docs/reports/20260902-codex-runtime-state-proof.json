@@ -1,0 +1,18 @@
+{
+  "codex_home": "claim_scoped_private_0700",
+  "contract": "run51-codex-runtime-state-proof-v1",
+  "database_mutation": 0,
+  "model": "gpt-5.6-sol",
+  "plaintext_auth_copy": 0,
+  "probe_contract": "codex-scheduler-context-app-server-probe-v1",
+  "probe_status": "PASS",
+  "production_send": 0,
+  "reasoning_effort": "xhigh",
+  "receipt_sha256": "f3304c9ec1e8be09a9cb9e8a9e7649bd1940ec4285775fe8611a3ddff4fc6a38",
+  "sandbox": "read-only",
+  "signed_in_auth": "owner_only_read_only_symlink_reference",
+  "sqlite_home": "claim_scoped_private_0700",
+  "sqlite_wal_probe": "PASS",
+  "state_contract": "codex-runtime-state-v1",
+  "state_scope": "isolated_per_claim_namespace"
+}

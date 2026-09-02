@@ -910,3 +910,14 @@ cutoff-safe exclusion, accepted-v2 ownership, exact delivery receipt, duplicates
 read-only. Do not manually run a task or Telegram proof. The generic background reconciler and
 market preflight remain enabled; CPNG is ACTIVE_READY from `2026-09-01`. Production Assist remains
 OFF.
+
+The latest authoritative bounded repair starts from exact instruction commit
+`ff255fc710a3b86b0496cdedca505a7a4a5323e7` and runtime implementation
+`16fa1222136b300d900682904f8391ef5c4b482a`. Read
+`docs/reports/20260902-three-p1-repair-readiness.md` and the artifact index first.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_LIVE` and `WAIT_FOR_NEXT_NATURAL_KR_LIVE`. Inspect the
+claim-scoped Codex state preflight, model reach, V2 candidate/accepted/explicit counts, exact
+daily-review quality receipt, KRX night `BAS_DD` mapping, fallback route, and exactly-once delivery.
+Do not manually run a Scheduled Task, resend a completed packet, expose recipient values, or treat
+the `22/22` dedicated-sink proof as natural LIVE_PASS. Production Assist remains OFF.

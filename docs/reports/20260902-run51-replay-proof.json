@@ -1,0 +1,25 @@
+{
+  "accepted_artifact_sha256": "f057d6cbdb2e09d2436e4cfc5eaecab05fffb2f4c8170a7f0876847e0b9e9b71",
+  "accepted_decision_count": 14,
+  "accepted_ready_count": 14,
+  "batch_schema_repair_count": 0,
+  "candidate_generated_count": 14,
+  "candidate_repair_count": 6,
+  "context_ready_count": 14,
+  "contract": "run51-v2-frozen-replay-proof-v1",
+  "context_sha256": "7617db6c7e16165a3cb412223041f175bf144567bfa6d0730b597a0d88926f15",
+  "decision_distribution": {
+    "BUY": 2,
+    "HOLD": 9,
+    "SELL": 3
+  },
+  "message_quality": "PASS",
+  "model_call_reached": true,
+  "not_ready_count": 0,
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "production_send": 0,
+  "raw_candidate_visible": 0,
+  "reasoning_effort": "xhigh",
+  "reasoning_model": "gpt-5.6-sol",
+  "status": "PASS"
+}

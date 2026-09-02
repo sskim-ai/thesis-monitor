@@ -2387,3 +2387,22 @@ Open P0/material P1/P2 are `0/2/0`. The bounded repair must first decouple or sa
 candidate preparation when the local OHLCV dependency is unavailable, then close the separate
 market-context `2000` provenance false positive. Do not repair by replaying run 49, exposing a raw
 candidate, weakening validators, or resending Telegram. Production Assist remains OFF.
+
+## 2026-09-02 Run-51 Three-P1 Repair Handoff
+
+Start with `docs/reports/20260902-three-p1-repair-readiness.md` and the artifact index. Exact
+instruction commit is `ff255fc710a3b86b0496cdedca505a7a4a5323e7`; runtime implementation is
+`16fa1222136b300d900682904f8391ef5c4b482a`.
+
+Run-51 V2 now reaches signed-in Codex xhigh through private claim-scoped runtime state and accepts
+all `14/14` US subjects. The exact daily-review candidate passes all strict gates with 15 messages,
+124 automatic numeric bindings, and no repeat/identity/language errors. KRX night semantics are
+closed, but the provider was genuinely stale: expected `2026-09-02`, returned `2026-09-01`, so
+ready/rendered remains safe `0/0`.
+
+Production-equivalent KR/US is `8/8 + 14/14`; the dedicated sink is `22/22 exact`, duplicate/orphan
+`0/0`, production send/intent `0/0`. Full regression is `2062 passed`; P0/material P1/P2 are
+`0/0/0`. Do not replay run-51 or manually trigger a task. The next action is read-only observation
+of the next ordinary US and KR cycles for natural runtime-state, accepted-decision, daily-review,
+night-futures visibility/safe omission, and exactly-once delivery proof. Production Assist remains
+OFF.

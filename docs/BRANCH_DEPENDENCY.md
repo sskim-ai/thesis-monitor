@@ -586,3 +586,16 @@ storage, exact evidence-owned identifier spans, and validation of adjacent or un
 They may not add a KR/ticker identifier allowlist, weaken generic numeric validation, restore
 launch-CWD dependence, bypass the repaired natural path in tests, manually trigger production, or
 treat the 22-message dedicated-sink proof as natural live evidence.
+
+The run-51 three-P1 repair starts from clean main
+`2a6bbc449d6802490560cb89d83e0d1fc3e88b24`. Exact instruction commit
+`ff255fc710a3b86b0496cdedca505a7a4a5323e7` precedes runtime implementation
+`16fa1222136b300d900682904f8391ef5c4b482a`.
+
+Descendants must preserve private claim-scoped Codex state, owner-safe signed-in auth reference,
+strict daily-review validators, exact-span synchronization, accepted-decision ownership, XKRX
+night-session end-date mapping, and source-limited omission when the provider is stale. They may
+not use world-writable state, root execution, plaintext auth copies, ticker exceptions, relaxed
+quality thresholds, forced night rows, manual production tasks, production Telegram proof, or raw
+recipient values. The dedicated `22/22` sink result is production-equivalent evidence only; the
+next dependency is ordinary natural US/KR observation.

@@ -1,0 +1,25 @@
+{
+  "classification": "SOURCE_LIMITATION_SAFE",
+  "contract": "run51-night-futures-session-proof-v1",
+  "forced_reclassification": 0,
+  "mapping": {
+    "contract": "night-futures-session-date-v2",
+    "krx_regular_business_date": "2026-09-01",
+    "night_session_business_date": "2026-09-02",
+    "observation_time_kst": "2026-09-02 08:20:00+09:00",
+    "provider_date_convention": "completed_session_end_date",
+    "provider_night_bas_dd": "2026-09-02",
+    "session_clock_finality": "COMPLETED_BY_06_00_KST",
+    "ui_session_start_date": "2026-09-01",
+    "us_regular_session_date": "2026-09-01"
+  },
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "provider_dates_returned": [
+    "2026-09-01"
+  ],
+  "provider_semantics": "completed_session_end_date",
+  "ready_count": 0,
+  "rendered_count": 0,
+  "source_sha256": "f6fe14941afb54db7668367b4d32bdb4c40fc07d06d66911c02298416b19d376",
+  "status": "SOURCE_LIMITATION_SAFE"
+}

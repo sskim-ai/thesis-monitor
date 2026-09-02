@@ -1,0 +1,64 @@
+{
+  "actions_implementation_run": 33580859664,
+  "actions_implementation_status": "PASS",
+  "base_sha": "2a6bbc449d6802490560cb89d83e0d1fc3e88b24",
+  "contract": "run51-three-p1-repair-readiness-v1",
+  "daily_review": {
+    "final_language_errors": 0,
+    "identity_prose_mismatches": 0,
+    "numeric_binding_errors": 0,
+    "quality": "PASS",
+    "repeated_substantive_sentences": 0,
+    "schema_errors": 0,
+    "template_skeleton_repeats": 0,
+    "valuation_binding_errors": 0
+  },
+  "implementation_sha": "16fa1222136b300d900682904f8391ef5c4b482a",
+  "night_futures": {
+    "expected_bas_dd": "2026-09-02",
+    "provider_bas_dd": "2026-09-01",
+    "provider_semantics": "PROVEN",
+    "ready_count": 0,
+    "rendered_count": 0,
+    "status": "SOURCE_LIMITATION_SAFE"
+  },
+  "open_material_p1": 0,
+  "open_p0": 0,
+  "open_p2": 0,
+  "regression": {
+    "full_pytest": "2062 passed",
+    "knowledge": "PASS",
+    "operation_ids": "20/20 unique",
+    "public_action": "0.4.5",
+    "ruff": "PASS",
+    "schema": "4"
+  },
+  "runtime_state": {
+    "app_server_probe": "PASS",
+    "contract": "codex-runtime-state-v1",
+    "model_call_reached": true,
+    "plaintext_auth_copy": 0,
+    "preflight": "PASS",
+    "run_as_root": 0,
+    "world_writable_state": 0
+  },
+  "status": "READY_FOR_MAIN",
+  "test_sink": {
+    "continuation_count": 2,
+    "duplicate_count": 0,
+    "exact_count": 22,
+    "initial_count": 20,
+    "kr_count": 8,
+    "orphan_count": 0,
+    "production_intent_created": 0,
+    "production_recipient_send": 0,
+    "us_count": 14
+  },
+  "v2": {
+    "kr_ready": 8,
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "us_ready": 14
+  },
+  "work_instruction_sha": "ff255fc710a3b86b0496cdedca505a7a4a5323e7"
+}

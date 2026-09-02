@@ -2315,3 +2315,29 @@ Open P0/material P1 is `0/0`; the repair passed `READY_FOR_MAIN` and was deploye
 fast-forward through `26004d926247c4ef053e49b74dc8fb9654353199`. Branch/main Actions and API
 health pass. Natural proof is still pending and must come from the next ordinary KR and US cycles
 without a manual task or production resend.
+
+### 40.33 Run-51 Runtime State, Daily Review, and Night-Futures Repair
+
+Exact instruction commit `ff255fc710a3b86b0496cdedca505a7a4a5323e7` precedes runtime
+implementation `16fa1222136b300d900682904f8391ef5c4b482a`. The natural V2 failure is now
+classified correctly as a local pre-model app-server state failure. `codex-runtime-state-v1`
+provides owner-only, claim-scoped `CODEX_HOME`/`CODEX_SQLITE_HOME`, a read-only signed-in auth
+reference, and a real SQLite WAL preflight. The scheduler-context probe and immutable run-51 xhigh
+replay reach the model; accepted-ready and explicit decisions are `14/14`.
+
+The exact rejected daily-review candidate converges from 47 errors to zero with strict schema,
+numeric, valuation, semantic, final-language, and runtime quality gates unchanged. The repair adds
+in-memory legacy scope assignment, numeric-span synchronization, typed canonical repetition
+handling, and depositary-ratio identity precision. Result is 15/15 messages, numeric auto-binding
+`124`, and zero substantive/template repetition.
+
+Official KRX evidence proves that night `BAS_DD` is the completed session end date. XKRX calendar
+mapping expected `2026-09-02`, while the provider returned `2026-09-01`; run-51 therefore remains
+correctly `SOURCE_LIMITATION_SAFE` with ready/rendered `0/0`. No value was forced ready.
+
+Cross-market production-equivalent proof is KR `8/8` plus US `14/14`; the dedicated non-production
+sink received `22/22 exact` through a rate-limit-safe `20 + 2` continuation with zero duplicate,
+orphan, production send, or production intent. Full regression is `2062 passed`; implementation
+Actions Test/Lint pass. Open P0/material P1/P2 are `0/0/0`, and the bounded repair is
+`READY_FOR_MAIN`. This is not natural LIVE_PASS. Wait for the next ordinary US and KR cycles and
+inspect the repaired paths read-only.
