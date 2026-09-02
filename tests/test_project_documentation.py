@@ -102,6 +102,11 @@ DOCUMENTS = (
     / "docs"
     / "architecture"
     / "US_MORNING_NIGHT_FUTURES_REFERENCE_DATE_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "MARKET_PACKET_TEMPORAL_ROLES.md",
+    ROOT / "docs" / "architecture" / "KRX_NIGHT_DAILY_OHLC_SOURCE_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "KRX_NIGHT_HISTORY_STORE.md",
+    ROOT / "docs" / "architecture" / "KRX_NIGHT_DWM_AGGREGATION.md",
+    ROOT / "docs" / "architecture" / "US_MARKET_REAL_YIELD_DELTA_CONTRACT.md",
     ROOT / "docs" / "architecture" / "US_FULL_MESSAGE_REFINEMENT_POLICY.md",
     ROOT / "docs" / "architecture" / "CROSS_MARKET_AI_DECISION_ENGINE.md",
     ROOT / "docs" / "architecture" / "OHLCV_MULTI_TIMEFRAME_FEATURE_ENGINE.md",
@@ -125,6 +130,19 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260902-run51-night-readiness.json",
     ROOT / "docs" / "reports" / "20260902-run51-market-night-replay.json",
     ROOT / "docs" / "reports" / "20260902-night-reference-repair-readiness.json",
+    ROOT
+    / "docs"
+    / "reports"
+    / "20260902-run51-live-path-with-krx-night-artifact-index.md",
+    ROOT
+    / "docs"
+    / "reports"
+    / "20260902-run51-live-path-with-krx-night-proof.json",
+    ROOT / "docs" / "reports" / "20260902-run51-live-path-artifact-index.json",
+    ROOT / "docs" / "reports" / "20260902-run51-live-path-delivery.json",
+    ROOT / "docs" / "reports" / "20260902-krx-night-source-contract.json",
+    ROOT / "docs" / "reports" / "20260902-run51-night-dwm.json",
+    ROOT / "docs" / "reports" / "20260902-run51-real-yield-delta.json",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -145,15 +163,37 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260902-night-futures-previous-xkrx-business-day"
+        "codex/20260902-run51-live-path-krx-night-ohlc-history"
     )
     assert state["current_phase"] == (
-        "night_reference_v3_ready_for_main_awaiting_natural_us_live"
+        "run51_krx_night_controlled_live_path_pass_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
-        "20260902_night_futures_previous_xkrx_business_day_contract_repair"
+        "20260902_run51_live_path_with_krx_night_ohlc_history_dwm_real_yield"
     )
     assert state["next_default_phase"] == "wait_for_next_natural_us_live"
+    live_path_implementation = "4341d352b8402a16dcd66d34504fc39a17acc61b"
+    live_path = state["run51_krx_night_live_path_20260902"]
+    assert live_path["status"] == "PASS_CONTROLLED_TEST_AWAITING_NATURAL_US_LIVE"
+    assert live_path["work_instruction_commit"] == (
+        "999d185a30afd64359bea793a270c9fd29d5e996"
+    )
+    assert live_path["base_commit"] == "d0039e6c84ccb8fd74c743b0ceec033760499229"
+    assert live_path["implementation_commit"] == live_path_implementation
+    assert live_path["run51_reference_date"] == "2026-09-01"
+    assert live_path["historical_backfill_requests_success_failure"] == "21/21/0"
+    assert live_path["normalized_stored_rejected"] == "78/78/216"
+    assert live_path["same_contract_dwm"] == "PASS_2_PRODUCTS"
+    assert live_path["non_night_numeric_selection_diff"] == "0/0"
+    assert live_path["v2_model_effort"] == "gpt-5.6-sol/xhigh"
+    assert live_path["v2_accepted_ready"] == 14
+    assert live_path["test_delivery_sent_acknowledged"] == "15/15"
+    assert live_path["test_delivery_exact_payload"] == "PASS"
+    assert live_path["production_recipient_send"] == 0
+    assert live_path["production_state_mutations"] == 0
+    assert live_path["open_p0"] == 0
+    assert live_path["open_material_p1"] == 0
+    assert live_path["open_p2"] == 2
     run51 = state["run51_three_p1_repair_20260902"]
     assert run51["work_instruction_commit"] == (
         "ff255fc710a3b86b0496cdedca505a7a4a5323e7"
@@ -236,16 +276,13 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == (
-        "ec616105f69aea3ba561ea9a6eea0835801d9a07"
-    )
+    assert state["recorded_base_commit"] == "d0039e6c84ccb8fd74c743b0ceec033760499229"
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    night_reference_implementation = "7efc07bb0a9c635b78bb63ec642b50656b01b0b4"
-    assert state["deployed_code_commit"] == night_reference_implementation
-    assert state["main_code_commit"] == night_reference_implementation
-    assert state["operating_code_commit"] == night_reference_implementation
+    assert state["deployed_code_commit"] == live_path_implementation
+    assert state["main_code_commit"] == live_path_implementation
+    assert state["operating_code_commit"] == live_path_implementation
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1517,7 +1554,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["open_material_p1"] == []
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
-    assert state["current_commit"] == night_reference_implementation
+    assert state["current_commit"] == live_path_implementation
     reality_gate = state["price_structure_major_sr_reality_gate"]
     assert reality_gate["status"] == "deployed_kr_live_pass_us_pending"
     assert reality_gate["instruction_commit"] == ("4a5702823da3f950b9f125bcbcfecd7c6cfa84df")

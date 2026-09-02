@@ -1,0 +1,43 @@
+# Run-51 Live-Path Artifact Index
+
+Indexed `39` report and machine artifacts. Every entry is content-addressed in `20260902-run51-live-path-artifact-index.json`. Raw recipient IDs, tokens, credentials, runtime-state databases, and hidden reasoning are excluded.
+
+- `docs/reports/20260902-krx-night-field-mapping.md` — `111ced8d65c4981db7826a0280cb08e5dd9f55aa0c83e254a7eb048090b277f9`
+- `docs/reports/20260902-krx-night-history-calendar-reconciliation.md` — `8dd3c5e515dc64a2330cc6072a2eb87b843d6f504056752b2b4fe1fbc3704734`
+- `docs/reports/20260902-krx-night-history-store.md` — `bf02c86146b1320aa57d05e73011157442113630a6ef6bf16760cae94e996fb3`
+- `docs/reports/20260902-krx-night-history.json` — `b92a77ce1bcc2692d302b9966ef723db1f4d12517c2bcf7af5c869c6e2792663`
+- `docs/reports/20260902-krx-night-production-integration.md` — `5052607ea7a6788ec7bf008126e84294bdc149e21009b99938532b7cd97fbb62`
+- `docs/reports/20260902-krx-night-raw-preservation.md` — `2e418227ad2d5e16f5aff10ebb9a913589c244bfa6fc154ab0a78fa2a2ee72d7`
+- `docs/reports/20260902-krx-night-source-contract.json` — `d92660a57deb330fcfeeea59e90b77342484b95d14d19e7c448e42f337149d1b`
+- `docs/reports/20260902-krx-night-source-schema-proof.md` — `fb48875825813fecac6603e2803450216783233b923445cdcc95dc53d5881ee1`
+- `docs/reports/20260902-night-contract-roll-partial-period.md` — `603da6d867225e4cd01002390c25e96e13afe3ccc135c237c0ae1dfcd61c4f4c`
+- `docs/reports/20260902-night-near-month-selection.md` — `8e106feb0d7198a8f202a1804dcea1cd0e10e8df0c2ad09c948464358df68252`
+- `docs/reports/20260902-night-same-contract-dwm-contract.md` — `ddd7115a3a6c3aa0c960ad7f7b0c3e682ed77adcf1a639619b88b9ba3c531b8b`
+- `docs/reports/20260902-real-yield-delta-contract.md` — `87342cee4de0b01c2d71165b9ca72994eb1d4ffea1da62d7225f6941d14caa90`
+- `docs/reports/20260902-run51-actual-send-idempotency.md` — `042a16e111bc09247e6fdbd609447aa0684f9e31415dbc2650a0a7b6539faab3`
+- `docs/reports/20260902-run51-actual-send-receipts.md` — `0c323daa9cbdad413de6a9054f5722a338dba18af56820cffd19cb36b06801dd`
+- `docs/reports/20260902-run51-exact-payload.json` — `fd03bfc0874b6f16818605cbdae883e8fa00b98631c17badcc8c2ea1619ccde4`
+- `docs/reports/20260902-run51-exact-payload.md` — `736d1649c29c6ea8437d56a359fe02688c5cfbbc201f0628f5360f280ab49ca1`
+- `docs/reports/20260902-run51-historical-backfill-disclosure.md` — `7a9484995521c21bfa7e56e9f4652585bbb7d4d09c19d163c8eb0dd202e1881d`
+- `docs/reports/20260902-run51-kosdaq150-night-daily.md` — `23e01dfa6a8019689430a5219b5f4685307d1cbe6deedda8ce20e1fa4c9d450d`
+- `docs/reports/20260902-run51-kospi200-night-daily.md` — `947a7de2d292edf2bc92705b82a7647411d1e8072dc757c9571df8ae0b3d6d4d`
+- `docs/reports/20260902-run51-kospi200-screenshot-control.md` — `a73375fdc05d3de920b1fc1943e5f52f3906308c117f9a81c170860867e8aded`
+- `docs/reports/20260902-run51-live-path-delivery.json` — `82916863050cd2dd227be80c9e0841beb2a955f6cd83c33e8b5bf56a9887a8a9`
+- `docs/reports/20260902-run51-live-path-stage-matrix.json` — `0290a2ea39cb51eb2ad433935a0fcba281d5e4b32c4a5c589685117a800f79aa`
+- `docs/reports/20260902-run51-live-path-with-krx-night-proof.json` — `f186ca71cf870f9aaa3ff41ce92ffbf670a59a2bbb20224b58fd364b194be9aa`
+- `docs/reports/20260902-run51-live-path-with-krx-night-proof.md` — `684d67e40b3005c4c24abe880bf1a71efc5602ca912c2a0a344a676065908ec3`
+- `docs/reports/20260902-run51-market-enriched-replay.md` — `c06dc9e7ca2ee9e1ea7d3f7c9bfb8afc87eba9f21d5d999b63309b5a54890f0e`
+- `docs/reports/20260902-run51-market-enriched.json` — `df7386c1796dd58946c31ab6372f57c0adcadcf2feb5204ad34ba63ff2fa586e`
+- `docs/reports/20260902-run51-market-numeric-provenance.md` — `856e4a451c98913eae3515b43417ed6ab41e62caafddf36ed31d0060d880041a`
+- `docs/reports/20260902-run51-night-dwm.json` — `1dd148873502f626723e89bc837efca00cf040dd903d7da5cbafa43975d30e13`
+- `docs/reports/20260902-run51-night-return-provenance.md` — `f1b9941fdf41bcf5415bba6f396cdde83bbaba5bf527d9be76be1f5445071e88`
+- `docs/reports/20260902-run51-night-weekly-monthly.md` — `b958af64351c7fcb0201a1126e165e0db41f73ae356682dd3e6b941491a35cd4`
+- `docs/reports/20260902-run51-pre-send-readiness.json` — `6478b2bbbf7f8d2495b6fc306f9bfb717703ac5e7bb584eb3fea3c7ade02f7c2`
+- `docs/reports/20260902-run51-production-mutation-audit.md` — `b55d5fb8caed8763ec13f0c413f501c7e1be8bbc9b51b02bbad517f081d8abab`
+- `docs/reports/20260902-run51-real-yield-delta.json` — `2a166facbe0ea2a19d60b029c080279d09fb19a01f0bb8438a19aae76810fde7`
+- `docs/reports/20260902-run51-real-yield-observation-pair.md` — `478a30d8d42b7d79097a4480157e8861ac36b1ef44bb1bb2c9a8c8e18f4b0dfc`
+- `docs/reports/20260902-run51-test-recipient-routing.md` — `ea9ddf504ac03bdfe029fc6c59c48167683828aab8e30c31ea39e54f9ba64579`
+- `docs/reports/20260902-run51-v2-accepted-artifact.json` — `3e882f8b87058ee740028abddc375534525d2cd215c3c15c4b46ce03a677c653`
+- `docs/reports/20260902-run51-v2-live-path.json` — `483e75ea4443218b753a4e493bd3850a5cf6e80f950c024b48171305cdf5cd35`
+- `docs/reports/20260902-run51-v2-live-path.md` — `32cbe30b10fb3a2e2197c3feee032879bf2628012c7f9e16abacfc4a3e2293cb`
+- `docs/reports/run51-enriched-market-message.txt` — `0695f6d3bde1117ebb3f08dd56b10d5986fc6b61f8a620bd04b93961632fbce3`

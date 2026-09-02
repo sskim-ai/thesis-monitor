@@ -1,0 +1,29 @@
+{
+  "checks": {
+    "accepted_ready_count_14": true,
+    "artifact_status_pass": true,
+    "context_ready_count_14": true,
+    "logical_identity_unique": true,
+    "market_count_1": true,
+    "message_count_15": true,
+    "message_quality_pass": true,
+    "not_ready_count_0": true,
+    "payload_hashes_valid": true,
+    "production_collision_0": true,
+    "reasoning_effort_xhigh": true,
+    "reasoning_model_exact": true,
+    "stock_count_14": true,
+    "telegram_length_valid": true,
+    "test_sink_available": true,
+    "ticker_scope_exact": true
+  },
+  "contract": "run51-pre-send-atomic-readiness-v1",
+  "market_message_count": 1,
+  "max_character_count": 1575,
+  "message_count": 15,
+  "production_recipient_resolution_disabled": true,
+  "production_sink_alias": "production:7937bea5b823",
+  "status": "PASS",
+  "stock_message_count": 14,
+  "test_sink_alias": "test:6d6e2ff463bf"
+}

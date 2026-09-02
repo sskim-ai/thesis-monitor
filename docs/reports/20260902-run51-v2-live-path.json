@@ -1,0 +1,101 @@
+{
+  "batch_schema_repair_count": 0,
+  "candidate_count": 14,
+  "candidate_repair_count": 4,
+  "context_ready_count": 14,
+  "contract": "run51-v2-live-path-proof-v1",
+  "decisions": [
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:5d87d52cf7efa6c8688e900841a673817e5909996f8fd7f83484279b80b490ff",
+      "decision": "HOLD",
+      "ticker": "CORZ"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:95b9fe02f91cf922fd922370d829145379ad64355a850bd601ffbccf8595b67d",
+      "decision": "HOLD",
+      "ticker": "CPNG"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:b5886cd6b014a398e8b7067207e35fa3c44e23d74f90f4f613132adc1f203172",
+      "decision": "HOLD",
+      "ticker": "CRCL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:f4fe14b407a62626e92e285c2c70c7019de7f365d7c2d0037c159664468a793b",
+      "decision": "HOLD",
+      "ticker": "GOOGL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:d309c32e19f34e313585a1195a929bae65e9b0d5a4e7d9411712a24919dbd432",
+      "decision": "SELL",
+      "ticker": "HUT"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:ebbb4874fc4584a1ec441b25fcced10acf2b023e353b73f05380bc20cffafb54",
+      "decision": "HOLD",
+      "ticker": "IBM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:9a8da1f7654b37d869016f4fa99e384adedb54c584a44758839e5e5cda3e882a",
+      "decision": "HOLD",
+      "ticker": "MU"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:924496d209d4a55be962a5210ff8ddc555b940402488f339c31300e7747955f3",
+      "decision": "HOLD",
+      "ticker": "RXRX"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:cd7374596d30c2d279302289521cd2308ec8bf328cad350c7503218912dbd2bc",
+      "decision": "HOLD",
+      "ticker": "SKHY"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:3915ba0743320efe429b3650614680c6b9549475acd000e785afc55a2d27e560",
+      "decision": "HOLD",
+      "ticker": "SNDK"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:378769fde9d141a0b7207b8e4d7489e7e79c6e3d9aebba0ebb7b6677e719b6d2",
+      "decision": "SELL",
+      "ticker": "TSLA"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:10c748676ebbf4acfa0d8bfafb6ede5a8a21d694c71fc1fbf0e56dc9767d47fc",
+      "decision": "HOLD",
+      "ticker": "TSM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:63acf379eca251f43a9dcc1a36a3ea0bd3d8c995da6dd5e8fac57adb9151fb6b",
+      "decision": "HOLD",
+      "ticker": "WRD"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:67285a7b93dd14935fe30652ffb12eb79e345f1b187e1a5fb057bc2805dbed9d",
+      "decision": "SELL",
+      "ticker": "WULF"
+    }
+  ],
+  "distribution": {
+    "BUY": 0,
+    "HOLD": 11,
+    "SELL": 3
+  },
+  "fallback_count": 0,
+  "message_quality": {
+    "contract": "v2-accepted-production-message-quality-v1",
+    "errors": [],
+    "manual_numeric_count": 0,
+    "message_count": 14,
+    "numeric_claim_count": 0,
+    "repeated_substantive_span_count": 0,
+    "status": "PASS",
+    "unresolved_numeric_count": 0
+  },
+  "model": "gpt-5.6-sol",
+  "not_ready_count": 0,
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "ready_count": 14,
+  "reasoning_effort": "xhigh",
+  "status": "PASS"
+}

@@ -1,0 +1,365 @@
+{
+  "contract": "krx-night-same-contract-dwm-v1",
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "products": {
+    "KOSDAQ150": {
+      "contract": "krx-night-same-contract-dwm-v1",
+      "contract_code": "A0669000",
+      "contract_maturity": "2026-09",
+      "daily": {
+        "aggregation_start_date": "2026-09-01",
+        "bar_start_date": "2026-09-01",
+        "change_value": -7.3,
+        "close": 1432.8,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0669000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-09-01"
+        ],
+        "fact_id": "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+        "future_expected_dates": [],
+        "high": 1447.0,
+        "included_dates": [
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSDAQ150",
+        "low": 1415.5,
+        "missing_dates": [],
+        "open": 1440.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1440.1,
+        "return_baseline_date": "2026-08-31",
+        "return_baseline_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+        "return_pct": -0.50690924,
+        "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+        ],
+        "source_raw_sha256": [
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "FINAL",
+        "timeframe": "DAILY"
+      },
+      "instrument_root": "KOSDAQ150",
+      "monthly": {
+        "aggregation_start_date": "2026-09-01",
+        "bar_start_date": "2026-09-01",
+        "change_value": -14.0,
+        "close": 1432.8,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0669000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-07",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30"
+        ],
+        "fact_id": "market:night_futures:monthly:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+        "future_expected_dates": [
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-07",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30"
+        ],
+        "high": 1447.0,
+        "included_dates": [
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSDAQ150",
+        "low": 1415.5,
+        "missing_dates": [],
+        "open": 1440.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1446.8,
+        "return_baseline_date": "2026-08-31",
+        "return_baseline_semantic": "previous_completed_same_contract_monthly_close",
+        "return_pct": -0.9676527508985348,
+        "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+        ],
+        "source_raw_sha256": [
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "IN_PROGRESS",
+        "timeframe": "MONTHLY"
+      },
+      "reference_date": "2026-09-01",
+      "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+      "weekly": {
+        "aggregation_start_date": "2026-08-31",
+        "bar_start_date": "2026-08-31",
+        "change_value": -44.100000000000136,
+        "close": 1432.8,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0669000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "fact_id": "market:night_futures:weekly:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+        "future_expected_dates": [
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "high": 1476.3,
+        "included_dates": [
+          "2026-08-31",
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSDAQ150",
+        "low": 1415.5,
+        "missing_dates": [],
+        "open": 1456.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1476.9,
+        "return_baseline_date": "2026-08-28",
+        "return_baseline_semantic": "previous_completed_same_contract_weekly_close",
+        "return_pct": -2.9859841560024467,
+        "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-08-31",
+          "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "8ac5644db4e81933ca334cee6cfdfc42a5e863d41f098e5464eb9bb40ad374ae",
+          "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+        ],
+        "source_raw_sha256": [
+          "e996ba90366370a95ab9315dffe074676f426426bbfab27fadd6d6d84a9d46e7",
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "IN_PROGRESS",
+        "timeframe": "WEEKLY"
+      }
+    },
+    "KOSPI200": {
+      "contract": "krx-night-same-contract-dwm-v1",
+      "contract_code": "A0169000",
+      "contract_maturity": "2026-09",
+      "daily": {
+        "aggregation_start_date": "2026-09-01",
+        "bar_start_date": "2026-09-01",
+        "change_value": -3.35,
+        "close": 1064.5,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0169000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-09-01"
+        ],
+        "fact_id": "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+        "future_expected_dates": [],
+        "high": 1072.45,
+        "included_dates": [
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSPI200",
+        "low": 1053.8,
+        "missing_dates": [],
+        "open": 1067.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1067.85,
+        "return_baseline_date": "2026-08-31",
+        "return_baseline_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+        "return_pct": -0.31371447,
+        "series_code": "KRX_KOSPI200_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+        ],
+        "source_raw_sha256": [
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "FINAL",
+        "timeframe": "DAILY"
+      },
+      "instrument_root": "KOSPI200",
+      "monthly": {
+        "aggregation_start_date": "2026-09-01",
+        "bar_start_date": "2026-09-01",
+        "change_value": 0.2999999999999545,
+        "close": 1064.5,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0169000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-07",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30"
+        ],
+        "fact_id": "market:night_futures:monthly:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+        "future_expected_dates": [
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04",
+          "2026-09-07",
+          "2026-09-08",
+          "2026-09-09",
+          "2026-09-10",
+          "2026-09-11",
+          "2026-09-14",
+          "2026-09-15",
+          "2026-09-16",
+          "2026-09-17",
+          "2026-09-18",
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-09-29",
+          "2026-09-30"
+        ],
+        "high": 1072.45,
+        "included_dates": [
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSPI200",
+        "low": 1053.8,
+        "missing_dates": [],
+        "open": 1067.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1064.2,
+        "return_baseline_date": "2026-08-31",
+        "return_baseline_semantic": "previous_completed_same_contract_monthly_close",
+        "return_pct": 0.028190189813940475,
+        "series_code": "KRX_KOSPI200_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+        ],
+        "source_raw_sha256": [
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "IN_PROGRESS",
+        "timeframe": "MONTHLY"
+      },
+      "reference_date": "2026-09-01",
+      "series_code": "KRX_KOSPI200_NIGHT_FUT",
+      "weekly": {
+        "aggregation_start_date": "2026-08-31",
+        "bar_start_date": "2026-08-31",
+        "change_value": -17.34999999999991,
+        "close": 1064.5,
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0169000",
+        "contract_maturity": "2026-09",
+        "expected_dates": [
+          "2026-08-31",
+          "2026-09-01",
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "fact_id": "market:night_futures:weekly:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+        "future_expected_dates": [
+          "2026-09-02",
+          "2026-09-03",
+          "2026-09-04"
+        ],
+        "high": 1086.3,
+        "included_dates": [
+          "2026-08-31",
+          "2026-09-01"
+        ],
+        "instrument_root": "KOSPI200",
+        "low": 1053.8,
+        "missing_dates": [],
+        "open": 1068.0,
+        "quality": "VALID",
+        "reference_date": "2026-09-01",
+        "return_baseline_close": 1081.85,
+        "return_baseline_date": "2026-08-28",
+        "return_baseline_semantic": "previous_completed_same_contract_weekly_close",
+        "return_pct": -1.6037343439478589,
+        "series_code": "KRX_KOSPI200_NIGHT_FUT",
+        "source_fact_ids": [
+          "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-08-31",
+          "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+        ],
+        "source_fingerprints": [
+          "85eab30bb38ef2e5561e1569c9986680398b9d56246a4128d87902a4e7badbda",
+          "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+        ],
+        "source_raw_sha256": [
+          "e996ba90366370a95ab9315dffe074676f426426bbfab27fadd6d6d84a9d46e7",
+          "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+        ],
+        "status": "IN_PROGRESS",
+        "timeframe": "WEEKLY"
+      }
+    }
+  },
+  "reference_date": "2026-09-01"
+}

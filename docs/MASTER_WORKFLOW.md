@@ -2359,3 +2359,30 @@ remains `8/8 + 14/14`. Full regression is `2077 passed`; implementation Actions 
 Open P0/material P1/P2 are `0/0/0`. The next dependency is the next ordinary US morning cycle,
 reviewed read-only. Do not manually run a task, resend production, expose recipient values, or treat
 retrospective replay as natural proof. Production Assist remains OFF.
+
+### 40.35 Run-51 Official KRX Night OHLC History and Controlled Live Path
+
+Exact instruction commit `999d185a30afd64359bea793a270c9fd29d5e996` precedes implementation
+`4341d352b8402a16dcd66d34504fc39a17acc61b` on operating base
+`d0039e6c84ccb8fd74c743b0ceec033760499229`. Official KRX `fut_bydd_trd` now owns NIGHT daily
+OHLC raw preservation, normalized contract/date/session identity, data-driven near-month selection,
+and same-contract daily/weekly/monthly aggregation. Current week and month remain `IN_PROGRESS`;
+contract roll is partial rather than spliced.
+
+Run-51 binds to `2026-09-01`. KOSPI200 official daily O/H/L/C is
+`1067.00/1072.45/1053.80/1064.50`; KOSDAQ150 is
+`1440.00/1447.00/1415.50/1432.80`. The visual KOSPI200 screenshot is `NOT_COMPARABLE` because its
+provider/session/chart convention is unverified; official KRX remains machine authority. A bounded
+TEST/HISTORICAL backfill made `21/21` official requests, stored `78` valid bars, recorded `216`
+rejections without repair, used no post-cutoff date, and did not mutate the frozen packet.
+
+The US 10Y real-yield pair is `2.44%` on `2026-08-31` versus `2.42%` on `2026-08-28`, rendered as
+`+0.02%p (+2bp)`. Non-night market numeric and selection diff are `0/0`. Signed-in Codex CLI
+`gpt-5.6-sol / xhigh` produced `14/14 READY` with HOLD/SELL `11/3`, fallback `0`, and strict quality
+PASS. The atomic TEST-only delivery sent and acknowledged `15/15` exact payloads with zero retry,
+duplicate, orphan, production-recipient send, or production-state mutation.
+
+Open P0/material P1/P2 are `0/0/2`; the P2 items are screenshot convention reconciliation and
+optional rejection-report presentation polish. `RUN51_KRX_NIGHT_LIVE_PATH_ACTUAL_SEND = PASS`, but
+this controlled TEST proof is not natural LIVE_PASS. The next dependency remains the next ordinary
+US morning cycle, reviewed read-only. Production Assist remains OFF.

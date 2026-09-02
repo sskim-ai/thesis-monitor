@@ -1,0 +1,78 @@
+{
+  "contracts": {
+    "daily": "krx-night-daily-ohlc-v1",
+    "raw_receipt": "krx-night-raw-response-receipt-v1"
+  },
+  "endpoint": "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd",
+  "field_mapping": {
+    "close": "TDD_CLSPRC",
+    "contract": "ISU_CD + ISU_NM maturity",
+    "date": "BAS_DD",
+    "high": "TDD_HGPRC",
+    "instrument_root": "PROD_NM + ISU_NM",
+    "low": "TDD_LWPRC",
+    "official_change": "CMPPREVDD_PRC",
+    "open": "TDD_OPNPRC",
+    "session": "MKT_NM",
+    "volume": "ACC_TRDVOL"
+  },
+  "field_names": [
+    "ACC_OPNINT_QTY",
+    "ACC_TRDVAL",
+    "ACC_TRDVOL",
+    "BAS_DD",
+    "CMPPREVDD_PRC",
+    "ISU_CD",
+    "ISU_NM",
+    "MKT_NM",
+    "PROD_NM",
+    "SETL_PRC",
+    "SPOT_PRC",
+    "TDD_CLSPRC",
+    "TDD_HGPRC",
+    "TDD_LWPRC",
+    "TDD_OPNPRC"
+  ],
+  "query_date": "2026-09-01",
+  "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881",
+  "raw_relative_path": "raw/2026/09/01/485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881.json",
+  "raw_size_bytes": 120255,
+  "row_count": 385,
+  "selected_exact_rows": [
+    {
+      "ACC_OPNINT_QTY": "421415",
+      "ACC_TRDVAL": "26998089000",
+      "ACC_TRDVOL": "1885",
+      "BAS_DD": "20260901",
+      "CMPPREVDD_PRC": "-7.30",
+      "ISU_CD": "A0669000",
+      "ISU_NM": "코스닥150 F 202609 (야간)",
+      "MKT_NM": "야간",
+      "PROD_NM": "코스닥150 선물",
+      "SETL_PRC": "",
+      "SPOT_PRC": "1410.05",
+      "TDD_CLSPRC": "1432.80",
+      "TDD_HGPRC": "1447.00",
+      "TDD_LWPRC": "1415.50",
+      "TDD_OPNPRC": "1440.00"
+    },
+    {
+      "ACC_OPNINT_QTY": "156205",
+      "ACC_TRDVAL": "5945663975000",
+      "ACC_TRDVOL": "22349",
+      "BAS_DD": "20260901",
+      "CMPPREVDD_PRC": "-3.35",
+      "ISU_CD": "A0169000",
+      "ISU_NM": "코스피200 F 202609 (야간)",
+      "MKT_NM": "야간",
+      "PROD_NM": "코스피200 선물",
+      "SETL_PRC": "",
+      "SPOT_PRC": "1075.30",
+      "TDD_CLSPRC": "1064.50",
+      "TDD_HGPRC": "1072.45",
+      "TDD_LWPRC": "1053.80",
+      "TDD_OPNPRC": "1067.00"
+    }
+  ],
+  "service": "fut_bydd_trd"
+}

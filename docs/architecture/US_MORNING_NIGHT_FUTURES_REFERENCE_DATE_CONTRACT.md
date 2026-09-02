@@ -29,3 +29,7 @@ expected reference date forward.
 The contract is scoped to the US morning production gate and its read-only
 publication observer. Other XKRX publication roles retain their own explicit
 date contracts.
+
+Run-51 therefore binds to `2026-09-01`. Its daily comparison remains completed NIGHT close versus
+the immediately preceding regular-day close. Contract month is identity metadata and must never be
+presented as the monthly analytical timeframe.

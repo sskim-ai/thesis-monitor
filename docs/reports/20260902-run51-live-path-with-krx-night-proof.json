@@ -1,0 +1,606 @@
+{
+  "contract": "run51-krx-night-live-path-evidence-v1",
+  "delivery": {
+    "acknowledged_message_count": 15,
+    "acknowledged_message_resend": 0,
+    "duplicate_count": 0,
+    "exact_payload_match": true,
+    "orphan_count": 0,
+    "planned_message_count": 15,
+    "production_recipient_send": 0,
+    "production_state_mutations": 0,
+    "sent_message_count": 15,
+    "status": "PASS",
+    "unowned_retry_count": 0
+  },
+  "dwm": {
+    "contract": "krx-night-same-contract-dwm-v1",
+    "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+    "products": {
+      "KOSDAQ150": {
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0669000",
+        "contract_maturity": "2026-09",
+        "daily": {
+          "aggregation_start_date": "2026-09-01",
+          "bar_start_date": "2026-09-01",
+          "change_value": -7.3,
+          "close": 1432.8,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0669000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-09-01"
+          ],
+          "fact_id": "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+          "future_expected_dates": [],
+          "high": 1447.0,
+          "included_dates": [
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSDAQ150",
+          "low": 1415.5,
+          "missing_dates": [],
+          "open": 1440.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1440.1,
+          "return_baseline_date": "2026-08-31",
+          "return_baseline_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+          "return_pct": -0.50690924,
+          "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+          ],
+          "source_raw_sha256": [
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "FINAL",
+          "timeframe": "DAILY"
+        },
+        "instrument_root": "KOSDAQ150",
+        "monthly": {
+          "aggregation_start_date": "2026-09-01",
+          "bar_start_date": "2026-09-01",
+          "change_value": -14.0,
+          "close": 1432.8,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0669000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "fact_id": "market:night_futures:monthly:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+          "future_expected_dates": [
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "high": 1447.0,
+          "included_dates": [
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSDAQ150",
+          "low": 1415.5,
+          "missing_dates": [],
+          "open": 1440.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1446.8,
+          "return_baseline_date": "2026-08-31",
+          "return_baseline_semantic": "previous_completed_same_contract_monthly_close",
+          "return_pct": -0.9676527508985348,
+          "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+          ],
+          "source_raw_sha256": [
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "IN_PROGRESS",
+          "timeframe": "MONTHLY"
+        },
+        "reference_date": "2026-09-01",
+        "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+        "weekly": {
+          "aggregation_start_date": "2026-08-31",
+          "bar_start_date": "2026-08-31",
+          "change_value": -44.100000000000136,
+          "close": 1432.8,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0669000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04"
+          ],
+          "fact_id": "market:night_futures:weekly:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01",
+          "future_expected_dates": [
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04"
+          ],
+          "high": 1476.3,
+          "included_dates": [
+            "2026-08-31",
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSDAQ150",
+          "low": 1415.5,
+          "missing_dates": [],
+          "open": 1456.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1476.9,
+          "return_baseline_date": "2026-08-28",
+          "return_baseline_semantic": "previous_completed_same_contract_weekly_close",
+          "return_pct": -2.9859841560024467,
+          "series_code": "KRX_KOSDAQ150_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-08-31",
+            "market:night_futures:daily:KRX_KOSDAQ150_NIGHT_FUT:A0669000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "8ac5644db4e81933ca334cee6cfdfc42a5e863d41f098e5464eb9bb40ad374ae",
+            "02de2670aec86c6dc1f3eef97ca29a9e7297bc9902c441c4af75daa97ce80567"
+          ],
+          "source_raw_sha256": [
+            "e996ba90366370a95ab9315dffe074676f426426bbfab27fadd6d6d84a9d46e7",
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "IN_PROGRESS",
+          "timeframe": "WEEKLY"
+        }
+      },
+      "KOSPI200": {
+        "contract": "krx-night-same-contract-dwm-v1",
+        "contract_code": "A0169000",
+        "contract_maturity": "2026-09",
+        "daily": {
+          "aggregation_start_date": "2026-09-01",
+          "bar_start_date": "2026-09-01",
+          "change_value": -3.35,
+          "close": 1064.5,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0169000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-09-01"
+          ],
+          "fact_id": "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+          "future_expected_dates": [],
+          "high": 1072.45,
+          "included_dates": [
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSPI200",
+          "low": 1053.8,
+          "missing_dates": [],
+          "open": 1067.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1067.85,
+          "return_baseline_date": "2026-08-31",
+          "return_baseline_semantic": "completed_night_close_minus_immediately_preceding_day_close",
+          "return_pct": -0.31371447,
+          "series_code": "KRX_KOSPI200_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+          ],
+          "source_raw_sha256": [
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "FINAL",
+          "timeframe": "DAILY"
+        },
+        "instrument_root": "KOSPI200",
+        "monthly": {
+          "aggregation_start_date": "2026-09-01",
+          "bar_start_date": "2026-09-01",
+          "change_value": 0.2999999999999545,
+          "close": 1064.5,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0169000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "fact_id": "market:night_futures:monthly:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+          "future_expected_dates": [
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04",
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-09",
+            "2026-09-10",
+            "2026-09-11",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-16",
+            "2026-09-17",
+            "2026-09-18",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-09-23",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30"
+          ],
+          "high": 1072.45,
+          "included_dates": [
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSPI200",
+          "low": 1053.8,
+          "missing_dates": [],
+          "open": 1067.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1064.2,
+          "return_baseline_date": "2026-08-31",
+          "return_baseline_semantic": "previous_completed_same_contract_monthly_close",
+          "return_pct": 0.028190189813940475,
+          "series_code": "KRX_KOSPI200_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+          ],
+          "source_raw_sha256": [
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "IN_PROGRESS",
+          "timeframe": "MONTHLY"
+        },
+        "reference_date": "2026-09-01",
+        "series_code": "KRX_KOSPI200_NIGHT_FUT",
+        "weekly": {
+          "aggregation_start_date": "2026-08-31",
+          "bar_start_date": "2026-08-31",
+          "change_value": -17.34999999999991,
+          "close": 1064.5,
+          "contract": "krx-night-same-contract-dwm-v1",
+          "contract_code": "A0169000",
+          "contract_maturity": "2026-09",
+          "expected_dates": [
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04"
+          ],
+          "fact_id": "market:night_futures:weekly:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01",
+          "future_expected_dates": [
+            "2026-09-02",
+            "2026-09-03",
+            "2026-09-04"
+          ],
+          "high": 1086.3,
+          "included_dates": [
+            "2026-08-31",
+            "2026-09-01"
+          ],
+          "instrument_root": "KOSPI200",
+          "low": 1053.8,
+          "missing_dates": [],
+          "open": 1068.0,
+          "quality": "VALID",
+          "reference_date": "2026-09-01",
+          "return_baseline_close": 1081.85,
+          "return_baseline_date": "2026-08-28",
+          "return_baseline_semantic": "previous_completed_same_contract_weekly_close",
+          "return_pct": -1.6037343439478589,
+          "series_code": "KRX_KOSPI200_NIGHT_FUT",
+          "source_fact_ids": [
+            "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-08-31",
+            "market:night_futures:daily:KRX_KOSPI200_NIGHT_FUT:A0169000:2026-09-01"
+          ],
+          "source_fingerprints": [
+            "85eab30bb38ef2e5561e1569c9986680398b9d56246a4128d87902a4e7badbda",
+            "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+          ],
+          "source_raw_sha256": [
+            "e996ba90366370a95ab9315dffe074676f426426bbfab27fadd6d6d84a9d46e7",
+            "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881"
+          ],
+          "status": "IN_PROGRESS",
+          "timeframe": "WEEKLY"
+        }
+      }
+    },
+    "reference_date": "2026-09-01"
+  },
+  "gates": {
+    "natural_us_live_status": "STILL_AWAITING_NEXT_SCHEDULED_RUN",
+    "open_material_p1": 0,
+    "open_p0": 0,
+    "open_p2": 2,
+    "run51_krx_night_live_path_actual_send": "PASS"
+  },
+  "history_summary": {
+    "cache_hit_count": 0,
+    "failure_count": 0,
+    "normalized_bar_count": 78,
+    "rejection_count": 216,
+    "request_count": 21,
+    "stored_bar_count": 78,
+    "success_count": 21
+  },
+  "market": {
+    "non_night_market_numeric_diff": 0,
+    "non_night_market_selection_diff": 0,
+    "numeric_registry_unsupported": [],
+    "quality": "PASS",
+    "status": "PASS"
+  },
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "real_yield": {
+    "contract": "us-market-real-yield-observation-pair-v1",
+    "current": 2.44,
+    "current_date": "2026-08-31",
+    "delta_bp": 2.0,
+    "delta_is_percentage_return": false,
+    "delta_pp": 0.02,
+    "fact_id": "market:real_yield:DFII10",
+    "previous": 2.42,
+    "previous_date": "2026-08-28",
+    "rendered_claim": "미 10년 실질금리 2.44% (08/31 관측) · 직전 2.42% (08/28) 대비 +0.02%p (+2bp)",
+    "rounding_contract": "delta_pp_times_100_equals_delta_bp",
+    "same_day_label_used": false
+  },
+  "reference_date": "2026-09-01",
+  "repository": {
+    "base_sha": "d0039e6c84ccb8fd74c743b0ceec033760499229",
+    "branch": "codex/20260902-run51-live-path-krx-night-ohlc-history",
+    "implementation_sha": "4341d352b8402a16dcd66d34504fc39a17acc61b",
+    "work_instruction_commit": "999d185a30afd64359bea793a270c9fd29d5e996"
+  },
+  "source": {
+    "contracts": {
+      "daily": "krx-night-daily-ohlc-v1",
+      "raw_receipt": "krx-night-raw-response-receipt-v1"
+    },
+    "endpoint": "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd",
+    "field_mapping": {
+      "close": "TDD_CLSPRC",
+      "contract": "ISU_CD + ISU_NM maturity",
+      "date": "BAS_DD",
+      "high": "TDD_HGPRC",
+      "instrument_root": "PROD_NM + ISU_NM",
+      "low": "TDD_LWPRC",
+      "official_change": "CMPPREVDD_PRC",
+      "open": "TDD_OPNPRC",
+      "session": "MKT_NM",
+      "volume": "ACC_TRDVOL"
+    },
+    "field_names": [
+      "ACC_OPNINT_QTY",
+      "ACC_TRDVAL",
+      "ACC_TRDVOL",
+      "BAS_DD",
+      "CMPPREVDD_PRC",
+      "ISU_CD",
+      "ISU_NM",
+      "MKT_NM",
+      "PROD_NM",
+      "SETL_PRC",
+      "SPOT_PRC",
+      "TDD_CLSPRC",
+      "TDD_HGPRC",
+      "TDD_LWPRC",
+      "TDD_OPNPRC"
+    ],
+    "query_date": "2026-09-01",
+    "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881",
+    "raw_relative_path": "raw/2026/09/01/485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881.json",
+    "raw_size_bytes": 120255,
+    "row_count": 385,
+    "selected_exact_rows": [
+      {
+        "ACC_OPNINT_QTY": "421415",
+        "ACC_TRDVAL": "26998089000",
+        "ACC_TRDVOL": "1885",
+        "BAS_DD": "20260901",
+        "CMPPREVDD_PRC": "-7.30",
+        "ISU_CD": "A0669000",
+        "ISU_NM": "코스닥150 F 202609 (야간)",
+        "MKT_NM": "야간",
+        "PROD_NM": "코스닥150 선물",
+        "SETL_PRC": "",
+        "SPOT_PRC": "1410.05",
+        "TDD_CLSPRC": "1432.80",
+        "TDD_HGPRC": "1447.00",
+        "TDD_LWPRC": "1415.50",
+        "TDD_OPNPRC": "1440.00"
+      },
+      {
+        "ACC_OPNINT_QTY": "156205",
+        "ACC_TRDVAL": "5945663975000",
+        "ACC_TRDVOL": "22349",
+        "BAS_DD": "20260901",
+        "CMPPREVDD_PRC": "-3.35",
+        "ISU_CD": "A0169000",
+        "ISU_NM": "코스피200 F 202609 (야간)",
+        "MKT_NM": "야간",
+        "PROD_NM": "코스피200 선물",
+        "SETL_PRC": "",
+        "SPOT_PRC": "1075.30",
+        "TDD_CLSPRC": "1064.50",
+        "TDD_HGPRC": "1072.45",
+        "TDD_LWPRC": "1053.80",
+        "TDD_OPNPRC": "1067.00"
+      }
+    ],
+    "service": "fut_bydd_trd"
+  },
+  "status": "PASS",
+  "v2": {
+    "batch_schema_repair_count": 0,
+    "candidate_count": 14,
+    "candidate_repair_count": 4,
+    "context_ready_count": 14,
+    "contract": "run51-v2-live-path-proof-v1",
+    "decisions": [
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:5d87d52cf7efa6c8688e900841a673817e5909996f8fd7f83484279b80b490ff",
+        "decision": "HOLD",
+        "ticker": "CORZ"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:95b9fe02f91cf922fd922370d829145379ad64355a850bd601ffbccf8595b67d",
+        "decision": "HOLD",
+        "ticker": "CPNG"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:b5886cd6b014a398e8b7067207e35fa3c44e23d74f90f4f613132adc1f203172",
+        "decision": "HOLD",
+        "ticker": "CRCL"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:f4fe14b407a62626e92e285c2c70c7019de7f365d7c2d0037c159664468a793b",
+        "decision": "HOLD",
+        "ticker": "GOOGL"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:d309c32e19f34e313585a1195a929bae65e9b0d5a4e7d9411712a24919dbd432",
+        "decision": "SELL",
+        "ticker": "HUT"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:ebbb4874fc4584a1ec441b25fcced10acf2b023e353b73f05380bc20cffafb54",
+        "decision": "HOLD",
+        "ticker": "IBM"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:9a8da1f7654b37d869016f4fa99e384adedb54c584a44758839e5e5cda3e882a",
+        "decision": "HOLD",
+        "ticker": "MU"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:924496d209d4a55be962a5210ff8ddc555b940402488f339c31300e7747955f3",
+        "decision": "HOLD",
+        "ticker": "RXRX"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:cd7374596d30c2d279302289521cd2308ec8bf328cad350c7503218912dbd2bc",
+        "decision": "HOLD",
+        "ticker": "SKHY"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:3915ba0743320efe429b3650614680c6b9549475acd000e785afc55a2d27e560",
+        "decision": "HOLD",
+        "ticker": "SNDK"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:378769fde9d141a0b7207b8e4d7489e7e79c6e3d9aebba0ebb7b6677e719b6d2",
+        "decision": "SELL",
+        "ticker": "TSLA"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:10c748676ebbf4acfa0d8bfafb6ede5a8a21d694c71fc1fbf0e56dc9767d47fc",
+        "decision": "HOLD",
+        "ticker": "TSM"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:63acf379eca251f43a9dcc1a36a3ea0bd3d8c995da6dd5e8fac57adb9151fb6b",
+        "decision": "HOLD",
+        "ticker": "WRD"
+      },
+      {
+        "accepted_decision_id": "v2-accepted-decision:sha256:67285a7b93dd14935fe30652ffb12eb79e345f1b187e1a5fb057bc2805dbed9d",
+        "decision": "SELL",
+        "ticker": "WULF"
+      }
+    ],
+    "distribution": {
+      "BUY": 0,
+      "HOLD": 11,
+      "SELL": 3
+    },
+    "fallback_count": 0,
+    "message_quality": {
+      "contract": "v2-accepted-production-message-quality-v1",
+      "errors": [],
+      "manual_numeric_count": 0,
+      "message_count": 14,
+      "numeric_claim_count": 0,
+      "repeated_substantive_span_count": 0,
+      "status": "PASS",
+      "unresolved_numeric_count": 0
+    },
+    "model": "gpt-5.6-sol",
+    "not_ready_count": 0,
+    "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+    "ready_count": 14,
+    "reasoning_effort": "xhigh",
+    "status": "PASS"
+  }
+}

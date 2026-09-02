@@ -1,5 +1,31 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-02 Run-51 KRX Night OHLC Live-Path Handoff
+
+Start with `docs/reports/20260902-run51-live-path-with-krx-night-proof.json` and the Run-51 artifact
+index. Exact work instructions were committed first as
+`999d185a30afd64359bea793a270c9fd29d5e996`; implementation is
+`4341d352b8402a16dcd66d34504fc39a17acc61b` on base
+`d0039e6c84ccb8fd74c743b0ceec033760499229`.
+
+Official KRX `fut_bydd_trd` NIGHT rows now preserve raw bytes and produce contract/date/session keyed
+daily OHLC history. Same-contract D/W/M aggregation is data-driven, never splices contracts, and
+labels current week/month `IN_PROGRESS`. Run-51 official daily bars are KOSPI200
+`1067.00/1072.45/1053.80/1064.50` and KOSDAQ150
+`1440.00/1447.00/1415.50/1432.80`. The provided screenshot is `NOT_COMPARABLE`; do not replace
+official KRX with its unverified chart convention.
+
+Real yield renders the exact dated pair `2.44% (08/31)` versus `2.42% (08/28)`, `+0.02%p (+2bp)`.
+The frozen non-night market diff is `0/0`. Signed-in `gpt-5.6-sol / xhigh` is READY `14/14` with
+HOLD/SELL `11/3`; schema repair `0`, bounded candidate repair `4`, fallback `0`. The dedicated TEST
+sink received market `1` plus stocks `14` exactly, with zero retry, duplicate, orphan, production
+send, or production mutation. Raw recipient IDs are absent from reports and bundle.
+
+Open P0/material P1/P2 are `0/0/2`. The controlled proof is PASS but not natural LIVE_PASS. Next
+action is `WAIT_FOR_NEXT_NATURAL_US_LIVE`: inspect the ordinary scheduled packet, KRX incremental
+history/DWM, real-yield pair, V2 accepted count, exact payload, and delivery read-only. Do not run a
+manual task or production resend. Production Assist remains OFF.
+
 ## 2026-09-01 V2 Natural CLI Path and Product-Identifier Handoff
 
 Start with `docs/reports/20260901-v2-runtime-repair-readiness.json` and

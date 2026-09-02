@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+Latest authoritative controlled proof is the 2026-09-02 Run-51 official KRX NIGHT OHLC history,
+same-contract D/W/M, real-yield pair, and TEST-only live path. Read
+`docs/reports/20260902-run51-live-path-with-krx-night-proof.json` and
+`docs/reports/20260902-run51-live-path-with-krx-night-artifact-index.md` first. Exact instruction
+commit is `999d185a30afd64359bea793a270c9fd29d5e996`; implementation is
+`4341d352b8402a16dcd66d34504fc39a17acc61b` on base
+`d0039e6c84ccb8fd74c743b0ceec033760499229`.
+
+Run-51 source/history/DWM, dated real-yield delta, market replay, signed-in xhigh V2 `14/14`, atomic
+gate, and actual dedicated TEST delivery `15/15 exact` pass. Production sends and production-state
+mutations are zero. Open P0/material P1/P2 are `0/0/2`; screenshot convention reconciliation and
+optional rejection-report polish do not block natural observation.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Inspect only the ordinary scheduled US morning run for
+incremental KRX history, correct D/W/M finality, dated real-yield pair, V2 candidate/accepted count,
+fallback, exact payload, and exactly-once delivery. Do not manually run a Scheduled Task, resend a
+production message, expose recipient values, or enable Production Assist.
+
+---
+
 Latest authoritative repair is the 2026-09-02 previous-XKRX night-reference contract. Read
 `docs/reports/20260902-night-reference-repair-readiness.json`, the contract, run-51 readiness,
 renderer replay, parity, live guard, and artifact index first. Exact instruction commit is

@@ -1,0 +1,14 @@
+{
+  "contract": "us-market-real-yield-observation-pair-v1",
+  "current": 2.44,
+  "current_date": "2026-08-31",
+  "delta_bp": 2.0,
+  "delta_is_percentage_return": false,
+  "delta_pp": 0.02,
+  "fact_id": "market:real_yield:DFII10",
+  "previous": 2.42,
+  "previous_date": "2026-08-28",
+  "rendered_claim": "미 10년 실질금리 2.44% (08/31 관측) · 직전 2.42% (08/28) 대비 +0.02%p (+2bp)",
+  "rounding_contract": "delta_pp_times_100_equals_delta_bp",
+  "same_day_label_used": false
+}

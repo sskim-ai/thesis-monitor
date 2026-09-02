@@ -20,3 +20,9 @@ For `2026-09-02 08:00 KST`, the expected reference date is `2026-09-01`.
 A provider raw date of `2026-09-01` is therefore current for this product path,
 not stale. Missing, stale, future, or unfinalized evidence is suppressed and is
 never filled by date guessing.
+
+Packet-owned D/W/M facts additionally preserve source session, exact contract, comparison
+baseline, and bar status. `CURRENT_DIRECTIONAL` means current for the fact's explicit temporal
+contract, not necessarily same-calendar-day. Prior-session and lagging official macro observations
+must be date-qualified. D/W/M renderers must retain `FINAL`, `IN_PROGRESS`, and
+`SAME_CONTRACT_PARTIAL_PERIOD` without relabeling.

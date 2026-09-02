@@ -1,0 +1,334 @@
+{
+  "acknowledged_message_count": 15,
+  "acknowledged_message_resend": 0,
+  "contract": "run51-krx-night-test-delivery-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "namespace": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY",
+  "orphan_count": 0,
+  "planned_message_count": 15,
+  "production_mutation_diff": {
+    "accepted_decision_state": false,
+    "data_database": false,
+    "frozen_run51_archive": false,
+    "pilot_state_v3": false,
+    "root_database": false
+  },
+  "production_recipient_resolution_disabled": true,
+  "production_recipient_send": 0,
+  "production_sink_alias": "production:7937bea5b823",
+  "production_state_mutations": 0,
+  "real_telegram_transport": true,
+  "receipt": {
+    "contract": "run51-krx-night-test-delivery-v1",
+    "duplicate_count": 0,
+    "exact_payload_match": true,
+    "namespace": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY",
+    "orphan_count": 0,
+    "planned_message_count": 15,
+    "production_collision": 0,
+    "production_intent_created": 0,
+    "production_recipient_send_count": 0,
+    "production_sink_alias": "production:7937bea5b823",
+    "request_retry_count": 0,
+    "rows": [
+      {
+        "character_count": 864,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:MARKET",
+        "outbound_sha256": "7f343e376c91b5708a0ec0f6362236b626d46a048a8f3030a66529285df4d5eb",
+        "received_payload_quality": {
+          "contract": "us-morning-exact-payload-quality-v1",
+          "errors": [],
+          "generic_macro_without_specific_evidence_visible": 0,
+          "generic_no_change_macro_section_visible": 0,
+          "malformed_zero_change_korean": 0,
+          "payload_sha256": "7f343e376c91b5708a0ec0f6362236b626d46a048a8f3030a66529285df4d5eb",
+          "required_layout_valid": true,
+          "status": "PASS"
+        },
+        "received_sha256": "7f343e376c91b5708a0ec0f6362236b626d46a048a8f3030a66529285df4d5eb",
+        "remote_message_alias": "7ac75405f346",
+        "rendered_sha256": "7f343e376c91b5708a0ec0f6362236b626d46a048a8f3030a66529285df4d5eb",
+        "route": "MARKET_ENRICHED",
+        "send_attempts": 1,
+        "sequence": 1,
+        "ticker": "MARKET"
+      },
+      {
+        "character_count": 1252,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CORZ",
+        "outbound_sha256": "a5d64318e4a387c539f97e3aed7e8ebbe6ed59123cd38ec7d433ddf5389924f7",
+        "received_payload_quality": {
+          "character_count": 1252,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "a5d64318e4a387c539f97e3aed7e8ebbe6ed59123cd38ec7d433ddf5389924f7",
+        "remote_message_alias": "c468c50a30d2",
+        "rendered_sha256": "a5d64318e4a387c539f97e3aed7e8ebbe6ed59123cd38ec7d433ddf5389924f7",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 2,
+        "ticker": "CORZ"
+      },
+      {
+        "character_count": 1364,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CPNG",
+        "outbound_sha256": "d3356b3580aaa6e0233176a7ef3687f6689d1b85e903073d3d697cbed314ea82",
+        "received_payload_quality": {
+          "character_count": 1364,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "d3356b3580aaa6e0233176a7ef3687f6689d1b85e903073d3d697cbed314ea82",
+        "remote_message_alias": "2bf7ffd58328",
+        "rendered_sha256": "d3356b3580aaa6e0233176a7ef3687f6689d1b85e903073d3d697cbed314ea82",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 3,
+        "ticker": "CPNG"
+      },
+      {
+        "character_count": 1123,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:CRCL",
+        "outbound_sha256": "da149b92b073dd66caba91889d2d7f43d6d60e58a990dc858bf042e178a1ef82",
+        "received_payload_quality": {
+          "character_count": 1123,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "da149b92b073dd66caba91889d2d7f43d6d60e58a990dc858bf042e178a1ef82",
+        "remote_message_alias": "897638450c28",
+        "rendered_sha256": "da149b92b073dd66caba91889d2d7f43d6d60e58a990dc858bf042e178a1ef82",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 4,
+        "ticker": "CRCL"
+      },
+      {
+        "character_count": 1224,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:GOOGL",
+        "outbound_sha256": "1f6319203b2ffcf7fb4b680b07ec9f13710945e985fda202056f49262bf33dbf",
+        "received_payload_quality": {
+          "character_count": 1224,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "1f6319203b2ffcf7fb4b680b07ec9f13710945e985fda202056f49262bf33dbf",
+        "remote_message_alias": "7ebab6982bbd",
+        "rendered_sha256": "1f6319203b2ffcf7fb4b680b07ec9f13710945e985fda202056f49262bf33dbf",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 5,
+        "ticker": "GOOGL"
+      },
+      {
+        "character_count": 1334,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:HUT",
+        "outbound_sha256": "069851b6c5385a47373b20722adeab3a0e108561f4bf854cf5ad517c8aa90b36",
+        "received_payload_quality": {
+          "character_count": 1334,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "069851b6c5385a47373b20722adeab3a0e108561f4bf854cf5ad517c8aa90b36",
+        "remote_message_alias": "02309589317c",
+        "rendered_sha256": "069851b6c5385a47373b20722adeab3a0e108561f4bf854cf5ad517c8aa90b36",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 6,
+        "ticker": "HUT"
+      },
+      {
+        "character_count": 1336,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:IBM",
+        "outbound_sha256": "d6b6d9a431982eaef53b370695ba2d9470d215c92e737f22ad5f20890f2d3193",
+        "received_payload_quality": {
+          "character_count": 1336,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "d6b6d9a431982eaef53b370695ba2d9470d215c92e737f22ad5f20890f2d3193",
+        "remote_message_alias": "f8f559168764",
+        "rendered_sha256": "d6b6d9a431982eaef53b370695ba2d9470d215c92e737f22ad5f20890f2d3193",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 7,
+        "ticker": "IBM"
+      },
+      {
+        "character_count": 1575,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:MU",
+        "outbound_sha256": "f52ac137a0ab6dd76037707c0a4a4dfc0936fe1423c6b0c0b5e9fe6fb01937c2",
+        "received_payload_quality": {
+          "character_count": 1575,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "f52ac137a0ab6dd76037707c0a4a4dfc0936fe1423c6b0c0b5e9fe6fb01937c2",
+        "remote_message_alias": "d9c35d005049",
+        "rendered_sha256": "f52ac137a0ab6dd76037707c0a4a4dfc0936fe1423c6b0c0b5e9fe6fb01937c2",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 8,
+        "ticker": "MU"
+      },
+      {
+        "character_count": 1053,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:RXRX",
+        "outbound_sha256": "bda775238469c3f16bbd05b9f0cdeb317ce2ae8eacddd392616d70047a286797",
+        "received_payload_quality": {
+          "character_count": 1053,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "bda775238469c3f16bbd05b9f0cdeb317ce2ae8eacddd392616d70047a286797",
+        "remote_message_alias": "8f0f4e5e90c0",
+        "rendered_sha256": "bda775238469c3f16bbd05b9f0cdeb317ce2ae8eacddd392616d70047a286797",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 9,
+        "ticker": "RXRX"
+      },
+      {
+        "character_count": 1167,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:SKHY",
+        "outbound_sha256": "8a4d7cb65eb971951606ffbfe1f548b07c16f3ee93b3815d557735d12d43567b",
+        "received_payload_quality": {
+          "character_count": 1167,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "8a4d7cb65eb971951606ffbfe1f548b07c16f3ee93b3815d557735d12d43567b",
+        "remote_message_alias": "7ad6dbc5e2e0",
+        "rendered_sha256": "8a4d7cb65eb971951606ffbfe1f548b07c16f3ee93b3815d557735d12d43567b",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 10,
+        "ticker": "SKHY"
+      },
+      {
+        "character_count": 1132,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:SNDK",
+        "outbound_sha256": "3bbf808227437d77140aab1ef44a5fbb9380382814dffb713639ad757468f3d9",
+        "received_payload_quality": {
+          "character_count": 1132,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "3bbf808227437d77140aab1ef44a5fbb9380382814dffb713639ad757468f3d9",
+        "remote_message_alias": "3b847567db9a",
+        "rendered_sha256": "3bbf808227437d77140aab1ef44a5fbb9380382814dffb713639ad757468f3d9",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 11,
+        "ticker": "SNDK"
+      },
+      {
+        "character_count": 1291,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:TSLA",
+        "outbound_sha256": "dc78392c50aa77b4ed35e67b8480e88c7ede1143c0d70d1c1d469ed47de634bf",
+        "received_payload_quality": {
+          "character_count": 1291,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "dc78392c50aa77b4ed35e67b8480e88c7ede1143c0d70d1c1d469ed47de634bf",
+        "remote_message_alias": "d6b1a3dd9fbe",
+        "rendered_sha256": "dc78392c50aa77b4ed35e67b8480e88c7ede1143c0d70d1c1d469ed47de634bf",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 12,
+        "ticker": "TSLA"
+      },
+      {
+        "character_count": 1127,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:TSM",
+        "outbound_sha256": "38e59f5575b331f530a8248e4b07f9d470ad7ee7455fa87e9ea80de394817de8",
+        "received_payload_quality": {
+          "character_count": 1127,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "38e59f5575b331f530a8248e4b07f9d470ad7ee7455fa87e9ea80de394817de8",
+        "remote_message_alias": "72665343444f",
+        "rendered_sha256": "38e59f5575b331f530a8248e4b07f9d470ad7ee7455fa87e9ea80de394817de8",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 13,
+        "ticker": "TSM"
+      },
+      {
+        "character_count": 1072,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:WRD",
+        "outbound_sha256": "0e7f2ee762f3afdd6201573dcfe30ab64441de6c2b706773bf7f0317656be9e2",
+        "received_payload_quality": {
+          "character_count": 1072,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "0e7f2ee762f3afdd6201573dcfe30ab64441de6c2b706773bf7f0317656be9e2",
+        "remote_message_alias": "8f6c43c0a152",
+        "rendered_sha256": "0e7f2ee762f3afdd6201573dcfe30ab64441de6c2b706773bf7f0317656be9e2",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 14,
+        "ticker": "WRD"
+      },
+      {
+        "character_count": 1326,
+        "exact_payload_match": true,
+        "logical_identity": "RUN51_KRX_NIGHT_LIVE_PATH_TEST_ONLY:2026-09-02-us-run-51-39a4d4eec53e:WULF",
+        "outbound_sha256": "8738776a7b50242b0a2631349dfb4dce9032c076d5334de159298072c623a105",
+        "received_payload_quality": {
+          "character_count": 1326,
+          "contract": "run51-stock-received-payload-integrity-v1",
+          "nonempty": true,
+          "status": "PASS"
+        },
+        "received_sha256": "8738776a7b50242b0a2631349dfb4dce9032c076d5334de159298072c623a105",
+        "remote_message_alias": "35d426f83921",
+        "rendered_sha256": "8738776a7b50242b0a2631349dfb4dce9032c076d5334de159298072c623a105",
+        "route": "V2_ACCEPTED",
+        "send_attempts": 1,
+        "sequence": 15,
+        "ticker": "WULF"
+      }
+    ],
+    "sent_message_count": 15,
+    "status": "sent",
+    "test_sink_alias": "test:6d6e2ff463bf",
+    "unowned_retry_count": 0
+  },
+  "sent_message_count": 15,
+  "status": "PASS",
+  "test_sink_alias": "test:6d6e2ff463bf",
+  "unowned_retry_count": 0
+}
