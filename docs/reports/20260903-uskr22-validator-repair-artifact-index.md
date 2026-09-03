@@ -1,0 +1,56 @@
+# USKR22 Validator Repair Artifact Index
+
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| 20260903-confirmation-business-condition-ownership-contract.md | 56b6af2655a233cc3a279908e4a8502bfd7824bc7d379ea5881df8dd82ddd9c1 | 484 |
+| 20260903-confirmation-validator-semantic-repair.md | 2104d943edf537a258ba888b8c824d813739f227bf1bf34b2951dff38f150c7c | 711 |
+| 20260903-confirmation-validator-regression-matrix.md | a1d97d9fa9f5539d332208e3a7ec16740770715e32c85185fb9911a5137c86a6 | 1701 |
+| 20260903-crcl-mu-false-positive-proof.md | c061d3d675039b6e9d2c6d59a40d04dda813f611235eadee691f98ea4a4fe609 | 486 |
+| 20260903-confirmation-business-condition-provenance.md | 621d6ea2c12c6de82d034f83dda14e61d0d335fc2373d19c282c0b191c4e73f0 | 7357 |
+| 20260903-uskr22-fresh-rerun-source-lock.md | 0f7d7aadce946fb0b788f88990266980faaea09883eae2c16ef452b411130ef8 | 682 |
+| 20260903-uskr22-fresh-rerun-first-run.md | 696fede3fe3f42a0fa4e547f7af85b9048558f156e8b6096b98f702c9a55917f | 1978 |
+| 20260903-uskr22-fresh-rerun-validation.md | e108573e4a63e30341f9a3798def7fac17b937ef5b05d4ac92a298221fded4d5 | 886 |
+| 20260903-uskr22-prior20-vs-new22.md | 706b2d7d4047ef6c7c42da066bf9d730264381a1a29a0733c4bd733816e877e0 | 2083 |
+| 20260903-uskr22-run-a.md | 50731d85b23eb01919f2885e955a51c13bdb1782a476b138f93be0e61518bf9b | 240 |
+| 20260903-uskr22-run-b.md | 82c87770d628aafb30d60952b85f37c48c99359be8066520e82603f48f66df40 | 240 |
+| 20260903-uskr22-run-c.md | c25f685d48f53d10324423320181ec64858c0c020d8b80134f7a9af221f8836e | 240 |
+| 20260903-uskr22-stability-comparison.md | 5b696c4c565f04a0f1cabaa8b6bc32b78a24e5d869db4059e2ffabe40a8688f2 | 164 |
+| 20260903-uskr22-hold-lean-stability.md | c1c3b18cdaa8d4d840831b80dce51fef5bcf03fc7c81e73ce071b1b32abf576d | 187 |
+| 20260903-uskr22-action-context-stability.md | 50ff0c55e927ca5b8c7f072f6d66e736f00068cc2bd1ab23756bb17250e8d62b | 196 |
+| 20260903-uskr22-evidence-selection-variance.md | 52fd6c814e10a534bbf0c0742157ac981f27dedc2a178cdaab30a742add1b8a5 | 176 |
+| 20260903-uskr22-message-quality.md | 55a37d0727d8406564cb686d1639f6ff2df1d27e649041bdd224ac4de446d087 | 452 |
+| 20260903-uskr22-promotion-readiness.md | 010746c51a4853e9faa474e1c99ec8ff4aa9a60584d3b39206bfed9a82f1a517 | 3293 |
+| 20260903-confirmation-validator-regression.json | e712a1882c6ddd3637bcccb97f794d8f6ba27c0c68414f950c1dd6cad15b2255 | 3153 |
+| 20260903-uskr22-fresh-rerun-first-run.json | a610c0fcc6aedc20d838a55dbb05b4ce8d605f01bc09dfd1fb2a00cbf97e245b | 903295 |
+| 20260903-uskr22-run-a.json | b9d6c6f7a13bd8588492713b4593e37fce1489939ea95986620e114cfbf8fb19 | 249 |
+| 20260903-uskr22-run-b.json | c3bbb0367de4da0759460ef2e15e89775c3b21baf4caeab590c4a36c830e2d87 | 249 |
+| 20260903-uskr22-run-c.json | f66aad05de3f9528024b2b1d63030b3a79e4b6c5b6a606d0d81ba8927d9a0557 | 249 |
+| 20260903-uskr22-stability.json | 9056840d31fcc80f2786bc264422b59fc9efdbd9a4ab5d79056f052a3191e734 | 246 |
+| 20260903-uskr22-validator-repair-proof.json | 80a2e90d79196f92f2c32f322b11090f5548857b1b549279b896594a2d4f138d | 967107 |
+| 20260903-uskr22-validator-repair-evidence-alias-map.json | 6e8a740822a07b53c90b82f47ec9c74caaa219d9cf39914db53bd97c0419a036 | 1112348 |
+| 20260903-uskr22-fresh-rerun-us14-message-preview.md | d9cc0b86f24cfbad86aa7d7c1e25f0ad589f8c783734f068a9d2d8843210c96b | 43877 |
+| 20260903-uskr22-fresh-rerun-kr8-message-preview.md | faf848b73973f9c8c643757838a6b4cff1631cff6dc5e8d23deee082abdd33ce | 26286 |
+| uskr22-validator-repair-messages/000660.txt | b6c5d4e36102ce40961d25f4890b6e6cbac1a69d7b41f5e4eb58b46c00e770e8 | 2619 |
+| uskr22-validator-repair-messages/003690.txt | f62b77a29ea3c728bc93be1de31613433d7ade34c72ee123dc119882f14949a5 | 2411 |
+| uskr22-validator-repair-messages/005490.txt | 7b41df19254d2f790ef3dadbf64e1adbb61e613b3e6f105983ab685ac415c8f1 | 3500 |
+| uskr22-validator-repair-messages/005930.txt | 5d8c24a0147160a783eac1ff81f1b139a36ca18abc84416ae3ee07fd3958c6c7 | 3392 |
+| uskr22-validator-repair-messages/010120.txt | 8f91bdf93ac0aa7210996b3ff0dee5531a494ba453e21d18be4a34b51bf7d67c | 3506 |
+| uskr22-validator-repair-messages/012450.txt | e61fdf946815eaaef7ce608ac2e0068de57d6de2e6c21f63b837dd489bcb62e4 | 3605 |
+| uskr22-validator-repair-messages/047810.txt | f2ceea673344d4b523cef64dfb7bf1f7e20381c3db943395665a8715952c3b76 | 3459 |
+| uskr22-validator-repair-messages/086280.txt | 6a92c169e726da5a806d7c39fa74f2f149899555065e0637e60b34989f78d232 | 3561 |
+| uskr22-validator-repair-messages/CORZ.txt | f05341f20f0e054e83b534e7df51cd7ee2ab976fa8424df37d761368fca38f29 | 3300 |
+| uskr22-validator-repair-messages/CPNG.txt | f51928bec5680f1ad0645dfbd86e943e503aade2cbf039f28a1514a5c6480371 | 3097 |
+| uskr22-validator-repair-messages/CRCL.txt | 58628f547f24d954208af749beed2356bff3554d58c7eac63db26f4928094492 | 3009 |
+| uskr22-validator-repair-messages/GOOGL.txt | 1321e1cefe98bb82f24ca2373557ac67e3bd615cdf9e012d02dfc77657ec7950 | 3396 |
+| uskr22-validator-repair-messages/HUT.txt | 3b1f0161ce37a9add76d44defb7041ae84d42e03776db716d25eb2019808adce | 3019 |
+| uskr22-validator-repair-messages/IBM.txt | 430da5d33fc283ee376c178250567540417aaf1480b390b0ed316ca57a864e0d | 3020 |
+| uskr22-validator-repair-messages/MU.txt | fe501ad6607971bd4af2267409753aac925d6844dc0a99e76ec2376c3052a0ba | 3118 |
+| uskr22-validator-repair-messages/RXRX.txt | 451a751f11cb44528bce679e35298903f368513c50d80f0fe58995f62a38c936 | 3161 |
+| uskr22-validator-repair-messages/SKHY.txt | ac0004b39d876c15a1d17dbac46729b9d6fa4aba3be75343060c6420b9d8d64c | 3039 |
+| uskr22-validator-repair-messages/SNDK.txt | 994f09ac10a66908abb817799f687fac8009d10759ef9fa1bebefdd881b50d2b | 3257 |
+| uskr22-validator-repair-messages/TSLA.txt | ce3ab1577580c620187d8b0a8d937f3c29498f3ff9f59d4211dc9d66911e8f60 | 3262 |
+| uskr22-validator-repair-messages/TSM.txt | faf4e7a201da185a3703b719cfa6c2fd882e110e140ba5f3cf72a268cc95f93d | 2859 |
+| uskr22-validator-repair-messages/WRD.txt | c80d9091146267373e1877768af1aa1b74d49f996139c18a8bf8150d9f3faa41 | 2811 |
+| uskr22-validator-repair-messages/WULF.txt | 3dcdfe6e5829ea9c0ff74fa250ff5593700ff3d90c27b4c6aaa823da800f09de | 3184 |
+
+Indexed artifacts: `50`. Secrets, recipient identifiers, logs, and runtime state are excluded.

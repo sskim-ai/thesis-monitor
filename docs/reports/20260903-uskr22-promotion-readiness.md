@@ -4,8 +4,10 @@
 
 | Gate | Value |
 | --- | --- |
+| BASE | 93d72816b5015c028b4a72475f4229fb120d3d10 / DESCENDANT |
 | BASE_BRANCH | 93d72816b5015c028b4a72475f4229fb120d3d10 / DESCENDANT |
 | JUDGMENT_LOGIC_CHANGED | 0 |
+| BALANCE_THRESHOLD_CHANGED | 0 |
 | MANUAL_CANDIDATE_OVERRIDE | 0 |
 | SELECTIVE_TICKER_RERUN | 0 |
 | OLD_PASSING_CANDIDATE_REUSE | 0 |
@@ -15,10 +17,9 @@
 | CROSS_SUBJECT_EVIDENCE_REF | 0 |
 | CROSS_MARKET_EVIDENCE_REF | 0 |
 | CROSS_GENERATION_EVIDENCE_REF | 0 |
-| GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP | 2 |
 | NEW_EXPERIMENT_GENERATION | PASS |
 | PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE | 0 |
-| FIRST_RUN_VALIDATED | 20 |
+| FIRST_RUN_VALIDATED | 21 |
 | A_B_C_GATE | NOT_RUN_FIRST_GATE_FAILED |
 | PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR | PASS |
 | KR_REPAIR_BASE | 93d72816b5015c028b4a72475f4229fb120d3d10 |
@@ -39,7 +40,7 @@
 | AVOID_RENDERED_AS_ACTIONABLE_ENTRY | 0 |
 | SAME_LEVEL_SCENARIO_AMBIGUITY | 0 |
 | PRIOR_ACCEPTED_VISIBLE_BEFORE_FRESH_BALANCE | 0 |
-| ALL22_FIRST_RUN_VALIDATED | 20 |
+| ALL22_FIRST_RUN_VALIDATED | 21 |
 | RUN_A_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
 | RUN_B_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
 | RUN_C_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
@@ -65,5 +66,12 @@
 | DB_CHANGE | 0 |
 | MAIN_MERGE | 0 |
 | PROMOTION_READINESS | NOT_READY |
+| CONFIRMATION_BUSINESS_CONDITION_GROUNDED | PASS |
+| BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE | 0 |
+| GENERIC_BUSINESS_WORD_FALSE_POSITIVE | 1 |
+| BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK | 0 |
+| CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC | 0 |
+| FALSE_POSITIVE_FIXTURE_PASS_COUNT | 7 |
+| TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT | 9 |
 
-Blocking P1 finding: the confirmation ownership guard matched ordinary business-language uses of 'support' and product 'pricing' in CRCL and MU. Provenance repair closed at `22/22`, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `20/22`. The next scope is a bounded semantic-field validator repair followed by a completely new all22 blind generation, not a selective rerun.
+Blocking P1 finding: the repaired validator correctly accepted the original CRCL/MU business-language cases, but its Korean token boundary rejected `수주가 ... 현금흐름이 회복` in `047810` as if it were `주가 ... 회복`. Provenance grounding passed, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `21/22`. No selective rerun or post-result tuning occurred.

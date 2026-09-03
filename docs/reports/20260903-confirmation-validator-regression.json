@@ -1,0 +1,99 @@
+{
+  "business_language": [
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "USDC 점유율과 비이자성 수익 확대가 정상화 이익을 지지함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "HBM 출하와 고객 채택이 확대되고 가격과 제품구성 강세 및 현금창출이 유지되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "가격 결정력이 마진 방어를 지원함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "customer demand supports utilization."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "pricing power supports margins."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "supplier support improves execution."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "text": "customer support helps close execution gaps."
+    }
+  ],
+  "contract": "confirmation-validator-regression-v1",
+  "false_positive_fixture_pass_count": 7,
+  "fresh_run_false_positives": [
+    {
+      "reason": "embedded_korean_price_token_without_word_boundary",
+      "text": "양산 인도와 경공격기 해외 수주가 확대되고 수익성과 현금흐름이 회복되는 것",
+      "ticker": "047810"
+    }
+  ],
+  "generic_business_word_false_positive": 1,
+  "generic_business_word_false_positive_fixture": 0,
+  "price_structure": [
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "종가 돌파가 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "저항선 위로 안착해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "지지선 회복이 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "확인선 회복이 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "주가 돌파가 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "close above resistance."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "breakout through confirmation."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "support-level retest."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "text": "registered confirmation price recovery."
+    }
+  ],
+  "technical_ownership_fixture_miss": 0,
+  "true_positive_block_fixture_pass_count": 9
+}

@@ -986,6 +986,16 @@ def _confirmation_line(text: str) -> str:
     return ""
 
 
+_EMBEDDED_KOREAN_PRICE_TOKEN_FALSE_POSITIVE = re.compile(
+    r"[가-힣](?:종가|주가)(?:가|는|이|의)?[^.!?\n]{0,24}?"
+    r"(?:돌파|상회|하회|회복|안착|재지지)"
+)
+
+
+def _has_embedded_korean_price_token_false_positive(text: str) -> bool:
+    return bool(_EMBEDDED_KOREAN_PRICE_TOKEN_FALSE_POSITIVE.search(text))
+
+
 def _write_validator_repair_reports(
     *,
     args: argparse.Namespace,
@@ -1042,6 +1052,31 @@ def _write_validator_repair_reports(
     validation_by_ticker = {
         str(row["ticker"]): row for row in document["validation"]
     }
+    candidate_by_ticker = {candidate.ticker: candidate for candidate in candidates}
+    fresh_run_false_positives = [
+        {
+            "ticker": ticker,
+            "text": candidate_by_ticker[ticker]
+            .new_buyer_view.confirmation_business_condition,
+            "reason": "embedded_korean_price_token_without_word_boundary",
+        }
+        for ticker, row in validation_by_ticker.items()
+        if "confirmation_business_condition_contains_price_structure_semantics"
+        in row["errors"]
+        and _has_embedded_korean_price_token_false_positive(
+            candidate_by_ticker[ticker]
+            .new_buyer_view.confirmation_business_condition
+        )
+    ]
+    regression["fresh_run_false_positives"] = fresh_run_false_positives
+    regression["generic_business_word_false_positive_fixture"] = false_positive_count
+    regression["generic_business_word_false_positive"] = (
+        false_positive_count + len(fresh_run_false_positives)
+    )
+    write_json(
+        args.report_dir / "20260903-confirmation-validator-regression.json",
+        regression,
+    )
     subjects = alias_map["subjects"]
     provenance_rows: list[dict[str, object]] = []
     for candidate in candidates:
@@ -1083,6 +1118,9 @@ def _write_validator_repair_reports(
     all_errors = [
         error for row in document["validation"] for error in row["errors"]
     ]
+    detected_technical_errors = all_errors.count(
+        "confirmation_business_condition_contains_price_structure_semantics"
+    )
     metrics: dict[str, object] = {
         "CONFIRMATION_BUSINESS_CONDITION_GROUNDED": (
             "PASS"
@@ -1092,11 +1130,12 @@ def _write_validator_repair_reports(
         "BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE": all_errors.count(
             "confirmation_business_condition_price_only_evidence"
         ),
-        "GENERIC_BUSINESS_WORD_FALSE_POSITIVE": false_positive_count,
+        "GENERIC_BUSINESS_WORD_FALSE_POSITIVE": (
+            false_positive_count + len(fresh_run_false_positives)
+        ),
         "BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK": (
-            all_errors.count(
-                "confirmation_business_condition_contains_price_structure_semantics"
-            )
+            detected_technical_errors
+            - len(fresh_run_false_positives)
             + technical_miss_count
         ),
         "CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC": all_errors.count(
@@ -1121,7 +1160,8 @@ def _write_validator_repair_reports(
         args.report_dir / "20260903-confirmation-validator-semantic-repair.md",
         "# Confirmation Validator Semantic Repair\n\n"
         "The prior guard rejected isolated words such as `지지`, `가격`, and `support`. The repair detects narrow stock-price phrase combinations instead, while preserving the global numeric-prose prohibition and evidence ownership checks. Judgment ordering, balance thresholds, HOLD lean, buyer/holder stance, and renderer structure are unchanged.\n\n"
-        f"Generic business-word false positives: `{metrics['GENERIC_BUSINESS_WORD_FALSE_POSITIVE']}`. Technical ownership leaks: `{metrics['BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK']}`.\n",
+        f"Generic business-word false positives: `{metrics['GENERIC_BUSINESS_WORD_FALSE_POSITIVE']}`. Technical ownership leaks: `{metrics['BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK']}`.\n\n"
+        "The fresh run exposed a remaining Korean token-boundary defect: `수주가 ... 현금흐름이 회복` contains the substring `주가 ... 회복`, so the detector rejected business order/cash-flow language. The candidate was not changed or rerun.\n",
     )
     matrix_rows = [
         [
@@ -1150,7 +1190,7 @@ def _write_validator_repair_reports(
             ["Fixture class", "Text", "Technical detected", "Result"],
             matrix_rows,
         )
-        + f"\n\nBusiness pass: `{metrics['FALSE_POSITIVE_FIXTURE_PASS_COUNT']}`. Technical block: `{metrics['TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT']}`.\n",
+        + f"\n\nBusiness fixture pass: `{metrics['FALSE_POSITIVE_FIXTURE_PASS_COUNT']}`. Technical fixture block: `{metrics['TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT']}`. Fresh-run false positives outside the original fixture set: `{len(fresh_run_false_positives)}` (`{', '.join(row['ticker'] for row in fresh_run_false_positives) or 'none'}`).\n",
     )
     write_text(
         args.report_dir / "20260903-crcl-mu-false-positive-proof.md",
@@ -1598,8 +1638,8 @@ def finalize_first_run_failure(
     write_text(
         args.report_dir / "20260903-confirmation-renderer-ownership.md",
         "# Confirmation Renderer Ownership\n\n"
-        "The renderer owns close/resistance/breakout scaffolding; the model owns only `confirmation_business_condition`. The first-run gate nevertheless rejected two semantically valid business phrases because the initial lexical ownership guard was over-broad: CRCL used business earnings 'support' wording and MU referred to product pricing. This is a validator false positive, not provenance or rendered repetition.\n\n"
-        f"`GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP = {gates['GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP']}`\n",
+        "The renderer owns close/resistance/breakout scaffolding; the model owns only `confirmation_business_condition`. Ordinary business-language uses of support and product pricing are accepted after the semantic repair. The first-run gate exposed a remaining token-boundary false positive where Korean `수주가` was read as stock-price `주가`; no actual technical ownership leaked.\n\n"
+        f"`GENERIC_BUSINESS_WORD_FALSE_POSITIVE = {gates['GENERIC_BUSINESS_WORD_FALSE_POSITIVE']}`\n",
     )
     write_text(
         args.report_dir / "20260903-repetition-validator-calibration.md",
@@ -1688,7 +1728,8 @@ def finalize_first_run_failure(
     )
     write_text(
         args.report_dir / "20260903-uskr22-evidence-selection-variance.md",
-        "# USKR22 Evidence-Selection Variance\n\n`NOT_MEASURED`\n\nA/B/C were not run because the fresh first-run gate validated `20/22`. No voting, averaging, or selective retry occurred.\n",
+        "# USKR22 Evidence-Selection Variance\n\n`NOT_MEASURED`\n\n"
+        f"A/B/C were not run because the fresh first-run gate validated `{document['validation_pass_count']}/22`. No voting, averaging, or selective retry occurred.\n",
     )
     decision_table = markdown_table(
         [
@@ -1830,7 +1871,7 @@ def finalize_first_run_failure(
         args.report_dir / "20260903-uskr22-promotion-readiness.md",
         "# USKR22 Promotion Readiness\n\n`PROMOTION_READINESS = NOT_READY`\n\n"
         + markdown_table(["Gate", "Value"], [[key, value] for key, value in gates.items()])
-        + "\n\nBlocking P1 finding: the confirmation ownership guard matched ordinary business-language uses of 'support' and product 'pricing' in CRCL and MU. Provenance repair closed at `22/22`, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `20/22`. The next scope is a bounded semantic-field validator repair followed by a completely new all22 blind generation, not a selective rerun.\n",
+        + f"\n\nBlocking P1 finding: the repaired validator correctly accepted the original CRCL/MU business-language cases, but its Korean token boundary rejected `수주가 ... 현금흐름이 회복` in `047810` as if it were `주가 ... 회복`. Provenance grounding passed, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `{document['validation_pass_count']}/22`. No selective rerun or post-result tuning occurred.\n",
     )
     index_rows = artifact_index_rows(args.report_dir)
     write_text(
