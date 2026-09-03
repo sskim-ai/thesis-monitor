@@ -25,6 +25,7 @@ BASE_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
 WORK_INSTRUCTION_SHA = "5a3c0faccdbfdb272056419b099d40c6ccd19962"
 GENERATION_ID = "2026-09-04-uskr22-validator-ownership-repair"
 RUNS = ("first", "a", "b", "c")
+FIRST_CHECKPOINT_CONTRACT = "uskr22-validator-first-checkpoint-v1"
 TARGET_VALIDATOR_ERRORS = {
     "mandatory_trade_language",
     "mandatory_sell_language",
@@ -259,6 +260,54 @@ def validation_failure_count(
         for document in documents.values()
         for row in document["validation"]
     )
+
+
+def write_first_checkpoint(
+    *,
+    path: Path,
+    source_lock: Mapping[str, object],
+    candidates: Sequence[StructuredAutonomyCandidate],
+    document: Mapping[str, object],
+) -> None:
+    write_json(
+        path,
+        {
+            "contract": FIRST_CHECKPOINT_CONTRACT,
+            "generation_id": GENERATION_ID,
+            "source_lock": source_lock,
+            "candidates": [candidate.model_dump(mode="json") for candidate in candidates],
+            "document": document,
+        },
+    )
+
+
+def read_first_checkpoint(
+    *,
+    path: Path,
+    source_lock: Mapping[str, object],
+) -> tuple[tuple[StructuredAutonomyCandidate, ...], dict[str, object]]:
+    checkpoint = read_json(path)
+    if checkpoint.get("contract") != FIRST_CHECKPOINT_CONTRACT:
+        raise ValueError("first_checkpoint_contract_mismatch")
+    if checkpoint.get("generation_id") != GENERATION_ID:
+        raise ValueError("first_checkpoint_generation_mismatch")
+    if checkpoint.get("source_lock") != source_lock:
+        raise ValueError("first_checkpoint_source_lock_mismatch")
+    candidates = tuple(
+        StructuredAutonomyCandidate.model_validate(row)
+        for row in checkpoint.get("candidates", [])
+    )
+    if tuple(candidate.ticker for candidate in candidates) != shadow.COHORT:
+        raise ValueError("first_checkpoint_cohort_mismatch")
+    document = checkpoint.get("document")
+    if not isinstance(document, dict):
+        raise ValueError("first_checkpoint_document_missing")
+    if (
+        int(document.get("validation_pass_count", 0)) != len(shadow.COHORT)
+        or document.get("message_quality", {}).get("status") != "PASS"
+    ):
+        raise ValueError("first_checkpoint_gate_not_passed")
+    return candidates, document
 
 
 def write_reports(
@@ -657,7 +706,11 @@ def main() -> None:
     parser.add_argument("--coexistence-json", type=Path, required=True)
     parser.add_argument("--timeout", type=int, default=1800)
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--stop-after-first", action="store_true")
+    parser.add_argument("--resume-first-checkpoint", type=Path)
     args = parser.parse_args()
+    if args.stop_after_first and args.resume_first_checkpoint:
+        parser.error("--stop-after-first and --resume-first-checkpoint are mutually exclusive")
     args.output_dir = args.output_dir.resolve()
     args.report_dir = args.report_dir.resolve()
     if args.output_dir.exists():
@@ -701,7 +754,19 @@ def main() -> None:
 
     candidates_by_run: dict[str, tuple[StructuredAutonomyCandidate, ...]] = {}
     documents: dict[str, dict[str, object]] = {}
-    for run in RUNS:
+    runs = RUNS
+    if args.resume_first_checkpoint:
+        first_candidates, first_document = read_first_checkpoint(
+            path=args.resume_first_checkpoint.resolve(),
+            source_lock=source_lock,
+        )
+        candidates_by_run["first"] = first_candidates
+        documents["first"] = first_document
+        runs = ("a", "b", "c")
+    elif args.stop_after_first:
+        runs = ("first",)
+
+    for run in runs:
         candidates, document, _rendered = shadow.execute_run(
             run=run,
             args=args,
@@ -718,6 +783,29 @@ def main() -> None:
             or document["message_quality"]["status"] != "PASS"
         ):
             break
+
+    if args.stop_after_first:
+        checkpoint_path = args.output_dir / "first-checkpoint.json"
+        write_first_checkpoint(
+            path=checkpoint_path,
+            source_lock=source_lock,
+            candidates=candidates_by_run["first"],
+            document=documents["first"],
+        )
+        print(
+            json.dumps(
+                {
+                    "checkpoint": str(checkpoint_path),
+                    "generation": GENERATION_ID,
+                    "message_quality": documents["first"]["message_quality"]["status"],
+                    "model_calls": 6,
+                    "validated": documents["first"]["validation_pass_count"],
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+        return
 
     args.report_dir = original_report_dir
     coexistence = read_json(args.coexistence_json)
