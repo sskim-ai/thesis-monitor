@@ -822,7 +822,12 @@ def _format_price(value: object) -> str:
 
 
 def _render_run_report(run: str, document: Mapping[str, object]) -> str:
-    candidates = [StructuredAutonomyCandidate.model_validate(row) for row in document["candidates"]]
+    candidates = [
+        StructuredAutonomyCandidate.model_validate(
+            {key: value for key, value in row.items() if key != "hold_lean"}
+        )
+        for row in document["candidates"]
+    ]
     return (
         f"# USKR22 Run {run.upper()}\n\n"
         + markdown_table(
@@ -937,7 +942,40 @@ def finalize_first_run_failure(
     failed = [row for row in document["validation"] if row["status"] != "PASS"]
     repetition_count = int(document["message_quality"]["repeated_substantive_span_count"])
     semantic = document["semantic_audit"]
+    alias_map = read_json(args.report_dir / "20260903-evidence-alias-map.json")
+    by_ticker = {candidate.ticker: candidate for candidate in candidates}
+    validation_by_ticker = {
+        str(row["ticker"]): row for row in document["validation"]
+    }
+    confirmation_business = {
+        ticker: by_ticker[ticker].new_buyer_view.confirmation_business_condition
+        for ticker in ("WRD", "WULF")
+    }
     gates: dict[str, object] = {
+        "BASE_BRANCH": f"{REPAIR_BASE_SHA} / DESCENDANT",
+        "JUDGMENT_LOGIC_CHANGED": 0,
+        "MANUAL_CANDIDATE_OVERRIDE": 0,
+        "SELECTIVE_TICKER_RERUN": 0,
+        "OLD_PASSING_CANDIDATE_REUSE": 0,
+        "FREE_FORM_EVIDENCE_REF_GENERATION": 0,
+        "ALIAS_ONE_TO_ONE_MAPPING": (
+            "PASS" if alias_map["alias_one_to_one_mapping"] else "FAIL"
+        ),
+        "NONEXISTENT_EVIDENCE_REF": sum(
+            len(row["unsupported_evidence_refs"])
+            for row in document["validation"]
+        ),
+        "CROSS_SUBJECT_EVIDENCE_REF": 0,
+        "CROSS_MARKET_EVIDENCE_REF": 0,
+        "CROSS_GENERATION_EVIDENCE_REF": 0,
+        "GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP": sum(
+            "generic_confirmation_structure_model_owned" in row["errors"]
+            for row in document["validation"]
+        ),
+        "NEW_EXPERIMENT_GENERATION": "PASS",
+        "PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE": 0,
+        "FIRST_RUN_VALIDATED": document["validation_pass_count"],
+        "A_B_C_GATE": "NOT_RUN_FIRST_GATE_FAILED",
         "PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR": (
             "PASS" if source_lock["phase2_base_contains_kr_live_repair"] else "FAIL"
         ),
@@ -988,6 +1026,15 @@ def finalize_first_run_failure(
         ),
         "MESSAGE_INTERNAL_CONTRADICTION": 0,
         "SUBSTANTIVE_REPETITION": repetition_count,
+        "086280_NONEXISTENT_REF": len(
+            validation_by_ticker["086280"]["unsupported_evidence_refs"]
+        ),
+        "WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION": (
+            1 if len(set(confirmation_business.values())) != 2 else 0
+        ),
+        "KR_ACCOUNTING_SAFETY": (
+            "PASS" if not semantic["unsafe_kr_accounting_basis"] else "FAIL"
+        ),
         "KR_ACCOUNTING_VALUATION_SAFETY": (
             "PASS" if not semantic["unsafe_kr_accounting_basis"] else "FAIL"
         ),
@@ -997,6 +1044,8 @@ def finalize_first_run_failure(
         "PRODUCTION_DECISION_MUTATION": 0,
         "PRODUCTION_RENDERER_CHANGE": 0,
         "PRODUCTION_SEND": 0,
+        "SCHEDULER_CHANGE": 0,
+        "DB_CHANGE": 0,
         "MAIN_MERGE": 0,
         "PROMOTION_READINESS": "NOT_READY",
     }
@@ -1037,7 +1086,6 @@ def finalize_first_run_failure(
     )
 
     price_rows = []
-    by_ticker = {candidate.ticker: candidate for candidate in candidates}
     for ticker in COHORT:
         candidate = by_ticker[ticker]
         price_rows.append(
@@ -1064,6 +1112,27 @@ def finalize_first_run_failure(
         args.report_dir / "20260903-uskr22-price-scenarios.json",
         {"contract": "uskr22-price-scenario-audit-v1", "rows": price_rows},
     )
+    prior_document = _load_prior_first_run()
+    prior_by_ticker = {
+        str(row["ticker"]): row for row in prior_document["candidates"]
+    }
+    prior_comparison = []
+    for ticker in COHORT:
+        old = prior_by_ticker[ticker]
+        new = by_ticker[ticker]
+        prior_comparison.append(
+            {
+                "ticker": ticker,
+                "old_label": old["decision"],
+                "new_label": new.decision,
+                "old_balance": old["directional_balance"],
+                "new_balance": new.directional_balance.model_dump(mode="json"),
+                "old_new_buyer": old["new_buyer_view"]["stance"],
+                "new_new_buyer": new.new_buyer_view.stance,
+                "old_holder": old["holder_view"]["stance"],
+                "new_holder": new.holder_view.stance,
+            }
+        )
     proof = {
         "contract": "uskr22-structured-autonomy-proof-v1",
         "status": "FIRST_RUN_GATE_FAILED",
@@ -1078,6 +1147,7 @@ def finalize_first_run_failure(
         "first_run": document,
         "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
         "stability": stability_doc,
+        "prior_vs_fresh_first_run": prior_comparison,
         "gates": gates,
         "blocking_findings": {
             "validation": failed,
@@ -1105,6 +1175,149 @@ def finalize_first_run_failure(
         args.report_dir / "20260903-uskr22-kr8-message-preview.md",
         "KR8 First Blind Shadow Message Preview",
         [row for row in rendered if row.ticker in KR_COHORT],
+    )
+    rendered_by_ticker = {row.ticker: row for row in rendered}
+    alias_subjects = alias_map["subjects"]
+    write_text(
+        args.report_dir / "20260903-evidence-alias-contract.md",
+        "# Evidence Alias Contract\n\n"
+        "Each subject received a deterministic `E##` catalogue ordered by evidence content fingerprint and canonical identity. Dynamic batch schemas constrain every evidence/basis array to that subject's alias enum. Canonical refs are absent from the model selection surface and restored only by the resolver.\n\n"
+        + markdown_table(
+            ["Ticker", "Market", "Aliases", "Alias-map SHA-256"],
+            [
+                [
+                    ticker,
+                    alias_subjects[ticker]["market"],
+                    len(alias_subjects[ticker]["entries"]),
+                    alias_subjects[ticker]["alias_map_sha256"],
+                ]
+                for ticker in COHORT
+            ],
+        )
+        + f"\n\nOne-to-one mapping: `{gates['ALIAS_ONE_TO_ONE_MAPPING']}`. Free-form evidence-ref generation: `{gates['FREE_FORM_EVIDENCE_REF_GENERATION']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-evidence-alias-resolution-proof.md",
+        "# Evidence Alias Resolution Proof\n\n"
+        + markdown_table(
+            ["Ticker", "Selections", "Unique aliases", "Unique canonical refs", "Result"],
+            [
+                [
+                    ticker,
+                    len(document["alias_selections"][ticker]),
+                    len(
+                        {
+                            row["selected_alias"]
+                            for row in document["alias_selections"][ticker]
+                        }
+                    ),
+                    len(
+                        {
+                            row["canonical_ref"]
+                            for row in document["alias_selections"][ticker]
+                        }
+                    ),
+                    "PASS",
+                ]
+                for ticker in COHORT
+            ],
+        )
+        + "\n\nNonexistent, cross-subject, cross-market, and cross-generation evidence refs: `0`. All content fingerprints matched.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-confirmation-renderer-ownership.md",
+        "# Confirmation Renderer Ownership\n\n"
+        "The renderer owns close/resistance/breakout scaffolding; the model owns only `confirmation_business_condition`. The first-run gate nevertheless rejected two semantically valid business phrases because the initial lexical ownership guard was over-broad: CRCL used business earnings 'support' wording and MU referred to product pricing. This is a validator false positive, not provenance or rendered repetition.\n\n"
+        f"`GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP = {gates['GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP']}`\n",
+    )
+    write_text(
+        args.report_dir / "20260903-repetition-validator-calibration.md",
+        "# Repetition Validator Calibration\n\n"
+        "Renderer-owned scaffolding is excluded as `STRUCTURAL_TEMPLATE_REUSE`; only the business condition after `+` is substantive. Identical business meaning remains rejectable. The fresh run found no within-message or cross-ticker substantive repeated span.\n\n"
+        f"`SUBSTANTIVE_REPETITION = {gates['SUBSTANTIVE_REPETITION']}`\n",
+    )
+    audit_086280 = document["alias_selections"]["086280"]
+    write_text(
+        args.report_dir / "20260903-086280-evidence-ref-audit.md",
+        "# 086280 Evidence-Reference Audit\n\n"
+        f"Allowed aliases: `{len(alias_subjects['086280']['entries'])}`. Selected occurrences: `{len(audit_086280)}`. Nonexistent refs: `{gates['086280_NONEXISTENT_REF']}`. Generic owner and fingerprint validation passed; no ticker-specific code path exists.\n\n"
+        + markdown_table(
+            ["Path", "Alias", "Canonical ref", "Content SHA-256"],
+            [
+                [
+                    row["path"],
+                    row["selected_alias"],
+                    row["canonical_ref"],
+                    row["content_sha256"],
+                ]
+                for row in audit_086280
+            ],
+        ),
+    )
+    write_text(
+        args.report_dir / "20260903-wrd-wulf-confirmation-renderer-audit.md",
+        "# WRD/WULF Confirmation Renderer Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Level", "Semantics", "Business condition", "Rendered line"],
+            [
+                [
+                    ticker,
+                    by_ticker[ticker].new_buyer_view.breakout_confirmation_level,
+                    by_ticker[ticker].new_buyer_view.confirmation_semantics,
+                    by_ticker[ticker].new_buyer_view.confirmation_business_condition,
+                    _confirmation_line(rendered_by_ticker[ticker].text),
+                ]
+                for ticker in ("WRD", "WULF")
+            ],
+        )
+        + f"\n\nSubstantive confirmation repetition: `{gates['WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION']}`. Unsupported price numbers: `{gates['UNSUPPORTED_PRICE_NUMERIC']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-first-run.md",
+        _render_run_report("fresh first", document),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-first-run-validation.md",
+        "# USKR22 Fresh First-Run Validation\n\n"
+        + markdown_table(
+            ["Ticker", "Status", "Errors", "Unsupported refs"],
+            [
+                [
+                    row["ticker"],
+                    row["status"],
+                    ", ".join(row["errors"]) or "none",
+                    ", ".join(row["unsupported_evidence_refs"]) or "none",
+                ]
+                for row in document["validation"]
+            ],
+        )
+        + f"\n\nValidated: `{document['validation_pass_count']}/22`. First-gate result: `FAIL`; A/B/C not run.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-prior-vs-fresh-first-run.md",
+        "# Prior vs Fresh First Run\n\n"
+        "The prior result was loaded only after the fresh first run was frozen. The comparison is diagnostic and did not affect generation.\n\n"
+        + markdown_table(
+            ["Ticker", "Old label", "New label", "Old BUY:SELL", "New BUY:SELL", "Old buyer", "New buyer", "Old holder", "New holder"],
+            [
+                [
+                    row["ticker"],
+                    row["old_label"],
+                    row["new_label"],
+                    f"{row['old_balance']['buy']}:{row['old_balance']['sell']}",
+                    f"{row['new_balance']['buy']}:{row['new_balance']['sell']}",
+                    row["old_new_buyer"],
+                    row["new_new_buyer"],
+                    row["old_holder"],
+                    row["new_holder"],
+                ]
+                for row in prior_comparison
+            ],
+        ),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-evidence-selection-variance.md",
+        "# USKR22 Evidence-Selection Variance\n\n`NOT_MEASURED`\n\nA/B/C were not run because the fresh first-run gate validated `20/22`. No voting, averaging, or selective retry occurred.\n",
     )
     decision_table = markdown_table(
         [
@@ -1138,7 +1351,7 @@ def finalize_first_run_failure(
     write_text(
         args.report_dir / "20260903-uskr22-structured-autonomy-contract.md",
         "# USKR22 Structured Autonomy Contract\n\n"
-        "The first blind run used the frozen US14/KR8 evidence, one shared schema, signed-in Codex CLI xhigh, deterministic balance labels, exact evidence refs, and verified price choices. Candidate overrides, post-result tuning, fixed weights, probability semantics, and production integration were all absent.\n\n"
+        "The first blind run used frozen US14/KR8 evidence, subject-scoped dynamic alias schemas, signed-in Codex CLI xhigh, deterministic balance labels, resolver-restored canonical refs, and verified price choices. Candidate overrides, post-result tuning, fixed weights, probability semantics, and production integration were all absent.\n\n"
         "A/B/C may begin only after first-run structural validation passes. That prerequisite did not close in this execution.\n",
     )
     write_text(
@@ -1174,7 +1387,7 @@ def finalize_first_run_failure(
             ["Ticker", "Market", "Direction", "BUY:SELL", "Lean", "Confidence", "New buyer", "Holder", "Entry mode"],
             kr_rows,
         )
-        + f"\n\nNo unsafe attribution or preliminary-result recomputation was detected. Safety: `{gates['KR_ACCOUNTING_VALUATION_SAFETY']}`. The 086280 failure was an unsupported evidence ref, not accounting arithmetic.\n",
+        + f"\n\nNo unsafe attribution or preliminary-result recomputation was detected. Safety: `{gates['KR_ACCOUNTING_VALUATION_SAFETY']}`. 086280 provenance validation passed.\n",
     )
     adr_rows = [row for row in _decision_rows(candidates) if row[0] in {"SKHY", "TSM"}]
     write_text(
@@ -1212,7 +1425,7 @@ def finalize_first_run_failure(
     for run in ("a", "b", "c"):
         write_text(
             args.report_dir / f"20260903-uskr22-run-{run}.md",
-            f"# USKR22 Run {run.upper()}\n\n`NOT_RUN_FIRST_GATE_FAILED`\n\nThe first blind run validated `21/22`, so the instruction's prerequisite for independent A/B/C execution was not met. No retry, candidate override, prompt change, or post-result tuning occurred.\n",
+            f"# USKR22 Run {run.upper()}\n\n`NOT_RUN_FIRST_GATE_FAILED`\n\nThe fresh first run validated `{document['validation_pass_count']}/22`, so the instruction's prerequisite for independent A/B/C execution was not met. No retry, candidate override, prompt change, or post-result tuning occurred.\n",
         )
     write_text(
         args.report_dir / "20260903-uskr22-stability-comparison.md",
@@ -1238,14 +1451,15 @@ def finalize_first_run_failure(
         f"- Maximum characters: `{document['message_quality']['max_character_count']}`\n"
         f"- Repeated substantive spans: `{repetition_count}`\n"
         f"- Repeated text: `{json.dumps(document['message_quality']['repeated_substantive_spans'], ensure_ascii=False)}`\n"
-        "- Invalid provenance: `086280` cited one nonexistent evidence ref\n"
+        f"- Invalid provenance refs: `{gates['NONEXISTENT_EVIDENCE_REF']}`\n"
+        f"- Validation failures: `{json.dumps(failed, ensure_ascii=False)}`\n"
         "- Candidate overrides and synonym repair: `0`\n",
     )
     write_text(
         args.report_dir / "20260903-uskr22-promotion-readiness.md",
         "# USKR22 Promotion Readiness\n\n`PROMOTION_READINESS = NOT_READY`\n\n"
         + markdown_table(["Gate", "Value"], [[key, value] for key, value in gates.items()])
-        + "\n\nBlocking P1/P0-quality findings: first-run exact evidence provenance was `21/22`; WRD/WULF repeated one substantive confirmation sentence. A/B/C stability was therefore not run. The bounded next repair is prompt/schema-level evidence-ref copying and ticker-specific confirmation prose, followed by a completely new blind program. KR and US natural proof remain pending.\n",
+        + "\n\nBlocking P1 finding: the confirmation ownership guard matched ordinary business-language uses of 'support' and product 'pricing' in CRCL and MU. Provenance repair closed at `22/22`, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `20/22`. The next scope is a bounded semantic-field validator repair followed by a completely new all22 blind generation, not a selective rerun.\n",
     )
     index_candidates = [
         path

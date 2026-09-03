@@ -6,10 +6,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 18.382585
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 22.4
           }
         ],
@@ -57,10 +59,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 17.157304
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 17.9
           }
         ],
@@ -98,7 +102,7 @@
       },
       "first_selected": {
         "confirmation": 17.9,
-        "downside_review": 14.45936,
+        "downside_review": 14.9,
         "pullback": [
           15.45,
           15.7
@@ -162,10 +166,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 353.787998
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 375.0
           }
         ],
@@ -218,10 +224,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 89.670191
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 97.0
           }
         ],
@@ -254,7 +262,7 @@
         "current_close": 80.68
       },
       "first_selected": {
-        "confirmation": 97.0,
+        "confirmation": 89.670191,
         "downside_review": 76.64856,
         "pullback": [
           80.640825,
@@ -274,10 +282,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 250.256325
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 250.0
           }
         ],
@@ -339,6 +349,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 1278.851879
           }
         ],
@@ -399,6 +410,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 3.678704
           }
         ],
@@ -460,6 +472,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 182.003405
           }
         ],
@@ -511,6 +524,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 2392.674432
           }
         ],
@@ -572,6 +586,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 382.678777
           }
         ],
@@ -616,8 +631,8 @@
         "confirmation": 382.678777,
         "downside_review": 328.096407,
         "pullback": [
-          318.0,
-          323.0
+          334.873011,
+          341.126989
         ],
         "trim": [
           358.961223,
@@ -633,10 +648,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 439.781794
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 432.0
           }
         ],
@@ -678,7 +695,7 @@
         "current_close": 415.5
       },
       "first_selected": {
-        "confirmation": 432.0,
+        "confirmation": 439.781794,
         "downside_review": 398.0,
         "pullback": [
           407.0,
@@ -698,10 +715,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 6.153512
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 6.68
           }
         ],
@@ -723,7 +742,7 @@
         "current_close": 5.77
       },
       "first_selected": {
-        "confirmation": 6.68,
+        "confirmation": 6.153512,
         "downside_review": 5.3,
         "pullback": [
           null,
@@ -743,10 +762,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 16.461814
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 18.4
           }
         ],
@@ -788,6 +809,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 3039041.7428
           }
         ],
@@ -832,8 +854,8 @@
         "confirmation": 3039041.7428,
         "downside_review": 1320000.0,
         "pullback": [
-          1190320.540012,
-          1301679.459988
+          1397000.0,
+          1420000.0
         ],
         "trim": [
           2934958.2572,
@@ -899,10 +921,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 402936.224195
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 344000.0
           }
         ],
@@ -945,10 +969,10 @@
       },
       "first_selected": {
         "confirmation": 344000.0,
-        "downside_review": 298000.0,
+        "downside_review": 325568.697293,
         "pullback": [
-          313000.0,
-          320000.0
+          332523.865417,
+          347476.134583
         ],
         "trim": [
           385063.775805,
@@ -964,10 +988,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 293295.836386
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 255000.0
           }
         ],
@@ -1009,7 +1035,7 @@
         "current_close": 250000.0
       },
       "first_selected": {
-        "confirmation": 293295.836386,
+        "confirmation": 255000.0,
         "downside_review": 218000.0,
         "pullback": [
           221865.993817,
@@ -1029,6 +1055,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 219883.2181
           }
         ],
@@ -1081,6 +1108,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 1217823.518708
           }
         ],
@@ -1133,10 +1161,12 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 155380.261741
           },
           {
             "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
             "level": 155800.0
           }
         ],
@@ -1194,6 +1224,7 @@
         "allowed_confirmation_levels": [
           {
             "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
             "level": 211872.542821
           }
         ],
@@ -1238,8 +1269,8 @@
         "confirmation": 211872.542821,
         "downside_review": 185103.437005,
         "pullback": [
-          200150.042518,
-          208349.957482
+          197802.735755,
+          210197.264245
         ],
         "trim": [
           206127.457179,

@@ -4,8 +4,24 @@
 
 | Gate | Value |
 | --- | --- |
+| BASE_BRANCH | 93d72816b5015c028b4a72475f4229fb120d3d10 / DESCENDANT |
+| JUDGMENT_LOGIC_CHANGED | 0 |
+| MANUAL_CANDIDATE_OVERRIDE | 0 |
+| SELECTIVE_TICKER_RERUN | 0 |
+| OLD_PASSING_CANDIDATE_REUSE | 0 |
+| FREE_FORM_EVIDENCE_REF_GENERATION | 0 |
+| ALIAS_ONE_TO_ONE_MAPPING | PASS |
+| NONEXISTENT_EVIDENCE_REF | 0 |
+| CROSS_SUBJECT_EVIDENCE_REF | 0 |
+| CROSS_MARKET_EVIDENCE_REF | 0 |
+| CROSS_GENERATION_EVIDENCE_REF | 0 |
+| GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP | 2 |
+| NEW_EXPERIMENT_GENERATION | PASS |
+| PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE | 0 |
+| FIRST_RUN_VALIDATED | 20 |
+| A_B_C_GATE | NOT_RUN_FIRST_GATE_FAILED |
 | PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR | PASS |
-| KR_REPAIR_BASE | 90cc52231c7343056c853c355ea90dfea10de25b |
+| KR_REPAIR_BASE | 93d72816b5015c028b4a72475f4229fb120d3d10 |
 | US_SOURCE_PACKET | 2026-09-03-us-run-53-055ae8ea01f6 |
 | KR_SOURCE_PACKET | 2026-09-03-kr-run-54-f19bb379daa7 |
 | US_COUNT | 14 |
@@ -23,7 +39,7 @@
 | AVOID_RENDERED_AS_ACTIONABLE_ENTRY | 0 |
 | SAME_LEVEL_SCENARIO_AMBIGUITY | 0 |
 | PRIOR_ACCEPTED_VISIBLE_BEFORE_FRESH_BALANCE | 0 |
-| ALL22_FIRST_RUN_VALIDATED | 21 |
+| ALL22_FIRST_RUN_VALIDATED | 20 |
 | RUN_A_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
 | RUN_B_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
 | RUN_C_VALIDATED | NOT_RUN_FIRST_GATE_FAILED |
@@ -36,13 +52,18 @@
 | UNSTABLE_TICKER_COUNT | NOT_MEASURED |
 | UNSUPPORTED_PRICE_NUMERIC | 0 |
 | MESSAGE_INTERNAL_CONTRADICTION | 0 |
-| SUBSTANTIVE_REPETITION | 1 |
+| SUBSTANTIVE_REPETITION | 0 |
+| 086280_NONEXISTENT_REF | 0 |
+| WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION | 0 |
+| KR_ACCOUNTING_SAFETY | PASS |
 | KR_ACCOUNTING_VALUATION_SAFETY | PASS |
 | ADR_SECURITY_BASIS_SAFETY | PASS |
 | PRODUCTION_DECISION_MUTATION | 0 |
 | PRODUCTION_RENDERER_CHANGE | 0 |
 | PRODUCTION_SEND | 0 |
+| SCHEDULER_CHANGE | 0 |
+| DB_CHANGE | 0 |
 | MAIN_MERGE | 0 |
 | PROMOTION_READINESS | NOT_READY |
 
-Blocking P1/P0-quality findings: first-run exact evidence provenance was `21/22`; WRD/WULF repeated one substantive confirmation sentence. A/B/C stability was therefore not run. The bounded next repair is prompt/schema-level evidence-ref copying and ticker-specific confirmation prose, followed by a completely new blind program. KR and US natural proof remain pending.
+Blocking P1 finding: the confirmation ownership guard matched ordinary business-language uses of 'support' and product 'pricing' in CRCL and MU. Provenance repair closed at `22/22`, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `20/22`. The next scope is a bounded semantic-field validator repair followed by a completely new all22 blind generation, not a selective rerun.

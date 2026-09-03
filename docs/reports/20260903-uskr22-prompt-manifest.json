@@ -2,8 +2,10 @@
   "batches": [
     {
       "batch": 1,
-      "bytes": 150138,
-      "sha256": "d61f3c5789341c7b281ed7c169b8f10d3861d84f12acb5b120ca3d44904cd05d",
+      "prompt_bytes": 141403,
+      "prompt_sha256": "e2b053a6cea8f360ae2eb6f48ca53c516dc011e07cb5e524e9b5a2e84b186046",
+      "schema_bytes": 57943,
+      "schema_sha256": "b789e658a49ba59ac5b58dc19fe6b9c7add43de19b4a9b82108e8cba413c145a",
       "tickers": [
         "CORZ",
         "CPNG",
@@ -13,8 +15,10 @@
     },
     {
       "batch": 2,
-      "bytes": 160422,
-      "sha256": "376bd7c0cc91e04345870c0dc842a143004df91b8503694a5bceb6ce511b6c54",
+      "prompt_bytes": 150570,
+      "prompt_sha256": "d4aefbf0361abc4d32bd8edcc49a68f20c58a97af8f1e56565499cc3c14bbdd1",
+      "schema_bytes": 58298,
+      "schema_sha256": "1fb7c654a2cd2cc0fc80631a96be79ee182b0abb9943c2392e1c588d57721263",
       "tickers": [
         "HUT",
         "IBM",
@@ -24,8 +28,10 @@
     },
     {
       "batch": 3,
-      "bytes": 149817,
-      "sha256": "9fe357563834e51cc23a826003b1707610d1503aee96c3861e4e28063a32bb68",
+      "prompt_bytes": 140933,
+      "prompt_sha256": "dfa3749dd45d04573973e7f6d433d3bff07a5460ec8e16a6a7227cb995f6eb6f",
+      "schema_bytes": 57911,
+      "schema_sha256": "2b3972bffa73e894db7b7e1f18dffb93231290fcce0a39a94fd21dbfef1b715e",
       "tickers": [
         "SKHY",
         "SNDK",
@@ -35,8 +41,10 @@
     },
     {
       "batch": 4,
-      "bytes": 70783,
-      "sha256": "d1c7263bf73ec23d6a9e19663f2b905d8169790b135b9cb039c01f601d5b5cb7",
+      "prompt_bytes": 67279,
+      "prompt_sha256": "a19b215c0c320e36d68dbc1fc3c5664c2b7948217930f1a26d3e7787169af750",
+      "schema_bytes": 29095,
+      "schema_sha256": "08c32ae7f3f4dbfabefed134994bdd96791b05e4453fa6c0b3716c8609672ef3",
       "tickers": [
         "WRD",
         "WULF"
@@ -44,8 +52,10 @@
     },
     {
       "batch": 5,
-      "bytes": 151501,
-      "sha256": "dcc678aa34f6010d5b2581d0f92cc0bffc61baef406dfe85fc42e2cce3b138d7",
+      "prompt_bytes": 142446,
+      "prompt_sha256": "feb59547732295004506205113b01db3ed16a8d768afafc4e732ab4324088344",
+      "schema_bytes": 58010,
+      "schema_sha256": "31a52585adf2aef1fe26a6e888bcd88e4f5b5923030977550592353eaccc301f",
       "tickers": [
         "000660",
         "003690",
@@ -55,8 +65,10 @@
     },
     {
       "batch": 6,
-      "bytes": 151429,
-      "sha256": "a859e6aededbb308a88951487ca6b85ab5464f214b0d318165f32498b863ac0e",
+      "prompt_bytes": 142037,
+      "prompt_sha256": "a21390a5cfd84a8d33e7e17e0b1a265b375693da70a971b809ff3dd28d814e81",
+      "schema_bytes": 58130,
+      "schema_sha256": "b42c30b156691b5a954c721e190bf3964a5815be569a6c133827f97e57059dc1",
       "tickers": [
         "010120",
         "012450",

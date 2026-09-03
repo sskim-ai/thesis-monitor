@@ -1,4 +1,4 @@
-# USKR22 First Blind Shadow Decisions
+# USKR22 Run FRESH FIRST
 
 | Ticker | Market | Direction | BUY:SELL | Lean | Confidence | New buyer | Holder | Entry mode |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -25,4 +25,4 @@
 | 047810 | KR | HOLD | 4.5:5.5 | SELL_LEAN | MEDIUM | WAIT | REVIEW | BOTH |
 | 086280 | KR | HOLD | 5.0:5.0 | NEUTRAL | MEDIUM | WAIT | HOLDABLE | BOTH |
 
-Validated: `20/22`. Distribution: `{"all": {"BUY": 7, "HOLD": 12, "SELL": 3}, "kr": {"BUY": 3, "HOLD": 5, "SELL": 0}, "us": {"BUY": 4, "HOLD": 7, "SELL": 3}}`. Invalid rows: `[{"ticker": "CRCL", "status": "FAIL", "errors": ["generic_confirmation_structure_model_owned"], "unsupported_evidence_refs": []}, {"ticker": "MU", "status": "FAIL", "errors": ["generic_confirmation_structure_model_owned"], "unsupported_evidence_refs": []}]`. No candidate was changed or rerun.
+Validated: `20/22`. Message quality: `FAIL`. Candidate overrides: `0`; post-result tuning: `0`.
