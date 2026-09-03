@@ -1,0 +1,3834 @@
+{
+  "contract": "kr-natural-run-facts-v1",
+  "target_date": "2026-09-03",
+  "target_market": "KR",
+  "source_packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "operating_revision": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "source_note": "No replay, rerun, or substitute provider fetch; values are copied from the primary natural packet and compacted primary run log.",
+  "subjects": [
+    {
+      "ticker": "000660",
+      "name": "SK하이닉스",
+      "industry": "Semiconductors",
+      "sector": "Technology",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:05:37.709512+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:05:39.619016+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 1596000.0,
+        "previous_close": 1613000.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": -2.860621,
+          "close": 1596000.0,
+          "close_location_pct": 41.758242,
+          "high": 1649000.0,
+          "low": 1558000.0,
+          "lower_wick_pct": 41.758242,
+          "open": 1643000.0,
+          "range_pct": 5.538649,
+          "trading_value": 4237728.0,
+          "upper_wick_pct": 6.593407,
+          "volume": 2628539.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 1543.67,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 3354.55,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 7192.0,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": 79318746000000.0,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 60542608000000.0,
+          "prose_eligible": false
+        },
+        "latest_operating_margin": {
+          "value": 76.32824654086185,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [
+            "net_income_exceeds_revenue",
+            "preliminary_profitability_outlier",
+            "unusually_high_or_low_operating_margin"
+          ],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [
+            "forward_bvps",
+            "forward_eps",
+            "forward_pe",
+            "forward_price_to_book",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue",
+            "trailing_pe",
+            "ttm_eps"
+          ],
+          "fields": {
+            "bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "forward_bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_modeled_forward_book_value",
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "denied"
+            },
+            "forward_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_modeled_forward_earnings",
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "denied"
+            },
+            "forward_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_modeled_forward_earnings",
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "denied"
+            },
+            "forward_price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_modeled_forward_book_value",
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "denied"
+            },
+            "historical_pb_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "current_trailing_pe_not_prose_eligible",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "denied"
+            },
+            "historical_pe_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "current_trailing_pe_not_prose_eligible",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "denied"
+            },
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_financial_quality_outlier",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003509",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "source_type": "formal",
+              "state": "denied",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "CIS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "latest_operating_margin": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_financial_quality_outlier",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_margin"
+              ],
+              "dependency_lineages": [
+                {
+                  "account_detail": "-",
+                  "account_id": "ifrs-full_Revenue",
+                  "account_name": "매출액",
+                  "amount": 79318746000000.0,
+                  "amount_period_end": "2026-06-30",
+                  "amount_period_start": "2026-04-01",
+                  "amount_period_type": "single_quarter",
+                  "amount_role": "current",
+                  "amount_variant": "standalone",
+                  "bsns_year": 2026,
+                  "contract": "financial-lineage-v2",
+                  "currency": "KRW",
+                  "denial_reason": null,
+                  "fs_div": "CFS",
+                  "lineage_verified": true,
+                  "logical_field": "revenue",
+                  "quality_state": "verified_usable",
+                  "rcept_no": "20260814003509",
+                  "reprt_code": "11012",
+                  "selected_for_canonical": true,
+                  "sj_div": "CIS",
+                  "sj_nm": "포괄손익계산서",
+                  "source_column": "thstrm_amount",
+                  "source_filing": "20260814003509",
+                  "source_labels": {
+                    "frmtrm_q_nm": "제 78 기 반기",
+                    "thstrm_nm": "제 79 기 반기"
+                  },
+                  "source_provider": "opendart",
+                  "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:thstrm_amount",
+                  "source_row_ordinal": "34",
+                  "source_type": "formal",
+                  "statement_basis": "consolidated",
+                  "statement_basis_source": "source_row_fs_div",
+                  "statement_basis_state": "verified_consolidated",
+                  "statement_type": "CIS"
+                },
+                {
+                  "account_detail": "-",
+                  "account_id": "dart_OperatingIncomeLoss",
+                  "account_name": "영업이익",
+                  "amount": 60542608000000.0,
+                  "amount_period_end": "2026-06-30",
+                  "amount_period_start": "2026-04-01",
+                  "amount_period_type": "single_quarter",
+                  "amount_role": "current",
+                  "amount_variant": "standalone",
+                  "bsns_year": 2026,
+                  "contract": "financial-lineage-v2",
+                  "currency": "KRW",
+                  "denial_reason": null,
+                  "fs_div": "CFS",
+                  "lineage_verified": true,
+                  "logical_field": "operating_income",
+                  "quality_state": "verified_usable",
+                  "rcept_no": "20260814003509",
+                  "reprt_code": "11012",
+                  "selected_for_canonical": true,
+                  "sj_div": "CIS",
+                  "sj_nm": "포괄손익계산서",
+                  "source_column": "thstrm_amount",
+                  "source_filing": "20260814003509",
+                  "source_labels": {
+                    "frmtrm_q_nm": "제 78 기 반기",
+                    "thstrm_nm": "제 79 기 반기"
+                  },
+                  "source_provider": "opendart",
+                  "source_row_identity": "20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+                  "source_row_ordinal": "6",
+                  "source_type": "formal",
+                  "statement_basis": "consolidated",
+                  "statement_basis_source": "source_row_fs_div",
+                  "statement_basis_state": "verified_consolidated",
+                  "statement_type": "CIS"
+                }
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003509",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:thstrm_amount+20260814003509:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "source_type": "formal",
+              "state": "denied",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "CIS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "latest_revenue": {
+              "account_identifier": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_financial_quality_outlier",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_revenue"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003509",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003509:11012:2026:CFS:CIS:ifrs-full_Revenue:매출액:-:34:thstrm_amount",
+              "source_type": "formal",
+              "state": "denied",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "CIS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "trailing_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_ttm_denominator",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "denied"
+            },
+            "ttm_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "critical_input_in_ttm_denominator",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "denied"
+            },
+            "valuation_relative_position": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "earnings_based_valuation_state_unavailable",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            },
+            "valuation_relative_position_reason": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "earnings_based_valuation_state_unavailable",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified_tainted",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "net_income_exceeds_revenue",
+                "unusually_high_or_low_operating_margin"
+              ],
+              "source_period": "2026-06-30",
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            }
+          },
+          "non_prose_fields": [
+            "forward_bvps",
+            "forward_eps",
+            "forward_pe",
+            "forward_price_to_book",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue",
+            "trailing_pe",
+            "ttm_eps",
+            "valuation_relative_position",
+            "valuation_relative_position_reason"
+          ],
+          "prose_eligible_fields": [
+            "bvps",
+            "historical_pb_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "price_to_book"
+          ],
+          "quality_reason_codes": [
+            "net_income_exceeds_revenue",
+            "preliminary_profitability_outlier",
+            "unusually_high_or_low_operating_margin"
+          ],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": "KRW",
+            "book_share_basis": "current_security",
+            "bvps": 368991.2112004984,
+            "bvps_denominator_period": "2026-06-30",
+            "contract": "valuation-coherence-v1",
+            "current_price": 1596000.0,
+            "price_currency": "KRW",
+            "price_to_book": 4.3253,
+            "price_to_book_basis_status": "directly_comparable",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": "latest owners-parent common equity / current common shares",
+            "price_to_book_source": "derived_trailing",
+            "reasons": [],
+            "status": "passed"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 1596000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "trailing_pe": {
+          "value": 7.0145,
+          "basis_status": "directly_comparable",
+          "prose_eligible": false
+        },
+        "price_to_book": {
+          "value": 4.3253,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_pe": {
+          "value": 9.2332,
+          "basis_status": "directly_comparable",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": 3.0808,
+          "basis_status": "directly_comparable",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": 38.4,
+        "historical_pb_percentile": 85.2,
+        "relative_position": "premium",
+        "relative_basis": "PBR 역사적 백분위 85",
+        "quality_reason_codes": [
+          "net_income_exceeds_revenue",
+          "preliminary_profitability_outlier",
+          "unusually_high_or_low_operating_margin"
+        ]
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-12",
+        "downside_surprises": [
+          "ASP 하락 또는 HBM4 지연"
+        ],
+        "level": "very_high",
+        "priced_in": [
+          "HBM4 램프업",
+          "AI 메모리 공급제약"
+        ],
+        "summary": "HBM4 실행과 높은 메모리 수익성 지속 기대가 상당 부분 반영됐다.",
+        "upside_surprises": [
+          "FCF·ROIC 추가 개선"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "003690",
+      "name": "코리안리",
+      "industry": "Insurance and Reinsurance",
+      "sector": "Financials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:05:47.955930+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-28",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:05:49.848264+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 15470.0,
+        "previous_close": 14850.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": 4.10498,
+          "close": 15470.0,
+          "close_location_pct": 77.647059,
+          "high": 15660.0,
+          "low": 14810.0,
+          "lower_wick_pct": 5.882353,
+          "open": 14860.0,
+          "range_pct": 5.720054,
+          "trading_value": 7604.0,
+          "upper_wick_pct": 22.352941,
+          "volume": 493160.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 186.22,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 142.86,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 1440.84,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 175045476922.0,
+          "prose_eligible": true
+        },
+        "latest_operating_margin": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "forward_bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "historical_pb_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "latest_operating_income": {
+              "account_identifier": "ifrs-full_ProfitLossFromOperatingActivities",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260828000557",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260828000557:11012:2026:CFS:CIS:ifrs-full_ProfitLossFromOperatingActivities:영업이익:-:59:thstrm_amount",
+              "source_type": "formal",
+              "state": "verified_usable",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "CIS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "trailing_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            },
+            "ttm_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            }
+          },
+          "non_prose_fields": [],
+          "prose_eligible_fields": [
+            "bvps",
+            "forward_bvps",
+            "forward_eps",
+            "forward_pe",
+            "forward_price_to_book",
+            "historical_pb_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "latest_operating_income",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps"
+          ],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-28",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": "KRW",
+            "book_share_basis": "current_security",
+            "bvps": 22746.584870043,
+            "bvps_denominator_period": "2026-06-30",
+            "contract": "valuation-coherence-v1",
+            "current_price": 15470.0,
+            "price_currency": "KRW",
+            "price_to_book": 0.6801,
+            "price_to_book_basis_status": "directly_comparable",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": "latest owners-parent common equity / current common shares",
+            "price_to_book_source": "derived_trailing",
+            "reasons": [],
+            "status": "passed"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 15470.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "trailing_pe": {
+          "value": 6.4191,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "price_to_book": {
+          "value": 0.6801,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_pe": {
+          "value": 6.4348,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_price_to_book": {
+          "value": 0.6294,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "historical_pe_percentile": null,
+        "historical_pb_percentile": null,
+        "relative_position": "premium",
+        "relative_basis": "PBR 역사적 백분위 97",
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-12",
+        "downside_surprises": [
+          "대형재해 손실 또는 갱신요율 약화"
+        ],
+        "level": "balanced",
+        "priced_in": [
+          "양호한 언더라이팅과 배당 기대"
+        ],
+        "summary": "보험영업 안정성과 자본환원 기대가 반영됐지만 지속 가능한 ROE 증명이 여전히 핵심이다.",
+        "upside_surprises": [
+          "ROE와 자본환원 동시 상향"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "005490",
+      "name": "POSCO홀딩스",
+      "industry": "Steel Manufacturing",
+      "sector": "Materials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:05:55.328783+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:05:57.228110+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 342000.0,
+        "previous_close": 330000.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": 2.702703,
+          "close": 342000.0,
+          "close_location_pct": 76.315789,
+          "high": 346500.0,
+          "low": 327500.0,
+          "lower_wick_pct": 28.947368,
+          "open": 333000.0,
+          "range_pct": 5.705706,
+          "trading_value": 110085.0,
+          "upper_wick_pct": 23.684211,
+          "volume": 323391.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 42.5,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 25.5,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 284.27,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": 19258684353345.0,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 819013515966.0,
+          "prose_eligible": false
+        },
+        "latest_operating_margin": {
+          "value": 4.252697125822862,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814000957",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814000957:opendart:dart_OperatingIncomeLoss:unknown:CIS:제 59 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "포괄손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "latest_operating_margin": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_margin"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814000957",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814000957:opendart:dart_OperatingIncomeLoss:unknown:CIS:제 59 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "포괄손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "latest_revenue": {
+              "account_identifier": "ifrs-full_Revenue",
+              "account_name": "revenue",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_revenue"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814000957",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814000957:opendart:ifrs-full_Revenue:unknown:CIS:제 59 기 반기:revenue",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "포괄손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "trailing_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            },
+            "ttm_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            }
+          },
+          "non_prose_fields": [
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue"
+          ],
+          "prose_eligible_fields": [
+            "bvps",
+            "historical_pb_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps"
+          ],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": "KRW",
+            "book_share_basis": "current_security",
+            "bvps": 759917.2911071572,
+            "bvps_denominator_period": "2026-06-30",
+            "contract": "valuation-coherence-v1",
+            "current_price": 342000.0,
+            "price_currency": "KRW",
+            "price_to_book": 0.45,
+            "price_to_book_basis_status": "directly_comparable",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": "latest owners-parent common equity / current common shares",
+            "price_to_book_source": "derived_trailing",
+            "reasons": [],
+            "status": "passed"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 342000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "trailing_pe": {
+          "value": 19.1941,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "price_to_book": {
+          "value": 0.45,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_pe": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": 54.2,
+        "historical_pb_percentile": 51.1,
+        "relative_position": "neutral",
+        "relative_basis": "PBR 역사적 백분위 51 · PER 역사적 백분위 54",
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-10",
+        "downside_surprises": [
+          "중국 철강 수요와 스프레드 악화",
+          "리튬 가격·가동률 부진과 추가 자금조달"
+        ],
+        "evidence_basis": [
+          "저장된 기업 논리와 구조화된 가격 규칙에 기반한 정성 기대 수준",
+          "실시간 컨센서스와 현재 멀티플 수치는 아직 자동 연결되지 않음"
+        ],
+        "level": "balanced",
+        "priced_in": [
+          "철강 업황의 점진적 개선",
+          "리튬·소재 손익 회복"
+        ],
+        "summary": "철강 회복과 리튬·소재 흑자 전환 기대가 공존하며 실제 ROIC·FCF 증명이 필요한 구간이다.",
+        "upside_surprises": [
+          "소재 흑자 전환과 FCF 개선이 예상보다 빠름",
+          "비핵심 자산 가치 현실화"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "005930",
+      "name": "삼성전자",
+      "industry": "Communications Equipment",
+      "sector": "Technology",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:06:02.906846+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:06:04.810805+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 250000.0,
+        "previous_close": 250500.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": -1.574803,
+          "close": 250000.0,
+          "close_location_pct": 58.333333,
+          "high": 255000.0,
+          "low": 243000.0,
+          "lower_wick_pct": 58.333333,
+          "open": 254000.0,
+          "range_pct": 4.724409,
+          "trading_value": 3444747.0,
+          "upper_wick_pct": 8.333333,
+          "volume": 13723105.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 307.83,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 766.85,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 7104.61,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": 171499470000000.0,
+          "prose_eligible": true
+        },
+        "latest_operating_income": {
+          "value": 89492412000000.0,
+          "prose_eligible": true
+        },
+        "latest_operating_margin": {
+          "value": 52.182325694650835,
+          "prose_eligible": true
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003699",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "source_type": "formal",
+              "state": "verified_usable",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "IS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "latest_operating_margin": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_margin"
+              ],
+              "dependency_lineages": [
+                {
+                  "account_detail": "-",
+                  "account_id": "ifrs-full_Revenue",
+                  "account_name": "매출액",
+                  "amount": 171499470000000.0,
+                  "amount_period_end": "2026-06-30",
+                  "amount_period_start": "2026-04-01",
+                  "amount_period_type": "single_quarter",
+                  "amount_role": "current",
+                  "amount_variant": "standalone",
+                  "bsns_year": 2026,
+                  "contract": "financial-lineage-v2",
+                  "currency": "KRW",
+                  "denial_reason": null,
+                  "fs_div": "CFS",
+                  "lineage_verified": true,
+                  "logical_field": "revenue",
+                  "quality_state": "verified_usable",
+                  "rcept_no": "20260814003699",
+                  "reprt_code": "11012",
+                  "selected_for_canonical": true,
+                  "sj_div": "IS",
+                  "sj_nm": "손익계산서",
+                  "source_column": "thstrm_amount",
+                  "source_filing": "20260814003699",
+                  "source_labels": {
+                    "frmtrm_q_nm": "제 57 기 반기",
+                    "thstrm_nm": "제 58 기 반기"
+                  },
+                  "source_provider": "opendart",
+                  "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+                  "source_row_ordinal": "23",
+                  "source_type": "formal",
+                  "statement_basis": "consolidated",
+                  "statement_basis_source": "source_row_fs_div",
+                  "statement_basis_state": "verified_consolidated",
+                  "statement_type": "IS"
+                },
+                {
+                  "account_detail": "-",
+                  "account_id": "dart_OperatingIncomeLoss",
+                  "account_name": "영업이익",
+                  "amount": 89492412000000.0,
+                  "amount_period_end": "2026-06-30",
+                  "amount_period_start": "2026-04-01",
+                  "amount_period_type": "single_quarter",
+                  "amount_role": "current",
+                  "amount_variant": "standalone",
+                  "bsns_year": 2026,
+                  "contract": "financial-lineage-v2",
+                  "currency": "KRW",
+                  "denial_reason": null,
+                  "fs_div": "CFS",
+                  "lineage_verified": true,
+                  "logical_field": "operating_income",
+                  "quality_state": "verified_usable",
+                  "rcept_no": "20260814003699",
+                  "reprt_code": "11012",
+                  "selected_for_canonical": true,
+                  "sj_div": "IS",
+                  "sj_nm": "손익계산서",
+                  "source_column": "thstrm_amount",
+                  "source_filing": "20260814003699",
+                  "source_labels": {
+                    "frmtrm_q_nm": "제 57 기 반기",
+                    "thstrm_nm": "제 58 기 반기"
+                  },
+                  "source_provider": "opendart",
+                  "source_row_identity": "20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+                  "source_row_ordinal": "6",
+                  "source_type": "formal",
+                  "statement_basis": "consolidated",
+                  "statement_basis_source": "source_row_fs_div",
+                  "statement_basis_state": "verified_consolidated",
+                  "statement_type": "IS"
+                }
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003699",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount+20260814003699:11012:2026:CFS:IS:dart_OperatingIncomeLoss:영업이익:-:6:thstrm_amount",
+              "source_type": "formal",
+              "state": "verified_usable",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "IS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "latest_revenue": {
+              "account_identifier": "ifrs-full_Revenue",
+              "account_name": "매출액",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_revenue"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003699",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003699:11012:2026:CFS:IS:ifrs-full_Revenue:매출액:-:23:thstrm_amount",
+              "source_type": "formal",
+              "state": "verified_usable",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "IS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "trailing_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            },
+            "ttm_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            }
+          },
+          "non_prose_fields": [],
+          "prose_eligible_fields": [
+            "bvps",
+            "historical_pb_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps"
+          ],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": "KRW",
+            "book_share_basis": "current_security",
+            "bvps": 98030.17482917414,
+            "bvps_denominator_period": "2026-06-30",
+            "contract": "valuation-coherence-v1",
+            "current_price": 250000.0,
+            "price_currency": "KRW",
+            "price_to_book": 2.5502,
+            "price_to_book_basis_status": "directly_comparable",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": "latest owners-parent common equity / current common shares",
+            "price_to_book_source": "derived_trailing",
+            "reasons": [],
+            "status": "passed"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 250000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "trailing_pe": {
+          "value": 11.1294,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "price_to_book": {
+          "value": 2.5502,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_pe": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": 31.1,
+        "historical_pb_percentile": 89.0,
+        "relative_position": "premium",
+        "relative_basis": "PBR 역사적 백분위 89",
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-12",
+        "downside_surprises": [
+          "HBM 인증·출하 지연",
+          "DX 부진과 CAPEX로 FCF가 기대 하회"
+        ],
+        "evidence_basis": [
+          "저장된 기업 논리와 구조화된 가격 규칙에 기반한 정성 기대 수준",
+          "실시간 컨센서스와 현재 멀티플 수치는 아직 자동 연결되지 않음"
+        ],
+        "level": "very_high",
+        "priced_in": [
+          "DS 이익 급증",
+          "HBM4·HBM4E 출하 확대",
+          "강한 영업현금흐름"
+        ],
+        "summary": "AI 메모리와 DS 이익 회복 기대가 매우 높다. HBM4 실행, mid-cycle DS 수익성, FCF·ROIC가 이미 높아진 기대를 넘어야 추가 재평가가 가능하다.",
+        "upside_surprises": [
+          "HBM 고객 채택과 DS 마진이 예상 상회",
+          "FCF 개선과 주주환원이 동시 확대"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "010120",
+      "name": "LS일렉트릭",
+      "industry": "Electrical Equipment",
+      "sector": "Industrials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:06:09.658155+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:06:11.625040+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 192100.0,
+        "previous_close": 195700.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": -3.467337,
+          "close": 192100.0,
+          "close_location_pct": 35.964912,
+          "high": 199400.0,
+          "low": 188000.0,
+          "lower_wick_pct": 35.964912,
+          "open": 199000.0,
+          "range_pct": 5.728643,
+          "trading_value": 99666.0,
+          "upper_wick_pct": 3.508772,
+          "volume": 516495.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 1561.76,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 1469.44,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 10026.52,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 178520071669.0,
+          "prose_eligible": false
+        },
+        "latest_operating_margin": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": null,
+              "amount_period_start": null,
+              "amount_period_type": null,
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "unknown",
+              "source_filing_identifier": "20260814003088",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003088:opendart:dart_OperatingIncomeLoss:unknown:CIS:제 53 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "포괄손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "valuation_relative_position": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            },
+            "valuation_relative_position_reason": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            }
+          },
+          "non_prose_fields": [
+            "latest_operating_income",
+            "valuation_relative_position",
+            "valuation_relative_position_reason"
+          ],
+          "prose_eligible_fields": [],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": null,
+            "book_share_basis": "unknown",
+            "bvps": null,
+            "bvps_denominator_period": null,
+            "contract": "valuation-coherence-v1",
+            "current_price": 192100.0,
+            "price_currency": "KRW",
+            "price_to_book": null,
+            "price_to_book_basis_status": "insufficient_metadata",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": null,
+            "price_to_book_source": "unavailable",
+            "reasons": [],
+            "status": "not_applicable"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 192100.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "unknown",
+        "trailing_pe": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "price_to_book": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "forward_pe": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": null,
+        "historical_pb_percentile": null,
+        "relative_position": "unknown",
+        "relative_basis": null,
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-12",
+        "downside_surprises": [
+          "수주 모멘텀 둔화 또는 프로젝트 지연",
+          "영업이익률의 의미 있는 하락",
+          "매출채권·재고 증가와 FCF 부진으로 성장의 현금 전환이 약해짐"
+        ],
+        "evidence_basis": [
+          "2026-08-12 최신 snapshot: trailing PER 15.95배, PBR 3.00배",
+          "2026-08-12 재분석에서 역사적 PER·PBR percentile이 이전 snapshot과 크게 달라 극단적 고평가 판단을 보류"
+        ],
+        "level": "elevated",
+        "priced_in": [
+          "2026년 2분기 영업이익 고성장과 두 자릿수 영업이익률",
+          "북미 데이터센터 및 전력 인프라 수요의 지속",
+          "대형 수주와 수주잔고 확대가 향후 매출 성장으로 이어질 것이라는 기대"
+        ],
+        "summary": "AI 데이터센터·북미 전력망 투자와 2026년 2분기 고성장 실적이 주가에 상당 부분 반영된 상태로 본다. 다만 현재 trailing PER 약 15.95배, PBR 약 3.00배의 역사적 percentile이 snapshot 간 크게 달라 극단적 고평가 여부는 확정하지 않는다. 향후 시장 기대의 정당성은 수주잔고의 매출 전환, 11%대 마진 지속, FCF·ROIC 개선으로 검증한다.",
+        "upside_surprises": [
+          "예상보다 큰 북미 데이터센터·전력설비 신규수주와 수주잔고 추가 확대",
+          "11%대 이상 영업이익률의 지속 또는 추가 개선",
+          "수주 증가와 동시에 영업현금흐름·FCF·ROIC 개선"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "012450",
+      "name": "한화에어로스페이스",
+      "industry": "Aerospace Manufacturing",
+      "sector": "Industrials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:06:16.796685+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:06:18.732996+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 1047000.0,
+        "previous_close": 1025000.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": 1.15942,
+          "close": 1047000.0,
+          "close_location_pct": 55.555556,
+          "high": 1075000.0,
+          "low": 1012000.0,
+          "lower_wick_pct": 36.507937,
+          "open": 1035000.0,
+          "range_pct": 6.086957,
+          "trading_value": 103291.0,
+          "upper_wick_pct": 44.444444,
+          "volume": 98743.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 1493.46,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 3946.38,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 25631.14,
+            "actual_count": 300,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 1365484214000.0,
+          "prose_eligible": false
+        },
+        "latest_operating_margin": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": null,
+              "amount_period_start": null,
+              "amount_period_type": null,
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "unknown",
+              "source_filing_identifier": "20260814003198",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003198:opendart:dart_OperatingIncomeLoss:unknown:CIS:제 50 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "포괄손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "valuation_relative_position": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            },
+            "valuation_relative_position_reason": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            }
+          },
+          "non_prose_fields": [
+            "latest_operating_income",
+            "valuation_relative_position",
+            "valuation_relative_position_reason"
+          ],
+          "prose_eligible_fields": [],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": null,
+            "book_share_basis": "unknown",
+            "bvps": null,
+            "bvps_denominator_period": null,
+            "contract": "valuation-coherence-v1",
+            "current_price": 1047000.0,
+            "price_currency": "KRW",
+            "price_to_book": null,
+            "price_to_book_basis_status": "insufficient_metadata",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": null,
+            "price_to_book_source": "unavailable",
+            "reasons": [],
+            "status": "not_applicable"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 1047000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "unknown",
+        "trailing_pe": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "price_to_book": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "forward_pe": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": null,
+        "historical_pb_percentile": null,
+        "relative_position": "unknown",
+        "relative_basis": null,
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-12",
+        "downside_surprises": [
+          "대형 수주 모멘텀 둔화 또는 수주잔고 감소",
+          "지상방산 마진의 의미 있는 하락",
+          "기존 프로젝트 인도 지연과 운전자본 악화",
+          "미국 확장 M&A의 과도한 인수가격·추가 자본투입·손실 부담"
+        ],
+        "evidence_basis": [
+          "2026년 2분기 잠정 연결 매출 9조2,929억원, 영업이익 1조3,655억원, 영업이익률 14.7%",
+          "2026년 2분기 지상방산 매출 2조1,075억원, 영업이익 5,330억원, 영업이익률 약 25%",
+          "지상방산 수주잔고 약 38.3조원",
+          "2026-08-11 오스탈 미국 사업부 인수 검토 관련 가격·방식·시점 미확정",
+          "현재 snapshot에서 안전한 EPS·BVPS가 확인되지 않아 PER/PBR은 사용하지 않음"
+        ],
+        "level": "elevated",
+        "priced_in": [
+          "유럽·중동 국방예산 확대와 K9·천무 수출 지속",
+          "2026년 2분기 연결 영업이익 1조3,655억원과 14.7% 영업이익률",
+          "지상방산 수주잔고 약 38.3조원이 향후 실적 가시성을 제공할 것이라는 기대",
+          "미국 방산시장 진출 가능성"
+        ],
+        "summary": "유럽 재무장, K9·천무 수출, 약 38.3조원 지상방산 수주잔고, 미국 자주포 및 해양방산 확장 기대가 주가에 상당 부분 반영된 상태다. 현재 snapshot에서 안전한 EPS·BVPS가 확인되지 않아 PER/PBR 기반 고평가·저평가 판단은 보류한다. 향후 추가 재평가는 신규 대형 수주, 높은 지상방산 마진 지속, FCF 개선과 미국 확장 성과가 기대를 넘어서는지에 달려 있다.",
+        "upside_surprises": [
+          "미국 차세대 자주포 사업 수주 또는 대형 유럽·중동 추가 계약",
+          "지상방산 20%대 이상 영업이익률의 장기 지속",
+          "수주잔고 증가와 동시에 FCF 개선",
+          "오스탈 미국 사업부 인수 또는 미국 해양방산 확장이 합리적 조건과 수주 시너지로 구체화"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "047810",
+      "name": "한국항공우주산업",
+      "industry": "Aerospace Manufacturing",
+      "sector": "Industrials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:06:24.038620+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "partial"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:06:25.878745+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 125000.0,
+        "previous_close": 122600.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": 1.626016,
+          "close": 125000.0,
+          "close_location_pct": 68.627451,
+          "high": 126600.0,
+          "low": 121500.0,
+          "lower_wick_pct": 29.411765,
+          "open": 123000.0,
+          "range_pct": 4.146341,
+          "trading_value": 33001.0,
+          "upper_wick_pct": 31.372549,
+          "volume": 265233.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 115.15,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 165.39,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 464.33,
+            "actual_count": 184,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 48441878616.0,
+          "prose_eligible": true
+        },
+        "latest_operating_margin": {
+          "value": null,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "영업이익(손실)",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": "consolidated",
+              "currency": "KRW",
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": [],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": "financial-lineage-v2",
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814003309",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814003309:11012:2026:CFS:CIS:dart_OperatingIncomeLoss:영업이익(손실):-:7:thstrm_amount",
+              "source_type": "formal",
+              "state": "verified_usable",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "fs_div": "CFS",
+                "sj_div": "CIS",
+                "source_column": "thstrm_amount"
+              },
+              "statement_basis_source": "source_row_fs_div",
+              "statement_basis_state": "verified_consolidated"
+            },
+            "valuation_relative_position": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            },
+            "valuation_relative_position_reason": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "security_identity_unverified",
+              "denominator_period": null,
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_statistics",
+                "security_identity.current_security_basis"
+              ],
+              "dependency_periods": [],
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [
+                "security_identity_unverified"
+              ],
+              "source_period": null,
+              "source_type": "derived_valuation_state",
+              "state": "unknown"
+            }
+          },
+          "non_prose_fields": [
+            "valuation_relative_position",
+            "valuation_relative_position_reason"
+          ],
+          "prose_eligible_fields": [
+            "latest_operating_income"
+          ],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": null,
+            "book_share_basis": "unknown",
+            "bvps": null,
+            "bvps_denominator_period": null,
+            "contract": "valuation-coherence-v1",
+            "current_price": 125000.0,
+            "price_currency": "KRW",
+            "price_to_book": null,
+            "price_to_book_basis_status": "insufficient_metadata",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": null,
+            "price_to_book_source": "unavailable",
+            "reasons": [],
+            "status": "not_applicable"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 125000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "unknown",
+        "trailing_pe": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "price_to_book": {
+          "value": null,
+          "basis_status": "insufficient_metadata",
+          "prose_eligible": false
+        },
+        "forward_pe": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "forward_price_to_book": {
+          "value": null,
+          "basis_status": "not_applicable",
+          "prose_eligible": false
+        },
+        "historical_pe_percentile": null,
+        "historical_pb_percentile": null,
+        "relative_position": "unknown",
+        "relative_basis": null,
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-31",
+        "downside_surprises": [
+          "KF-21 양산 또는 인도 지연",
+          "FA-50 신규수주 부진",
+          "영업이익률 4~6%대 장기화",
+          "수주잔고 감소 또는 신규수주 목표 미달",
+          "외국인·기관 매도 지속과 장기 지지구조 훼손"
+        ],
+        "evidence_basis": [
+          "2026년 2분기 매출 약 1조1,679억원, 영업이익 약 484억원, 영업이익률 약 4.1%",
+          "2026년 상반기 매출 증가에도 영업이익 감소로 마진 정상화 필요",
+          "KF-21 체계개발 완료 및 양산·인도 단계 전환",
+          "FA-50 해외 운용국 확대와 추가 수주 사례",
+          "2026-08-31 OHLCV 분석: 130,000원 지지 판별, 120,500~126,500원 1차 눌림, 150,300~155,800원 중기 회복 확인 구간"
+        ],
+        "level": "elevated",
+        "priced_in": [
+          "KF-21 양산 확대와 수출 가능성",
+          "FA-50의 지속적인 해외수주",
+          "향후 영업이익률 정상화",
+          "글로벌 방산 수요와 국내 방위산업 투자 확대"
+        ],
+        "summary": "현재 주가는 2026년 이익 자체보다 2027~2028년 KF-21·FA-50 대량 인도, 추가 수출, 마진 정상화 기대를 상당 부분 반영하고 있다. 2026년 2분기 어닝쇼크로 기대는 고점 대비 낮아졌지만 아직 저평가·저기대 구간은 아니다.",
+        "upside_surprises": [
+          "KF-21 대형 수출 계약의 조기 확정",
+          "FA-50 추가 대형 계약 및 옵션 실행",
+          "영업이익률의 빠른 7~10%대 회복",
+          "신규수주와 수주잔고가 회사 목표를 의미 있게 상회",
+          "150,300~155,800원 회복과 함께 외국인·기관 수급 전환"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    },
+    {
+      "ticker": "086280",
+      "name": "현대글로비스",
+      "industry": "Transportation and Logistics",
+      "sector": "Industrials",
+      "source_readiness": "CURRENT",
+      "freshness": {
+        "price": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "technical": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03T16:06:30.963052+09:00",
+          "quality": "fresh"
+        },
+        "supply": {
+          "state": "CURRENT",
+          "as_of": "2026-09-03"
+        },
+        "earnings": {
+          "state": "CURRENT",
+          "period": "2026-06-30",
+          "full_filing_date": "2026-08-14",
+          "quality": "fresh"
+        },
+        "valuation": {
+          "state": "PARTIAL",
+          "calculated_at": "2026-09-03T07:06:32.820623+00:00",
+          "quality": "partial"
+        },
+        "company_event": {
+          "state": "PARTIAL",
+          "quality": "fresh",
+          "selected_fact_count": 0,
+          "reason": "MISSING_FROM_NATURAL_ARTIFACTS"
+        }
+      },
+      "price": {
+        "current_close": 202000.0,
+        "previous_close": 195000.0,
+        "currency": "KRW",
+        "as_of_date": "2026-09-03",
+        "exchange_trade_date": "2026-09-03",
+        "price_basis": "close",
+        "daily_ohlc": {
+          "body_pct": 2.746694,
+          "close": 202000.0,
+          "close_location_pct": 70.149254,
+          "high": 206000.0,
+          "low": 192600.0,
+          "lower_wick_pct": 29.850746,
+          "open": 196600.0,
+          "range_pct": 6.81587,
+          "trading_value": 43074.0,
+          "upper_wick_pct": 29.850746,
+          "volume": 214691.0
+        },
+        "window_returns": {
+          "semantics": "Source-owned full-window period_return_pct; not relabeled as 1-day/1-week/1-month.",
+          "daily": {
+            "period_return_pct": 125.61,
+            "actual_count": 1000,
+            "latest_date": "2026-09-03"
+          },
+          "weekly": {
+            "period_return_pct": 72.58,
+            "actual_count": 600,
+            "latest_date": "2026-08-31"
+          },
+          "monthly": {
+            "period_return_pct": 573.06,
+            "actual_count": 250,
+            "latest_date": "2026-09-01"
+          }
+        }
+      },
+      "earnings": {
+        "latest_reporting_period": "2026-06-30",
+        "period_type": "Q2",
+        "period_scope": "half-year",
+        "financial_currency": "KRW",
+        "latest_revenue": {
+          "value": 8705366003397.0,
+          "prose_eligible": false
+        },
+        "latest_operating_income": {
+          "value": 495063379908.0,
+          "prose_eligible": false
+        },
+        "latest_operating_margin": {
+          "value": 5.6868761142818895,
+          "prose_eligible": false
+        },
+        "attributable_income": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "guidance": {
+          "value": null,
+          "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+        },
+        "quality": {
+          "critical_reason_codes": [],
+          "decision_version": "financial-quality-taint-v2",
+          "denied_fields": [],
+          "fields": {
+            "bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "forward_bvps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_earnings_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "forward_price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "FY1",
+              "dependency_fields": [
+                "modeled_forward_book_value_inputs"
+              ],
+              "dependency_periods": [
+                "2024-09-30",
+                "2024-12-31",
+                "2025-03-31",
+                "2025-06-30",
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "FY1",
+              "source_type": "modeled_forward",
+              "state": "caution_usable"
+            },
+            "historical_pb_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pb_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "price_to_book",
+                "historical_pb_distribution"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_price_to_book",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_percentile": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "historical_pe_statistics.current_value": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "trailing_pe",
+                "historical_pe_distribution"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "historical_trailing_pe",
+              "state": "verified_usable"
+            },
+            "latest_operating_income": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_income"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814002854",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814002854:opendart:dart_OperatingIncomeLoss:unknown:IS:제 26 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "latest_operating_margin": {
+              "account_identifier": "dart_OperatingIncomeLoss",
+              "account_name": "operating_income",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_operating_margin"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814002854",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814002854:opendart:dart_OperatingIncomeLoss:unknown:IS:제 26 기 반기:operating_income",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "latest_revenue": {
+              "account_identifier": "ifrs-full_Revenue",
+              "account_name": "revenue",
+              "amount_period_end": "2026-06-30",
+              "amount_period_start": "2026-04-01",
+              "amount_period_type": "single_quarter",
+              "comparison_period_end": null,
+              "comparison_period_start": null,
+              "comparison_type": null,
+              "consolidated_separate_basis": null,
+              "currency": null,
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": "direct_financial_lineage_unverified",
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings.latest_revenue"
+              ],
+              "dependency_lineages": null,
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "financial_lineage_contract": null,
+              "lineage_verification_status": "unverified",
+              "prose_eligible": false,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "single_quarter_cumulative_flag": "single_quarter",
+              "source_filing_identifier": "20260814002854",
+              "source_period": "2026-06-30",
+              "source_row_identity": "20260814002854:opendart:ifrs-full_Revenue:unknown:IS:제 26 기 반기:revenue",
+              "source_type": "full_statement",
+              "state": "unknown",
+              "statement_basis_contract": "financial-statement-basis-v1",
+              "statement_basis_evidence": {
+                "embedded_fs_div": "UNKNOWN",
+                "row_fs_div": "UNKNOWN",
+                "statement_name": "손익계산서"
+              },
+              "statement_basis_source": null,
+              "statement_basis_state": "unknown"
+            },
+            "price_to_book": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "book_value_denominator"
+              ],
+              "dependency_periods": [
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "full_statement",
+              "state": "verified_usable"
+            },
+            "trailing_pe": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            },
+            "ttm_eps": {
+              "decision_version": "financial-quality-taint-v2",
+              "denial_reason": null,
+              "denominator_period": "2026-06-30",
+              "dependency_fields": [
+                "earnings_quarter_series.eps"
+              ],
+              "dependency_periods": [
+                "2025-09-30",
+                "2025-12-31",
+                "2026-03-31",
+                "2026-06-30"
+              ],
+              "lineage_verification_status": "verified",
+              "prose_eligible": true,
+              "provider": "opendart",
+              "quality_reason_codes": [],
+              "source_period": "2026-06-30",
+              "source_type": "derived_trailing",
+              "state": "verified_usable"
+            }
+          },
+          "non_prose_fields": [
+            "latest_operating_income",
+            "latest_operating_margin",
+            "latest_revenue"
+          ],
+          "prose_eligible_fields": [
+            "bvps",
+            "forward_bvps",
+            "forward_eps",
+            "forward_pe",
+            "forward_price_to_book",
+            "historical_pb_statistics.current_percentile",
+            "historical_pb_statistics.current_value",
+            "historical_pe_statistics.current_percentile",
+            "historical_pe_statistics.current_value",
+            "price_to_book",
+            "trailing_pe",
+            "ttm_eps"
+          ],
+          "quality_reason_codes": [],
+          "source_snapshot": {
+            "filing_date": "2026-08-14",
+            "fiscal_year": 2026,
+            "is_cumulative": true,
+            "period": "2026-06-30",
+            "period_scope": "half-year",
+            "period_type": "Q2",
+            "provider": "opendart",
+            "source_type": "full_statement"
+          },
+          "valuation_coherence": {
+            "book_currency": "KRW",
+            "book_share_basis": "current_security",
+            "bvps": 145223.79974345333,
+            "bvps_denominator_period": "2026-06-30",
+            "contract": "valuation-coherence-v1",
+            "current_price": 202000.0,
+            "price_currency": "KRW",
+            "price_to_book": 1.391,
+            "price_to_book_basis_status": "directly_comparable",
+            "price_to_book_denominator_period": "2026-06-30",
+            "price_to_book_method": "latest owners-parent common equity / current common shares",
+            "price_to_book_source": "derived_trailing",
+            "reasons": [],
+            "status": "passed"
+          }
+        }
+      },
+      "valuation": {
+        "quality": "partial",
+        "current_price": 202000.0,
+        "price_as_of": "2026-09-03",
+        "currency": "KRW",
+        "security_identity_state": "verified_non_depositary",
+        "trailing_pe": {
+          "value": 9.8306,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "price_to_book": {
+          "value": 1.391,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_pe": {
+          "value": 9.0258,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "forward_price_to_book": {
+          "value": 1.3882,
+          "basis_status": "directly_comparable",
+          "prose_eligible": true
+        },
+        "historical_pe_percentile": 89.2,
+        "historical_pb_percentile": 84.1,
+        "relative_position": "premium",
+        "relative_basis": "PER 역사적 백분위 89 · PBR 역사적 백분위 84",
+        "quality_reason_codes": []
+      },
+      "market_expectations": {
+        "as_of_date": "2026-08-10",
+        "downside_surprises": [
+          "완성차 판매·운임 둔화",
+          "운전자본과 CAPEX 부담 확대"
+        ],
+        "evidence_basis": [
+          "저장된 기업 논리와 구조화된 가격 규칙에 기반한 정성 기대 수준",
+          "실시간 컨센서스와 현재 멀티플 수치는 아직 자동 연결되지 않음"
+        ],
+        "level": "elevated",
+        "priced_in": [
+          "완성차 물류 성장",
+          "수익성 개선과 안정적 현금흐름"
+        ],
+        "summary": "양호한 수급과 장기 성장 기대가 반영됐으나 높은 가격대에서 실적 상향이 뒤따라야 한다.",
+        "upside_surprises": [
+          "비계열 물량과 마진이 예상 상회",
+          "FCF와 주주환원 확대"
+        ]
+      },
+      "business_event_evidence": {
+        "selected_facts": [],
+        "state": "MISSING_FROM_NATURAL_ARTIFACTS"
+      }
+    }
+  ]
+}

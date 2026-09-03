@@ -1,0 +1,245 @@
+{
+  "contract": "kr-natural-run-proof-v1",
+  "target_date": "2026-09-03",
+  "target_market": "KR",
+  "work_instruction_commit": "6c0dde576ad8253bd4791b20ed0857af92f13551",
+  "operating_revision": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "authoritative_run": {
+    "identified": "PASS",
+    "run_id": "54",
+    "source_run_status": "success",
+    "primary_packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+    "delivered_packet_id": "2026-09-03-kr-run-54-78ed269de3df",
+    "timezone": "Asia/Seoul",
+    "scheduler_unit": "com.seungsoo.thesis-monitor.kr-close",
+    "invocation": "python -m app.jobs.monitor_daily --market kr"
+  },
+  "timeline": [
+    {
+      "role": "PRIMARY",
+      "scheduled_at": "2026-09-03T16:05:00+09:00",
+      "observed_at": "2026-09-03T16:05:05.806705+09:00",
+      "analysis_completed_at": "2026-09-03T16:06:33.294414+09:00",
+      "analysis_action": "fresh",
+      "packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+      "delivery_action": "held_for_ai_review",
+      "exit_code": 0
+    },
+    {
+      "role": "BACKUP",
+      "scheduled_at": "2026-09-03T16:20:00+09:00",
+      "observed_at": "2026-09-03T16:20:01.866945+09:00",
+      "artifact_recorded_at": "2026-09-03T16:20:13+09:00",
+      "analysis_action": "reuse",
+      "analysis_status": "already_completed",
+      "packet_id": "2026-09-03-kr-run-54-b081eb8a0619",
+      "delivery_action": "held_for_ai_review",
+      "exit_code": 0
+    },
+    {
+      "role": "LATE_BACKUP",
+      "scheduled_at": "2026-09-03T16:50:00+09:00",
+      "observed_at": "2026-09-03T16:50:03.252341+09:00",
+      "artifact_recorded_at": "2026-09-03T16:50:14+09:00",
+      "analysis_action": "reuse",
+      "analysis_status": "already_completed",
+      "packet_id": "2026-09-03-kr-run-54-78ed269de3df",
+      "delivery_action": "held_for_ai_review",
+      "exit_code": 0
+    },
+    {
+      "role": "FALLBACK_DELIVERY",
+      "scheduled_at": "2026-09-03T17:10:00+09:00",
+      "dispatched_at": "2026-09-03T17:10:06.739586+09:00",
+      "receipt_recorded_at": "2026-09-03T17:10:18+09:00",
+      "packet_id": "2026-09-03-kr-run-54-78ed269de3df",
+      "delivery_mode": "deterministic_fallback",
+      "status": "sent",
+      "sent_count": 9
+    }
+  ],
+  "pipeline": {
+    "source_ready_count": 8,
+    "source_failure_count": 0,
+    "technical": {
+      "subject_count": 8,
+      "full_count": 8,
+      "partial_safe_count": 0,
+      "unavailable_count": 0,
+      "request_count": 24,
+      "success_count": 24,
+      "retry_count": 0
+    },
+    "packet_persistence": {
+      "eligible": true,
+      "hard_errors": []
+    },
+    "ai_ready_count": 8,
+    "network_preflight": "NOT_PRESENT_IN_THIS_REVISION",
+    "codex_app_server": "NOT_PRESENT_IN_THIS_REVISION",
+    "model_reached_count": "NOT_PRESENT_IN_THIS_REVISION",
+    "candidate": {
+      "set_count": 1,
+      "item_count": 9,
+      "stock_count": 8,
+      "market_count": 1,
+      "initial_status": "rejected",
+      "initial_errors": [
+        "market_review:numeric_usage_semantic_mismatch:market:relative:IWM:SPY:fields.relative_return_pct",
+        "market_review:numbers_without_provenance:important_changes[2].text:0.7",
+        "000660:valuation_interpretation_multiple_occurrences:v_hist_pbr",
+        "000660:valuation_interpretation_occurrence_uncovered:valuation_analysis.text:94",
+        "000660:valuation_interpretation_occurrence_uncovered:valuation_analysis.text:125",
+        "000660:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:PBR 역사적 백분위 85.2%"
+      ]
+    },
+    "accepted": {
+      "set_count": 1,
+      "item_count": 9,
+      "stock_count": 8,
+      "market_count": 1,
+      "validation_status": "passed",
+      "quality_receipt_scope": {
+        "message_count": 3,
+        "stock_count": 2,
+        "stock_tickers": [
+          "000660",
+          "003690"
+        ],
+        "status": "passed"
+      }
+    },
+    "explicit_v2_count": 0,
+    "decision_canary_state": "V2_DECISION_SUPPRESSED_SAFE",
+    "ai_assisted_delivery": {
+      "status": "pending",
+      "delivery_count": 9,
+      "sent_count": 0,
+      "pending_count": 9
+    },
+    "fallback_count": 9,
+    "delivery_count": 9
+  },
+  "delivery": {
+    "mode": "deterministic_fallback",
+    "status": "sent",
+    "market_message_count": 1,
+    "stock_message_count": 8,
+    "duplicate_delivery_count": 0,
+    "delivered_tickers": [
+      "000660",
+      "003690",
+      "005490",
+      "005930",
+      "010120",
+      "012450",
+      "047810",
+      "086280"
+    ],
+    "fallback_and_v2_double_send_count": 0,
+    "user_visible_night_futures": 0
+  },
+  "backup": {
+    "classification": "DEDUPE_SUPPRESSED",
+    "detail": "16:20 reused already-completed analysis and created deterministic artifacts but no delivery receipt; 16:50 also reused analysis and its packet was later delivered once by the 17:10 fallback scheduler.",
+    "provider_calls": {
+      "primary": {
+        "requests": 42,
+        "successes": 42,
+        "failures": 0,
+        "retries": 0
+      },
+      "backup_1620": {
+        "requests": 42,
+        "successes": 42,
+        "failures": 0,
+        "retries": 0
+      },
+      "late_backup_1650": {
+        "requests": 42,
+        "successes": 42,
+        "failures": 0,
+        "retries": 0
+      }
+    }
+  },
+  "telemetry": {
+    "scheduler_unit": "com.seungsoo.thesis-monitor.krx-publication-telemetry",
+    "scheduled_at": "2026-09-03T16:05:00+09:00",
+    "observed_at": "2026-09-03T16:05:05.526690Z",
+    "exit_code": 0,
+    "status": "MARKET_COMPLETED_PROVIDER_PENDING",
+    "current_snapshot_promotable": false,
+    "endpoint_requests": 4,
+    "http_200_count": 4,
+    "empty_count": 4,
+    "failure_count": 0,
+    "provider_dates": [],
+    "reason_codes": [
+      "all_core_endpoints_returned_empty_200"
+    ],
+    "bas_dd_20260903_night_present": false,
+    "night_futures": {
+      "expected_session": "2026-09-02",
+      "products": [
+        "KRX_KOSPI200_NIGHT_FUT",
+        "KRX_KOSDAQ150_NIGHT_FUT"
+      ],
+      "verified_count": 0,
+      "user_visible_count": 0
+    }
+  },
+  "counts": {
+    "expected_kr_cohort": 8,
+    "actual_kr_cohort": 8,
+    "supply_available_count": 8,
+    "valuation_safe_count": 5,
+    "production_directional_balance_present_count": 0,
+    "production_new_buyer_view_present_count": 8,
+    "production_holder_view_present_count": 8
+  },
+  "safety": {
+    "fresh_provider_fetch_for_substitution": 0,
+    "model_rerun": 0,
+    "replay": 0,
+    "production_mutation": 0,
+    "telegram_resend": 0
+  },
+  "gates": {
+    "TARGET_DATE": "2026-09-03",
+    "TARGET_MARKET": "KR",
+    "AUTHORITATIVE_RUN_IDENTIFIED": "PASS",
+    "AUTHORITATIVE_RUN_ID": "54",
+    "OPERATING_REVISION": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+    "PRIMARY_EXIT_CODE": 0,
+    "TELEMETRY_EXIT_CODE": 0,
+    "BACKUP_EXIT_CODE": 0,
+    "EXPECTED_KR_COHORT": 8,
+    "ACTUAL_KR_COHORT": 8,
+    "SOURCE_READY_COUNT": 8,
+    "TECHNICAL_FULL_COUNT": 8,
+    "TECHNICAL_PARTIAL_SAFE_COUNT": 0,
+    "TECHNICAL_UNAVAILABLE_COUNT": 0,
+    "AI_READY_COUNT": 8,
+    "MODEL_REACHED_COUNT": "NOT_PRESENT_IN_THIS_REVISION",
+    "CANDIDATE_COUNT": 9,
+    "ACCEPTED_COUNT": 9,
+    "EXPLICIT_V2_COUNT": 0,
+    "FALLBACK_COUNT": 9,
+    "MARKET_MESSAGE_COUNT": 1,
+    "STOCK_MESSAGE_COUNT": 8,
+    "DUPLICATE_DELIVERY_COUNT": 0,
+    "USER_VISIBLE_NIGHT_FUTURES": 0,
+    "SUPPLY_AVAILABLE_COUNT": 8,
+    "VALUATION_SAFE_COUNT": 5,
+    "PRODUCTION_DIRECTIONAL_BALANCE_PRESENT_COUNT": 0,
+    "PRODUCTION_NEW_BUYER_VIEW_PRESENT_COUNT": 8,
+    "PRODUCTION_HOLDER_VIEW_PRESENT_COUNT": 8,
+    "BACKUP_BEHAVIOR": "DEDUPE_SUPPRESSED",
+    "FRESH_PROVIDER_FETCH_FOR_SUBSTITUTION": 0,
+    "MODEL_RERUN": 0,
+    "REPLAY": 0,
+    "PRODUCTION_MUTATION": 0,
+    "TELEGRAM_RESEND": 0
+  }
+}

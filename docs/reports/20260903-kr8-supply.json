@@ -1,0 +1,1191 @@
+{
+  "contract": "kr-natural-run-supply-v1",
+  "target_date": "2026-09-03",
+  "target_market": "KR",
+  "source_packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "native_unit": "shares",
+  "fundamental_conclusion_added": false,
+  "subjects": [
+    {
+      "ticker": "000660",
+      "name": "SK하이닉스",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": -232622,
+          "institution": -187288,
+          "individual": -220315
+        },
+        "day_5": {
+          "foreign": -1193535,
+          "institution": -1735470,
+          "individual": -287045
+        },
+        "day_20": {
+          "foreign": -3866248,
+          "institution": -2269768,
+          "individual": -787838
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 368668790,
+        "ratio_pct": 50.47
+      },
+      "score": 48.0,
+      "quality": "distribution",
+      "primary_signal": "distribution",
+      "provider_primary_signal": "distribution",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "divergence:joint_distribution"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.49844,
+          "displayed_net": -640225,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 640225,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -2004,
+            "foreign": -232622,
+            "individual": -220315,
+            "institution": -187288,
+            "other_corporation": 642229
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.499862,
+          "displayed_net": -6923854,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 6923854,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -1909,
+            "foreign": -3866248,
+            "individual": -787838,
+            "institution": -2269768,
+            "other_corporation": 6925763
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.499544,
+          "displayed_net": -3216050,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 3216050,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -2933,
+            "foreign": -1193535,
+            "individual": -287045,
+            "institution": -1735470,
+            "other_corporation": 3218983
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "003690",
+      "name": "코리안리",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": -68806,
+          "institution": 135684,
+          "individual": -67833
+        },
+        "day_5": {
+          "foreign": -163678,
+          "institution": 247311,
+          "individual": -99894
+        },
+        "day_20": {
+          "foreign": 313355,
+          "institution": 130637,
+          "individual": -338731
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 46780573,
+        "ratio_pct": 26.47
+      },
+      "score": 90.0,
+      "quality": "strong_joint",
+      "primary_signal": "material_other_participant_flow",
+      "provider_primary_signal": "strong_joint",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "institution_accumulation",
+        "foreign_institution_joint_accumulation",
+        "divergence:joint_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.995631,
+          "displayed_net": -955,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 955,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -120,
+            "foreign": -68806,
+            "individual": -67833,
+            "institution": 135684,
+            "other_corporation": 1075
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.87962,
+          "displayed_net": 105261,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -105261,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 929,
+            "foreign": 313355,
+            "individual": -338731,
+            "institution": 130637,
+            "other_corporation": -106190
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.968403,
+          "displayed_net": -16261,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 16261,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -204,
+            "foreign": -163678,
+            "individual": -99894,
+            "institution": 247311,
+            "other_corporation": 16465
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "005490",
+      "name": "POSCO홀딩스",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": 24550,
+          "institution": 56902,
+          "individual": -81909
+        },
+        "day_5": {
+          "foreign": -64198,
+          "institution": 124958,
+          "individual": -53106
+        },
+        "day_20": {
+          "foreign": 22992,
+          "institution": 204260,
+          "individual": -196954
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 25610289,
+        "ratio_pct": 32.32
+      },
+      "score": 90.0,
+      "quality": "strong_joint",
+      "primary_signal": "foreign_reentry",
+      "provider_primary_signal": "foreign_reentry",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "institution_accumulation",
+        "foreign_institution_joint_accumulation",
+        "foreign_reentry_signal",
+        "divergence:joint_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.995278,
+          "displayed_net": -457,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 457,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -159,
+            "foreign": 24550,
+            "individual": -81909,
+            "institution": 56902,
+            "other_corporation": 616
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.931653,
+          "displayed_net": 30298,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -30298,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 411,
+            "foreign": 22992,
+            "individual": -196954,
+            "institution": 204260,
+            "other_corporation": -30709
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.967369,
+          "displayed_net": 7654,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -7654,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 259,
+            "foreign": -64198,
+            "individual": -53106,
+            "institution": 124958,
+            "other_corporation": -7913
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "005930",
+      "name": "삼성전자",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": 92935,
+          "institution": -839601,
+          "individual": -1234260
+        },
+        "day_5": {
+          "foreign": -3897343,
+          "institution": -8159625,
+          "individual": 2084923
+        },
+        "day_20": {
+          "foreign": -6140540,
+          "institution": -11526164,
+          "individual": -635819
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 2729876332,
+        "ratio_pct": 46.69
+      },
+      "score": 44.0,
+      "quality": "distribution",
+      "primary_signal": "distribution",
+      "provider_primary_signal": "distribution",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "divergence:foreign_only_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.522127,
+          "displayed_net": -1980926,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 1980926,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -1110,
+            "foreign": 92935,
+            "individual": -1234260,
+            "institution": -839601,
+            "other_corporation": 1982036
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.49969,
+          "displayed_net": -18302523,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 18302523,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -11357,
+            "foreign": -6140540,
+            "individual": -635819,
+            "institution": -11526164,
+            "other_corporation": 18313880
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.586461,
+          "displayed_net": -9972045,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 9972045,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 30648,
+            "foreign": -3897343,
+            "individual": 2084923,
+            "institution": -8159625,
+            "other_corporation": 9941397
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "010120",
+      "name": "LS일렉트릭",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": -77152,
+          "institution": -40693,
+          "individual": 118653
+        },
+        "day_5": {
+          "foreign": -266368,
+          "institution": -214013,
+          "individual": 480159
+        },
+        "day_20": {
+          "foreign": 181082,
+          "institution": -417075,
+          "individual": 252201
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 27744314,
+        "ratio_pct": 18.5
+      },
+      "score": 48.0,
+      "quality": "foreign_led",
+      "primary_signal": "material_other_participant_flow",
+      "provider_primary_signal": "foreign_led",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "individual_accumulation",
+        "divergence:foreign_only_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.991182,
+          "displayed_net": 808,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -808,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 648,
+            "foreign": -77152,
+            "individual": 118653,
+            "institution": -40693,
+            "other_corporation": -1456
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.981287,
+          "displayed_net": 16208,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -16208,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 4,
+            "foreign": 181082,
+            "individual": 252201,
+            "institution": -417075,
+            "other_corporation": -16212
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.997044,
+          "displayed_net": -222,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 222,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1535,
+            "foreign": -266368,
+            "individual": 480159,
+            "institution": -214013,
+            "other_corporation": -1313
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "012450",
+      "name": "한화에어로스페이스",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": -3995,
+          "institution": 18776,
+          "individual": -14447
+        },
+        "day_5": {
+          "foreign": -40016,
+          "institution": -14117,
+          "individual": 53878
+        },
+        "day_20": {
+          "foreign": 756,
+          "institution": -22274,
+          "individual": 19622
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 23446938,
+        "ratio_pct": 45.47
+      },
+      "score": 48.0,
+      "quality": "foreign_led",
+      "primary_signal": "material_other_participant_flow",
+      "provider_primary_signal": "foreign_led",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "individual_accumulation",
+        "divergence:foreign_only_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.991106,
+          "displayed_net": 334,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -334,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -42,
+            "foreign": -3995,
+            "individual": -14447,
+            "institution": 18776,
+            "other_corporation": -292
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.957439,
+          "displayed_net": -1896,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 1896,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 254,
+            "foreign": 756,
+            "individual": 19622,
+            "institution": -22274,
+            "other_corporation": 1642
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.997645,
+          "displayed_net": -255,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 255,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 122,
+            "foreign": -40016,
+            "individual": 53878,
+            "institution": -14117,
+            "other_corporation": 133
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "047810",
+      "name": "한국항공우주산업",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": 37532,
+          "institution": -5833,
+          "individual": -31688
+        },
+        "day_5": {
+          "foreign": -96300,
+          "institution": -365242,
+          "individual": 459118
+        },
+        "day_20": {
+          "foreign": -613584,
+          "institution": -545801,
+          "individual": 813250
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 22949280,
+        "ratio_pct": 23.54
+      },
+      "score": 33.0,
+      "quality": "distribution",
+      "primary_signal": "foreign_exit_broad_absorption",
+      "provider_primary_signal": "foreign_exit_retail_absorption",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "individual_accumulation",
+        "foreign_exit_retail_absorption",
+        "divergence:foreign_exit_retail_absorption"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.994396,
+          "displayed_net": 11,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -11,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -217,
+            "foreign": 37532,
+            "individual": -31688,
+            "institution": -5833,
+            "other_corporation": 206
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.850725,
+          "displayed_net": -346135,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 346135,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 1121,
+            "foreign": -613584,
+            "individual": 813250,
+            "institution": -545801,
+            "other_corporation": 345014
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.997374,
+          "displayed_net": -2424,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 2424,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 302,
+            "foreign": -96300,
+            "individual": 459118,
+            "institution": -365242,
+            "other_corporation": 2122
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "foreign_exit_broad_absorption",
+          "signal_participants": [
+            "foreign"
+          ],
+          "window": "5d"
+        }
+      }
+    },
+    {
+      "ticker": "086280",
+      "name": "현대글로비스",
+      "available": true,
+      "as_of_date": "2026-09-03",
+      "flows": {
+        "today": {
+          "foreign": 19936,
+          "institution": 32792,
+          "individual": -52754
+        },
+        "day_5": {
+          "foreign": -28852,
+          "institution": 65843,
+          "individual": -36938
+        },
+        "day_20": {
+          "foreign": 130697,
+          "institution": 48983,
+          "individual": -171369
+        }
+      },
+      "foreign_ownership": {
+        "quantity": 34818521,
+        "ratio_pct": 46.42
+      },
+      "score": 90.0,
+      "quality": "strong_joint",
+      "primary_signal": "material_other_participant_flow",
+      "provider_primary_signal": "strong_joint",
+      "confidence": "high",
+      "validation_status": "validated",
+      "attribution_safe": false,
+      "attribution_confidence": "qualified",
+      "omitted_participant_materiality": true,
+      "data_scope": "all_investors",
+      "investor_20d_validation_status": "validated",
+      "investor_20d_diff_ratio": 0.0,
+      "signals": [
+        "foreign_accumulation",
+        "institution_accumulation",
+        "foreign_institution_joint_accumulation",
+        "divergence:joint_accumulation"
+      ],
+      "reconciliation_contract": "kr-investor-flow-reconciliation-v1",
+      "reconciliations": {
+        "1d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 1,
+          "display_coverage_ratio": 0.99928,
+          "displayed_net": -26,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": 26,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -25,
+            "foreign": 19936,
+            "individual": -52754,
+            "institution": 32792,
+            "other_corporation": 51
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "1d"
+        },
+        "20d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 20,
+          "display_coverage_ratio": 0.976873,
+          "displayed_net": 8311,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -8311,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": -782,
+            "foreign": 130697,
+            "individual": -171369,
+            "institution": 48983,
+            "other_corporation": -7529
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "20d"
+        },
+        "5d": {
+          "all_participant_net": 0,
+          "as_of_date": "2026-09-03",
+          "attribution_safe": false,
+          "constituent_count": 5,
+          "display_coverage_ratio": 0.998975,
+          "displayed_net": 53,
+          "displayed_participants": [
+            "foreign",
+            "institution",
+            "individual"
+          ],
+          "material_omitted_flow": true,
+          "missing_participants": [],
+          "omitted_net": -53,
+          "omitted_participants": [
+            "other_corporation",
+            "domestic_foreign"
+          ],
+          "participant_flows": {
+            "domestic_foreign": 41,
+            "foreign": -28852,
+            "individual": -36938,
+            "institution": 65843,
+            "other_corporation": -94
+          },
+          "provider_total": null,
+          "reconciliation_difference": null,
+          "reconciliation_status": "complete_without_provider_total",
+          "signal": "material_other_participant_flow",
+          "signal_participants": [],
+          "window": "5d"
+        }
+      }
+    }
+  ]
+}

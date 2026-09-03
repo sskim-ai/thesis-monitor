@@ -1,0 +1,805 @@
+{
+  "contract": "kr-natural-run-production-decisions-v1",
+  "target_date": "2026-09-03",
+  "target_market": "KR",
+  "analysis_packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "delivered_packet_id": "2026-09-03-kr-run-54-78ed269de3df",
+  "operating_revision": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "subjects": [
+    {
+      "ticker": "000660",
+      "name": "SK하이닉스",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "HBM4와 AI 서버용 고부가 메모리 수요가 높은 수익성을 지지한다. 다만 피크 이익의 낮은 PER보다 mid-cycle 수익성, PBR, FCF와 ROIC를 우선한다. HBM4 수율·ASP·장기계약이 늘어나는 CAPEX를 상쇄해 주당가치와 현금창출을 높이는지가 재평가의 핵심이다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "HBM4 출하·수율·LTA",
+            "HBM·DRAM ASP와 영업이익률",
+            "CAPEX·FCF·ROIC"
+          ],
+          "strengthen_signals": [
+            "HBM4 고객 채택과 장기계약 확대",
+            "CAPEX 증가에도 FCF·ROIC 개선"
+          ],
+          "weaken_signals": [
+            "HBM4 실행 또는 ASP 둔화",
+            "CAPEX 증가 대비 FCF·ROIC 악화"
+          ],
+          "invalidation_signals": [
+            "핵심 HBM 고객 상실 또는 기술경쟁력의 구조적 열위",
+            "공급과잉으로 중기 수익성이 구조적으로 훼손"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.82,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "HBM 제품 믹스와 가동률이 늘어난 CAPEX를 상쇄할 현금전환으로 이어지는지가 핵심입니다. 현재 가격은 현재가 1,596,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 1,190,321원 경계입니다. 높은 기대를 바꿀 새 사업 근거는 없습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 동적 지지 이탈에 따른 차트 재검토와 HBM 수율·ASP·현금전환 훼손에 따른 투자 논리 재검토를 분리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지가 유지되고 HBM 제품 믹스·가동률의 실행 근거가 확인될 때 가격·사실 비대칭을 다시 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 1,596,000원. 동적 지지는 동적 지지구간 하단 1,190,321원, 동적 지지구간 상단 1,301,679원 구간입니다. 동적 저항은 동적 저항구간 하단 2,934,958원, 동적 저항구간 상단 3,039,042원 구간입니다. 현재가 기준 차트 손익비 2.84배 조건에서는 가격 비대칭이 열려 있지만 수급 분산과 HBM 실행 근거를 함께 확인해야 합니다. 등록 확인 기준 상회 상태는 유지됐고 현재 동적 지지와 구분합니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 HBM 제품별 기여·가동률, CAPEX와 FCF를 함께 확인합니다."
+        ],
+        "unknowns": [
+          "HBM 제품별 기여와 가동률이 확인되지 않았습니다.",
+          "CAPEX 이후 FCF·자본수익률의 연결이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 489,
+        "message_path": "messages/000660.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_TICKER_SPECIFIC_VALUATION_BINDING",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "003690",
+      "name": "코리안리",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "재보험 갱신요율과 손해율 관리가 안정적인 언더라이팅 이익을 만들고 투자수익과 자본적정성이 ROE·배당여력을 높이는지가 핵심이다. 2026년 자사주 전량 소각은 주당가치와 자본배분 측면의 긍정 신호지만, 장기 재평가는 합산비율·대형재해 손실·투자수익률과 자본적정성이 지속적으로 뒷받침해야 한다. 가격·수급은 진입 보조정보로만 본다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "갱신요율",
+            "합산비율·손해율",
+            "대형재해 손실",
+            "보험서비스손익",
+            "투자수익률·ROE",
+            "자본적정성·주주환원"
+          ],
+          "strengthen_signals": [
+            "언더라이팅 이익과 ROE가 동시 개선",
+            "자본적정성을 유지하며 배당·소각 확대"
+          ],
+          "weaken_signals": [
+            "갱신요율 하락과 손해율 악화",
+            "대형재해 손실 증가 또는 투자수익 약화"
+          ],
+          "invalidation_signals": [
+            "언더라이팅 적자가 구조적으로 지속",
+            "자본적정성 훼손으로 주주환원 여력이 크게 축소"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.8,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "monitoring:confirmation_transition"
+          ],
+          "text": "재보험 갱신요율과 손해율 관리가 언더라이팅 이익·ROE·배당여력으로 이어지는지가 핵심입니다. 현재 가격은 현재가 15,470원 수준이고 동적 지지 하단은 동적 지지구간 하단 15,265원 경계입니다. 등록 확인 기준 상회는 유지됐지만 합산비율과 자본적정성의 확인이 필요합니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 현재 동적 지지와 돌파 안착을 차트 관리 기준으로 두고, 합산비율 악화 또는 대형재해 손실을 펀더멘털 재검토 조건으로 별도 관리해야 합니다.",
+          "new_observer_view": "새 자금은 새 동적 지지가 유지되고 다음 저항이 확인되며 합산비율·ROE·자본적정성이 함께 뒷받침될 때 진입 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 15,470원. 동적 지지는 동적 지지구간 하단 15,265원, 동적 지지구간 상단 15,635원 구간입니다. 저항이 확인되지 않아 현재가 기준 차트 손익비는 산정되지 않았습니다. 돌파 확인 구조로 바뀌었지만 이는 주문이 아니며 합산비율·ROE·자본적정성 확인이 우선입니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 합산비율·투자수익률·ROE와 자본적정성을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "현재 이익에서 언더라이팅과 투자수익의 기여가 구분되지 않았습니다.",
+          "대형재해 손실과 자본적정성의 최신 연결이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 490,
+        "message_path": "messages/003690.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "005490",
+      "name": "POSCO홀딩스",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "POSCO홀딩스의 재평가 조건은 철강 본업의 스프레드·수익성 회복과 리튬·이차전지 소재의 흑자 지속이 동시에 나타나고, 그 성장이 FCF와 ROIC 개선으로 연결되는 것이다. 대규모 CAPEX와 전환·희석 가능성이 존재하므로 연결 영업이익 개선만으로는 충분하지 않으며 완전희석 기준 주당가치가 증가하는지를 본다. 소재 사업이 테마가 아니라 반복 가능한 이익과 현금흐름으로 전환될수록 철강주 할인 축소 가능성이 커진다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "연결 영업이익률",
+            "철강 스프레드",
+            "리튬·이차전지 소재 영업이익",
+            "영업현금흐름·FCF",
+            "CAPEX 대비 ROIC",
+            "순부채",
+            "완전희석 주식수",
+            "소재 사업 매출·마진"
+          ],
+          "strengthen_signals": [
+            "철강 스프레드와 연결 영업이익률이 동반 개선",
+            "소재 부문 흑자가 반복적으로 유지",
+            "FCF가 CAPEX 증가를 상쇄",
+            "ROIC가 상승",
+            "완전희석 기준 주당가치가 개선"
+          ],
+          "weaken_signals": [
+            "소재 흑자가 일회성으로 확인",
+            "철강 마진이 재악화",
+            "FCF 감소와 순부채 증가가 동반",
+            "전환·희석 가능 주식수가 의미 있게 증가",
+            "CAPEX 증가에도 ROIC가 하락"
+          ],
+          "invalidation_signals": [
+            "철강과 소재가 동시에 구조적 적자로 전환",
+            "리튬 사업의 장기 수익성 확보 실패",
+            "지속적 희석으로 주당가치 개선이 나타나지 않음",
+            "대규모 CAPEX 이후에도 FCF와 ROIC 장기 악화"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.8,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "철강 스프레드 회복과 리튬·소재의 반복 이익이 FCF와 ROIC로 연결되는지가 재평가 조건입니다. 현재 가격은 현재가 342,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 332,524원 경계입니다. 사업 논리를 바꿀 새 수익성 근거는 없습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 새 동적 지지의 이탈을 차트 재검토 기준으로 두고 철강·소재 마진과 FCF 훼손을 사업 논리 재검토 조건으로 분리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지 유지와 등록 확인 기준 회복, 철강 스프레드·소재 수익성·현금전환의 동행이 확인될 때 가격 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 342,000원. 동적 지지는 동적 지지구간 하단 332,524원, 동적 지지구간 상단 347,476원 구간입니다. 동적 저항은 동적 저항구간 하단 385,064원, 동적 저항구간 상단 402,936원 구간입니다. 현재가 기준 차트 손익비 2.62배 조건에서 가격 비대칭이 확인됐고 돌파 확인 구조지만 등록 확인 기준에는 아직 도달하지 않았습니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 철강 스프레드·재고·소재 마진과 영업현금흐름을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "철강 스프레드와 원재료비의 최신 변화가 확인되지 않았습니다.",
+          "소재 사업의 정상화 이익과 현금전환이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 491,
+        "message_path": "messages/005490.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "005930",
+      "name": "삼성전자",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "삼성전자의 재평가 핵심은 HBM4·HBM4E 고객 채택과 서버 메모리 강세가 DS 이익률과 전사 현금창출력 개선으로 연결되면서 HBM 경쟁력 할인까지 축소되는 것이다. 메모리 ASP 상승만으로는 충분하지 않고, HBM 출하·DS 마진·영업현금흐름이 함께 개선되어야 한다. 동시에 대규모 CAPEX의 효율과 DX 등 비메모리 사업이 전사 이익을 얼마나 상쇄하는지까지 보며, 결국 투자 확대가 ROIC와 FCF로 회수되는지를 핵심 검증축으로 둔다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "HBM 주요 고객 채택·출하량",
+            "DS 영업이익률",
+            "메모리 ASP와 제품 믹스",
+            "영업현금흐름·FCF",
+            "재고와 매출채권",
+            "CAPEX 대비 ROIC",
+            "DX 영업이익 기여"
+          ],
+          "strengthen_signals": [
+            "HBM 출하와 고객 채택이 동시에 확대",
+            "DS 마진과 메모리 ASP가 동반 개선",
+            "영업현금흐름이 회계이익 증가를 따라감",
+            "재고 부담 없이 FCF가 개선",
+            "CAPEX 대비 ROIC가 상승"
+          ],
+          "weaken_signals": [
+            "HBM 고객 채택 속도가 둔화",
+            "DS 마진 또는 ASP가 하락",
+            "재고 증가와 현금흐름 약화가 동반",
+            "DX 부진이 DS 개선을 상쇄",
+            "CAPEX 증가에도 ROIC가 하락"
+          ],
+          "invalidation_signals": [
+            "HBM4 경쟁력 약화로 주요 고객 채택 실패",
+            "서버 메모리 수요 둔화와 ASP 하락이 장기화",
+            "DS 수익성 급락과 영업현금흐름 악화가 동반",
+            "중장기 공급과잉으로 고수익성 구조가 정상화"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.76,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "HBM 고객 채택과 서버 메모리 강세가 DS 마진·전사 FCF·ROIC로 이어지는지가 핵심입니다. 현재 가격은 현재가 250,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 221,866원 경계입니다. 높은 기대를 넘어설 새 HBM 실행 근거는 아직 확인되지 않았습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 현재 지지 이탈에 따른 차트 재검토와 HBM 경쟁력·DS 마진·FCF 훼손에 따른 투자 논리 재검토를 분리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지 접근 또는 저항 돌파 뒤 안착과 함께 HBM 출하·DS 마진·FCF의 동행이 확인될 때 비대칭을 다시 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 250,000원. 동적 지지는 동적 지지구간 하단 221,866원, 동적 지지구간 상단 233,134원 구간입니다. 동적 저항은 동적 저항구간 하단 282,704원, 동적 저항구간 상단 293,296원 구간입니다. 현재가 기준 차트 손익비 0.89배 조건에서는 현재 위치의 추격 비대칭이 불리합니다. 등록 확인 상태는 이전 실패돌파에서 현재 미도달로 바뀌어 동적 지지와 HBM 실행 근거를 다시 확인해야 합니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 HBM 출하·DS 마진·영업현금흐름과 CAPEX를 함께 확인합니다."
+        ],
+        "unknowns": [
+          "HBM 제품별 출하와 DS 이익 기여가 확인되지 않았습니다.",
+          "CAPEX 이후 전사 FCF·ROIC의 연결이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 492,
+        "message_path": "messages/005930.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "010120",
+      "name": "LS일렉트릭",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "북미 데이터센터 및 전력 인프라 투자 확대가 LS일렉트릭의 대형 수주와 매출 성장으로 전환되고, 고부가 전력기기·솔루션 믹스 개선을 통해 두 자릿수 영업이익률과 이익 성장이 지속되는지가 핵심 투자 논리다. 2026년 2분기 잠정 매출 1조5,770억원, 영업이익 1,785억원, 영업이익률 11.3%와 북미 데이터센터용 전력설비 대형 계약, 수주잔고 확대가 핵심 근거다. 현재 trailing PER 약 15.95배, PBR 약 3.00배이지만 역사적 percentile 산출치가 이전 snapshot과 크게 달라 극단적 고평가 판단은 보류한다. 따라서 Valuation은 현재 배수 자체보다 수주잔고의 매출 전환, 11%대 마진 지속, FCF·ROIC 개선 여부로 판단한다. 차트상 현재가 208,500원은 최근 저점 148,000원과 거리가 커 신규 진입은 추격보다 새로운 근거리 지지 형성을 기다리는 관점이다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "분기 매출 성장과 영업이익 성장의 동행 여부",
+            "영업이익률이 2026년 2분기 11.3% 수준을 유지·개선하는지",
+            "수주잔고 약 7조원 수준의 유지·증가와 북미 데이터센터·전력 인프라 관련 신규 대형 수주",
+            "수주 증가가 매출채권·재고 급증 없이 영업현금흐름·FCF·ROIC 개선으로 이어지는지"
+          ],
+          "strengthen_signals": [
+            "북미 데이터센터·전력 인프라 관련 대형 수주가 반복적으로 확인되고 수주잔고가 유지·증가함",
+            "매출 증가보다 영업이익이 더 빠르게 증가하며 11% 안팎 이상의 수익성이 유지·개선됨",
+            "수주 증가와 함께 영업현금흐름·FCF·ROIC가 개선되어 성장의 질이 확인됨",
+            "고부가 초고압 변압기·배전 솔루션 및 해외 매출 비중 상승으로 이익 가시성이 높아짐"
+          ],
+          "weaken_signals": [
+            "신규수주 증가세가 둔화되거나 대형 프로젝트 매출 인식이 지연됨",
+            "매출 성장에도 영업이익률이 뚜렷하게 하락해 믹스·원가 우려가 커짐",
+            "수주 확대와 함께 매출채권·재고·운전자본 부담이 커져 현금 전환이 약해짐",
+            "데이터센터·전력망 CAPEX 둔화로 핵심 수요 가정이 약해짐"
+          ],
+          "invalidation_signals": [
+            "북미 데이터센터·전력 인프라 수요 둔화가 반복적인 수주 감소와 실적 역성장으로 확인됨",
+            "대형 프로젝트 취소·지연 또는 원가 상승으로 수주잔고가 매출·이익으로 정상 전환되지 못함",
+            "마진과 영업현금흐름·FCF가 여러 분기에 걸쳐 동시에 악화해 구조적 고수익성 가정이 훼손됨",
+            "확장 투자나 자본배분으로 재무구조가 유의미하게 악화되고 주당가치 희석이 커짐"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.68,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "북미 전력 인프라 수요가 실제 수주·매출·마진과 현금 회수로 전환되는지가 핵심입니다. 현재 가격은 현재가 192,100원 수준이고 동적 지지 하단은 동적 지지구간 하단 178,055원 경계입니다. 높은 기대를 정당화할 새 수주 전환 근거는 확인되지 않았습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 현재 지지 이탈을 차트 재검토 기준으로 두고 수주 전환·프로젝트 마진·운전자본 훼손을 투자 논리 재검토 조건으로 분리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지에서 가격이 안정되고 북미 수주가 매출·마진·현금 회수로 연결될 때 진입 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 192,100원. 동적 지지는 동적 지지구간 하단 178,055원, 동적 지지구간 상단 185,745원 구간입니다. 동적 저항은 동적 저항구간 하단 209,117원, 동적 저항구간 상단 219,883원 구간입니다. 현재가 기준 차트 손익비 0.81배 조건에서는 현재 위치의 추격 비대칭이 불리하며 동적 지지와 실제 수주 전환 확인이 필요합니다. 등록 확인 기준은 설정돼 있지 않습니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 수주잔고의 매출 전환·프로젝트 마진과 영업현금흐름을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "수주잔고의 매출 전환 속도와 프로젝트 마진이 확인되지 않았습니다.",
+          "증설 이후 운전자본과 현금 회수의 연결이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 493,
+        "message_path": "messages/010120.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "012450",
+      "name": "한화에어로스페이스",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "유럽·중동을 중심으로 한 방산 수요 확대가 K9·천무 등 지상방산의 대형 수출 수주와 높은 수익성으로 연결되고, 약 38.3조원 수준의 지상방산 수주잔고가 향후 수년간 매출·이익 가시성을 제공하는지가 핵심 투자 논리다. 2026년 2분기 연결 매출 9조2,929억원, 영업이익 1조3,655억원, 영업이익률 14.7%와 지상방산 영업이익률 약 25%가 핵심 근거다. 미국 차세대 자주포 사업과 미국 조선·해양방산 진출은 추가 재평가 옵션이지만 아직 미확정이며, 오스탈 미국 사업부 인수 검토는 성장 옵션과 자본배분 리스크를 동시에 가진다. 현재 가격 1,156,000원은 최근 의미 있는 저점 783,000원과 거리가 커 신규 진입은 추격보다 새로운 근거리 지지 형성을 기다리는 관점이다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "지상방산 수주잔고 약 38.3조원의 유지·증가 여부",
+            "지상방산 영업이익률 약 25% 및 연결 영업이익률 14%대의 지속 여부",
+            "폴란드·이집트·호주 등 기존 대형 계약의 정상 인도와 매출 인식",
+            "신규 해외 수주가 반복적으로 확인되는지",
+            "영업현금흐름·FCF가 이익 증가를 따라 개선되는지",
+            "미국 자주포 사업 및 오스탈 미국 사업부 인수 검토의 실제 조건과 경제성"
+          ],
+          "strengthen_signals": [
+            "지상방산 수주잔고가 38.3조원 수준에서 추가 확대됨",
+            "K9·천무 등 해외 인도가 계획대로 진행되며 지상방산 20%대 이상의 높은 수익성이 유지됨",
+            "미국 차세대 자주포 사업 등 대형 신규 수주가 실제 계약으로 확인됨",
+            "영업이익 증가와 함께 영업현금흐름·FCF가 개선되어 이익의 질이 확인됨",
+            "미국 해양방산 확장이 합리적 인수가격과 명확한 수주 시너지로 연결됨"
+          ],
+          "weaken_signals": [
+            "신규 해외수주 둔화와 함께 지상방산 수주잔고가 감소함",
+            "폴란드·이집트·호주 등 기존 프로젝트 인도 지연 또는 원가 상승이 반복됨",
+            "지상방산 영업이익률이 의미 있게 하락해 고마진 수출 믹스의 지속성에 의문이 생김",
+            "이익 증가에도 재고·계약자산·매출채권 증가로 FCF가 악화됨",
+            "오스탈 미국 사업부 등 해외 M&A에 예상보다 많은 자본이 투입되거나 손실사업 정상화 비용이 확대됨"
+          ],
+          "invalidation_signals": [
+            "유럽·중동 방산 수요 둔화가 실제 대형 수주 감소와 수주잔고의 구조적 축소로 이어짐",
+            "핵심 지상방산 프로젝트의 반복적인 지연·취소 또는 원가 문제로 높은 마진과 현금창출력이 훼손됨",
+            "지상방산 수익성이 여러 분기에 걸쳐 구조적으로 하락하고 FCF까지 동반 악화됨",
+            "대규모 해외 확장·M&A로 재무구조가 유의미하게 악화되고 기존 핵심 사업의 주당가치 창출을 희석함"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.68,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "지상방산 수주잔고가 인도·마진·계약대금 회수로 전환되고 미국 확장이 합리적인 자본배분으로 이어지는지가 핵심입니다. 현재 가격은 현재가 1,047,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 1,024,142원 경계입니다. 가격 구조는 유지됐지만 사업 논리를 바꿀 새 수주 근거는 없습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 동적 지지 이탈을 차트 재검토 기준으로 두고 수주 인도 지연·마진 하락·과도한 자본투입을 투자 논리 재검토 조건으로 분리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지가 유지되고 지상방산 인도·마진·현금 회수의 동행이 확인될 때 조건부 가격 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 1,047,000원. 동적 지지는 동적 지지구간 하단 1,024,142원, 동적 지지구간 상단 1,073,858원 구간입니다. 동적 저항은 동적 저항구간 하단 1,182,176원, 동적 저항구간 상단 1,217,824원 구간입니다. 현재가 기준 차트 손익비 2.37배 조건에서는 차트상 조건부 비대칭이 확인되며 현재 구조는 보유 관점입니다. 등록 확인 기준은 설정돼 있지 않습니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 지상방산 인도·양산 마진과 영업현금흐름을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "수주잔고의 인도 일정과 계약별 마진이 확인되지 않았습니다.",
+          "미국 확장의 거래 조건과 추가 자본투입 규모가 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 494,
+        "message_path": "messages/012450.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "047810",
+      "name": "한국항공우주산업",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "한국항공우주의 핵심 투자 논리는 KF-21이 개발 단계에서 양산·인도·수출 단계로 넘어가고, FA-50의 반복적인 해외 수주와 후속지원 매출이 더해지면서 완제기 중심의 수주잔고가 향후 매출·이익·현금흐름으로 전환되는지에 있다. 2026년 2분기 매출은 크게 증가했지만 영업이익률이 약 4.1%로 하락해 현재는 성장의 양보다 마진 정상화와 이익의 질이 더 중요하다. 따라서 KF-21/FA-50 인도 확대, 신규수주 증가, 영업이익률 회복이 확인되면 투자 논리가 강화되고, 양산 지연·수주 둔화·저마진 고착이 반복되면 약화된다. 차트상 2026-08-31 현재 131,100원은 장기 상승 추세 안의 중기 조정 구간으로, 120,500~126,500원 지지 또는 150,300~155,800원 회복이 신규 관찰자의 핵심 가격 확인 조건이다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "분기 영업이익률이 2026년 2분기 약 4.1%에서 7% 이상으로 회복하는지",
+            "2026년 신규수주와 총 수주잔고의 증가 여부",
+            "KF-21·FA-50 실제 인도대수와 인도 일정 준수 여부",
+            "완제기 매출 증가가 영업현금흐름·FCF 개선으로 이어지는지",
+            "외국인·기관 5~20거래일 누적 수급이 순매도에서 중립·순매수로 전환되는지"
+          ],
+          "strengthen_signals": [
+            "KF-21 양산 인도가 계획대로 확대되고 신규 수출 계약이 확인됨",
+            "FA-50 추가 해외수주와 후속지원 계약이 반복적으로 발생함",
+            "영업이익률이 7~10%대로 회복되며 매출 성장보다 이익 성장이 빨라짐",
+            "수주잔고 증가와 함께 영업현금흐름·FCF가 개선됨",
+            "외국인·기관 중기 수급이 순매수로 전환되고 가격이 150,300~155,800원 구간을 회복함"
+          ],
+          "weaken_signals": [
+            "KF-21·FA-50 인도 지연이 반복되거나 신규수주 증가세가 둔화됨",
+            "매출은 증가하지만 영업이익률이 4~6%대에 장기간 머물러 저마진 구조가 고착됨",
+            "환율·원가·재고평가·충당금 등 비용 요인으로 이익 변동성이 반복됨",
+            "외국인·기관 중기 순매도가 지속되고 130,000원대 지지 실패 후 120,500원대 재시험이 반복됨",
+            "신규수주 목표 달성이 지연되고 수주잔고가 구조적으로 감소함"
+          ],
+          "invalidation_signals": [
+            "KF-21 양산·인도 일정이 구조적으로 지연되고 주요 수출 기회가 반복적으로 무산됨",
+            "FA-50 신규 해외수주가 장기간 감소하고 기존 운용국 후속수요도 약화됨",
+            "생산량 증가에도 영업이익률과 FCF가 여러 분기 개선되지 않아 성장의 경제성이 훼손됨",
+            "수주잔고가 구조적으로 감소하면서 향후 매출 가시성이 뚜렷하게 악화됨"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.7,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "주요 전투기와 경공격기의 인도 확대가 수주잔고의 매출 전환, 마진 정상화와 현금 회수로 이어지는지가 핵심입니다. 현재 가격은 현재가 125,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 115,279원 경계입니다. 사업 논리를 바꿀 새 근거는 확인되지 않았습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:risk_reward:current_price",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 현재 동적 지지 이탈을 차트 관리 기준으로 두고 양산 지연·저마진 고착을 사업 논리 재검토 조건으로 별도 관리해야 합니다.",
+          "new_observer_view": "새 자금은 동적 지지 유지 또는 저항 회복과 함께 주요 항공기 인도, 마진 정상화가 확인될 때 조건부 가격 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 125,000원. 동적 지지는 동적 지지구간 하단 115,279원, 동적 지지구간 상단 120,021원 구간입니다. 동적 저항은 동적 저항구간 하단 150,620원, 동적 저항구간 상단 155,380원 구간입니다. 현재가 기준 차트 손익비 1.84배 조건에서는 가격 비대칭이 조건부이며 수급 분산 때문에 현재 구조는 대기 상태입니다. 등록 확인 기준에는 아직 도달하지 않았습니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 기종별 인도·매출 전환, 영업마진과 현금흐름을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "기종별 인도와 수주잔고의 매출 전환 속도가 확인되지 않았습니다.",
+          "양산 확대 과정의 마진과 계약대금 회수가 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 495,
+        "message_path": "messages/047810.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    },
+    {
+      "ticker": "086280",
+      "name": "현대글로비스",
+      "production_payload": {
+        "decision_label": "no_material_change",
+        "business_thesis_state": "no_material_change",
+        "directional_balance": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "lean": {
+          "state": "NOT_PRESENT_IN_PRODUCTION_REVISION",
+          "value": null
+        },
+        "new_buyer_view": {
+          "state": "PRESENT",
+          "value": "신규 진입 판단은 기존 투자 논리와 가격 기준을 유지합니다."
+        },
+        "holder_view": {
+          "state": "PRESENT",
+          "value": "보유자는 기존 모니터링 조건을 유지합니다."
+        },
+        "summary": "현재 투자 논리를 바꿀 만한 새로운 근거가 확인되지 않았습니다.",
+        "core_thesis": "현대글로비스의 핵심은 완성차 해상운송과 CKD·물류의 물량·운임·마진 개선이 비계열 화주 확대와 함께 지속되고, 선박 CAPEX가 높은 가동률과 ROIC로 회수되는 것이다. 기존 수급·가격 구조는 진입 판단의 보조 신호로 낮추고, 현대차그룹 물량 의존도와 비계열 화주 확대, PCTC 운임·선복, 물류 마진, FCF를 기업가치 판단의 중심에 둔다. 장기 고가격대에서도 멀티플이 유지되려면 매출 성장보다 마진과 자본효율이 동반 개선되어야 한다.",
+        "re_evaluation": {
+          "validation_metrics": [
+            "PCTC 운임",
+            "완성차 해상운송 물량",
+            "현대차그룹 물량 비중",
+            "비계열 화주 매출 비중",
+            "CKD·물류 영업이익률",
+            "선박 가동률",
+            "영업현금흐름·FCF",
+            "CAPEX 대비 ROIC"
+          ],
+          "strengthen_signals": [
+            "운임과 해상운송 물량이 동반 개선",
+            "비계열 화주 비중이 상승",
+            "물류 마진이 확대",
+            "선박 가동률과 FCF가 CAPEX 증가를 상쇄",
+            "ROIC가 상승"
+          ],
+          "weaken_signals": [
+            "운임 하락과 물량 둔화가 동반",
+            "현대차그룹 의존도가 상승",
+            "비계열 화주 확대가 정체",
+            "CAPEX 증가에도 FCF가 감소",
+            "물류 마진이 악화"
+          ],
+          "invalidation_signals": [
+            "완성차 수출 둔화와 운임 하락이 장기화",
+            "비계열 화주 확대 실패로 고객 집중도가 구조적으로 높아짐",
+            "대규모 선박 CAPEX 이후에도 가동률·FCF·ROIC가 악화",
+            "핵심 물류 사업 마진이 구조적으로 하락"
+          ]
+        }
+      },
+      "accepted_ai_candidate_not_delivered": {
+        "ai_thesis_assessment": "no_material_change",
+        "confidence": 0.8,
+        "core_judgment": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1"
+          ],
+          "text": "완성차 해상운송과 CKD·물류의 물량·운임·마진이 비계열 화주 확대와 함께 FCF·ROIC로 이어지는지가 핵심입니다. 현재 가격은 현재가 202,000원 수준이고 동적 지지 하단은 동적 지지구간 하단 197,803원 경계입니다. 사업 논리를 바꿀 새 물량·마진 근거는 없습니다."
+        },
+        "price_positioning": {
+          "fact_ids": [
+            "price:current",
+            "chart:structure:nearest_supports:1",
+            "chart:structure:nearest_resistance:1",
+            "chart:structure:state",
+            "monitoring:confirmation_transition"
+          ],
+          "holder_view": "보유자는 동적 지지 이탈과 확인 가격 재이탈을 차트 관리 기준으로 두고 운임·가동률·FCF 훼손을 투자 논리 재검토 조건으로 분리해야 합니다.",
+          "new_observer_view": "새 자금은 겹친 지지·저항이 정리되고 확인 가격 위 안착과 물량·운임·마진의 현금전환이 함께 확인될 때 가격 비대칭을 평가할 수 있습니다.",
+          "text": "가격 기준: 현재가 202,000원. 동적 지지는 동적 지지구간 하단 197,803원, 동적 지지구간 상단 210,197원 구간입니다. 동적 저항은 동적 저항구간 하단 206,127원, 동적 저항구간 상단 211,873원 구간입니다. 두 구간이 겹쳐 현재가 기준 차트 손익비는 확인되지 않습니다. 등록 확인 상태는 이전 실패돌파에서 현재 상향 통과로 바뀌었지만 안착과 물량·마진·현금전환을 함께 확인해야 합니다."
+        },
+        "next_checks": [
+          "다음 공식 실적에서 물량·운임·물류 마진과 영업현금흐름을 함께 확인합니다."
+        ],
+        "unknowns": [
+          "비계열 화주 물량과 계약 운임의 기여가 확인되지 않았습니다.",
+          "선박 CAPEX 이후 가동률·FCF·ROIC의 연결이 확인되지 않았습니다."
+        ]
+      },
+      "actual_delivery": {
+        "mode": "deterministic_fallback",
+        "status": "sent",
+        "delivery_id": 496,
+        "message_path": "messages/086280.txt",
+        "cash_flow_context_id": null,
+        "working_capital_context_id": null
+      },
+      "candidate_acceptance": {
+        "fresh_candidate_items": 1,
+        "initial_validation": "REJECTED_SET_DUE_TO_MARKET_LEVEL_ERRORS",
+        "corrected_candidate": "ACCEPTED",
+        "accepted_render_delivery": "PENDING_NOT_SENT",
+        "actual_rendered_delivery": "DETERMINISTIC_FALLBACK"
+      }
+    }
+  ]
+}

@@ -1,0 +1,3397 @@
+{
+  "contract": "kr-natural-run-price-structure-v1",
+  "target_date": "2026-09-03",
+  "target_market": "KR",
+  "source_packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "calculation_performed": false,
+  "subjects": [
+    {
+      "ticker": "000660",
+      "name": "SK하이닉스",
+      "current_close": 1596000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:05:37.709512+09:00",
+      "feature_fingerprint": "88f230ccda11e9e13f6039e5f856e96a254a0eb7ba8557d26b497816e8fecd7b",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 139.6만~140.4만원",
+          "distance_pct": "12.067754",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "1403398.651793",
+          "raw_low": "1396399.157271",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:279143ba7830900792af"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "000660",
+          "zone_id": "v3-zone:b016e7ddc474f455b703"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "LONG_HORIZON_HISTORICAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 180.3만~181.3만원",
+          "distance_pct": "13.025068",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "LONG_HORIZON",
+          "raw_high": "1812922.098207",
+          "raw_low": "1803880.092729",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:5e34c687fbd6d6b6acd2"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "000660",
+          "zone_id": "v3-zone:a7314ce572fcde329a7d"
+        }
+      },
+      "major_support": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_ACTIVE_STRUCTURAL_LEVEL"
+      },
+      "major_resistance": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_ACTIVE_STRUCTURAL_LEVEL"
+      },
+      "major_cross_timeframe_zone": null,
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 139.6만~140.4만원",
+        "distance_pct": "12.067754",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "1403398.651793",
+        "raw_low": "1396399.157271",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:279143ba7830900792af"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 11,
+        "ticker": "000660",
+        "zone_id": "v3-zone:b016e7ddc474f455b703"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 186.7만~187.7만원",
+        "distance_pct": "17.018750",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "1876980.750000",
+        "raw_low": "1867619.250000",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:90b1b4185e762abf9152"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "000660",
+        "zone_id": "v3-zone:4b6cff0ad3bea3ef381d"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 106.8만~107.4만원",
+        "distance_pct": "32.718136",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-04"
+        ],
+        "indicator_bar_starts": [
+          "2026-08-31"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:37.709512+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "1073818.551274",
+        "raw_low": "1068462.847776",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:ac586565bcf6b7cef183"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "000660",
+        "zone_id": "v3-zone:f22550852ab16d041cdc"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 235.2만~236.5만원",
+        "distance_pct": "47.404656",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:37.709512+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "2364370.688133",
+        "raw_low": "2352578.315623",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:aa734cd069d25b30a064"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "000660",
+        "zone_id": "v3-zone:c984f9d6323ccd42aa31"
+      },
+      "registered_rules": {
+        "support_zone_low": 1397000.0,
+        "support_zone_high": 1420000.0,
+        "confirmation_price": 1550000.0,
+        "warning_price": null,
+        "invalidation_price": 1320000.0,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 1301679.459988,
+          "zone_low": 1190320.540012
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 3039041.7428,
+          "zone_low": 2934958.2572
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 1124227.136784,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "medium",
+          "reasons": [
+            "distribution"
+          ],
+          "state": "WAIT",
+          "user_semantics": "price_structure_wait_not_sell_command"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "attractive",
+          "ratio": 2.838142,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": "2026-08-20",
+          "final_sessions_above": 12,
+          "price": 1550000.0,
+          "relevance": "background",
+          "rendering_class": "HISTORICAL_REFERENCE",
+          "state": "holding_above"
+        }
+      }
+    },
+    {
+      "ticker": "003690",
+      "name": "코리안리",
+      "current_close": 15470.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:05:47.955930+09:00",
+      "feature_fingerprint": "d1cfe6c43c9be7e671d0f32d7633c25bf0ed4e068552622c4eb8ffe063b39a6f",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 1.52만~1.54만원",
+          "distance_pct": "0.776104",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "15349.936772",
+          "raw_low": "15273.378484",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:83087055ace8aaff06fd"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "003690",
+          "zone_id": "v3-zone:e0f1637c6820ac3f5ec1"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_CONFIRMED_HISTORICAL_LEVEL"
+      },
+      "major_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 1.48만~1.51만원",
+          "distance_pct": "2.501056",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-31"
+          ],
+          "last_meaningful_interaction": "2026-05-04",
+          "last_price_interaction_date": "2026-05-04",
+          "price_anchor_refs": [
+            "v3-pivot:70910a9505b0c46f30b5"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "15083.086698",
+          "raw_low": "14882.542963",
+          "reaction_count": 1,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:b4f43dd1f180f5d999ef",
+            "v3-pivot:70910a9505b0c46f30b5"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 32,
+          "ticker": "003690",
+          "zone_id": "v3-zone:d2aba8df0742baa66953"
+        }
+      },
+      "major_resistance": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_CONFIRMED_HISTORICAL_LEVEL"
+      },
+      "major_cross_timeframe_zone": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 1.4만~1.5만원",
+        "distance_pct": "3.316651",
+        "evidence_family_score": "5.050000",
+        "historical_interaction_count": 12,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2026-09-02",
+        "last_price_interaction_date": "2026-09-02",
+        "price_anchor_refs": [
+          "v3-balance-box:5332e57721bb80c0899d",
+          "v3-pivot:70910a9505b0c46f30b5"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "14956.914167",
+        "raw_low": "14643.085833",
+        "reaction_count": 12,
+        "requested_timeframe": "cross_timeframe",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:5332e57721bb80c0899d",
+          "v3-bollinger:d3ca670c5e2a6623c31e",
+          "v3-pivot:70910a9505b0c46f30b5"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly",
+          "daily"
+        ],
+        "structural_score": 33,
+        "ticker": "003690",
+        "zone_id": "v3-zone:279946f980ca2c19ab7e"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 1.48만~1.51만원",
+        "distance_pct": "2.501056",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 1,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31"
+        ],
+        "last_meaningful_interaction": "2026-05-04",
+        "last_price_interaction_date": "2026-05-04",
+        "price_anchor_refs": [
+          "v3-pivot:70910a9505b0c46f30b5"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "15083.086698",
+        "raw_low": "14882.542963",
+        "reaction_count": 1,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:b4f43dd1f180f5d999ef",
+          "v3-pivot:70910a9505b0c46f30b5"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 32,
+        "ticker": "003690",
+        "zone_id": "v3-zone:d2aba8df0742baa66953"
+      },
+      "dynamic_bollinger_resistance": null,
+      "provisional_bollinger_support": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 7,000~8,000원",
+        "distance_pct": "52.154439",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:47.955930+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "7401.708254",
+        "raw_low": "7364.792004",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:0b21c99d1ecea630d756"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "003690",
+        "zone_id": "v3-zone:8bb2d8b6e8e902b1f809"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 1.55만~1.57만원",
+        "distance_pct": "0.605966",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:47.955930+09:00"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "15641.756746",
+        "raw_low": "15563.742996",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:bf57ca4d95e4982859ee"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "003690",
+        "zone_id": "v3-zone:6fec0c07169c31ded99b"
+      },
+      "registered_rules": {
+        "support_zone_low": 12900.0,
+        "support_zone_high": 13100.0,
+        "confirmation_price": 14300.0,
+        "warning_price": null,
+        "invalidation_price": 12900.0,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "partial",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Strong",
+          "timeframe": "daily",
+          "zone_high": 15635.400944,
+          "zone_low": 15264.599056
+        },
+        "active_resistance": {
+          "available": false
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 14995.574219,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [
+            "trading_value_ratio_unavailable"
+          ],
+          "breakout_zone": {
+            "atr": 682.191065,
+            "bollinger_overlap": true,
+            "center": 14365.0,
+            "fibonacci_overlap": false,
+            "higher_timeframe_overlap_count": 0,
+            "higher_timeframe_score": 0,
+            "latest_reaction_date": "2026-07-27",
+            "lower_timeframe_overlap_count": 0,
+            "padding": 170.547766,
+            "pivot_count": 4,
+            "pivot_dates": [
+              "2026-06-05",
+              "2026-06-17",
+              "2026-07-27",
+              "2026-07-15"
+            ],
+            "pivot_prices": [
+              14330.0,
+              14350.0,
+              14380.0,
+              14400.0
+            ],
+            "pivot_type": "high",
+            "reaction_count": 4,
+            "reaction_score": 4,
+            "recency_score": 1,
+            "score": 7,
+            "strength": "Medium",
+            "timeframe": "daily",
+            "zone_high": 14570.547766,
+            "zone_low": 14159.452234
+          },
+          "confidence": "high",
+          "reasons": [
+            "two_close_breakout",
+            "volume_ratio_confirmed"
+          ],
+          "state": "CONFIRM_ENTRY",
+          "user_semantics": "confirmed_breakout_not_buy_command"
+        },
+        "current_price_risk_reward": {
+          "available": false,
+          "classification": null,
+          "ratio": null,
+          "reason": "resistance_unavailable"
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": "2026-09-01",
+          "final_sessions_above": 3,
+          "price": 14300.0,
+          "relevance": "background",
+          "rendering_class": "HISTORICAL_REFERENCE",
+          "state": "holding_above"
+        }
+      }
+    },
+    {
+      "ticker": "005490",
+      "name": "POSCO홀딩스",
+      "current_close": 342000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:05:55.328783+09:00",
+      "feature_fingerprint": "c4e82999aac6506b6cc26eccd22df2e62658e47feba4fab737200d044372d145",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 33.06만~34.19만원",
+          "distance_pct": "0.045779",
+          "evidence_family_score": "1.000000",
+          "historical_interaction_count": 4,
+          "last_meaningful_interaction": "2025-10-01",
+          "last_price_interaction_date": "2025-10-01",
+          "price_anchor_refs": [
+            "v3-pivot:70fa7537802198459e0d",
+            "v3-pivot:74a86b7b5937766d8693",
+            "v3-pivot:84a119b7e2073a315141",
+            "v3-pivot:ce31c1ae525b68f9d1f0"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "341843.437500",
+          "raw_low": "330656.562500",
+          "reaction_count": 4,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:70fa7537802198459e0d",
+            "v3-pivot:74a86b7b5937766d8693",
+            "v3-pivot:84a119b7e2073a315141",
+            "v3-pivot:ce31c1ae525b68f9d1f0"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 31,
+          "ticker": "005490",
+          "zone_id": "v3-zone:3ddde0685b841e6a51e1"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 36.2만~37.6만원",
+          "distance_pct": "6.016813",
+          "evidence_family_score": "1.000000",
+          "historical_interaction_count": 2,
+          "last_meaningful_interaction": "2014-09-01",
+          "last_price_interaction_date": "2014-09-01",
+          "price_anchor_refs": [
+            "v3-pivot:0e086837327618b1dd44",
+            "v3-pivot:adc1a20310ec20ba9b05"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "375422.500000",
+          "raw_low": "362577.500000",
+          "reaction_count": 2,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-pivot:0e086837327618b1dd44",
+            "v3-pivot:adc1a20310ec20ba9b05"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 31,
+          "ticker": "005490",
+          "zone_id": "v3-zone:19c113d4ffae21e933ed"
+        }
+      },
+      "major_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 30.8만~31.8만원",
+          "distance_pct": "7.307890",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 3,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-31"
+          ],
+          "last_meaningful_interaction": "2024-08-01",
+          "last_price_interaction_date": "2024-08-01",
+          "price_anchor_refs": [
+            "v3-pivot:61d4ed64742fdf2c3b84",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:a112aa6f1b1f8eac69b0"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "317007.015625",
+          "raw_low": "308217.984375",
+          "reaction_count": 3,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:fd2ab5e1fc51e799e712",
+            "v3-pivot:61d4ed64742fdf2c3b84",
+            "v3-pivot:722dd70f940b5bd489ca",
+            "v3-pivot:a112aa6f1b1f8eac69b0"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 32,
+          "ticker": "005490",
+          "zone_id": "v3-zone:fbe8bf02db9a7aa1e755"
+        }
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 42.5만~43.8만원",
+          "distance_pct": "24.538438",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-31"
+          ],
+          "last_meaningful_interaction": "2023-04-03",
+          "last_price_interaction_date": "2023-04-03",
+          "price_anchor_refs": [
+            "v3-pivot:206cbf280d26e33eb5cd",
+            "v3-pivot:27d72c0da9ca8a90ae40",
+            "v3-pivot:92131790e22c1b0f8e22",
+            "v3-pivot:c51773e328a47a8845ce"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "437078.541321",
+          "raw_low": "425921.458679",
+          "reaction_count": 4,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:be874e9e308cf201f19e",
+            "v3-pivot:206cbf280d26e33eb5cd",
+            "v3-pivot:27d72c0da9ca8a90ae40",
+            "v3-pivot:92131790e22c1b0f8e22",
+            "v3-pivot:c51773e328a47a8845ce"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 32,
+          "ticker": "005490",
+          "zone_id": "v3-zone:21a41cde4536d075d95b"
+        }
+      },
+      "major_cross_timeframe_zone": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.941176",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 32.4만~33.3만원",
+        "distance_pct": "2.830078",
+        "evidence_family_score": "8.900000",
+        "historical_interaction_count": 31,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2026-09-02",
+        "last_price_interaction_date": "2026-09-02",
+        "price_anchor_refs": [
+          "v3-balance-box:96146344696e585bffa8",
+          "v3-balance-box:c7ba19c3a7e33ff91443",
+          "v3-pivot:213275bafe44bff25b8a",
+          "v3-pivot:2d8649037fb9f6f514ae",
+          "v3-pivot:3bd4395d177951b1d7c9",
+          "v3-pivot:4be7b1516c0cfea93e59",
+          "v3-pivot:546a4fb414c3c2d4a4ed",
+          "v3-pivot:70fa7537802198459e0d",
+          "v3-pivot:7977ca32a2739088f0aa",
+          "v3-pivot:83c88c57001f27f512b4",
+          "v3-pivot:a5e6cbf3ae0aa5f3e507",
+          "v3-pivot:be25a8d9856091904d66",
+          "v3-pivot:c576f1fc1c42715c1825",
+          "v3-pivot:eec4cd0232ae44a78d6c",
+          "v3-pivot:f530a8f4817c7f6e961d"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "332321.132353",
+        "raw_low": "324178.867647",
+        "reaction_count": 31,
+        "requested_timeframe": "cross_timeframe",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY",
+          "PIVOT_MONTHLY",
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:96146344696e585bffa8",
+          "v3-balance-box:c7ba19c3a7e33ff91443",
+          "v3-bollinger:f3f7d0ee1c7e88360c9e",
+          "v3-pivot:213275bafe44bff25b8a",
+          "v3-pivot:2d006c39eed4eef3daa9",
+          "v3-pivot:2d8649037fb9f6f514ae",
+          "v3-pivot:3bd4395d177951b1d7c9",
+          "v3-pivot:4be7b1516c0cfea93e59",
+          "v3-pivot:546a4fb414c3c2d4a4ed",
+          "v3-pivot:70fa7537802198459e0d",
+          "v3-pivot:7977ca32a2739088f0aa",
+          "v3-pivot:83c88c57001f27f512b4",
+          "v3-pivot:a5e6cbf3ae0aa5f3e507",
+          "v3-pivot:be25a8d9856091904d66",
+          "v3-pivot:c576f1fc1c42715c1825",
+          "v3-pivot:eec4cd0232ae44a78d6c",
+          "v3-pivot:f530a8f4817c7f6e961d"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly",
+          "weekly",
+          "daily"
+        ],
+        "structural_score": 36,
+        "ticker": "005490",
+        "zone_id": "v3-zone:0ad5a220a4e904d70e56"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 30.8만~31.8만원",
+        "distance_pct": "7.307890",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 3,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31"
+        ],
+        "last_meaningful_interaction": "2024-08-01",
+        "last_price_interaction_date": "2024-08-01",
+        "price_anchor_refs": [
+          "v3-pivot:61d4ed64742fdf2c3b84",
+          "v3-pivot:722dd70f940b5bd489ca",
+          "v3-pivot:a112aa6f1b1f8eac69b0"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "317007.015625",
+        "raw_low": "308217.984375",
+        "reaction_count": 3,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:fd2ab5e1fc51e799e712",
+          "v3-pivot:61d4ed64742fdf2c3b84",
+          "v3-pivot:722dd70f940b5bd489ca",
+          "v3-pivot:a112aa6f1b1f8eac69b0"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 32,
+        "ticker": "005490",
+        "zone_id": "v3-zone:fbe8bf02db9a7aa1e755"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 36.9만~37.6만원",
+        "distance_pct": "7.914998",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 2,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "last_meaningful_interaction": "2021-07-26",
+        "last_price_interaction_date": "2021-07-26",
+        "price_anchor_refs": [
+          "v3-pivot:18e3b7aa5adce93c3ebe",
+          "v3-pivot:d67712b96e2822c8747d"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "375930.708333",
+        "raw_low": "369069.291667",
+        "reaction_count": 2,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_WEEKLY",
+          "PIVOT_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:e086aac6f55e3707c2d9",
+          "v3-pivot:18e3b7aa5adce93c3ebe",
+          "v3-pivot:d67712b96e2822c8747d"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 22,
+        "ticker": "005490",
+        "zone_id": "v3-zone:5c0c03fdebfce06974a6"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 20.9만~21.1만원",
+        "distance_pct": "38.464435",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:55.328783+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "210451.631888",
+        "raw_low": "209401.997814",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:d02b9423f94cba589205"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "005490",
+        "zone_id": "v3-zone:1be04b44e9277a1d3f7f"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 42.9만~43.2만원",
+        "distance_pct": "25.613012",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:05:55.328783+09:00"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "431749.868112",
+        "raw_low": "429596.502186",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:1a6fc40baa201b2709df"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "005490",
+        "zone_id": "v3-zone:cc81f00875a50777ae0e"
+      },
+      "registered_rules": {
+        "support_zone_low": 313000.0,
+        "support_zone_high": 320000.0,
+        "confirmation_price": 344000.0,
+        "warning_price": null,
+        "invalidation_price": 298000.0,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Strong",
+          "timeframe": "daily",
+          "zone_high": 347476.134583,
+          "zone_low": 332523.865417
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 402936.224195,
+          "zone_low": 385063.775805
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 325568.697293,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [
+            "trading_value_ratio_unavailable"
+          ],
+          "breakout_zone": {
+            "atr": 9610.510136,
+            "bollinger_overlap": false,
+            "center": 323000.0,
+            "fibonacci_overlap": true,
+            "higher_timeframe_overlap_count": 0,
+            "higher_timeframe_score": 0,
+            "latest_reaction_date": "2026-07-23",
+            "lower_timeframe_overlap_count": 0,
+            "padding": 2402.627534,
+            "pivot_count": 3,
+            "pivot_dates": [
+              "2025-12-24",
+              "2025-12-12",
+              "2026-07-23"
+            ],
+            "pivot_prices": [
+              319500.0,
+              323000.0,
+              325000.0
+            ],
+            "pivot_type": "high",
+            "reaction_count": 3,
+            "reaction_score": 3,
+            "recency_score": 1,
+            "score": 5,
+            "strength": "Medium",
+            "timeframe": "daily",
+            "zone_high": 327402.627534,
+            "zone_low": 317097.372466
+          },
+          "confidence": "high",
+          "reasons": [
+            "two_close_breakout",
+            "volume_ratio_confirmed"
+          ],
+          "state": "CONFIRM_ENTRY",
+          "user_semantics": "confirmed_breakout_not_buy_command"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "attractive",
+          "ratio": 2.620838,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": null,
+          "final_sessions_above": 0,
+          "price": 344000.0,
+          "relevance": "active",
+          "rendering_class": "FUTURE_TRIGGER",
+          "state": "not_reached"
+        }
+      }
+    },
+    {
+      "ticker": "005930",
+      "name": "삼성전자",
+      "current_close": 250000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:06:02.906846+09:00",
+      "feature_fingerprint": "10b94b908bab5d35a01b947a2a03b843f758fed1217dc32efdc1fc42a808f996",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 22.6만~22.8만원",
+          "distance_pct": "8.812332",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "227969.171129",
+          "raw_low": "226832.167781",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:01afca9f352c5bf5f3d4"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "005930",
+          "zone_id": "v3-zone:9626595cc235db9f9811"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 25.5만~26만원",
+          "distance_pct": "2.092563",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2026-09-03",
+          "last_price_interaction_date": "2026-09-03",
+          "price_anchor_refs": [
+            "v3-balance-box:a4bda28b674f93715be8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "259643.593750",
+          "raw_low": "255231.406250",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:a4bda28b674f93715be8",
+            "v3-bollinger:c7ced87d999f45e9a3db"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "005930",
+          "zone_id": "v3-zone:b0d98628291da9e30ebc"
+        }
+      },
+      "major_support": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_ACTIVE_STRUCTURAL_LEVEL"
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 25.5만~26만원",
+          "distance_pct": "2.092563",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2026-09-03",
+          "last_price_interaction_date": "2026-09-03",
+          "price_anchor_refs": [
+            "v3-balance-box:a4bda28b674f93715be8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "259643.593750",
+          "raw_low": "255231.406250",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:a4bda28b674f93715be8",
+            "v3-bollinger:c7ced87d999f45e9a3db"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "005930",
+          "zone_id": "v3-zone:b0d98628291da9e30ebc"
+        }
+      },
+      "major_cross_timeframe_zone": null,
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 22.6만~22.8만원",
+        "distance_pct": "8.812332",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "227969.171129",
+        "raw_low": "226832.167781",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:01afca9f352c5bf5f3d4"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 11,
+        "ticker": "005930",
+        "zone_id": "v3-zone:9626595cc235db9f9811"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 25.5만~26만원",
+        "distance_pct": "2.092563",
+        "evidence_family_score": "2.800000",
+        "historical_interaction_count": 11,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2026-09-03",
+        "last_price_interaction_date": "2026-09-03",
+        "price_anchor_refs": [
+          "v3-balance-box:a4bda28b674f93715be8"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "259643.593750",
+        "raw_low": "255231.406250",
+        "reaction_count": 11,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:a4bda28b674f93715be8",
+          "v3-bollinger:c7ced87d999f45e9a3db"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 12,
+        "ticker": "005930",
+        "zone_id": "v3-zone:b0d98628291da9e30ebc"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 20.3만~20.5만원",
+        "distance_pct": "18.366357",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-04"
+        ],
+        "indicator_bar_starts": [
+          "2026-08-31"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:02.906846+09:00"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "204084.106785",
+        "raw_low": "203066.230941",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:59adc4f198da2062cabf"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "005930",
+        "zone_id": "v3-zone:196a7ec40a73ba7e2541"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 33.5만~33.8만원",
+        "distance_pct": "34.331389",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:02.906846+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "337511.824422",
+        "raw_low": "335828.473676",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:dc1d8f6d0e2fab9d2f9e"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "005930",
+        "zone_id": "v3-zone:93caa1ac95ca383dc31d"
+      },
+      "registered_rules": {
+        "support_zone_low": 228000.0,
+        "support_zone_high": 233000.0,
+        "confirmation_price": 255000.0,
+        "warning_price": null,
+        "invalidation_price": 218000.0,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 233134.006183,
+          "zone_low": 221865.993817
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 293295.836386,
+          "zone_low": 282704.163614
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 213360.219246,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "medium",
+          "reasons": [
+            "rr_below_1_5",
+            "distribution"
+          ],
+          "state": "WAIT",
+          "user_semantics": "price_structure_wait_not_sell_command"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "poor_chase",
+          "ratio": 0.892586,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": null,
+          "final_sessions_above": 0,
+          "price": 255000.0,
+          "relevance": "active",
+          "rendering_class": "FUTURE_TRIGGER",
+          "state": "not_reached"
+        }
+      }
+    },
+    {
+      "ticker": "010120",
+      "name": "LS일렉트릭",
+      "current_close": 192100.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:06:09.658155+09:00",
+      "feature_fingerprint": "3417ff3787b0e47836cfdd95185417248b058c14054c864bcad9cda3a333c145",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "0.500000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 18.6만~18.9만원",
+          "distance_pct": "1.890147",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "188469.026896",
+          "raw_low": "186752.489749",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:7a1d859ca1c3b34041ef",
+            "v3-pivot:518f8b7b998621f018d3"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "010120",
+          "zone_id": "v3-zone:cc2bdb2bf4a08baa23bd"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 20.2만~20.5만원",
+          "distance_pct": "5.518571",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2026-09-01",
+          "last_price_interaction_date": "2026-09-01",
+          "price_anchor_refs": [
+            "v3-balance-box:179f51ef5bbdf4e5b0d9"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "204358.825000",
+          "raw_low": "202701.175000",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:179f51ef5bbdf4e5b0d9",
+            "v3-bollinger:14c119136451487bfd73"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "010120",
+          "zone_id": "v3-zone:4dc9f7b1f419e1b0f834"
+        }
+      },
+      "major_support": {
+        "classification": "NO_CONFIRMED_HISTORICAL_LEVEL",
+        "reason": "NO_ACTIVE_STRUCTURAL_LEVEL"
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 21.1만~21.3만원",
+          "distance_pct": "9.953475",
+          "evidence_family_score": "1.100000",
+          "historical_interaction_count": 7,
+          "last_meaningful_interaction": "2026-08-24",
+          "last_price_interaction_date": "2026-08-24",
+          "price_anchor_refs": [
+            "v3-balance-box:7baf0261475383afa9eb"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "212279.375000",
+          "raw_low": "211220.625000",
+          "reaction_count": 7,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:7baf0261475383afa9eb"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ],
+          "structural_score": 21,
+          "ticker": "010120",
+          "zone_id": "v3-zone:7098464a3ab93da93ceb"
+        }
+      },
+      "major_cross_timeframe_zone": null,
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.500000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 18.6만~18.9만원",
+        "distance_pct": "1.890147",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "188469.026896",
+        "raw_low": "186752.489749",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7a1d859ca1c3b34041ef",
+          "v3-pivot:518f8b7b998621f018d3"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 12,
+        "ticker": "010120",
+        "zone_id": "v3-zone:cc2bdb2bf4a08baa23bd"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 20.2만~20.5만원",
+        "distance_pct": "5.518571",
+        "evidence_family_score": "2.800000",
+        "historical_interaction_count": 11,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2026-09-01",
+        "last_price_interaction_date": "2026-09-01",
+        "price_anchor_refs": [
+          "v3-balance-box:179f51ef5bbdf4e5b0d9"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "204358.825000",
+        "raw_low": "202701.175000",
+        "reaction_count": 11,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_DAILY"
+        ],
+        "source_refs": [
+          "v3-balance-box:179f51ef5bbdf4e5b0d9",
+          "v3-bollinger:14c119136451487bfd73"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 12,
+        "ticker": "010120",
+        "zone_id": "v3-zone:4dc9f7b1f419e1b0f834"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "ACTIVE_STRUCTURAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 15.6만~15.7만원",
+        "distance_pct": "18.354788",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-04"
+        ],
+        "indicator_bar_starts": [
+          "2026-08-31"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:09.658155+09:00"
+        ],
+        "proximity_tier": "RELEVANT",
+        "raw_high": "156840.451338",
+        "raw_low": "156058.204698",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:c025bc5306403f467fad"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "010120",
+        "zone_id": "v3-zone:879a8270132c7e4a9e63"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 27.2만~27.4만원",
+        "distance_pct": "41.594628",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:09.658155+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "273366.706053",
+        "raw_low": "272003.281085",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:d41d5651f6012c0b2862"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "010120",
+        "zone_id": "v3-zone:b9576d112ac3e446fc58"
+      },
+      "registered_rules": {
+        "support_zone_low": null,
+        "support_zone_high": null,
+        "confirmation_price": null,
+        "warning_price": null,
+        "invalidation_price": null,
+        "basis": null
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 185745.114859,
+          "zone_low": 178054.885141
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 219883.2181,
+          "zone_low": 209116.7819
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 171043.950693,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "medium",
+          "reasons": [
+            "rr_below_1_5"
+          ],
+          "state": "WAIT",
+          "user_semantics": "price_structure_wait_not_sell_command"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "poor_chase",
+          "ratio": 0.808166,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": false,
+          "crossed_at": null,
+          "final_sessions_above": 0,
+          "price": null,
+          "relevance": "unavailable",
+          "rendering_class": "UNAVAILABLE",
+          "state": "not_configured"
+        }
+      }
+    },
+    {
+      "ticker": "012450",
+      "name": "한화에어로스페이스",
+      "current_close": 1047000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:06:16.796685+09:00",
+      "feature_fingerprint": "9667228b1cf22f74b8edc7217cc25fa078dae46b74081f749ecc142e6f066b5b",
+      "bar_counts": {
+        "D": 1000,
+        "M": 300,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 102만~103.8만원",
+          "distance_pct": "0.900445",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2025-07-31",
+          "last_price_interaction_date": "2025-07-31",
+          "price_anchor_refs": [
+            "v3-pivot:e2d31e22c22b2fa352d8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1037572.343687",
+          "raw_low": "1020302.605706",
+          "reaction_count": 1,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:e0b8343d2585d80b933a",
+            "v3-pivot:e2d31e22c22b2fa352d8"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "012450",
+          "zone_id": "v3-zone:91bc297805f50b3067b1"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 104.73만~106.57만원",
+          "distance_pct": "0.034563",
+          "evidence_family_score": "1.000000",
+          "historical_interaction_count": 4,
+          "last_meaningful_interaction": "2026-07-24",
+          "last_price_interaction_date": "2026-07-24",
+          "price_anchor_refs": [
+            "v3-pivot:64a8f7cc09eb12142b07",
+            "v3-pivot:8749f8da2bf09af16175",
+            "v3-pivot:9d142cee3abbe663562e",
+            "v3-pivot:c1e5bd28c0420000a7d5"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1065638.125000",
+          "raw_low": "1047361.875000",
+          "reaction_count": 4,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-pivot:64a8f7cc09eb12142b07",
+            "v3-pivot:8749f8da2bf09af16175",
+            "v3-pivot:9d142cee3abbe663562e",
+            "v3-pivot:c1e5bd28c0420000a7d5"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "012450",
+          "zone_id": "v3-zone:14463eb7c422bcc30807"
+        }
+      },
+      "major_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 102만~103.8만원",
+          "distance_pct": "0.900445",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2025-07-31",
+          "last_price_interaction_date": "2025-07-31",
+          "price_anchor_refs": [
+            "v3-pivot:e2d31e22c22b2fa352d8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1037572.343687",
+          "raw_low": "1020302.605706",
+          "reaction_count": 1,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:e0b8343d2585d80b933a",
+            "v3-pivot:e2d31e22c22b2fa352d8"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "012450",
+          "zone_id": "v3-zone:91bc297805f50b3067b1"
+        }
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 111.2만~112.5만원",
+          "distance_pct": "6.275370",
+          "evidence_family_score": "2.800000",
+          "historical_interaction_count": 11,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2026-08-31",
+          "last_price_interaction_date": "2026-08-31",
+          "price_anchor_refs": [
+            "v3-balance-box:eeb7d1e3b593122e7e2a"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "1124796.875000",
+          "raw_low": "1112703.125000",
+          "reaction_count": 11,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX",
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-balance-box:eeb7d1e3b593122e7e2a",
+            "v3-bollinger:e99c049120fd245b48e3"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "012450",
+          "zone_id": "v3-zone:678c336fcbc611205012"
+        }
+      },
+      "major_cross_timeframe_zone": null,
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 95.4만~96만원",
+        "distance_pct": "8.333942",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "959743.625625",
+        "raw_low": "954956.874375",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:5913a1744f42fad20ed2"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "012450",
+        "zone_id": "v3-zone:6919484e57f7e2c6dc28"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 114.7만~115.3만원",
+        "distance_pct": "9.563037",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "1152875.000000",
+        "raw_low": "1147125.000000",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:559928c5045bd9fb9c34"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "012450",
+        "zone_id": "v3-zone:d1a77b286e9195a61bda"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 56.7만~57.1만원",
+        "distance_pct": "45.511519",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:16.796685+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "570494.395605",
+        "raw_low": "567649.037023",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:adf73fa264e57b082130"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "012450",
+        "zone_id": "v3-zone:90b393a93ba963e666bc"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 140.7만~141.5만원",
+        "distance_pct": "34.423441",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:16.796685+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "1414468.135645",
+        "raw_low": "1407413.431727",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:67f7db3dbe073d2516c4"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "012450",
+        "zone_id": "v3-zone:f43df6a05b0768f4d272"
+      },
+      "registered_rules": {
+        "support_zone_low": null,
+        "support_zone_high": null,
+        "confirmation_price": null,
+        "warning_price": null,
+        "invalidation_price": null,
+        "basis": null
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 1073858.466106,
+          "zone_low": 1024141.533894
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 1217823.518708,
+          "zone_low": 1182176.481292
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 989979.726448,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "high",
+          "reasons": [
+            "major_structure_and_support_intact"
+          ],
+          "state": "HOLD",
+          "user_semantics": "holder_structure_not_new_entry"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "attractive",
+          "ratio": 2.370674,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": false,
+          "crossed_at": null,
+          "final_sessions_above": 0,
+          "price": null,
+          "relevance": "unavailable",
+          "rendering_class": "UNAVAILABLE",
+          "state": "not_configured"
+        }
+      }
+    },
+    {
+      "ticker": "047810",
+      "name": "한국항공우주산업",
+      "current_close": 125000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:06:24.038620+09:00",
+      "feature_fingerprint": "ba06cfc3da132493d4f341f35413dba0f5cf34cd6082c8d26d845f7ebeb042e1",
+      "bar_counts": {
+        "D": 1000,
+        "M": 184,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 12.1만~12.3만원",
+          "distance_pct": "2.246085",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-28"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "122192.394291",
+          "raw_low": "121582.955915",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:a973516d009fbe97ff7a"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ],
+          "structural_score": 21,
+          "ticker": "047810",
+          "zone_id": "v3-zone:34b1de2c4a1fa18f2d80"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 13.4만~13.8만원",
+          "distance_pct": "7.407876",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 4,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "last_meaningful_interaction": "2026-08-12",
+          "last_price_interaction_date": "2026-08-12",
+          "price_anchor_refs": [
+            "v3-pivot:341b78114cbb568c4608",
+            "v3-pivot:6023581dc2b4fec80f43",
+            "v3-pivot:6c252e179d0775400306",
+            "v3-pivot:dcd210745739b950a8e8"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "137650.155000",
+          "raw_low": "134259.845000",
+          "reaction_count": 4,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY",
+            "PIVOT_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:2322ce991f24a1f60b9c",
+            "v3-pivot:341b78114cbb568c4608",
+            "v3-pivot:6023581dc2b4fec80f43",
+            "v3-pivot:6c252e179d0775400306",
+            "v3-pivot:dcd210745739b950a8e8"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 12,
+          "ticker": "047810",
+          "zone_id": "v3-zone:398822878235d7dcb990"
+        }
+      },
+      "major_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 11.6만~12만원",
+          "distance_pct": "4.724275",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-31"
+          ],
+          "last_meaningful_interaction": "2025-09-01",
+          "last_price_interaction_date": "2025-09-01",
+          "price_anchor_refs": [
+            "v3-pivot:e9e4fd6e4d574a37e928"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "119094.656250",
+          "raw_low": "116630.343750",
+          "reaction_count": 1,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_MONTHLY",
+            "PIVOT_MONTHLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:934911e429993623f3ab",
+            "v3-pivot:e9e4fd6e4d574a37e928"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 32,
+          "ticker": "047810",
+          "zone_id": "v3-zone:005f63178e077571c8a6"
+        }
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 14.7만~14.8만원",
+          "distance_pct": "17.744900",
+          "evidence_family_score": "1.100000",
+          "historical_interaction_count": 7,
+          "last_meaningful_interaction": "2026-08-10",
+          "last_price_interaction_date": "2026-08-10",
+          "price_anchor_refs": [
+            "v3-balance-box:2cb9dc93407118047365"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "147918.875000",
+          "raw_low": "147181.125000",
+          "reaction_count": 7,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:2cb9dc93407118047365"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ],
+          "structural_score": 21,
+          "ticker": "047810",
+          "zone_id": "v3-zone:6716ebe6e08504407112"
+        }
+      },
+      "major_cross_timeframe_zone": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 11.6만~12만원",
+        "distance_pct": "4.723837",
+        "evidence_family_score": "4.650000",
+        "historical_interaction_count": 1,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31",
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2025-09-01",
+        "last_price_interaction_date": "2025-09-01",
+        "price_anchor_refs": [
+          "v3-pivot:e9e4fd6e4d574a37e928"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "119095.203557",
+        "raw_low": "116629.796443",
+        "reaction_count": 1,
+        "requested_timeframe": "cross_timeframe",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:2f3f953b1ef9ef363362",
+          "v3-bollinger:934911e429993623f3ab",
+          "v3-pivot:e9e4fd6e4d574a37e928"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly",
+          "daily"
+        ],
+        "structural_score": 33,
+        "ticker": "047810",
+        "zone_id": "v3-zone:549b83a52bd0c3b7eddb"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 11.6만~12만원",
+        "distance_pct": "4.724275",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 1,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31"
+        ],
+        "last_meaningful_interaction": "2025-09-01",
+        "last_price_interaction_date": "2025-09-01",
+        "price_anchor_refs": [
+          "v3-pivot:e9e4fd6e4d574a37e928"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "119094.656250",
+        "raw_low": "116630.343750",
+        "reaction_count": 1,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_MONTHLY",
+          "PIVOT_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:934911e429993623f3ab",
+          "v3-pivot:e9e4fd6e4d574a37e928"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 32,
+        "ticker": "047810",
+        "zone_id": "v3-zone:005f63178e077571c8a6"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 13.4만~13.8만원",
+        "distance_pct": "7.407876",
+        "evidence_family_score": "2.700000",
+        "historical_interaction_count": 4,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "last_meaningful_interaction": "2026-08-12",
+        "last_price_interaction_date": "2026-08-12",
+        "price_anchor_refs": [
+          "v3-pivot:341b78114cbb568c4608",
+          "v3-pivot:6023581dc2b4fec80f43",
+          "v3-pivot:6c252e179d0775400306",
+          "v3-pivot:dcd210745739b950a8e8"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "137650.155000",
+        "raw_low": "134259.845000",
+        "reaction_count": 4,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_DAILY",
+          "PIVOT_DAILY"
+        ],
+        "source_refs": [
+          "v3-bollinger:2322ce991f24a1f60b9c",
+          "v3-pivot:341b78114cbb568c4608",
+          "v3-pivot:6023581dc2b4fec80f43",
+          "v3-pivot:6c252e179d0775400306",
+          "v3-pivot:dcd210745739b950a8e8"
+        ],
+        "source_timeframe": "daily",
+        "source_timeframes": [
+          "daily"
+        ],
+        "structural_score": 12,
+        "ticker": "047810",
+        "zone_id": "v3-zone:398822878235d7dcb990"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "RETIRED_OR_LOW_RELEVANCE",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 4.8만~4.9만원",
+        "distance_pct": "60.951152",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:24.038620+09:00"
+        ],
+        "proximity_tier": "OUT_OF_ACTIVE_RANGE",
+        "raw_high": "48811.060578",
+        "raw_low": "48567.613892",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:06ad708b45a257e908e6"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "047810",
+        "zone_id": "v3-zone:0572d1e7ca917eb2e77e"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 19.1만~19.3만원",
+        "distance_pct": "53.479869",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:24.038620+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "192811.489422",
+        "raw_low": "191849.836108",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:cb2e408dac8314f70f13"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "047810",
+        "zone_id": "v3-zone:37c513c2c574bbfbd12d"
+      },
+      "registered_rules": {
+        "support_zone_low": 120500.0,
+        "support_zone_high": 126500.0,
+        "confirmation_price": 155800.0,
+        "warning_price": null,
+        "invalidation_price": null,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 120020.871437,
+          "zone_low": 115279.128563
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 155380.261741,
+          "zone_low": 150619.738259
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 111092.633779,
+          "reason": null,
+          "timeframe": "daily"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "medium",
+          "reasons": [
+            "distribution"
+          ],
+          "state": "WAIT",
+          "user_semantics": "price_structure_wait_not_sell_command"
+        },
+        "current_price_risk_reward": {
+          "available": true,
+          "classification": "conditional",
+          "ratio": 1.84217,
+          "reason": null
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": null,
+          "final_sessions_above": 0,
+          "price": 155800.0,
+          "relevance": "active",
+          "rendering_class": "FUTURE_TRIGGER",
+          "state": "not_reached"
+        }
+      }
+    },
+    {
+      "ticker": "086280",
+      "name": "현대글로비스",
+      "current_close": 202000.0,
+      "currency": "KRW",
+      "as_of_date": "2026-09-03",
+      "price_basis": "adjusted_close",
+      "technical_status": "FULL",
+      "technical_quality": "fresh",
+      "technical_as_of": "2026-09-03T16:06:30.963052+09:00",
+      "feature_fingerprint": "39e5470f9fe781b9ef6714856c691756906f2445fd0f31deb58f0f9bf37b17b6",
+      "bar_counts": {
+        "D": 1000,
+        "M": 250,
+        "W": 600
+      },
+      "v3_contract": "kr-price-structure-runtime-context-v1",
+      "v3_eligibility": "ELIGIBLE_SR_ONLY",
+      "v3_family_consensus_safe": false,
+      "nearest_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 19.4만~19.6만원",
+          "distance_pct": "3.310847",
+          "evidence_family_score": "1.200000",
+          "historical_interaction_count": 0,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-09-03"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "195312.089742",
+          "raw_low": "194337.964606",
+          "reaction_count": 0,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_DAILY"
+          ],
+          "source_refs": [
+            "v3-bollinger:2b552bee787e2bd32a0f"
+          ],
+          "source_timeframe": "daily",
+          "source_timeframes": [
+            "daily"
+          ],
+          "structural_score": 11,
+          "ticker": "086280",
+          "zone_id": "v3-zone:346304de7c02a1369bfe"
+        }
+      },
+      "nearest_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 20.209만~20.311만원",
+          "distance_pct": "0.046287",
+          "evidence_family_score": "1.100000",
+          "historical_interaction_count": 7,
+          "last_meaningful_interaction": "2026-08-24",
+          "last_price_interaction_date": "2026-08-24",
+          "price_anchor_refs": [
+            "v3-balance-box:210a55f34b656453984f"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "203106.500000",
+          "raw_low": "202093.500000",
+          "reaction_count": 7,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:210a55f34b656453984f"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ],
+          "structural_score": 21,
+          "ticker": "086280",
+          "zone_id": "v3-zone:cd8d8b21cb52a2b5a3f3"
+        }
+      },
+      "major_support": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_STRUCTURAL",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "SUPPORT",
+          "display": "약 17.2만~17.7만원",
+          "distance_pct": "12.845807",
+          "evidence_family_score": "2.700000",
+          "historical_interaction_count": 1,
+          "indicator_bar_states": [
+            "COMPLETE"
+          ],
+          "indicator_observation_dates": [
+            "2026-08-28"
+          ],
+          "last_meaningful_interaction": "2026-06-22",
+          "last_price_interaction_date": "2026-06-22",
+          "price_anchor_refs": [
+            "v3-pivot:3b0bc390b3b5eced161a"
+          ],
+          "proximity_tier": "RELEVANT",
+          "raw_high": "176051.469575",
+          "raw_low": "172064.854595",
+          "reaction_count": 1,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BOLLINGER_WEEKLY",
+            "PIVOT_WEEKLY"
+          ],
+          "source_refs": [
+            "v3-bollinger:16f08d55a4152a6e9e45",
+            "v3-pivot:3b0bc390b3b5eced161a"
+          ],
+          "source_timeframe": "weekly",
+          "source_timeframes": [
+            "weekly"
+          ],
+          "structural_score": 22,
+          "ticker": "086280",
+          "zone_id": "v3-zone:10b1cad2a45346e24b35"
+        }
+      },
+      "major_resistance": {
+        "classification": "AVAILABLE_LOCAL",
+        "zone": {
+          "active_relevance": "ACTIVE_NEAR",
+          "as_of": "2026-09-03",
+          "confirmation_quality": "1.000000",
+          "contract": "deterministic-sr-base-layer-v1",
+          "currency": "KRW",
+          "current_role": "RESISTANCE",
+          "display": "약 21.2만~21.5만원",
+          "distance_pct": "5.428837",
+          "evidence_family_score": "1.100000",
+          "historical_interaction_count": 4,
+          "last_meaningful_interaction": "2026-08-03",
+          "last_price_interaction_date": "2026-08-03",
+          "price_anchor_refs": [
+            "v3-balance-box:6fd77dce5629435129ee"
+          ],
+          "proximity_tier": "NEAR",
+          "raw_high": "214033.750000",
+          "raw_low": "212966.250000",
+          "reaction_count": 4,
+          "requested_timeframe": "summary",
+          "source_families": [
+            "BALANCE_BOX"
+          ],
+          "source_refs": [
+            "v3-balance-box:6fd77dce5629435129ee"
+          ],
+          "source_timeframe": "monthly",
+          "source_timeframes": [
+            "monthly"
+          ],
+          "structural_score": 31,
+          "ticker": "086280",
+          "zone_id": "v3-zone:52899ec27ff00a5feddb"
+        }
+      },
+      "major_cross_timeframe_zone": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 21.2만~21.5만원",
+        "distance_pct": "5.428704",
+        "evidence_family_score": "3.550000",
+        "historical_interaction_count": 4,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "last_meaningful_interaction": "2026-08-03",
+        "last_price_interaction_date": "2026-08-03",
+        "price_anchor_refs": [
+          "v3-balance-box:6fd77dce5629435129ee"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "214249.018750",
+        "raw_low": "212965.981250",
+        "reaction_count": 4,
+        "requested_timeframe": "cross_timeframe",
+        "source_families": [
+          "BALANCE_BOX",
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-balance-box:6fd77dce5629435129ee",
+          "v3-bollinger:7c89128317e59f8b8cbc"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly",
+          "weekly"
+        ],
+        "structural_score": 32,
+        "ticker": "086280",
+        "zone_id": "v3-zone:4a177b521e730521b74d"
+      },
+      "dynamic_bollinger_support": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 17.8만~18만원",
+        "distance_pct": "11.057902",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-31"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "179663.037500",
+        "raw_low": "178766.962500",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:a3ce9c0f5d763d8d38cf"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "086280",
+        "zone_id": "v3-zone:ced34bf87f5bfa31d5bc"
+      },
+      "dynamic_bollinger_resistance": {
+        "active_relevance": "ACTIVE_NEAR",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "1.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 21.3만~21.5만원",
+        "distance_pct": "5.535006",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_states": [
+          "COMPLETE"
+        ],
+        "indicator_observation_dates": [
+          "2026-08-28"
+        ],
+        "proximity_tier": "NEAR",
+        "raw_high": "214249.287500",
+        "raw_low": "213180.712500",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "BOLLINGER_WEEKLY"
+        ],
+        "source_refs": [
+          "v3-bollinger:7c89128317e59f8b8cbc"
+        ],
+        "source_timeframe": "weekly",
+        "source_timeframes": [
+          "weekly"
+        ],
+        "structural_score": 21,
+        "ticker": "086280",
+        "zone_id": "v3-zone:df8fc07f7bb59cdcfd9f"
+      },
+      "provisional_bollinger_support": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "SUPPORT",
+        "display": "약 8.8만~8.9만원",
+        "distance_pct": "56.198265",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:30.963052+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "88479.505544",
+        "raw_low": "88038.211252",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:9e9c6b42e28e5da3f07d"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "086280",
+        "zone_id": "v3-zone:7b32edf4f3135c5a4bd1"
+      },
+      "provisional_bollinger_resistance": {
+        "active_relevance": "LONG_HORIZON_HISTORICAL",
+        "as_of": "2026-09-03",
+        "confirmation_quality": "0.000000",
+        "contract": "deterministic-sr-base-layer-v1",
+        "currency": "KRW",
+        "current_role": "RESISTANCE",
+        "display": "약 27.4만~27.7만원",
+        "distance_pct": "36.011170",
+        "evidence_family_score": "1.200000",
+        "historical_interaction_count": 0,
+        "indicator_bar_expected_closes": [
+          "2026-09-30"
+        ],
+        "indicator_bar_starts": [
+          "2026-09-01"
+        ],
+        "indicator_bar_states": [
+          "PARTIAL"
+        ],
+        "indicator_observation_dates": [
+          "2026-09-03"
+        ],
+        "observation_timestamps": [
+          "2026-09-03T16:06:30.963052+09:00"
+        ],
+        "proximity_tier": "LONG_HORIZON",
+        "raw_high": "276119.719456",
+        "raw_low": "274742.563748",
+        "reaction_count": 0,
+        "requested_timeframe": "summary",
+        "source_families": [
+          "PROVISIONAL_BOLLINGER_MONTHLY"
+        ],
+        "source_refs": [
+          "v3-provisional-bollinger:a5370e39ee6558260735"
+        ],
+        "source_timeframe": "monthly",
+        "source_timeframes": [
+          "monthly"
+        ],
+        "structural_score": 31,
+        "ticker": "086280",
+        "zone_id": "v3-zone:0a4aee726d71052a0f4a"
+      },
+      "registered_rules": {
+        "support_zone_low": 176000.0,
+        "support_zone_high": 180000.0,
+        "confirmation_price": 200000.0,
+        "warning_price": null,
+        "invalidation_price": 176000.0,
+        "basis": "close"
+      },
+      "current_price_context": {
+        "availability": "ready",
+        "active_support": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "weekly",
+          "zone_high": 210197.264245,
+          "zone_low": 197802.735755
+        },
+        "active_resistance": {
+          "available": true,
+          "source": "dynamic",
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 211872.542821,
+          "zone_low": 206127.457179
+        },
+        "chart_invalidation": {
+          "available": true,
+          "chart_only": true,
+          "price": 185103.437005,
+          "reason": null,
+          "timeframe": "weekly"
+        },
+        "chart_state": {
+          "blocking_unknowns": [],
+          "confidence": "medium",
+          "reasons": [
+            "support_resistance_overlap"
+          ],
+          "state": "WAIT",
+          "user_semantics": "price_structure_wait_not_sell_command"
+        },
+        "current_price_risk_reward": {
+          "available": false,
+          "classification": null,
+          "ratio": null,
+          "reason": "nearest_support_resistance_overlap"
+        },
+        "registered_confirmation": {
+          "automatically_promoted_to_support": false,
+          "available": true,
+          "crossed_at": "2026-09-03",
+          "final_sessions_above": 1,
+          "price": 200000.0,
+          "relevance": "active",
+          "rendering_class": "ACTIVE_TRANSITION",
+          "state": "crossed"
+        }
+      }
+    }
+  ]
+}
