@@ -1,0 +1,22 @@
+# US14 Refined Shadow Messages
+
+Combined preview: [20260903-us14-refined-structured-autonomy-message-preview.md](20260903-us14-refined-structured-autonomy-message-preview.md)
+
+| Ticker | Lean | Chars | SHA-256 | Status |
+| --- | --- | --- | --- | --- |
+| CORZ | BUY_LEAN | 1587 | dbe4f028ce2f9c632f5d6a012c6a9ad5bc4c6dec62aacc6e12a48f522b86f117 | PASS |
+| CPNG | SELL_LEAN | 1560 | 8d01928032655809efa3750aa2e26ef36c0f7f87750a138f20f98f0314c430c3 | PASS |
+| CRCL | SELL_LEAN | 1442 | 0bc7a0366f744c321169dd8ca3891165cb20014451ce1f7911168ff9dbbdf4bb | PASS |
+| GOOGL | BUY_LEAN | 1692 | 75d634f82f139faa49f2cc135161ac48d1e54c8f44e4d30f0ce34ba4084ddf07 | PASS |
+| HUT | NOT_HOLD | 1556 | 5405dff42ef8ccae6a785b86d922363b286b63be92f54df43619f01a7419f688 | PASS |
+| IBM | BUY_LEAN | 1672 | 834f4e8b9087d607048f8b46ecdb0ba2796fbec0898e1233a8d435b825567127 | PASS |
+| MU | NOT_HOLD | 1633 | 02c7575392fe325094340078846430154cb8afae4e8ab1754d73cfdcd9d4e7ed | PASS |
+| RXRX | SELL_LEAN | 1543 | 92bbbd74cad0a8cffe965b1db1d03fb98ccca22f58699de78f0ab1ef03b1275c | PASS |
+| SKHY | NOT_HOLD | 1423 | 2b764332edfbc8f84a05cda4069a30aa5f4be6aa478f8a4895e6fac76684f511 | PASS |
+| SNDK | BUY_LEAN | 1490 | d3630a813d25fc20dd34770d632fb34a3f6617cbe2c77bc536f4cffd8a64f087 | PASS |
+| TSLA | NOT_HOLD | 1562 | 5d11ae0ca59a929bc6c32dc2debb1047459ca9498e54defdd49259da52c40246 | PASS |
+| TSM | BUY_LEAN | 1346 | b77954613c4a24a2b5c9ed401fe3a602be395b2315126f122932c0a90c86f76d | PASS |
+| WRD | SELL_LEAN | 1293 | fb05bbed7df9f1f9d56f34ef1851d564b0b9a3536797536ea03cc9e06b20f673 | PASS |
+| WULF | NOT_HOLD | 1557 | 8625a8ad7d2d77cc6915a78352b3262289be82ac30ca46ad2527f3cf8bb4558f | PASS |
+
+Message quality: `PASS`; repeated substantive spans: `0`.

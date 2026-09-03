@@ -1,0 +1,20 @@
+# US14 Refined Shadow Candidates
+
+| Ticker | Decision | BUY:SELL | Lean | Confidence | Business thesis |
+| --- | --- | --- | --- | --- | --- |
+| CORZ | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | STRENGTHENED |
+| CPNG | HOLD | 4.5:5.5 | SELL_LEAN | MEDIUM | WEAKENED |
+| CRCL | HOLD | 4.5:5.5 | SELL_LEAN | LOW | UNRESOLVED |
+| GOOGL | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | UNCHANGED |
+| HUT | SELL | 4.0:6.0 | NOT_HOLD | LOW | UNCHANGED |
+| IBM | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | UNCHANGED |
+| MU | BUY | 6.0:4.0 | NOT_HOLD | MEDIUM | UNCHANGED |
+| RXRX | HOLD | 4.5:5.5 | SELL_LEAN | LOW | UNRESOLVED |
+| SKHY | SELL | 4.0:6.0 | NOT_HOLD | LOW | UNRESOLVED |
+| SNDK | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | STRENGTHENED |
+| TSLA | SELL | 3.0:7.0 | NOT_HOLD | MEDIUM | WEAKENED |
+| TSM | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | STRENGTHENED |
+| WRD | HOLD | 4.5:5.5 | SELL_LEAN | LOW | UNRESOLVED |
+| WULF | SELL | 4.0:6.0 | NOT_HOLD | MEDIUM | UNRESOLVED |
+
+Distribution: `BUY 1 / HOLD 9 / SELL 4`.

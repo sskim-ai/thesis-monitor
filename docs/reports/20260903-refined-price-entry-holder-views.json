@@ -1,0 +1,1312 @@
+{
+  "contract": "structured-autonomy-v2-price-entry-holder-views",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "rows": [
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 18.382585
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 22.4
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 12.257319
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 13.463829,
+            "low": 12.911171
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 18.382585,
+            "low": 17.447415
+          }
+        ],
+        "currency": "USD",
+        "current_close": 16.81
+      },
+      "business_thesis_change": "STRENGTHENED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "holder": {
+        "downside_review": 12.257319,
+        "stance": "HOLDABLE",
+        "trim_high": 18.382585,
+        "trim_low": 17.447415
+      },
+      "holder_full": {
+        "business_invalidation_condition": "핵심 고객계약의 취소·대폭 축소나 반복적인 준공 실패가 발생하거나, 가동 확대에도 코로케이션 수익성과 현금흐름이 구조적으로 악화되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 12.257319,
+        "stance": "HOLDABLE",
+        "summary": "사업 전환 증거가 유지되는 동안 보유는 가능하다. 다만 하단 검토 수준에서는 계약 이행과 자금조달 부담을 함께 재점검하고, 상단 구간은 의무 매도가 아닌 희석·현금흐름 개선 여부의 재평가 영역으로 본다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 18.382585,
+        "upside_trim_zone_low": 17.447415
+      },
+      "lean": "BUY_LEAN",
+      "new_buyer": {
+        "confirmation_level": 22.4,
+        "preferred_mode": "BOTH",
+        "pullback_high": 13.463829,
+        "pullback_low": 12.911171,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "breakout_confirmation_level": 22.4,
+        "confirmation_condition": "등록 확인선을 종가로 회복한 뒤 거래량과 실제 청구 확대가 함께 확인돼야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "현재 추격 효율이 낮으므로 충분한 가격 여유가 생기는 눌림과 강한 회복 확인을 모두 열어 두는 편이 적절하다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 13.463829,
+        "pullback_entry_zone_low": 12.911171,
+        "stance": "WAIT",
+        "summary": "사업 논리는 매력적이지만 현재 가격 구조와 자금조달 불확실성이 신규 진입을 서두를 근거는 아니다."
+      },
+      "ticker": "CORZ"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 17.157304
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 17.9
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 14.9
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 14.45936
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 15.22279,
+            "low": 14.72721
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 15.7,
+            "low": 15.45
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 17.157304,
+            "low": 16.507696
+          }
+        ],
+        "currency": "USD",
+        "current_close": 15.97
+      },
+      "business_thesis_change": "WEAKENED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "holder": {
+        "downside_review": 14.9,
+        "stance": "REVIEW",
+        "trim_high": 17.157304,
+        "trim_low": 16.507696
+      },
+      "holder_full": {
+        "business_invalidation_condition": "핵심 커머스 마진이 여러 기간 회복되지 않는 동시에 확장사업 손실이 커지거나, 고객 성장과 고객당 매출의 구조적 둔화로 경쟁력 약화가 확인되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 14.9,
+        "stance": "REVIEW",
+        "summary": "핵심 사업 기반이 유지돼 즉시 축소할 근거는 부족하지만 수익성 정상화의 지연 여부를 점검해야 한다. 상단 구간은 의무 매도가 아니라 마진·FCF 회복을 다시 평가할 영역이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 17.157304,
+        "upside_trim_zone_low": 16.507696
+      },
+      "lean": "SELL_LEAN",
+      "new_buyer": {
+        "confirmation_level": 17.9,
+        "preferred_mode": "BOTH",
+        "pullback_high": 15.7,
+        "pullback_low": 15.45,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "breakout_confirmation_level": 17.9,
+        "confirmation_condition": "등록 확인선을 회복한 뒤 핵심 커머스 마진과 FCF 정상화가 함께 나타나야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "가격 조정만으로는 수익성 회복을 확인할 수 없으므로 지지구간 방어와 추세 회복 확인을 모두 활용한다.",
+        "pullback_entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "pullback_entry_zone_high": 15.7,
+        "pullback_entry_zone_low": 15.45,
+        "stance": "WAIT",
+        "summary": "신규 매수자는 핵심 사업의 수익성 회복 증거가 부족하므로 지지구간 방어 또는 등록 확인선 회복을 기다리는 편이 적절하다."
+      },
+      "ticker": "CPNG"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 57.8
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 78.914109
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 86.529549,
+            "low": 82.010451
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 62.5,
+            "low": 60.0
+          }
+        ],
+        "allowed_trim_zones": [],
+        "currency": "USD",
+        "current_close": 88.64
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "holder": {
+        "downside_review": 78.914109,
+        "stance": "REVIEW",
+        "trim_high": null,
+        "trim_low": null
+      },
+      "holder_full": {
+        "business_invalidation_condition": "USDC 점유율과 유통량이 구조적으로 하락하거나 규제 변화로 핵심 사업모델이 훼손되고, 준비금 수익 의존 속 금리 하락으로 정상화 수익성이 크게 악화되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 78.914109,
+        "stance": "REVIEW",
+        "summary": "강한 현금창출 때문에 즉시 축소할 근거는 부족하지만 비이자 수익 전환과 평가 부담을 계속 점검해야 한다. 등록된 상단 트림 구간은 없으며 하단 수준은 손절선이 아닌 재검토 기준이다.",
+        "upside_trim_basis": [],
+        "upside_trim_zone_high": null,
+        "upside_trim_zone_low": null
+      },
+      "lean": "SELL_LEAN",
+      "new_buyer": {
+        "confirmation_level": null,
+        "preferred_mode": "PULLBACK",
+        "pullback_high": 86.529549,
+        "pullback_low": 82.010451,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [],
+        "breakout_confirmation_level": null,
+        "confirmation_condition": "별도 확인 가격이 등록되지 않았으므로 지지구간 방어와 USDC·비이자 수익 지표의 개선을 함께 확인한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "PULLBACK",
+        "preferred_entry_reason": "등록 확인선은 이미 지난 반면 검증된 저항과 공급 정보가 없어, 허용된 지지구간에서 가격 여유를 확보하는 방식이 적절하다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 86.529549,
+        "pullback_entry_zone_low": 82.010451,
+        "stance": "WAIT",
+        "summary": "현재 가격은 확인선 위지만 신규 진입 설정의 신뢰도가 낮고 평가 부담도 커서 허용된 눌림 구간을 기다린다."
+      },
+      "ticker": "CRCL"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 353.787998
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 375.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 308.223399
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 321.878566,
+            "low": 312.373234
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 298.552733,
+            "low": 291.777267
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 353.787998,
+            "low": 343.652002
+          }
+        ],
+        "currency": "USD",
+        "current_close": 337.12
+      },
+      "business_thesis_change": "UNCHANGED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "holder": {
+        "downside_review": 308.223399,
+        "stance": "REVIEW",
+        "trim_high": 353.787998,
+        "trim_low": 343.652002
+      },
+      "holder_full": {
+        "business_invalidation_condition": "Search와 Cloud 성장이 함께 장기 둔화하거나, AI 도입이 Search 경제성을 지속 훼손하거나, 대규모 AI 설비투자 이후 잉여현금흐름 구조가 악화되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 308.223399,
+        "stance": "REVIEW",
+        "summary": "사업 논리는 남아 있으나 저장된 가격 기준을 하회한 만큼 보유 근거와 현금 전환을 함께 재점검할 필요가 있다. 상단 구간은 의무 매도가 아닌 재평가 영역이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 353.787998,
+        "upside_trim_zone_low": 343.652002
+      },
+      "lean": "BUY_LEAN",
+      "new_buyer": {
+        "confirmation_level": 353.787998,
+        "preferred_mode": "BOTH",
+        "pullback_high": 321.878566,
+        "pullback_low": 312.373234,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 353.787998,
+        "confirmation_condition": "선정한 상향 확인선을 종가로 회복하고 가격 구조의 대기 상태가 해소될 때 확인 근거가 강화된다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "사업 매력은 있으나 현재 추격 여건이 불리해 지지 구간의 방어와 저항 회복을 각각 확인할 수 있다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 321.878566,
+        "pullback_entry_zone_low": 312.373234,
+        "stance": "WAIT",
+        "summary": "신규 매수 관점에서는 현재 가격을 추격하기보다 선정된 지지 구간의 방어 또는 상향 확인이 필요하다."
+      },
+      "ticker": "GOOGL"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 89.670191
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 97.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 76.64856
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 85.959175,
+            "low": 80.640825
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 58.328089,
+            "low": 55.831811
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 89.670191,
+            "low": 84.109809
+          }
+        ],
+        "currency": "USD",
+        "current_close": 80.68
+      },
+      "business_thesis_change": "UNCHANGED",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "holder": {
+        "downside_review": 76.64856,
+        "stance": "REDUCE",
+        "trim_high": 89.670191,
+        "trim_low": 84.109809
+      },
+      "holder_full": {
+        "business_invalidation_condition": "핵심 데이터센터 고객계약이 취소·대폭 축소되거나 반복적으로 준공에 실패하고, 채굴 변동성 의존이 구조적으로 유지되며 모회사 자본 부담이 급증하는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 76.64856,
+        "stance": "REDUCE",
+        "summary": "보유 관점에서는 장기 선택지보다 실행·자금조달 위험의 우위가 커 비중 축소 재검토가 타당하다. 상단 구간은 의무 매도가 아닌 재평가 영역이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 89.670191,
+        "upside_trim_zone_low": 84.109809
+      },
+      "lean": "NOT_HOLD",
+      "new_buyer": {
+        "confirmation_level": 89.670191,
+        "preferred_mode": "CONFIRMATION",
+        "pullback_high": 85.959175,
+        "pullback_low": 80.640825,
+        "stance": "AVOID"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 89.670191,
+        "confirmation_condition": "선정한 저항선을 종가로 회복하고 프로젝트 준공·가동의 실질적인 진전이 함께 확인될 때 재검토 근거가 생긴다.",
+        "currency": "USD",
+        "preferred_entry_mode": "CONFIRMATION",
+        "preferred_entry_reason": "지지와 저항이 겹치고 사업 성과 전환도 미확인 상태여서 지지 접근보다 상향 확인의 정보가 더 중요하다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 85.959175,
+        "pullback_entry_zone_low": 80.640825,
+        "stance": "AVOID",
+        "summary": "현재는 신규 매수 매력보다 회피 논리가 우세하며, 가격과 프로젝트 실행의 동시 확인이 필요하다."
+      },
+      "ticker": "HUT"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 250.256325
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 250.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 223.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 228.180854
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 235.551357,
+            "low": 231.558643
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 232.415043,
+            "low": 225.494957
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 230.0,
+            "low": 223.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 250.256325,
+            "low": 237.103675
+          }
+        ],
+        "currency": "USD",
+        "current_close": 231.7
+      },
+      "business_thesis_change": "UNCHANGED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "holder": {
+        "downside_review": 228.180854,
+        "stance": "HOLDABLE",
+        "trim_high": 250.256325,
+        "trim_low": 237.103675
+      },
+      "holder_full": {
+        "business_invalidation_condition": "Software와 AI 성장에도 전사 매출과 잉여현금흐름이 장기간 정체·감소하거나, 대규모 인수 이후 현금창출과 재무구조가 구조적으로 악화되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 228.180854,
+        "stance": "HOLDABLE",
+        "summary": "현금창출과 주요 가격 구조가 유지돼 보유 가능하지만 성장 가속과 부채 관리는 계속 확인해야 한다. 상단 구간은 의무 매도가 아닌 재평가 영역이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 250.256325,
+        "upside_trim_zone_low": 237.103675
+      },
+      "lean": "BUY_LEAN",
+      "new_buyer": {
+        "confirmation_level": 250.256325,
+        "preferred_mode": "CONFIRMATION",
+        "pullback_high": 232.415043,
+        "pullback_low": 225.494957,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 250.256325,
+        "confirmation_condition": "선정한 저항선을 종가로 회복하고 Software 성장과 전사 매출 개선이 함께 확인될 때 신규 접근의 근거가 강화된다.",
+        "currency": "USD",
+        "preferred_entry_mode": "CONFIRMATION",
+        "preferred_entry_reason": "현재 가격은 지지에 가깝지만 지지 접근의 가격 효율이 약하고 전사 성장도 미확인 상태여서 상향 확인이 더 유용하다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:2"
+        ],
+        "pullback_entry_zone_high": 232.415043,
+        "pullback_entry_zone_low": 225.494957,
+        "stance": "WAIT",
+        "summary": "신규 매수 관점에서는 지지 구간만으로 충분하지 않으며 가격 회복과 전사 성장의 확인이 필요하다."
+      },
+      "ticker": "IBM"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 1278.851879
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 827.0
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 737.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 839.757164
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 911.748329,
+            "low": 867.516671
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 865.0,
+            "low": 844.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 1278.851879,
+            "low": 1231.148121
+          }
+        ],
+        "currency": "USD",
+        "current_close": 956.08
+      },
+      "business_thesis_change": "UNCHANGED",
+      "decision": "BUY",
+      "directional_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "holder": {
+        "downside_review": 827.0,
+        "stance": "HOLDABLE",
+        "trim_high": 1278.851879,
+        "trim_low": 1231.148121
+      },
+      "holder_full": {
+        "business_invalidation_condition": "AI 메모리 수요와 메모리 가격의 장기 하락으로 계약 기반 수요 가시성이 훼손되거나 HBM 경쟁력이 구조적으로 약화되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 827.0,
+        "stance": "HOLDABLE",
+        "summary": "보유는 가능하되 상단 구간에서는 기대와 가치 부담을 재평가하고, 하단 가격은 손절선이 아니라 사업과 가격 구조를 함께 점검하는 기준으로 본다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 1278.851879,
+        "upside_trim_zone_low": 1231.148121
+      },
+      "lean": "NOT_HOLD",
+      "new_buyer": {
+        "confirmation_level": 1278.851879,
+        "preferred_mode": "BOTH",
+        "pullback_high": 911.748329,
+        "pullback_low": 867.516671,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 1278.851879,
+        "confirmation_condition": "해당 확인 가격 위에서 종가 안착과 거래량 확대가 함께 나타나야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "사업 강점은 매력적이지만 현재 돌파는 거래량과 재지지 확인이 부족해 눌림과 추가 확인 경로를 모두 열어둔다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 911.748329,
+        "pullback_entry_zone_low": 867.516671,
+        "stance": "WAIT",
+        "summary": "신규 매수자는 강한 사업 흐름을 인정하되, 지지 확인이나 더 높은 저항 돌파의 검증을 기다리는 편이 적절하다."
+      },
+      "ticker": "MU"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 3.678704
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 2.84
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 3.279337
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 3.466017,
+            "low": 3.373983
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 2.961842,
+            "low": 2.878158
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 3.08,
+            "low": 3.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 3.678704,
+            "low": 3.581096
+          }
+        ],
+        "currency": "USD",
+        "current_close": 3.38
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "holder": {
+        "downside_review": 2.84,
+        "stance": "REVIEW",
+        "trim_high": 3.678704,
+        "trim_low": 3.581096
+      },
+      "holder_full": {
+        "business_invalidation_condition": "AI 플랫폼의 타깃 발굴이 임상 성공이나 경제적 가치로 전환되지 않고 핵심 프로그램 실패와 파트너 정체가 반복되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 2.84,
+        "stance": "REVIEW",
+        "summary": "보유자는 임상과 파트너 진전 및 현금소진을 계속 재검토해야 하며, 상단 구간은 의무 매도 영역이 아니고 하단 가격도 손절선이 아니다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 3.678704,
+        "upside_trim_zone_low": 3.581096
+      },
+      "lean": "SELL_LEAN",
+      "new_buyer": {
+        "confirmation_level": 3.678704,
+        "preferred_mode": "BOTH",
+        "pullback_high": 3.08,
+        "pullback_low": 3.0,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 3.678704,
+        "confirmation_condition": "해당 확인 가격 위 종가 안착과 거래량 확대, 임상 또는 파트너 진전이 함께 확인되어야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "가격 경로만으로 임상 불확실성을 해소할 수 없어 지지 확인이나 저항 돌파와 함께 사업 진전이 필요하다.",
+        "pullback_entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "pullback_entry_zone_high": 3.08,
+        "pullback_entry_zone_low": 3.0,
+        "stance": "WAIT",
+        "summary": "신규 매수자는 가격 지지나 돌파뿐 아니라 임상과 파트너 성과가 경제적 가치로 이어지는 증거를 기다려야 한다."
+      },
+      "ticker": "RXRX"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 182.003405
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 143.0
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 124.8
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 151.0,
+            "low": 147.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 182.003405,
+            "low": 174.856595
+          }
+        ],
+        "currency": "USD",
+        "current_close": 164.98
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "holder": {
+        "downside_review": 143.0,
+        "stance": "REDUCE",
+        "trim_high": 182.003405,
+        "trim_low": 174.856595
+      },
+      "holder_full": {
+        "business_invalidation_condition": "주요 AI 고객에서 HBM 기술·공급 우위를 구조적으로 잃고 장기계약의 수요 가시성이 훼손되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 143.0,
+        "stance": "REDUCE",
+        "summary": "보유자는 기초기업 논리와 별개로 ADR 가격 위험을 우선 재검토해야 하며, 상단 구간은 의무 매도가 아니고 하단 가격도 손절선이 아니다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 182.003405,
+        "upside_trim_zone_low": 174.856595
+      },
+      "lean": "NOT_HOLD",
+      "new_buyer": {
+        "confirmation_level": 182.003405,
+        "preferred_mode": "BOTH",
+        "pullback_high": 151.0,
+        "pullback_low": 147.0,
+        "stance": "AVOID"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 182.003405,
+        "confirmation_condition": "해당 확인 가격 위 종가 안착과 거래량 확대, 재지지 및 ADR 괴리 완화가 함께 확인되어야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "현재 신규 진입은 피하되 향후 평가에서는 지지 확인과 저항 돌파를 모두 사업·ADR 구조의 개선과 함께 검증해야 한다.",
+        "pullback_entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "pullback_entry_zone_high": 151.0,
+        "pullback_entry_zone_low": 147.0,
+        "stance": "AVOID",
+        "summary": "현재 신규 진입은 피하고 기초기업 실적과 ADR 괴리 완화가 확인된 뒤 두 가격 경로를 재평가하는 편이 적절하다."
+      },
+      "ticker": "SKHY"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 2392.674432
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 998.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 777.410484
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 1073.01247,
+            "low": 923.36753
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 1046.033008,
+            "low": 950.346992
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 1125.0,
+            "low": 1100.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 2392.674432,
+            "low": 2316.105368
+          }
+        ],
+        "currency": "USD",
+        "current_close": 1553.4
+      },
+      "business_thesis_change": "STRENGTHENED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "holder": {
+        "downside_review": 998.0,
+        "stance": "HOLDABLE",
+        "trim_high": 2392.674432,
+        "trim_low": 2316.105368
+      },
+      "holder_full": {
+        "business_invalidation_condition": "NAND 가격 하락과 데이터센터 수요 둔화가 함께 지속되거나 장기계약이 매출과 현금흐름으로 전환되지 않는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 998.0,
+        "stance": "HOLDABLE",
+        "summary": "사업 논리는 강화됐지만 계약 전환과 가격 순환을 계속 확인해야 한다. 상단 구간은 자동 매도가 아닌 재평가 영역이고 하단 수준은 손절선이 아닌 사업 증거 검토 기준이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 2392.674432,
+        "upside_trim_zone_low": 2316.105368
+      },
+      "lean": "BUY_LEAN",
+      "new_buyer": {
+        "confirmation_level": 2392.674432,
+        "preferred_mode": "PULLBACK",
+        "pullback_high": 1073.01247,
+        "pullback_low": 923.36753,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 2392.674432,
+        "confirmation_condition": "저항 상단 안착과 함께 RPO 매출 전환 및 현금창출 지속이 확인되어야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "PULLBACK",
+        "preferred_entry_reason": "현재 추격 구조보다 확인된 지지 구간에서 사업 지속성을 다시 점검하는 편이 낫다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 1073.01247,
+        "pullback_entry_zone_low": 923.36753,
+        "stance": "WAIT",
+        "summary": "사업 현금창출은 강하지만 기대 반영과 현재 가격 보상 구조 때문에 진입을 서두르기 어렵다."
+      },
+      "ticker": "SNDK"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 382.678777
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 297.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 328.096407
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 341.126989,
+            "low": 334.873011
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 340.960185,
+            "low": 333.519815
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 323.0,
+            "low": 318.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 382.678777,
+            "low": 358.961223
+          }
+        ],
+        "currency": "USD",
+        "current_close": 357.01
+      },
+      "business_thesis_change": "WEAKENED",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "holder": {
+        "downside_review": 328.096407,
+        "stance": "REDUCE",
+        "trim_high": 382.678777,
+        "trim_low": 358.961223
+      },
+      "holder_full": {
+        "business_invalidation_condition": "Robotaxi와 FSD 수익화가 장기간 지연되고 자동차 저마진 구조가 고착되거나, 현금소모와 성장 투자 효율 악화가 지속되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 328.096407,
+        "stance": "REDUCE",
+        "summary": "장기 선택가치를 인정하더라도 실적 방어력이 약해 비중 축소를 검토할 상태다. 상단 구간은 자동 매도가 아닌 재평가 영역이고 하단 수준은 손절선이 아닌 사업 검토 기준이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 382.678777,
+        "upside_trim_zone_low": 358.961223
+      },
+      "lean": "NOT_HOLD",
+      "new_buyer": {
+        "confirmation_level": 382.678777,
+        "preferred_mode": "CONFIRMATION",
+        "pullback_high": 341.126989,
+        "pullback_low": 334.873011,
+        "stance": "AVOID"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 382.678777,
+        "confirmation_condition": "저항 돌파와 함께 자동차 마진 및 FCF 회복, Robotaxi 경제성 입증이 필요하다.",
+        "currency": "USD",
+        "preferred_entry_mode": "CONFIRMATION",
+        "preferred_entry_reason": "낮은 가격만으로는 약화된 사업 논리가 회복되지 않으므로 가격과 수익화 증거의 동시 확인이 우선이다.",
+        "pullback_entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "pullback_entry_zone_high": 341.126989,
+        "pullback_entry_zone_low": 334.873011,
+        "stance": "AVOID",
+        "summary": "현재는 높은 기대와 약한 현금 방어력 때문에 신규 진입을 피하고 사업 회복 증거를 기다리는 편이 적절하다."
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 439.781794
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 432.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 398.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 374.987393
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 390.305963,
+            "low": 380.774037
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 316.224939,
+            "low": 305.055061
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 414.0,
+            "low": 407.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 439.781794,
+            "low": 432.298206
+          }
+        ],
+        "currency": "USD",
+        "current_close": 415.5
+      },
+      "business_thesis_change": "STRENGTHENED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "holder": {
+        "downside_review": 398.0,
+        "stance": "HOLDABLE",
+        "trim_high": 439.781794,
+        "trim_low": 432.298206
+      },
+      "holder_full": {
+        "business_invalidation_condition": "AI 및 HPC 수요와 선단공정 주문이 함께 구조적으로 둔화하고 마진 하락이 장기화하거나 선단공정 경쟁력 약화로 점유율 하락이 확인되는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 398.0,
+        "stance": "HOLDABLE",
+        "summary": "강화된 사업 논리는 보유를 지지하지만 높은 기대와 해외 팹 비용을 점검해야 한다. 상단 구간은 자동 매도가 아닌 재평가 영역이고 하단 수준은 손절선이 아닌 사업 검토 기준이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 439.781794,
+        "upside_trim_zone_low": 432.298206
+      },
+      "lean": "BUY_LEAN",
+      "new_buyer": {
+        "confirmation_level": 432.0,
+        "preferred_mode": "BOTH",
+        "pullback_high": 414.0,
+        "pullback_low": 407.0,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "breakout_confirmation_level": 432.0,
+        "confirmation_condition": "상향 확인선 안착 또는 지지 구간 유지와 함께 선단공정 주문 및 마진 지속성이 확인되어야 한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "BOTH",
+        "preferred_entry_reason": "지지 구간의 재확인과 상향 돌파 확인이 각각 다른 방식으로 높은 기대에 대한 진입 위험을 낮춘다.",
+        "pullback_entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "pullback_entry_zone_high": 414.0,
+        "pullback_entry_zone_low": 407.0,
+        "stance": "WAIT",
+        "summary": "사업은 강하지만 높은 기대와 불완전한 가치평가 기준 때문에 눌림 유지나 상향 확인을 기다리는 편이 적절하다."
+      },
+      "ticker": "TSM"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 6.153512
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 6.68
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 5.3
+          }
+        ],
+        "allowed_pullback_zones": [],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 6.153512,
+            "low": 5.906488
+          }
+        ],
+        "currency": "USD",
+        "current_close": 5.77
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "holder": {
+        "downside_review": 5.3,
+        "stance": "REVIEW",
+        "trim_high": 6.153512,
+        "trim_low": 5.906488
+      },
+      "holder_full": {
+        "business_invalidation_condition": "주요 지역의 규제나 안전 문제로 서비스 확장이 구조적으로 중단되거나 상용화 확대에도 단위경제성이 개선되지 않는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 5.3,
+        "stance": "REVIEW",
+        "summary": "기존 보유자는 경제성 검증을 다시 살펴야 하며, 지정 상단 구간은 의무 매도가 아닌 기대 재평가 영역이고 하단 수준은 손절선이 아닌 논리 재점검 기준이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 6.153512,
+        "upside_trim_zone_low": 5.906488
+      },
+      "lean": "SELL_LEAN",
+      "new_buyer": {
+        "confirmation_level": 6.153512,
+        "preferred_mode": "CONFIRMATION",
+        "pullback_high": null,
+        "pullback_low": null,
+        "stance": "WAIT"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "breakout_confirmation_level": 6.153512,
+        "confirmation_condition": "종가가 선택된 저항을 회복하고 그 위에서 유지되는지 확인한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "CONFIRMATION",
+        "preferred_entry_reason": "활성 지지가 없고 확인 신호도 도달하지 않아 회복 확인이 우선이다.",
+        "pullback_entry_basis": [],
+        "pullback_entry_zone_high": null,
+        "pullback_entry_zone_low": null,
+        "stance": "WAIT",
+        "summary": "사업 확장 가능성은 있으나 경제성과 가격 구조가 함께 확인되기 전에는 신규 진입 판단을 유보할 필요가 있다."
+      },
+      "ticker": "WRD"
+    },
+    {
+      "allowed_price_choices": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "level": 16.461814
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 18.4
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 14.8
+          }
+        ],
+        "allowed_pullback_zones": [],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 16.461814,
+            "low": 15.552386
+          }
+        ],
+        "currency": "USD",
+        "current_close": 14.82
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "holder": {
+        "downside_review": 14.8,
+        "stance": "REDUCE",
+        "trim_high": 16.461814,
+        "trim_low": 15.552386
+      },
+      "holder_full": {
+        "business_invalidation_condition": "핵심 HPC 계약이 취소되거나 대폭 축소되고 반복적인 준공 실패가 발생하거나, 가동 확대에도 EBITDA와 영업현금흐름이 구조적으로 개선되지 않는 경우다.",
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 14.8,
+        "stance": "REDUCE",
+        "summary": "기존 보유자는 자본집약도와 희석 부담 때문에 노출 축소를 검토할 근거가 있으며, 지정 상단 구간은 의무 매도가 아닌 기대 재평가 영역이고 하단 수준은 손절선이 아닌 논리 재점검 기준이다.",
+        "upside_trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "upside_trim_zone_high": 16.461814,
+        "upside_trim_zone_low": 15.552386
+      },
+      "lean": "NOT_HOLD",
+      "new_buyer": {
+        "confirmation_level": 18.4,
+        "preferred_mode": "CONFIRMATION",
+        "pullback_high": null,
+        "pullback_low": null,
+        "stance": "AVOID"
+      },
+      "new_buyer_full": {
+        "breakout_confirmation_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "breakout_confirmation_level": 18.4,
+        "confirmation_condition": "종가가 선택된 확인선을 회복해 유지되고 청구 확대와 수익성 개선이 함께 확인될 때 재평가한다.",
+        "currency": "USD",
+        "preferred_entry_mode": "CONFIRMATION",
+        "preferred_entry_reason": "활성 지지가 없고 사업경제성과 가격 회복이 모두 미확인이어서 확인형 접근만 적절하다.",
+        "pullback_entry_basis": [],
+        "pullback_entry_zone_high": null,
+        "pullback_entry_zone_low": null,
+        "stance": "AVOID",
+        "summary": "현재 구조는 신규 매수에 부적합하며 사업경제성과 가격 회복이 확인된 뒤 다시 평가할 필요가 있다."
+      },
+      "ticker": "WULF"
+    }
+  ]
+}
