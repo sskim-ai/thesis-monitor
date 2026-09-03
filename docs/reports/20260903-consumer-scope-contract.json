@@ -1,0 +1,30 @@
+{
+  "consumers": [
+    "STOCK_V2",
+    "DAILY_REVIEW",
+    "MARKET_RENDERER",
+    "ARCHIVE_ONLY",
+    "NIGHT_FUTURES_MODULE"
+  ],
+  "contract": "packet-fact-consumer-scope-v1",
+  "fail_safe_default": "LEGACY_UNCLASSIFIED_STRICT",
+  "market_context": {
+    "consumer_scopes": [
+      "DAILY_REVIEW",
+      "MARKET_RENDERER"
+    ]
+  },
+  "night_futures": {
+    "consumer_scopes": [
+      "ARCHIVE_ONLY",
+      "NIGHT_FUTURES_MODULE"
+    ],
+    "exclusion_reason": "NOT_IN_CONSUMER_SCOPE",
+    "user_visible": false
+  },
+  "stock_v2": {
+    "excluded_nonconsumer_numeric_count": 70,
+    "included_numeric_count": 1987,
+    "readiness_contract": "ai-numeric-semantic-consumer-surface-v1"
+  }
+}

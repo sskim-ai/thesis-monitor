@@ -1,0 +1,26 @@
+{
+  "contract": "packet-ai-consumability-test-sink-v1",
+  "duplicate_count": 0,
+  "exact_payload_match": true,
+  "kr_message_count": 8,
+  "namespace": "PACKET_AI_CONSUMABILITY_20260903_TEST_ONLY",
+  "orphan_count": 0,
+  "planned_message_count": 22,
+  "production_delivery_intent_created": 0,
+  "production_recipient_send": 0,
+  "sent_message_count": 22,
+  "status": "PASS",
+  "test_sink": {
+    "available": true,
+    "configured_test_key_names": [
+      "TELEGRAM_TEST_CHAT_ID"
+    ],
+    "namespace": "TEST_ONLY_NON_PRODUCTION",
+    "production_collision": 0,
+    "production_intent_collision": 0,
+    "reason": "safe_dedicated_test_sink",
+    "selected_test_key_name": "TELEGRAM_TEST_CHAT_ID",
+    "status": "ISOLATED"
+  },
+  "us_message_count": 14
+}

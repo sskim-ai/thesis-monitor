@@ -166,6 +166,7 @@ def replay(packet_path: Path) -> tuple[dict[str, object], dict[str, object]]:
         and coverage.get("ready") is True
     )
     included_prompt_mismatches: list[str] = []
+    legacy_prompt_fact_differences: list[str] = []
     for surface in surfaces[1:]:
         surface_name = str(surface["name"])
         ticker = surface_name.removeprefix("stock:")
@@ -183,6 +184,13 @@ def replay(packet_path: Path) -> tuple[dict[str, object], dict[str, object]]:
                 included_prompt_mismatches.append(
                     f"{surface_name}:{fact_id}:{row.get('field_path')}"
                 )
+        legacy_ids = {
+            str(fact.get("fact_id") or "")
+            for fact in original_stock_facts[ticker]
+            if fact.get("fact_id")
+        }
+        for fact_id in sorted(legacy_ids ^ prompt_ids):
+            legacy_prompt_fact_differences.append(f"{ticker}:{fact_id}")
 
     repaired_fact_count = len(market_facts) + sum(
         len(_facts(stock.get("fact_catalog")))
@@ -247,6 +255,10 @@ def replay(packet_path: Path) -> tuple[dict[str, object], dict[str, object]]:
             "included_numeric_prompt_mismatch_count": len(included_prompt_mismatches),
             "included_numeric_prompt_mismatches": included_prompt_mismatches,
             "standalone_market_surface_sent_to_stock_v2": 0,
+            "legacy_prompt_fact_difference_count": len(
+                legacy_prompt_fact_differences
+            ),
+            "legacy_prompt_fact_differences": legacy_prompt_fact_differences,
         },
         "preservation": {
             "fact_count_preserved": original_fact_count == repaired_fact_count,

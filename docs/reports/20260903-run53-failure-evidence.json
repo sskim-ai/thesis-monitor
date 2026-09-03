@@ -1,0 +1,27 @@
+{
+  "contract": "run53-readiness-failure-evidence-v1",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "packet_file_sha256": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1",
+  "source_monitor": {
+    "subject_count": 14,
+    "success_count": 14,
+    "failure_count": 0
+  },
+  "before": {
+    "numeric_entry_count": 2057,
+    "registered_numeric_count": 2055,
+    "ready_for_ai": false,
+    "unsupported": [
+      "market:night_futures:1:fields.reference_price",
+      "market:night_futures:2:fields.reference_price"
+    ],
+    "claim_count": 0,
+    "model_reached": false,
+    "candidate_count": 0,
+    "accepted_count": 0,
+    "stock_fallback_count": 14,
+    "delivery_count": 15,
+    "delivery_mode": "deterministic_fallback"
+  },
+  "production_packet_mutation": 0
+}

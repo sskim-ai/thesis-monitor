@@ -1,0 +1,160 @@
+{
+  "accepted_artifact_sha256": "48505385c4ae188aa764bd3c4eec0769934e4dadb2fd2f01461d1a249bb5ea9a",
+  "accepted_count": 14,
+  "candidate_count": 14,
+  "claim_id": "packet-readiness-run53-test-only",
+  "codex_app_server_reached": true,
+  "context_ready_count": 14,
+  "contract": "packet-ai-consumability-v2-replay-v1",
+  "decisions": [
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:72b58683c752b41efcce5e3fe47f150e567e3c49fc748c830845571347b224e2",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "CORZ"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:ed503f41e713d26c1e5ac7ec61846c17f408b710a3becde76edb3f51e6b87b72",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "ticker": "CPNG"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:f8928bdadedd0713155e7b7294eae4a13e5d730955afe17037649a20e8f003b9",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "CRCL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:24d380954ac3e176b1314a73d475cc2593842060e178aefaf7926fdf41e3bba3",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "GOOGL"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:b8f4db8f819344dd0e62895015ca08a8d3cd044e5d224445093a53c10df7ec2e",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "ticker": "HUT"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:a4523766b31e2400fa58226c9202e3ecb4b0262e9212c4896e2b91f5b9da179a",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "ticker": "IBM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:6be7b734bd608dc118ab4866b17d2355d0fa45b2388a3991a9635c2eb39a741f",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "ticker": "MU"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:e60aa15f6bb5803e0b55f0c1ea9bf1e955be9ea6d35ee8a69c11362477fe2da9",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "RXRX"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:5f5c5db19a3a4e7c74f0b26f3ef788bb95bdbed727b462360f8b7f8e76f3f3fc",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "SKHY"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:02e549be726afbbefa66f88ce731cea2717c5063d0e3090a49229bd6910b3023",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "ticker": "SNDK"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:d99e235541ecf3768da337da325cfb0f1fc5ca4ee9d2ac9dc8908a575ac7e985",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 2.5,
+        "sell": 7.5
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:68a841cc25b06181ae6803c8192820a77f3fefb0340e49c4c8d0248f731ddbe9",
+      "decision": "HOLD",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "TSM"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:5a94f4acf28d8a5c49c7fb998ef982fa9198fb9404858670372682528e2a73f1",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 3.5,
+        "sell": 6.5
+      },
+      "ticker": "WRD"
+    },
+    {
+      "accepted_decision_id": "v2-accepted-decision:sha256:27c88b8fce1ee1e174591760c24ad8d82432d77d533347e88092556dee91bd92",
+      "decision": "SELL",
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "ticker": "WULF"
+    }
+  ],
+  "explicit_count": 14,
+  "fallback_count": 0,
+  "market": "us",
+  "message_quality": {
+    "contract": "v2-accepted-production-message-quality-v1",
+    "errors": [],
+    "manual_numeric_count": 0,
+    "message_count": 14,
+    "numeric_claim_count": 0,
+    "repeated_substantive_span_count": 0,
+    "status": "PASS",
+    "unresolved_numeric_count": 0
+  },
+  "model_reached": true,
+  "namespace": "PACKET_READINESS_REPAIR_20260903_RUN53_TEST_ONLY",
+  "network_preflight_reached": true,
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "production_send": 0,
+  "production_state_mutation": 0,
+  "reasoning_effort": "xhigh",
+  "reasoning_model": "gpt-5.6-sol",
+  "source_packet_sha256": "1434a5c8cc7e197d348299aacaa38366cb989867ec5fd1b43eebfc70b6b1e9fc",
+  "timeout_seconds": 1800
+}

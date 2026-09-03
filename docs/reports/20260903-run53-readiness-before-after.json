@@ -1,0 +1,579 @@
+{
+  "after": {
+    "canonical_fact_count": 626,
+    "consumer": "STOCK_V2",
+    "market_numeric_count": 70,
+    "numeric_semantic_gate": {
+      "consumer": "STOCK_V2",
+      "contract": "ai-numeric-semantic-consumer-surface-v1",
+      "entry_count": 1987,
+      "excluded_nonconsumer": [
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:breakeven_inflation:T10YIE",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:breakeven_inflation:T10YIE",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:credit_spread:BAMLH0A0HYM2",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:credit_spread:BAMLH0A0HYM2",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:dollar_index:DTWEXBGS",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:dollar_index:DTWEXBGS",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:fx:USDKRW",
+          "field_path": "fields.change_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:fx:USDKRW",
+          "field_path": "fields.value",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:index:IWM",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:index:QQQ",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:index:SPY",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS10",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS10",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS10",
+          "field_path": "fields.previous_level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS3",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS3",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS3",
+          "field_path": "fields.previous_level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS30",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS30",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS30",
+          "field_path": "fields.previous_level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS5",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS5",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:nominal_yield:DGS5",
+          "field_path": "fields.previous_level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:oil:DCOILWTICO",
+          "field_path": "fields.price_usd_per_barrel",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:oil:DCOILWTICO",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:real_yield:DFII10",
+          "field_path": "fields.change_bp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:real_yield:DFII10",
+          "field_path": "fields.change_pp",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:real_yield:DFII10",
+          "field_path": "fields.level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:real_yield:DFII10",
+          "field_path": "fields.previous_level_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:relative:IWM:SPY",
+          "field_path": "fields.relative_return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:relative:QQQ:SPY",
+          "field_path": "fields.relative_return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:relative:RSP:SPY",
+          "field_path": "fields.relative_return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:relative:SOXX:SPY",
+          "field_path": "fields.relative_return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:relative:XLE:XLF",
+          "field_path": "fields.relative_return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:SOXX",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:SOXX",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLB",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLB",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLC",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLC",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLE",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLE",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLF",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLF",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLI",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLI",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLK",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLK",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLP",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLP",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLRE",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLRE",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLU",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLU",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLV",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLV",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLY",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:sector:XLY",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:style:RSP",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:style:RSP",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:volatility:VIXCLS",
+          "field_path": "fields.level",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:volatility:VIXCLS",
+          "field_path": "fields.return_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:1",
+          "field_path": "fields.change_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:1",
+          "field_path": "fields.change_value",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:1",
+          "field_path": "fields.reference_price",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:1",
+          "field_path": "fields.value",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:2",
+          "field_path": "fields.change_pct",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:2",
+          "field_path": "fields.change_value",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:2",
+          "field_path": "fields.reference_price",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        },
+        {
+          "consumer_scope_source": "FACT_METADATA",
+          "fact_id": "market:night_futures:2",
+          "field_path": "fields.value",
+          "reason": "NOT_IN_CONSUMER_SCOPE",
+          "surface": "market_context"
+        }
+      ],
+      "excluded_nonconsumer_fact_count": 34,
+      "excluded_nonconsumer_numeric_count": 70,
+      "included_fact_count": 64,
+      "included_numeric_count": 1987,
+      "prose_allowed_count": 1872,
+      "prose_denied_count": 115,
+      "ready": true,
+      "registered_count": 1987,
+      "total_entry_count": 2057,
+      "unsupported": [],
+      "unsupported_included_numeric_count": 0
+    },
+    "ready_for_ai": true,
+    "reference_price_exclusions": [
+      {
+        "consumer_scope_source": "FACT_METADATA",
+        "fact_id": "market:night_futures:1",
+        "field_path": "fields.reference_price",
+        "reason": "NOT_IN_CONSUMER_SCOPE",
+        "surface": "market_context"
+      },
+      {
+        "consumer_scope_source": "FACT_METADATA",
+        "fact_id": "market:night_futures:2",
+        "field_path": "fields.reference_price",
+        "reason": "NOT_IN_CONSUMER_SCOPE",
+        "surface": "market_context"
+      }
+    ],
+    "stock_numeric_count": 1987,
+    "subject_count": 14
+  },
+  "before": {
+    "canonical_fact_count": 626,
+    "numeric_semantic_gate": {
+      "entry_count": 2057,
+      "prose_allowed_count": 1939,
+      "prose_denied_count": 118,
+      "ready": false,
+      "registered_count": 2055,
+      "unsupported": [
+        "market:night_futures:1:fields.reference_price",
+        "market:night_futures:2:fields.reference_price"
+      ]
+    },
+    "ready_for_ai": false
+  },
+  "contract": "packet-ai-consumability-readiness-replay-v1",
+  "gates": {
+    "PRODUCTION_PACKET_MUTATION": 0,
+    "READINESS_PROMPT_CONSUMER_SURFACE_MISMATCH": 0,
+    "RUN53_CANONICAL_RAW_FACT_COUNT_PRESERVED": "PASS",
+    "RUN53_STOCK_V2_READY_FOR_AI": true,
+    "RUN53_UNSUPPORTED_INCLUDED_STOCK_V2_NUMERICS": 0
+  },
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "preservation": {
+    "fact_count_preserved": true,
+    "night_fact_count": 2,
+    "night_facts_daily_review_consumable": 0,
+    "night_facts_stock_v2_consumable": 0,
+    "raw_payload_preserved": true
+  },
+  "prompt_parity": {
+    "included_numeric_prompt_mismatch_count": 0,
+    "included_numeric_prompt_mismatches": [],
+    "legacy_prompt_fact_difference_count": 0,
+    "legacy_prompt_fact_differences": [],
+    "standalone_market_surface_sent_to_stock_v2": 0,
+    "subject_count": 14
+  },
+  "source": {
+    "path": "/Users/sskim/Codex/thesis-monitor/data/ai_review/inbox/2026-09-03-us-run-53-055ae8ea01f6.json",
+    "production_packet_mutated": 0,
+    "sha256_after": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1",
+    "sha256_before": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1"
+  }
+}

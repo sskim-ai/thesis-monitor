@@ -5,7 +5,7 @@
 - Contract: `night-futures-user-visibility-v1`
 - US user-facing visibility: disabled
 - Internal suppression reason: `SESSION_DATE_CONVENTION_PENDING`
-- Scope: temporary renderer gate only
+- Scope: temporary renderer gate plus explicit AI consumer ownership
 
 ## Boundary
 
@@ -13,9 +13,19 @@ The gate is evaluated immediately before user-facing rendering. It applies to th
 US full market message, daily-digest fallback, morning macro notification, and AI
 market-message fallback. The reason is internal and is not rendered as a warning.
 
+`packet-fact-consumer-scope-v1` also declares preserved night-futures facts as
+`ARCHIVE_ONLY` and `NIGHT_FUTURES_MODULE`. They do not own `STOCK_V2`,
+`DAILY_REVIEW`, or `MARKET_RENDERER` while this gate remains active. This avoids
+letting intentionally non-consumed raw fields block an unrelated stock-decision
+readiness gate.
+
 The gate does not change collection, raw occurrences, session mapping, publication
 telemetry, history, or daily/weekly/monthly aggregation. These inputs remain
 available for diagnostics and for a later session-date convention repair.
+
+The consumer exclusion is not a semantic validation result. Diagnostics use
+`NOT_IN_CONSUMER_SCOPE`, and facts without explicit ownership retain strict legacy
+validation.
 
 ## Preserved US Market Contract
 
