@@ -108,6 +108,13 @@ DOCUMENTS = (
     ROOT / "docs" / "architecture" / "KRX_NIGHT_DWM_AGGREGATION.md",
     ROOT / "docs" / "architecture" / "US_MARKET_REAL_YIELD_DELTA_CONTRACT.md",
     ROOT / "docs" / "architecture" / "US_FULL_MESSAGE_REFINEMENT_POLICY.md",
+    ROOT / "docs" / "architecture" / "PACKET_FACT_CONSUMER_SCOPE_CONTRACT.md",
+    ROOT / "docs" / "architecture" / "AI_NUMERIC_SEMANTIC_READINESS_SURFACE.md",
+    ROOT / "docs" / "architecture" / "MARKET_PACKET_CONSUMER_OWNERSHIP.md",
+    ROOT
+    / "docs"
+    / "architecture"
+    / "US_MARKET_TEMPORARY_NIGHT_FUTURES_SUPPRESSION.md",
     ROOT / "docs" / "architecture" / "CROSS_MARKET_AI_DECISION_ENGINE.md",
     ROOT / "docs" / "architecture" / "OHLCV_MULTI_TIMEFRAME_FEATURE_ENGINE.md",
     ROOT / "docs" / "architecture" / "DECISION_EVIDENCE_PACKET.md",
@@ -143,6 +150,12 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260902-krx-night-source-contract.json",
     ROOT / "docs" / "reports" / "20260902-run51-night-dwm.json",
     ROOT / "docs" / "reports" / "20260902-run51-real-yield-delta.json",
+    ROOT / "docs" / "reports" / "20260903-run53-readiness-root-cause.md",
+    ROOT / "docs" / "reports" / "20260903-run53-frozen-readiness-replay.md",
+    ROOT / "docs" / "reports" / "20260903-run53-v2-production-equivalent-replay.md",
+    ROOT / "docs" / "reports" / "20260903-readiness-repair-test-sink.md",
+    ROOT / "docs" / "reports" / "20260903-readiness-repair-readiness.json",
+    ROOT / "docs" / "reports" / "20260903-readiness-repair-artifact-index.md",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -162,16 +175,48 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
-    assert state["experimental_branch"] == "codex/20260902-four-track-stabilization"
+    assert state["experimental_branch"] == (
+        "codex/20260903-packet-ai-consumability-readiness-repair"
+    )
     assert state["current_phase"] == (
-        "four_track_stabilization_deployed_awaiting_natural_kr_us_live"
+        "packet_ai_consumability_repair_deployed_awaiting_natural_us_live"
     )
     assert state["last_completed_phase"] == (
-        "20260902_four_track_stabilization_network_dailyreview_market_renderer"
+        "20260903_packet_ai_consumability_readiness_repair"
     )
-    assert state["next_default_phase"] == (
-        "wait_for_next_natural_kr_us_live"
-    )
+    assert state["next_default_phase"] == "wait_for_next_natural_us_live"
+    readiness_base = "c1c43070cd944e273c53f952c29a768a33fefdee"
+    readiness_instruction = "57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3"
+    readiness_implementation = "c0964a31380f0bd7cb759e09f395d8c780c8b781"
+    readiness_report_runtime = "9d47c02fe638348df022a427ef147f0d4855d609"
+    readiness = state["packet_ai_consumability_repair_20260903"]
+    assert readiness["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
+    assert readiness["work_instruction_commit"] == readiness_instruction
+    assert readiness["base_commit"] == readiness_base
+    assert readiness["implementation_commit"] == readiness_implementation
+    assert readiness["report_runtime_commit"] == readiness_report_runtime
+    assert readiness["implementation_actions_run"] == 33702360623
+    assert readiness["report_runtime_actions_run"] == 33708265266
+    assert readiness["contract"] == "packet-fact-consumer-scope-v1"
+    assert readiness["canonical_facts_preserved"] == 626
+    assert readiness["stock_v2_numeric_included"] == 1987
+    assert readiness["standalone_market_numeric_excluded"] == 70
+    assert readiness["unsupported_stock_v2_numeric"] == 0
+    assert readiness["v2_context_candidate_accepted_explicit"] == "14/14/14/14"
+    assert readiness["accepted_decision_distribution"] == {
+        "BUY": 0,
+        "HOLD": 9,
+        "SELL": 5,
+    }
+    assert readiness["fallback_count"] == 0
+    assert readiness["kr_regression_ready"] == 8
+    assert readiness["test_sink_sent_exact"] == "22/22"
+    assert readiness["production_recipient_send"] == 0
+    assert readiness["production_delivery_intent_created"] == 0
+    assert readiness["open_p0"] == 0
+    assert readiness["open_material_p1"] == 0
+    assert readiness["next_action"] == "WAIT_FOR_NEXT_NATURAL_US_LIVE"
+    assert readiness["production_assist"] is False
     four_track_base = "89d3dc7ea350564c2b55b36b0c9ef9406330b3f9"
     four_track_integration = "c0a4d66616eb775415b602e58ddf2c8198cf4962"
     four_track_report = "deab50a122075b5fc710e97b74d9fbb63f2ac1e4"
@@ -279,13 +324,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == four_track_base
+    assert state["recorded_base_commit"] == readiness_base
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == four_track_report
-    assert state["main_code_commit"] == four_track_report
-    assert state["operating_code_commit"] == four_track_report
+    assert state["deployed_code_commit"] == readiness_report_runtime
+    assert state["main_code_commit"] == "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
+    assert state["operating_code_commit"] == (
+        "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
+    )
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion
@@ -1558,7 +1605,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert formatting["kr_rollout"] == "LIVE_PASS"
     assert formatting["next_action"] == "NO_ACTION_KR_LIVE_PROOF_CLOSED"
     four_track = state["four_track_stabilization_20260902"]
-    assert state["current_commit"] == four_track_report
+    assert state["current_commit"] == "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
     assert four_track["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_LIVE"
     assert four_track["base_commit"] == four_track_base
     assert four_track["integration_commit"] == four_track_integration
