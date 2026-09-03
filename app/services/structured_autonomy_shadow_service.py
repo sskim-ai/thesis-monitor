@@ -35,14 +35,27 @@ CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
 MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
     "HBM 출하와 고객 채택이 확대되고 가격과 제품구성 강세 및 현금창출이 유지되는 것"
 )
+KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
+    "양산 인도와 경공격기 해외 수주가 확대되고 수익성과 현금흐름이 회복되는 것"
+)
 CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES = (
     CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     "가격 결정력이 마진 방어를 지원함.",
     "customer demand supports utilization.",
     "pricing power supports margins.",
     "supplier support improves execution.",
     "customer support helps close execution gaps.",
+    "수주가 확대되고 영업현금흐름이 개선되는 것",
+    "해외 발주가 증가하고 생산 효율이 회복되는 것",
+    "신규수주가 유지되고 수익성이 개선되는 것",
+    "해외수주가 회복되고 생산 효율이 개선되는 것",
+    "최종가격 상승이 수익성 개선을 지지함.",
+    "제품 가격 회복이 마진 개선을 지원함.",
+    "평균판매가격 개선이 현금창출을 지지함.",
+    "원재료 가격이 안정되고 마진이 회복되는 것",
+    "판매가격 강세가 이익을 지지함.",
 )
 CONFIRMATION_PRICE_STRUCTURE_FIXTURES = (
     "종가 돌파가 필요하다.",
@@ -54,6 +67,18 @@ CONFIRMATION_PRICE_STRUCTURE_FIXTURES = (
     "breakout through confirmation.",
     "support-level retest.",
     "registered confirmation price recovery.",
+    "주가가 확인선을 돌파해야 한다.",
+    "주가는 저항선을 회복해야 한다.",
+    "현재 주가가 저항 상단을 상회해야 한다.",
+    "현재주가가 지지선을 회복해야 한다.",
+    "당일주가가 확인 가격을 돌파해야 한다.",
+    "종가가 확인선을 돌파해야 한다.",
+    "정규장 종가가 저항 상단에 안착해야 한다.",
+    "정규장종가가 확인 가격을 상회해야 한다.",
+    "전일 종가를 하회했다.",
+    "전일종가보다 하회했다.",
+    "현재주가가 지지선을 이탈해야 한다.",
+    "당일 주가가 지지 구간을 붕괴했다.",
 )
 
 BusinessThesisChange = Literal["STRENGTHENED", "UNCHANGED", "WEAKENED", "UNRESOLVED"]
@@ -190,14 +215,22 @@ _NEGATED_PROHIBITED_LANGUAGE = re.compile(
 )
 _PROSE_NUMBER = re.compile(r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?")
 _KOREAN_PROSE = re.compile(r"[가-힣]")
+_KOREAN_PRICE_SUBJECT_ACTION = re.compile(
+    r"(?<![가-힣])"
+    r"(?P<subject>"
+    r"(?:현재|당일)\s*주가|"
+    r"(?:정규장|전일|당일)\s*종가|"
+    r"주가|종가"
+    r")"
+    r"(?:가|는|이|의|를|에서|으로|보다)?"
+    r"[^.!?\n]{0,32}?"
+    r"(?P<action>돌파|상회|하회|회복|안착|재지지|이탈|붕괴)"
+)
 _CONFIRMATION_PRICE_STRUCTURE_PATTERNS = (
-    re.compile(
-        r"(?:종가|주가)(?:가|는|이|의)?[^.!?\n]{0,24}?"
-        r"(?:돌파|상회|하회|회복|안착|재지지)",
-    ),
+    _KOREAN_PRICE_SUBJECT_ACTION,
     re.compile(
         r"(?:저항|지지|확인)\s*(?:선|구간|영역|가격|수준|레벨|상단|하단)"
-        r"|(?:저항|지지)\s*(?:돌파|상회|하회|회복|안착|재지지)"
+        r"|(?:저항|지지)\s*(?:돌파|상회|하회|회복|안착|재지지|이탈|붕괴)"
         r"|등록\s*확인\s*(?:가격|수준|레벨)|돌파\s*후\s*(?:안착|재지지)",
     ),
     re.compile(
@@ -428,6 +461,13 @@ def _has_assertive_match(pattern: re.Pattern[str], text: str) -> bool:
 
 def confirmation_business_condition_has_price_structure_semantics(text: str) -> bool:
     return any(pattern.search(text) for pattern in _CONFIRMATION_PRICE_STRUCTURE_PATTERNS)
+
+
+def korean_price_subject_action_matches(text: str) -> tuple[tuple[str, str], ...]:
+    return tuple(
+        (match.group("subject"), match.group("action"))
+        for match in _KOREAN_PRICE_SUBJECT_ACTION.finditer(text)
+    )
 
 
 def validate_structured_autonomy_candidate(

@@ -13,6 +13,7 @@ from app.services.structured_autonomy_shadow_service import (
     CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
     CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
     CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     ClassifiedSellDriver,
     HoldLean,
@@ -25,6 +26,7 @@ from app.services.structured_autonomy_shadow_service import (
     confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
     hold_lean_flip,
+    korean_price_subject_action_matches,
     render_structured_autonomy_message,
     sanitize_detail_body,
     structured_autonomy_message_quality,
@@ -465,12 +467,60 @@ def test_confirmation_business_condition_blocks_price_structure(text: str) -> No
 @pytest.mark.parametrize(
     "text",
     (
+        "수주가 회복되고 영업현금흐름이 개선되는 것",
+        "발주가 증가하고 생산 효율이 회복되는 것",
+        "신규수주가 확대되고 수익성이 개선되는 것",
+        "해외수주가 유지되고 마진이 회복되는 것",
+        "최종가격 상승이 수익성 개선을 지지함.",
+    ),
+)
+def test_korean_business_compounds_do_not_match_embedded_price_tokens(
+    text: str,
+) -> None:
+    assert korean_price_subject_action_matches(text) == ()
+    assert confirmation_business_condition_has_price_structure_semantics(text) is False
+
+
+@pytest.mark.parametrize("prefix", ("수", "발", "신규수", "해외수"))
+@pytest.mark.parametrize("action", ("확대", "증가", "유지", "개선", "회복"))
+def test_korean_compound_collision_corpus_is_deterministically_safe(
+    prefix: str,
+    action: str,
+) -> None:
+    text = f"{prefix}주가 {action}되고 영업현금흐름이 회복되는 것"
+
+    assert korean_price_subject_action_matches(text) == ()
+    assert confirmation_business_condition_has_price_structure_semantics(text) is False
+
+
+@pytest.mark.parametrize(
+    "subject",
+    ("주가", "현재주가", "당일주가", "종가", "전일종가", "정규장종가"),
+)
+@pytest.mark.parametrize(
+    "action",
+    ("돌파", "상회", "하회", "회복", "안착", "재지지", "이탈"),
+)
+def test_recognized_korean_price_subject_action_corpus_is_detected(
+    subject: str,
+    action: str,
+) -> None:
+    text = f"{subject}가 확인 구간을 {action}해야 한다."
+
+    assert korean_price_subject_action_matches(text) == ((subject, action),)
+    assert confirmation_business_condition_has_price_structure_semantics(text) is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
         CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
         MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+        KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     ),
-    ids=("crcl", "mu"),
+    ids=("crcl", "mu", "047810"),
 )
-def test_crcl_mu_exact_business_conditions_pass_candidate_validation(text: str) -> None:
+def test_exact_business_conditions_pass_candidate_validation(text: str) -> None:
     candidate = _candidate().model_copy(
         update={
             "new_buyer_view": _candidate().new_buyer_view.model_copy(

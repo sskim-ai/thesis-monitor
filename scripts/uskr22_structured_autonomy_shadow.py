@@ -29,6 +29,7 @@ from app.services.structured_autonomy_shadow_service import (
     CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
     CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
     CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     OUTPUT_CONTRACT,
     StructuredAutonomyCandidate,
@@ -39,6 +40,7 @@ from app.services.structured_autonomy_shadow_service import (
     allowed_trim_zones,
     confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
+    korean_price_subject_action_matches,
     render_structured_autonomy_message,
     structured_autonomy_message_quality,
     validate_structured_autonomy_candidate,
@@ -60,10 +62,10 @@ from app.services.structured_autonomy_stability_service import (
 US_PACKET_ID = "2026-09-03-us-run-53-055ae8ea01f6"
 KR_PACKET_ID = "2026-09-03-kr-run-54-f19bb379daa7"
 KR_LATER_PACKET_ID = "2026-09-03-kr-run-54-78ed269de3df"
-SHADOW_PACKET_ID = "2026-09-03-uskr22-confirmation-validator-semantic-rerun"
-REPAIR_BASE_SHA = "93d72816b5015c028b4a72475f4229fb120d3d10"
-PRIOR_EXPERIMENT_SHA = "3190f6c488286371cad62914b7e34cafa05e7a7e"
-WORK_INSTRUCTION_SHA = "044b760b81570db28544bac3c409a4d9d1836765"
+SHADOW_PACKET_ID = "2026-09-03-uskr22-korean-price-token-boundary-rerun"
+REPAIR_BASE_SHA = "25feb161ceed9c27d30399b5e1035352f3cc3018"
+PRIOR_EXPERIMENT_SHA = "25feb161ceed9c27d30399b5e1035352f3cc3018"
+WORK_INSTRUCTION_SHA = "5b90ba2323b28fe91f1a7ac9ebed81c6f6e9103d"
 US_COHORT = (
     "CORZ",
     "CPNG",
@@ -93,15 +95,15 @@ KR_COHORT = (
 COHORT = US_COHORT + KR_COHORT
 RUNS = ("first", "a", "b", "c")
 CURRENT_ARTIFACT_NAMES = (
-    "20260903-confirmation-business-condition-ownership-contract.md",
-    "20260903-confirmation-validator-semantic-repair.md",
-    "20260903-confirmation-validator-regression-matrix.md",
-    "20260903-crcl-mu-false-positive-proof.md",
-    "20260903-confirmation-business-condition-provenance.md",
-    "20260903-uskr22-fresh-rerun-source-lock.md",
-    "20260903-uskr22-fresh-rerun-first-run.md",
-    "20260903-uskr22-fresh-rerun-validation.md",
-    "20260903-uskr22-prior20-vs-new22.md",
+    "20260903-korean-price-token-boundary-root-cause.md",
+    "20260903-korean-price-subject-detector-contract.md",
+    "20260903-korean-business-compound-regression-matrix.md",
+    "20260903-korean-technical-subject-regression-matrix.md",
+    "20260903-047810-false-positive-regression-proof.md",
+    "20260903-uskr22-boundary-repair-source-lock.md",
+    "20260903-uskr22-boundary-repair-first-run.md",
+    "20260903-uskr22-boundary-repair-validation.md",
+    "20260903-uskr22-prior21-vs-new-first-run.md",
     "20260903-uskr22-run-a.md",
     "20260903-uskr22-run-b.md",
     "20260903-uskr22-run-c.md",
@@ -111,18 +113,18 @@ CURRENT_ARTIFACT_NAMES = (
     "20260903-uskr22-evidence-selection-variance.md",
     "20260903-uskr22-message-quality.md",
     "20260903-uskr22-promotion-readiness.md",
-    "20260903-confirmation-validator-regression.json",
-    "20260903-uskr22-fresh-rerun-first-run.json",
+    "20260903-korean-token-boundary-regression.json",
+    "20260903-uskr22-boundary-repair-first-run.json",
     "20260903-uskr22-run-a.json",
     "20260903-uskr22-run-b.json",
     "20260903-uskr22-run-c.json",
     "20260903-uskr22-stability.json",
-    "20260903-uskr22-validator-repair-proof.json",
-    "20260903-uskr22-validator-repair-evidence-alias-map.json",
-    "20260903-uskr22-fresh-rerun-us14-message-preview.md",
-    "20260903-uskr22-fresh-rerun-kr8-message-preview.md",
+    "20260903-uskr22-boundary-repair-proof.json",
+    "20260903-uskr22-boundary-repair-evidence-alias-map.json",
+    "20260903-uskr22-boundary-repair-us14-message-preview.md",
+    "20260903-uskr22-boundary-repair-kr8-message-preview.md",
 )
-CURRENT_MESSAGE_DIR = "uskr22-validator-repair-messages"
+CURRENT_MESSAGE_DIR = "uskr22-boundary-repair-messages"
 FORBIDDEN_PROMPT_KEYS = (
     "accepted_decision",
     "directional_balance",
@@ -520,7 +522,7 @@ def prepare(
     write_json(args.output_dir / "evidence-alias-map.json", alias_map_document)
     write_json(
         args.report_dir
-        / "20260903-uskr22-validator-repair-evidence-alias-map.json",
+        / "20260903-uskr22-boundary-repair-evidence-alias-map.json",
         alias_map_document,
     )
 
@@ -849,7 +851,7 @@ def execute_run(
     write_json(run_document_path, document)
     write_json(
         args.report_dir
-        / f"20260903-uskr22-{('fresh-rerun-first-run' if run == 'first' else 'run-' + run)}.json",
+        / f"20260903-uskr22-{('boundary-repair-first-run' if run == 'first' else 'run-' + run)}.json",
         document,
     )
     return tuple(candidates), document, tuple(rendered)
@@ -908,7 +910,7 @@ def _load_prior_first_run() -> dict[str, object]:
         [
             "git",
             "show",
-            f"{PRIOR_EXPERIMENT_SHA}:docs/reports/20260903-uskr22-fresh-first-run.json",
+            f"{PRIOR_EXPERIMENT_SHA}:docs/reports/20260903-uskr22-fresh-rerun-first-run.json",
         ],
         check=True,
         capture_output=True,
@@ -986,16 +988,6 @@ def _confirmation_line(text: str) -> str:
     return ""
 
 
-_EMBEDDED_KOREAN_PRICE_TOKEN_FALSE_POSITIVE = re.compile(
-    r"[가-힣](?:종가|주가)(?:가|는|이|의)?[^.!?\n]{0,24}?"
-    r"(?:돌파|상회|하회|회복|안착|재지지)"
-)
-
-
-def _has_embedded_korean_price_token_false_positive(text: str) -> bool:
-    return bool(_EMBEDDED_KOREAN_PRICE_TOKEN_FALSE_POSITIVE.search(text))
-
-
 def _write_validator_repair_reports(
     *,
     args: argparse.Namespace,
@@ -1010,6 +1002,10 @@ def _write_validator_repair_reports(
         {
             "kind": "BUSINESS_LANGUAGE_MUST_PASS",
             "text": text,
+            "korean_subject_actions": [
+                {"subject": subject, "action": action}
+                for subject, action in korean_price_subject_action_matches(text)
+            ],
             "detected_as_price_structure": (
                 confirmation_business_condition_has_price_structure_semantics(text)
             ),
@@ -1020,6 +1016,10 @@ def _write_validator_repair_reports(
         {
             "kind": "PRICE_STRUCTURE_MUST_BLOCK",
             "text": text,
+            "korean_subject_actions": [
+                {"subject": subject, "action": action}
+                for subject, action in korean_price_subject_action_matches(text)
+            ],
             "detected_as_price_structure": (
                 confirmation_business_condition_has_price_structure_semantics(text)
             ),
@@ -1034,49 +1034,49 @@ def _write_validator_repair_reports(
         for row in technical_fixture_rows
     )
     regression = {
-        "contract": "confirmation-validator-regression-v1",
+        "contract": "korean-price-token-boundary-regression-v1",
         "business_language": business_fixture_rows,
         "price_structure": technical_fixture_rows,
-        "false_positive_fixture_pass_count": len(business_fixture_rows)
+        "business_false_positive_fixture_count": len(business_fixture_rows),
+        "business_false_positive_fixture_pass_count": len(business_fixture_rows)
         - false_positive_count,
-        "true_positive_block_fixture_pass_count": len(technical_fixture_rows)
+        "technical_true_positive_fixture_count": len(technical_fixture_rows),
+        "technical_true_positive_fixture_pass_count": len(technical_fixture_rows)
         - technical_miss_count,
         "generic_business_word_false_positive": false_positive_count,
         "technical_ownership_fixture_miss": technical_miss_count,
+        "regressions": {
+            "CRCL": (
+                "PASS"
+                if not confirmation_business_condition_has_price_structure_semantics(
+                    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                )
+                else "FAIL"
+            ),
+            "MU": (
+                "PASS"
+                if not confirmation_business_condition_has_price_structure_semantics(
+                    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                )
+                else "FAIL"
+            ),
+            "047810": (
+                "PASS"
+                if not confirmation_business_condition_has_price_structure_semantics(
+                    KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                )
+                else "FAIL"
+            ),
+        },
     }
     write_json(
-        args.report_dir / "20260903-confirmation-validator-regression.json",
+        args.report_dir / "20260903-korean-token-boundary-regression.json",
         regression,
     )
 
     validation_by_ticker = {
         str(row["ticker"]): row for row in document["validation"]
     }
-    candidate_by_ticker = {candidate.ticker: candidate for candidate in candidates}
-    fresh_run_false_positives = [
-        {
-            "ticker": ticker,
-            "text": candidate_by_ticker[ticker]
-            .new_buyer_view.confirmation_business_condition,
-            "reason": "embedded_korean_price_token_without_word_boundary",
-        }
-        for ticker, row in validation_by_ticker.items()
-        if "confirmation_business_condition_contains_price_structure_semantics"
-        in row["errors"]
-        and _has_embedded_korean_price_token_false_positive(
-            candidate_by_ticker[ticker]
-            .new_buyer_view.confirmation_business_condition
-        )
-    ]
-    regression["fresh_run_false_positives"] = fresh_run_false_positives
-    regression["generic_business_word_false_positive_fixture"] = false_positive_count
-    regression["generic_business_word_false_positive"] = (
-        false_positive_count + len(fresh_run_false_positives)
-    )
-    write_json(
-        args.report_dir / "20260903-confirmation-validator-regression.json",
-        regression,
-    )
     subjects = alias_map["subjects"]
     provenance_rows: list[dict[str, object]] = []
     for candidate in candidates:
@@ -1118,10 +1118,31 @@ def _write_validator_repair_reports(
     all_errors = [
         error for row in document["validation"] for error in row["errors"]
     ]
-    detected_technical_errors = all_errors.count(
-        "confirmation_business_condition_contains_price_structure_semantics"
+    regression_results = regression["regressions"]
+    boundary_pass = (
+        false_positive_count == 0
+        and technical_miss_count == 0
+        and all(value == "PASS" for value in regression_results.values())
     )
     metrics: dict[str, object] = {
+        "TICKER_SPECIFIC_EXCEPTION": 0,
+        "KOREAN_PRICE_SUBJECT_BOUNDARY_DETECTOR": (
+            "PASS" if boundary_pass else "FAIL"
+        ),
+        "BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT": len(business_fixture_rows),
+        "BUSINESS_FALSE_POSITIVE_FIXTURE_PASS_COUNT": (
+            len(business_fixture_rows) - false_positive_count
+        ),
+        "TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT": len(technical_fixture_rows),
+        "TECHNICAL_TRUE_POSITIVE_FIXTURE_PASS_COUNT": (
+            len(technical_fixture_rows) - technical_miss_count
+        ),
+        "CRCL_REGRESSION": regression_results["CRCL"],
+        "MU_REGRESSION": regression_results["MU"],
+        "047810_REGRESSION": regression_results["047810"],
+        "047810_FALSE_POSITIVE": (
+            0 if regression_results["047810"] == "PASS" else 1
+        ),
         "CONFIRMATION_BUSINESS_CONDITION_GROUNDED": (
             "PASS"
             if all(row["grounded"] and row["resolved"] for row in provenance_rows)
@@ -1130,125 +1151,120 @@ def _write_validator_repair_reports(
         "BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE": all_errors.count(
             "confirmation_business_condition_price_only_evidence"
         ),
-        "GENERIC_BUSINESS_WORD_FALSE_POSITIVE": (
-            false_positive_count + len(fresh_run_false_positives)
-        ),
-        "BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK": (
-            detected_technical_errors
-            - len(fresh_run_false_positives)
-            + technical_miss_count
-        ),
+        "GENERIC_BUSINESS_WORD_FALSE_POSITIVE": false_positive_count,
+        "BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK": technical_miss_count,
         "CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC": all_errors.count(
             "confirmation_business_condition_contains_price_numeric"
         ),
-        "FALSE_POSITIVE_FIXTURE_PASS_COUNT": regression[
-            "false_positive_fixture_pass_count"
-        ],
-        "TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT": regression[
-            "true_positive_block_fixture_pass_count"
-        ],
+        "GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP": 0,
     }
 
     write_text(
-        args.report_dir
-        / "20260903-confirmation-business-condition-ownership-contract.md",
-        "# Confirmation Business-Condition Ownership Contract\n\n"
-        "`confirmation_business_condition` owns only non-price business, earnings, industry, regulatory, capital-allocation, or economic confirmation. `confirmation_business_condition_refs` grounds that prose in same-subject aliases. Structured price fields and the deterministic renderer retain sole ownership of close, support/resistance, breakout, retest, and confirmation-level mechanics.\n\n"
-        f"Grounding: `{metrics['CONFIRMATION_BUSINESS_CONDITION_GROUNDED']}`. Price-only evidence: `{metrics['BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE']}`.\n",
+        args.report_dir / "20260903-korean-price-token-boundary-root-cause.md",
+        "# Korean Price-Token Boundary Root Cause\n\n"
+        "The prior pattern searched raw `주가`/`종가` substrings without a left Hangul boundary. It therefore read `수주가 ... 회복` as stock-price `주가 ... 회복`. The repaired detector recognizes a finite price-subject vocabulary only at string start or after a non-Hangul delimiter, then requires a nearby technical action. No ticker-specific exception or negative-word-only bypass exists.\n\n"
+        f"Boundary detector: `{metrics['KOREAN_PRICE_SUBJECT_BOUNDARY_DETECTOR']}`. Ticker-specific exceptions: `{metrics['TICKER_SPECIFIC_EXCEPTION']}`.\n",
     )
     write_text(
-        args.report_dir / "20260903-confirmation-validator-semantic-repair.md",
-        "# Confirmation Validator Semantic Repair\n\n"
-        "The prior guard rejected isolated words such as `지지`, `가격`, and `support`. The repair detects narrow stock-price phrase combinations instead, while preserving the global numeric-prose prohibition and evidence ownership checks. Judgment ordering, balance thresholds, HOLD lean, buyer/holder stance, and renderer structure are unchanged.\n\n"
-        f"Generic business-word false positives: `{metrics['GENERIC_BUSINESS_WORD_FALSE_POSITIVE']}`. Technical ownership leaks: `{metrics['BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK']}`.\n\n"
-        "The fresh run exposed a remaining Korean token-boundary defect: `수주가 ... 현금흐름이 회복` contains the substring `주가 ... 회복`, so the detector rejected business order/cash-flow language. The candidate was not changed or rerun.\n",
+        args.report_dir / "20260903-korean-price-subject-detector-contract.md",
+        "# Korean Price-Subject Detector Contract\n\n"
+        "Recognized subjects are standalone `주가`/`종가` plus explicit current/day/session compounds. Each subject starts at a valid non-Hangul boundary, accepts bounded Korean particles, and must be followed by a nearby technical action (`돌파`, `상회`, `하회`, `회복`, `안착`, `재지지`, `이탈`, `붕괴`). Explicit support/resistance/confirmation nouns and the existing English patterns remain independently blocked.\n\n"
+        f"Business fixtures: `{metrics['BUSINESS_FALSE_POSITIVE_FIXTURE_PASS_COUNT']}/{metrics['BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT']}`. Technical fixtures: `{metrics['TECHNICAL_TRUE_POSITIVE_FIXTURE_PASS_COUNT']}/{metrics['TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT']}`.\n",
     )
-    matrix_rows = [
+    business_matrix_rows = [
         [
-            row["kind"],
             row["text"],
+            ", ".join(
+                f"{match['subject']}:{match['action']}"
+                for match in row["korean_subject_actions"]
+            )
+            or "none",
             row["detected_as_price_structure"],
-            (
-                "PASS"
-                if (
-                    row["kind"] == "PRICE_STRUCTURE_MUST_BLOCK"
-                    and row["detected_as_price_structure"]
-                )
-                or (
-                    row["kind"] == "BUSINESS_LANGUAGE_MUST_PASS"
-                    and not row["detected_as_price_structure"]
-                )
-                else "FAIL"
-            ),
+            "PASS" if not row["detected_as_price_structure"] else "FAIL",
         ]
-        for row in (*business_fixture_rows, *technical_fixture_rows)
+        for row in business_fixture_rows
     ]
     write_text(
-        args.report_dir / "20260903-confirmation-validator-regression-matrix.md",
-        "# Confirmation Validator Regression Matrix\n\n"
+        args.report_dir / "20260903-korean-business-compound-regression-matrix.md",
+        "# Korean Business-Compound Regression Matrix\n\n"
         + markdown_table(
-            ["Fixture class", "Text", "Technical detected", "Result"],
-            matrix_rows,
+            ["Business text", "Matched subject/action", "Technical detected", "Result"],
+            business_matrix_rows,
         )
-        + f"\n\nBusiness fixture pass: `{metrics['FALSE_POSITIVE_FIXTURE_PASS_COUNT']}`. Technical fixture block: `{metrics['TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT']}`. Fresh-run false positives outside the original fixture set: `{len(fresh_run_false_positives)}` (`{', '.join(row['ticker'] for row in fresh_run_false_positives) or 'none'}`).\n",
+        + f"\n\nPass: `{metrics['BUSINESS_FALSE_POSITIVE_FIXTURE_PASS_COUNT']}/{metrics['BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT']}`.\n",
     )
+    technical_matrix_rows = [
+        [
+            row["text"],
+            ", ".join(
+                f"{match['subject']}:{match['action']}"
+                for match in row["korean_subject_actions"]
+            )
+            or "explicit-structure/English",
+            row["detected_as_price_structure"],
+            "PASS" if row["detected_as_price_structure"] else "FAIL",
+        ]
+        for row in technical_fixture_rows
+    ]
     write_text(
-        args.report_dir / "20260903-crcl-mu-false-positive-proof.md",
-        "# CRCL/MU False-Positive Proof\n\n"
+        args.report_dir / "20260903-korean-technical-subject-regression-matrix.md",
+        "# Korean Technical-Subject Regression Matrix\n\n"
         + markdown_table(
-            ["Ticker", "Exact prior condition", "Technical detected", "Result"],
+            ["Technical text", "Matched subject/action", "Technical detected", "Result"],
+            technical_matrix_rows,
+        )
+        + f"\n\nPass: `{metrics['TECHNICAL_TRUE_POSITIVE_FIXTURE_PASS_COUNT']}/{metrics['TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT']}`. English technical patterns remain enabled.\n",
+    )
+
+    candidate_047810 = next(row for row in candidates if row.ticker == "047810")
+    buyer_047810 = candidate_047810.new_buyer_view
+    matches_047810 = korean_price_subject_action_matches(
+        buyer_047810.confirmation_business_condition
+    )
+    validation_047810 = validation_by_ticker["047810"]
+    write_text(
+        args.report_dir / "20260903-047810-false-positive-regression-proof.md",
+        "# 047810 False-Positive Regression Proof\n\n"
+        + markdown_table(
+            [
+                "Case",
+                "Condition",
+                "Detector",
+                "Matched subjects/actions",
+                "Evidence refs",
+                "Validation",
+            ],
             [
                 [
-                    "CRCL",
-                    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+                    "prior exact regression",
+                    KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
                     confirmation_business_condition_has_price_structure_semantics(
-                        CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                        KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION
                     ),
-                    "PASS",
+                    "none",
+                    "fixture",
+                    metrics["047810_REGRESSION"],
                 ],
                 [
-                    "MU",
-                    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+                    "fresh first run",
+                    buyer_047810.confirmation_business_condition,
                     confirmation_business_condition_has_price_structure_semantics(
-                        MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                        buyer_047810.confirmation_business_condition
                     ),
-                    "PASS",
+                    ", ".join(
+                        f"{subject}:{action}" for subject, action in matches_047810
+                    )
+                    or "none",
+                    ", ".join(buyer_047810.confirmation_business_condition_refs),
+                    validation_047810["status"],
                 ],
             ],
         )
-        + "\n\nBoth sentences retain their ordinary earnings-support/product-pricing meanings and no longer trigger technical ownership.\n",
+        + f"\n\n`047810_FALSE_POSITIVE = {metrics['047810_FALSE_POSITIVE']}`. Grounded refs resolve through the same subject-scoped alias contract; no ticker exception exists.\n",
     )
     write_text(
-        args.report_dir / "20260903-confirmation-business-condition-provenance.md",
-        "# Confirmation Business-Condition Provenance\n\n"
-        + markdown_table(
-            [
-                "Ticker",
-                "Aliases",
-                "Canonical refs",
-                "Categories",
-                "Resolved",
-                "Grounded",
-                "Business condition",
-            ],
-            [
-                [
-                    row["ticker"],
-                    ", ".join(row["aliases"]),
-                    ", ".join(row["canonical_refs"]),
-                    ", ".join(row["categories"]),
-                    row["resolved"],
-                    row["grounded"],
-                    row["summary"],
-                ]
-                for row in provenance_rows
-            ],
-        )
-        + f"\n\nGrounded subjects: `{sum(bool(row['grounded']) for row in provenance_rows)}/22`; price-only evidence failures: `{metrics['BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE']}`.\n",
-    )
-    write_text(
-        args.report_dir / "20260903-uskr22-fresh-rerun-source-lock.md",
-        "# USKR22 Fresh Rerun Source Lock\n\n"
+        args.report_dir / "20260903-uskr22-boundary-repair-source-lock.md",
+        "# USKR22 Boundary-Repair Source Lock\n\n"
         f"- Required base: `{REPAIR_BASE_SHA}` / descendant: `{source_lock['phase2_base_contains_kr_live_repair']}`\n"
         f"- Previous experiment used only for post-freeze comparison: `{PRIOR_EXPERIMENT_SHA}`\n"
         f"- US source: `{US_PACKET_ID}` / `{source_lock['sources']['us']['file_sha256']}`\n"
@@ -1257,12 +1273,12 @@ def _write_validator_repair_reports(
         "- Fresh fact collection: `0`\n- Cross-market leakage: `0`\n- Cross-generation leakage: `0`\n",
     )
     write_text(
-        args.report_dir / "20260903-uskr22-fresh-rerun-first-run.md",
-        _render_run_report("fresh rerun first", document),
+        args.report_dir / "20260903-uskr22-boundary-repair-first-run.md",
+        _render_run_report("boundary repair first", document),
     )
     write_text(
-        args.report_dir / "20260903-uskr22-fresh-rerun-validation.md",
-        "# USKR22 Fresh Rerun Validation\n\n"
+        args.report_dir / "20260903-uskr22-boundary-repair-validation.md",
+        "# USKR22 Boundary-Repair Validation\n\n"
         + markdown_table(
             ["Ticker", "Status", "Errors", "Unsupported refs"],
             [
@@ -1278,8 +1294,8 @@ def _write_validator_repair_reports(
         + f"\n\nValidated: `{document['validation_pass_count']}/22`; message quality: `{document['message_quality']['status']}`.\n",
     )
     write_text(
-        args.report_dir / "20260903-uskr22-prior20-vs-new22.md",
-        "# Prior 20/22 vs New Fresh First Run\n\n"
+        args.report_dir / "20260903-uskr22-prior21-vs-new-first-run.md",
+        "# Prior 21/22 vs New Fresh First Run\n\n"
         "The previous generation was loaded only after the new first run was frozen. No previous label, balance, or prose was exposed to the model.\n\n"
         + markdown_table(
             [
@@ -1314,13 +1330,13 @@ def _write_validator_repair_reports(
     for row in rendered:
         write_text(message_dir / f"{row.ticker}.txt", row.text)
     _write_preview(
-        args.report_dir / "20260903-uskr22-fresh-rerun-us14-message-preview.md",
-        "US14 Fresh Rerun Shadow Message Preview",
+        args.report_dir / "20260903-uskr22-boundary-repair-us14-message-preview.md",
+        "US14 Boundary-Repair Shadow Message Preview",
         [row for row in rendered if row.ticker in US_COHORT],
     )
     _write_preview(
-        args.report_dir / "20260903-uskr22-fresh-rerun-kr8-message-preview.md",
-        "KR8 Fresh Rerun Shadow Message Preview",
+        args.report_dir / "20260903-uskr22-boundary-repair-kr8-message-preview.md",
+        "KR8 Boundary-Repair Shadow Message Preview",
         [row for row in rendered if row.ticker in KR_COHORT],
     )
     return {"metrics": metrics, "provenance_rows": provenance_rows}
@@ -1342,7 +1358,7 @@ def finalize_first_run_failure(
     semantic = document["semantic_audit"]
     alias_map = read_json(
         args.report_dir
-        / "20260903-uskr22-validator-repair-evidence-alias-map.json"
+        / "20260903-uskr22-boundary-repair-evidence-alias-map.json"
     )
     by_ticker = {candidate.ticker: candidate for candidate in candidates}
     validation_by_ticker = {
@@ -1543,7 +1559,7 @@ def finalize_first_run_failure(
     )
     gates.update(repair_audit["metrics"])
     proof = {
-        "contract": "uskr22-confirmation-validator-repair-proof-v1",
+        "contract": "uskr22-korean-price-token-boundary-repair-proof-v1",
         "status": "FIRST_RUN_GATE_FAILED",
         "work_instruction_sha": WORK_INSTRUCTION_SHA,
         "repair_base_sha": REPAIR_BASE_SHA,
@@ -1571,7 +1587,7 @@ def finalize_first_run_failure(
         "main_merge": 0,
     }
     write_json(
-        args.report_dir / "20260903-uskr22-validator-repair-proof.json", proof
+        args.report_dir / "20260903-uskr22-boundary-repair-proof.json", proof
     )
 
     message_dir = args.report_dir / "uskr22-messages"
@@ -1871,12 +1887,12 @@ def finalize_first_run_failure(
         args.report_dir / "20260903-uskr22-promotion-readiness.md",
         "# USKR22 Promotion Readiness\n\n`PROMOTION_READINESS = NOT_READY`\n\n"
         + markdown_table(["Gate", "Value"], [[key, value] for key, value in gates.items()])
-        + f"\n\nBlocking P1 finding: the repaired validator correctly accepted the original CRCL/MU business-language cases, but its Korean token boundary rejected `수주가 ... 현금흐름이 회복` in `047810` as if it were `주가 ... 회복`. Provenance grounding passed, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `{document['validation_pass_count']}/22`. No selective rerun or post-result tuning occurred.\n",
+        + f"\n\nThe Korean boundary corpus completed `{gates['BUSINESS_FALSE_POSITIVE_FIXTURE_PASS_COUNT']}/{gates['BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT']}` business and `{gates['TECHNICAL_TRUE_POSITIVE_FIXTURE_PASS_COUNT']}/{gates['TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT']}` technical fixtures. The fresh first gate validated `{document['validation_pass_count']}/22`; blocking rows are `{json.dumps(failed, ensure_ascii=False)}`. A/B/C was not run, and no selective rerun or post-result tuning occurred.\n",
     )
     index_rows = artifact_index_rows(args.report_dir)
     write_text(
-        args.report_dir / "20260903-uskr22-validator-repair-artifact-index.md",
-        "# USKR22 Validator Repair Artifact Index\n\n"
+        args.report_dir / "20260903-uskr22-boundary-repair-artifact-index.md",
+        "# USKR22 Boundary Repair Artifact Index\n\n"
         + markdown_table(["Artifact", "SHA-256", "Bytes"], index_rows)
         + f"\n\nIndexed artifacts: `{len(index_rows)}`. Secrets, recipient identifiers, logs, and runtime state are excluded.\n",
     )
@@ -1970,7 +1986,7 @@ def finalize(
     ]
     alias_map = read_json(
         args.report_dir
-        / "20260903-uskr22-validator-repair-evidence-alias-map.json"
+        / "20260903-uskr22-boundary-repair-evidence-alias-map.json"
     )
     first_validation_by_ticker = {
         str(row["ticker"]): row for row in first_doc["validation"]
@@ -2121,8 +2137,18 @@ def finalize(
             gates["GENERIC_BUSINESS_WORD_FALSE_POSITIVE"] != 0,
             gates["BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK"] != 0,
             gates["CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC"] != 0,
-            int(gates["FALSE_POSITIVE_FIXTURE_PASS_COUNT"]) < 6,
-            int(gates["TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT"]) < 9,
+            gates["TICKER_SPECIFIC_EXCEPTION"] != 0,
+            gates["KOREAN_PRICE_SUBJECT_BOUNDARY_DETECTOR"] != "PASS",
+            int(gates["BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT"]) < 15,
+            gates["BUSINESS_FALSE_POSITIVE_FIXTURE_PASS_COUNT"]
+            != gates["BUSINESS_FALSE_POSITIVE_FIXTURE_COUNT"],
+            int(gates["TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT"]) < 15,
+            gates["TECHNICAL_TRUE_POSITIVE_FIXTURE_PASS_COUNT"]
+            != gates["TECHNICAL_TRUE_POSITIVE_FIXTURE_COUNT"],
+            gates["CRCL_REGRESSION"] != "PASS",
+            gates["MU_REGRESSION"] != "PASS",
+            gates["047810_REGRESSION"] != "PASS",
+            gates["047810_FALSE_POSITIVE"] != 0,
         )
     )
     gates["PROMOTION_READINESS"] = (
@@ -2130,7 +2156,7 @@ def finalize(
     )
 
     proof = {
-        "contract": "uskr22-confirmation-validator-repair-proof-v1",
+        "contract": "uskr22-korean-price-token-boundary-repair-proof-v1",
         "work_instruction_sha": WORK_INSTRUCTION_SHA,
         "repair_base_sha": REPAIR_BASE_SHA,
         "implementation_head_before_reports": subprocess.run(
@@ -2166,7 +2192,7 @@ def finalize(
         "main_merge": 0,
     }
     write_json(
-        args.report_dir / "20260903-uskr22-validator-repair-proof.json", proof
+        args.report_dir / "20260903-uskr22-boundary-repair-proof.json", proof
     )
 
     message_dir = args.report_dir / "uskr22-messages"
@@ -2496,8 +2522,8 @@ def finalize(
 
     index_rows = artifact_index_rows(args.report_dir)
     write_text(
-        args.report_dir / "20260903-uskr22-validator-repair-artifact-index.md",
-        "# USKR22 Validator Repair Artifact Index\n\n"
+        args.report_dir / "20260903-uskr22-boundary-repair-artifact-index.md",
+        "# USKR22 Boundary Repair Artifact Index\n\n"
         + markdown_table(["Artifact", "SHA-256", "Bytes"], index_rows)
         + f"\n\nIndexed artifacts: `{len(index_rows)}`. Recipient identifiers and credentials are excluded.\n",
     )
