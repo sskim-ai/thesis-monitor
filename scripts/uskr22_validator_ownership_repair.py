@@ -22,7 +22,7 @@ from app.services.structured_autonomy_stability_service import (
 
 
 BASE_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
-WORK_INSTRUCTION_SHA = "5a3c0fa397f72b208e7d0920b3e9226594ceef4e"
+WORK_INSTRUCTION_SHA = "5a3c0faccdbfdb272056419b099d40c6ccd19962"
 GENERATION_ID = "2026-09-04-uskr22-validator-ownership-repair"
 RUNS = ("first", "a", "b", "c")
 TARGET_VALIDATOR_ERRORS = {
