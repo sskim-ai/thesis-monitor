@@ -62,6 +62,7 @@ V2_TRANSPORT_ATTEMPT_LIMIT = 2
 V2_TRANSPORT_BACKOFF_SECONDS = 2.0
 
 logger = logging.getLogger(__name__)
+V2_STAGE_RECEIPT_CONTRACT = "accepted-v2-generation-stage-v1"
 
 
 class V2CLIPathPreconditionError(ValueError):
@@ -328,6 +329,47 @@ def _paths(claim: Mapping[str, object], claim_id: str) -> dict[str, Path]:
     )
 
 
+def _stage_receipt_path(paths: Mapping[str, Path]) -> Path:
+    return paths["receipt"].with_name(
+        paths["receipt"].name.replace(".decision-v2-receipt.json", ".decision-v2-stage.json")
+    )
+
+
+def _record_stage(
+    packet_id: str,
+    claim_id: str,
+    *,
+    stage: str,
+    batch_number: int | None = None,
+    subject_count: int | None = None,
+    reason: str | None = None,
+) -> None:
+    try:
+        claim = _claim(packet_id, claim_id)
+        paths = _paths(claim, claim_id)
+        path = _stage_receipt_path(paths)
+        receipt = _read_json(path) if path.exists() else {
+            "contract": V2_STAGE_RECEIPT_CONTRACT,
+            "packet_id": packet_id,
+            "claim_id": claim_id,
+            "stages": [],
+        }
+        stages = receipt.setdefault("stages", [])
+        if isinstance(stages, list):
+            stages.append(
+                {
+                    "stage": stage,
+                    "batch_number": batch_number,
+                    "subject_count": subject_count,
+                    "reason": reason,
+                    "recorded_at": datetime.now(UTC).isoformat(),
+                }
+            )
+        _atomic_json(path, receipt)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return
+
+
 def _schema_validation_errors(exc: ValidationError) -> tuple[str, ...]:
     return tuple(
         ":".join(
@@ -373,6 +415,12 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
         strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
     )
     _atomic_text(paths["prompt"], accepted_v2_production_prompt(context))
+    _record_stage(
+        packet_id,
+        claim_id,
+        stage="context_ready",
+        subject_count=len(context.selected_subjects),
+    )
     return {
         "status": "CONTEXT_READY",
         "packet_id": packet_id,
@@ -448,6 +496,7 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     if prepared.get("status") != "CONTEXT_READY":
         return prepared
     codex_bin = _signed_in_codex_bin()
+    _record_stage(packet_id, claim_id, stage="model_path_ready")
     claim = _claim(packet_id, claim_id)
     paths = _paths(claim, claim_id)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
@@ -470,6 +519,13 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             batch_prompt,
             accepted_v2_production_prompt(context, subjects=subjects),
         )
+        _record_stage(
+            packet_id,
+            claim_id,
+            stage="model_invoking",
+            batch_number=batch_number,
+            subject_count=len(subjects),
+        )
         transport_telemetry.append(
             _invoke_signed_in_codex(
                 codex_bin=codex_bin,
@@ -483,6 +539,13 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
             )
         )
         raw_batch = _read_json(batch_output)
+        _record_stage(
+            packet_id,
+            claim_id,
+            stage="candidate_batch_created",
+            batch_number=batch_number,
+            subject_count=len(subjects),
+        )
         try:
             batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
         except ValidationError as exc:
@@ -613,6 +676,12 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
         ).model_dump(mode="json"),
     )
     receipt = validate_output(packet_id, claim_id)
+    _record_stage(
+        packet_id,
+        claim_id,
+        stage="accepted_artifact_created",
+        subject_count=len(context.selected_subjects),
+    )
     receipt["batch_schema_repair_count"] = batch_schema_repair_count
     receipt["candidate_repair_count"] = candidate_repair_count
     receipt["network_readiness_contract"] = NETWORK_READINESS_CONTRACT
@@ -652,6 +721,12 @@ async def _run(args: argparse.Namespace) -> None:
         result = _safe_suppression_receipt(
             args.packet_id,
             args.claim_id,
+            reason=reason,
+        )
+        _record_stage(
+            args.packet_id,
+            args.claim_id,
+            stage="suppressed_safe",
             reason=reason,
         )
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))

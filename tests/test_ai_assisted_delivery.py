@@ -16,6 +16,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionBlock,
 )
 from app.services.ai_assisted_delivery_service import (
+    PilotDeliveryResult,
     _render_ai_market_message,
     _render_ai_stock_message,
     ai_assisted_pilot_active,
@@ -37,6 +38,18 @@ RUN_DATE = date(2026, 8, 14)
 PACKET_ID = "2026-08-14-kr-run-1-pilot"
 
 
+def test_already_sent_result_keeps_delivery_mode_visible() -> None:
+    result = PilotDeliveryResult(
+        status="already_sent",
+        market="kr",
+        delivery_mode="ai_assisted",
+        delivery_count=9,
+        sent_count=9,
+    )
+
+    assert result.as_dict()["orchestration_outcome"] == "AI_V2_DELIVERED"
+
+
 class RecordingNotifier:
     def __init__(self, *, fail: bool = False) -> None:
         self.fail = fail
@@ -49,6 +62,11 @@ class RecordingNotifier:
         return "sent"
 
 
+class DryRunNotifier:
+    async def send(self, payload: dict[str, object]) -> str:
+        return "dry_run"
+
+
 class PartialFailureNotifier:
     def __init__(self, *, successful_sends: int) -> None:
         self.successful_sends = successful_sends
@@ -58,6 +76,19 @@ class PartialFailureNotifier:
         self.payloads.append(payload)
         if len(self.payloads) > self.successful_sends:
             raise RuntimeError("scripted partial outage")
+        return "sent"
+
+
+class AiFailureFallbackSuccessNotifier:
+    def __init__(self) -> None:
+        self.attempted: list[dict[str, object]] = []
+        self.sent: list[dict[str, object]] = []
+
+    async def send(self, payload: dict[str, object]) -> str:
+        self.attempted.append(payload)
+        if str(payload.get("type") or "").startswith("ai_assisted"):
+            raise RuntimeError("scripted terminal AI delivery outage")
+        self.sent.append(payload)
         return "sent"
 
 
@@ -122,6 +153,22 @@ def test_v2_production_keeps_ai_assisted_route_active_after_pilot_days(
     assert ai_assisted_pilot_active("us") is True
 
 
+def test_archive_quality_scope_keeps_v2_subjects_outside_adaptive_canary() -> None:
+    messages: list[object] = [
+        {"ticker": "__DAILY_DIGEST_KR__", "common_ai_core": {"canary_selected": True}},
+        {"ticker": "A", "common_ai_core": {"canary_selected": False}},
+        {"ticker": "B", "common_ai_core": {"canary_selected": True}},
+    ]
+
+    selected = delivery_service._quality_scoped_archived_messages(
+        {"market": "kr"},
+        messages,
+        {"A"},
+    )
+
+    assert [item["ticker"] for item in selected] == ["__DAILY_DIGEST_KR__", "A"]
+
+
 def _packet() -> dict[str, object]:
     return {
         "schema_version": "1",
@@ -130,6 +177,7 @@ def _packet() -> dict[str, object]:
         "knowledge": {"version": "3.0", "sha256": "knowledge-sha"},
         "chart_knowledge": {"version": "1.0", "sha256": "chart-knowledge-sha"},
         "packet_id": PACKET_ID,
+        "source_monitor_run_id": "1",
         "market": "kr",
         "assessment_date": RUN_DATE.isoformat(),
         "market_context": {
@@ -232,6 +280,13 @@ def _write_artifacts(tmp_path: Path, *, output: bool = True) -> None:
         (outbox / f"{PACKET_ID}--daily-review-v3.7--knowledge.json").write_text(
             json.dumps(_output(), ensure_ascii=False), encoding="utf-8"
         )
+
+
+def _write_reuse_packet(tmp_path: Path, packet_id: str) -> None:
+    packet = {**_packet(), "packet_id": packet_id}
+    (tmp_path / "ai_review" / "inbox" / f"{packet_id}.json").write_text(
+        json.dumps(packet, ensure_ascii=False), encoding="utf-8"
+    )
 
 
 def test_stock_renderer_preserves_validated_user_text_without_semantic_rewrite() -> None:
@@ -401,6 +456,10 @@ async def test_ai_pass_sends_only_one_ai_assisted_set(monkeypatch, tmp_path: Pat
     )
     assert len(json.loads((archive / "deterministic-messages.json").read_text())["messages"]) == 2
     assert len(json.loads((archive / "ai-assisted-messages.json").read_text())["messages"]) == 2
+    eligibility = json.loads((archive / "delivery-eligibility.json").read_text())
+    assert eligibility["gate_state"] == "delivery_ready"
+    assert eligibility["ai_assisted_delivery_eligible"] is True
+    assert eligibility["scope"]["explicit_ai_market_count"] == 1
 
 
 @pytest.mark.anyio
@@ -470,6 +529,21 @@ async def test_v2_accepted_block_is_visible_without_raw_candidate_fallback(
     assert "raw candidate" not in text.lower()
     assert "SHADOW" not in text
     assert advanced == [PACKET_ID]
+    eligibility = json.loads(
+        (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "delivery-eligibility.json"
+        ).read_text()
+    )
+    assert eligibility["explicit_stock_v2_eligible"] is True
+    assert eligibility["scope"]["explicit_stock_v2_count"] == 1
+    assert eligibility["scope"]["explicit_ai_total_count"] == 2
 
 
 @pytest.mark.anyio
@@ -962,6 +1036,258 @@ async def test_persisted_delivery_retry_reuses_final_text_without_reanalysis(
 
 
 @pytest.mark.anyio
+async def test_analysis_reuse_does_not_erase_primary_pending_delivery(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    backup_packet_id = "2026-08-14-kr-run-1-backup"
+    _write_reuse_packet(tmp_path, backup_packet_id)
+    failed = RecordingNotifier(fail=True)
+    recovered = RecordingNotifier()
+
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        initial = await deliver_validated_ai_review(session, PACKET_ID, notifier=failed)
+        backup = hold_ai_assisted_pilot_session(session, backup_packet_id)
+        rows = session.exec(select(NotificationDelivery)).all()
+        metadata = [
+            json.loads(row.payload)[AI_ASSISTED_PILOT_METADATA_KEY] for row in rows
+        ]
+        retried = await retry_pending_ai_assisted_deliveries(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 50, tzinfo=KST),
+            notifier=recovered,
+        )
+
+    assert initial.status == "pending"
+    assert backup.pending_count == 2
+    assert {item["packet_id"] for item in metadata} == {PACKET_ID}
+    assert all(backup_packet_id in item["observed_reuse_packet_ids"] for item in metadata)
+    assert retried[-1].status == "sent"
+    assert len(recovered.payloads) == 2
+
+
+@pytest.mark.anyio
+async def test_pending_delivery_is_discoverable_from_fresh_database_session(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    database = tmp_path / "process-boundary.sqlite3"
+    engine = create_engine(f"sqlite:///{database}")
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as first_process:
+        _seed_deliveries(first_process)
+        hold_ai_assisted_pilot_session(first_process, PACKET_ID)
+        result = await deliver_validated_ai_review(
+            first_process,
+            PACKET_ID,
+            notifier=RecordingNotifier(fail=True),
+        )
+        assert result.pending_count == 2
+
+    recovered = RecordingNotifier()
+    with Session(engine) as second_process:
+        result = await retry_pending_ai_assisted_deliveries(
+            second_process,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 50, tzinfo=KST),
+            notifier=recovered,
+        )
+
+    assert result[-1].sent_count == 2
+    assert result[-1].pending_count == 0
+    assert len(recovered.payloads) == 2
+
+
+@pytest.mark.anyio
+async def test_persisted_ai_pending_dry_run_is_reactivated_for_real_retry(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    database = tmp_path / "dry-run-boundary.sqlite3"
+    engine = create_engine(f"sqlite:///{database}")
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as first_process:
+        _seed_deliveries(first_process)
+        hold_ai_assisted_pilot_session(first_process, PACKET_ID)
+        result = await deliver_validated_ai_review(
+            first_process,
+            PACKET_ID,
+            notifier=DryRunNotifier(),
+        )
+        assert result.pending_count == 2
+
+    recovered = RecordingNotifier()
+    with Session(engine) as second_process:
+        result = await retry_pending_ai_assisted_deliveries(
+            second_process,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 16, 50, tzinfo=KST),
+            notifier=recovered,
+        )
+        rows = session_rows = second_process.exec(select(NotificationDelivery)).all()
+
+    assert result[-1].sent_count == 2
+    assert result[-1].pending_count == 0
+    assert len(recovered.payloads) == 2
+    assert all(row.status == "sent" for row in session_rows)
+    assert all(
+        "dry_run_reactivated_at"
+        in json.loads(row.payload)[AI_ASSISTED_PILOT_METADATA_KEY]
+        for row in rows
+    )
+
+
+@pytest.mark.anyio
+async def test_terminal_ai_failure_transitions_unsent_rows_to_one_fallback_set(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path)
+    notifier = AiFailureFallbackSuccessNotifier()
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        results = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=notifier,
+        )
+        rows = session.exec(select(NotificationDelivery)).all()
+
+    assert results[-1].status == "sent"
+    assert results[-1].delivery_mode == "deterministic_fallback"
+    assert len(notifier.sent) == 2
+    assert all(not str(item["type"]).startswith("ai_assisted") for item in notifier.sent)
+    assert all(row.status == "sent" for row in rows)
+    assert {
+        json.loads(row.payload)[AI_ASSISTED_PILOT_METADATA_KEY]["state"] for row in rows
+    } == {"fallback_sent"}
+
+
+@pytest.mark.anyio
+async def test_nine_row_unavailable_ai_session_falls_back_once(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    packet = _packet()
+    source_stock = packet["stocks"][0]
+    assert isinstance(source_stock, dict)
+    stock_tickers = [f"KR{index:06d}" for index in range(1, 9)]
+    packet["stocks"] = [{**source_stock, "ticker": ticker} for ticker in stock_tickers]
+    inbox = tmp_path / "ai_review" / "inbox"
+    inbox.mkdir(parents=True)
+    (inbox / f"{PACKET_ID}.json").write_text(
+        json.dumps(packet, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    notifier = RecordingNotifier()
+    with Session(_engine()) as session:
+        for ticker in ["__DAILY_DIGEST_KR__", *stock_tickers]:
+            session.add(
+                NotificationDelivery(
+                    ticker=ticker,
+                    assessment_date=RUN_DATE,
+                    channel="telegram",
+                    status="pending",
+                    payload=json.dumps(
+                        {
+                            "text": f"deterministic fallback {ticker}",
+                            "type": "daily_market_digest" if ticker.startswith("__") else "daily_stock_analysis",
+                            "ticker": ticker,
+                        }
+                    ),
+                )
+            )
+        session.commit()
+        held = hold_ai_assisted_pilot_session(session, PACKET_ID)
+        results = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=notifier,
+        )
+        duplicate = await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 11, tzinfo=KST),
+            notifier=notifier,
+        )
+
+    assert held.pending_count == 9
+    assert results[-1].delivery_mode == "deterministic_fallback"
+    assert results[-1].sent_count == 9
+    assert duplicate[-1].status == "no_held_session"
+    assert len(notifier.payloads) == 9
+
+
+@pytest.mark.anyio
+async def test_late_validation_after_fallback_is_receipt_only(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    _write_artifacts(tmp_path, output=False)
+    with Session(_engine()) as session:
+        _seed_deliveries(session)
+        hold_ai_assisted_pilot_session(session, PACKET_ID)
+        await dispatch_due_deterministic_fallbacks(
+            session,
+            market="kr",
+            run_date=RUN_DATE,
+            now=datetime(2026, 8, 14, 17, 10, tzinfo=KST),
+            notifier=RecordingNotifier(),
+        )
+        archive = (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+        )
+        canonical = archive / "validation-result.json"
+        canonical.write_text(
+            json.dumps({"packet_id": PACKET_ID, "status": "fallback_terminal"}),
+            encoding="utf-8",
+        )
+        before = canonical.read_bytes()
+        result = record_ai_validation_rejection(
+            session,
+            PACKET_ID,
+            errors=("late_candidate_error",),
+            rejected_at=datetime(2026, 8, 14, 17, 11, tzinfo=KST),
+        )
+        rows = session.exec(select(NotificationDelivery)).all()
+
+    assert result.status == "late_validation_ignored"
+    assert canonical.read_bytes() == before
+    assert len(list((archive / "late-validation-results").glob("*.json"))) == 1
+    assert all(row.status == "sent" for row in rows)
+    assert {
+        json.loads(row.payload)[AI_ASSISTED_PILOT_METADATA_KEY]["state"] for row in rows
+    } == {"fallback_sent"}
+
+
+@pytest.mark.anyio
 async def test_explicit_duplicate_exception_allows_sent_session_once(
     monkeypatch, tmp_path: Path
 ) -> None:
@@ -1023,6 +1349,21 @@ async def test_runtime_quality_gate_rejects_ai_and_preserves_single_fallback(
     assert len(fallback_notifier.payloads) == 2
     state = json.loads((tmp_path / "ai_review" / "pilot" / "state-v3.json").read_text())
     assert state["markets"]["kr"]["successful_packet_ids"] == []
+    eligibility = json.loads(
+        (
+            tmp_path
+            / "ai_review"
+            / "pilot"
+            / "history"
+            / "2026"
+            / "08"
+            / PACKET_ID
+            / "delivery-eligibility.json"
+        ).read_text()
+    )
+    assert eligibility["gate_state"] == "runtime_quality_rejected"
+    assert eligibility["ai_assisted_delivery_eligible"] is False
+    assert eligibility["scope"]["explicit_ai_total_count"] == 0
 
 
 @pytest.mark.anyio

@@ -62,6 +62,7 @@ from app.services.ai_reasoning_quality_service import (
 from app.services.ai_review_service import quantitative_grounding_report
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
+    AI_ASSISTED_OWNED_STATES,
     PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramNotifier,
@@ -75,6 +76,8 @@ PILOT_VERSION = "ai-assisted-pilot-v3"
 PILOT_RENDERER_VERSION = "ai-assisted-pilot-renderer-v3"
 AI_ARCHIVE_CONTRACT_VERSION = "ai-assisted-archive-v2"
 AI_ARTIFACT_MANIFEST_VERSION = "runtime-quality-receipt-v2"
+DELIVERY_LIFECYCLE_CONTRACT = "ai-delivery-lifecycle-v1"
+DELIVERY_ELIGIBILITY_CONTRACT = "ai-delivery-eligibility-v1"
 PILOT_MARKERS = {"us": "__DAILY_DIGEST__", "kr": "__DAILY_DIGEST_KR__"}
 MAX_PERSISTED_DELIVERY_RETRIES = 3
 PilotMarket = Literal["us", "kr"]
@@ -110,7 +113,20 @@ class PilotDeliveryResult:
     reason: str | None = None
 
     def as_dict(self) -> dict[str, object]:
-        return asdict(self)
+        value = asdict(self)
+        if self.status in {"sent", "already_sent"} and self.delivery_mode == "ai_assisted":
+            classification = "AI_V2_DELIVERED"
+        elif (
+            self.status in {"sent", "already_sent"}
+            and self.delivery_mode == "deterministic_fallback"
+        ):
+            classification = "FALLBACK_DELIVERED"
+        elif self.status in {"held", "pending"} or self.pending_count:
+            classification = "AI_V2_PENDING"
+        else:
+            classification = "NO_DELIVERY_ERROR"
+        value["orchestration_outcome"] = classification
+        return value
 
 
 def _pilot_root() -> Path:
@@ -290,6 +306,169 @@ def _clean_deterministic_payload(payload: dict[str, object]) -> dict[str, object
 def _pilot_metadata(payload: dict[str, object]) -> dict[str, object]:
     value = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
     return dict(value) if isinstance(value, dict) else {}
+
+
+def _analysis_generation_id(packet: dict[str, object]) -> str:
+    source_run = str(packet.get("source_monitor_run_id") or "").strip()
+    identity = {
+        "market": str(packet.get("market") or ""),
+        "business_date": str(packet.get("assessment_date") or ""),
+        "source_monitor_run_id": source_run or None,
+        "packet_id_fallback": None if source_run else str(packet.get("packet_id") or ""),
+    }
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    return f"analysis-{hashlib.sha256(encoded).hexdigest()[:24]}"
+
+
+def _content_generation_id(output: AIDailyReviewOutput) -> str:
+    identity = f"{output.packet_id}:{output.claim_id}:{output.analysis_policy_version}"
+    return f"content-{hashlib.sha256(identity.encode()).hexdigest()[:24]}"
+
+
+def _delivery_generation_id(
+    packet: dict[str, object],
+    *,
+    content_generation_id: str,
+) -> str:
+    settings = get_settings()
+    identity = {
+        "analysis_generation_id": _analysis_generation_id(packet),
+        "content_generation_id": content_generation_id,
+        "channel": settings.notification_channel.strip().lower(),
+        "recipient_class": getattr(settings, "notification_recipient_class", "production"),
+    }
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    return f"delivery-{hashlib.sha256(encoded).hexdigest()[:24]}"
+
+
+def _generation_metadata(
+    packet: dict[str, object],
+    *,
+    content_generation_id: str | None = None,
+) -> dict[str, object]:
+    values: dict[str, object] = {
+        "delivery_lifecycle_contract": DELIVERY_LIFECYCLE_CONTRACT,
+        "analysis_generation_id": _analysis_generation_id(packet),
+        "source_monitor_run_id": packet.get("source_monitor_run_id"),
+        "recipient_class": getattr(
+            get_settings(), "notification_recipient_class", "production"
+        ),
+    }
+    if content_generation_id:
+        values["content_generation_id"] = content_generation_id
+        values["delivery_generation_id"] = _delivery_generation_id(
+            packet,
+            content_generation_id=content_generation_id,
+        )
+    return values
+
+
+def _write_delivery_eligibility(
+    packet: dict[str, object],
+    output: AIDailyReviewOutput,
+    *,
+    explicit_v2_state: str,
+    candidate_stock_v2_count: int,
+    included_stock_v2_count: int,
+    eligible: bool,
+    gate_state: str,
+    reason_code: str,
+    recorded_at: datetime,
+) -> None:
+    settings = get_settings()
+    content_generation_id = _content_generation_id(output)
+    explicit_market_count = 1 if eligible else 0
+    explicit_stock_count = included_stock_v2_count if eligible else 0
+    _atomic_json(
+        _archive_directory(packet) / "delivery-eligibility.json",
+        {
+            "contract": DELIVERY_ELIGIBILITY_CONTRACT,
+            "packet_id": packet["packet_id"],
+            "market": packet["market"],
+            "business_date": packet["assessment_date"],
+            "analysis_generation_id": _analysis_generation_id(packet),
+            "accepted_generation": content_generation_id,
+            "selector_generation": output.claim_id,
+            "delivery_generation": _delivery_generation_id(
+                packet,
+                content_generation_id=content_generation_id,
+            ),
+            "recipient_class": getattr(
+                settings, "notification_recipient_class", "production"
+            ),
+            "gate_state": gate_state,
+            "ai_assisted_delivery_eligible": eligible,
+            "explicit_stock_v2_eligible": explicit_stock_count > 0,
+            "explicit_v2_state": explicit_v2_state,
+            "reason_code": reason_code,
+            "candidate_scope": {
+                "accepted_ai_market_count": 1,
+                "accepted_stock_review_count": len(output.stock_reviews),
+                "candidate_stock_v2_count": candidate_stock_v2_count,
+            },
+            "scope": {
+                "explicit_ai_market_count": explicit_market_count,
+                "explicit_stock_v2_count": explicit_stock_count,
+                "explicit_ai_total_count": explicit_market_count + explicit_stock_count,
+                "ai_assisted_delivery_count": (
+                    1 + len(output.stock_reviews) if eligible else 0
+                ),
+            },
+            "recorded_at": recorded_at.isoformat(),
+        },
+    )
+
+
+def _owner_packet(metadata: dict[str, object]) -> dict[str, object] | None:
+    owner = str(metadata.get("packet_id") or "")
+    if not owner:
+        return None
+    try:
+        return _read_json(_packet_path(owner))
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def _same_analysis_generation(
+    metadata: dict[str, object], packet: dict[str, object]
+) -> bool:
+    generation = str(metadata.get("analysis_generation_id") or "")
+    if not generation:
+        owner = _owner_packet(metadata)
+        generation = _analysis_generation_id(owner) if owner is not None else ""
+    return bool(generation and generation == _analysis_generation_id(packet))
+
+
+def _write_delivery_stage_receipt(
+    packet: dict[str, object],
+    *,
+    stage: str,
+    count: int,
+    current: datetime,
+    reason_code: str | None = None,
+    delivery_mode: str | None = None,
+) -> None:
+    path = _archive_directory(packet) / "delivery-state-receipt.json"
+    receipt = _read_json(path) if path.exists() else {
+        "contract": DELIVERY_LIFECYCLE_CONTRACT,
+        "packet_id": packet["packet_id"],
+        "market": packet["market"],
+        "business_date": packet["assessment_date"],
+        **_generation_metadata(packet),
+        "stages": [],
+    }
+    stages = receipt.setdefault("stages", [])
+    if isinstance(stages, list):
+        stages.append(
+            {
+                "stage": stage,
+                "count": count,
+                "reason_code": reason_code,
+                "delivery_mode": delivery_mode,
+                "recorded_at": current.isoformat(),
+            }
+        )
+    _atomic_json(path, receipt)
 
 
 def _payload_cash_flow_context(payload: dict[str, object]) -> dict[str, object]:
@@ -589,13 +768,11 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
             }
         )
         if isinstance(archived_messages, list):
-            archived_messages = [
-                item
-                for item in archived_messages
-                if isinstance(item, dict)
-                and isinstance(item.get("common_ai_core"), dict)
-                and item["common_ai_core"].get("canary_selected") is True
-            ]
+            archived_messages = _quality_scoped_archived_messages(
+                packet,
+                archived_messages,
+                scope,
+            )
     if not isinstance(archived_messages, list) or not verify_runtime_message_quality_receipt(
         receipt,
         _read_json(archive_dir / "packet.json"),
@@ -609,6 +786,20 @@ def _verified_ai_archive_artifacts(packet: dict[str, object]) -> list[dict[str, 
     ) != receipt.get("rendered_payload_set_sha256"):
         raise ValueError("AI delivery archive receipt integrity mismatch")
     return artifacts
+
+
+def _quality_scoped_archived_messages(
+    packet: dict[str, object],
+    archived_messages: list[object],
+    scope: set[str],
+) -> list[dict[str, object]]:
+    marker = PILOT_MARKERS[str(packet["market"])]
+    return [
+        item
+        for item in archived_messages
+        if isinstance(item, dict)
+        and (item.get("ticker") == marker or str(item.get("ticker") or "") in scope)
+    ]
 
 
 def _verified_legacy_archive_artifacts(
@@ -855,40 +1046,65 @@ def hold_ai_assisted_pilot_session(
         deliveries = _session_deliveries(session, packet)
         archived: list[dict[str, object]] = []
         held_ids: list[int] = []
+        pending_count = 0
+        sent_count = 0
         for delivery in deliveries:
             payload = json.loads(delivery.payload)
             if not isinstance(payload, dict):
                 continue
             metadata = _pilot_metadata(payload)
-            if metadata.get("packet_id") == packet_id and metadata.get("state") in {
-                "held",
-                "ai_assisted_pending",
-                "ai_assisted_sent",
-                "fallback_pending",
-                "fallback_sent",
-            }:
+            state = str(metadata.get("state") or "")
+            if state in AI_ASSISTED_OWNED_STATES and state != "packet_bound_pending_hold":
+                owner_packet = _owner_packet(metadata)
+                if owner_packet is not None:
+                    for key, value in _generation_metadata(owner_packet).items():
+                        metadata.setdefault(key, value)
+                observed = list(metadata.get("observed_reuse_packet_ids") or [])
+                if packet_id != metadata.get("packet_id") and packet_id not in observed:
+                    observed.append(packet_id)
+                metadata["observed_reuse_packet_ids"] = observed
+                if not _same_analysis_generation(metadata, packet):
+                    metadata["ownership_conflict_packet_id"] = packet_id
+                    metadata["ownership_conflict_at"] = now.isoformat()
+                payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+                delivery.payload = json.dumps(payload, ensure_ascii=False)
+                session.add(delivery)
                 if delivery.id is not None:
                     held_ids.append(delivery.id)
+                if delivery.status == "sent":
+                    sent_count += 1
+                else:
+                    pending_count += 1
                 continue
             telegram = payload.get(TELEGRAM_DELIVERY_METADATA_KEY)
             if isinstance(telegram, dict) and int(telegram.get("next_chunk_index") or 0) > 0:
                 continue
+            hold_packet = packet
+            hold_packet_id = packet_id
+            if state == "packet_bound_pending_hold" and metadata.get("packet_id") != packet_id:
+                existing_owner = _owner_packet(metadata)
+                if existing_owner is not None:
+                    hold_packet = existing_owner
+                    hold_packet_id = str(existing_owner["packet_id"])
             deterministic = _clean_deterministic_payload(payload)
-            _align_working_capital_packet_id(deterministic, packet_id)
+            _align_working_capital_packet_id(deterministic, hold_packet_id)
             payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
                 "pilot_mode": PILOT_MODE,
                 "pilot_version": PILOT_VERSION,
                 "renderer_version": PILOT_RENDERER_VERSION,
                 "delivery_intent_contract": PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
-                "packet_id": packet_id,
-                "market": market,
-                "assessment_date": packet["assessment_date"],
+                "packet_id": hold_packet_id,
+                "market": hold_packet["market"],
+                "assessment_date": hold_packet["assessment_date"],
                 "state": "held",
                 "fallback_eligible": True,
                 "held_at": now.isoformat(),
                 "deterministic_payload": deterministic,
-                **_cash_flow_delivery_metadata(packet, delivery.ticker, deterministic),
-                **_working_capital_delivery_metadata(packet, delivery.ticker, deterministic),
+                **_generation_metadata(hold_packet),
+                **_cash_flow_delivery_metadata(hold_packet, delivery.ticker, deterministic),
+                **_working_capital_delivery_metadata(
+                    hold_packet, delivery.ticker, deterministic
+                ),
             }
             delivery.payload = json.dumps(payload, ensure_ascii=False)
             delivery.status = "pending"
@@ -896,6 +1112,7 @@ def hold_ai_assisted_pilot_session(
             session.add(delivery)
             if delivery.id is not None:
                 held_ids.append(delivery.id)
+            pending_count += 1
             archived.append(
                 {
                     "delivery_id": delivery.id,
@@ -907,13 +1124,26 @@ def hold_ai_assisted_pilot_session(
         archive_path = _archive_directory(packet) / "deterministic-messages.json"
         if archived or not archive_path.exists():
             _archive_messages(packet, "deterministic-messages.json", archived)
+        _write_delivery_stage_receipt(
+            packet,
+            stage="delivery_pending" if pending_count else "dedupe_complete",
+            count=pending_count if pending_count else sent_count,
+            current=now,
+            reason_code=(
+                "awaiting_accepted_ai_artifact"
+                if pending_count
+                else "authoritative_delivery_already_sent"
+            ),
+            delivery_mode="ai_assisted",
+        )
     return PilotDeliveryResult(
-        status="held",
+        status="already_sent" if held_ids and pending_count == 0 else "held",
         market=market,
         packet_id=packet_id,
-        delivery_mode="held",
+        delivery_mode="ai_assisted" if sent_count else "held",
         delivery_count=len(held_ids),
-        pending_count=len(held_ids),
+        sent_count=sent_count,
+        pending_count=pending_count,
     )
 
 
@@ -930,7 +1160,9 @@ def record_ai_validation_rejection(
     current = (rejected_at or datetime.now(KST)).astimezone(KST)
     held_count = 0
     with _pilot_lock(packet_id):
-        for delivery in _session_deliveries(session, packet):
+        deliveries = _session_deliveries(session, packet)
+        terminal_count = 0
+        for delivery in deliveries:
             try:
                 payload = json.loads(delivery.payload)
             except json.JSONDecodeError:
@@ -938,6 +1170,11 @@ def record_ai_validation_rejection(
             if not isinstance(payload, dict):
                 continue
             metadata = _pilot_metadata(payload)
+            if delivery.status == "sent" and metadata.get("state") in {
+                "ai_assisted_sent",
+                "fallback_sent",
+            }:
+                terminal_count += 1
             if metadata.get("packet_id") != packet_id or metadata.get("state") != "held":
                 continue
             metadata["fallback_eligible"] = True
@@ -949,19 +1186,32 @@ def record_ai_validation_rejection(
             session.add(delivery)
             held_count += 1
         session.commit()
-        _atomic_json(
-            _archive_directory(packet) / "validation-result.json",
-            {
-                "packet_id": packet_id,
-                "status": "rejected",
-                "errors": list(errors),
-                "rejected_ai_sent": False,
-                "fallback_eligibility_preserved": held_count > 0,
-                "recorded_at": current.isoformat(),
-            },
+        result = {
+            "packet_id": packet_id,
+            "status": "rejected" if held_count else "late_validation_ignored",
+            "errors": list(errors),
+            "rejected_ai_sent": False,
+            "fallback_eligibility_preserved": held_count > 0,
+            "terminal_delivery_count": terminal_count,
+            "delivery_state_mutated": held_count > 0,
+            "recorded_at": current.isoformat(),
+        }
+        archive = _archive_directory(packet)
+        if held_count:
+            _atomic_json(archive / "validation-result.json", result)
+        else:
+            late_dir = archive / "late-validation-results"
+            stamp = current.strftime("%Y%m%dT%H%M%S%f%z")
+            _atomic_json(late_dir / f"{stamp}.json", result)
+        _write_delivery_stage_receipt(
+            packet,
+            stage=("validation_rejected" if held_count else "late_validation_ignored"),
+            count=held_count,
+            current=current,
+            reason_code="ai_validation_rejected",
         )
     return PilotDeliveryResult(
-        status="fallback_preserved" if held_count else "no_held_session",
+        status="fallback_preserved" if held_count else "late_validation_ignored",
         market=market,
         packet_id=packet_id,
         delivery_mode="held",
@@ -1252,6 +1502,11 @@ async def deliver_validated_ai_review(
             reason="validated_output_missing",
         )
     output = AIDailyReviewOutput.model_validate(_read_json(output_path))
+    content_generation_id = _content_generation_id(output)
+    delivery_generation_id = _delivery_generation_id(
+        packet,
+        content_generation_id=content_generation_id,
+    )
     adaptive_canary_active = free_analyst_adaptive_canary_armed()
     accepted_v2_active = v2_accepted_production_armed()
     if accepted_v2_active:
@@ -1283,6 +1538,11 @@ async def deliver_validated_ai_review(
     pilot_day = min(_pilot_day(market), target_days)
     reviews = {item.ticker: item for item in output.stock_reviews}
     archive_dir = _archive_directory(packet)
+    explicit_stock_v2_count = (
+        len(decision_artifact.blocks)
+        if accepted_v2_active and isinstance(decision_artifact, AcceptedV2ProductionArtifact)
+        else 0
+    )
     if decision_artifact is not None:
         _atomic_json(
             archive_dir
@@ -1474,7 +1734,7 @@ async def deliver_validated_ai_review(
                     pilot_day=pilot_day,
                     target_days=target_days,
                 )
-                identity = f"{PILOT_VERSION}:{packet_id}:market"
+                identity = f"{PILOT_VERSION}:{delivery_generation_id}:market"
                 message_type = "ai_assisted_pilot_market"
                 common_ai_message_key = f"market:{packet_id}"
             else:
@@ -1498,7 +1758,9 @@ async def deliver_validated_ai_review(
                         text,
                         deterministic_text,
                     )
-                identity = f"{PILOT_VERSION}:{packet_id}:stock:{delivery.ticker}"
+                identity = (
+                    f"{PILOT_VERSION}:{delivery_generation_id}:stock:{delivery.ticker}"
+                )
                 message_type = "ai_assisted_pilot_stock"
                 common_ai_message_key = f"stock:{delivery.ticker}"
             if adaptive_canary_active:
@@ -1536,6 +1798,10 @@ async def deliver_validated_ai_review(
                 "deterministic_payload": deterministic,
                 "prepared_at": current.isoformat(),
                 "persisted_delivery_retry_count": 0,
+                **_generation_metadata(
+                    packet,
+                    content_generation_id=content_generation_id,
+                ),
                 **_cash_flow_delivery_metadata(packet, delivery.ticker, deterministic),
             }
             prepared_payloads.append((delivery, new_payload))
@@ -1915,6 +2181,15 @@ async def deliver_validated_ai_review(
             )
             _atomic_json(receipt_path, receipt)
         if not reused_persisted_payload and not receipt_valid and decision_included_tickers:
+            _atomic_json(
+                archive_dir / "decision-v2-combined-quality-rejection.json",
+                receipt,
+            )
+            _archive_messages(
+                packet,
+                "decision-v2-combined-quality-rejected-messages.json",
+                final_messages,
+            )
             for delivery, new_payload in prepared_payloads:
                 if delivery.ticker not in decision_included_tickers:
                     continue
@@ -2001,6 +2276,17 @@ async def deliver_validated_ai_review(
                 reason=reason,
             )
         if not receipt_valid:
+            _write_delivery_eligibility(
+                packet,
+                output,
+                explicit_v2_state=decision_delivery_state,
+                candidate_stock_v2_count=explicit_stock_v2_count,
+                included_stock_v2_count=len(decision_included_tickers),
+                eligible=False,
+                gate_state="runtime_quality_rejected",
+                reason_code="runtime_message_quality_gate_failed",
+                recorded_at=current,
+            )
             for delivery in deliveries:
                 try:
                     payload = json.loads(delivery.payload)
@@ -2043,6 +2329,21 @@ async def deliver_validated_ai_review(
                 pending_count=len(prepared_ids),
                 reason="runtime_message_quality_gate_failed",
             )
+        _write_delivery_eligibility(
+            packet,
+            output,
+            explicit_v2_state=decision_delivery_state,
+            candidate_stock_v2_count=explicit_stock_v2_count,
+            included_stock_v2_count=len(decision_included_tickers),
+            eligible=True,
+            gate_state="delivery_ready",
+            reason_code=(
+                "accepted_daily_review_and_explicit_v2_ready"
+                if decision_included_tickers
+                else "accepted_daily_review_ready_explicit_v2_unavailable"
+            ),
+            recorded_at=current,
+        )
         receipt_sha256 = _file_sha256(receipt_path)
         for delivery, new_payload in prepared_payloads:
             metadata = _pilot_metadata(new_payload)
@@ -2056,6 +2357,14 @@ async def deliver_validated_ai_review(
             delivery.sent_at = None
             session.add(delivery)
         session.commit()
+        _write_delivery_stage_receipt(
+            packet,
+            stage="delivery_claimed",
+            count=len(prepared_ids),
+            current=current,
+            reason_code="validated_payload_persisted",
+            delivery_mode="ai_assisted",
+        )
         persisted_integrity_errors = _persisted_quality_integrity_errors(
             deliveries,
             packet_id,
@@ -2151,6 +2460,14 @@ async def deliver_validated_ai_review(
                     session.add(delivery)
         session.commit()
         complete = bool(prepared_ids) and pending_count == 0
+        _write_delivery_stage_receipt(
+            packet,
+            stage="delivery_sent" if complete else "delivery_pending",
+            count=sent_count if complete else pending_count,
+            current=current,
+            reason_code=None if complete else "delivery_adapter_pending",
+            delivery_mode="ai_assisted",
+        )
         delivery_result = {
             "packet_id": packet_id,
             "delivery_mode": "ai_assisted",
@@ -2265,7 +2582,13 @@ def _pending_pilot_packets(
             or str(packet.get("assessment_date") or "") != run_date.isoformat()
         ):
             continue
-        retryable = delivery.status == "pending" and state in {
+        delivery_retryable = delivery.status == "pending" or (
+            delivery.status == "dry_run"
+            and state == "ai_assisted_pending"
+            and not get_settings().notification_dry_run
+        )
+        retryable = delivery_retryable and state in {
+            "packet_bound_pending_hold",
             "held",
             "ai_assisted_pending",
             "fallback_pending",
@@ -2306,14 +2629,30 @@ async def retry_pending_ai_assisted_deliveries(
                 ):
                     archive_recovery = True
                     continue
-                if delivery.status != "pending":
+                dry_run_reactivation = (
+                    delivery.status == "dry_run"
+                    and metadata.get("state") == "ai_assisted_pending"
+                    and not get_settings().notification_dry_run
+                )
+                if delivery.status != "pending" and not dry_run_reactivation:
                     continue
-                if (
-                    metadata.get("packet_id") != packet_id
-                    or metadata.get("state") != "ai_assisted_pending"
+                if metadata.get("packet_id") != packet_id or metadata.get("state") not in {
+                    "packet_bound_pending_hold",
+                    "held",
+                    "ai_assisted_pending",
+                }:
+                    continue
+                if metadata.get("state") in {"packet_bound_pending_hold", "held"} and (
+                    _output_path(packet) is None
                 ):
                     continue
                 retryable.append(delivery)
+                if dry_run_reactivation:
+                    metadata["dry_run_reactivated_at"] = current.isoformat()
+                    payload[AI_ASSISTED_PILOT_METADATA_KEY] = metadata
+                    delivery.payload = json.dumps(payload, ensure_ascii=False)
+                    delivery.status = "pending"
+                    session.add(delivery)
                 retry_count = max(
                     retry_count,
                     int(metadata.get("persisted_delivery_retry_count") or 0),
@@ -2345,6 +2684,14 @@ async def retry_pending_ai_assisted_deliveries(
                 delivery.payload = json.dumps(payload, ensure_ascii=False)
                 session.add(delivery)
             session.commit()
+            _write_delivery_stage_receipt(
+                packet,
+                stage="delivery_discovered_by_retry",
+                count=len(retryable),
+                current=current,
+                reason_code="persisted_delivery_obligation",
+                delivery_mode="ai_assisted",
+            )
         result = await deliver_validated_ai_review(
             session,
             packet_id,
@@ -2549,8 +2896,58 @@ async def dispatch_due_deterministic_fallbacks(
                 now=current,
             )
             results.append(ai_result)
-            if ai_result.status in {"sent", "pending"}:
+            if ai_result.status == "sent":
                 continue
+            if ai_result.status == "pending" and ai_result.sent_count:
+                results.append(
+                    PilotDeliveryResult(
+                        status="partial_integrity_manual_intervention",
+                        market=market,
+                        packet_id=packet_id,
+                        delivery_mode="partial_integrity",
+                        sent_count=ai_result.sent_count,
+                        pending_count=ai_result.pending_count,
+                        reason="ai_delivery_partial_at_fallback_deadline",
+                    )
+                )
+                continue
+            if ai_result.status == "pending":
+                for delivery in _session_deliveries(session, packet):
+                    if delivery.status != "pending":
+                        continue
+                    payload = json.loads(delivery.payload)
+                    if not isinstance(payload, dict):
+                        continue
+                    metadata = _pilot_metadata(payload)
+                    if (
+                        metadata.get("packet_id") != packet_id
+                        or metadata.get("state") != "ai_assisted_pending"
+                    ):
+                        continue
+                    deterministic = metadata.get("deterministic_payload")
+                    if not isinstance(deterministic, dict):
+                        continue
+                    restored = copy.deepcopy(deterministic)
+                    restored[AI_ASSISTED_PILOT_METADATA_KEY] = {
+                        **metadata,
+                        "state": "held",
+                        "fallback_eligible": True,
+                        "ai_delivery_terminal_reason": "fallback_deadline_expired",
+                        "ai_delivery_terminal_at": current.isoformat(),
+                    }
+                    delivery.payload = json.dumps(restored, ensure_ascii=False)
+                    delivery.attempt_count = 0
+                    delivery.last_error = None
+                    session.add(delivery)
+                session.commit()
+                _write_delivery_stage_receipt(
+                    packet,
+                    stage="fallback_eligible",
+                    count=ai_result.pending_count,
+                    current=current,
+                    reason_code="ai_delivery_deadline_expired",
+                    delivery_mode="deterministic_fallback",
+                )
         with _pilot_lock(packet_id):
             delivery_ids: set[int] = set()
             fallback_messages: list[dict[str, object]] = []
@@ -2641,6 +3038,14 @@ async def dispatch_due_deterministic_fallbacks(
                     **_cash_flow_run_metadata(packet),
                     **_working_capital_run_metadata(packet),
                 },
+            )
+            _write_delivery_stage_receipt(
+                packet,
+                stage="fallback_sent" if complete else "fallback_pending",
+                count=sent_count if complete else pending_count,
+                current=current,
+                reason_code=None if complete else "fallback_delivery_adapter_pending",
+                delivery_mode="deterministic_fallback",
             )
             results.append(
                 PilotDeliveryResult(

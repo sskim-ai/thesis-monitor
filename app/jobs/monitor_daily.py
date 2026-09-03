@@ -403,11 +403,12 @@ async def _run_market_job(
     if gate_result is not None:
         delivery_action = str(gate_result["dispatch_action"])
     elif pilot_hold is not None:
-        delivery_action = (
-            "held_for_ai_review"
-            if pilot_hold.get("status") == "held"
-            else "packet_not_ready"
-        )
+        if pilot_hold.get("status") == "held":
+            delivery_action = "held_for_ai_review"
+        elif pilot_hold.get("status") == "already_sent":
+            delivery_action = "already_delivered_deduped"
+        else:
+            delivery_action = "packet_not_ready"
     return {
         "market_scope": market_scope,
         "producer_role_target": (
