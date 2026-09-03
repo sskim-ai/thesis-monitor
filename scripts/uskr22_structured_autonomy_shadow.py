@@ -62,10 +62,10 @@ from app.services.structured_autonomy_stability_service import (
 US_PACKET_ID = "2026-09-03-us-run-53-055ae8ea01f6"
 KR_PACKET_ID = "2026-09-03-kr-run-54-f19bb379daa7"
 KR_LATER_PACKET_ID = "2026-09-03-kr-run-54-78ed269de3df"
-SHADOW_PACKET_ID = "2026-09-03-uskr22-korean-price-token-boundary-rerun"
-REPAIR_BASE_SHA = "25feb161ceed9c27d30399b5e1035352f3cc3018"
-PRIOR_EXPERIMENT_SHA = "25feb161ceed9c27d30399b5e1035352f3cc3018"
-WORK_INSTRUCTION_SHA = "5b90ba2323b28fe91f1a7ac9ebed81c6f6e9103d"
+SHADOW_PACKET_ID = "2026-09-04-uskr22-validator-ownership-repair"
+REPAIR_BASE_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
+PRIOR_EXPERIMENT_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
+WORK_INSTRUCTION_SHA = "5a3c0fa397f72b208e7d0920b3e9226594ceef4e"
 US_COHORT = (
     "CORZ",
     "CPNG",
@@ -316,7 +316,7 @@ Every interpretation, driver, Unknown, and reevaluation condition must select co
 
 Use only canonical issuer/security-basis claims. For KR, do not infer common-share, parent-attributable, consolidated, or preliminary-result equivalence beyond the evidence. For ADR or foreign issuers, do not recompute per-share values, ADR ratios, currency conversions, or issuer/security denominators. Basis uncertainty lowers confidence or blocks the unsafe inference; it is not automatic SELL evidence.
 
-Do not place digits or exact numbers in any prose field. Numeric price values belong only in structured buyer/holder fields and must be copied exactly from allowed_price_choices. Do not state FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, runway months, targets, expected returns, or guaranteed outcomes.
+Do not place digits or exact numbers in any prose field. Numeric price values belong only in structured buyer/holder fields and must be copied exactly from allowed_price_choices. Do not state FCF yield, per-share FCF, EV/FCF, P/FCF, runway months, targets, expected returns, or guaranteed outcomes. ROIC, CCC, DSO, and DPO may appear only as qualitative future validation/checkpoint metrics when a selected evidence alias explicitly names that same metric. Never state or calculate their current or historical value or assert an unsupported current change.
 
 If allowed_pullback_zones is non-empty, preserve exactly one listed pullback zone and its exact basis_alias. If allowed_confirmation_levels is non-empty, preserve exactly one listed confirmation, basis_alias, and confirmation_semantics. Preserve both when both exist, then choose preferred_entry_mode PULLBACK, CONFIRMATION, or BOTH. When no confirmation level exists, use null, empty basis, and confirmation_semantics NONE. Do not invent technical levels, discounts, targets, or round numbers.
 
@@ -764,7 +764,7 @@ def execute_run(
                 schema=schema,
                 cwd=run_dir,
                 timeout=args.timeout,
-                state_namespace=f"USKR22_STRUCTURED_AUTONOMY_{run.upper()}_20260903",
+                state_namespace=f"USKR22_VALIDATOR_OWNERSHIP_{run.upper()}_20260904",
             )
         parsed = read_json(output)
         if parsed.get("contract") != OUTPUT_CONTRACT:
@@ -794,7 +794,7 @@ def execute_run(
                 "prompt_sha256": sha256(prompt),
                 "schema_sha256": sha256(schema),
                 "output_sha256": sha256(output),
-                "state_namespace": f"USKR22_STRUCTURED_AUTONOMY_{run.upper()}_20260903",
+                "state_namespace": f"USKR22_VALIDATOR_OWNERSHIP_{run.upper()}_20260904",
             }
         )
         print(f"RUN_{run.upper()}_BATCH_COMPLETE {number} {','.join(batch)}", flush=True)

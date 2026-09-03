@@ -27,6 +27,7 @@ from app.services.structured_autonomy_shadow_service import (
     derive_hold_lean,
     hold_lean_flip,
     korean_price_subject_action_matches,
+    mandatory_trade_directive_matches,
     render_structured_autonomy_message,
     sanitize_detail_body,
     structured_autonomy_message_quality,
@@ -290,6 +291,107 @@ def test_prohibited_language_validator_still_rejects_assertive_trade_rules() -> 
 
     assert "mandatory_sell_language" in result.errors
     assert "invented_stop_loss" in result.errors
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "자동 매도보다 사업 성과 재점검이 우선이다.",
+        "상단에서는 자동 매도보다 회복의 질을 평가한다.",
+        "무조건 매도할 가격대로 보지는 않는다.",
+        "기계적 매도 대신 Valuation 정당화를 확인한다.",
+        "자동 축소가 아니라 사업 성과를 확인한다.",
+    ),
+)
+def test_nonmandatory_trade_comparisons_are_not_directives(text: str) -> None:
+    assert mandatory_trade_directive_matches(text) == ()
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "반드시 매도해야 한다.",
+        "즉시 매도한다.",
+        "자동으로 매도한다.",
+        "자동 매도한다.",
+        "무조건 비중을 줄인다.",
+        "이 가격에서는 손절해야 한다.",
+        "must sell immediately.",
+        "automatically reduce the position.",
+    ),
+)
+def test_mandatory_trade_directives_remain_blocked(text: str) -> None:
+    assert mandatory_trade_directive_matches(text)
+
+
+def _packet_with_metric_evidence(metric_text: str) -> DecisionEvidencePacket:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"statement": metric_text})
+        if row.ref_id == "ref:thesis"
+        else row
+        for row in packet.evidence
+    )
+    return packet.model_copy(update={"evidence": evidence})
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "ROIC가 개선되는지 확인한다.",
+        "ROIC 개선이 성장의 질을 확인해준다.",
+        "FCF와 ROIC 개선 여부를 함께 본다.",
+        "CCC 정상화가 운전자본 개선으로 이어지는지 확인한다.",
+    ),
+)
+def test_future_metric_checkpoint_passes_only_with_owned_evidence(text: str) -> None:
+    packet = _packet_with_metric_evidence("ROIC와 CCC 개선 여부는 미래 검증 조건입니다.")
+    candidate = _candidate().model_copy(
+        update={"reevaluation_up": (_claim("ref:thesis", text),)}
+    )
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_future_checkpoint_metric" not in result.errors
+    assert "unsupported_metric_or_inference" not in result.errors
+
+
+def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
+    candidate = _candidate().model_copy(
+        update={"reevaluation_up": (_claim("ref:thesis", "ROIC 개선 여부를 확인한다."),)}
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_future_checkpoint_metric" in result.errors
+    assert "unsupported_metric_or_inference" in result.errors
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "현재 ROIC는 12.4%다.",
+        "ROIC가 전년 8%에서 14%로 상승했다.",
+        "현재 CCC는 31일이다.",
+        "DSO는 42일로 개선됐다.",
+    ),
+)
+def test_current_or_historical_metric_values_remain_rejected(text: str) -> None:
+    packet = _packet_with_metric_evidence("ROIC와 CCC 및 DSO는 미래 검증 조건입니다.")
+    candidate = _candidate().model_copy(
+        update={"reevaluation_up": (_claim("ref:thesis", text),)}
+    )
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_current_metric_value" in result.errors
+    assert "unsupported_metric_or_inference" in result.errors
 
 
 def test_mixed_language_decision_prose_is_rejected() -> None:

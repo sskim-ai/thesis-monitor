@@ -197,18 +197,61 @@ class RenderedStructuredAutonomy(FrozenModel):
     validation: StructuredAutonomyValidation
 
 
-_ORDER_LANGUAGE = re.compile(
-    r"시장가|지정가|(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|"
-    r"포지션\s*크기|buy\s+now|sell\s+now",
+_TRADE_ACTION = re.compile(
+    r"매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄)|손절|"
+    r"(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|시장가|지정가|"
+    r"\b(?:sell|buy|reduce\s+(?:the\s+)?position)\b",
     re.IGNORECASE,
 )
-_MANDATORY_SELL = re.compile(r"자동\s*매도|반드시\s*매도|무조건\s*매도|매도\s*목표가")
+_NON_DIRECTIVE_TRADE_SPAN = re.compile(
+    r"(?:자동(?:으로)?|기계적(?:으로)?|무조건|반드시)?\s*"
+    r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절(?:선)?)"
+    r"[^,.!?;\n]{0,40}?"
+    r"(?:보다|대신|아니\w*|않\w*|필요\s*없\w*|보지\w*\s*않\w*)",
+    re.IGNORECASE,
+)
+_MANDATORY_TRADE_DIRECTIVE = re.compile(
+    r"(?:반드시|즉시|무조건|자동으로|기계적으로)\s*"
+    r"(?:[^,.!?;\n]{0,24}?)"
+    r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절)|"
+    r"자동\s*(?:매도|매수)\s*(?:한다|해야|하라|하십시오|실행)|"
+    r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절)"
+    r"\s*(?:해야|한다|하라|하십시오|실행|권고)|"
+    r"(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|"
+    r"\b(?:buy|sell)\s+(?:now|immediately)\b|"
+    r"\b(?:must|should)\s+(?:buy|sell|reduce)\b|"
+    r"\bautomatically\s+(?:buy|sell|reduce)\b",
+    re.IGNORECASE,
+)
+_MANDATORY_SELL = re.compile(
+    r"매도|손절|비중(?:을|를)?\s*(?:축소|감축|줄)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄)|"
+    r"\b(?:sell|reduce)\b",
+    re.IGNORECASE,
+)
 _STOP_LOSS = re.compile(r"손절|stop[- ]?loss", re.IGNORECASE)
 _TARGET_PRICE = re.compile(r"목표가|적정가|target\s*price", re.IGNORECASE)
 _UNSUPPORTED_METRIC = re.compile(
     r"FCF\s*(?:yield|수익률|주당)|EV\s*/\s*FCF|P\s*/\s*FCF|"
-    r"\b(?:ROIC|CCC|DSO|DPO)\b|runway\s*(?:개월|months?)",
+    r"runway\s*(?:개월|months?)",
     re.IGNORECASE,
+)
+_EVIDENCE_GROUNDED_METRIC = re.compile(
+    r"(?<![A-Za-z0-9_])(?P<metric>ROIC|CCC|DSO|DPO)(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+_CURRENT_OR_HISTORICAL_METRIC = re.compile(
+    r"현재|이번|최근|전년|전분기|지난|기록|"
+    r"(?:개선|상승|악화|하락|정상화)(?:됐|되었|했다|하였다)",
+)
+_FUTURE_METRIC_CONTEXT = re.compile(
+    r"여부|확인|검증|조건|요건|재평가|주목|지켜|본다|보겠다|"
+    r"(?:되|이어지|나타나|유지하|상쇄하|회수하|개선하|상승하|악화하|하락하)"
+    r"(?:면|는지|는\s*경우|ㄹ\s*경우)",
 )
 _NEGATED_PROHIBITED_LANGUAGE = re.compile(
     r"아니다|아니며|아니고|아니라|아닌|않는다|않으며|않고|금지"
@@ -459,6 +502,125 @@ def _has_assertive_match(pattern: re.Pattern[str], text: str) -> bool:
     return False
 
 
+def mandatory_trade_directive_matches(text: str) -> tuple[str, ...]:
+    matches: list[str] = []
+    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
+        if not _TRADE_ACTION.search(sentence):
+            continue
+        directive_surface = _NON_DIRECTIVE_TRADE_SPAN.sub("", sentence)
+        match = _MANDATORY_TRADE_DIRECTIVE.search(directive_surface)
+        if match:
+            matches.append(match.group(0))
+    return tuple(matches)
+
+
+def _metric_names(text: str) -> set[str]:
+    return {
+        match.group("metric").upper()
+        for match in _EVIDENCE_GROUNDED_METRIC.finditer(text)
+    }
+
+
+def _evidence_owned_metric_names(
+    packet: DecisionEvidencePacket,
+    refs: Sequence[str],
+) -> set[str]:
+    selected = set(refs)
+    return {
+        metric
+        for row in packet.evidence
+        if row.ref_id in selected
+        for metric in _metric_names(f"{row.label}\n{row.statement}")
+    }
+
+
+def _metric_owned_prose(
+    candidate: StructuredAutonomyCandidate,
+) -> tuple[tuple[str, tuple[str, ...], str], ...]:
+    rows: list[tuple[str, tuple[str, ...], str]] = []
+    named_claims = (
+        ("business_thesis_context", candidate.business_thesis_context),
+        ("earnings_estimate_context", candidate.earnings_estimate_context),
+        ("market_expectation_context", candidate.market_expectation_context),
+        ("valuation_context", candidate.valuation_context),
+        ("price_timing_context", candidate.price_timing_context),
+        ("risk_context", candidate.risk_context),
+        ("sector_interpretation", candidate.sector_interpretation),
+        *(("buy_driver", claim) for claim in candidate.buy_drivers),
+        *(("sell_driver", claim) for claim in candidate.sell_drivers),
+        ("dominant_evidence", candidate.dominant_evidence),
+        ("uncertainty_limit", candidate.uncertainty_limit),
+        ("core_judgment", candidate.core_judgment),
+        *(("reevaluation_up", claim) for claim in candidate.reevaluation_up),
+        *(("reevaluation_down", claim) for claim in candidate.reevaluation_down),
+    )
+    rows.extend((role, claim.evidence_refs, claim.text) for role, claim in named_claims)
+    rows.extend(
+        ("unknown_treatment", unknown.evidence_refs, unknown.summary)
+        for unknown in candidate.unknown_treatments
+    )
+    buyer = candidate.new_buyer_view
+    rows.extend(
+        (
+            ("new_buyer_summary", (), buyer.summary),
+            ("preferred_entry_reason", (), buyer.preferred_entry_reason),
+            (
+                "confirmation_business_condition",
+                buyer.confirmation_business_condition_refs,
+                buyer.confirmation_business_condition,
+            ),
+        )
+    )
+    downside_refs = tuple(
+        dict.fromkeys(
+            (
+                *candidate.risk_context.evidence_refs,
+                *(ref for claim in candidate.sell_drivers for ref in claim.evidence_refs),
+                *(ref for claim in candidate.reevaluation_down for ref in claim.evidence_refs),
+            )
+        )
+    )
+    rows.extend(
+        (
+            ("holder_summary", (), candidate.holder_view.summary),
+            (
+                "holder_business_invalidation",
+                downside_refs,
+                candidate.holder_view.business_invalidation_condition,
+            ),
+        )
+    )
+    return tuple((text, refs, role) for role, refs, text in rows)
+
+
+def evidence_grounded_metric_claim_errors(
+    packet: DecisionEvidencePacket,
+    candidate: StructuredAutonomyCandidate,
+) -> tuple[str, ...]:
+    errors: list[str] = []
+    future_roles = {
+        "confirmation_business_condition",
+        "holder_business_invalidation",
+        "reevaluation_up",
+        "reevaluation_down",
+    }
+    for text, refs, role in _metric_owned_prose(candidate):
+        for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
+            metrics = _metric_names(sentence)
+            if not metrics:
+                continue
+            if _PROSE_NUMBER.search(sentence) or _CURRENT_OR_HISTORICAL_METRIC.search(sentence):
+                errors.append("unsupported_current_metric_value")
+                continue
+            is_future = role in future_roles or bool(_FUTURE_METRIC_CONTEXT.search(sentence))
+            owned_metrics = _evidence_owned_metric_names(packet, refs)
+            if not is_future or not metrics <= owned_metrics:
+                errors.append("unsupported_future_checkpoint_metric")
+    if errors:
+        errors.append("unsupported_metric_or_inference")
+    return tuple(dict.fromkeys(errors))
+
+
 def confirmation_business_condition_has_price_structure_semantics(text: str) -> bool:
     return any(pattern.search(text) for pattern in _CONFIRMATION_PRICE_STRUCTURE_PATTERNS)
 
@@ -641,9 +803,10 @@ def validate_structured_autonomy_candidate(
     prose = _prose(candidate)
     errors.extend(directional_balance_language_errors(prose))
     joined = "\n".join(prose)
-    if _ORDER_LANGUAGE.search(joined):
+    mandatory_trade_matches = mandatory_trade_directive_matches(joined)
+    if mandatory_trade_matches:
         errors.append("mandatory_trade_language")
-    if _has_assertive_match(_MANDATORY_SELL, joined):
+    if any(_MANDATORY_SELL.search(match) for match in mandatory_trade_matches):
         errors.append("mandatory_sell_language")
     if _has_assertive_match(_STOP_LOSS, joined):
         errors.append("invented_stop_loss")
@@ -651,6 +814,7 @@ def validate_structured_autonomy_candidate(
         errors.append("target_price_language")
     if _UNSUPPORTED_METRIC.search(joined):
         errors.append("unsupported_metric_or_inference")
+    errors.extend(evidence_grounded_metric_claim_errors(packet, candidate))
     if _PROSE_NUMBER.search(joined):
         errors.append("numeric_prose_outside_structured_fields")
     if any(not _KOREAN_PROSE.search(text) for text in prose):
@@ -852,7 +1016,7 @@ def render_structured_autonomy_message(
         message_errors.append("avoid_rendered_as_actionable_entry")
     if candidate.core_judgment.text in detail:
         message_errors.append("duplicated_judgment_paragraph")
-    if _has_assertive_match(_MANDATORY_SELL, text) or _ORDER_LANGUAGE.search(text):
+    if mandatory_trade_directive_matches(text):
         message_errors.append("mandatory_trade_language")
     if message_errors:
         validation = validation.model_copy(
