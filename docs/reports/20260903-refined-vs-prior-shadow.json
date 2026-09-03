@@ -1,0 +1,1198 @@
+{
+  "contract": "structured-autonomy-v2-vs-prior-shadow",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "prior_loaded_after_fresh_freeze": true,
+  "prior_shadow_sha256": "ee624f207cfac88d5f1f43dedbb012574b0ae5e1229031a7037522893e61db59",
+  "rows": [
+    {
+      "accepted": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 12.257319,
+          "stance": "HOLDABLE",
+          "trim_high": 18.382585,
+          "trim_low": 17.447415
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 22.4,
+          "preferred_mode": "BOTH",
+          "pullback_high": 13.463829,
+          "pullback_low": 12.911171,
+          "stance": "WAIT"
+        },
+        "ticker": "CORZ"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 12.257319,
+          "stance": "HOLDABLE",
+          "trim_high": 18.382585,
+          "trim_low": 17.447415
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 22.4,
+          "preferred_mode": "BOTH",
+          "pullback_high": 13.463829,
+          "pullback_low": 12.911171,
+          "stance": "WAIT"
+        },
+        "ticker": "CORZ"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "holder": {
+          "downside_review": 12.257319,
+          "stance": "REVIEW",
+          "trim_high": 18.382585,
+          "trim_low": 17.447415
+        },
+        "lean": "NEUTRAL",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 13.463829,
+          "pullback_low": 12.911171,
+          "stance": "WAIT"
+        },
+        "ticker": "CORZ"
+      },
+      "production_state_write": 0,
+      "ticker": "CORZ"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 14.9,
+          "stance": "REVIEW",
+          "trim_high": 17.157304,
+          "trim_low": 16.507696
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 17.9,
+          "preferred_mode": "BOTH",
+          "pullback_high": 15.7,
+          "pullback_low": 15.45,
+          "stance": "WAIT"
+        },
+        "ticker": "CPNG"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 14.9,
+          "stance": "REVIEW",
+          "trim_high": 17.157304,
+          "trim_low": 16.507696
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 17.9,
+          "preferred_mode": "BOTH",
+          "pullback_high": 15.7,
+          "pullback_low": 15.45,
+          "stance": "WAIT"
+        },
+        "ticker": "CPNG"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 14.45936,
+          "stance": "REVIEW",
+          "trim_high": 17.157304,
+          "trim_low": 16.507696
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 15.22279,
+          "pullback_low": 14.72721,
+          "stance": "WAIT"
+        },
+        "ticker": "CPNG"
+      },
+      "production_state_write": 0,
+      "ticker": "CPNG"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 78.914109,
+          "stance": "REVIEW",
+          "trim_high": null,
+          "trim_low": null
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 86.529549,
+          "pullback_low": 82.010451,
+          "stance": "WAIT"
+        },
+        "ticker": "CRCL"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 78.914109,
+          "stance": "REVIEW",
+          "trim_high": null,
+          "trim_low": null
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 86.529549,
+          "pullback_low": 82.010451,
+          "stance": "WAIT"
+        },
+        "ticker": "CRCL"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 78.914109,
+          "stance": "HOLDABLE",
+          "trim_high": null,
+          "trim_low": null
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 86.529549,
+          "pullback_low": 82.010451,
+          "stance": "WAIT"
+        },
+        "ticker": "CRCL"
+      },
+      "production_state_write": 0,
+      "ticker": "CRCL"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 308.223399,
+          "stance": "REVIEW",
+          "trim_high": 353.787998,
+          "trim_low": 343.652002
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 353.787998,
+          "preferred_mode": "BOTH",
+          "pullback_high": 321.878566,
+          "pullback_low": 312.373234,
+          "stance": "WAIT"
+        },
+        "ticker": "GOOGL"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 308.223399,
+          "stance": "REVIEW",
+          "trim_high": 353.787998,
+          "trim_low": 343.652002
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 353.787998,
+          "preferred_mode": "BOTH",
+          "pullback_high": 321.878566,
+          "pullback_low": 312.373234,
+          "stance": "WAIT"
+        },
+        "ticker": "GOOGL"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "holder": {
+          "downside_review": 340.0,
+          "stance": "REVIEW",
+          "trim_high": 353.787998,
+          "trim_low": 343.652002
+        },
+        "lean": "NEUTRAL",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 321.878566,
+          "pullback_low": 312.373234,
+          "stance": "WAIT"
+        },
+        "ticker": "GOOGL"
+      },
+      "production_state_write": 0,
+      "ticker": "GOOGL"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 76.64856,
+          "stance": "REDUCE",
+          "trim_high": 89.670191,
+          "trim_low": 84.109809
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 89.670191,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 85.959175,
+          "pullback_low": 80.640825,
+          "stance": "AVOID"
+        },
+        "ticker": "HUT"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 76.64856,
+          "stance": "REDUCE",
+          "trim_high": 89.670191,
+          "trim_low": 84.109809
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 89.670191,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 85.959175,
+          "pullback_low": 80.640825,
+          "stance": "AVOID"
+        },
+        "ticker": "HUT"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        },
+        "holder": {
+          "downside_review": 83.0,
+          "stance": "REDUCE",
+          "trim_high": 89.670191,
+          "trim_low": 84.109809
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 97.0,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "HUT"
+      },
+      "production_state_write": 0,
+      "ticker": "HUT"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 228.180854,
+          "stance": "HOLDABLE",
+          "trim_high": 250.256325,
+          "trim_low": 237.103675
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 250.256325,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 232.415043,
+          "pullback_low": 225.494957,
+          "stance": "WAIT"
+        },
+        "ticker": "IBM"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 228.180854,
+          "stance": "HOLDABLE",
+          "trim_high": 250.256325,
+          "trim_low": 237.103675
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 250.256325,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 232.415043,
+          "pullback_low": 225.494957,
+          "stance": "WAIT"
+        },
+        "ticker": "IBM"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 228.180854,
+          "stance": "HOLDABLE",
+          "trim_high": 250.256325,
+          "trim_low": 237.103675
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 250.0,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "IBM"
+      },
+      "production_state_write": 0,
+      "ticker": "IBM"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "BUY",
+        "directional_balance": {
+          "buy": 6.0,
+          "sell": 4.0
+        },
+        "holder": {
+          "downside_review": 827.0,
+          "stance": "HOLDABLE",
+          "trim_high": 1278.851879,
+          "trim_low": 1231.148121
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 1278.851879,
+          "preferred_mode": "BOTH",
+          "pullback_high": 911.748329,
+          "pullback_low": 867.516671,
+          "stance": "WAIT"
+        },
+        "ticker": "MU"
+      },
+      "adjudication_required": true,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "UNCHANGED",
+        "decision": "BUY",
+        "directional_balance": {
+          "buy": 6.0,
+          "sell": 4.0
+        },
+        "holder": {
+          "downside_review": 827.0,
+          "stance": "HOLDABLE",
+          "trim_high": 1278.851879,
+          "trim_low": 1231.148121
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 1278.851879,
+          "preferred_mode": "BOTH",
+          "pullback_high": 911.748329,
+          "pullback_low": 867.516671,
+          "stance": "WAIT"
+        },
+        "ticker": "MU"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": true,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 839.757164,
+          "stance": "HOLDABLE",
+          "trim_high": 1278.851879,
+          "trim_low": 1231.148121
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 911.748329,
+          "pullback_low": 867.516671,
+          "stance": "WAIT"
+        },
+        "ticker": "MU"
+      },
+      "production_state_write": 0,
+      "ticker": "MU"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 2.84,
+          "stance": "REVIEW",
+          "trim_high": 3.678704,
+          "trim_low": 3.581096
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 3.678704,
+          "preferred_mode": "BOTH",
+          "pullback_high": 3.08,
+          "pullback_low": 3.0,
+          "stance": "WAIT"
+        },
+        "ticker": "RXRX"
+      },
+      "adjudication_required": true,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 2.84,
+          "stance": "REVIEW",
+          "trim_high": 3.678704,
+          "trim_low": 3.581096
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 3.678704,
+          "preferred_mode": "BOTH",
+          "pullback_high": 3.08,
+          "pullback_low": 3.0,
+          "stance": "WAIT"
+        },
+        "ticker": "RXRX"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": true,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 3.279337,
+          "stance": "REDUCE",
+          "trim_high": 3.678704,
+          "trim_low": 3.581096
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "NONE",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "AVOID"
+        },
+        "ticker": "RXRX"
+      },
+      "production_state_write": 0,
+      "ticker": "RXRX"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 143.0,
+          "stance": "REDUCE",
+          "trim_high": 182.003405,
+          "trim_low": 174.856595
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 182.003405,
+          "preferred_mode": "BOTH",
+          "pullback_high": 151.0,
+          "pullback_low": 147.0,
+          "stance": "AVOID"
+        },
+        "ticker": "SKHY"
+      },
+      "adjudication_required": true,
+      "balance_drift": "MODERATE",
+      "buy_balance_delta": 1.0,
+      "current_candidate": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 143.0,
+          "stance": "REDUCE",
+          "trim_high": 182.003405,
+          "trim_low": 174.856595
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 182.003405,
+          "preferred_mode": "BOTH",
+          "pullback_high": 151.0,
+          "pullback_low": 147.0,
+          "stance": "AVOID"
+        },
+        "ticker": "SKHY"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": true,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "holder": {
+          "downside_review": 143.0,
+          "stance": "REVIEW",
+          "trim_high": 182.003405,
+          "trim_low": 174.856595
+        },
+        "lean": "NEUTRAL",
+        "new_buyer": {
+          "confirmation_level": 163.0,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "SKHY"
+      },
+      "production_state_write": 0,
+      "ticker": "SKHY"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 998.0,
+          "stance": "HOLDABLE",
+          "trim_high": 2392.674432,
+          "trim_low": 2316.105368
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 2392.674432,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 1073.01247,
+          "pullback_low": 923.36753,
+          "stance": "WAIT"
+        },
+        "ticker": "SNDK"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 998.0,
+          "stance": "HOLDABLE",
+          "trim_high": 2392.674432,
+          "trim_low": 2316.105368
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 2392.674432,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 1073.01247,
+          "pullback_low": 923.36753,
+          "stance": "WAIT"
+        },
+        "ticker": "SNDK"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 998.0,
+          "stance": "REVIEW",
+          "trim_high": 2392.674432,
+          "trim_low": 2316.105368
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "PULLBACK",
+          "pullback_high": 1125.0,
+          "pullback_low": 1100.0,
+          "stance": "WAIT"
+        },
+        "ticker": "SNDK"
+      },
+      "production_state_write": 0,
+      "ticker": "SNDK"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        },
+        "holder": {
+          "downside_review": 328.096407,
+          "stance": "REDUCE",
+          "trim_high": 382.678777,
+          "trim_low": 358.961223
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 382.678777,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 341.126989,
+          "pullback_low": 334.873011,
+          "stance": "AVOID"
+        },
+        "ticker": "TSLA"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        },
+        "holder": {
+          "downside_review": 328.096407,
+          "stance": "REDUCE",
+          "trim_high": 382.678777,
+          "trim_low": 358.961223
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 382.678777,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": 341.126989,
+          "pullback_low": 334.873011,
+          "stance": "AVOID"
+        },
+        "ticker": "TSLA"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        },
+        "holder": {
+          "downside_review": 328.096407,
+          "stance": "REDUCE",
+          "trim_high": 382.678777,
+          "trim_low": 358.961223
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": null,
+          "preferred_mode": "NONE",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "AVOID"
+        },
+        "ticker": "TSLA"
+      },
+      "production_state_write": 0,
+      "ticker": "TSLA"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 398.0,
+          "stance": "HOLDABLE",
+          "trim_high": 439.781794,
+          "trim_low": 432.298206
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 432.0,
+          "preferred_mode": "BOTH",
+          "pullback_high": 414.0,
+          "pullback_low": 407.0,
+          "stance": "WAIT"
+        },
+        "ticker": "TSM"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 398.0,
+          "stance": "HOLDABLE",
+          "trim_high": 439.781794,
+          "trim_low": 432.298206
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 432.0,
+          "preferred_mode": "BOTH",
+          "pullback_high": 414.0,
+          "pullback_low": 407.0,
+          "stance": "WAIT"
+        },
+        "ticker": "TSM"
+      },
+      "entry_mode_changed": true,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "STRENGTHENED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "holder": {
+          "downside_review": 398.0,
+          "stance": "HOLDABLE",
+          "trim_high": 439.781794,
+          "trim_low": 432.298206
+        },
+        "lean": "BUY_LEAN",
+        "new_buyer": {
+          "confirmation_level": 432.0,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "TSM"
+      },
+      "production_state_write": 0,
+      "ticker": "TSM"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 5.3,
+          "stance": "REVIEW",
+          "trim_high": 6.153512,
+          "trim_low": 5.906488
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 6.153512,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "WRD"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.0,
+      "current_candidate": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 5.3,
+          "stance": "REVIEW",
+          "trim_high": 6.153512,
+          "trim_low": 5.906488
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 6.153512,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "WRD"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "holder": {
+          "downside_review": 5.3,
+          "stance": "REVIEW",
+          "trim_high": 6.153512,
+          "trim_low": 5.906488
+        },
+        "lean": "SELL_LEAN",
+        "new_buyer": {
+          "confirmation_level": 6.68,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "WRD"
+      },
+      "production_state_write": 0,
+      "ticker": "WRD"
+    },
+    {
+      "accepted": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 14.8,
+          "stance": "REDUCE",
+          "trim_high": 16.461814,
+          "trim_low": 15.552386
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 18.4,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "AVOID"
+        },
+        "ticker": "WULF"
+      },
+      "adjudication_required": false,
+      "balance_drift": "MINOR",
+      "buy_balance_delta": 0.5,
+      "current_candidate": {
+        "business_thesis_change": "UNRESOLVED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "holder": {
+          "downside_review": 14.8,
+          "stance": "REDUCE",
+          "trim_high": 16.461814,
+          "trim_low": 15.552386
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 18.4,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "AVOID"
+        },
+        "ticker": "WULF"
+      },
+      "entry_mode_changed": false,
+      "evidence_delta_summary": "SAME_FROZEN_RUN53_EVIDENCE",
+      "label_changed": false,
+      "lean_flip": false,
+      "prior": {
+        "business_thesis_change": "WEAKENED",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        },
+        "holder": {
+          "downside_review": 14.8,
+          "stance": "REDUCE",
+          "trim_high": 16.461814,
+          "trim_low": 15.552386
+        },
+        "lean": "NOT_HOLD",
+        "new_buyer": {
+          "confirmation_level": 18.4,
+          "preferred_mode": "CONFIRMATION",
+          "pullback_high": null,
+          "pullback_low": null,
+          "stance": "WAIT"
+        },
+        "ticker": "WULF"
+      },
+      "production_state_write": 0,
+      "ticker": "WULF"
+    }
+  ],
+  "special_audits": {
+    "MU": {
+      "balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "canonical:cashflow:96e9c3b873f3678d4dec0ff3",
+          "decision-evidence:2c7de5970a1beda446d7",
+          "canonical:valuation:historical_pb",
+          "canonical:chart:price_transition"
+        ],
+        "text": "Micron의 AI 메모리 수요와 강한 현금창출은 긍정적이지만, 높은 기대와 장부가치 기준 부담 때문에 가격 확인을 동반한 제한적 매수 판단이 적절하다."
+      },
+      "cycle_expectation_valuation_combined": true,
+      "decision": "BUY",
+      "low_forward_per_alone_determined_buy": false
+    },
+    "RXRX": {
+      "balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "decision-evidence:774e2e7f46d2025d7257",
+          "decision-evidence:bb19872705545d1af04f",
+          "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+          "canonical:chart:price_transition"
+        ],
+        "text": "파트너와 임상 진전은 플랫폼 가치를 지지하지만 반복 가능한 경제성은 미증명이고 가격 돌파도 약해, 신규 확신보다 관찰을 우선하는 보유 판단이 적절하다."
+      },
+      "decision": "HOLD",
+      "sector_normal_alone_determined_sell": false,
+      "sell_driver_classification_counts": {
+        "OTHER_EVIDENCE": 1,
+        "SECTOR_NORMAL": 1,
+        "STRUCTURAL_RISK": 2
+      },
+      "sell_has_deterioration_or_structural_risk": true
+    },
+    "WRD": {
+      "balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "decision-evidence:e0d708a0ce64006b8bd5",
+          "decision-evidence:b6654e5fc384c0d33bda",
+          "canonical:price:current",
+          "canonical:chart:structure:state"
+        ],
+        "text": "Robotaxi 확장 가능성은 남아 있지만 이용률과 수익성 검증이 부족하고 가격도 확인 상태가 아니어서 어느 방향으로도 강한 판단은 이르다."
+      },
+      "decision": "HOLD",
+      "unknown_alone_determined_sell": false,
+      "unknown_treatment_counts": {
+        "CONFIDENCE_LIMIT": 2,
+        "CONFIRMATION_REQUIRED": 2
+      }
+    }
+  },
+  "summary": {
+    "balance_changes": 7,
+    "entry_mode_changes": 8,
+    "label_changes": 3,
+    "lean_flips": 0
+  }
+}
