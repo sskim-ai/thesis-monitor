@@ -83,6 +83,15 @@ from app.services.onboarding_readiness_service import (
 )
 from app.services.current_price_context_service import select_current_price_context
 from app.services.daily_digest import build_daily_digest
+from app.services.fact_consumer_scope_service import (
+    MARKET_CONTEXT_CONSUMER_SCOPES,
+    NIGHT_FUTURES_CONSUMER_SCOPES,
+    FactConsumer,
+    fact_is_in_consumer_scope,
+    project_fact_catalog_for_consumer,
+    with_added_fact_consumer_scope,
+    with_fact_consumer_scopes,
+)
 from app.services.financial_quality_service import (
     build_financial_quality_state,
     field_quality,
@@ -131,8 +140,9 @@ from app.services.security_identity_service import (
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     build_numeric_registry,
+    consumer_numeric_registry_coverage,
     numeric_declaration_fact_ids,
-    numeric_registry_coverage,
+    project_numeric_registry_for_consumer,
     relation_usage_context,
     usage_direction_matches,
     usage_matches_semantic,
@@ -246,6 +256,8 @@ class OutputValidationResult:
 def _shadow_gate_error_state(
     gate: Literal["profile", "numeric_semantic"],
     exc: Exception,
+    *,
+    consumer: FactConsumer = FactConsumer.STOCK_V2,
 ) -> dict[str, object]:
     if gate == "profile":
         return {
@@ -257,7 +269,16 @@ def _shadow_gate_error_state(
             "error": type(exc).__name__,
         }
     return {
+        "contract": "ai-numeric-semantic-consumer-surface-v1",
+        "consumer": consumer.value,
+        "total_entry_count": 0,
         "entry_count": 0,
+        "included_fact_count": 0,
+        "included_numeric_count": 0,
+        "excluded_nonconsumer_fact_count": 0,
+        "excluded_nonconsumer_numeric_count": 0,
+        "unsupported_included_numeric_count": 0,
+        "excluded_nonconsumer": [],
         "registered_count": 0,
         "prose_allowed_count": 0,
         "prose_denied_count": 0,
@@ -269,10 +290,11 @@ def _shadow_gate_error_state(
 
 def _shadow_cohort_readiness(
     session: Session,
-    registries: list[list[dict[str, object]]],
+    registry_surfaces: list[dict[str, object]],
     *,
     watchlist_items: list[WatchlistItem] | tuple[WatchlistItem, ...],
     profile_gate_override: dict[str, object] | None = None,
+    consumer: FactConsumer = FactConsumer.STOCK_V2,
 ) -> dict[str, object]:
     errors: list[str] = []
     if profile_gate_override is not None:
@@ -288,9 +310,12 @@ def _shadow_cohort_readiness(
             profile_gate = _shadow_gate_error_state("profile", exc)
             errors.append(f"profile_gate:{type(exc).__name__}")
     try:
-        numeric_gate = numeric_registry_coverage(registries)
+        numeric_gate = consumer_numeric_registry_coverage(
+            registry_surfaces,
+            consumer=consumer,
+        )
     except Exception as exc:  # noqa: BLE001
-        numeric_gate = _shadow_gate_error_state("numeric_semantic", exc)
+        numeric_gate = _shadow_gate_error_state("numeric_semantic", exc, consumer=consumer)
         errors.append(f"numeric_semantic_gate:{type(exc).__name__}")
     suppression_reasons = []
     if profile_gate.get("ready") is not True:
@@ -3281,21 +3306,35 @@ def _market_packet(
         cross_section=cross_section,
         previous_briefing=previous_briefing,
     )
-    market_facts = list(intelligence["fact_catalog"])
+    market_facts = [
+        with_fact_consumer_scopes(fact, MARKET_CONTEXT_CONSUMER_SCOPES)
+        for fact in intelligence["fact_catalog"]
+        if isinstance(fact, dict)
+    ]
     night_items = list(digest.night_futures.items)
     night_futures = [night_futures_context_row(item) for item in night_items]
     for item in night_futures:
         fact_id = NIGHT_FUTURES_FACT_IDS[str(item["series_code"])]
         market_facts.append(
-            {
-                "fact_id": fact_id,
-                "fact_type": "night_futures",
-                "as_of_date": str(item.get("session_date") or run_date),
-                "fields": _public_value(item),
-            }
+            with_fact_consumer_scopes(
+                {
+                    "fact_id": fact_id,
+                    "fact_type": "night_futures",
+                    "as_of_date": str(item.get("session_date") or run_date),
+                    "fields": _public_value(item),
+                },
+                NIGHT_FUTURES_CONSUMER_SCOPES,
+                user_visible=False,
+            )
         )
     night_timeframe_facts = [
-        fact for item in night_items for fact in night_futures_timeframe_facts(item)
+        with_fact_consumer_scopes(
+            fact,
+            NIGHT_FUTURES_CONSUMER_SCOPES,
+            user_visible=False,
+        )
+        for item in night_items
+        for fact in night_futures_timeframe_facts(item)
     ]
     market_facts.extend(night_timeframe_facts)
     night_fact_ids = [NIGHT_FUTURES_FACT_IDS[str(item["series_code"])] for item in night_futures]
@@ -3341,12 +3380,15 @@ def _market_packet(
         fx_items = [asdict(item) for item in digest.kr_close_fx.items]
         for index, item in enumerate(fx_items, start=1):
             market_facts.append(
-                {
-                    "fact_id": f"market:fx:{index}",
-                    "fact_type": "fx",
-                    "as_of_date": run_date.isoformat(),
-                    "fields": _public_value(item),
-                }
+                with_fact_consumer_scopes(
+                    {
+                        "fact_id": f"market:fx:{index}",
+                        "fact_type": "fx",
+                        "as_of_date": run_date.isoformat(),
+                        "fields": _public_value(item),
+                    },
+                    MARKET_CONTEXT_CONSUMER_SCOPES,
+                )
             )
     temporal_eligibility = _dict(intelligence.get("macro_temporal_eligibility"))
     macro_theses = _public_value(_list(briefing.macro_theses)) if briefing else []
@@ -3360,6 +3402,12 @@ def _market_packet(
             item["today_signal"] = "neutral"
             item["today_signal_strength"] = "none"
             item["current_signal_eligible"] = False
+    daily_review_fact_ids = {
+        str(fact.get("fact_id"))
+        for fact in market_facts
+        if fact.get("fact_id")
+        and fact_is_in_consumer_scope(fact, FactConsumer.DAILY_REVIEW)
+    }
     return {
         "session": {
             "market": market,
@@ -3383,7 +3431,11 @@ def _market_packet(
         "current_observation_fact_ids": intelligence["current_observation_fact_ids"],
         "prior_market_session_fact_ids": intelligence["prior_market_session_fact_ids"],
         "reference_fact_ids": intelligence["reference_fact_ids"],
-        "required_market_fact_ids": night_fact_ids if market == "us" else [],
+        "required_market_fact_ids": (
+            [fact_id for fact_id in night_fact_ids if fact_id in daily_review_fact_ids]
+            if market == "us"
+            else []
+        ),
         "integrated_view": _clean_texts(digest.macro.integrated_view),
         "market_assumptions": _clean_texts(digest.macro.market_assumptions),
         "market_theses": macro_theses,
@@ -3558,7 +3610,10 @@ def build_ai_review_packet(
             if isinstance(link, dict) and link.get("fact_id")
         }
         stock["fact_catalog"].extend(
-            market_facts_by_id[fact_id]
+            with_added_fact_consumer_scope(
+                market_facts_by_id[fact_id],
+                FactConsumer.STOCK_V2,
+            )
             for fact_id in sorted(relevant_ids)
             if fact_id in market_facts_by_id
         )
@@ -3566,11 +3621,21 @@ def build_ai_review_packet(
     shadow_cohort = _shadow_cohort_readiness(
         session,
         [
-            market_context["numeric_registry"],
-            *(stock["numeric_registry"] for stock in stocks),
+            {
+                "name": "market_context",
+                "registry": market_context["numeric_registry"],
+            },
+            *(
+                {
+                    "name": f"stock:{stock['ticker']}",
+                    "registry": stock["numeric_registry"],
+                }
+                for stock in stocks
+            ),
         ],
         watchlist_items=items,
         profile_gate_override=profile_gate_override,
+        consumer=FactConsumer.STOCK_V2,
     )
     cohort_ready = shadow_cohort["eligible"] is True
     body = {
@@ -5639,6 +5704,27 @@ def _validate_bound_ai_review_output(
             )
         )
     market_context = packet.get("market_context")
+    if isinstance(market_context, dict):
+        market_context = {
+            **market_context,
+            "fact_catalog": project_fact_catalog_for_consumer(
+                [
+                    item
+                    for item in market_context.get("fact_catalog", [])
+                    if isinstance(item, dict)
+                ],
+                FactConsumer.DAILY_REVIEW,
+                default_scopes=MARKET_CONTEXT_CONSUMER_SCOPES,
+            ),
+            "numeric_registry": project_numeric_registry_for_consumer(
+                [
+                    item
+                    for item in market_context.get("numeric_registry", [])
+                    if isinstance(item, dict)
+                ],
+                FactConsumer.DAILY_REVIEW,
+            ),
+        }
     market_fact_ids = (
         {
             str(item.get("fact_id"))

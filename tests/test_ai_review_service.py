@@ -5030,7 +5030,7 @@ def test_market_hard_fails_zero_claims_with_four_eligible_anchors(
     assert "market_review:numeric_grounding_hard_fail" in errors
 
 
-def test_fresh_night_futures_are_required_and_grounded_end_to_end(
+def test_fresh_night_futures_are_preserved_but_outside_ai_consumer_surfaces(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -5046,63 +5046,49 @@ def test_fresh_night_futures_are_required_and_grounded_end_to_end(
         assert packet is not None
         context = packet["market_context"]
         required = context["required_market_fact_ids"]
-        assert required == [
+        assert required == []
+        expected_fact_ids = {
             "market:night_futures:1",
             "market:night_futures:2",
+        }
+        night_facts = [
+            item
+            for item in context["fact_catalog"]
+            if item.get("fact_id") in expected_fact_ids
         ]
+        assert {item["fact_id"] for item in night_facts} == expected_fact_ids
+        assert all(
+            item["consumer_scopes"] == ["ARCHIVE_ONLY", "NIGHT_FUTURES_MODULE"]
+            and item["user_visible"] is False
+            for item in night_facts
+        )
         assert all(
             item["market_packet_included"]
             and item["ai_fact_catalog_included"]
             and item["freshness"] == "fresh"
             for item in context["night_futures_audit"]["products"]
         )
-
+        numeric_gate = packet["shadow_cohort"]["numeric_semantic_gate"]
+        assert numeric_gate["ready"] is True
+        assert numeric_gate["unsupported_included_numeric_count"] == 0
+        excluded_paths = {
+            f"{item['fact_id']}:{item['field_path']}"
+            for item in numeric_gate["excluded_nonconsumer"]
+        }
+        assert {
+            "market:night_futures:1:fields.reference_price",
+            "market:night_futures:2:fields.reference_price",
+        }.issubset(excluded_paths)
         output = _valid_output(packet)
-        market_review = output["market_review"]
-        close_entries = [
-            next(
-                item
-                for item in context["numeric_registry"]
-                if item["fact_id"] == fact_id
-                and item["semantic_type"] == "futures_close"
-            )
-            for fact_id in required
-        ]
-        usages = [
-            f"{label} 야간선물 종가 {entry['approved_display_variants'][2]}"
-            for label, entry in zip(("KOSPI200", "KOSDAQ150"), close_entries)
-        ]
-        market_review["facts_used"] = required
-        market_review["core_judgment"] = {
+        output["market_review"]["facts_used"].append("market:night_futures:1")
+        output["market_review"]["core_judgment"] = {
             "text": "두 계약의 방향 차이는 한국 개장 전 가격 맥락으로만 봅니다.",
-            "fact_ids": required,
+            "fact_ids": ["market:night_futures:1"],
         }
-        market_review["important_changes"] = [
-            {
-                "text": f"{usages[0]}, {usages[1]}로 확인됐습니다.",
-                "fact_ids": required,
-            }
-        ]
-        market_review["market_context"] = {
-            "text": "야간선물은 기업 투자 논리 변화가 아니라 개장 전 가격 신호입니다.",
-            "fact_ids": required,
-        }
-        market_review["market_assumptions"]["fact_ids"] = required
-        market_review["numeric_claims"] = [
-            {
-                "fact_id": entry["fact_id"],
-                "field_path": entry["field_path"],
-                "value": entry["value"],
-                "unit": entry["unit"],
-                "semantic_type": entry["semantic_type"],
-                "text_ref": "important_changes[0].text",
-                "usage": usage,
-            }
-            for entry, usage in zip(close_entries, usages)
-        ]
         _, errors = validate_ai_review_output(session, packet, output)
 
-    assert errors == []
+    assert "market_review:unknown_fact_ids" in errors
+    assert "market_review:interpretation_unknown_fact_ids" in errors
 
 
 def test_partial_or_missing_night_futures_do_not_block_market_packet(
@@ -5115,9 +5101,7 @@ def test_partial_or_missing_night_futures_do_not_block_market_packet(
         _set_fresh_night_futures(session, "KRX_KOSPI200_NIGHT_FUT")
         partial = build_ai_review_packet(session, RUN_DATE, "us")
         assert partial is not None
-        assert partial["market_context"]["required_market_fact_ids"] == [
-            "market:night_futures:1"
-        ]
+        assert partial["market_context"]["required_market_fact_ids"] == []
         assert any(
             "KOSDAQ150" in item
             for item in partial["market_context"]["night_futures_cautions"]
@@ -5542,9 +5526,18 @@ def test_numeric_shadow_failure_preserves_production_packet(
     _settings(monkeypatch, tmp_path)
     monkeypatch.setattr(
         ai_review_service,
-        "numeric_registry_coverage",
-        lambda registries: {
+        "consumer_numeric_registry_coverage",
+        lambda surfaces, *, consumer: {
+            "contract": "ai-numeric-semantic-consumer-surface-v1",
+            "consumer": consumer.value,
+            "total_entry_count": 1,
             "entry_count": 1,
+            "included_fact_count": 1,
+            "included_numeric_count": 1,
+            "excluded_nonconsumer_fact_count": 0,
+            "excluded_nonconsumer_numeric_count": 0,
+            "unsupported_included_numeric_count": 1,
+            "excluded_nonconsumer": [],
             "registered_count": 0,
             "prose_allowed_count": 0,
             "prose_denied_count": 1,
@@ -5777,7 +5770,9 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
     assert packet["analysis_policy_version"] == "daily-review-v3.10"
     assert packet["structure_algorithm_version"] == "ohlcv-structure-v2"
     assert packet["ready_for_ai"] is True
-    assert packet["shadow_cohort"] == {
+    shadow_cohort = packet["shadow_cohort"]
+    numeric_gate = shadow_cohort["numeric_semantic_gate"]
+    assert {key: value for key, value in shadow_cohort.items() if key != "numeric_semantic_gate"} == {
         "contract_version": "shadow-cohort-readiness-v1",
         "policy_version": "daily-review-v3.10",
         "eligible": True,
@@ -5791,15 +5786,22 @@ def test_v35_packet_records_structure_v2_shadow_cohort_metadata(
             "unavailable_count": 0,
             "ready": True,
         },
-        "numeric_semantic_gate": {
-            "entry_count": 16,
-            "registered_count": 16,
-            "prose_allowed_count": 15,
-            "prose_denied_count": 1,
-            "unsupported": [],
-            "ready": True,
-        },
     }
+    assert numeric_gate["contract"] == "ai-numeric-semantic-consumer-surface-v1"
+    assert numeric_gate["consumer"] == "STOCK_V2"
+    assert numeric_gate["total_entry_count"] == 16
+    assert numeric_gate["entry_count"] == 16
+    assert numeric_gate["included_fact_count"] > 0
+    assert numeric_gate["included_numeric_count"] == 16
+    assert numeric_gate["excluded_nonconsumer_fact_count"] == 0
+    assert numeric_gate["excluded_nonconsumer_numeric_count"] == 0
+    assert numeric_gate["unsupported_included_numeric_count"] == 0
+    assert numeric_gate["registered_count"] == 16
+    assert numeric_gate["prose_allowed_count"] == 15
+    assert numeric_gate["prose_denied_count"] == 1
+    assert numeric_gate["unsupported"] == []
+    assert numeric_gate["excluded_nonconsumer"] == []
+    assert numeric_gate["ready"] is True
     assert packet["production_packet_persistence"] == {
         "contract_version": "production-packet-persistence-v1",
         "eligible": True,

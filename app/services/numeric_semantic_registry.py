@@ -5,6 +5,12 @@ from dataclasses import dataclass
 from typing import Literal
 
 from app.services.canonical_fact_service import compact_krw_amount
+from app.services.fact_consumer_scope_service import (
+    EXCLUSION_REASON,
+    FactConsumer,
+    fact_consumer_scope_source,
+    fact_consumer_scopes,
+)
 
 
 NumericScope = Literal["market", "stock", "both"]
@@ -2798,6 +2804,7 @@ def build_numeric_registry(
                 registry.append(
                     {
                         "fact_id": fact_id,
+                        "fact_type": fact_type,
                         "field_path": path,
                         "value": value,
                         "unit": unit,
@@ -2839,6 +2846,17 @@ def build_numeric_registry(
                             else None
                         ),
                         "declaration_fact_ids": sorted({fact_id, *declaration_aliases}),
+                        "consumer_scopes": (
+                            [scope.value for scope in fact_consumer_scopes(fact)]
+                            if fact_consumer_scopes(fact) is not None
+                            else None
+                        ),
+                        "consumer_scope_source": fact_consumer_scope_source(fact),
+                        "user_visible": (
+                            fact.get("user_visible")
+                            if isinstance(fact.get("user_visible"), bool)
+                            else None
+                        ),
                         **_registry_contract_metadata(
                             fact_type,
                             path,
@@ -2872,3 +2890,75 @@ def numeric_registry_coverage(
         "unsupported": unsupported,
         "ready": not unsupported,
     }
+
+
+def numeric_registry_entry_is_in_consumer_scope(
+    entry: dict[str, object],
+    consumer: FactConsumer,
+) -> bool:
+    scopes_value = entry.get("consumer_scopes")
+    if not isinstance(scopes_value, (list, tuple)):
+        return True
+    scopes = {str(scope) for scope in scopes_value}
+    return not scopes or consumer.value in scopes
+
+
+def project_numeric_registry_for_consumer(
+    registry: list[dict[str, object]],
+    consumer: FactConsumer,
+) -> list[dict[str, object]]:
+    return [
+        entry
+        for entry in registry
+        if numeric_registry_entry_is_in_consumer_scope(entry, consumer)
+    ]
+
+
+def consumer_numeric_registry_coverage(
+    surfaces: list[dict[str, object]],
+    *,
+    consumer: FactConsumer,
+) -> dict[str, object]:
+    included: list[dict[str, object]] = []
+    excluded: list[dict[str, object]] = []
+    total_entries = 0
+    for surface in surfaces:
+        registry = surface.get("registry")
+        if not isinstance(registry, list):
+            continue
+        surface_name = str(surface.get("name") or "unnamed")
+        for item in registry:
+            if not isinstance(item, dict):
+                continue
+            total_entries += 1
+            if numeric_registry_entry_is_in_consumer_scope(item, consumer):
+                included.append(item)
+                continue
+            excluded.append(
+                {
+                    "surface": surface_name,
+                    "fact_id": item.get("fact_id"),
+                    "field_path": item.get("field_path"),
+                    "consumer_scope_source": item.get("consumer_scope_source"),
+                    "reason": EXCLUSION_REASON,
+                }
+            )
+    coverage = numeric_registry_coverage([included])
+    coverage.update(
+        {
+            "contract": "ai-numeric-semantic-consumer-surface-v1",
+            "consumer": consumer.value,
+            "total_entry_count": total_entries,
+            "included_fact_count": len(
+                {str(item.get("fact_id")) for item in included if item.get("fact_id")}
+            ),
+            "included_numeric_count": len(included),
+            "excluded_nonconsumer_fact_count": len(
+                {str(item.get("fact_id")) for item in excluded if item.get("fact_id")}
+            ),
+            "excluded_nonconsumer_numeric_count": len(excluded),
+            "unsupported_included_numeric_count": len(coverage["unsupported"]),
+            "excluded_nonconsumer": excluded,
+        }
+    )
+    return coverage

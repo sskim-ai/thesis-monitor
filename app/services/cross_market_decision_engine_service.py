@@ -16,6 +16,11 @@ from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
     TechnicalContextStatus,
 )
+from app.services.fact_consumer_scope_service import (
+    STOCK_CONTEXT_CONSUMER_SCOPES,
+    FactConsumer,
+    project_fact_catalog_for_consumer,
+)
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -380,9 +385,12 @@ def build_decision_evidence_packet(
 
     fact_catalog = stock.get("fact_catalog")
     if isinstance(fact_catalog, list):
-        for row in fact_catalog:
-            if not isinstance(row, Mapping):
-                continue
+        scoped_facts = project_fact_catalog_for_consumer(
+            [row for row in fact_catalog if isinstance(row, Mapping)],
+            FactConsumer.STOCK_V2,
+            default_scopes=STOCK_CONTEXT_CONSUMER_SCOPES,
+        )
+        for row in scoped_facts:
             fact_id = str(row.get("fact_id") or "")
             if not fact_id:
                 continue
