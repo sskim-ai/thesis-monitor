@@ -1,12 +1,28 @@
 {
-  "contract": "directional-balance-us-natural-live-v1",
+  "contract": "us-natural-live-immediate-proof-v1",
   "assessment_date": "2026-09-03",
   "completed_us_session": "2026-09-02",
+  "report_timing": {"wait_for_kr_before_us_report": 0, "generated_before_kr_close": true, "kr_observation_in_scope": false},
+  "runtime": {
+    "origin_main": "c1c43070cd944e273c53f952c29a768a33fefdee",
+    "operating_head": "c1c43070cd944e273c53f952c29a768a33fefdee",
+    "runtime_sha": "c1c43070cd944e273c53f952c29a768a33fefdee",
+    "analysis_policy": "daily-review-v3.10",
+    "output_schema": "4",
+    "visible_decision_engine": "v2_accepted",
+    "directional_balance_contract": "v2-directional-balance-v1",
+    "codex_runtime_state_contract": "codex-runtime-state-v1",
+    "network_readiness_contract": "codex-network-readiness-v1",
+    "lineage_status": "PASS"
+  },
   "packet": {
     "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
     "sha256": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1",
     "source_run_id": 53,
     "source_run_status": "success",
+    "source_started_at_kst": "2026-09-03T08:05:34.715535+09:00",
+    "source_completed_at_kst": "2026-09-03T08:06:50.510582+09:00",
+    "cutoff_kst": "2026-09-03T08:05:34.715535+09:00",
     "ticker_count": 14,
     "success_count": 14,
     "failure_count": 0,
@@ -16,52 +32,62 @@
     "unsupported_numeric_semantics": [
       "market:night_futures:1:fields.reference_price",
       "market:night_futures:2:fields.reference_price"
-    ]
+    ],
+    "cohort_mutated_after_cutoff": 0
   },
+  "ownership": {"claim_id": null, "claim_owner": null, "claim_time": null, "multiple_producers_owned_packet": 0, "unowned_retry": 0},
   "automation": {
-    "primary": {
-      "started_at_kst": "2026-09-03T08:15:28.903000+09:00",
-      "finished_at_kst": "2026-09-03T08:21:14.558000+09:00",
-      "status": "PENDING_REVIEW",
-      "outcome": "no_pending_review_packet"
-    },
-    "backup": {
-      "started_at_kst": "2026-09-03T08:31:54.604000+09:00",
-      "finished_at_kst": "2026-09-03T08:32:34.214000+09:00",
-      "status": "PENDING_REVIEW",
-      "outcome": "no_pending_review_packet"
-    },
-    "model_call_reached": false,
+    "primary": {"started_at_kst": "2026-09-03T08:15:28.903000+09:00", "finished_at_kst": "2026-09-03T08:21:14.558000+09:00", "status": "PENDING_REVIEW", "outcome": "no_pending_review_packet"},
+    "backup": {"started_at_kst": "2026-09-03T08:31:54.604000+09:00", "finished_at_kst": "2026-09-03T08:32:34.214000+09:00", "status": "PENDING_REVIEW", "outcome": "no_pending_review_packet"},
+    "network_preflight": "NOT_REACHED_NO_PENDING_PACKET",
+    "codex_runtime_state_preflight": "NOT_REACHED_NO_PENDING_PACKET",
+    "codex_app_server_initialization": "NOT_REACHED_NO_PENDING_PACKET",
+    "model_transport_reached": false,
     "claim_created": false
   },
+  "source_readiness": {
+    "cutoff_eligible_count": 14, "source_ready_count": 14,
+    "technical_full_count": 0, "technical_partial_safe_count": 14,
+    "technical_unavailable_count": 0, "technical_invalid_count": 0,
+    "technical_request_count": 44, "technical_success_count": 44,
+    "technical_retry_count": 2, "technical_timeout_count": 0
+  },
   "v2": {
-    "candidate_count": 0,
-    "accepted_ready_count": 0,
-    "explicit_v2_count": 0,
-    "balance_visible_count": 0,
-    "unexplained_balance_jump": 0
+    "context_ready_count": 0, "model_covered_count": 0, "candidate_count": 0,
+    "candidate_validation_pass_count": 0, "adjudication_required_count": 0,
+    "adjudication_completed_count": 0, "accepted_ready_count": 0,
+    "explicit_v2_count": 0, "balance_visible_count": 0,
+    "balance_sum_valid_count": 0, "hold_prior_carry_forward_count": 0,
+    "raw_candidate_used_as_final": 0, "unexplained_balance_jump": 0,
+    "distribution": {"BUY": 0, "HOLD": 0, "SELL": 0, "NOT_READY": 14}
   },
   "market": {
-    "quality_status": "PASS",
+    "core_data_status": "PASS", "message_status": "PASS",
+    "quality_contract": "us-morning-exact-payload-quality-v1",
     "payload_sha256": "c3fe77e8a075a3d94403fc2653f29c6434686a471852cd41c0f9650327d16fda",
-    "treasury_3y_5y_10y_30y_present": true,
-    "night_futures_section_absent": true
+    "treasury_3y_5y_10y_30y_present": true, "treasury_delta_provenance": "PASS",
+    "night_futures_user_facing_count": 0, "night_futures_section_absent": true,
+    "phantom_numeric_errors": 0
   },
   "delivery": {
-    "mode": "deterministic_fallback",
-    "status": "sent",
-    "message_count": 15,
-    "sent_count": 15,
-    "pending_count": 0,
-    "attempt_count_exactly_one": 15,
-    "archive_ledger_exact_match": 15,
-    "duplicate_count": 0
+    "mode": "deterministic_fallback", "status": "sent",
+    "dispatched_at_kst": "2026-09-03T08:40:06.109292+09:00",
+    "delivery_start_kst": "2026-09-03T08:40:08+09:00",
+    "delivery_end_kst": "2026-09-03T08:40:24+09:00",
+    "expected_count": 15, "intent_count": 15, "sent_count": 15,
+    "acknowledged_count": 15, "pending_count": 0,
+    "attempt_count_exactly_one": 15, "archive_ledger_exact_match": 15,
+    "duplicate_count": 0, "orphan_count": 0, "unowned_retry_count": 0,
+    "exactly_once": true, "exact_payload": true
   },
   "classification": {
-    "status": "FAIL_SAFE_FALLBACK",
-    "open_p0": 0,
-    "open_material_p1": 1,
+    "earliest_failure_taxonomy": "OTHER",
+    "earliest_failure_detail": "PACKET_NUMERIC_SEMANTIC_READINESS",
+    "operational_status": "FAIL_SAFE_FALLBACK",
+    "us_v2_natural_live": "FAIL",
+    "open_p0": 0, "open_material_p1": 1, "open_p2": 0,
     "p1": "suppressed_night_reference_price_blocks_packet_numeric_semantic_readiness",
-    "repair_during_observation": 0
+    "repair_during_observation": 0,
+    "next_action": "BOUNDED_REPAIR_US_PACKET_NUMERIC_SEMANTIC_READINESS"
   }
 }

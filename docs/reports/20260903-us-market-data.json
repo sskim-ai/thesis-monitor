@@ -1,0 +1,28 @@
+{
+  "contract": "us-natural-market-proof-v1",
+  "session": "2026-09-02",
+  "indices": [
+    {"symbol": "SPY", "return_pct": 0.4437, "rendered_pct": 0.44},
+    {"symbol": "QQQ", "rendered_pct": 0.23},
+    {"symbol": "IWM", "rendered_pct": 1.18},
+    {"symbol": "SOXX", "rendered_pct": 0.23},
+    {"symbol": "RSP", "rendered_pct": 0.46}
+  ],
+  "market_internals": {
+    "equal_weight_direction_matches_spy": true,
+    "iwm_stronger_than_spy": true,
+    "strong_sector": {"name": "materials", "return_pct": 1.69},
+    "weak_sector": {"name": "real_estate", "return_pct": -0.70}
+  },
+  "treasury": [
+    {"tenor": "3Y", "series": "DGS3", "level_pct": 4.46, "observation_date": "2026-09-01", "previous_level_pct": 4.40, "previous_observation_date": "2026-08-31", "change_bp": 6},
+    {"tenor": "5Y", "series": "DGS5", "level_pct": 4.55, "observation_date": "2026-09-01", "previous_level_pct": 4.49, "previous_observation_date": "2026-08-31", "change_bp": 6},
+    {"tenor": "10Y", "series": "DGS10", "level_pct": 4.79, "observation_date": "2026-09-01", "previous_level_pct": 4.75, "previous_observation_date": "2026-08-31", "change_bp": 4},
+    {"tenor": "30Y", "series": "DGS30", "level_pct": 5.27, "observation_date": "2026-09-01", "previous_level_pct": 5.25, "previous_observation_date": "2026-08-31", "change_bp": 2}
+  ],
+  "treasury_delta_provenance": "PASS",
+  "night_futures_user_facing_count": 0,
+  "night_futures_section_absent": true,
+  "market_message_status": "PASS",
+  "payload_sha256": "c3fe77e8a075a3d94403fc2653f29c6434686a471852cd41c0f9650327d16fda"
+}

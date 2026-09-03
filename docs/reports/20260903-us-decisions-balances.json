@@ -1,0 +1,26 @@
+{
+  "contract": "us-natural-decision-balance-proof-v1",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "directional_balance_contract": "v2-directional-balance-v1",
+  "status": "NOT_GENERATED_PACKET_READINESS",
+  "distribution": {"BUY": 0, "HOLD": 0, "SELL": 0, "NOT_READY": 14},
+  "subjects": [
+    {"ticker": "CORZ", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "CPNG", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "CRCL", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "GOOGL", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "HUT", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "IBM", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "MU", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "RXRX", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "SKHY", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "SNDK", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "TSLA", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "TSM", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "WRD", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"},
+    {"ticker": "WULF", "candidate": null, "candidate_balance": null, "accepted": null, "accepted_balance": null, "status": "NOT_READY"}
+  ],
+  "balance_sum_valid_count": 0,
+  "hold_prior_carry_forward_count": 0,
+  "unexplained_balance_jump": 0
+}

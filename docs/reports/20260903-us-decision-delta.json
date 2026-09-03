@@ -1,0 +1,10 @@
+{
+  "contract": "us-natural-decision-delta-proof-v1",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "accepted_decision_count": 0,
+  "accepted_change_count": 0,
+  "accepted_change_without_explanation": 0,
+  "unexplained_balance_jump": 0,
+  "changes": [],
+  "reason": "candidate_and_accepted_stages_not_reached"
+}
