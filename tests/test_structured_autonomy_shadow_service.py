@@ -23,6 +23,10 @@ from app.services.structured_autonomy_shadow_service import (
     structured_autonomy_message_quality,
     validate_structured_autonomy_candidate,
 )
+from app.services.structured_autonomy_stability_service import (
+    classify_same_evidence_runs,
+    stability_summary,
+)
 
 
 def _claim(ref: str, text: str = "검증된 사업 근거가 판단을 지지합니다.") -> EvidenceClaim:
@@ -371,10 +375,91 @@ def test_renderer_uses_accepted_plan_once_and_separates_price_roles() -> None:
     )
 
     assert rendered.validation.valid is True
-    assert rendered.text.count("🧠 AI 분석 판단:") == 1
+    assert rendered.text.count("🧠 종합 방향:") == 1
     assert "판단 방향: BUY 쪽 HOLD" in rendered.text
+    assert "현재 신규진입: WAIT" in rendered.text
     assert "눌림 진입 검토: $90~$94" in rendered.text
     assert "추세 확인 가격: $112" in rendered.text
-    assert "상방 매도·축소 검토: $108~$112" in rendered.text
+    assert "상방 보유 관점 재검토: $108~$112" in rendered.text
     assert "하방 재점검: $86" in rendered.text
     assert "투자 논리: 약화" not in rendered.text
+
+
+def test_avoid_renderer_uses_reconsideration_not_actionable_entry() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={"stance": "AVOID"}
+            )
+        }
+    )
+
+    rendered = render_structured_autonomy_message(
+        _packet(),
+        candidate,
+        price_map=_price_map(),
+        industry="Software",
+        base_detail_text="",
+    )
+
+    assert rendered.validation.valid is True
+    assert "현재 신규진입: AVOID" in rendered.text
+    assert "재검토 가격 조건: $90~$94" in rendered.text
+    assert "눌림 진입 검토:" not in rendered.text
+
+
+def test_directional_unknown_needs_non_unknown_economic_evidence() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "unknown_treatments": (
+                UnknownTreatment(
+                    summary="핵심 증거가 아직 확인되지 않았습니다.",
+                    evidence_refs=("ref:unknown",),
+                    treatment="DIRECTIONAL_NEGATIVE",
+                    directional_negative_basis=("ref:unknown",),
+                ),
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unknown_directional_negative_without_non_unknown_evidence" in result.errors
+
+
+def test_same_evidence_stability_classification_catches_lean_and_action_reversals() -> None:
+    buy_lean = _candidate()
+    sell_lean = _candidate().model_copy(
+        update={
+            "directional_balance": DirectionalBalance(buy=4.5, sell=5.5),
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={"stance": "AVOID"}
+            ),
+            "holder_view": _candidate().holder_view.model_copy(
+                update={"stance": "REDUCE"}
+            ),
+        }
+    )
+    neutral = _candidate().model_copy(
+        update={"directional_balance": DirectionalBalance(buy=5, sell=5)}
+    )
+
+    row = classify_same_evidence_runs((buy_lean, sell_lean, neutral))
+    summary = stability_summary((row,))
+
+    assert row["classification"] == "UNSTABLE"
+    assert row["unexplained_hold_lean_flip"] is True
+    assert summary["unexplained_hold_lean_flip_count"] == 1
+
+
+def test_same_evidence_stability_allows_half_point_balance_noise() -> None:
+    neutral = _candidate().model_copy(
+        update={"directional_balance": DirectionalBalance(buy=5, sell=5)}
+    )
+
+    row = classify_same_evidence_runs((_candidate(), _candidate(), neutral))
+
+    assert row["classification"] == "BOUNDARY_UNCERTAINTY"
+    assert row["max_balance_distance"] == 0.5

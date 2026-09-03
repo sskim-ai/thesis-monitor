@@ -118,7 +118,7 @@ class StructuredAutonomyCandidate(FrozenModel):
 class StructuredAutonomyBatch(FrozenModel):
     contract: Literal["structured-autonomy-decision-v2-shadow-output"] = OUTPUT_CONTRACT
     packet_id: str
-    candidates: tuple[StructuredAutonomyCandidate, ...] = Field(min_length=1, max_length=3)
+    candidates: tuple[StructuredAutonomyCandidate, ...] = Field(min_length=1, max_length=4)
 
 
 class StructuredAutonomyValidation(FrozenModel):
@@ -155,7 +155,7 @@ _NEGATED_PROHIBITED_LANGUAGE = re.compile(
 _PROSE_NUMBER = re.compile(r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?")
 _KOREAN_PROSE = re.compile(r"[가-힣]")
 _DETAIL_JUDGMENT = re.compile(
-    r"AI\s*분석\s*판단|판단\s*균형|판단\s*방향|판단\s*확신도|"
+    r"AI\s*분석\s*판단|종합\s*방향|판단\s*균형|판단\s*방향|판단\s*확신도|"
     r"투자\s*논리\s*:|사업\s*논리\s*상태|신규진입\s*관점|보유자\s*관점|"
     r"재평가\s*조건|핵심\s*판단"
 )
@@ -395,6 +395,16 @@ def validate_structured_autonomy_candidate(
     if any(ref not in valid_refs for ref in cited):
         errors.append("unsupported_evidence_ref")
 
+    evidence_categories = {row.ref_id: row.category.value for row in packet.evidence}
+    for unknown in candidate.unknown_treatments:
+        if unknown.treatment != "DIRECTIONAL_NEGATIVE":
+            continue
+        if not any(
+            evidence_categories.get(ref) not in {None, "unknown"}
+            for ref in unknown.directional_negative_basis
+        ):
+            errors.append("unknown_directional_negative_without_non_unknown_evidence")
+
     pullbacks = allowed_pullback_zones(price_map)
     confirmations = allowed_confirmation_levels(price_map)
     trims = allowed_trim_zones(price_map)
@@ -582,7 +592,7 @@ def render_structured_autonomy_message(
     lines = [
         f"🏢 {packet.company_name}({packet.ticker})",
         "",
-        f"🧠 AI 분석 판단: {candidate.decision}",
+        f"🧠 종합 방향: {candidate.decision}",
         f"판단 균형: {render_directional_balance(candidate.directional_balance)}",
     ]
     if lean != HoldLean.NOT_HOLD:
@@ -591,29 +601,31 @@ def render_structured_autonomy_message(
         [
             f"판단 확신도: {confidence}",
             f"사업 논리 상태: {_thesis_language(candidate.business_thesis_change)}",
+            f"현재 신규진입: {buyer.stance}",
             "",
             "🎯 핵심 판단",
             f"• {candidate.core_judgment.text}",
             "",
             "🆕 신규진입 관점",
-            f"• 현재 관점: {buyer.stance}",
             f"• {buyer.summary}",
         ]
     )
     if buyer.pullback_entry_zone_low is not None and buyer.pullback_entry_zone_high is not None:
-        lines.append(
-            "• 눌림 진입 검토: "
-            + _zone(
-                buyer.pullback_entry_zone_low,
-                buyer.pullback_entry_zone_high,
-                buyer.currency,
-            )
+        zone = _zone(
+            buyer.pullback_entry_zone_low,
+            buyer.pullback_entry_zone_high,
+            buyer.currency,
         )
+        if buyer.stance == "AVOID":
+            lines.append(f"• 재검토 가격 조건: {zone} · 가격만으로 진입하지 않음")
+        else:
+            lines.append(f"• 눌림 진입 검토: {zone} · 지지 확인 시 재평가")
     if buyer.breakout_confirmation_level is not None:
-        lines.append(
-            "• 추세 확인 가격: "
-            + _currency_value(buyer.breakout_confirmation_level, buyer.currency)
-        )
+        level = _currency_value(buyer.breakout_confirmation_level, buyer.currency)
+        if buyer.stance == "AVOID":
+            lines.append(f"• 상향 재검토 조건: {level} 돌파·안착과 사업 근거 확인")
+        else:
+            lines.append(f"• 추세 확인 가격: {level} · 돌파·안착 시 신규진입 재평가")
     lines.extend(
         [
             f"• 현재 선호: {preferred}",
@@ -627,12 +639,13 @@ def render_structured_autonomy_message(
     )
     if holder.upside_trim_zone_low is not None and holder.upside_trim_zone_high is not None:
         lines.append(
-            "• 상방 매도·축소 검토: "
+            "• 상방 보유 관점 재검토: "
             + _zone(
                 holder.upside_trim_zone_low,
                 holder.upside_trim_zone_high,
                 holder.currency,
             )
+            + " · 저항 거부 시 기대·가치평가 재점검"
         )
     if holder.downside_review_level is not None:
         lines.append(
@@ -655,8 +668,12 @@ def render_structured_autonomy_message(
     message_errors: list[str] = []
     if _DETAIL_JUDGMENT.search(detail):
         message_errors.append("duplicate_judgment_authority")
-    if text.count("🧠 AI 분석 판단:") != 1 or text.count("🎯 핵심 판단") != 1:
+    if text.count("🧠 종합 방향:") != 1 or text.count("🎯 핵심 판단") != 1:
         message_errors.append("duplicate_judgment_section")
+    if text.count("현재 신규진입:") != 1:
+        message_errors.append("top_label_entry_stance_ambiguity")
+    if buyer.stance == "AVOID" and "눌림 진입 검토:" in text:
+        message_errors.append("avoid_rendered_as_actionable_entry")
     if candidate.core_judgment.text in detail:
         message_errors.append("duplicated_judgment_paragraph")
     if _has_assertive_match(_MANDATORY_SELL, text) or _ORDER_LANGUAGE.search(text):
