@@ -16,7 +16,11 @@ from app.services.cross_market_decision_engine_service import (
 
 
 CONTRACT_VERSION = "structured-autonomy-evidence-alias-v1"
-_REFERENCE_FIELDS = {"evidence_refs", "directional_negative_basis"}
+_REFERENCE_FIELDS = {
+    "confirmation_business_condition_refs",
+    "directional_negative_basis",
+    "evidence_refs",
+}
 
 
 def _canonical_sha256(value: object) -> str:

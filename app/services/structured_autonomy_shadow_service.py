@@ -29,6 +29,33 @@ OUTPUT_CONTRACT = "structured-autonomy-decision-v2-shadow-output"
 VALIDATOR_CONTRACT = "structured-autonomy-decision-v2-shadow-validator"
 RENDERER_CONTRACT = "structured-autonomy-decision-v2-shadow-renderer"
 
+CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
+    "USDC 점유율과 비이자성 수익 확대가 정상화 이익을 지지함."
+)
+MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
+    "HBM 출하와 고객 채택이 확대되고 가격과 제품구성 강세 및 현금창출이 유지되는 것"
+)
+CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES = (
+    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    "가격 결정력이 마진 방어를 지원함.",
+    "customer demand supports utilization.",
+    "pricing power supports margins.",
+    "supplier support improves execution.",
+    "customer support helps close execution gaps.",
+)
+CONFIRMATION_PRICE_STRUCTURE_FIXTURES = (
+    "종가 돌파가 필요하다.",
+    "저항선 위로 안착해야 한다.",
+    "지지선 회복이 필요하다.",
+    "확인선 회복이 필요하다.",
+    "주가 돌파가 필요하다.",
+    "close above resistance.",
+    "breakout through confirmation.",
+    "support-level retest.",
+    "registered confirmation price recovery.",
+)
+
 BusinessThesisChange = Literal["STRENGTHENED", "UNCHANGED", "WEAKENED", "UNRESOLVED"]
 NewBuyerStance = Literal["ATTRACTIVE", "WAIT", "AVOID"]
 PreferredEntryMode = Literal["PULLBACK", "CONFIRMATION", "BOTH", "NONE"]
@@ -82,6 +109,9 @@ class NewBuyerViewV2(FrozenModel):
     preferred_entry_reason: str = Field(min_length=1, max_length=420)
     confirmation_semantics: ConfirmationSemantics
     confirmation_business_condition: str = Field(min_length=1, max_length=420)
+    confirmation_business_condition_refs: tuple[str, ...] = Field(
+        default=(), min_length=1, max_length=6
+    )
 
 
 class HolderViewV2(FrozenModel):
@@ -160,10 +190,35 @@ _NEGATED_PROHIBITED_LANGUAGE = re.compile(
 )
 _PROSE_NUMBER = re.compile(r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?")
 _KOREAN_PROSE = re.compile(r"[가-힣]")
-_MODEL_OWNED_CONFIRMATION_STRUCTURE = re.compile(
-    r"종가|돌파|안착|확인선|저항|지지|가격|close|breakout|resistance|support",
-    re.IGNORECASE,
+_CONFIRMATION_PRICE_STRUCTURE_PATTERNS = (
+    re.compile(
+        r"(?:종가|주가)(?:가|는|이|의)?[^.!?\n]{0,24}?"
+        r"(?:돌파|상회|하회|회복|안착|재지지)",
+    ),
+    re.compile(
+        r"(?:저항|지지|확인)\s*(?:선|구간|영역|가격|수준|레벨|상단|하단)"
+        r"|(?:저항|지지)\s*(?:돌파|상회|하회|회복|안착|재지지)"
+        r"|등록\s*확인\s*(?:가격|수준|레벨)|돌파\s*후\s*(?:안착|재지지)",
+    ),
+    re.compile(
+        r"\b(?:close|share\s+price)\s+(?:above|below|over|under|through|beyond)\b"
+        r"|\bbreak(?:out|\s+out)?\s+(?:above|through|over)\s+"
+        r"(?:the\s+)?(?:resistance|support|confirmation|level|zone|price)\b"
+        r"|\b(?:resistance|support|confirmation)[-\s]+(?:level|zone|price|line)\b"
+        r"|\bretest(?:s|ed|ing)?\s+(?:the\s+)?(?:support|resistance)\b"
+        r"|\bregistered\s+confirmation\s+(?:price|level)\b",
+        re.IGNORECASE,
+    ),
 )
+_BUSINESS_CONFIRMATION_EVIDENCE_CATEGORIES = {
+    "catalysts",
+    "earnings",
+    "earnings_quality",
+    "expectations",
+    "macro",
+    "risks",
+    "thesis",
+}
 _DETAIL_JUDGMENT = re.compile(
     r"AI\s*분석\s*판단|종합\s*방향|판단\s*균형|판단\s*방향|판단\s*확신도|"
     r"투자\s*논리\s*:|사업\s*논리\s*상태|신규진입\s*관점|보유자\s*관점|"
@@ -371,6 +426,10 @@ def _has_assertive_match(pattern: re.Pattern[str], text: str) -> bool:
     return False
 
 
+def confirmation_business_condition_has_price_structure_semantics(text: str) -> bool:
+    return any(pattern.search(text) for pattern in _CONFIRMATION_PRICE_STRUCTURE_PATTERNS)
+
+
 def validate_structured_autonomy_candidate(
     packet: DecisionEvidencePacket,
     candidate: StructuredAutonomyCandidate,
@@ -400,6 +459,7 @@ def validate_structured_autonomy_candidate(
     holder = candidate.holder_view
     cited.extend(buyer.pullback_entry_basis)
     cited.extend(buyer.breakout_confirmation_basis)
+    cited.extend(buyer.confirmation_business_condition_refs)
     cited.extend(holder.upside_trim_basis)
     cited.extend(holder.downside_review_basis)
     if any(ref not in valid_refs for ref in cited):
@@ -475,10 +535,31 @@ def validate_structured_autonomy_candidate(
             if buyer.confirmation_semantics not in expected_semantics:
                 errors.append("confirmation_semantics_basis_mismatch")
 
-    if _MODEL_OWNED_CONFIRMATION_STRUCTURE.search(
+    confirmation_refs = buyer.confirmation_business_condition_refs
+    confirmation_categories = {
+        evidence_categories.get(ref)
+        for ref in confirmation_refs
+        if evidence_categories.get(ref) is not None
+    }
+    if not confirmation_refs:
+        errors.append("confirmation_business_condition_without_evidence")
+    elif confirmation_categories and confirmation_categories <= {
+        "price_structure",
+        "technical_feature",
+    }:
+        errors.append("confirmation_business_condition_price_only_evidence")
+    elif not confirmation_categories.intersection(
+        _BUSINESS_CONFIRMATION_EVIDENCE_CATEGORIES
+    ):
+        errors.append("confirmation_business_condition_without_business_evidence")
+    if confirmation_business_condition_has_price_structure_semantics(
         buyer.confirmation_business_condition
     ):
-        errors.append("generic_confirmation_structure_model_owned")
+        errors.append(
+            "confirmation_business_condition_contains_price_structure_semantics"
+        )
+    if _PROSE_NUMBER.search(buyer.confirmation_business_condition):
+        errors.append("confirmation_business_condition_contains_price_numeric")
 
     has_pullback = p_low is not None and p_high is not None
     has_confirmation = confirmation is not None

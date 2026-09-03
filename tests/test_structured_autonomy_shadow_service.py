@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
@@ -8,6 +10,10 @@ from app.services.cross_market_decision_engine_service import (
 )
 from app.services.directional_balance_service import DirectionalBalance
 from app.services.structured_autonomy_shadow_service import (
+    CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
+    CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
+    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     ClassifiedSellDriver,
     HoldLean,
     HolderViewV2,
@@ -16,6 +22,7 @@ from app.services.structured_autonomy_shadow_service import (
     RenderedStructuredAutonomy,
     StructuredAutonomyValidation,
     UnknownTreatment,
+    confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
     hold_lean_flip,
     render_structured_autonomy_message,
@@ -136,6 +143,7 @@ def _candidate() -> StructuredAutonomyCandidate:
             preferred_entry_reason="가격 비대칭이 더 나은 구간을 우선합니다.",
             confirmation_semantics="VERIFIED_RESISTANCE_BREAKOUT",
             confirmation_business_condition="상용화 경제성과 공급 완화를 함께 확인합니다.",
+            confirmation_business_condition_refs=("ref:earnings",),
         ),
         holder_view=HolderViewV2(
             stance="HOLDABLE",
@@ -432,7 +440,109 @@ def test_model_owned_confirmation_business_condition_rejects_price_structure() -
         _packet(), candidate, price_map=_price_map(), industry="Software"
     )
 
-    assert "generic_confirmation_structure_model_owned" in result.errors
+    assert (
+        "confirmation_business_condition_contains_price_structure_semantics"
+        in result.errors
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
+)
+def test_confirmation_business_condition_allows_business_language(text: str) -> None:
+    assert confirmation_business_condition_has_price_structure_semantics(text) is False
+
+
+@pytest.mark.parametrize(
+    "text",
+    CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
+)
+def test_confirmation_business_condition_blocks_price_structure(text: str) -> None:
+    assert confirmation_business_condition_has_price_structure_semantics(text) is True
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+        MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    ),
+    ids=("crcl", "mu"),
+)
+def test_crcl_mu_exact_business_conditions_pass_candidate_validation(text: str) -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={"confirmation_business_condition": text}
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert result.valid is True
+    assert (
+        "confirmation_business_condition_contains_price_structure_semantics"
+        not in result.errors
+    )
+
+
+def test_confirmation_business_condition_requires_non_price_evidence() -> None:
+    price_only = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={"confirmation_business_condition_refs": ("ref:price",)}
+            )
+        }
+    )
+    mixed = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={
+                    "confirmation_business_condition_refs": (
+                        "ref:price",
+                        "ref:earnings",
+                    )
+                }
+            )
+        }
+    )
+
+    price_only_result = validate_structured_autonomy_candidate(
+        _packet(), price_only, price_map=_price_map(), industry="Software"
+    )
+    mixed_result = validate_structured_autonomy_candidate(
+        _packet(), mixed, price_map=_price_map(), industry="Software"
+    )
+
+    assert "confirmation_business_condition_price_only_evidence" in price_only_result.errors
+    assert "confirmation_business_condition_price_only_evidence" not in mixed_result.errors
+    assert mixed_result.valid is True
+
+
+def test_confirmation_business_condition_rejects_numeric_backdoor() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={
+                    "confirmation_business_condition": "$950 돌파 후 재지지가 필요하다."
+                }
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "confirmation_business_condition_contains_price_numeric" in result.errors
+    assert (
+        "confirmation_business_condition_contains_price_structure_semantics"
+        in result.errors
+    )
 
 
 def test_confirmation_semantics_must_match_selected_price_basis() -> None:

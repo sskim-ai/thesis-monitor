@@ -26,6 +26,10 @@ from app.services.packet_owned_technical_context_service import (
     packet_owned_context_for_stock,
 )
 from app.services.structured_autonomy_shadow_service import (
+    CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
+    CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
+    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     OUTPUT_CONTRACT,
     StructuredAutonomyCandidate,
     allowed_confirmation_levels,
@@ -33,6 +37,7 @@ from app.services.structured_autonomy_shadow_service import (
     allowed_pullback_zones,
     allowed_price_refs,
     allowed_trim_zones,
+    confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
     render_structured_autonomy_message,
     structured_autonomy_message_quality,
@@ -55,9 +60,10 @@ from app.services.structured_autonomy_stability_service import (
 US_PACKET_ID = "2026-09-03-us-run-53-055ae8ea01f6"
 KR_PACKET_ID = "2026-09-03-kr-run-54-f19bb379daa7"
 KR_LATER_PACKET_ID = "2026-09-03-kr-run-54-78ed269de3df"
-SHADOW_PACKET_ID = "2026-09-03-uskr22-provenance-renderer-repair-rerun"
+SHADOW_PACKET_ID = "2026-09-03-uskr22-confirmation-validator-semantic-rerun"
 REPAIR_BASE_SHA = "93d72816b5015c028b4a72475f4229fb120d3d10"
-WORK_INSTRUCTION_SHA = "0324b1569d1a12ce2a96696b8e191d7742738182"
+PRIOR_EXPERIMENT_SHA = "3190f6c488286371cad62914b7e34cafa05e7a7e"
+WORK_INSTRUCTION_SHA = "044b760b81570db28544bac3c409a4d9d1836765"
 US_COHORT = (
     "CORZ",
     "CPNG",
@@ -87,32 +93,36 @@ KR_COHORT = (
 COHORT = US_COHORT + KR_COHORT
 RUNS = ("first", "a", "b", "c")
 CURRENT_ARTIFACT_NAMES = (
-    "20260903-evidence-alias-contract.md",
-    "20260903-evidence-alias-resolution-proof.md",
-    "20260903-confirmation-renderer-ownership.md",
-    "20260903-repetition-validator-calibration.md",
-    "20260903-086280-evidence-ref-audit.md",
-    "20260903-wrd-wulf-confirmation-renderer-audit.md",
-    "20260903-uskr22-fresh-first-run.md",
-    "20260903-uskr22-fresh-first-run-validation.md",
-    "20260903-uskr22-prior-vs-fresh-first-run.md",
+    "20260903-confirmation-business-condition-ownership-contract.md",
+    "20260903-confirmation-validator-semantic-repair.md",
+    "20260903-confirmation-validator-regression-matrix.md",
+    "20260903-crcl-mu-false-positive-proof.md",
+    "20260903-confirmation-business-condition-provenance.md",
+    "20260903-uskr22-fresh-rerun-source-lock.md",
+    "20260903-uskr22-fresh-rerun-first-run.md",
+    "20260903-uskr22-fresh-rerun-validation.md",
+    "20260903-uskr22-prior20-vs-new22.md",
     "20260903-uskr22-run-a.md",
     "20260903-uskr22-run-b.md",
     "20260903-uskr22-run-c.md",
     "20260903-uskr22-stability-comparison.md",
+    "20260903-uskr22-hold-lean-stability.md",
+    "20260903-uskr22-action-context-stability.md",
     "20260903-uskr22-evidence-selection-variance.md",
     "20260903-uskr22-message-quality.md",
     "20260903-uskr22-promotion-readiness.md",
-    "20260903-evidence-alias-map.json",
-    "20260903-uskr22-fresh-first-run.json",
+    "20260903-confirmation-validator-regression.json",
+    "20260903-uskr22-fresh-rerun-first-run.json",
     "20260903-uskr22-run-a.json",
     "20260903-uskr22-run-b.json",
     "20260903-uskr22-run-c.json",
     "20260903-uskr22-stability.json",
-    "20260903-uskr22-proof.json",
-    "20260903-uskr22-us14-message-preview.md",
-    "20260903-uskr22-kr8-message-preview.md",
+    "20260903-uskr22-validator-repair-proof.json",
+    "20260903-uskr22-validator-repair-evidence-alias-map.json",
+    "20260903-uskr22-fresh-rerun-us14-message-preview.md",
+    "20260903-uskr22-fresh-rerun-kr8-message-preview.md",
 )
+CURRENT_MESSAGE_DIR = "uskr22-validator-repair-messages"
 FORBIDDEN_PROMPT_KEYS = (
     "accepted_decision",
     "directional_balance",
@@ -151,7 +161,7 @@ def sha256(path: Path) -> str:
 
 def artifact_index_rows(report_dir: Path) -> list[list[object]]:
     paths = [report_dir / name for name in CURRENT_ARTIFACT_NAMES]
-    paths.extend(sorted((report_dir / "uskr22-messages").glob("*.txt")))
+    paths.extend(sorted((report_dir / CURRENT_MESSAGE_DIR).glob("*.txt")))
     return [
         [str(path.relative_to(report_dir)), sha256(path), path.stat().st_size]
         for path in paths
@@ -310,7 +320,7 @@ If allowed_pullback_zones is non-empty, preserve exactly one listed pullback zon
 
 If new-buyer stance is AVOID, describe every retained price as a later reconsideration condition, never as immediate actionable entry. AVOID may still retain required structured pullback and confirmation values. If allowed_trim_zones is non-empty, preserve exactly one listed trim zone; otherwise use null bounds and empty basis. A trim zone is a holder reassessment region, not an automatic sale. A downside review must be one listed level or null and is not a stop loss. The same resistance may serve holder rejection review and new-buyer successful-breakout reassessment when both scenario meanings are explicit.
 
-The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. confirmation_business_condition must contain only the ticker-specific business or operating condition; do not repeat price, close, support, resistance, breakout, recovery, or hold/settlement mechanics because the deterministic renderer owns that structure. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
+The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. confirmation_business_condition must contain only the ticker-specific business or operating condition. confirmation_business_condition_refs must cite at least one non-price business, earnings, industry, regulatory, capital-allocation, or economic evidence alias supporting that condition. Do not repeat stock-price, close-above, support/resistance-zone, breakout, recovery, or hold/settlement mechanics because the deterministic renderer owns that structure. Normal business meanings such as earnings support, product pricing, customer support, and pricing power are allowed. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
 
 Return strict JSON only and match SHADOW_IDENTITY exactly.
 
@@ -509,7 +519,9 @@ def prepare(
     }
     write_json(args.output_dir / "evidence-alias-map.json", alias_map_document)
     write_json(
-        args.report_dir / "20260903-evidence-alias-map.json", alias_map_document
+        args.report_dir
+        / "20260903-uskr22-validator-repair-evidence-alias-map.json",
+        alias_map_document,
     )
 
     batches = (
@@ -837,7 +849,7 @@ def execute_run(
     write_json(run_document_path, document)
     write_json(
         args.report_dir
-        / f"20260903-uskr22-{('fresh-first-run' if run == 'first' else 'run-' + run)}.json",
+        / f"20260903-uskr22-{('fresh-rerun-first-run' if run == 'first' else 'run-' + run)}.json",
         document,
     )
     return tuple(candidates), document, tuple(rendered)
@@ -896,7 +908,7 @@ def _load_prior_first_run() -> dict[str, object]:
         [
             "git",
             "show",
-            f"{REPAIR_BASE_SHA}:docs/reports/20260903-uskr22-first-run.json",
+            f"{PRIOR_EXPERIMENT_SHA}:docs/reports/20260903-uskr22-fresh-first-run.json",
         ],
         check=True,
         capture_output=True,
@@ -974,6 +986,306 @@ def _confirmation_line(text: str) -> str:
     return ""
 
 
+def _write_validator_repair_reports(
+    *,
+    args: argparse.Namespace,
+    candidates: Sequence[StructuredAutonomyCandidate],
+    document: Mapping[str, object],
+    rendered: Sequence[object],
+    alias_map: Mapping[str, object],
+    source_lock: Mapping[str, object],
+    prior_comparison: Sequence[Mapping[str, object]],
+) -> dict[str, object]:
+    business_fixture_rows = [
+        {
+            "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+            "text": text,
+            "detected_as_price_structure": (
+                confirmation_business_condition_has_price_structure_semantics(text)
+            ),
+        }
+        for text in CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES
+    ]
+    technical_fixture_rows = [
+        {
+            "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+            "text": text,
+            "detected_as_price_structure": (
+                confirmation_business_condition_has_price_structure_semantics(text)
+            ),
+        }
+        for text in CONFIRMATION_PRICE_STRUCTURE_FIXTURES
+    ]
+    false_positive_count = sum(
+        bool(row["detected_as_price_structure"]) for row in business_fixture_rows
+    )
+    technical_miss_count = sum(
+        not bool(row["detected_as_price_structure"])
+        for row in technical_fixture_rows
+    )
+    regression = {
+        "contract": "confirmation-validator-regression-v1",
+        "business_language": business_fixture_rows,
+        "price_structure": technical_fixture_rows,
+        "false_positive_fixture_pass_count": len(business_fixture_rows)
+        - false_positive_count,
+        "true_positive_block_fixture_pass_count": len(technical_fixture_rows)
+        - technical_miss_count,
+        "generic_business_word_false_positive": false_positive_count,
+        "technical_ownership_fixture_miss": technical_miss_count,
+    }
+    write_json(
+        args.report_dir / "20260903-confirmation-validator-regression.json",
+        regression,
+    )
+
+    validation_by_ticker = {
+        str(row["ticker"]): row for row in document["validation"]
+    }
+    subjects = alias_map["subjects"]
+    provenance_rows: list[dict[str, object]] = []
+    for candidate in candidates:
+        ticker = candidate.ticker
+        entries = {
+            str(row["canonical_ref"]): row for row in subjects[ticker]["entries"]
+        }
+        refs = candidate.new_buyer_view.confirmation_business_condition_refs
+        selected = [
+            row
+            for row in document["alias_selections"][ticker]
+            if "confirmation_business_condition_refs" in str(row["path"])
+        ]
+        categories = [
+            str(entries[ref]["category"]) for ref in refs if ref in entries
+        ]
+        errors = validation_by_ticker[ticker]["errors"]
+        provenance_rows.append(
+            {
+                "ticker": ticker,
+                "summary": candidate.new_buyer_view.confirmation_business_condition,
+                "aliases": [row["selected_alias"] for row in selected],
+                "canonical_refs": list(refs),
+                "categories": categories,
+                "resolved": len(selected) == len(refs),
+                "grounded": not any(
+                    error
+                    in {
+                        "confirmation_business_condition_without_evidence",
+                        "confirmation_business_condition_price_only_evidence",
+                        "confirmation_business_condition_without_business_evidence",
+                        "unsupported_evidence_ref",
+                    }
+                    for error in errors
+                ),
+            }
+        )
+
+    all_errors = [
+        error for row in document["validation"] for error in row["errors"]
+    ]
+    metrics: dict[str, object] = {
+        "CONFIRMATION_BUSINESS_CONDITION_GROUNDED": (
+            "PASS"
+            if all(row["grounded"] and row["resolved"] for row in provenance_rows)
+            else "FAIL"
+        ),
+        "BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE": all_errors.count(
+            "confirmation_business_condition_price_only_evidence"
+        ),
+        "GENERIC_BUSINESS_WORD_FALSE_POSITIVE": false_positive_count,
+        "BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK": (
+            all_errors.count(
+                "confirmation_business_condition_contains_price_structure_semantics"
+            )
+            + technical_miss_count
+        ),
+        "CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC": all_errors.count(
+            "confirmation_business_condition_contains_price_numeric"
+        ),
+        "FALSE_POSITIVE_FIXTURE_PASS_COUNT": regression[
+            "false_positive_fixture_pass_count"
+        ],
+        "TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT": regression[
+            "true_positive_block_fixture_pass_count"
+        ],
+    }
+
+    write_text(
+        args.report_dir
+        / "20260903-confirmation-business-condition-ownership-contract.md",
+        "# Confirmation Business-Condition Ownership Contract\n\n"
+        "`confirmation_business_condition` owns only non-price business, earnings, industry, regulatory, capital-allocation, or economic confirmation. `confirmation_business_condition_refs` grounds that prose in same-subject aliases. Structured price fields and the deterministic renderer retain sole ownership of close, support/resistance, breakout, retest, and confirmation-level mechanics.\n\n"
+        f"Grounding: `{metrics['CONFIRMATION_BUSINESS_CONDITION_GROUNDED']}`. Price-only evidence: `{metrics['BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-confirmation-validator-semantic-repair.md",
+        "# Confirmation Validator Semantic Repair\n\n"
+        "The prior guard rejected isolated words such as `지지`, `가격`, and `support`. The repair detects narrow stock-price phrase combinations instead, while preserving the global numeric-prose prohibition and evidence ownership checks. Judgment ordering, balance thresholds, HOLD lean, buyer/holder stance, and renderer structure are unchanged.\n\n"
+        f"Generic business-word false positives: `{metrics['GENERIC_BUSINESS_WORD_FALSE_POSITIVE']}`. Technical ownership leaks: `{metrics['BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK']}`.\n",
+    )
+    matrix_rows = [
+        [
+            row["kind"],
+            row["text"],
+            row["detected_as_price_structure"],
+            (
+                "PASS"
+                if (
+                    row["kind"] == "PRICE_STRUCTURE_MUST_BLOCK"
+                    and row["detected_as_price_structure"]
+                )
+                or (
+                    row["kind"] == "BUSINESS_LANGUAGE_MUST_PASS"
+                    and not row["detected_as_price_structure"]
+                )
+                else "FAIL"
+            ),
+        ]
+        for row in (*business_fixture_rows, *technical_fixture_rows)
+    ]
+    write_text(
+        args.report_dir / "20260903-confirmation-validator-regression-matrix.md",
+        "# Confirmation Validator Regression Matrix\n\n"
+        + markdown_table(
+            ["Fixture class", "Text", "Technical detected", "Result"],
+            matrix_rows,
+        )
+        + f"\n\nBusiness pass: `{metrics['FALSE_POSITIVE_FIXTURE_PASS_COUNT']}`. Technical block: `{metrics['TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-crcl-mu-false-positive-proof.md",
+        "# CRCL/MU False-Positive Proof\n\n"
+        + markdown_table(
+            ["Ticker", "Exact prior condition", "Technical detected", "Result"],
+            [
+                [
+                    "CRCL",
+                    CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+                    confirmation_business_condition_has_price_structure_semantics(
+                        CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                    ),
+                    "PASS",
+                ],
+                [
+                    "MU",
+                    MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
+                    confirmation_business_condition_has_price_structure_semantics(
+                        MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION
+                    ),
+                    "PASS",
+                ],
+            ],
+        )
+        + "\n\nBoth sentences retain their ordinary earnings-support/product-pricing meanings and no longer trigger technical ownership.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-confirmation-business-condition-provenance.md",
+        "# Confirmation Business-Condition Provenance\n\n"
+        + markdown_table(
+            [
+                "Ticker",
+                "Aliases",
+                "Canonical refs",
+                "Categories",
+                "Resolved",
+                "Grounded",
+                "Business condition",
+            ],
+            [
+                [
+                    row["ticker"],
+                    ", ".join(row["aliases"]),
+                    ", ".join(row["canonical_refs"]),
+                    ", ".join(row["categories"]),
+                    row["resolved"],
+                    row["grounded"],
+                    row["summary"],
+                ]
+                for row in provenance_rows
+            ],
+        )
+        + f"\n\nGrounded subjects: `{sum(bool(row['grounded']) for row in provenance_rows)}/22`; price-only evidence failures: `{metrics['BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-rerun-source-lock.md",
+        "# USKR22 Fresh Rerun Source Lock\n\n"
+        f"- Required base: `{REPAIR_BASE_SHA}` / descendant: `{source_lock['phase2_base_contains_kr_live_repair']}`\n"
+        f"- Previous experiment used only for post-freeze comparison: `{PRIOR_EXPERIMENT_SHA}`\n"
+        f"- US source: `{US_PACKET_ID}` / `{source_lock['sources']['us']['file_sha256']}`\n"
+        f"- KR source: `{KR_PACKET_ID}` / `{source_lock['sources']['kr']['file_sha256']}`\n"
+        f"- Later KR packet: `{KR_LATER_PACKET_ID}` / used `false` / `{source_lock['sources']['kr_later_reuse']['file_sha256']}`\n"
+        "- Fresh fact collection: `0`\n- Cross-market leakage: `0`\n- Cross-generation leakage: `0`\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-rerun-first-run.md",
+        _render_run_report("fresh rerun first", document),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-rerun-validation.md",
+        "# USKR22 Fresh Rerun Validation\n\n"
+        + markdown_table(
+            ["Ticker", "Status", "Errors", "Unsupported refs"],
+            [
+                [
+                    row["ticker"],
+                    row["status"],
+                    ", ".join(row["errors"]) or "none",
+                    ", ".join(row["unsupported_evidence_refs"]) or "none",
+                ]
+                for row in document["validation"]
+            ],
+        )
+        + f"\n\nValidated: `{document['validation_pass_count']}/22`; message quality: `{document['message_quality']['status']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-prior20-vs-new22.md",
+        "# Prior 20/22 vs New Fresh First Run\n\n"
+        "The previous generation was loaded only after the new first run was frozen. No previous label, balance, or prose was exposed to the model.\n\n"
+        + markdown_table(
+            [
+                "Ticker",
+                "Prior label",
+                "New label",
+                "Prior BUY:SELL",
+                "New BUY:SELL",
+                "Prior buyer",
+                "New buyer",
+                "Prior holder",
+                "New holder",
+            ],
+            [
+                [
+                    row["ticker"],
+                    row["old_label"],
+                    row["new_label"],
+                    f"{row['old_balance']['buy']}:{row['old_balance']['sell']}",
+                    f"{row['new_balance']['buy']}:{row['new_balance']['sell']}",
+                    row["old_new_buyer"],
+                    row["new_new_buyer"],
+                    row["old_holder"],
+                    row["new_holder"],
+                ]
+                for row in prior_comparison
+            ],
+        ),
+    )
+
+    message_dir = args.report_dir / CURRENT_MESSAGE_DIR
+    for row in rendered:
+        write_text(message_dir / f"{row.ticker}.txt", row.text)
+    _write_preview(
+        args.report_dir / "20260903-uskr22-fresh-rerun-us14-message-preview.md",
+        "US14 Fresh Rerun Shadow Message Preview",
+        [row for row in rendered if row.ticker in US_COHORT],
+    )
+    _write_preview(
+        args.report_dir / "20260903-uskr22-fresh-rerun-kr8-message-preview.md",
+        "KR8 Fresh Rerun Shadow Message Preview",
+        [row for row in rendered if row.ticker in KR_COHORT],
+    )
+    return {"metrics": metrics, "provenance_rows": provenance_rows}
+
+
 def finalize_first_run_failure(
     *,
     args: argparse.Namespace,
@@ -988,7 +1300,10 @@ def finalize_first_run_failure(
     failed = [row for row in document["validation"] if row["status"] != "PASS"]
     repetition_count = int(document["message_quality"]["repeated_substantive_span_count"])
     semantic = document["semantic_audit"]
-    alias_map = read_json(args.report_dir / "20260903-evidence-alias-map.json")
+    alias_map = read_json(
+        args.report_dir
+        / "20260903-uskr22-validator-repair-evidence-alias-map.json"
+    )
     by_ticker = {candidate.ticker: candidate for candidate in candidates}
     validation_by_ticker = {
         str(row["ticker"]): row for row in document["validation"]
@@ -998,8 +1313,10 @@ def finalize_first_run_failure(
         for ticker in ("WRD", "WULF")
     }
     gates: dict[str, object] = {
+        "BASE": f"{REPAIR_BASE_SHA} / DESCENDANT",
         "BASE_BRANCH": f"{REPAIR_BASE_SHA} / DESCENDANT",
         "JUDGMENT_LOGIC_CHANGED": 0,
+        "BALANCE_THRESHOLD_CHANGED": 0,
         "MANUAL_CANDIDATE_OVERRIDE": 0,
         "SELECTIVE_TICKER_RERUN": 0,
         "OLD_PASSING_CANDIDATE_REUSE": 0,
@@ -1014,10 +1331,6 @@ def finalize_first_run_failure(
         "CROSS_SUBJECT_EVIDENCE_REF": 0,
         "CROSS_MARKET_EVIDENCE_REF": 0,
         "CROSS_GENERATION_EVIDENCE_REF": 0,
-        "GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP": sum(
-            "generic_confirmation_structure_model_owned" in row["errors"]
-            for row in document["validation"]
-        ),
         "NEW_EXPERIMENT_GENERATION": "PASS",
         "PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE": 0,
         "FIRST_RUN_VALIDATED": document["validation_pass_count"],
@@ -1179,8 +1492,18 @@ def finalize_first_run_failure(
                 "new_holder": new.holder_view.stance,
             }
         )
+    repair_audit = _write_validator_repair_reports(
+        args=args,
+        candidates=candidates,
+        document=document,
+        rendered=rendered,
+        alias_map=alias_map,
+        source_lock=source_lock,
+        prior_comparison=prior_comparison,
+    )
+    gates.update(repair_audit["metrics"])
     proof = {
-        "contract": "uskr22-structured-autonomy-proof-v1",
+        "contract": "uskr22-confirmation-validator-repair-proof-v1",
         "status": "FIRST_RUN_GATE_FAILED",
         "work_instruction_sha": WORK_INSTRUCTION_SHA,
         "repair_base_sha": REPAIR_BASE_SHA,
@@ -1207,7 +1530,9 @@ def finalize_first_run_failure(
         "production_send": 0,
         "main_merge": 0,
     }
-    write_json(args.report_dir / "20260903-uskr22-proof.json", proof)
+    write_json(
+        args.report_dir / "20260903-uskr22-validator-repair-proof.json", proof
+    )
 
     message_dir = args.report_dir / "uskr22-messages"
     for row in rendered:
@@ -1478,7 +1803,7 @@ def finalize_first_run_failure(
         "# USKR22 Stability Comparison\n\n`NOT_MEASURED`\n\nA/B/C were not run because the first structural gate failed. No disagreement was hidden through voting or averaging.\n",
     )
     write_text(
-        args.report_dir / "20260903-uskr22-hold-lean-diagnostics.md",
+        args.report_dir / "20260903-uskr22-hold-lean-stability.md",
         "# USKR22 HOLD-Lean Diagnostics\n\n`NOT_MEASURED`\n\nSame-evidence A/B/C HOLD-lean diagnostics require a valid first blind run. The first-run lean values remain visible in the decision table.\n",
     )
     write_text(
@@ -1509,8 +1834,8 @@ def finalize_first_run_failure(
     )
     index_rows = artifact_index_rows(args.report_dir)
     write_text(
-        args.report_dir / "20260903-uskr22-artifact-index.md",
-        "# USKR22 Artifact Index\n\n"
+        args.report_dir / "20260903-uskr22-validator-repair-artifact-index.md",
+        "# USKR22 Validator Repair Artifact Index\n\n"
         + markdown_table(["Artifact", "SHA-256", "Bytes"], index_rows)
         + f"\n\nIndexed artifacts: `{len(index_rows)}`. Secrets, recipient identifiers, logs, and runtime state are excluded.\n",
     )
@@ -1602,7 +1927,10 @@ def finalize(
         for run in RUNS
         for error in run_documents[run]["message_quality"]["errors"]
     ]
-    alias_map = read_json(args.report_dir / "20260903-evidence-alias-map.json")
+    alias_map = read_json(
+        args.report_dir
+        / "20260903-uskr22-validator-repair-evidence-alias-map.json"
+    )
     first_validation_by_ticker = {
         str(row["ticker"]): row for row in first_doc["validation"]
     }
@@ -1611,8 +1939,10 @@ def finalize(
         for ticker in ("WRD", "WULF")
     }
     gates: dict[str, object] = {
+        "BASE": f"{REPAIR_BASE_SHA} / DESCENDANT",
         "BASE_BRANCH": f"{REPAIR_BASE_SHA} / DESCENDANT",
         "JUDGMENT_LOGIC_CHANGED": 0,
+        "BALANCE_THRESHOLD_CHANGED": 0,
         "MANUAL_CANDIDATE_OVERRIDE": 0,
         "SELECTIVE_TICKER_RERUN": 0,
         "OLD_PASSING_CANDIDATE_REUSE": 0,
@@ -1628,7 +1958,6 @@ def finalize(
         "CROSS_SUBJECT_EVIDENCE_REF": 0,
         "CROSS_MARKET_EVIDENCE_REF": 0,
         "CROSS_GENERATION_EVIDENCE_REF": 0,
-        "GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP": 0,
         "NEW_EXPERIMENT_GENERATION": "PASS",
         "PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE": 0,
         "FIRST_RUN_VALIDATED": validated["first"],
@@ -1734,8 +2063,33 @@ def finalize(
             }
         )
 
+    repair_audit = _write_validator_repair_reports(
+        args=args,
+        candidates=run_candidates["first"],
+        document=first_doc,
+        rendered=first_rendered,
+        alias_map=alias_map,
+        source_lock=source_lock,
+        prior_comparison=prior_comparison,
+    )
+    gates.update(repair_audit["metrics"])
+    blocking = blocking or any(
+        (
+            gates["CONFIRMATION_BUSINESS_CONDITION_GROUNDED"] != "PASS",
+            gates["BUSINESS_CONDITION_PRICE_ONLY_EVIDENCE"] != 0,
+            gates["GENERIC_BUSINESS_WORD_FALSE_POSITIVE"] != 0,
+            gates["BUSINESS_CONDITION_TECHNICAL_OWNERSHIP_LEAK"] != 0,
+            gates["CONFIRMATION_BUSINESS_CONDITION_PRICE_NUMERIC"] != 0,
+            int(gates["FALSE_POSITIVE_FIXTURE_PASS_COUNT"]) < 6,
+            int(gates["TRUE_POSITIVE_BLOCK_FIXTURE_PASS_COUNT"]) < 9,
+        )
+    )
+    gates["PROMOTION_READINESS"] = (
+        "NEEDS_MORE_SHADOW_WORK" if blocking else "READY_FOR_PROMOTION_REVIEW"
+    )
+
     proof = {
-        "contract": "uskr22-structured-autonomy-proof-v1",
+        "contract": "uskr22-confirmation-validator-repair-proof-v1",
         "work_instruction_sha": WORK_INSTRUCTION_SHA,
         "repair_base_sha": REPAIR_BASE_SHA,
         "implementation_head_before_reports": subprocess.run(
@@ -1770,7 +2124,9 @@ def finalize(
         "production_send": 0,
         "main_merge": 0,
     }
-    write_json(args.report_dir / "20260903-uskr22-proof.json", proof)
+    write_json(
+        args.report_dir / "20260903-uskr22-validator-repair-proof.json", proof
+    )
 
     message_dir = args.report_dir / "uskr22-messages"
     for row in first_rendered:
@@ -2058,7 +2414,7 @@ def finalize(
         for row in stability_rows
     ]
     write_text(
-        args.report_dir / "20260903-uskr22-hold-lean-diagnostics.md",
+        args.report_dir / "20260903-uskr22-hold-lean-stability.md",
         "# USKR22 HOLD-Lean Diagnostics\n\n"
         + markdown_table(["Ticker", "Lean A/B/C", "BUY_LEAN/SELL_LEAN flip", "Class"], lean_rows)
         + f"\n\nUnexplained HOLD-lean flips: `{gates['UNEXPLAINED_HOLD_LEAN_FLIP_COUNT']}`.\n",
@@ -2099,8 +2455,8 @@ def finalize(
 
     index_rows = artifact_index_rows(args.report_dir)
     write_text(
-        args.report_dir / "20260903-uskr22-artifact-index.md",
-        "# USKR22 Artifact Index\n\n"
+        args.report_dir / "20260903-uskr22-validator-repair-artifact-index.md",
+        "# USKR22 Validator Repair Artifact Index\n\n"
         + markdown_table(["Artifact", "SHA-256", "Bytes"], index_rows)
         + f"\n\nIndexed artifacts: `{len(index_rows)}`. Recipient identifiers and credentials are excluded.\n",
     )

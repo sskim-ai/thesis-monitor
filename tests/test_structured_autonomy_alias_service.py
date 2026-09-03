@@ -25,7 +25,9 @@ def _alias_candidate() -> tuple[dict[str, object], object]:
         if isinstance(value, Mapping):
             return {str(child_key): replace(child, str(child_key)) for child_key, child in value.items()}
         if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
-            if key == "evidence_refs" or (key and key.endswith("_basis")):
+            if key in {"confirmation_business_condition_refs", "evidence_refs"} or (
+                key and key.endswith("_basis")
+            ):
                 return [by_ref[str(child)] for child in value]
             return [replace(child, key) for child in value]
         return value
@@ -89,7 +91,10 @@ def test_dynamic_schema_constrains_every_reference_array_to_subject_aliases() ->
             properties = value.get("properties")
             if isinstance(properties, dict):
                 for name, child in properties.items():
-                    if name == "evidence_refs" or name.endswith("_basis"):
+                    if name in {
+                        "confirmation_business_condition_refs",
+                        "evidence_refs",
+                    } or name.endswith("_basis"):
                         reference_items.append(child["items"])
                     collect(child)
             for key, child in value.items():
