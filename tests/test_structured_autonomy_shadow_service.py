@@ -134,7 +134,8 @@ def _candidate() -> StructuredAutonomyCandidate:
             currency="USD",
             preferred_entry_mode="PULLBACK",
             preferred_entry_reason="가격 비대칭이 더 나은 구간을 우선합니다.",
-            confirmation_condition="사업 근거와 가격 방어를 함께 확인합니다.",
+            confirmation_semantics="VERIFIED_RESISTANCE_BREAKOUT",
+            confirmation_business_condition="상용화 경제성과 공급 완화를 함께 확인합니다.",
         ),
         holder_view=HolderViewV2(
             stance="HOLDABLE",
@@ -181,6 +182,7 @@ def test_supported_pullback_and_confirmation_cannot_be_silently_dropped() -> Non
                     "breakout_confirmation_level": None,
                     "breakout_confirmation_basis": (),
                     "preferred_entry_mode": "NONE",
+                    "confirmation_semantics": "NONE",
                 }
             )
         }
@@ -379,7 +381,11 @@ def test_renderer_uses_accepted_plan_once_and_separates_price_roles() -> None:
     assert "판단 방향: BUY 쪽 HOLD" in rendered.text
     assert "현재 신규진입: WAIT" in rendered.text
     assert "눌림 진입 검토: $90~$94" in rendered.text
-    assert "추세 확인 가격: $112" in rendered.text
+    assert (
+        "추세 확인 재평가: $112 저항 상단 돌파 확인 + "
+        "상용화 경제성과 공급 완화를 함께 확인합니다."
+    ) in rendered.text
+    assert "• 확인 조건:" not in rendered.text
     assert "상방 보유 관점 재검토: $108~$112" in rendered.text
     assert "하방 재점검: $86" in rendered.text
     assert "투자 논리: 약화" not in rendered.text
@@ -405,7 +411,95 @@ def test_avoid_renderer_uses_reconsideration_not_actionable_entry() -> None:
     assert rendered.validation.valid is True
     assert "현재 신규진입: AVOID" in rendered.text
     assert "재검토 가격 조건: $90~$94" in rendered.text
+    assert "상향 재검토: $112 저항 상단 돌파 확인" in rendered.text
     assert "눌림 진입 검토:" not in rendered.text
+
+
+def test_model_owned_confirmation_business_condition_rejects_price_structure() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={
+                    "confirmation_business_condition": (
+                        "저항 돌파와 상용화 경제성을 함께 확인합니다."
+                    )
+                }
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "generic_confirmation_structure_model_owned" in result.errors
+
+
+def test_confirmation_semantics_must_match_selected_price_basis() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_view": _candidate().new_buyer_view.model_copy(
+                update={"confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION"}
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "confirmation_semantics_basis_mismatch" in result.errors
+
+
+def test_confirmation_renderer_structure_is_not_substantive_repetition() -> None:
+    validation = StructuredAutonomyValidation(valid=True, errors=())
+    rendered = (
+        RenderedStructuredAutonomy(
+            ticker="ONE",
+            decision="HOLD",
+            lean=HoldLean.NEUTRAL,
+            text=(
+                "🧠 종합 방향: HOLD\n"
+                "• 상향 재검토: $10 종가 상회 확인 + 상용화 경제성을 확인합니다.\n"
+            ),
+            validation=validation,
+        ),
+        RenderedStructuredAutonomy(
+            ticker="TWO",
+            decision="HOLD",
+            lean=HoldLean.NEUTRAL,
+            text=(
+                "🧠 종합 방향: HOLD\n"
+                "• 상향 재검토: $20 종가 상회 확인 + 수익성 정상화를 확인합니다.\n"
+            ),
+            validation=validation,
+        ),
+    )
+
+    result = structured_autonomy_message_quality(rendered)
+
+    assert result["status"] == "PASS"
+    assert result["repeated_substantive_span_count"] == 0
+
+
+def test_confirmation_renderer_still_rejects_repeated_business_condition() -> None:
+    validation = StructuredAutonomyValidation(valid=True, errors=())
+    business = "상용화 경제성과 수익성 정상화를 함께 확인합니다."
+    rendered = tuple(
+        RenderedStructuredAutonomy(
+            ticker=ticker,
+            decision="HOLD",
+            lean=HoldLean.NEUTRAL,
+            text=f"🧠 종합 방향: HOLD\n• 상향 재검토: ${level} 종가 상회 확인 + {business}\n",
+            validation=validation,
+        )
+        for ticker, level in (("ONE", 10), ("TWO", 20))
+    )
+
+    result = structured_autonomy_message_quality(rendered)
+
+    assert result["status"] == "FAIL"
+    assert business in result["repeated_substantive_spans"]
 
 
 def test_directional_unknown_needs_non_unknown_economic_evidence() -> None:

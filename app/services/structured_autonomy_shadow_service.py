@@ -32,6 +32,11 @@ RENDERER_CONTRACT = "structured-autonomy-decision-v2-shadow-renderer"
 BusinessThesisChange = Literal["STRENGTHENED", "UNCHANGED", "WEAKENED", "UNRESOLVED"]
 NewBuyerStance = Literal["ATTRACTIVE", "WAIT", "AVOID"]
 PreferredEntryMode = Literal["PULLBACK", "CONFIRMATION", "BOTH", "NONE"]
+ConfirmationSemantics = Literal[
+    "REGISTERED_PRICE_CONFIRMATION",
+    "VERIFIED_RESISTANCE_BREAKOUT",
+    "NONE",
+]
 HolderStance = Literal["HOLDABLE", "REVIEW", "REDUCE"]
 SellDriverClass = Literal[
     "SECTOR_NORMAL",
@@ -75,7 +80,8 @@ class NewBuyerViewV2(FrozenModel):
     currency: str | None
     preferred_entry_mode: PreferredEntryMode
     preferred_entry_reason: str = Field(min_length=1, max_length=420)
-    confirmation_condition: str = Field(min_length=1, max_length=420)
+    confirmation_semantics: ConfirmationSemantics
+    confirmation_business_condition: str = Field(min_length=1, max_length=420)
 
 
 class HolderViewV2(FrozenModel):
@@ -154,6 +160,10 @@ _NEGATED_PROHIBITED_LANGUAGE = re.compile(
 )
 _PROSE_NUMBER = re.compile(r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?")
 _KOREAN_PROSE = re.compile(r"[가-힣]")
+_MODEL_OWNED_CONFIRMATION_STRUCTURE = re.compile(
+    r"종가|돌파|안착|확인선|저항|지지|가격|close|breakout|resistance|support",
+    re.IGNORECASE,
+)
 _DETAIL_JUDGMENT = re.compile(
     r"AI\s*분석\s*판단|종합\s*방향|판단\s*균형|판단\s*방향|판단\s*확신도|"
     r"투자\s*논리\s*:|사업\s*논리\s*상태|신규진입\s*관점|보유자\s*관점|"
@@ -348,7 +358,7 @@ def _prose(candidate: StructuredAutonomyCandidate) -> tuple[str, ...]:
     ) + (
         buyer.summary,
         buyer.preferred_entry_reason,
-        buyer.confirmation_condition,
+        buyer.confirmation_business_condition,
         holder.summary,
         holder.business_invalidation_condition,
     )
@@ -429,6 +439,8 @@ def validate_structured_autonomy_candidate(
             errors.append("confirmation_basis_without_level")
         if confirmations:
             errors.append("supported_confirmation_level_not_preserved")
+        if buyer.confirmation_semantics != "NONE":
+            errors.append("confirmation_semantics_without_level")
     else:
         matching_levels = [row for row in confirmations if _same(confirmation, row[0])]
         if not matching_levels:
@@ -437,6 +449,36 @@ def validate_structured_autonomy_candidate(
             row[1] for row in matching_levels
         ):
             errors.append("confirmation_basis_mismatch")
+        else:
+            registered = price_map.get("registered_price_rules")
+            registered_ref = (
+                str(registered.get("basis_ref"))
+                if isinstance(registered, Mapping) and registered.get("basis_ref")
+                else None
+            )
+            registered_level = (
+                _as_float(registered.get("confirmation_price"))
+                if isinstance(registered, Mapping)
+                else None
+            )
+            expected_semantics = {
+                (
+                    "REGISTERED_PRICE_CONFIRMATION"
+                    if ref == registered_ref
+                    and registered_level is not None
+                    and _same(confirmation, registered_level)
+                    else "VERIFIED_RESISTANCE_BREAKOUT"
+                )
+                for _level, ref in matching_levels
+                if ref in buyer.breakout_confirmation_basis
+            }
+            if buyer.confirmation_semantics not in expected_semantics:
+                errors.append("confirmation_semantics_basis_mismatch")
+
+    if _MODEL_OWNED_CONFIRMATION_STRUCTURE.search(
+        buyer.confirmation_business_condition
+    ):
+        errors.append("generic_confirmation_structure_model_owned")
 
     has_pullback = p_low is not None and p_high is not None
     has_confirmation = confirmation is not None
@@ -566,6 +608,14 @@ def _thesis_language(value: BusinessThesisChange) -> str:
     }[value]
 
 
+def _confirmation_structure(semantics: ConfirmationSemantics) -> str:
+    return {
+        "REGISTERED_PRICE_CONFIRMATION": "종가 상회 확인",
+        "VERIFIED_RESISTANCE_BREAKOUT": "저항 상단 돌파 확인",
+        "NONE": "",
+    }[semantics]
+
+
 def render_structured_autonomy_message(
     packet: DecisionEvidencePacket,
     candidate: StructuredAutonomyCandidate,
@@ -622,15 +672,20 @@ def render_structured_autonomy_message(
             lines.append(f"• 눌림 진입 검토: {zone} · 지지 확인 시 재평가")
     if buyer.breakout_confirmation_level is not None:
         level = _currency_value(buyer.breakout_confirmation_level, buyer.currency)
+        condition = (
+            f"{level} {_confirmation_structure(buyer.confirmation_semantics)}"
+            f" + {buyer.confirmation_business_condition}"
+        )
         if buyer.stance == "AVOID":
-            lines.append(f"• 상향 재검토 조건: {level} 돌파·안착과 사업 근거 확인")
+            lines.append(f"• 상향 재검토: {condition}")
         else:
-            lines.append(f"• 추세 확인 가격: {level} · 돌파·안착 시 신규진입 재평가")
+            lines.append(f"• 추세 확인 재평가: {condition}")
+    else:
+        lines.append(f"• 사업 확인 조건: {buyer.confirmation_business_condition}")
     lines.extend(
         [
             f"• 현재 선호: {preferred}",
             f"• 이유: {buyer.preferred_entry_reason}",
-            f"• 확인 조건: {buyer.confirmation_condition}",
             "",
             "💼 보유자 관점",
             f"• 현재 관점: {holder.stance}",
@@ -709,7 +764,35 @@ def structured_autonomy_message_quality(
         judgment_text = _judgment_owned_text(row.text)
         for line in judgment_text.splitlines():
             normalized = re.sub(r"\s+", " ", line.strip().removeprefix("• "))
-            if len(normalized) >= 36:
+            if normalized.startswith(("상향 재검토:", "추세 확인 재평가:")):
+                normalized = normalized.partition(" + ")[2]
+            elif normalized.startswith("사업 확인 조건:"):
+                normalized = normalized.partition(":")[2].strip()
+            elif normalized.startswith(
+                (
+                    "🏢 ",
+                    "🧠 ",
+                    "🎯 ",
+                    "🆕 ",
+                    "💼 ",
+                    "🔄 ",
+                    "종합 방향:",
+                    "판단 균형:",
+                    "판단 방향:",
+                    "판단 확신도:",
+                    "사업 논리 상태:",
+                    "현재 신규진입:",
+                    "재검토 가격 조건:",
+                    "눌림 진입 검토:",
+                    "현재 선호:",
+                    "현재 관점:",
+                    "상방 보유 관점 재검토:",
+                    "하방 재점검:",
+                )
+            ):
+                continue
+            minimum_length = 12 if "확인" in normalized else 36
+            if len(normalized) >= minimum_length:
                 local.append(normalized)
                 substantive.append(normalized)
         duplicates = sorted({line for line, count in Counter(local).items() if count > 1})

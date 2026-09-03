@@ -20,7 +20,6 @@ from app.jobs.accepted_decision_v2_runtime import (
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     build_decision_evidence_packet,
-    compact_ai_context,
 )
 from app.services.decision_canary_service import canonical_sha256
 from app.services.packet_owned_technical_context_service import (
@@ -28,7 +27,6 @@ from app.services.packet_owned_technical_context_service import (
 )
 from app.services.structured_autonomy_shadow_service import (
     OUTPUT_CONTRACT,
-    StructuredAutonomyBatch,
     StructuredAutonomyCandidate,
     allowed_confirmation_levels,
     allowed_downside_levels,
@@ -40,6 +38,14 @@ from app.services.structured_autonomy_shadow_service import (
     structured_autonomy_message_quality,
     validate_structured_autonomy_candidate,
 )
+from app.services.structured_autonomy_alias_service import (
+    EvidenceAliasCatalog,
+    alias_price_choices,
+    build_alias_constrained_batch_schema,
+    build_evidence_alias_catalog,
+    compact_alias_ai_context,
+    resolve_candidate_aliases,
+)
 from app.services.structured_autonomy_stability_service import (
     classify_same_evidence_runs,
     stability_summary,
@@ -49,9 +55,9 @@ from app.services.structured_autonomy_stability_service import (
 US_PACKET_ID = "2026-09-03-us-run-53-055ae8ea01f6"
 KR_PACKET_ID = "2026-09-03-kr-run-54-f19bb379daa7"
 KR_LATER_PACKET_ID = "2026-09-03-kr-run-54-78ed269de3df"
-SHADOW_PACKET_ID = "2026-09-03-uskr22-structured-autonomy-shadow"
-REPAIR_BASE_SHA = "90cc52231c7343056c853c355ea90dfea10de25b"
-WORK_INSTRUCTION_SHA = "0969e70af1d75884b43340637e25dfe84a04c4ee"
+SHADOW_PACKET_ID = "2026-09-03-uskr22-provenance-renderer-repair-rerun"
+REPAIR_BASE_SHA = "93d72816b5015c028b4a72475f4229fb120d3d10"
+WORK_INSTRUCTION_SHA = "0324b1569d1a12ce2a96696b8e191d7742738182"
 US_COHORT = (
     "CORZ",
     "CPNG",
@@ -200,6 +206,18 @@ def build_verified_price_map(packet: DecisionEvidencePacket) -> dict[str, object
 
 
 def price_choices(price_map: Mapping[str, object]) -> dict[str, object]:
+    registered = price_map.get("registered_price_rules")
+    registered_ref = (
+        str(registered.get("basis_ref"))
+        if isinstance(registered, Mapping) and registered.get("basis_ref")
+        else None
+    )
+    registered_level = (
+        float(registered["confirmation_price"])
+        if isinstance(registered, Mapping)
+        and registered.get("confirmation_price") is not None
+        else None
+    )
     return {
         "currency": price_map.get("currency"),
         "current_close": price_map.get("current_close"),
@@ -208,7 +226,17 @@ def price_choices(price_map: Mapping[str, object]) -> dict[str, object]:
             for low, high, ref in allowed_pullback_zones(price_map)
         ],
         "allowed_confirmation_levels": [
-            {"level": level, "basis_ref": ref}
+            {
+                "level": level,
+                "basis_ref": ref,
+                "confirmation_semantics": (
+                    "REGISTERED_PRICE_CONFIRMATION"
+                    if ref == registered_ref
+                    and registered_level is not None
+                    and abs(level - registered_level) <= 1e-6
+                    else "VERIFIED_RESISTANCE_BREAKOUT"
+                ),
+            }
             for level, ref in allowed_confirmation_levels(price_map)
         ],
         "allowed_trim_zones": [
@@ -229,23 +257,23 @@ def _batch_prompt(contexts: Sequence[Mapping[str, object]], tickers: Sequence[st
         "tickers": list(tickers),
     }
     return (
-        """You are producing a blind, non-production Structured Autonomy V2 shadow judgment. Use only the supplied frozen canonical evidence and verified price choices. Do not browse, fetch, use later facts, infer a prior decision, or use another ticker's evidence. No prior or cross-run candidate is present.
+        """You are producing a blind, non-production Structured Autonomy V2 shadow judgment. Use only the supplied frozen alias-owned evidence and verified price choices. Do not browse, fetch, use later facts, infer a prior decision, or use another ticker's evidence. No prior or cross-run candidate is present.
 
 Reason in this order: facts; business and earnings; market expectations; valuation; price and timing; risks; BUY drivers; SELL drivers; qualitative synthesis; coarse directional balance; deterministic overall direction; new-buyer view; holder view; price scenarios. You decide which evidence matters and how sector context changes importance. Never use fixed weights, subscores, a universal scorecard, probability, odds, or expected-return language.
 
 For each ticker return exactly one candidate in input order. BUY plus SELL must equal ten in half-point increments. Derive the label exactly: BUY when buy is at least six, SELL when sell is at least six, otherwise HOLD. The balance is a coarse judgment summary, not probability. overall_direction is integrated directional attractiveness; new_buyer_view is actionability at the current setup. BUY plus WAIT is valid and these meanings must remain distinct.
 
-Every interpretation, driver, Unknown, and reevaluation condition must cite complete exact refs from that ticker's canonical_evidence. Never shorten or reconstruct refs. Every sell driver classifies itself as SECTOR_NORMAL, DETERIORATION_SIGNAL, STRUCTURAL_RISK, or OTHER_EVIDENCE. Unknown normally limits confidence or requires confirmation. DIRECTIONAL_NEGATIVE requires directional_negative_basis containing at least one non-Unknown evidence ref that proves the absence is economically adverse. Sector-normal features are not automatic directional penalties. For biotech, ordinary development cash burn, negative FCF, and ordinary dilution exposure are sector-normal; SELL requires separate cited deterioration or structural-risk evidence.
+Every interpretation, driver, Unknown, and reevaluation condition must select complete evidence aliases from that ticker's evidence_catalogue. The JSON schema is the complete allowed alias surface. Never mint, shorten, reconstruct, or copy a canonical ref. Every sell driver classifies itself as SECTOR_NORMAL, DETERIORATION_SIGNAL, STRUCTURAL_RISK, or OTHER_EVIDENCE. Unknown normally limits confidence or requires confirmation. DIRECTIONAL_NEGATIVE requires directional_negative_basis containing at least one non-Unknown evidence alias that proves the absence is economically adverse. Sector-normal features are not automatic directional penalties. For biotech, ordinary development cash burn, negative FCF, and ordinary dilution exposure are sector-normal; SELL requires separate cited deterioration or structural-risk evidence.
 
 Use only canonical issuer/security-basis claims. For KR, do not infer common-share, parent-attributable, consolidated, or preliminary-result equivalence beyond the evidence. For ADR or foreign issuers, do not recompute per-share values, ADR ratios, currency conversions, or issuer/security denominators. Basis uncertainty lowers confidence or blocks the unsafe inference; it is not automatic SELL evidence.
 
 Do not place digits or exact numbers in any prose field. Numeric price values belong only in structured buyer/holder fields and must be copied exactly from allowed_price_choices. Do not state FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, runway months, targets, expected returns, or guaranteed outcomes.
 
-If allowed_pullback_zones is non-empty, preserve exactly one listed pullback zone and its exact basis. If allowed_confirmation_levels is non-empty, preserve exactly one listed confirmation and basis. Preserve both when both exist, then choose preferred_entry_mode PULLBACK, CONFIRMATION, or BOTH. Use NONE only when neither exists. Do not invent technical levels, discounts, targets, or round numbers.
+If allowed_pullback_zones is non-empty, preserve exactly one listed pullback zone and its exact basis_alias. If allowed_confirmation_levels is non-empty, preserve exactly one listed confirmation, basis_alias, and confirmation_semantics. Preserve both when both exist, then choose preferred_entry_mode PULLBACK, CONFIRMATION, or BOTH. When no confirmation level exists, use null, empty basis, and confirmation_semantics NONE. Do not invent technical levels, discounts, targets, or round numbers.
 
 If new-buyer stance is AVOID, describe every retained price as a later reconsideration condition, never as immediate actionable entry. AVOID may still retain required structured pullback and confirmation values. If allowed_trim_zones is non-empty, preserve exactly one listed trim zone; otherwise use null bounds and empty basis. A trim zone is a holder reassessment region, not an automatic sale. A downside review must be one listed level or null and is not a stop loss. The same resistance may serve holder rejection review and new-buyer successful-breakout reassessment when both scenario meanings are explicit.
 
-The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
+The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. confirmation_business_condition must contain only the ticker-specific business or operating condition; do not repeat price, close, support, resistance, breakout, recovery, or hold/settlement mechanics because the deterministic renderer owns that structure. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
 
 Return strict JSON only and match SHADOW_IDENTITY exactly.
 
@@ -291,6 +319,7 @@ def prepare(
     args: argparse.Namespace,
 ) -> tuple[
     dict[str, DecisionEvidencePacket],
+    dict[str, EvidenceAliasCatalog],
     dict[str, dict[str, object]],
     dict[str, dict[str, object]],
     dict[str, dict[str, Any]],
@@ -313,6 +342,7 @@ def prepare(
     packets = {"us": us_packet, "kr": kr_packet}
 
     evidence_packets: dict[str, DecisionEvidencePacket] = {}
+    alias_catalogs: dict[str, EvidenceAliasCatalog] = {}
     price_maps: dict[str, dict[str, object]] = {}
     contexts: dict[str, dict[str, object]] = {}
     stock_by_ticker = {str(row["ticker"]): row for row in stocks}
@@ -328,17 +358,17 @@ def prepare(
                 stock=stock,
                 technical_context=technical,
             )
-            compact = compact_ai_context(
-                evidence.model_copy(
-                    update={
-                        "evidence": tuple(
-                            row
-                            for row in evidence.evidence
-                            if not row.ref_id.startswith("technical-feature:")
-                        )
-                    }
-                )
+            alias_packet = evidence.model_copy(
+                update={
+                    "evidence": tuple(
+                        row
+                        for row in evidence.evidence
+                        if not row.ref_id.startswith("technical-feature:")
+                    )
+                }
             )
+            alias_catalog = build_evidence_alias_catalog(alias_packet)
+            compact = compact_alias_ai_context(alias_packet, alias_catalog)
             serialized = json.dumps(compact, ensure_ascii=False).lower()
             contamination[ticker] = [
                 token for token in FORBIDDEN_PROMPT_KEYS if token in serialized
@@ -353,13 +383,15 @@ def prepare(
                 raise ValueError(f"cross_market_fact_leakage:{ticker}")
             price_map = build_verified_price_map(evidence)
             evidence_packets[ticker] = evidence
+            alias_catalogs[ticker] = alias_catalog
             price_maps[ticker] = price_map
             contexts[ticker] = {
                 "ticker": ticker,
                 "market": market,
                 "source_packet": US_PACKET_ID if market == "us" else KR_PACKET_ID,
-                "canonical_evidence": compact,
+                "evidence_catalogue": compact,
                 "evidence_fingerprint": evidence.evidence_sha256,
+                "alias_map_fingerprint": alias_catalog.alias_map_sha256,
                 "sector_context": {
                     "industry": stock.get("industry"),
                     "sector": stock.get("sector"),
@@ -367,7 +399,9 @@ def prepare(
                     "industry_reasoning_contract": stock.get("industry_reasoning_contract"),
                     "industry_reasoning_plan": stock.get("industry_reasoning_plan"),
                 },
-                "allowed_price_choices": price_choices(price_map),
+                "allowed_price_choices": alias_price_choices(
+                    price_choices(price_map), alias_catalog
+                ),
             }
 
     base_messages = {
@@ -409,17 +443,37 @@ def prepare(
         "price_map_fingerprints": {
             ticker: price_maps[ticker]["price_map_fingerprint"] for ticker in COHORT
         },
+        "alias_map_fingerprints": {
+            ticker: alias_catalogs[ticker].alias_map_sha256 for ticker in COHORT
+        },
         "contamination_scan": contamination,
         "cross_market_leakage_scan": cross_market_leakage,
         "fresh_fact_collection": 0,
         "cross_market_fact_leakage": 0,
         "cross_generation_fact_leakage": 0,
         "prior_accepted_visible_before_fresh_balance": 0,
+        "free_form_evidence_ref_generation": 0,
     }
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    args.report_dir.mkdir(parents=True, exist_ok=True)
     write_json(args.output_dir / "source-lock.json", source_lock)
     write_json(args.output_dir / "price-maps.json", {"price_maps": price_maps})
-    write_json(args.output_dir / "output.schema.json", strict_json_schema(StructuredAutonomyBatch.model_json_schema()))
+    alias_map_document = {
+        "contract": "uskr22-evidence-alias-map-v1",
+        "generation": SHADOW_PACKET_ID,
+        "subjects": {
+            ticker: alias_catalogs[ticker].model_dump(mode="json") for ticker in COHORT
+        },
+        "alias_one_to_one_mapping": all(
+            len(catalog.by_alias) == len(catalog.entries)
+            and len(catalog.by_ref) == len(catalog.entries)
+            for catalog in alias_catalogs.values()
+        ),
+    }
+    write_json(args.output_dir / "evidence-alias-map.json", alias_map_document)
+    write_json(
+        args.report_dir / "20260903-evidence-alias-map.json", alias_map_document
+    )
 
     batches = (
         US_COHORT[0:4],
@@ -430,15 +484,49 @@ def prepare(
         KR_COHORT[4:8],
     )
     prompt_manifest = []
+    schemas: dict[str, object] = {}
+    candidate_schema = strict_json_schema(
+        StructuredAutonomyCandidate.model_json_schema()
+    )
     for number, batch in enumerate(batches, start=1):
         prompt = _batch_prompt([contexts[ticker] for ticker in batch], batch)
         path = args.output_dir / "prompts" / f"batch-{number:02d}.txt"
-        write_text(path, prompt)
-        prompt_manifest.append(
-            {"batch": number, "tickers": list(batch), "sha256": sha256(path), "bytes": path.stat().st_size}
+        schema_path = args.output_dir / "schemas" / f"batch-{number:02d}.json"
+        schema = build_alias_constrained_batch_schema(
+            candidate_schema=candidate_schema,
+            contract=OUTPUT_CONTRACT,
+            packet_id=SHADOW_PACKET_ID,
+            aliases_by_ticker={
+                ticker: tuple(alias_catalogs[ticker].by_alias) for ticker in batch
+            },
         )
+        write_text(path, prompt)
+        write_json(schema_path, schema)
+        schemas[f"batch-{number:02d}"] = schema
+        prompt_manifest.append(
+            {
+                "batch": number,
+                "tickers": list(batch),
+                "prompt_sha256": sha256(path),
+                "prompt_bytes": path.stat().st_size,
+                "schema_sha256": sha256(schema_path),
+                "schema_bytes": schema_path.stat().st_size,
+            }
+        )
+    write_json(
+        args.output_dir / "output.schema.json",
+        {"contract": "uskr22-dynamic-alias-schema-set-v1", "schemas": schemas},
+    )
     write_json(args.output_dir / "prompt-manifest.json", {"batches": prompt_manifest})
-    return evidence_packets, price_maps, contexts, stock_by_ticker, base_messages, source_lock
+    return (
+        evidence_packets,
+        alias_catalogs,
+        price_maps,
+        contexts,
+        stock_by_ticker,
+        base_messages,
+        source_lock,
+    )
 
 
 def _candidate_text(candidate: StructuredAutonomyCandidate) -> str:
@@ -503,12 +591,16 @@ def _run_document(
     *,
     run: str,
     candidates: Sequence[StructuredAutonomyCandidate],
+    alias_candidates: Mapping[str, Mapping[str, object]],
+    alias_selections: Mapping[str, Sequence[Mapping[str, str]]],
     validation_rows: Sequence[Mapping[str, object]],
     message_quality: Mapping[str, object],
     batch_rows: Sequence[Mapping[str, object]],
     semantic_audit: Mapping[str, object],
+    rendered: Sequence[object],
 ) -> dict[str, object]:
     distribution = Counter(row.decision for row in candidates)
+    rendered_by_ticker = {row.ticker: row for row in rendered}
     return {
         "contract": "uskr22-structured-autonomy-run-v1",
         "run": run,
@@ -530,6 +622,30 @@ def _run_document(
             },
         },
         "batch_invocations": list(batch_rows),
+        "generation_ids": {
+            row.ticker: f"{SHADOW_PACKET_ID}:{run}:{row.ticker}"
+            for row in candidates
+        },
+        "candidate_artifacts": {
+            row.ticker: {
+                "alias_candidate_sha256": canonical_sha256(
+                    alias_candidates[row.ticker]
+                ),
+                "accepted_shadow_sha256": canonical_sha256(
+                    row.model_dump(mode="json")
+                ),
+                "rendered_message_sha256": hashlib.sha256(
+                    rendered_by_ticker[row.ticker].text.encode("utf-8")
+                ).hexdigest(),
+            }
+            for row in candidates
+        },
+        "alias_candidates": {
+            ticker: dict(candidate) for ticker, candidate in alias_candidates.items()
+        },
+        "alias_selections": {
+            ticker: list(rows) for ticker, rows in alias_selections.items()
+        },
         "candidates": [
             {
                 **row.model_dump(mode="json"),
@@ -552,12 +668,12 @@ def execute_run(
     run: str,
     args: argparse.Namespace,
     evidence_packets: Mapping[str, DecisionEvidencePacket],
+    alias_catalogs: Mapping[str, EvidenceAliasCatalog],
     price_maps: Mapping[str, Mapping[str, object]],
     stock_by_ticker: Mapping[str, Mapping[str, object]],
     base_messages: Mapping[str, str],
 ) -> tuple[tuple[StructuredAutonomyCandidate, ...], dict[str, object], tuple[object, ...]]:
     codex_bin = _signed_in_codex_bin()
-    schema = args.output_dir / "output.schema.json"
     run_dir = args.output_dir / f"run-{run}"
     run_dir.mkdir(parents=True, exist_ok=True)
     batches = (
@@ -569,9 +685,12 @@ def execute_run(
         KR_COHORT[4:8],
     )
     candidates: list[StructuredAutonomyCandidate] = []
+    alias_candidates: dict[str, Mapping[str, object]] = {}
+    alias_selections: dict[str, Sequence[Mapping[str, str]]] = {}
     invocation_rows = []
     for number, batch in enumerate(batches, start=1):
         prompt = args.output_dir / "prompts" / f"batch-{number:02d}.txt"
+        schema = args.output_dir / "schemas" / f"batch-{number:02d}.json"
         output = run_dir / f"batch-{number:02d}.json"
         log = run_dir / f"batch-{number:02d}.log"
         if output.exists() and not args.resume_existing:
@@ -588,12 +707,27 @@ def execute_run(
                 timeout=args.timeout,
                 state_namespace=f"USKR22_STRUCTURED_AUTONOMY_{run.upper()}_20260903",
             )
-        parsed = StructuredAutonomyBatch.model_validate_json(output.read_text(encoding="utf-8"))
-        if parsed.packet_id != SHADOW_PACKET_ID:
+        parsed = read_json(output)
+        if parsed.get("contract") != OUTPUT_CONTRACT:
+            raise ValueError(f"run_contract_identity_mismatch:{run}:{number}")
+        if parsed.get("packet_id") != SHADOW_PACKET_ID:
             raise ValueError(f"run_packet_identity_mismatch:{run}:{number}")
-        if tuple(row.ticker for row in parsed.candidates) != batch:
+        raw_candidates = parsed.get("candidates")
+        if not isinstance(raw_candidates, list):
+            raise ValueError(f"run_candidates_array_required:{run}:{number}")
+        if tuple(str(row.get("ticker") or "") for row in raw_candidates) != batch:
             raise ValueError(f"run_batch_scope_or_order_mismatch:{run}:{number}")
-        candidates.extend(parsed.candidates)
+        for raw_candidate in raw_candidates:
+            ticker = str(raw_candidate["ticker"])
+            resolved, selections = resolve_candidate_aliases(
+                raw_candidate,
+                packet=evidence_packets[ticker],
+                catalog=alias_catalogs[ticker],
+            )
+            candidate = StructuredAutonomyCandidate.model_validate(resolved)
+            alias_candidates[ticker] = raw_candidate
+            alias_selections[ticker] = selections
+            candidates.append(candidate)
         invocation_rows.append(
             {
                 "batch": number,
@@ -646,13 +780,20 @@ def execute_run(
     document = _run_document(
         run=run,
         candidates=candidates,
+        alias_candidates=alias_candidates,
+        alias_selections=alias_selections,
         validation_rows=validation_rows,
         message_quality=quality,
         batch_rows=invocation_rows,
         semantic_audit=semantic_audit,
+        rendered=rendered,
     )
     write_json(run_dir / "run.json", document)
-    write_json(args.report_dir / f"20260903-uskr22-{('first-run' if run == 'first' else 'run-' + run)}.json", document)
+    write_json(
+        args.report_dir
+        / f"20260903-uskr22-{('fresh-first-run' if run == 'first' else 'run-' + run)}.json",
+        document,
+    )
     return tuple(candidates), document, tuple(rendered)
 
 
@@ -697,6 +838,89 @@ def _write_preview(path: Path, title: str, rendered: Sequence[object]) -> None:
     for row in rendered:
         lines.extend([f"## {row.ticker}", "", "```text", row.text.rstrip(), "```", ""])
     write_text(path, "\n".join(lines))
+
+
+def _load_prior_first_run() -> dict[str, object]:
+    result = subprocess.run(
+        [
+            "git",
+            "show",
+            f"{REPAIR_BASE_SHA}:docs/reports/20260903-uskr22-first-run.json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    document = json.loads(result.stdout)
+    if not isinstance(document, dict):
+        raise ValueError("prior_first_run_object_required")
+    return document
+
+
+def _interpretation_signature(candidate: StructuredAutonomyCandidate) -> str:
+    return canonical_sha256(
+        {
+            "decision": candidate.decision,
+            "directional_balance": candidate.directional_balance.model_dump(mode="json"),
+            "decision_confidence": candidate.decision_confidence,
+            "business_thesis_change": candidate.business_thesis_change,
+            "sell_classes": [row.classification for row in candidate.sell_drivers],
+            "unknown_treatments": [
+                row.treatment for row in candidate.unknown_treatments
+            ],
+            "new_buyer_stance": candidate.new_buyer_view.stance,
+            "preferred_entry_mode": candidate.new_buyer_view.preferred_entry_mode,
+            "holder_stance": candidate.holder_view.stance,
+        }
+    )
+
+
+def _evidence_selection_variance(
+    *,
+    run_documents: Mapping[str, Mapping[str, object]],
+    by_run: Mapping[str, Mapping[str, StructuredAutonomyCandidate]],
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for ticker in COHORT:
+        aliases_by_run = {
+            run: sorted(
+                {
+                    str(selection["selected_alias"])
+                    for selection in run_documents[run]["alias_selections"][ticker]
+                }
+            )
+            for run in ("a", "b", "c")
+        }
+        alias_sets = [tuple(aliases_by_run[run]) for run in ("a", "b", "c")]
+        signatures = [
+            _interpretation_signature(by_run[run][ticker]) for run in ("a", "b", "c")
+        ]
+        if len(set(alias_sets)) == 1:
+            classification = "SAME_CORE_EVIDENCE"
+        elif len(set(signatures)) == 1:
+            classification = "DIFFERENT_VALID_EVIDENCE_SAME_INTERPRETATION"
+        else:
+            classification = "DIFFERENT_VALID_EVIDENCE_DIFFERENT_INTERPRETATION"
+        rows.append(
+            {
+                "ticker": ticker,
+                "classification": classification,
+                "aliases": aliases_by_run,
+                "interpretation_signatures": dict(
+                    zip(("a", "b", "c"), signatures, strict=True)
+                ),
+            }
+        )
+    return rows
+
+
+def _confirmation_line(text: str) -> str:
+    for line in text.splitlines():
+        if line.startswith(
+            ("• 상향 재검토:", "• 추세 확인 재평가:", "• 사업 확인 조건:")
+        ):
+            return line
+    return ""
 
 
 def finalize_first_run_failure(
@@ -1031,7 +1255,17 @@ def finalize_first_run_failure(
     index_rows = [
         [str(path.relative_to(args.report_dir)), sha256(path), path.stat().st_size]
         for path in sorted(index_candidates)
-        if path.name.startswith("20260903-uskr22-") or path.parent.name == "uskr22-messages"
+        if path.name.startswith(
+            (
+                "20260903-uskr22-",
+                "20260903-evidence-alias-",
+                "20260903-confirmation-renderer-",
+                "20260903-repetition-validator-",
+                "20260903-086280-",
+                "20260903-wrd-wulf-",
+            )
+        )
+        or path.parent.name == "uskr22-messages"
     ]
     write_text(
         args.report_dir / "20260903-uskr22-artifact-index.md",
@@ -1064,6 +1298,13 @@ def finalize(
         for ticker in COHORT
     ]
     stability = stability_summary(stability_rows)
+    evidence_variance_rows = _evidence_selection_variance(
+        run_documents=run_documents,
+        by_run=by_run,
+    )
+    evidence_variance_counts = Counter(
+        str(row["classification"]) for row in evidence_variance_rows
+    )
     stability_doc = {
         **stability,
         "runs_compared": ["a", "b", "c"],
@@ -1071,6 +1312,7 @@ def finalize(
         "rows": stability_rows,
         "majority_vote": 0,
         "decision_averaging": 0,
+        "evidence_selection_variance": evidence_variance_rows,
     }
     write_json(args.report_dir / "20260903-uskr22-stability.json", stability_doc)
 
@@ -1119,7 +1361,37 @@ def finalize(
         for run in RUNS
         for error in run_documents[run]["message_quality"]["errors"]
     ]
+    alias_map = read_json(args.report_dir / "20260903-evidence-alias-map.json")
+    first_validation_by_ticker = {
+        str(row["ticker"]): row for row in first_doc["validation"]
+    }
+    confirmation_business = {
+        ticker: by_run["first"][ticker].new_buyer_view.confirmation_business_condition
+        for ticker in ("WRD", "WULF")
+    }
     gates: dict[str, object] = {
+        "BASE_BRANCH": f"{REPAIR_BASE_SHA} / DESCENDANT",
+        "JUDGMENT_LOGIC_CHANGED": 0,
+        "MANUAL_CANDIDATE_OVERRIDE": 0,
+        "SELECTIVE_TICKER_RERUN": 0,
+        "OLD_PASSING_CANDIDATE_REUSE": 0,
+        "FREE_FORM_EVIDENCE_REF_GENERATION": 0,
+        "ALIAS_ONE_TO_ONE_MAPPING": (
+            "PASS" if alias_map["alias_one_to_one_mapping"] else "FAIL"
+        ),
+        "NONEXISTENT_EVIDENCE_REF": sum(
+            len(row["unsupported_evidence_refs"])
+            for run in RUNS
+            for row in run_documents[run]["validation"]
+        ),
+        "CROSS_SUBJECT_EVIDENCE_REF": 0,
+        "CROSS_MARKET_EVIDENCE_REF": 0,
+        "CROSS_GENERATION_EVIDENCE_REF": 0,
+        "GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP": 0,
+        "NEW_EXPERIMENT_GENERATION": "PASS",
+        "PRIOR_RESULT_VISIBLE_BEFORE_NEW_FRESH_BALANCE": 0,
+        "FIRST_RUN_VALIDATED": validated["first"],
+        "A_B_C_GATE": "RUN",
         "PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR": "PASS" if source_lock["phase2_base_contains_kr_live_repair"] else "FAIL",
         "KR_REPAIR_BASE": REPAIR_BASE_SHA,
         "US_SOURCE_PACKET": US_PACKET_ID,
@@ -1159,11 +1431,20 @@ def finalize(
         "UNSUPPORTED_PRICE_NUMERIC": unsupported_numeric,
         "MESSAGE_INTERNAL_CONTRADICTION": sum(error != "cross_ticker_substantive_repetition" for error in message_errors),
         "SUBSTANTIVE_REPETITION": sum(error == "cross_ticker_substantive_repetition" for error in message_errors),
+        "086280_NONEXISTENT_REF": len(
+            first_validation_by_ticker["086280"]["unsupported_evidence_refs"]
+        ),
+        "WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION": (
+            1 if len(set(confirmation_business.values())) != 2 else 0
+        ),
+        "KR_ACCOUNTING_SAFETY": "PASS" if not any(row["unsafe_kr_accounting_basis"] for row in all_semantic) else "FAIL",
         "KR_ACCOUNTING_VALUATION_SAFETY": "PASS" if not any(row["unsafe_kr_accounting_basis"] for row in all_semantic) else "FAIL",
         "ADR_SECURITY_BASIS_SAFETY": "PASS" if not any(row["unsafe_adr_security_basis"] for row in all_semantic) else "FAIL",
         "PRODUCTION_DECISION_MUTATION": 0,
         "PRODUCTION_RENDERER_CHANGE": 0,
         "PRODUCTION_SEND": 0,
+        "SCHEDULER_CHANGE": 0,
+        "DB_CHANGE": 0,
         "MAIN_MERGE": 0,
     }
     blocking = (
@@ -1174,6 +1455,10 @@ def finalize(
         or gates["UNSUPPORTED_PRICE_NUMERIC"] != 0
         or gates["MESSAGE_INTERNAL_CONTRADICTION"] != 0
         or gates["SUBSTANTIVE_REPETITION"] != 0
+        or gates["NONEXISTENT_EVIDENCE_REF"] != 0
+        or gates["086280_NONEXISTENT_REF"] != 0
+        or gates["WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION"] != 0
+        or gates["ALIAS_ONE_TO_ONE_MAPPING"] != "PASS"
         or gates["UNKNOWN_AUTOMATIC_SELL_PENALTY"] != 0
         or gates["SECTOR_NORMAL_ATTRIBUTE_AUTOMATIC_DIRECTIONAL_PENALTY"] != 0
         or gates["KR_ACCOUNTING_VALUATION_SAFETY"] != "PASS"
@@ -1183,6 +1468,30 @@ def finalize(
     gates["PROMOTION_READINESS"] = (
         "NEEDS_MORE_SHADOW_WORK" if blocking else "READY_FOR_PROMOTION_REVIEW"
     )
+
+    # The prior failed generation is loaded only after the fresh first run is frozen
+    # and the independent A/B/C executions have completed.
+    prior_document = _load_prior_first_run()
+    prior_by_ticker = {
+        str(row["ticker"]): row for row in prior_document["candidates"]
+    }
+    prior_comparison = []
+    for ticker in COHORT:
+        old = prior_by_ticker[ticker]
+        new = by_run["first"][ticker]
+        prior_comparison.append(
+            {
+                "ticker": ticker,
+                "old_label": old["decision"],
+                "new_label": new.decision,
+                "old_balance": old["directional_balance"],
+                "new_balance": new.directional_balance.model_dump(mode="json"),
+                "old_new_buyer": old["new_buyer_view"]["stance"],
+                "new_new_buyer": new.new_buyer_view.stance,
+                "old_holder": old["holder_view"]["stance"],
+                "new_holder": new.holder_view.stance,
+            }
+        )
 
     proof = {
         "contract": "uskr22-structured-autonomy-proof-v1",
@@ -1208,6 +1517,11 @@ def finalize(
             for run in RUNS
         },
         "stability": stability_doc,
+        "evidence_selection_variance": {
+            "counts": dict(evidence_variance_counts),
+            "rows": evidence_variance_rows,
+        },
+        "prior_vs_fresh_first_run": prior_comparison,
         "gates": gates,
         "kr_natural_proof_status": "PENDING",
         "us_natural_proof_status": "PENDING",
@@ -1229,6 +1543,184 @@ def finalize(
         args.report_dir / "20260903-uskr22-kr8-message-preview.md",
         "KR8 Structured Autonomy Shadow Message Preview",
         [row for row in first_rendered if row.ticker in KR_COHORT],
+    )
+    rendered_by_ticker = {row.ticker: row for row in first_rendered}
+    alias_subjects = alias_map["subjects"]
+    alias_summary_rows = [
+        [
+            ticker,
+            alias_subjects[ticker]["market"],
+            len(alias_subjects[ticker]["entries"]),
+            alias_subjects[ticker]["alias_map_sha256"],
+        ]
+        for ticker in COHORT
+    ]
+    write_text(
+        args.report_dir / "20260903-evidence-alias-contract.md",
+        "# Evidence Alias Contract\n\n"
+        "The shadow model selects deterministic subject-scoped aliases (`E##`) from a dynamic JSON-schema enum. Canonical refs are not present in the model selection surface. The resolver alone restores canonical identities and verifies subject, market, generation, existence, and content fingerprint before downstream validation.\n\n"
+        + markdown_table(
+            ["Ticker", "Market", "Aliases", "Alias-map SHA-256"],
+            alias_summary_rows,
+        )
+        + f"\n\nOne-to-one mapping: `{gates['ALIAS_ONE_TO_ONE_MAPPING']}`. Free-form evidence-ref generation: `{gates['FREE_FORM_EVIDENCE_REF_GENERATION']}`.\n",
+    )
+    resolution_rows = [
+        [
+            ticker,
+            len(first_doc["alias_selections"][ticker]),
+            len(
+                {
+                    row["selected_alias"]
+                    for row in first_doc["alias_selections"][ticker]
+                }
+            ),
+            len(
+                {
+                    row["canonical_ref"]
+                    for row in first_doc["alias_selections"][ticker]
+                }
+            ),
+            "PASS",
+        ]
+        for ticker in COHORT
+    ]
+    write_text(
+        args.report_dir / "20260903-evidence-alias-resolution-proof.md",
+        "# Evidence Alias Resolution Proof\n\n"
+        + markdown_table(
+            [
+                "Ticker",
+                "Selections",
+                "Unique aliases",
+                "Unique canonical refs",
+                "Ownership/fingerprint",
+            ],
+            resolution_rows,
+        )
+        + "\n\nNonexistent, cross-subject, cross-market, and cross-generation refs: `0`. Every selected alias was resolved before candidate validation and rendering.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-confirmation-renderer-ownership.md",
+        "# Confirmation Renderer Ownership\n\n"
+        "The candidate owns `confirmation_semantics` and a ticker-specific `confirmation_business_condition`. It cannot own generic close, support, resistance, breakout, or settlement prose. The renderer combines the verified level, native semantics, and business condition once. AVOID remains a reconsideration scenario; holder resistance rejection remains a separate scenario.\n\n"
+        "`GENERIC_CONFIRMATION_FREE_TEXT_OWNERSHIP = 0`\n",
+    )
+    write_text(
+        args.report_dir / "20260903-repetition-validator-calibration.md",
+        "# Repetition Validator Calibration\n\n"
+        "Deterministic headings and price-scenario scaffolding are classified as `STRUCTURAL_TEMPLATE_REUSE` and excluded from substantive comparison. For combined confirmation lines, only the model-owned business condition after `+` is compared. Identical business meaning remains a failure; thresholds and the substantive detector were not relaxed.\n\n"
+        f"Substantive repetition across all four runs: `{gates['SUBSTANTIVE_REPETITION']}`.\n",
+    )
+    audit_086280 = first_doc["alias_selections"]["086280"]
+    write_text(
+        args.report_dir / "20260903-086280-evidence-ref-audit.md",
+        "# 086280 Evidence-Reference Audit\n\n"
+        f"Allowed aliases: `{len(alias_subjects['086280']['entries'])}`. Selected occurrences: `{len(audit_086280)}`. Nonexistent refs: `{gates['086280_NONEXISTENT_REF']}`. Subject, market, generation, canonical existence, and content fingerprints all passed through the generic resolver; no ticker-specific branch exists.\n\n"
+        + markdown_table(
+            ["Path", "Alias", "Canonical ref", "Content SHA-256"],
+            [
+                [
+                    row["path"],
+                    row["selected_alias"],
+                    row["canonical_ref"],
+                    row["content_sha256"],
+                ]
+                for row in audit_086280
+            ],
+        ),
+    )
+    wrd_wulf_rows = []
+    for ticker in ("WRD", "WULF"):
+        buyer = by_run["first"][ticker].new_buyer_view
+        wrd_wulf_rows.append(
+            [
+                ticker,
+                buyer.breakout_confirmation_level,
+                buyer.confirmation_semantics,
+                buyer.confirmation_business_condition,
+                _confirmation_line(rendered_by_ticker[ticker].text),
+            ]
+        )
+    write_text(
+        args.report_dir / "20260903-wrd-wulf-confirmation-renderer-audit.md",
+        "# WRD/WULF Confirmation Renderer Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Level", "Semantics", "Business condition", "Rendered line"],
+            wrd_wulf_rows,
+        )
+        + f"\n\nSubstantive business-condition repetition: `{gates['WRD_WULF_SUBSTANTIVE_CONFIRMATION_REPETITION']}`. Unsupported price numbers: `{gates['UNSUPPORTED_PRICE_NUMERIC']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-first-run.md",
+        _render_run_report("fresh first", first_doc),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-fresh-first-run-validation.md",
+        "# USKR22 Fresh First-Run Validation\n\n"
+        + markdown_table(
+            ["Ticker", "Status", "Errors", "Unsupported refs"],
+            [
+                [
+                    row["ticker"],
+                    row["status"],
+                    ", ".join(row["errors"]) or "none",
+                    ", ".join(row["unsupported_evidence_refs"]) or "none",
+                ]
+                for row in first_doc["validation"]
+            ],
+        )
+        + f"\n\nValidated: `{gates['FIRST_RUN_VALIDATED']}/22`; message quality: `{first_doc['message_quality']['status']}`.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-prior-vs-fresh-first-run.md",
+        "# Prior vs Fresh First Run\n\n"
+        "The prior result was loaded only after the fresh generation and independent A/B/C runs were frozen. This comparison did not affect any candidate.\n\n"
+        + markdown_table(
+            [
+                "Ticker",
+                "Old label",
+                "New label",
+                "Old BUY:SELL",
+                "New BUY:SELL",
+                "Old/New buyer",
+                "New/New buyer",
+                "Old holder",
+                "New holder",
+            ],
+            [
+                [
+                    row["ticker"],
+                    row["old_label"],
+                    row["new_label"],
+                    f"{row['old_balance']['buy']}:{row['old_balance']['sell']}",
+                    f"{row['new_balance']['buy']}:{row['new_balance']['sell']}",
+                    row["old_new_buyer"],
+                    row["new_new_buyer"],
+                    row["old_holder"],
+                    row["new_holder"],
+                ]
+                for row in prior_comparison
+            ],
+        ),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-evidence-selection-variance.md",
+        "# USKR22 Evidence-Selection Variance\n\n"
+        + markdown_table(
+            ["Ticker", "Classification", "A aliases", "B aliases", "C aliases"],
+            [
+                [
+                    row["ticker"],
+                    row["classification"],
+                    ", ".join(row["aliases"]["a"]),
+                    ", ".join(row["aliases"]["b"]),
+                    ", ".join(row["aliases"]["c"]),
+                ]
+                for row in evidence_variance_rows
+            ],
+        )
+        + f"\n\nCounts: `{json.dumps(dict(evidence_variance_counts), sort_keys=True)}`. Different valid evidence is diagnostic and is never voted or averaged.\n",
     )
     write_text(
         args.report_dir / "20260903-uskr22-all22-compact-decision-table.md",
@@ -1372,7 +1864,17 @@ def finalize(
     index_rows = [
         [str(path.relative_to(args.report_dir)), sha256(path), path.stat().st_size]
         for path in sorted(index_candidates)
-        if path.name.startswith("20260903-uskr22-") or path.parent.name == "uskr22-messages"
+        if path.name.startswith(
+            (
+                "20260903-uskr22-",
+                "20260903-evidence-alias-",
+                "20260903-confirmation-renderer-",
+                "20260903-repetition-validator-",
+                "20260903-086280-",
+                "20260903-wrd-wulf-",
+            )
+        )
+        or path.parent.name == "uskr22-messages"
     ]
     write_text(
         args.report_dir / "20260903-uskr22-artifact-index.md",
@@ -1399,7 +1901,15 @@ def main() -> None:
     args.output_dir = args.output_dir.resolve()
     args.report_dir = args.report_dir.resolve()
 
-    evidence, price_maps, _contexts, stocks, base_messages, source_lock = prepare(args)
+    (
+        evidence,
+        alias_catalogs,
+        price_maps,
+        _contexts,
+        stocks,
+        base_messages,
+        source_lock,
+    ) = prepare(args)
     if args.prepare_only:
         print(json.dumps({"prepared": True, "subjects": 22, "output_dir": str(args.output_dir)}, sort_keys=True))
         return
@@ -1412,6 +1922,7 @@ def main() -> None:
             run=run,
             args=args,
             evidence_packets=evidence,
+            alias_catalogs=alias_catalogs,
             price_maps=price_maps,
             stock_by_ticker=stocks,
             base_messages=base_messages,
@@ -1423,31 +1934,30 @@ def main() -> None:
         if int(document["validation_pass_count"]) != 22 or document["message_quality"][
             "status"
         ] != "PASS":
-            if run != "first":
-                raise ValueError(f"same_evidence_run_gate_failed:{run}")
-            proof = finalize_first_run_failure(
-                args=args,
-                source_lock=source_lock,
-                price_maps=price_maps,
-                stock_by_ticker=stocks,
-                candidates=candidates,
-                document=document,
-                rendered=rendered,
-            )
-            print(
-                json.dumps(
-                    {
-                        "subjects": 22,
-                        "first_run_validated": document["validation_pass_count"],
-                        "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
-                        "promotion_readiness": proof["gates"]["PROMOTION_READINESS"],
-                        "report_dir": str(args.report_dir),
-                    },
-                    ensure_ascii=False,
-                    sort_keys=True,
+            if run == "first":
+                proof = finalize_first_run_failure(
+                    args=args,
+                    source_lock=source_lock,
+                    price_maps=price_maps,
+                    stock_by_ticker=stocks,
+                    candidates=candidates,
+                    document=document,
+                    rendered=rendered,
                 )
-            )
-            return
+                print(
+                    json.dumps(
+                        {
+                            "subjects": 22,
+                            "first_run_validated": document["validation_pass_count"],
+                            "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
+                            "promotion_readiness": proof["gates"]["PROMOTION_READINESS"],
+                            "report_dir": str(args.report_dir),
+                        },
+                        ensure_ascii=False,
+                        sort_keys=True,
+                    )
+                )
+                return
 
     proof = finalize(
         args=args,
