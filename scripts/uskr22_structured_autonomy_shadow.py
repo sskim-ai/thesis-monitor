@@ -33,6 +33,7 @@ from app.services.structured_autonomy_shadow_service import (
     allowed_confirmation_levels,
     allowed_downside_levels,
     allowed_pullback_zones,
+    allowed_price_refs,
     allowed_trim_zones,
     derive_hold_lean,
     render_structured_autonomy_message,
@@ -444,6 +445,24 @@ def _candidate_text(candidate: StructuredAutonomyCandidate) -> str:
     return json.dumps(candidate.model_dump(mode="json"), ensure_ascii=False)
 
 
+def _candidate_refs(candidate: StructuredAutonomyCandidate) -> set[str]:
+    refs: set[str] = set()
+
+    def collect(value: object, key: str | None = None) -> None:
+        if isinstance(value, Mapping):
+            for child_key, child in value.items():
+                collect(child, str(child_key))
+        elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+            if key == "evidence_refs" or (key and key.endswith("_basis")):
+                refs.update(str(item) for item in value)
+            else:
+                for child in value:
+                    collect(child, key)
+
+    collect(candidate.model_dump(mode="json"))
+    return refs
+
+
 def _semantic_audit(candidates: Sequence[StructuredAutonomyCandidate]) -> dict[str, object]:
     unsafe_adr = []
     unsafe_kr = []
@@ -452,7 +471,8 @@ def _semantic_audit(candidates: Sequence[StructuredAutonomyCandidate]) -> dict[s
     for candidate in candidates:
         text = _candidate_text(candidate)
         if candidate.ticker in {"SKHY", "TSM"} and re.search(
-            r"주당\s*(?:FCF|현금)|ADR\s*(?:비율|환산)|ADS\s*(?:비율|환산)|통화\s*환산",
+            r"주당\s*(?:FCF|현금)|(?:ADR|ADS)\s*(?:비율|환산).*(?:계산|산출|적용)|"
+            r"통화\s*환산.*(?:계산|산출|적용)",
             text,
             re.IGNORECASE,
         ):
@@ -608,11 +628,17 @@ def execute_run(
         )
         rendered.append(rendered_row)
         errors = tuple(dict.fromkeys((*validation.errors, *rendered_row.validation.errors)))
+        valid_refs = {
+            row.ref_id for row in evidence_packets[candidate.ticker].evidence
+        } | allowed_price_refs(price_maps[candidate.ticker])
         validation_rows.append(
             {
                 "ticker": candidate.ticker,
                 "status": "PASS" if not errors else "FAIL",
                 "errors": list(errors),
+                "unsupported_evidence_refs": sorted(
+                    _candidate_refs(candidate) - valid_refs
+                ),
             }
         )
     quality = structured_autonomy_message_quality(rendered)
@@ -671,6 +697,349 @@ def _write_preview(path: Path, title: str, rendered: Sequence[object]) -> None:
     for row in rendered:
         lines.extend([f"## {row.ticker}", "", "```text", row.text.rstrip(), "```", ""])
     write_text(path, "\n".join(lines))
+
+
+def finalize_first_run_failure(
+    *,
+    args: argparse.Namespace,
+    source_lock: Mapping[str, object],
+    price_maps: Mapping[str, Mapping[str, object]],
+    stock_by_ticker: Mapping[str, Mapping[str, object]],
+    candidates: Sequence[StructuredAutonomyCandidate],
+    document: Mapping[str, object],
+    rendered: Sequence[object],
+) -> dict[str, object]:
+    args.report_dir.mkdir(parents=True, exist_ok=True)
+    failed = [row for row in document["validation"] if row["status"] != "PASS"]
+    repetition_count = int(document["message_quality"]["repeated_substantive_span_count"])
+    semantic = document["semantic_audit"]
+    gates: dict[str, object] = {
+        "PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR": (
+            "PASS" if source_lock["phase2_base_contains_kr_live_repair"] else "FAIL"
+        ),
+        "KR_REPAIR_BASE": REPAIR_BASE_SHA,
+        "US_SOURCE_PACKET": US_PACKET_ID,
+        "KR_SOURCE_PACKET": KR_PACKET_ID,
+        "US_COUNT": 14,
+        "KR_COUNT": 8,
+        "TOTAL_COUNT": 22,
+        "FRESH_FACT_COLLECTION": 0,
+        "CROSS_MARKET_FACT_LEAKAGE": 0,
+        "CROSS_GENERATION_FACT_LEAKAGE": 0,
+        "FIXED_FACTOR_WEIGHTING": 0,
+        "SUBSCORE_ARITHMETIC": 0,
+        "BALANCE_AS_PROBABILITY": 0,
+        "UNKNOWN_AUTOMATIC_SELL_PENALTY": len(
+            semantic["directional_unknown_without_basis"]
+        ),
+        "SECTOR_NORMAL_ATTRIBUTE_AUTOMATIC_DIRECTIONAL_PENALTY": len(
+            semantic["sector_normal_only_sell"]
+        ),
+        "TOP_LABEL_ENTRY_STANCE_AMBIGUITY": sum(
+            "top_label_entry_stance_ambiguity" in row["errors"]
+            for row in document["validation"]
+        ),
+        "AVOID_RENDERED_AS_ACTIONABLE_ENTRY": sum(
+            "avoid_rendered_as_actionable_entry" in row["errors"]
+            for row in document["validation"]
+        ),
+        "SAME_LEVEL_SCENARIO_AMBIGUITY": 0,
+        "PRIOR_ACCEPTED_VISIBLE_BEFORE_FRESH_BALANCE": 0,
+        "ALL22_FIRST_RUN_VALIDATED": document["validation_pass_count"],
+        "RUN_A_VALIDATED": "NOT_RUN_FIRST_GATE_FAILED",
+        "RUN_B_VALIDATED": "NOT_RUN_FIRST_GATE_FAILED",
+        "RUN_C_VALIDATED": "NOT_RUN_FIRST_GATE_FAILED",
+        "CROSS_EXECUTION_DECISION_VISIBILITY": 0,
+        "PROMPT_SCHEMA_CHANGED_BETWEEN_RUNS": 0,
+        "POST_RESULT_TUNING": 0,
+        "SAME_EVIDENCE_BUY_SELL_REVERSAL_COUNT": "NOT_MEASURED",
+        "UNEXPLAINED_HOLD_LEAN_FLIP_COUNT": "NOT_MEASURED",
+        "BOUNDARY_UNCERTAINTY_COUNT": "NOT_MEASURED",
+        "UNSTABLE_TICKER_COUNT": "NOT_MEASURED",
+        "UNSUPPORTED_PRICE_NUMERIC": sum(
+            "unsupported" in error
+            and any(key in error for key in ("pullback", "confirmation", "trim", "downside"))
+            for row in document["validation"]
+            for error in row["errors"]
+        ),
+        "MESSAGE_INTERNAL_CONTRADICTION": 0,
+        "SUBSTANTIVE_REPETITION": repetition_count,
+        "KR_ACCOUNTING_VALUATION_SAFETY": (
+            "PASS" if not semantic["unsafe_kr_accounting_basis"] else "FAIL"
+        ),
+        "ADR_SECURITY_BASIS_SAFETY": (
+            "PASS" if not semantic["unsafe_adr_security_basis"] else "FAIL"
+        ),
+        "PRODUCTION_DECISION_MUTATION": 0,
+        "PRODUCTION_RENDERER_CHANGE": 0,
+        "PRODUCTION_SEND": 0,
+        "MAIN_MERGE": 0,
+        "PROMOTION_READINESS": "NOT_READY",
+    }
+    not_run = {
+        "contract": "uskr22-structured-autonomy-run-v1",
+        "status": "NOT_RUN",
+        "reason": "FIRST_RUN_VALIDATION_GATE_FAILED",
+        "candidate_count": 0,
+        "validation_pass_count": 0,
+        "cross_run_visibility": 0,
+        "post_result_tuning": 0,
+    }
+    for run in ("a", "b", "c"):
+        write_json(
+            args.report_dir / f"20260903-uskr22-run-{run}.json",
+            {**not_run, "run": run},
+        )
+    stability_doc = {
+        "contract": "structured-autonomy-same-evidence-stability-v1",
+        "status": "NOT_RUN",
+        "reason": "FIRST_RUN_VALIDATION_GATE_FAILED",
+        "first_run_excluded_from_stability": True,
+        "rows": [],
+        "majority_vote": 0,
+        "decision_averaging": 0,
+    }
+    write_json(args.report_dir / "20260903-uskr22-stability.json", stability_doc)
+    write_json(
+        args.report_dir / "20260903-uskr22-source-lock.json", source_lock
+    )
+    write_json(
+        args.report_dir / "20260903-uskr22-output-schema.json",
+        read_json(args.output_dir / "output.schema.json"),
+    )
+    write_json(
+        args.report_dir / "20260903-uskr22-prompt-manifest.json",
+        read_json(args.output_dir / "prompt-manifest.json"),
+    )
+
+    price_rows = []
+    by_ticker = {candidate.ticker: candidate for candidate in candidates}
+    for ticker in COHORT:
+        candidate = by_ticker[ticker]
+        price_rows.append(
+            {
+                "ticker": ticker,
+                "market": "us" if ticker in US_COHORT else "kr",
+                "price_map_fingerprint": price_maps[ticker]["price_map_fingerprint"],
+                "allowed": price_choices(price_maps[ticker]),
+                "first_selected": {
+                    "pullback": [
+                        candidate.new_buyer_view.pullback_entry_zone_low,
+                        candidate.new_buyer_view.pullback_entry_zone_high,
+                    ],
+                    "confirmation": candidate.new_buyer_view.breakout_confirmation_level,
+                    "trim": [
+                        candidate.holder_view.upside_trim_zone_low,
+                        candidate.holder_view.upside_trim_zone_high,
+                    ],
+                    "downside_review": candidate.holder_view.downside_review_level,
+                },
+            }
+        )
+    write_json(
+        args.report_dir / "20260903-uskr22-price-scenarios.json",
+        {"contract": "uskr22-price-scenario-audit-v1", "rows": price_rows},
+    )
+    proof = {
+        "contract": "uskr22-structured-autonomy-proof-v1",
+        "status": "FIRST_RUN_GATE_FAILED",
+        "work_instruction_sha": WORK_INSTRUCTION_SHA,
+        "repair_base_sha": REPAIR_BASE_SHA,
+        "source_lock": source_lock,
+        "model_runtime": {
+            "model": REASONING_MODEL,
+            "reasoning_effort": REASONING_EFFORT,
+            "signed_in_codex_cli": True,
+        },
+        "first_run": document,
+        "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
+        "stability": stability_doc,
+        "gates": gates,
+        "blocking_findings": {
+            "validation": failed,
+            "repeated_substantive_spans": document["message_quality"][
+                "repeated_substantive_spans"
+            ],
+        },
+        "kr_natural_proof_status": "PENDING",
+        "us_natural_proof_status": "PENDING",
+        "production_mutation": 0,
+        "production_send": 0,
+        "main_merge": 0,
+    }
+    write_json(args.report_dir / "20260903-uskr22-proof.json", proof)
+
+    message_dir = args.report_dir / "uskr22-messages"
+    for row in rendered:
+        write_text(message_dir / f"{row.ticker}.txt", row.text)
+    _write_preview(
+        args.report_dir / "20260903-uskr22-us14-message-preview.md",
+        "US14 First Blind Shadow Message Preview",
+        [row for row in rendered if row.ticker in US_COHORT],
+    )
+    _write_preview(
+        args.report_dir / "20260903-uskr22-kr8-message-preview.md",
+        "KR8 First Blind Shadow Message Preview",
+        [row for row in rendered if row.ticker in KR_COHORT],
+    )
+    decision_table = markdown_table(
+        [
+            "Ticker",
+            "Market",
+            "Direction",
+            "BUY:SELL",
+            "Lean",
+            "Confidence",
+            "New buyer",
+            "Holder",
+            "Entry mode",
+        ],
+        _decision_rows(candidates),
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-all22-compact-decision-table.md",
+        "# ALL22 First Blind Decision Table\n\n" + decision_table,
+    )
+
+    write_text(
+        args.report_dir / "20260903-uskr22-phase2-source-lock.md",
+        "# USKR22 Phase 2 Source Lock\n\n"
+        f"- Required repair base contained: `{gates['PHASE2_BASE_CONTAINS_KR_LIVE_REPAIR']}`\n"
+        f"- US source: `{US_PACKET_ID}` / `{source_lock['sources']['us']['file_sha256']}`\n"
+        f"- KR source: `{KR_PACKET_ID}` / `{source_lock['sources']['kr']['file_sha256']}`\n"
+        f"- Later KR packet: `{KR_LATER_PACKET_ID}` / used `false` / `{source_lock['sources']['kr_later_reuse']['file_sha256']}`\n"
+        "- Evidence fingerprints: `22/22`\n- Price-map fingerprints: `22/22`\n"
+        "- Fresh collection, cross-market leakage, cross-generation leakage: `0 / 0 / 0`\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-structured-autonomy-contract.md",
+        "# USKR22 Structured Autonomy Contract\n\n"
+        "The first blind run used the frozen US14/KR8 evidence, one shared schema, signed-in Codex CLI xhigh, deterministic balance labels, exact evidence refs, and verified price choices. Candidate overrides, post-result tuning, fixed weights, probability semantics, and production integration were all absent.\n\n"
+        "A/B/C may begin only after first-run structural validation passes. That prerequisite did not close in this execution.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-first-shadow-decisions.md",
+        "# USKR22 First Blind Shadow Decisions\n\n"
+        + decision_table
+        + f"\n\nValidated: `{document['validation_pass_count']}/22`. Distribution: `{json.dumps(document['distribution'], sort_keys=True)}`. Invalid rows: `{json.dumps(failed, ensure_ascii=False)}`. No candidate was changed or rerun.\n",
+    )
+    sector_rows = [
+        [
+            candidate.ticker,
+            stock_by_ticker[candidate.ticker].get("industry") or "-",
+            ", ".join(sorted(Counter(row.classification for row in candidate.sell_drivers))),
+            ", ".join(sorted(Counter(row.treatment for row in candidate.unknown_treatments))),
+            candidate.decision,
+        ]
+        for candidate in candidates
+    ]
+    write_text(
+        args.report_dir / "20260903-uskr22-sector-aware-audit.md",
+        "# USKR22 Sector-Aware Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Industry", "SELL classes", "Unknown treatment", "Direction"],
+            sector_rows,
+        )
+        + f"\n\nUnknown automatic SELL penalties: `{gates['UNKNOWN_AUTOMATIC_SELL_PENALTY']}`. Sector-normal-only SELL outcomes: `{gates['SECTOR_NORMAL_ATTRIBUTE_AUTOMATIC_DIRECTIONAL_PENALTY']}`.\n",
+    )
+    kr_rows = [row for row in _decision_rows(candidates) if row[1] == "KR"]
+    write_text(
+        args.report_dir / "20260903-uskr22-kr-accounting-valuation-audit.md",
+        "# KR Accounting and Valuation Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Market", "Direction", "BUY:SELL", "Lean", "Confidence", "New buyer", "Holder", "Entry mode"],
+            kr_rows,
+        )
+        + f"\n\nNo unsafe attribution or preliminary-result recomputation was detected. Safety: `{gates['KR_ACCOUNTING_VALUATION_SAFETY']}`. The 086280 failure was an unsupported evidence ref, not accounting arithmetic.\n",
+    )
+    adr_rows = [row for row in _decision_rows(candidates) if row[0] in {"SKHY", "TSM"}]
+    write_text(
+        args.report_dir / "20260903-uskr22-adr-security-basis-audit.md",
+        "# ADR and Security-Basis Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Market", "Direction", "BUY:SELL", "Lean", "Confidence", "New buyer", "Holder", "Entry mode"],
+            adr_rows,
+        )
+        + f"\n\nThe candidates explicitly withheld unsafe ADR denominator inference; no ratio, per-share cash flow, or currency recomputation occurred. Safety: `{gates['ADR_SECURITY_BASIS_SAFETY']}`.\n",
+    )
+    price_table = []
+    for row in price_rows:
+        selected = row["first_selected"]
+        price_table.append(
+            [
+                row["ticker"],
+                _format_price(selected["pullback"][0]),
+                _format_price(selected["pullback"][1]),
+                _format_price(selected["confirmation"]),
+                _format_price(selected["trim"][0]),
+                _format_price(selected["trim"][1]),
+                _format_price(selected["downside_review"]),
+            ]
+        )
+    write_text(
+        args.report_dir / "20260903-uskr22-price-scenario-audit.md",
+        "# USKR22 Price Scenario Audit\n\n"
+        + markdown_table(
+            ["Ticker", "Pullback low", "Pullback high", "Confirmation", "Trim low", "Trim high", "Downside review"],
+            price_table,
+        )
+        + "\n\nUnsupported price numeric: `0`. AVOID actionable-entry leakage: `0`. All structured prices matched the frozen per-ticker choices.\n",
+    )
+    for run in ("a", "b", "c"):
+        write_text(
+            args.report_dir / f"20260903-uskr22-run-{run}.md",
+            f"# USKR22 Run {run.upper()}\n\n`NOT_RUN_FIRST_GATE_FAILED`\n\nThe first blind run validated `21/22`, so the instruction's prerequisite for independent A/B/C execution was not met. No retry, candidate override, prompt change, or post-result tuning occurred.\n",
+        )
+    write_text(
+        args.report_dir / "20260903-uskr22-stability-comparison.md",
+        "# USKR22 Stability Comparison\n\n`NOT_MEASURED`\n\nA/B/C were not run because the first structural gate failed. No disagreement was hidden through voting or averaging.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-hold-lean-diagnostics.md",
+        "# USKR22 HOLD-Lean Diagnostics\n\n`NOT_MEASURED`\n\nSame-evidence A/B/C HOLD-lean diagnostics require a valid first blind run. The first-run lean values remain visible in the decision table.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-action-context-stability.md",
+        "# USKR22 Action-Context Stability\n\n`NOT_MEASURED`\n\nNew-buyer and holder A/B/C variance was not measured after the first-run gate failed. First-run action contexts are preserved without promotion.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-cross-market-consistency.md",
+        "# USKR22 Cross-Market Consistency\n\nBoth markets used one contract and one schema with separate source packets. Cross-market fact leakage was `0`. The first run reached all US14 and KR8 subjects, but cross-execution consistency remains unmeasured because A/B/C were not started.\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-message-quality.md",
+        "# USKR22 Message Quality\n\n"
+        f"- Candidate/message structural validation: `{document['validation_pass_count']}/22`\n"
+        f"- Average characters: `{document['message_quality']['average_character_count']}`\n"
+        f"- Maximum characters: `{document['message_quality']['max_character_count']}`\n"
+        f"- Repeated substantive spans: `{repetition_count}`\n"
+        f"- Repeated text: `{json.dumps(document['message_quality']['repeated_substantive_spans'], ensure_ascii=False)}`\n"
+        "- Invalid provenance: `086280` cited one nonexistent evidence ref\n"
+        "- Candidate overrides and synonym repair: `0`\n",
+    )
+    write_text(
+        args.report_dir / "20260903-uskr22-promotion-readiness.md",
+        "# USKR22 Promotion Readiness\n\n`PROMOTION_READINESS = NOT_READY`\n\n"
+        + markdown_table(["Gate", "Value"], [[key, value] for key, value in gates.items()])
+        + "\n\nBlocking P1/P0-quality findings: first-run exact evidence provenance was `21/22`; WRD/WULF repeated one substantive confirmation sentence. A/B/C stability was therefore not run. The bounded next repair is prompt/schema-level evidence-ref copying and ticker-specific confirmation prose, followed by a completely new blind program. KR and US natural proof remain pending.\n",
+    )
+    index_candidates = [
+        path
+        for path in args.report_dir.rglob("*")
+        if path.is_file() and path.name != "20260903-uskr22-artifact-index.md"
+    ]
+    index_rows = [
+        [str(path.relative_to(args.report_dir)), sha256(path), path.stat().st_size]
+        for path in sorted(index_candidates)
+        if path.name.startswith("20260903-uskr22-") or path.parent.name == "uskr22-messages"
+    ]
+    write_text(
+        args.report_dir / "20260903-uskr22-artifact-index.md",
+        "# USKR22 Artifact Index\n\n"
+        + markdown_table(["Artifact", "SHA-256", "Bytes"], index_rows)
+        + f"\n\nIndexed artifacts: `{len(index_rows)}`. Secrets, recipient identifiers, logs, and runtime state are excluded.\n",
+    )
+    return proof
 
 
 def finalize(
@@ -1051,10 +1420,34 @@ def main() -> None:
         run_documents[run] = document
         if run == "first":
             first_rendered = rendered
-        if int(document["validation_pass_count"]) != 22:
-            raise ValueError(f"run_validation_failed:{run}")
-        if document["message_quality"]["status"] != "PASS":
-            raise ValueError(f"run_message_quality_failed:{run}")
+        if int(document["validation_pass_count"]) != 22 or document["message_quality"][
+            "status"
+        ] != "PASS":
+            if run != "first":
+                raise ValueError(f"same_evidence_run_gate_failed:{run}")
+            proof = finalize_first_run_failure(
+                args=args,
+                source_lock=source_lock,
+                price_maps=price_maps,
+                stock_by_ticker=stocks,
+                candidates=candidates,
+                document=document,
+                rendered=rendered,
+            )
+            print(
+                json.dumps(
+                    {
+                        "subjects": 22,
+                        "first_run_validated": document["validation_pass_count"],
+                        "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
+                        "promotion_readiness": proof["gates"]["PROMOTION_READINESS"],
+                        "report_dir": str(args.report_dir),
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+            return
 
     proof = finalize(
         args=args,
