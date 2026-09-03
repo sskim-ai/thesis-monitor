@@ -86,6 +86,33 @@ KR_COHORT = (
 )
 COHORT = US_COHORT + KR_COHORT
 RUNS = ("first", "a", "b", "c")
+CURRENT_ARTIFACT_NAMES = (
+    "20260903-evidence-alias-contract.md",
+    "20260903-evidence-alias-resolution-proof.md",
+    "20260903-confirmation-renderer-ownership.md",
+    "20260903-repetition-validator-calibration.md",
+    "20260903-086280-evidence-ref-audit.md",
+    "20260903-wrd-wulf-confirmation-renderer-audit.md",
+    "20260903-uskr22-fresh-first-run.md",
+    "20260903-uskr22-fresh-first-run-validation.md",
+    "20260903-uskr22-prior-vs-fresh-first-run.md",
+    "20260903-uskr22-run-a.md",
+    "20260903-uskr22-run-b.md",
+    "20260903-uskr22-run-c.md",
+    "20260903-uskr22-stability-comparison.md",
+    "20260903-uskr22-evidence-selection-variance.md",
+    "20260903-uskr22-message-quality.md",
+    "20260903-uskr22-promotion-readiness.md",
+    "20260903-evidence-alias-map.json",
+    "20260903-uskr22-fresh-first-run.json",
+    "20260903-uskr22-run-a.json",
+    "20260903-uskr22-run-b.json",
+    "20260903-uskr22-run-c.json",
+    "20260903-uskr22-stability.json",
+    "20260903-uskr22-proof.json",
+    "20260903-uskr22-us14-message-preview.md",
+    "20260903-uskr22-kr8-message-preview.md",
+)
 FORBIDDEN_PROMPT_KEYS = (
     "accepted_decision",
     "directional_balance",
@@ -120,6 +147,16 @@ def write_text(path: Path, value: str) -> None:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def artifact_index_rows(report_dir: Path) -> list[list[object]]:
+    paths = [report_dir / name for name in CURRENT_ARTIFACT_NAMES]
+    paths.extend(sorted((report_dir / "uskr22-messages").glob("*.txt")))
+    return [
+        [str(path.relative_to(report_dir)), sha256(path), path.stat().st_size]
+        for path in paths
+        if path.is_file()
+    ]
 
 
 def strict_json_schema(value: object) -> object:
@@ -598,6 +635,7 @@ def _run_document(
     batch_rows: Sequence[Mapping[str, object]],
     semantic_audit: Mapping[str, object],
     rendered: Sequence[object],
+    generated_at: str | None = None,
 ) -> dict[str, object]:
     distribution = Counter(row.decision for row in candidates)
     rendered_by_ticker = {row.ticker: row for row in rendered}
@@ -607,7 +645,7 @@ def _run_document(
         "packet_id": SHADOW_PACKET_ID,
         "model": REASONING_MODEL,
         "reasoning_effort": REASONING_EFFORT,
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": generated_at or datetime.now(UTC).isoformat(),
         "candidate_count": len(candidates),
         "validation_pass_count": sum(row["status"] == "PASS" for row in validation_rows),
         "distribution": {
@@ -676,6 +714,13 @@ def execute_run(
     codex_bin = _signed_in_codex_bin()
     run_dir = args.output_dir / f"run-{run}"
     run_dir.mkdir(parents=True, exist_ok=True)
+    run_document_path = run_dir / "run.json"
+    existing_generated_at = None
+    if args.resume_existing and run_document_path.is_file():
+        prior_run_document = read_json(run_document_path)
+        prior_generated_at = prior_run_document.get("generated_at")
+        if isinstance(prior_generated_at, str):
+            existing_generated_at = prior_generated_at
     batches = (
         US_COHORT[0:4],
         US_COHORT[4:8],
@@ -787,8 +832,9 @@ def execute_run(
         batch_rows=invocation_rows,
         semantic_audit=semantic_audit,
         rendered=rendered,
+        generated_at=existing_generated_at,
     )
-    write_json(run_dir / "run.json", document)
+    write_json(run_document_path, document)
     write_json(
         args.report_dir
         / f"20260903-uskr22-{('fresh-first-run' if run == 'first' else 'run-' + run)}.json",
@@ -1461,26 +1507,7 @@ def finalize_first_run_failure(
         + markdown_table(["Gate", "Value"], [[key, value] for key, value in gates.items()])
         + "\n\nBlocking P1 finding: the confirmation ownership guard matched ordinary business-language uses of 'support' and product 'pricing' in CRCL and MU. Provenance repair closed at `22/22`, 086280 passed, and WRD/WULF substantive repetition was zero. A/B/C stability was not run because the fresh first gate was `20/22`. The next scope is a bounded semantic-field validator repair followed by a completely new all22 blind generation, not a selective rerun.\n",
     )
-    index_candidates = [
-        path
-        for path in args.report_dir.rglob("*")
-        if path.is_file() and path.name != "20260903-uskr22-artifact-index.md"
-    ]
-    index_rows = [
-        [str(path.relative_to(args.report_dir)), sha256(path), path.stat().st_size]
-        for path in sorted(index_candidates)
-        if path.name.startswith(
-            (
-                "20260903-uskr22-",
-                "20260903-evidence-alias-",
-                "20260903-confirmation-renderer-",
-                "20260903-repetition-validator-",
-                "20260903-086280-",
-                "20260903-wrd-wulf-",
-            )
-        )
-        or path.parent.name == "uskr22-messages"
-    ]
+    index_rows = artifact_index_rows(args.report_dir)
     write_text(
         args.report_dir / "20260903-uskr22-artifact-index.md",
         "# USKR22 Artifact Index\n\n"
@@ -2070,26 +2097,7 @@ def finalize(
         + "\n\nKR natural production proof: `PENDING`. US repaired natural proof: `PENDING`. This shadow verdict does not itself authorize production promotion. Production mutation, send, and main merge remain zero.\n",
     )
 
-    index_candidates = [
-        path
-        for path in args.report_dir.rglob("*")
-        if path.is_file() and path.name != "20260903-uskr22-artifact-index.md"
-    ]
-    index_rows = [
-        [str(path.relative_to(args.report_dir)), sha256(path), path.stat().st_size]
-        for path in sorted(index_candidates)
-        if path.name.startswith(
-            (
-                "20260903-uskr22-",
-                "20260903-evidence-alias-",
-                "20260903-confirmation-renderer-",
-                "20260903-repetition-validator-",
-                "20260903-086280-",
-                "20260903-wrd-wulf-",
-            )
-        )
-        or path.parent.name == "uskr22-messages"
-    ]
+    index_rows = artifact_index_rows(args.report_dir)
     write_text(
         args.report_dir / "20260903-uskr22-artifact-index.md",
         "# USKR22 Artifact Index\n\n"
