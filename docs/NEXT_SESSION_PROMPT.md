@@ -1,5 +1,27 @@
 # Next Session Prompt
 
+Latest authoritative repair is the 2026-09-03 packet AI consumability readiness work. Read
+`docs/reports/20260903-readiness-repair-readiness.json`, the Run-53 root-cause, frozen readiness,
+V2 replay, test-sink, main-merge, natural-live guard, and artifact index first. Exact instruction
+commit is `57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3`; implementation is
+`c0964a31380f0bd7cb759e09f395d8c780c8b781`; report/runtime promotion is
+`9d47c02fe638348df022a427ef147f0d4855d609`.
+
+The stock V2 readiness gate now validates only facts explicitly owned by `STOCK_V2`; canonical
+standalone market and KRX NIGHT facts remain stored and separately consumable. Run-53 frozen
+readiness passes with zero unsupported included numerics. Signed-in `gpt-5.6-sol / xhigh` reaches
+`14/14` accepted decisions with fallback `0`, and the dedicated sink receives KR8 + US14 exactly
+once. Full pytest is `2152 PASS`; open P0/material P1 is `0/0`. No production recipient, schedule,
+night-session contract, public Action, database, or Production Assist setting changed.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_US_LIVE`. Inspect the next ordinary scheduled US cycle
+read-only for readiness, model reach, context/candidate/accepted/explicit counts, fallback,
+message quality, and exactly-once delivery. Do not manually run a Scheduled Task, resend
+production messages, expose recipient values, or call this controlled proof natural `LIVE_PASS`.
+Production Assist remains OFF.
+
+---
+
 Latest authoritative work is the 2026-09-02 four-track stabilization. Read
 `docs/reports/20260902-four-track-readiness.json`, the validation report, natural-live guard, and
 artifact index first. Exact instruction commit is

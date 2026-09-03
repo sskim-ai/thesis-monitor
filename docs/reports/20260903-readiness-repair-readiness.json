@@ -5,9 +5,11 @@
     "base_sha": "c1c43070cd944e273c53f952c29a768a33fefdee",
     "work_instruction_commit": "57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3",
     "implementation_commit": "c0964a31380f0bd7cb759e09f395d8c780c8b781",
-    "report_commit": "PENDING",
-    "final_main": "PENDING",
-    "operating_sha": "PENDING"
+    "report_runtime_commit": "9d47c02fe638348df022a427ef147f0d4855d609",
+    "runtime_promotion_main": "9d47c02fe638348df022a427ef147f0d4855d609",
+    "documentation_closure_sha": "RESOLVED_FROM_GIT",
+    "final_main": "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE",
+    "operating_sha": "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
   },
   "gates": {
     "BASE_CONTAINS_CURRENT_SAFE_REPAIRS": "PASS",
@@ -64,8 +66,9 @@
     "PUBLIC_ACTION_VERSION": "0.4.5",
     "OPERATION_IDS": "20_OF_20_UNIQUE",
     "IMPLEMENTATION_ACTIONS": "PASS_33702360623",
-    "FINAL_ACTIONS": "PENDING",
-    "SERVICE_HEALTH": "PENDING_PROMOTION",
+    "REPORT_RUNTIME_ACTIONS": "PASS_33708265266",
+    "DOCUMENTATION_CLOSURE_ACTIONS": "RESOLVED_FROM_GITHUB_FOR_CLOSURE_SHA",
+    "SERVICE_HEALTH": "PASS_AFTER_RUNTIME_PROMOTION",
     "OPEN_P0": 0,
     "OPEN_MATERIAL_P1": 0,
     "OPEN_P2": 2
@@ -74,5 +77,5 @@
     "unverified_night_futures_screenshot_convention_reconciliation",
     "optional_historical_rejection_report_presentation_polish"
   ],
-  "status": "READY_FOR_MAIN_AWAITING_FINAL_ACTIONS"
+  "status": "DEPLOYED_AWAITING_NATURAL_US_LIVE"
 }

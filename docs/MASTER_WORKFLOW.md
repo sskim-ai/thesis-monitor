@@ -2413,3 +2413,36 @@ presentation items do not block promotion. Report/runtime commit
 linear fast-forward, synchronized to operating, and passed API health after a thesis-monitor-only
 restart. State is `DEPLOYED_AWAITING_NATURAL_KR_US_LIVE`, not natural `LIVE_PASS`. Wait for the next
 ordinary KR and US cycles and review them read-only. Production Assist remains OFF.
+
+### 40.37 Run-53 Packet AI Consumability Readiness Repair
+
+Exact instruction commit `57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3` precedes implementation
+`c0964a31380f0bd7cb759e09f395d8c780c8b781` on base
+`c1c43070cd944e273c53f952c29a768a33fefdee`. Run-53 source monitoring completed `14/14`, but the
+legacy AI readiness gate treated all `2,057` packet numeric occurrences as stock-V2 input. Two
+standalone KRX NIGHT reference-price facts were canonical but outside the stock prompt, so the
+packet failed before network/model reach and delivered deterministic fallback `15/15`.
+
+`packet-fact-consumer-scope-v1` separates canonical storage, user visibility, and consumer
+eligibility. `STOCK_V2`, `DAILY_REVIEW`, `MARKET_RENDERER`, `ARCHIVE_ONLY`, and
+`NIGHT_FUTURES_MODULE` projections now share one explicit contract. Unknown facts remain strict;
+there is no semantic field/ticker/value allowlist and no validator threshold change. Frozen
+Run-53 preserves all `626` canonical facts, includes `1,987` stock-V2 numeric occurrences, excludes
+`70` standalone-market occurrences with explicit ownership, and has zero unsupported included
+numeric occurrences or prompt/readiness mismatch.
+
+Signed-in `gpt-5.6-sol / xhigh` production-equivalent replay reaches
+context/candidate/accepted/explicit `14/14/14/14`, fallback `0`, and strict final quality PASS.
+The accepted distribution is HOLD `9`, SELL `5`; GOOGL's adjudicated accepted plan remains final
+authority. Frozen KR regression remains `8/8`, and the dedicated test sink receives the exact KR8
++ US14 accepted stock payloads `22/22` with zero duplicate, orphan, production send, or production
+intent. Focused/full tests are `187/2152 PASS`; Public Action remains `0.4.5` and operationIds
+remain `20/20` unique.
+
+Report/runtime commit `9d47c02fe638348df022a427ef147f0d4855d609` passed exact-SHA Actions runs
+`33702360623` and `33708265266`, advanced by clean linear fast-forward, synchronized to operating,
+and passed authenticated API health after a thesis-monitor-only restart. Open P0/material P1 are
+`0/0`; two inherited P2 presentation items remain. State is
+`DEPLOYED_AWAITING_NATURAL_US_LIVE`, not natural `LIVE_PASS`. The next action is read-only review of
+the next ordinary US cycle. Manual task invocation and production resend remain prohibited;
+Production Assist remains OFF.

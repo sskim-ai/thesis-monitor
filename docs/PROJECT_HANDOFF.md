@@ -1,5 +1,37 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-03 Packet AI Consumability Readiness Handoff
+
+Start with `docs/reports/20260903-readiness-repair-readiness.json`, the Run-53 root-cause,
+frozen-readiness, V2 replay, exact test-sink, main-merge, natural-live guard, and artifact-index
+reports. Exact work instructions were committed first as
+`57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3`; implementation is
+`c0964a31380f0bd7cb759e09f395d8c780c8b781` on base
+`c1c43070cd944e273c53f952c29a768a33fefdee`.
+
+Run-53 failed before model reach because the legacy readiness gate validated every numeric field
+stored in the packet, including two standalone KRX NIGHT `reference_price` occurrences outside the
+stock V2 prompt. `packet-fact-consumer-scope-v1` now projects canonical facts and semantic registry
+coverage by explicit consumer. Facts remain canonical and user-visible where owned, while only the
+`STOCK_V2` surface gates stock V2 readiness. Unclassified facts remain strict; there is no field,
+ticker, value, or night-reference allowlist and no validator relaxation.
+
+Frozen Run-53 changes from not ready to ready with all `626` canonical facts preserved, `1,987`
+included numeric occurrences, `70` standalone-market exclusions, and zero unsupported included
+numeric occurrences. Signed-in `gpt-5.6-sol / xhigh` production-equivalent replay is
+`14/14/14/14` context/candidate/accepted/explicit, final quality PASS, and fallback `0`; decision
+distribution is HOLD `9`, SELL `5`. Frozen KR remains `8/8` and blocks night-futures leakage.
+The dedicated TEST sink received only the exact KR8 + US14 accepted stock messages, `22/22`, with
+zero duplicate, orphan, production-recipient send, or production delivery intent.
+
+Focused/full tests are `187/2152 PASS`; Public Action remains `0.4.5` with `20/20` unique
+operationIds. Report/runtime commit `9d47c02fe638348df022a427ef147f0d4855d609` passed Actions runs
+`33702360623` and `33708265266`, was fast-forwarded to main and operating, and passed authenticated
+API health after a thesis-monitor-only restart. Open P0/material P1 are `0/0`; two inherited P2
+presentation items remain. This controlled replay is not natural `LIVE_PASS`. Next action is
+`WAIT_FOR_NEXT_NATURAL_US_LIVE`, read-only, with no manual task or production resend. Production
+Assist remains OFF.
+
 ## 2026-09-02 Run-51 KRX Night OHLC Live-Path Handoff
 
 Start with `docs/reports/20260902-run51-live-path-with-krx-night-proof.json` and the Run-51 artifact

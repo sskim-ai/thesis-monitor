@@ -626,3 +626,18 @@ Treasury observations, and accepted-plan-only rendering. They may not add DNS/TL
 retune decisions, restore common stock disclaimers, use raw candidates as final, expose recipient
 values, manually trigger production, or treat the dedicated `22/22` sink as natural proof. The next
 dependency is ordinary natural KR/US observation; Production Assist remains OFF.
+
+The packet AI consumability readiness repair starts from clean main
+`c1c43070cd944e273c53f952c29a768a33fefdee`. Exact instruction commit
+`57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3` precedes implementation
+`c0964a31380f0bd7cb759e09f395d8c780c8b781` and report/runtime promotion
+`9d47c02fe638348df022a427ef147f0d4855d609`.
+
+Descendants must preserve explicit consumer ownership for canonical numeric facts, strict handling
+of unclassified facts, identical consumer projection for readiness and prompt construction,
+accepted-plan-only rendering, and separate ownership for standalone market and KRX NIGHT facts.
+They may not derive AI consumption from user visibility, add a field/ticker/value allowlist, relax
+numeric or semantic validation, remove canonical night facts to obtain readiness, alter the night
+session contract, expose recipient values, manually invoke a production task, or treat the exact
+`22/22` test-sink proof as natural live evidence. The next dependency is the next ordinary US
+cycle, reviewed read-only; Production Assist remains OFF.
