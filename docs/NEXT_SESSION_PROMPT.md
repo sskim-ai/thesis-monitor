@@ -2,7 +2,7 @@
 
 Latest authoritative repair is the 2026-09-03 Run-54 KR live V2 delivery orchestration work.
 Read `docs/reports/20260903-live-orchestration-repair-verdict.md` and the artifact index first.
-Exact instruction commit is `20d052d35d80c4eddf50562763199a43bb55df6f`; implementation is
+Exact instruction commit is `20d052dee5f4ea0d6b2630a284434a98ca52596a`; implementation is
 `d00741abbe227bd199c8383de0cad9bbd740ceeb`.
 
 Next action: `WAIT_FOR_NEXT_NATURAL_KR_LIVE`. Review the ordinary scheduled packet read-only and

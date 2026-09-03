@@ -1,6 +1,6 @@
 {
   "contract": "kr-live-v2-delivery-repair-verdict-v1",
-  "work_instruction_sha": "20d052d35d80c4eddf50562763199a43bb55df6f",
+  "work_instruction_sha": "20d052dee5f4ea0d6b2630a284434a98ca52596a",
   "implementation_sha": "d00741abbe227bd199c8383de0cad9bbd740ceeb",
   "source_incident_run": 54,
   "root_causes_identified": true,

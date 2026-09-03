@@ -3,7 +3,7 @@
 ## Source and implementation
 
 - Work instruction: `docs/work-instructions/20260903-kr-live-v2-delivery-orchestration-repair-and-live-path-e2e.md`
-- Work-instruction SHA: `20d052d35d80c4eddf50562763199a43bb55df6f`
+- Work-instruction SHA: `20d052dee5f4ea0d6b2630a284434a98ca52596a`
 - Implementation SHA: `d00741abbe227bd199c8383de0cad9bbd740ceeb`
 - Root-cause machine proof: `docs/reports/20260903-run54-root-cause.json`
 - State transition proof: `docs/reports/20260903-delivery-state-transition-proof.json`

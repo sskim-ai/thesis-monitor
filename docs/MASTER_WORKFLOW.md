@@ -2449,7 +2449,7 @@ Production Assist remains OFF.
 
 ### 40.38 Run-54 KR Live V2 Delivery Orchestration Repair
 
-Exact instruction commit `20d052d35d80c4eddf50562763199a43bb55df6f` precedes implementation
+Exact instruction commit `20d052dee5f4ea0d6b2630a284434a98ca52596a` precedes implementation
 `d00741abbe227bd199c8383de0cad9bbd740ceeb` on operating base
 `5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The incident's final failure was not the initial
 candidate rejection. A corrected `9/9` candidate had passed quality and entered pending state, but
