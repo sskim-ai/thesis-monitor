@@ -1,0 +1,18 @@
+{
+  "contract": "test-sink-delivery-receipt-v1",
+  "recipient": "TEST_SINK_A",
+  "recipient_value_redacted": true,
+  "dedicated_test_sink_configured": true,
+  "distinct_from_production": true,
+  "production_collision": 0,
+  "actual_telegram_adapter": true,
+  "logical_delivery_count": 9,
+  "logical_sent_count": 9,
+  "single_chunk_rows": 9,
+  "pending_count": 0,
+  "duplicate_sent": 0,
+  "fallback_sent": 0,
+  "production_recipient_send": 0,
+  "archive_completion_recovery": true,
+  "archive_recovery_telegram_resent": false
+}

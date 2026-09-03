@@ -1,0 +1,16 @@
+{
+  "contract": "run54-live-orchestration-root-cause-v1",
+  "incident_run": 54,
+  "operating_revision": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "primary_packet": "2026-09-03-kr-run-54-f19bb379daa7",
+  "later_packet": "2026-09-03-kr-run-54-78ed269de3df",
+  "corrected_accepted_count": 9,
+  "initial_validation_rejection_final_root_cause": false,
+  "pending_retry_root_cause": "analysis_reuse_overwrote_delivery_owner_then_retry_inner_state_filter_rejected_held_rows",
+  "v2_suppression_root_cause": "claim_bound_final_accepted_v2_artifact_missing",
+  "root_cause_relationship": "INDEPENDENT",
+  "late_packet_market_owner": "kr",
+  "late_packet_iwm_spy_source": "packet_owned_global_market_fact_catalog",
+  "open_p0": [],
+  "open_material_p1": []
+}

@@ -1,6 +1,19 @@
 # Next Session Prompt
 
-Latest authoritative repair is the 2026-09-03 packet AI consumability readiness work. Read
+Latest authoritative repair is the 2026-09-03 Run-54 KR live V2 delivery orchestration work.
+Read `docs/reports/20260903-live-orchestration-repair-verdict.md` and the artifact index first.
+Exact instruction commit is `20d052d35d80c4eddf50562763199a43bb55df6f`; implementation is
+`d00741abbe227bd199c8383de0cad9bbd740ceeb`.
+
+Next action: `WAIT_FOR_NEXT_NATURAL_KR_LIVE`. Review the ordinary scheduled packet read-only and
+verify accepted V2 `8/8`, one market message, pending/retry ownership, AI sent `9/9`, fallback `0`,
+duplicates `0`, and orphans `0`. Do not trigger a Scheduled Task, send Telegram manually, merge
+this branch to main without a separate decision, or expose recipient values. Production Assist
+remains OFF.
+
+---
+
+Previous authoritative repair is the 2026-09-03 packet AI consumability readiness work. Read
 `docs/reports/20260903-readiness-repair-readiness.json`, the Run-53 root-cause, frozen readiness,
 V2 replay, test-sink, main-merge, natural-live guard, and artifact index first. Exact instruction
 commit is `57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3`; implementation is
