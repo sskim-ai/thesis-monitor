@@ -1,0 +1,274 @@
+{
+  "base_sha": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "bounded_repair_scope": "EVIDENCE_REFS_ONLY",
+  "bounded_repairs": [
+    {
+      "bad_ref": "decision-evidence:8906a34193399a6c5d0",
+      "replacement_ref": "decision-evidence:8906a34193399a6c5d0a",
+      "ticker": "CORZ"
+    },
+    {
+      "bad_ref": "decision-evidence:47e26c6f53ec96785224",
+      "replacement_ref": "decision-evidence:47e26c6f53f6504d798d",
+      "ticker": "GOOGL"
+    },
+    {
+      "bad_ref": "decision-evidence:d2f6c30d68288191bbd428a394a78407",
+      "replacement_ref": "decision-evidence:d2f6c30fdb85a421401f",
+      "ticker": "SKHY"
+    }
+  ],
+  "contract": "shadow-decision-experiment-proof-v1",
+  "freeze_hash_checks": {
+    "20260903-us14-shadow-decision-message-preview.md": {
+      "actual": "6ba07b9cc0e404514a38240191f2e2ba63b92c3d6a0e3d313dd4339932003b93",
+      "expected": "6ba07b9cc0e404514a38240191f2e2ba63b92c3d6a0e3d313dd4339932003b93",
+      "status": "PASS"
+    },
+    "shadow-accepted.json": {
+      "actual": "fcbdb4712c54efd0b512bc5788129feb48e6fc98a9423106a1ebddce60b816fb",
+      "expected": "fcbdb4712c54efd0b512bc5788129feb48e6fc98a9423106a1ebddce60b816fb",
+      "status": "PASS"
+    },
+    "shadow-candidates.json": {
+      "actual": "249079a79abba30d08d020d69732a92ede55c62f4641f1ff05690d8e89f682f5",
+      "expected": "249079a79abba30d08d020d69732a92ede55c62f4641f1ff05690d8e89f682f5",
+      "status": "PASS"
+    }
+  },
+  "gates": {
+    "BALANCE_PROBABILITY_LANGUAGE": 0,
+    "BALANCE_SUM_INVALID": 0,
+    "COMMON_ORDER_DISCLAIMER_OCCURRENCE": 0,
+    "ENTRY_ZONE_SAME_OR_OVERLAP_COUNT": 4,
+    "FIXED_FACTOR_WEIGHTED_SCORE": 0,
+    "FRESH_FACT_COLLECTION": 0,
+    "INVENTED_STOP_LOSS": 0,
+    "PHASE1_ARTIFACTS_FROZEN": "PASS",
+    "POST_COMPARISON_PROMPT_TUNING": 0,
+    "POST_RUN53_FACT_LEAKAGE": 0,
+    "PRICE_TIMING_AUTOMATICALLY_CHANGES_BUSINESS_THESIS": 0,
+    "PRIOR_ACCEPTED_USED_TO_ANCHOR_FRESH_BALANCE": 0,
+    "PRODUCTION_ACCEPTED_STATE_MUTATION": 0,
+    "PRODUCTION_DELIVERY_INTENT": 0,
+    "PRODUCTION_RECIPIENT_SEND": 0,
+    "REFERENCE_BALANCE_MATERIAL_COUNT": 0,
+    "REFERENCE_BALANCE_MODERATE_COUNT": 6,
+    "REFERENCE_BALANCE_NEAR_COUNT": 8,
+    "REFERENCE_LABEL_MATCH_COUNT": 11,
+    "REFERENCE_MANUAL_VIEW_VISIBLE_DURING_GENERATION": 0,
+    "RUN53_FROZEN_COHORT_COUNT": 14,
+    "RUN53_SOURCE_PACKET": "2026-09-03-us-run-53-055ae8ea01f6",
+    "SHADOW_CANDIDATE_COUNT": 14,
+    "SHADOW_DECISION_STRUCTURE_VERDICT": "PROMISING",
+    "SHADOW_MESSAGE_STYLE": "NEEDS_MINOR_EDIT",
+    "SHADOW_MODEL_REACHED": "PASS",
+    "SHADOW_VALIDATION_PASS_COUNT": 14,
+    "SUPPORTED_CODEX_ENTRY_ZONE_COUNT": 12,
+    "SUPPORTED_CODEX_TRIM_ZONE_COUNT": 13,
+    "TRIM_ZONE_RENDERED_AS_MANDATORY_SELL": 0,
+    "TRIM_ZONE_SAME_OR_OVERLAP_COUNT": 14,
+    "UNSUPPORTED_ENTRY_ZONE": 0,
+    "UNSUPPORTED_TRIM_ZONE": 0
+  },
+  "model_runtime": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "signed_in_codex_cli": true
+  },
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "phase1_freeze": {
+    "accepted_sha256": "fcbdb4712c54efd0b512bc5788129feb48e6fc98a9423106a1ebddce60b816fb",
+    "base_message_sha256": "fa8df4c59ffed56f4f8f3151c73a5d0c14cd07e344a0fa501845daa2712ba012",
+    "batch_output_sha256": [
+      "de3ad170a05a41710f575e5bf1a09ff6ddc7b7f8e04a23d69387d6a2a772571e",
+      "0a2c61972829a3964ddb06194140fc79128dcef03bbf2a929be00c70765a2f8a",
+      "942cd9ac0edd1c7f63c545af2a4e8b90f78930332b4a6a6b7ecedc54fa898396",
+      "610e987797a48d3aa41c1eb43ba9f8ec7dabea75c4a220c9cf9a28ac2b3baf0c",
+      "cf88dc47f6d9e918d4b4c18fecd9018ddd0e1639c938e7dfa6c9f4ccee974d5f"
+    ],
+    "batch_prompt_sha256": {
+      "batch-01": "ffa4aebc5e54e1fd9a10ad328e2bae8526609aaa1215c9f734d5e0d455011241",
+      "batch-02": "bbd3b2c9567b3e74d01640bdb7436563b4d3478cdf9f3bc86eb0980d4f348496",
+      "batch-03": "3153d35d16631246a8f90fabe763c22e7a2f69976b8afff068acf66682f11b3e",
+      "batch-04": "753d982ea5a2df6271f70657ea6c010775ee871bc97c8167d07ce5ef86608bc2",
+      "batch-05": "a55922120fa9723cf487f21eb92a06cce8f4f9b2706bf5960fd7e4fa04f8d7fe"
+    },
+    "bounded_reference_repair_sha256": "0547c497418ae54ab429e79fbb44b933ae938d2fa4f53dc35f6a20cbc3d78d4f",
+    "candidate_sha256": "249079a79abba30d08d020d69732a92ede55c62f4641f1ff05690d8e89f682f5",
+    "combined_message_sha256": "6ba07b9cc0e404514a38240191f2e2ba63b92c3d6a0e3d313dd4339932003b93",
+    "contract": "shadow-phase1-freeze-v1",
+    "evidence_fingerprints": {
+      "CORZ": "b3e0620200cbcc2ffc36e06d86ea8b64976702b143720b06295c763e0f0c4e54",
+      "CPNG": "4e5ec6d9dd20e3d7de192c81b26c5337b976ddf6cbd063fe954ce322df03cc0a",
+      "CRCL": "24e05bfd98e7b20e2fba1270e81d769ba714e4136975a999e3512f0abd0aa3e6",
+      "GOOGL": "46c26d00e2b87c3f3670b8af5c5ecb80e5c0a9b9f408e8c2366c97f1ec0f2255",
+      "HUT": "b8261e2fa61dd3cc99d60e90befd64d83be8088a63a4f24e38522a1e7ea8fbd2",
+      "IBM": "5fdffdbbb336cc6dc66df88600f34a064e7bd9fd4c7483a0c3207c5075d24096",
+      "MU": "ab1dd37739519cb103903a951ec00155dd54577f6472367fd85b52623b2c7bb6",
+      "RXRX": "e4395ca1fb599ea9963fd4212bac3eb8826f7833ff54c4e8427cda065484dd01",
+      "SKHY": "b2b8b74db322a138f223fca4156ad7263bf0898172196cef1f363ac535476410",
+      "SNDK": "9f548fbd751a92296174093d5d6dc4866c18c201ccc9adbd389a41c96b8d3a1f",
+      "TSLA": "5bcd4aef26ecffb6a3d432a822df6cfa65ed6f87e23774432d22f0de77c65286",
+      "TSM": "7348e948acd62584bacdf810eecf701c118dcb3bef1ec53b1d080939d5ab8739",
+      "WRD": "fe1b02502ea42b92ebf52a34812f600f6e7393dcce4287adf32d4b1847b96c42",
+      "WULF": "b78e92fb7bd157bd28a552f6b93f9f7b7f12ab32c582b596827a0e97349fdf0d"
+    },
+    "frozen_at": "2026-09-03T05:13:57.589034+00:00",
+    "message_quality": {
+      "common_order_disclaimer_occurrence": 0,
+      "rows": [
+        {
+          "char_count": 1662,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "6173eea3a870f6d77a23b6fcebbbae99b68fcbe880909f3fc4dbf370f0aefde4",
+          "quality": "PASS",
+          "ticker": "CORZ"
+        },
+        {
+          "char_count": 1679,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "a923bcbc786dd8e265177d1f60a6acb8a8217c06c51cb5fa7fbb2bee302cc203",
+          "quality": "PASS",
+          "ticker": "CPNG"
+        },
+        {
+          "char_count": 1471,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "bba17c07835193d3fe3a650d7cdcb4f8d767d7d3357fabf3b42c51ab8620d2b4",
+          "quality": "PASS",
+          "ticker": "CRCL"
+        },
+        {
+          "char_count": 1605,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "fa37b4deec07b6f967739333c65e593f7095838eeefe562e82c37f570cbed54a",
+          "quality": "PASS",
+          "ticker": "GOOGL"
+        },
+        {
+          "char_count": 1642,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "50f42e9d1bc320864e0c0e50ceb05571ad3eac1fcf78fd18061758e36a48fe5a",
+          "quality": "PASS",
+          "ticker": "HUT"
+        },
+        {
+          "char_count": 1791,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "08268b2322f00dc5d25e0d08a1822d0e49d9617f178f89fee3840d1539959fd3",
+          "quality": "PASS",
+          "ticker": "IBM"
+        },
+        {
+          "char_count": 1925,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "8985bc047f6de588b19740c77444719d400e9a6c7a927c171376515d3508a532",
+          "quality": "PASS",
+          "ticker": "MU"
+        },
+        {
+          "char_count": 1492,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "608b882e317ede7371553ca4b7bb842862bac065c204a4b46eab8732dbc21709",
+          "quality": "PASS",
+          "ticker": "RXRX"
+        },
+        {
+          "char_count": 1469,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "e87e8ee512165db6cc94beab0d5a147c718a5f32bdae3cfd5279423631d3256f",
+          "quality": "PASS",
+          "ticker": "SKHY"
+        },
+        {
+          "char_count": 1461,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "4d3cac717884bdd4a1e1515dc204275aaad1bd65b3d224bd600d9dc616263d23",
+          "quality": "PASS",
+          "ticker": "SNDK"
+        },
+        {
+          "char_count": 1561,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "38d8a42ae7ef95f9e1516fb9b4324a7062225cf3593650a3e3b0c4831bc3db1e",
+          "quality": "PASS",
+          "ticker": "TSLA"
+        },
+        {
+          "char_count": 1391,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "c470fc4c6cbaec89754555047dd753e3d405eb658643136dfa115b518f1d65dd",
+          "quality": "PASS",
+          "ticker": "TSM"
+        },
+        {
+          "char_count": 1467,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "95ffcbde0a1bb9f1f67fb48ee022b71bf221ab5b3afe90a2feec34731baa0f33",
+          "quality": "PASS",
+          "ticker": "WRD"
+        },
+        {
+          "char_count": 1794,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "4211791677c7e564e51098ca2f9664491a1d9b6df7ab5b27591a607d48b430e5",
+          "quality": "PASS",
+          "ticker": "WULF"
+        }
+      ],
+      "status": "PASS"
+    },
+    "model": "gpt-5.6-sol",
+    "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+    "phase1_artifacts_frozen": "PASS",
+    "price_map_fingerprints": {
+      "CORZ": "23cd19bd6321f4b26c8880774830ee0224a8388d4cf4314c8f68c9d66e55ef84",
+      "CPNG": "c1256ea5dee3165234237fc1c8513641b731f602daa6d4bdf0ed58ee0604db0a",
+      "CRCL": "5af7742f40d9375b4d9e8957fdb7572320474fe5dcb22bf5d0eaa569f7c09e9f",
+      "GOOGL": "64ef08619cb3e498cbfdbaca1cd4f3386bb54a0392d1d88ad2dd22825d19fb8c",
+      "HUT": "de92dadff4e68569a6fb3198f57cd6e8878cf35a6b9be86913381567133e0774",
+      "IBM": "74481f0d5de2f53b0086d2c43b8614fa6b2326e491e4a2a6acd4c95e25f72b62",
+      "MU": "2e3085db34468bf56677ad112aa6a62d8c567bc60be0bded427243bb862c09d4",
+      "RXRX": "4d92ccd87eaa46fd2600316b9c4d0a1afcd3e694a21649533ffe996a77f901c0",
+      "SKHY": "f2778ce2e7fa8c2ee1837f4f1fbb011fb3fe8f10d4d889664454280a50a43e61",
+      "SNDK": "a5c6d19c09292be335463a34d0dc387f7f0ee55f25ede1127ed4f2810787b2de",
+      "TSLA": "a8c88bb57296a0a77ebf345c861bba1af2e2b4e8452aff7e0690f09f98cf5e21",
+      "TSM": "a616f6de8259c10cf62ba73d6ab4b158c5a63e90f510bcd3b282d83655b9d1e2",
+      "WRD": "ee0a24684b44f60e0d312634c613b77af5ca026bc2015c1b79f79fb76e122213",
+      "WULF": "cd6f179a366e1262ed06e371c8f5c6d66184e822e7a0565697f0e59b354dadda"
+    },
+    "prior_accepted_used_to_anchor_fresh_balance": 0,
+    "production_accepted_state_mutation": 0,
+    "production_delivery_intent": 0,
+    "production_recipient_send": 0,
+    "reasoning_effort": "xhigh",
+    "reference_manual_view_visible_during_generation": 0,
+    "rendered_message_fingerprints": {
+      "CORZ": "6173eea3a870f6d77a23b6fcebbbae99b68fcbe880909f3fc4dbf370f0aefde4",
+      "CPNG": "a923bcbc786dd8e265177d1f60a6acb8a8217c06c51cb5fa7fbb2bee302cc203",
+      "CRCL": "bba17c07835193d3fe3a650d7cdcb4f8d767d7d3357fabf3b42c51ab8620d2b4",
+      "GOOGL": "fa37b4deec07b6f967739333c65e593f7095838eeefe562e82c37f570cbed54a",
+      "HUT": "50f42e9d1bc320864e0c0e50ceb05571ad3eac1fcf78fd18061758e36a48fe5a",
+      "IBM": "08268b2322f00dc5d25e0d08a1822d0e49d9617f178f89fee3840d1539959fd3",
+      "MU": "8985bc047f6de588b19740c77444719d400e9a6c7a927c171376515d3508a532",
+      "RXRX": "608b882e317ede7371553ca4b7bb842862bac065c204a4b46eab8732dbc21709",
+      "SKHY": "e87e8ee512165db6cc94beab0d5a147c718a5f32bdae3cfd5279423631d3256f",
+      "SNDK": "4d3cac717884bdd4a1e1515dc204275aaad1bd65b3d224bd600d9dc616263d23",
+      "TSLA": "38d8a42ae7ef95f9e1516fb9b4324a7062225cf3593650a3e3b0c4831bc3db1e",
+      "TSM": "c470fc4c6cbaec89754555047dd753e3d405eb658643136dfa115b518f1d65dd",
+      "WRD": "95ffcbde0a1bb9f1f67fb48ee022b71bf221ab5b3afe90a2feec34731baa0f33",
+      "WULF": "4211791677c7e564e51098ca2f9664491a1d9b6df7ab5b27591a607d48b430e5"
+    },
+    "shadow_candidate_count": 14,
+    "shadow_model_reached": "PASS",
+    "shadow_validation_pass_count": 14,
+    "source_packet_canonical_sha256": "1434a5c8cc7e197d348299aacaa38366cb989867ec5fd1b43eebfc70b6b1e9fc",
+    "source_packet_file_sha256": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1"
+  },
+  "test_sink_send": {
+    "performed": false,
+    "reason": "optional send omitted; no production or test recipient was contacted"
+  },
+  "work_instruction_commit": "3281e59e33c1ae5ba85c78f8a26433fed0efb502"
+}

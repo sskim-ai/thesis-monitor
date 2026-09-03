@@ -1,0 +1,1017 @@
+{
+  "contract": "shadow-reference-comparison-v1",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "reference_loaded_after_phase1_freeze": true,
+  "reference_role": "independent comparator, not authoritative truth",
+  "rows": [
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.5,
+      "codex": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside_review": 12.257319,
+        "entry_high": 13.463829,
+        "entry_low": 12.911171,
+        "entry_type": "SUPPORT",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.0,
+        "trim_high": 18.382585,
+        "trim_low": 17.447415
+      },
+      "difference_summary": "Both views kept HOLD. Codex chose a lower support-defense entry, while the reference required recovery through the 17.45-18.38 resistance area.",
+      "difference_taxonomy": [
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 18.38,
+          "low": 17.45
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 26.0105,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 26.7474
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            17.45,
+            18.38,
+            "BREAKOUT_CONFIRMATION"
+          ]
+        ],
+        "new_stance": "WAIT",
+        "sell": 5.5,
+        "trim": [
+          17.45,
+          18.38
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "WAIT",
+      "ticker": "CORZ",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 18.38,
+          "low": 17.45
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0148,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0141
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside_review": 14.45936,
+        "entry_high": 15.22279,
+        "entry_low": 14.72721,
+        "entry_type": "SUPPORT",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.5,
+        "trim_high": 17.157304,
+        "trim_low": 16.507696
+      },
+      "difference_summary": "Codex was one balance point more cautious and selected the lower dynamic support instead of the registered 15.45-15.70 support.",
+      "difference_taxonomy": [
+        "EARNINGS_FCF_WEIGHT",
+        "RISK_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 15.7,
+          "low": 15.45
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 4.6783,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 3.0396
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            15.45,
+            15.7,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 4.5,
+        "trim": [
+          16.51,
+          17.16
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "CPNG",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 17.16,
+          "low": 16.51
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.014,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0157
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.5,
+      "codex": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside_review": 78.914109,
+        "entry_high": 86.529549,
+        "entry_low": 82.010451,
+        "entry_type": "SUPPORT",
+        "holder_stance": "HOLDABLE",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.5,
+        "trim_high": null,
+        "trim_low": null
+      },
+      "difference_summary": "The label and entry area agreed; Codex assigned a half-point more weight to expectation and valuation risk.",
+      "difference_taxonomy": [
+        "MARKET_EXPECTATION_WEIGHT",
+        "VALUATION_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 86.5,
+          "low": 82.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0127,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0342
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            82.0,
+            86.5,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 5.0,
+        "trim": null
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "CRCL",
+      "trim_zone_comparison": {
+        "best_reference": null,
+        "classification": "SAME_ZONE",
+        "detail": "both withheld",
+        "numeric": false,
+        "overlap": null
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.5,
+      "codex": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside_review": 340.0,
+        "entry_high": 321.878566,
+        "entry_low": 312.373234,
+        "entry_type": "SUPPORT",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.0,
+        "trim_high": 353.787998,
+        "trim_low": 343.652002
+      },
+      "difference_summary": "Codex used the same support-style entry alternative and was a half-point less bearish on the balance.",
+      "difference_taxonomy": [
+        "EARNINGS_FCF_WEIGHT",
+        "MARKET_EXPECTATION_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 322.0,
+          "low": 312.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1196,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0377
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            312.0,
+            322.0,
+            "SUPPORT"
+          ],
+          [
+            354.0,
+            354.0,
+            "BREAKOUT_CONFIRMATION"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 5.5,
+        "trim": [
+          344.0,
+          354.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "GOOGL",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 354.0,
+          "low": 344.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1012,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0599
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.5,
+      "codex": {
+        "buy": 3.5,
+        "decision": "SELL",
+        "downside_review": 83.0,
+        "entry_high": 97.0,
+        "entry_low": 97.0,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "REDUCE",
+        "new_buyer_stance": "WAIT",
+        "sell": 6.5,
+        "trim_high": 89.670191,
+        "trim_low": 84.109809
+      },
+      "difference_summary": "Both views were SELL. Codex still allowed a wait-for-confirmation path at 97, while the reference left the entry numeric zone unstated and emphasized avoidance/recovery.",
+      "difference_taxonomy": [
+        "RISK_WEIGHT",
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": null,
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "reference withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 3.0,
+        "decision": "SELL",
+        "downside": null,
+        "entry": [],
+        "new_stance": "AVOID_OR_WAIT",
+        "sell": 7.0,
+        "trim": [
+          84.0,
+          90.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "AVOID_OR_WAIT",
+      "ticker": "HUT",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 90.0,
+          "low": 84.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1307,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.3665
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.0,
+      "codex": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside_review": 228.180854,
+        "entry_high": 250.0,
+        "entry_low": 250.0,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "HOLDABLE",
+        "new_buyer_stance": "WAIT",
+        "sell": 4.5,
+        "trim_high": 250.256325,
+        "trim_low": 237.103675
+      },
+      "difference_summary": "The decision and balance matched. Codex required breakout confirmation at 250 rather than using the lower 228-235 support area.",
+      "difference_taxonomy": [
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 235.0,
+          "low": 228.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 9.6491,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 6.383
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            228.0,
+            235.0,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 4.5,
+        "trim": [
+          237.0,
+          250.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "IBM",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 250.0,
+          "low": 237.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0437,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.1025
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside_review": 839.757164,
+        "entry_high": 911.748329,
+        "entry_low": 867.516671,
+        "entry_type": "SUPPORT",
+        "holder_stance": "HOLDABLE",
+        "new_buyer_stance": "WAIT",
+        "sell": 4.5,
+        "trim_high": 1278.851879,
+        "trim_low": 1231.148121
+      },
+      "difference_summary": "Codex stopped at HOLD despite the same support entry area; the reference reached BUY by assigning more weight to the upside case than to cycle, expectation, and timing risk.",
+      "difference_taxonomy": [
+        "MARKET_EXPECTATION_WEIGHT",
+        "VALUATION_WEIGHT",
+        "RISK_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 912.0,
+          "low": 868.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0557,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0276
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": false,
+      "reference": {
+        "buy": 6.5,
+        "decision": "BUY",
+        "downside": null,
+        "entry": [
+          [
+            868.0,
+            912.0,
+            "SUPPORT"
+          ],
+          [
+            950.0,
+            950.0,
+            "BREAKOUT_CONFIRMATION"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 3.5,
+        "trim": [
+          1231.0,
+          1279.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "MU",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 1279.0,
+          "low": 1231.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.012,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0116
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 4.0,
+        "decision": "SELL",
+        "downside_review": 3.279337,
+        "entry_high": null,
+        "entry_low": null,
+        "entry_type": "NONE",
+        "holder_stance": "REDUCE",
+        "new_buyer_stance": "AVOID",
+        "sell": 6.0,
+        "trim_high": 3.678704,
+        "trim_low": 3.581096
+      },
+      "difference_summary": "Codex reached SELL/AVOID and withheld an entry, while the reference retained HOLD with a 3.37-3.47 review zone. The split is chiefly the weight placed on pre-profit cash burn and clinical uncertainty.",
+      "difference_taxonomy": [
+        "BUSINESS_EVIDENCE_WEIGHT",
+        "EARNINGS_FCF_WEIGHT",
+        "RISK_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": [
+          3.37,
+          3.47,
+          "SUPPORT"
+        ],
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "Codex withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": false,
+      "reference": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            3.37,
+            3.47,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 5.0,
+        "trim": [
+          3.58,
+          3.68
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "RXRX",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 3.68,
+          "low": 3.58
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0306,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0352
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.0,
+      "codex": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside_review": 143.0,
+        "entry_high": 163.0,
+        "entry_low": 163.0,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.0,
+        "trim_high": 182.003405,
+        "trim_low": 174.856595
+      },
+      "difference_summary": "Decision and balance matched, but Codex required confirmation at 163 instead of the reference's 147-151 support entry.",
+      "difference_taxonomy": [
+        "VALUATION_WEIGHT",
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 151.0,
+          "low": 147.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 10.8844,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 7.947
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 5.0,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            147.0,
+            151.0,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 5.0,
+        "trim": [
+          175.0,
+          182.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "SKHY",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 182.0,
+          "low": 175.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0819,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0019
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside_review": 998.0,
+        "entry_high": 1125.0,
+        "entry_low": 1100.0,
+        "entry_type": "SUPPORT",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 4.5,
+        "trim_high": 2392.674432,
+        "trim_low": 2316.105368
+      },
+      "difference_summary": "Both views were HOLD and used the same registered support, while Codex's balance was one point more constructive.",
+      "difference_taxonomy": [
+        "BUSINESS_EVIDENCE_WEIGHT",
+        "MARKET_EXPECTATION_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 1125.0,
+          "low": 1100.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            1100.0,
+            1125.0,
+            "SUPPORT"
+          ],
+          [
+            923.0,
+            1073.0,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 5.5,
+        "trim": [
+          2316.0,
+          2393.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "SNDK",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 2393.0,
+          "low": 2316.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0045,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0136
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.5,
+      "codex": {
+        "buy": 3.0,
+        "decision": "SELL",
+        "downside_review": 328.096407,
+        "entry_high": null,
+        "entry_low": null,
+        "entry_type": "NONE",
+        "holder_stance": "REDUCE",
+        "new_buyer_stance": "AVOID",
+        "sell": 7.0,
+        "trim_high": 382.678777,
+        "trim_low": 358.961223
+      },
+      "difference_summary": "Both views were SELL. Codex withheld a numeric entry under AVOID, while the reference retained only a business-confirmation-conditioned 335-341 price review.",
+      "difference_taxonomy": [
+        "BUSINESS_EVIDENCE_WEIGHT",
+        "RISK_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": [
+          335.0,
+          341.0,
+          "BUSINESS_CONFIRMATION"
+        ],
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "Codex withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 2.5,
+        "decision": "SELL",
+        "downside": null,
+        "entry": [
+          [
+            335.0,
+            341.0,
+            "BUSINESS_CONFIRMATION"
+          ]
+        ],
+        "new_stance": "CONDITIONAL",
+        "sell": 7.5,
+        "trim": [
+          359.0,
+          383.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "CONDITIONAL",
+      "ticker": "TSLA",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 383.0,
+          "low": 359.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0108,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0839
+      }
+    },
+    {
+      "balance_classification": "BALANCE_NEAR",
+      "buy_balance_delta": 0.0,
+      "codex": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside_review": 398.0,
+        "entry_high": 432.0,
+        "entry_low": 432.0,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "HOLDABLE",
+        "new_buyer_stance": "WAIT",
+        "sell": 4.5,
+        "trim_high": 439.781794,
+        "trim_low": 432.298206
+      },
+      "difference_summary": "Decision and balance matched. Codex selected 432 breakout confirmation rather than the 407-414 support area.",
+      "difference_taxonomy": [
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 414.0,
+          "low": 407.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 6.1425,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 4.3478
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 5.5,
+        "decision": "HOLD",
+        "downside": null,
+        "entry": [
+          [
+            407.0,
+            414.0,
+            "SUPPORT"
+          ]
+        ],
+        "new_stance": null,
+        "sell": 4.5,
+        "trim": [
+          432.0,
+          440.0
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "NOT_EXPLICIT",
+      "ticker": "TSM",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 440.0,
+          "low": 432.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.069,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0496
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 4.5,
+        "decision": "HOLD",
+        "downside_review": 5.3,
+        "entry_high": 6.68,
+        "entry_low": 6.68,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "REVIEW",
+        "new_buyer_stance": "WAIT",
+        "sell": 5.5,
+        "trim_high": 6.153512,
+        "trim_low": 5.906488
+      },
+      "difference_summary": "Codex separated business progress from weak price timing and stopped at HOLD; the reference assigned enough execution and financing risk to reach SELL.",
+      "difference_taxonomy": [
+        "BUSINESS_EVIDENCE_WEIGHT",
+        "RISK_WEIGHT",
+        "PRICE_TIMING_WEIGHT"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 6.15,
+          "low": 5.9
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 13.2203,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 8.6179
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": false,
+      "reference": {
+        "buy": 3.5,
+        "decision": "SELL",
+        "downside": 5.3,
+        "entry": [
+          [
+            5.9,
+            6.15,
+            "BREAKOUT_CONFIRMATION"
+          ]
+        ],
+        "new_stance": "WAIT",
+        "sell": 6.5,
+        "trim": [
+          5.91,
+          6.15
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "WAIT",
+      "ticker": "WRD",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 6.15,
+          "low": 5.91
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0594,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0571
+      }
+    },
+    {
+      "balance_classification": "BALANCE_MODERATE",
+      "buy_balance_delta": 1.0,
+      "codex": {
+        "buy": 3.5,
+        "decision": "SELL",
+        "downside_review": 14.8,
+        "entry_high": 18.4,
+        "entry_low": 18.4,
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "holder_stance": "REDUCE",
+        "new_buyer_stance": "WAIT",
+        "sell": 6.5,
+        "trim_high": 16.461814,
+        "trim_low": 15.552386
+      },
+      "difference_summary": "Both views were SELL. Codex required a stricter 18.40 confirmation, versus the reference's 16.2-16.8 recovery area.",
+      "difference_taxonomy": [
+        "RISK_WEIGHT",
+        "TECHNICAL_CONTEXT_WEIGHT",
+        "PRICE_ZONE_DERIVATION"
+      ],
+      "entry_zone_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 16.8,
+          "low": 16.2
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 13.5802,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 9.5238
+      },
+      "fact_surface_classification": "SAME_FACT_DIFFERENT_INTERPRETATION",
+      "label_match": true,
+      "reference": {
+        "buy": 2.5,
+        "decision": "SELL",
+        "downside": 14.8,
+        "entry": [
+          [
+            16.2,
+            16.8,
+            "BREAKOUT_CONFIRMATION"
+          ]
+        ],
+        "new_stance": "WAIT",
+        "sell": 7.5,
+        "trim": [
+          15.55,
+          16.46
+        ]
+      },
+      "reference_holder_stance": "NOT_EXPLICIT",
+      "reference_stance_note": "WAIT",
+      "ticker": "WULF",
+      "trim_zone_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 16.46,
+          "low": 15.55
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0153,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.011
+      }
+    }
+  ],
+  "summary": {
+    "balance_material": 0,
+    "balance_moderate": 6,
+    "balance_near": 8,
+    "codex_distribution": {
+      "HOLD": 10,
+      "SELL": 4
+    },
+    "entry_same_or_overlap": 4,
+    "label_matches": 11,
+    "reference_distribution": {
+      "BUY": 1,
+      "HOLD": 9,
+      "SELL": 4
+    },
+    "trim_same_or_overlap": 14
+  }
+}

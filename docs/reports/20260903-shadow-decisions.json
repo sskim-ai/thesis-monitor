@@ -1,0 +1,4908 @@
+{
+  "accepted": [
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:acea5134d19f8ded2449"
+          ],
+          "summary": "코로케이션 전환이 매출 구성, 청구 전력, 계약 기반과 마진에서 실체를 보였다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a"
+          ],
+          "summary": "영업활동에서 현금이 창출되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f4a5b684431292d9085f"
+          ],
+          "summary": "AI 데이터센터 투자 확대가 추가 계약과 가동 수요로 이어질 수 있다."
+        }
+      ],
+      "core_judgment": "AI/HPC 코로케이션 전환은 실제 가동·청구와 수익성으로 강화됐다. 다만 막대한 투자지출, 레버리지, 희석과 높은 시장 기대가 이를 상쇄해 관망이 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:acea5134d19f8ded2449",
+        "decision-evidence:464fa6687c0246031611",
+        "canonical:cashflow-reported:211beda9a2734f3e3167c264",
+        "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a",
+        "canonical:cashflow:1b8f3742f33dd3b66f8f7673",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:trailing_earnings",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:risk_reward:support_entry",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:06164bafce7057b20b52",
+        "decision-evidence:8906a34193399a6c5d0a",
+        "decision-evidence:35d4bb9f5d7d5501418f",
+        "decision-evidence:359d3801bde7f3625d6c",
+        "decision-evidence:fb3e833eaecedb42e2ae",
+        "decision-evidence:cc2821e2af21b4635a68",
+        "decision-evidence:d9ef83e7a574c9185b09",
+        "decision-evidence:f988e9a6083fdac84102",
+        "decision-evidence:02b2ecf8c9efa8dce70a",
+        "decision-evidence:0f836ab7e80714aed726",
+        "decision-evidence:36090e913951b40587f1",
+        "decision-evidence:f4a5b684431292d9085f"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 12.257319,
+        "invalidation_condition": "핵심 고객계약의 축소나 반복적인 준공 실패가 발생하고, 성장투자가 주주 귀속가치를 계속 훼손하는 경우다.",
+        "stance": "REVIEW",
+        "summary": "사업 전환의 진전은 인정되지만 등록된 가격 기준이 훼손돼 보유 근거를 재점검해야 한다. 저항 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 18.382585,
+        "trim_zone_low": 17.447415
+      },
+      "market_expectation_context": "AI/HPC 전환과 대형 계약의 상당 부분이 반영돼 있어, 계약 규모보다 실제 가동·청구·현금 전환이 추가 상승의 기준이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 방어와 가격 구조 안정이 확인될 때 매수 매력을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 13.463829,
+        "entry_zone_low": 12.911171,
+        "stance": "WAIT",
+        "summary": "현재 위치의 추격보다 검증된 하단 지지의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "등록 기준 아래에 있고 현재 추격 손익비도 불리하다. 신규 매수는 검증된 지지 방어를 기다리는 편이 낫다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:359d3801bde7f3625d6c"
+          ],
+          "summary": "계약된 전력의 준공·가동이 지연되거나 고객계약이 축소된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fb3e833eaecedb42e2ae"
+          ],
+          "summary": "코로케이션 마진 하락과 투자지출 증가가 함께 나타난다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cc2821e2af21b4635a68",
+            "decision-evidence:d9ef83e7a574c9185b09",
+            "decision-evidence:f988e9a6083fdac84102"
+          ],
+          "summary": "희석과 부채 부담이 확대되고 내부통제 취약점이 장기화된다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:06164bafce7057b20b52"
+          ],
+          "summary": "청구 전력이 계획대로 늘고 신규 장기계약이 추가된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8906a34193399a6c5d0a"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 개선되고 레버리지가 안정된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:35d4bb9f5d7d5501418f"
+          ],
+          "summary": "잠재 희석 부담이 줄고 주당가치 증가가 희석을 상회한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:211beda9a2734f3e3167c264",
+            "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a",
+            "canonical:cashflow:1b8f3742f33dd3b66f8f7673"
+          ],
+          "summary": "투자지출이 영업현금창출을 크게 웃돌아 잉여현금흐름 부담이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:acea5134d19f8ded2449",
+            "decision-evidence:cc2821e2af21b4635a68",
+            "decision-evidence:f988e9a6083fdac84102"
+          ],
+          "summary": "부채, 잠재 희석과 내부통제 부담이 주당가치와 자금조달을 압박한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:464fa6687c0246031611"
+          ],
+          "summary": "전환 기대가 이미 매우 높아 가동과 현금 전환의 지연에 취약하다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "가격이 등록 무효화 기준 아래에 있고 현재 손익비도 불리하다."
+        }
+      ],
+      "ticker": "CORZ",
+      "valuation_context": "손실과 음의 장부가치 때문에 이익·장부가치 배수는 투자 판단에 부적합하며 역사 비교도 제한적이다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "핵심 커머스의 매출 성장 기반은 유지되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "신규사업 매출 성장과 손실 축소가 나타났다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "사고 이후 비용과 마진 우려가 주가에 상당 부분 반영됐다."
+        }
+      ],
+      "core_judgment": "핵심 커머스 성장 기반은 남아 있지만 마진과 현금흐름 악화가 투자 논리를 약화시켰다. 신규사업 손실 개선은 긍정적이나 정상화 확인 전까지 관망이 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "decision-evidence:c6b338c45aaae1f1cb71",
+        "decision-evidence:a335519fd9d606b5650d",
+        "canonical:earnings:2026-06-30",
+        "canonical:financial_quality:2026-06-30",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:current",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:risk_reward:support_entry",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:e71c5614d7ffd54ea5f1",
+        "decision-evidence:0ef84cb409ca7f82f5e9",
+        "decision-evidence:0d741ce1e9c5866c6512",
+        "decision-evidence:1a001f061b284baba978",
+        "decision-evidence:f4c0cea0d38305985210",
+        "decision-evidence:1a88821e3293abdd188d"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 14.45936,
+        "invalidation_condition": "핵심 커머스 경쟁력 약화와 마진 회복 실패가 신규사업 손실 확대 및 현금흐름 부진과 겹치는 경우다.",
+        "stance": "REVIEW",
+        "summary": "핵심 사업 경쟁력은 유지되지만 수익성과 현금흐름 회복 전까지 보유 근거를 재점검해야 한다. 저항 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 17.157304,
+        "trim_zone_low": 16.507696
+      },
+      "market_expectation_context": "핵심 마진 훼손과 현금흐름 부진은 상당 부분 반영됐지만 정상화가 확인되지 않아 기대는 균형적이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간의 방어가 확인되거나 등록 확인선 회복과 실적 정상화가 함께 나타날 때 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 15.22279,
+        "entry_zone_low": 14.72721,
+        "stance": "WAIT",
+        "summary": "현재 추격보다 검증된 지지 구간의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "지지 위이지만 상향 확인선 아래에 있고 현재 추격 손익비도 불리하다. 눌림 방어나 상향 확인이 먼저다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1a001f061b284baba978"
+          ],
+          "summary": "핵심 커머스 마진이 회복되지 않는 가운데 신규사업 손실이 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f4c0cea0d38305985210"
+          ],
+          "summary": "현금흐름이 회복되지 않고 차입과 자본배분 부담이 커진다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1a88821e3293abdd188d"
+          ],
+          "summary": "규제나 보안 문제로 고객 신뢰와 영업경제성이 장기 훼손된다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e71c5614d7ffd54ea5f1"
+          ],
+          "summary": "핵심 커머스 마진이 빠르게 회복되고 고객 성장도 재가속된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0ef84cb409ca7f82f5e9"
+          ],
+          "summary": "신규사업 성장과 함께 손실이 지속 축소되거나 흑자 가시성이 높아진다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0d741ce1e9c5866c6512"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 의미 있게 회복된다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "핵심 커머스 마진과 현금흐름이 크게 약화됐다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "신규사업은 여전히 손실 상태여서 통합 수익성 회복이 미완성이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "증권 기준이 검증되지 않아 공급된 장부가치 배수로 저평가를 논증할 수 없다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "가격은 상향 확인 전이며 현재 추격 손익비가 낮다."
+        }
+      ],
+      "ticker": "CPNG",
+      "valuation_context": "증권 정체성과 주식 기준이 검증되지 않아 장부가치 배수를 사용할 수 없고, 다른 검증 배수도 없어 저평가 판단은 유보한다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:9c63f15c0cc9d7846eacb167",
+            "canonical:cashflow-reported:f4ba92dfb0abaa1ec5fbb775",
+            "canonical:cashflow:402041c63553616360d17391"
+          ],
+          "summary": "영업현금흐름과 투자지출 후 현금창출이 견조하다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f97a9d471eb72b218274"
+          ],
+          "summary": "USDC 유통량과 온체인 사용 확대가 플랫폼 성장의 장기 축이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 등록 확인선 위를 유지하고 있다."
+        }
+      ],
+      "core_judgment": "현금창출과 상향 확인 유지가 긍정적이지만 비이자 수익 전환은 검증이 부족하고 기대와 배수 부담도 크다. 신규 매수는 지지 확인 전 대기가 낫다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "canonical:cashflow-reported:9c63f15c0cc9d7846eacb167",
+        "canonical:cashflow-reported:f4ba92dfb0abaa1ec5fbb775",
+        "canonical:cashflow:402041c63553616360d17391",
+        "decision-evidence:f97a9d471eb72b218274",
+        "decision-evidence:194457c71ac726c17374",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:consensus_forward_earnings",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:7cac10279a2a9ce88d13",
+        "decision-evidence:2fc3dcbc87507a0909fd",
+        "decision-evidence:568b87f1490205922073",
+        "decision-evidence:e35ff3fd6aad2793aa06",
+        "decision-evidence:52b3b639e2122ecd51bd",
+        "decision-evidence:ce096eec7439591c0246",
+        "decision-evidence:65dab49dc52c42ea2eb0",
+        "decision-evidence:f9389a85c4423a03dbee",
+        "decision-evidence:beee0feed84acc8fe672"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 78.914109,
+        "invalidation_condition": "USDC 기반이 구조적으로 약해지거나 준비금 수익 의존 심화로 정상화 수익성이 크게 훼손되는 경우다.",
+        "stance": "HOLDABLE",
+        "summary": "등록 확인선 위 유지로 보유는 가능하지만 비이자 수익 검증과 가까운 지지의 훼손 여부를 함께 봐야 한다.",
+        "trim_basis": [],
+        "trim_zone_high": null,
+        "trim_zone_low": null
+      },
+      "market_expectation_context": "유통량 성장과 스테이블코인 인프라 확장 기대가 투기적으로 높아, 비이자 수익의 대체 속도에 민감하다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 방어와 가격 구조 안정이 확인될 때 매수 매력을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 86.529549,
+        "entry_zone_low": 82.010451,
+        "stance": "WAIT",
+        "summary": "확인선 위에 있지만 검증된 저항이 없어 추격보다 가까운 지지의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "등록 확인선 위를 유지하지만 검증된 저항이 없어 상단 손익비 판단 근거가 부족하다. 가까운 지지 방어 확인이 필요하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:65dab49dc52c42ea2eb0"
+          ],
+          "summary": "USDC 점유율과 유통량이 구조적으로 하락한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f9389a85c4423a03dbee"
+          ],
+          "summary": "준비금 수익 의존이 지속되는 가운데 금리 하락으로 정상화 수익성이 크게 악화된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:beee0feed84acc8fe672"
+          ],
+          "summary": "규제 변화가 핵심 스테이블코인 사업모델을 구조적으로 훼손한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e35ff3fd6aad2793aa06"
+          ],
+          "summary": "USDC 점유율과 유통량이 함께 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:52b3b639e2122ecd51bd"
+          ],
+          "summary": "비이자성 플랫폼과 결제 수익의 비중이 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:ce096eec7439591c0246"
+          ],
+          "summary": "금리 하락 환경에서도 조정 영업이익과 잉여현금흐름이 개선된다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:194457c71ac726c17374"
+          ],
+          "summary": "시장은 유통량 성장과 인프라 확장을 투기적으로 선반영하고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:book_quality",
+            "canonical:valuation:consensus_forward_earnings"
+          ],
+          "summary": "검증 가능한 선행 이익과 장부가치 배수가 높은 성장 기대를 요구한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f97a9d471eb72b218274",
+            "decision-evidence:305a91dd774b63e72a70",
+            "decision-evidence:50a8854112f9b0152dae"
+          ],
+          "summary": "비이자 수익이 준비금 수익 의존을 대체할지는 아직 확인되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:2fc3dcbc87507a0909fd",
+            "decision-evidence:568b87f1490205922073",
+            "decision-evidence:7cac10279a2a9ce88d13"
+          ],
+          "summary": "금리와 위험선호의 상반된 전달경로가 수익성과 배수 변동성을 높인다."
+        }
+      ],
+      "ticker": "CRCL",
+      "valuation_context": "검증 가능한 선행 이익과 장부가치 배수는 성장 기대를 많이 요구하지만 역사 비교가 제한돼 적정가치 확신이 낮다."
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "decision-evidence:2b6d4fb027ec96785224",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6"
+          ],
+          "summary": "Search의 방어력과 Cloud·AI 수요가 이익 성장의 핵심 기반으로 유지되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "후행 이익평가는 자체 역사 대비 낮고 장부가치 평가는 중간권이어서 과도한 고평가 신호는 제한적이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:nearest_supports:1",
+            "canonical:chart:structure:risk_reward:support_entry"
+          ],
+          "summary": "검증된 하단 지지 구간에서는 신규 진입의 가격 조건이 현 위치보다 개선된다."
+        }
+      ],
+      "core_judgment": "핵심 사업 논리는 유지되지만 AI 투자 부담과 높아진 시장 기대, 불리한 단기 가격 구조가 상승 여력을 상쇄한다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:55c968b74bb8bf591006",
+        "decision-evidence:47e26c6f53f6504d798d",
+        "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+        "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+        "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2",
+        "canonical:valuation:historical_pe",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:multiple_relation",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "decision-evidence:119eb75d8acc25305dc3",
+        "decision-evidence:e557bc193349d6c5e071"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "downside_review_level": 340.0,
+        "invalidation_condition": "Search와 Cloud 둔화가 함께 장기화하거나 AI 투자 이후 현금창출과 자본효율이 구조적으로 악화될 때",
+        "stance": "REVIEW",
+        "summary": "등록 재점검선을 하회해 점검이 필요하지만 사업 논리 훼손이 확인된 것은 아니므로 즉시 축소보다 실적 검증이 우선이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 353.787998,
+        "trim_zone_low": 343.652002
+      },
+      "market_expectation_context": "Search 방어와 Cloud·AI 성장이 이미 높게 기대되며, 투자 확대가 현금창출 회복으로 이어져야 추가 재평가가 가능하다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 종가 방어와 수급 개선이 함께 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 321.878566,
+        "entry_zone_low": 312.373234,
+        "stance": "WAIT",
+        "summary": "현 위치의 추격 여건은 불리하므로 검증된 하단 지지 구간의 반응을 기다리는 편이 낫다."
+      },
+      "price_timing_context": "기존 등록 지지 구간과 재점검선 아래에 있으며 근접 저항도 있어 현 위치의 추격 매력은 낮다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:9a44445c9140d82dae68",
+            "decision-evidence:119eb75d8acc25305dc3",
+            "decision-evidence:da18106c96f53ecfd7b8"
+          ],
+          "summary": "Search 수익화 약화가 지속되거나 Search와 Cloud가 함께 둔화할 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1eab5946cbdbeae961f6",
+            "decision-evidence:e91745bd16fef5ba4649"
+          ],
+          "summary": "Cloud 성장·수주잔고의 동력이 약해지고 인프라 비용으로 수익성 압박이 확대될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e557bc193349d6c5e071",
+            "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+            "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+            "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2"
+          ],
+          "summary": "AI 투자 확대 이후에도 잉여현금흐름과 자본효율이 구조적으로 악화될 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:2b6d4fb027ec96785224",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6"
+          ],
+          "summary": "Search 수익화가 유지되고 Cloud 성장·수익성과 수주잔고가 함께 개선될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:47e26c6f53f6504d798d",
+            "decision-evidence:f99b2da186a81fc1c21d"
+          ],
+          "summary": "AI 투자 부담에도 잉여현금흐름 회복이 예상보다 빠르게 확인될 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록된 종가 확인선을 회복해 가격 추세 전환이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+            "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+            "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2",
+            "decision-evidence:f99b2da186a81fc1c21d"
+          ],
+          "summary": "대규모 AI 투자가 잉여현금흐름 여력을 크게 압박해 투자 회수의 가시성이 중요해졌다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "summary": "Search 방어와 Cloud 성장 기대가 높아 실적이 기대에 못 미칠 때 하방 민감도가 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 재점검선 아래에 있고 근접 저항과 불리한 현 위치 손익 구조가 추격 매수를 제약한다."
+        }
+      ],
+      "ticker": "GOOGL",
+      "valuation_context": "후행 이익 기준 평가는 자체 역사보다 낮지만 선행 평가는 더 높고 장부가치 기준은 중간권이어서, 명확한 저평가보다 실적 회복을 요구하는 혼합 신호다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:4cfce0c1d1d7f61e130c"
+          ],
+          "summary": "대규모 계약 용량과 장기 계약가치, 우량 고객 기반은 AI 데이터센터 전환의 큰 선택가치를 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:7f12a241fbf8249e9ea5",
+            "decision-evidence:85cc2f47424078a0d841"
+          ],
+          "summary": "프로젝트 금융 확대와 장기 인프라 수익 비중 증가는 모회사 부담과 채굴 변동성을 낮출 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fe783c093a24882e06a6"
+          ],
+          "summary": "AI 데이터센터 수요가 실제 장기 임대와 가동 프로젝트로 연결되면 성장 여력이 크다."
+        }
+      ],
+      "core_judgment": "장기 인프라 전환 잠재력은 크지만 계약의 준공·가동·수익 전환이 검증되지 않았고, 매우 높은 기대와 평가 부담 및 가격 경고가 우세하다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.5,
+        "sell": 6.5
+      },
+      "evidence_refs": [
+        "decision-evidence:4cfce0c1d1d7f61e130c",
+        "decision-evidence:4c28d1cc7a794cc4171c",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:state",
+        "decision-evidence:1ab32a7d65e4aa419957",
+        "decision-evidence:457d43794a37d4fc9955",
+        "decision-evidence:a9a5a806fa52791bb318",
+        "decision-evidence:0750ded5723b45b38bd9",
+        "decision-evidence:e12752508a662d6e988d"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "downside_review_level": 83.0,
+        "invalidation_condition": "핵심 고객계약이 취소·대폭 축소되거나 인프라 전환 실패로 채굴 변동성 의존이 구조적으로 유지될 때",
+        "stance": "REDUCE",
+        "summary": "등록 기준 훼손과 높은 실행·자금조달 위험 때문에 비중 축소 검토가 합리적이며, 반등 저항대는 재평가 구간일 뿐 자동 매도 목표가 아니다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 89.670191,
+        "trim_zone_low": 84.109809
+      },
+      "market_expectation_context": "대형 AI 인프라 계약과 장기 수익 전환이 매우 높게 반영돼 있어 계약 규모보다 준공·가동·수익 실현이 핵심이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 종가 확인선을 회복하고 거래량 개선이 동반될 때 추세 전환을 재평가한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:b939d70a17422e43c177"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 97.0,
+        "entry_zone_low": 97.0,
+        "stance": "WAIT",
+        "summary": "지지와 저항이 겹치고 등록 기준도 훼손돼 있어 신규 진입은 명확한 상향 확인 이후가 적절하다."
+      },
+      "price_timing_context": "등록 경고선과 무효화선 아래이며 지지와 저항이 겹치는 대기 상태라 반등만으로 바닥을 확인하기 어렵다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1ab32a7d65e4aa419957",
+            "decision-evidence:8fea96b768334f56d13c"
+          ],
+          "summary": "프로젝트 준공·전력 인입이 지연되거나 계약 용량과 예상 수익이 하향될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a9a5a806fa52791bb318",
+            "decision-evidence:5540a963a80231f49a70"
+          ],
+          "summary": "모회사 자본투입과 희석 위험이 프로젝트 금융보다 빠르게 커지고 자유현금이 부족해질 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0750ded5723b45b38bd9",
+            "decision-evidence:1b0709720f50a6bda8e2",
+            "decision-evidence:e12752508a662d6e988d"
+          ],
+          "summary": "핵심 고객계약 훼손이나 장기 인프라 전환 실패로 주주가치 창출 논리가 무너질 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b040f8545884d2f40f7"
+          ],
+          "summary": "대형 AI 데이터센터 프로젝트가 계획대로 준공·가동돼 계약 매출과 수익이 실제 인식될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:7f12a241fbf8249e9ea5",
+            "decision-evidence:85cc2f47424078a0d841"
+          ],
+          "summary": "프로젝트 금융으로 모회사 부담이 제한되고 안정적인 인프라 수익 비중이 뚜렷하게 늘어날 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "decision-evidence:b939d70a17422e43c177"
+          ],
+          "summary": "등록된 종가 확인선을 회복한 뒤 거래량을 동반한 안착이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "decision-evidence:1ab32a7d65e4aa419957",
+            "decision-evidence:8fea96b768334f56d13c"
+          ],
+          "summary": "시장 기대가 매우 높은 반면 프로젝트 준공·가동과 실제 수익 실현에는 큰 실행 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 프리미엄과 무거운 선행 이익평가가 실행 지연에 대한 가치 완충력을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:457d43794a37d4fc9955",
+            "decision-evidence:5540a963a80231f49a70",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "summary": "현재 실적의 채굴 변동성, 제한된 자유현금, 모회사 자본투입 위험이 사업 전환의 질을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_supports:1",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 경고 기준을 밑돌고 지지·저항이 중첩돼 기술적 반전 확인이 부족하다."
+        }
+      ],
+      "ticker": "HUT",
+      "valuation_context": "장부가치 기준 프리미엄이고 선행 이익평가 부담도 매우 크며 역사 비교 신뢰도는 낮아, 계약 실행이 지연될 때 가치 방어력이 약하다."
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:a4e33fdbb619e8a75ec6",
+            "decision-evidence:d746b38e4f88e9088509"
+          ],
+          "summary": "Software·Red Hat·AI와 반복매출 확대가 중기 성장 기반을 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:f132b335d1d8e29e1a93b9f1",
+            "canonical:cashflow-reported:2e36e787851ab8640db90dcd",
+            "canonical:cashflow:a158304539a9269c66f6d2cb"
+          ],
+          "summary": "영업현금흐름 대비 설비투자 부담이 제한적이어서 현금창출력이 사업 전환을 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:daada1e8e154d258cf46"
+          ],
+          "summary": "시장 기대가 균형적이고 후행 이익평가와 장부가치 평가는 자체 역사에서 과도한 수준이 아니다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:state",
+            "canonical:chart:structure:nearest_supports:2",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "주요 지지 구조가 유지되고 현 위치의 손익 구조도 조건부로 개선됐다."
+        }
+      ],
+      "core_judgment": "현금창출력과 Software·AI 성장 기반은 유지되지만 전사 성장과 Consulting 회복의 증명이 부족해 보유는 가능하되 신규 추격 근거는 약하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "decision-evidence:f5f5d02d68353ae33d2d",
+        "decision-evidence:daada1e8e154d258cf46",
+        "canonical:cashflow-reported:f132b335d1d8e29e1a93b9f1",
+        "canonical:cashflow-reported:2e36e787851ab8640db90dcd",
+        "canonical:cashflow:a158304539a9269c66f6d2cb",
+        "canonical:valuation:historical_pe",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:multiple_relation",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:2",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "decision-evidence:972c4c6634d9dcdfd155",
+        "decision-evidence:e5705361ce4c4132cde7",
+        "decision-evidence:ed03d8f73e419de39113"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 228.180854,
+        "invalidation_condition": "Software·AI 성장에도 전사 매출과 잉여현금흐름이 장기간 정체되거나 대규모 투자 이후 자본효율이 구조적으로 악화될 때",
+        "stance": "HOLDABLE",
+        "summary": "지지 구조와 현금창출력이 유지돼 보유 가능하지만, 성장 증명이 부족하므로 추가 확대는 상향 확인 이후가 적절하다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 250.256325,
+        "trim_zone_low": 237.103675
+      },
+      "market_expectation_context": "Software·Red Hat·AI 기대는 반영돼 있지만 Consulting 회복과 전사 성장, 잉여현금흐름 가속은 아직 충분히 반영되거나 증명되지 않았다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 종가 확인선을 회복하고 그 위에서 안착이 확인될 때 신규 진입을 재평가한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:monitoring:confirmation_transition"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 250.0,
+        "entry_zone_low": 250.0,
+        "stance": "WAIT",
+        "summary": "지지는 유지되지만 인접 저항과 미확인 성장 과제가 있어 상향 확인 전에는 기다리는 편이 낫다."
+      },
+      "price_timing_context": "지지 구조는 유지되지만 인접 저항과 상향 확인선 미도달로 신규 추격보다 확인이 우선이다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:972c4c6634d9dcdfd155",
+            "decision-evidence:e9b769462b74d97c8dbc"
+          ],
+          "summary": "Consulting 정체가 이어지고 Software 또는 Red Hat 성장 동력이 약화될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e5705361ce4c4132cde7",
+            "decision-evidence:54f61a882c928f99e40b"
+          ],
+          "summary": "인수와 AI 투자 확대에도 잉여현금흐름이 정체되고 부채와 자본효율이 악화될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:ed03d8f73e419de39113",
+            "decision-evidence:a68244a9f6772590082d"
+          ],
+          "summary": "Software·AI 성장에도 전사 매출과 현금창출이 장기간 개선되지 않아 투자 논리가 무효화될 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:a4e33fdbb619e8a75ec6",
+            "decision-evidence:d746b38e4f88e9088509"
+          ],
+          "summary": "Software와 Red Hat 성장이 가속되고 AI 계약이 전사 매출 개선으로 연결될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1e35c6622a824b5fbe74"
+          ],
+          "summary": "잉여현금흐름 성장이 다시 빨라지고 부채 관리가 개선될 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록된 종가 확인선을 회복해 상향 추세 전환이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:972c4c6634d9dcdfd155"
+          ],
+          "summary": "Consulting 회복과 전사 매출 성장 가속이 아직 충분히 증명되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:e5705361ce4c4132cde7"
+          ],
+          "summary": "선행 이익평가가 후행 기준보다 높아 향후 이익과 잉여현금흐름 가속이 미흡하면 평가 부담이 커질 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 상향 확인선 아래에 있고 근접 저항이 있어 신규 매수의 즉각적인 상승 여력이 제한된다."
+        }
+      ],
+      "ticker": "IBM",
+      "valuation_context": "후행 이익평가는 자체 역사보다 낮고 장부가치 평가는 중간권이지만 선행 평가는 더 높아, 저평가보다는 실적 가속 여부가 중요한 수준이다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:31b3afdedc39a02d46b5",
+            "decision-evidence:e7b80cece0f60bb16c47"
+          ],
+          "summary": "AI 서버와 고부가 메모리 수요, 장기 고객계약이 가격·믹스와 이익 가시성을 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:earnings:2026-05-28",
+            "canonical:cashflow-reported:413266fe8659a8b24e238de2",
+            "canonical:cashflow:96e9c3b873f3678d4dec0ff3"
+          ],
+          "summary": "최근 실적과 영업현금흐름은 사업의 강한 현금창출력을 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:multiple_relation",
+            "canonical:valuation:consensus_forward_earnings"
+          ],
+          "summary": "합의 선행 이익 기준 배수는 후행 배수보다 낮아 이익 지속 시 평가 부담이 완화될 여지가 있다."
+        }
+      ],
+      "core_judgment": "AI 메모리 수요와 현금창출력은 사업 논리를 강화했지만, 높은 시장 기대와 장부가치 평가 부담, 거래량이 약한 돌파가 신규 매수 확신을 제한한다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "decision-evidence:31b3afdedc39a02d46b5",
+        "decision-evidence:2c7de5970a1beda446d7",
+        "canonical:earnings:2026-05-28",
+        "canonical:cashflow-reported:413266fe8659a8b24e238de2",
+        "canonical:cashflow:96e9c3b873f3678d4dec0ff3",
+        "canonical:valuation:multiple_relation",
+        "canonical:valuation:historical_pb",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:6ce38081e8f272ad68a3",
+        "decision-evidence:76ac8d9e50fd630777ff",
+        "decision-evidence:beeedb93a3d123acbe7b"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 839.757164,
+        "invalidation_condition": "AI 메모리 수요와 가격 약세가 장기화되고 장기계약의 수요 가시성까지 훼손될 때 사업 논리를 무효화한다.",
+        "stance": "HOLDABLE",
+        "summary": "사업과 현금흐름은 보유를 지지하지만 기대 수준이 높아 하방 구조와 업황 변화를 함께 점검해야 한다. 상단 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 1278.851879,
+        "trim_zone_low": 1231.148121
+      },
+      "market_expectation_context": "AI 메모리 성장, 가격·믹스 강세, 장기계약과 강한 현금창출이 상당 부분 반영돼 작은 실망에도 민감한 상태다.",
+      "new_buyer_view": {
+        "confirmation_condition": "해당 지지 구간에서 주요 구조 보존과 재지지가 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 911.748329,
+        "entry_zone_low": 867.516671,
+        "stance": "WAIT",
+        "summary": "돌파 직후 추격보다 검증된 지지 구간의 재지지를 기다리는 편이 낫다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량 확인이 부족하고 재시험을 기다리는 상태다. 주요 지지 구조는 아직 유지된다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:b19318d37863cd366850",
+            "decision-evidence:cc362633dd4b99be7455"
+          ],
+          "summary": "메모리 가격 상승 둔화와 재고 증가, 마진 정상화가 예상보다 빠르면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b4450f1f4ffd534fe72c",
+            "decision-evidence:76ac8d9e50fd630777ff"
+          ],
+          "summary": "차세대 HBM 경쟁력과 고객 점유율이 구조적으로 약화되면 핵심 성장 가설을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:00cb0b2759fcf17f5a54",
+            "decision-evidence:beeedb93a3d123acbe7b"
+          ],
+          "summary": "설비투자가 현금창출 개선을 지속적으로 앞서고 재무구조가 악화되면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:7d84dda8918aa8dbcf26",
+            "decision-evidence:a28e6663801fec8ab611"
+          ],
+          "summary": "메모리 가격과 고부가 믹스 강세가 지속되고 차세대 HBM 고객 채택이 확대되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fc21b074ee6020ea8322",
+            "decision-evidence:a3ecd96de1e2ab92ea19"
+          ],
+          "summary": "장기계약의 수요 가시성과 높은 현금창출의 지속성이 함께 확인되면 확신을 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:472cc5c042bf61014917",
+            "canonical:chart:price_transition"
+          ],
+          "summary": "상향 확인선 안착과 거래량 확대, 후속 저항 회복이 확인되면 가격 타이밍을 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:2c7de5970a1beda446d7",
+            "canonical:valuation:historical_pb"
+          ],
+          "summary": "성장과 현금흐름 기대가 이미 높고 장부가치 기준 평가는 역사적으로 부담스러운 구간이다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8101aa12a05f32d84593",
+            "decision-evidence:b19318d37863cd366850",
+            "decision-evidence:00cb0b2759fcf17f5a54"
+          ],
+          "summary": "메모리 업황 반전과 공급 확대, 설비투자 부담이 현금창출의 지속성을 훼손할 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:risk_reward_transition"
+          ],
+          "summary": "돌파 거래량이 충분하지 않고 재시험 전이며 가격 구조의 보상도 이전보다 악화됐다."
+        }
+      ],
+      "ticker": "MU",
+      "valuation_context": "선행 이익 기준 부담은 낮아 보이지만 장부가치 기준 평가는 역사적으로 높아, 현재 이익의 지속성을 보수적으로 판단해야 한다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "decision-evidence:cff20610893f66f3069a"
+          ],
+          "summary": "파트너 타깃 선택과 임상 후보 진전은 플랫폼 가설에 초기 검증 신호를 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 평가는 자체 역사에서 낮은 구간에 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:risk_reward_transition"
+          ],
+          "summary": "상향 확인선 돌파와 가격 구조의 보상 개선은 단기 회복 가능성을 높였다."
+        }
+      ],
+      "core_judgment": "파트너 진전은 플랫폼 가설을 다소 강화했지만 임상 성공과 반복 가능한 경제성은 아직 미증명이며, 지속적인 현금소진과 희석 위험이 더 강하다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "evidence_refs": [
+        "decision-evidence:774e2e7f46d2025d7257",
+        "decision-evidence:bb19872705545d1af04f",
+        "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+        "canonical:cashflow:498c289d4304c0822d861ec3",
+        "canonical:valuation:historical_pb",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:5c119a38e114ea930b42",
+        "decision-evidence:76019cf1946660a50862",
+        "decision-evidence:89c4eda6b0a5385fecf8",
+        "decision-evidence:a46a61d055249bee0708"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 3.279337,
+        "invalidation_condition": "핵심 임상 실패가 반복되고 파트너 성과도 정체되는 가운데 현금소진과 희석이 지속될 때 투자 논리를 무효화한다.",
+        "stance": "REDUCE",
+        "summary": "임상·경제성 검증 전까지 위험축소가 적절하다. 상단 구간은 자동 매도 목표가 아니라 반등 시 비중을 재평가하는 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 3.678704,
+        "trim_zone_low": 3.581096
+      },
+      "market_expectation_context": "플랫폼 가능성과 파트너 진전이 반영된 투기적 기대 상태이며, 임상 실패나 현금소진 확대에 대한 민감도가 높다.",
+      "new_buyer_view": {
+        "confirmation_condition": "임상과 파트너 경제성이 실증되고 현금소진 완화가 함께 확인될 때 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [],
+        "entry_type": "NONE",
+        "entry_zone_high": null,
+        "entry_zone_low": null,
+        "stance": "AVOID",
+        "summary": "가격 확인만으로 임상·자금조달 위험을 상쇄하기 어려워 신규 진입을 피한다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량이 약하고 재시험을 기다리고 있다. 인접 저항까지의 가격 보상도 조건부다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:00b417dd6fd4fc571834",
+            "decision-evidence:76019cf1946660a50862"
+          ],
+          "summary": "주요 임상 일정이 지연되거나 실패가 반복되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4f0bc47466e1016adb48",
+            "decision-evidence:b7dbcfcc7a8af1559f33",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "summary": "현금소진 확대와 대규모 희석이 지속되면 위험 판단을 강화한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cb8ca0214f6312e64b75",
+            "decision-evidence:5c119a38e114ea930b42"
+          ],
+          "summary": "파트너 프로그램 진전이 둔화되고 플랫폼이 경제적 가치로 전환되지 않으면 핵심 가설을 낮춘다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:cf625978558ad8aee418",
+            "decision-evidence:49f131c127e173452c39"
+          ],
+          "summary": "신규 파트너 타깃 선택과 마일스톤 수익이 반복적으로 확대되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cff20610893f66f3069a",
+            "decision-evidence:00b417dd6fd4fc571834"
+          ],
+          "summary": "주요 임상 후보가 계획대로 진행되고 긍정적 데이터가 확인되면 플랫폼 신뢰도를 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b1d79226f524ced701e5",
+            "decision-evidence:4f0bc47466e1016adb48"
+          ],
+          "summary": "현금소진이 감소해 자금조달과 희석 위험이 완화되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+            "canonical:cashflow:498c289d4304c0822d861ec3",
+            "canonical:earnings:2026-06-30"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 적자인 가운데 매출 기반도 아직 제한적이다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:76019cf1946660a50862",
+            "decision-evidence:00b417dd6fd4fc571834"
+          ],
+          "summary": "플랫폼의 임상 성공과 반복 가능한 경제성이 검증되지 않았고 프로그램 실패 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4f0bc47466e1016adb48",
+            "decision-evidence:b7dbcfcc7a8af1559f33",
+            "decision-evidence:a46a61d055249bee0708"
+          ],
+          "summary": "현금소진과 희석 가능성이 높으며 자금조달 환경 악화가 부담을 키울 수 있다."
+        }
+      ],
+      "ticker": "RXRX",
+      "valuation_context": "장부가치 기준 평가는 역사적으로 낮지만 이익 기반 평가가 성립하지 않으며, 현금소진과 임상 불확실성을 충분히 보상한다고 단정하기 어렵다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7febdf06f514f5954d",
+            "decision-evidence:7182bfe7297ce4ab39d6"
+          ],
+          "summary": "AI 메모리 기술·공급 리더십과 차세대 제품 전환 가능성이 기초기업의 성장 논리를 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:329c162763d982913954",
+            "decision-evidence:ca3b9c4c10a3eed64161"
+          ],
+          "summary": "메모리 가격 환경과 데이터센터 투자가 유지되면 고부가 메모리 수요와 수익성에 우호적이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 상향 확인선을 넘어 단기 회복 신호를 보였다."
+        }
+      ],
+      "core_judgment": "기초기업의 AI 메모리 리더십은 매력적이지만 최신 재무 검증이 부족하고 ADR 희소성 프리미엄과 주당 기준 불확실성이 커서 관망이 적절하다.",
+      "decision": "HOLD",
+      "decision_confidence": "LOW",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:8b7febdf06f514f5954d",
+        "decision-evidence:c78bf1321a16a218b60c",
+        "canonical:financial_quality:latest",
+        "canonical:security_basis:current",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:41dfa075e4353b22e62d",
+        "decision-evidence:c0b7de949ffba7459112",
+        "decision-evidence:f298d7c0d8736a7ff594"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 143.0,
+        "invalidation_condition": "주요 고객에서 HBM 기술·공급 우위를 구조적으로 잃고 메모리 수요 둔화와 재무 악화가 장기화될 때 투자 논리를 무효화한다.",
+        "stance": "REVIEW",
+        "summary": "기초기업 논리는 보유를 지지하지만 ADR 고유의 프리미엄과 재무 검증 공백을 별도로 점검해야 한다. 상단 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 182.003405,
+        "trim_zone_low": 174.856595
+      },
+      "market_expectation_context": "차세대 HBM 램프업과 높은 메모리 수익성뿐 아니라 ADR 희소성 프리미엄 유지까지 반영된 투기적 기대 상태다.",
+      "new_buyer_view": {
+        "confirmation_condition": "상향 확인선 위 재지지와 거래량 개선이 함께 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 163.0,
+        "entry_zone_low": 163.0,
+        "stance": "WAIT",
+        "summary": "확인선 돌파만으로는 부족하며 재지지와 거래량 확인을 기다려야 한다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량 확인이 부족하고 재시험 전이다. 차트 상태도 신규 진입 구조가 충분하지 않음을 가리킨다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:84563b2bc741359a15fe",
+            "decision-evidence:39b48eb6fa509ca4efc2"
+          ],
+          "summary": "차세대 HBM 출하·채택이 지연되거나 경쟁사에 기술·점유율 우위를 내주면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:21b5d954a474cea0f4aa",
+            "decision-evidence:c7c64228106e41b1702e",
+            "decision-evidence:f298d7c0d8736a7ff594"
+          ],
+          "summary": "메모리 가격 하락과 재고 증가 속에서 설비투자 부담이 현금창출을 훼손하면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:d2f6c30fdb85a421401f",
+            "decision-evidence:c78bf1321a16a218b60c"
+          ],
+          "summary": "ADR 희소성 프리미엄이 실적 개선과 괴리되거나 급격히 축소되면 증권 자체의 위험을 높인다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:7182bfe7297ce4ab39d6",
+            "decision-evidence:0ed690872e22b916098a"
+          ],
+          "summary": "차세대 HBM 램프업과 신규 고객 채택이 확인되고 고부가 믹스가 유지되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:d5166789b23ccac34611",
+            "decision-evidence:8b7febdf06f514f5954d"
+          ],
+          "summary": "장기공급계약 확대로 중장기 수요 가시성이 높아지면 사업 논리의 확신을 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f2e01b3b63d7b1477309",
+            "canonical:chart:price_transition"
+          ],
+          "summary": "확인선 위 재지지와 본주 모멘텀·수급 개선이 함께 나타나면 가격 타이밍을 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7febdf06f514f5954d",
+            "decision-evidence:c78bf1321a16a218b60c",
+            "decision-evidence:d2f6c30fdb85a421401f"
+          ],
+          "summary": "ADR 희소성 프리미엄이 기초기업 실적보다 빠르게 확대될 수 있어 증권 자체의 가격 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:financial_quality:latest",
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "최신 재무 정보와 ADR 주당 기준의 검증이 부족해 제공된 평가배수를 판단 근거로 쓰기 어렵다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:21b5d954a474cea0f4aa",
+            "decision-evidence:39b48eb6fa509ca4efc2",
+            "decision-evidence:c7c64228106e41b1702e"
+          ],
+          "summary": "메모리 가격 하락, 경쟁사의 HBM 개선, 설비투자 부담이 성장 프리미엄을 훼손할 수 있다."
+        }
+      ],
+      "ticker": "SKHY",
+      "valuation_context": "ADR 주당 기준과 재무 계보가 충분히 검증되지 않아 제공된 이익·장부가치 배수를 신뢰도 높은 평가 근거로 사용할 수 없다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e7f88110afad8a0a90bc",
+            "canonical:cashflow:1b8db0b46c63ae9369231151",
+            "canonical:earnings:2026-07-03"
+          ],
+          "summary": "데이터센터 저장 수요와 장기 계약이 매출과 현금창출을 뒷받침하고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:security_basis:current"
+          ],
+          "summary": "선행 이익 기준 밸류에이션 부담은 낮아 보인다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "확인선 위 상태가 유지돼 가격 구조가 훼손되지는 않았다."
+        }
+      ],
+      "core_judgment": "강한 현금창출은 사업 논리를 강화했지만, 사이클 의존성과 투기적으로 높아진 기대를 감안하면 추격 매수보다 검증 대기가 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "canonical:cashflow:1b8db0b46c63ae9369231151",
+        "canonical:earnings:2026-07-03",
+        "canonical:security_basis:current",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:06e6f847342760f52d96",
+        "decision-evidence:0b9fa704d15bffb77dac",
+        "decision-evidence:1a43e68befc2686f2759",
+        "decision-evidence:687af24c7385d2caf4a4",
+        "decision-evidence:6a7d8f2de9200a7e4de7",
+        "decision-evidence:86645d2f1e1d8c65d8d6",
+        "decision-evidence:995d5eeddc1f86a7abbc",
+        "decision-evidence:e7f88110afad8a0a90bc",
+        "decision-evidence:eaef4247b3e9e73a8809",
+        "decision-evidence:fb61100929e38148b8ed"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 998.0,
+        "invalidation_condition": "NAND 약세와 데이터센터 수요 둔화가 동반되고 계약의 매출·현금흐름 전환도 실패하는 경우다.",
+        "stance": "REVIEW",
+        "summary": "보유는 가능하지만 높은 기대와 사이클 민감도를 감안해 저항 구간에서는 비중을 재평가할 필요가 있다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 2392.674432,
+        "trim_zone_low": 2316.105368
+      },
+      "market_expectation_context": "NAND 강세와 데이터센터 수요, 계약 전환 기대가 투기적으로 반영돼 실제 매출 전환과 마진 지속이 관건이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "지지 구간에서 가격 구조가 유지되고 계약 전환과 마진 지속이 확인될 때다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 1125.0,
+        "entry_zone_low": 1100.0,
+        "stance": "WAIT",
+        "summary": "사업 논리는 강화됐지만 현재 추격 여건이 불리해 검증된 지지 구간까지 기다리는 편이 낫다."
+      },
+      "price_timing_context": "확인선 위 구조는 유지되지만 현재 추격 손익비가 불리하고 공급 확인도 없어 눌림 대기가 적절하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1a43e68befc2686f2759"
+          ],
+          "summary": "NAND 가격 약세와 데이터센터 수요 둔화가 함께 지속될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "decision-evidence:6a7d8f2de9200a7e4de7"
+          ],
+          "summary": "장기 계약이 매출과 현금흐름으로 전환되지 않거나 마진과 현금창출이 장기간 약화될 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:06e6f847342760f52d96",
+            "decision-evidence:0b9fa704d15bffb77dac"
+          ],
+          "summary": "장기 계약과 수주잔고의 매출 전환이 확대되고 데이터센터 수요가 이어질 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:995d5eeddc1f86a7abbc",
+            "decision-evidence:fb61100929e38148b8ed"
+          ],
+          "summary": "높은 마진과 현금창출이 유지되며 NAND 공급 규율이 확인될 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4"
+          ],
+          "summary": "NAND 강세와 계약 전환 기대가 이미 투기적으로 반영돼 실적 검증 부담이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e7f88110afad8a0a90bc",
+            "decision-evidence:eaef4247b3e9e73a8809"
+          ],
+          "summary": "마진의 가격 사이클 의존성과 NAND 약세 전환 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "현재 구간의 추격 손익비가 불리하고 공급 확인도 없다."
+        }
+      ],
+      "ticker": "SNDK",
+      "valuation_context": "선행 이익 기준 부담은 낮아 보이나 역사 비교가 제한되고 장부가치 기준 프리미엄이 있어 저평가를 확정하기 어렵다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:01253b856674f1f9fabd",
+            "decision-evidence:07cbedff4c2b25a7f0cc"
+          ],
+          "summary": "Robotaxi와 자율주행 소프트웨어의 고마진 수익화 가능성은 장기 선택가치로 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록 확인선 위 가격 구조는 유지되고 있다."
+        }
+      ],
+      "core_judgment": "장기 선택가치는 남아 있지만 자동차 수익성 약화와 투자 부담으로 사업 논리가 약해졌고, 높은 기대와 밸류에이션이 추가 안전마진을 제공하지 않는다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "evidence_refs": [
+        "canonical:cashflow-reported:9d3bf8b7dc198173af97abb1",
+        "canonical:cashflow-reported:c1737ceffc87ec63cb6b0ba1",
+        "canonical:cashflow:68666c261434dab50ab88a8d",
+        "canonical:valuation:current",
+        "canonical:valuation:historical_pe",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:01253b856674f1f9fabd",
+        "decision-evidence:01fa8f7aaa1f70a9fddc",
+        "decision-evidence:03b5853364f073ce37ea",
+        "decision-evidence:07cbedff4c2b25a7f0cc",
+        "decision-evidence:0cbb33d247bc3d3facec",
+        "decision-evidence:14d67efcafb67911e795",
+        "decision-evidence:31cc4350366b95a54e12",
+        "decision-evidence:78738239503d582a1819",
+        "decision-evidence:a399508186fff1c1fd00",
+        "decision-evidence:b99b830cf03964463742",
+        "decision-evidence:bd7317649d95840d757e"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 328.096407,
+        "invalidation_condition": "Robotaxi와 자율주행 수익화가 장기간 지연되고 자동차 저마진과 자본소모가 고착되는 경우다.",
+        "stance": "REDUCE",
+        "summary": "논리 약화와 높은 기대를 감안하면 축소 검토가 타당하며, 저항 구간은 자동 매도선이 아닌 비중 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 382.678777,
+        "trim_zone_low": 358.961223
+      },
+      "market_expectation_context": "Robotaxi와 자율주행, 인공지능 선택가치가 크게 반영돼 자동차 마진과 현금창출의 동반 회복이 요구된다.",
+      "new_buyer_view": {
+        "confirmation_condition": "자동차 마진과 현금창출이 회복되고 Robotaxi 경제성이 검증될 때다.",
+        "currency": null,
+        "entry_basis": [
+          "decision-evidence:0cbb33d247bc3d3facec",
+          "canonical:valuation:historical_pe",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "NONE",
+        "entry_zone_high": null,
+        "entry_zone_low": null,
+        "stance": "AVOID",
+        "summary": "가격 지지 여부만으로 약해진 사업 논리와 높은 기대 부담을 상쇄하기 어려워 신규 진입을 피하는 편이 낫다."
+      },
+      "price_timing_context": "확인선 위에 있지만 중기 저항이 가깝고 현재 추격 손익비가 불리해 가격도 신규 진입을 지지하지 않는다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:78738239503d582a1819",
+            "decision-evidence:a399508186fff1c1fd00"
+          ],
+          "summary": "Robotaxi 상용화가 지연되거나 경제성이 확인되지 않고 자동차 저마진 구조가 고착될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:14d67efcafb67911e795",
+            "decision-evidence:31cc4350366b95a54e12"
+          ],
+          "summary": "자본소모가 지속되면서 주요 지역의 자동차 수요와 점유율이 구조적으로 하락할 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:01253b856674f1f9fabd",
+            "decision-evidence:07cbedff4c2b25a7f0cc"
+          ],
+          "summary": "Robotaxi 유료 운행과 단위경제성이 확대되고 자율주행 관련 매출이 빠르게 성장할 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b99b830cf03964463742",
+            "decision-evidence:0cbb33d247bc3d3facec"
+          ],
+          "summary": "자동차 마진과 현금창출이 함께 회복되고 투자 대비 현금창출력이 개선될 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:01fa8f7aaa1f70a9fddc"
+          ],
+          "summary": "영업수익성 저하가 사업 논리에 초기 균열을 만들었다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:9d3bf8b7dc198173af97abb1",
+            "canonical:cashflow-reported:c1737ceffc87ec63cb6b0ba1",
+            "canonical:cashflow:68666c261434dab50ab88a8d",
+            "decision-evidence:03b5853364f073ce37ea"
+          ],
+          "summary": "대규모 투자 부담이 영업현금의 대부분을 흡수해 현금창출 여력이 약하다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0cbb33d247bc3d3facec",
+            "canonical:valuation:current",
+            "canonical:valuation:historical_pe"
+          ],
+          "summary": "장기 선택가치가 크게 반영됐고 이익 기준 밸류에이션도 자사 역사에서 높은 구간이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가까운 저항과 불리한 추격 손익비가 가격 부담을 더한다."
+        }
+      ],
+      "ticker": "TSLA",
+      "valuation_context": "이익 기준 멀티플이 자사 역사에서도 높은 구간이고 선행 기준 부담도 크다. 장부가치 기준의 중립적 위치만으로 이를 상쇄하기 어렵다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:a82017fe9cb283a18521",
+            "decision-evidence:488571d04949915641a6"
+          ],
+          "summary": "인공지능과 고성능컴퓨팅 수요, 첨단공정 지배력이 높은 수익성과 현금창출을 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:earnings:2026-06-30",
+            "canonical:financial_quality:2026-06-30"
+          ],
+          "summary": "최근 잠정 실적의 높은 영업수익성은 사업 경쟁력과 마진 방어를 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:chart:stored_price_rules"
+          ],
+          "summary": "등록 지지 구간을 회복해 가격 구조의 즉각적인 훼손은 제한됐다."
+        }
+      ],
+      "core_judgment": "높은 영업수익성이 핵심 사업 논리를 강화했지만 시장 기대가 매우 높고 밸류에이션 기준도 불완전해, 확인선 회복 전에는 보유 관점의 관망이 적절하다.",
+      "decision": "HOLD",
+      "decision_confidence": "LOW",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "canonical:earnings:2026-06-30",
+        "canonical:financial_quality:2026-06-30",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:08a1db369b9003e5047d",
+        "decision-evidence:154bfac696d5e730161e",
+        "decision-evidence:1887c6577a65ceec3a44",
+        "decision-evidence:488571d04949915641a6",
+        "decision-evidence:6a454b19944a355a5ebf",
+        "decision-evidence:6f4e42c1f2c48790d2a1",
+        "decision-evidence:752b64bdc2bef3de9afc",
+        "decision-evidence:a82017fe9cb283a18521",
+        "decision-evidence:b21475d9a36d91c1124d",
+        "decision-evidence:ba6b3b6ef4c2f66a7952",
+        "decision-evidence:beb13ef1dcffeb355bad",
+        "decision-evidence:c1b4eea017821045c953"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 398.0,
+        "invalidation_condition": "인공지능과 고성능컴퓨팅 수요가 구조적으로 둔화되고 첨단공정 경쟁력과 마진이 함께 약화되는 경우다.",
+        "stance": "HOLDABLE",
+        "summary": "핵심 사업 논리가 강화돼 보유 가능하지만, 높은 기대를 감안해 저항 구간에서는 비중을 재평가해야 한다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 439.781794,
+        "trim_zone_low": 432.298206
+      },
+      "market_expectation_context": "인공지능 성장과 첨단공정 가격결정력, 높은 마진 지속 기대가 매우 높아 실행 상회가 추가 재평가의 전제다.",
+      "new_buyer_view": {
+        "confirmation_condition": "종가 기준 상향 확인이 유지되고 첨단공정 수요와 마진 방어가 이어질 때다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:chart:price_transition",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 432.0,
+        "entry_zone_low": 432.0,
+        "stance": "WAIT",
+        "summary": "사업 경쟁력은 강하지만 높은 기대와 불완전한 밸류에이션 근거를 고려해 상향 확인을 기다리는 편이 낫다."
+      },
+      "price_timing_context": "지지 구간은 회복했지만 상향 확인선 아래에 있고 현재 추격 손익비도 불리해 신규 진입 확인이 부족하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c1b4eea017821045c953",
+            "decision-evidence:b21475d9a36d91c1124d"
+          ],
+          "summary": "인공지능 고객의 투자 지침이 둔화되고 주요 고객 주문 지연이나 재고조정이 확대될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:6f4e42c1f2c48790d2a1",
+            "decision-evidence:ba6b3b6ef4c2f66a7952"
+          ],
+          "summary": "마진이 구조적으로 하락하고 선단공정 경쟁력 약화로 점유율 하락이 확인될 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:08a1db369b9003e5047d",
+            "decision-evidence:154bfac696d5e730161e",
+            "decision-evidence:752b64bdc2bef3de9afc"
+          ],
+          "summary": "인공지능 고객 수요와 투자가 이어지고 첨단공정 가동률과 가격 방어가 강화될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1887c6577a65ceec3a44",
+            "decision-evidence:beb13ef1dcffeb355bad"
+          ],
+          "summary": "높은 마진이 유지되고 해외 생산시설의 비용 희석이 예상보다 작을 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:beb13ef1dcffeb355bad"
+          ],
+          "summary": "시장 기대가 매우 높아 양호한 실행만으로는 추가 재평가가 제한될 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:6a454b19944a355a5ebf"
+          ],
+          "summary": "해외 생산시설 비용에 따른 마진 희석 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "예탁증서 비율과 주식 기준이 확인되지 않아 제공자 멀티플을 신뢰성 있게 해석하기 어렵다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "상향 확인 전의 추격 손익비가 불리해 가격 측면의 안전마진이 부족하다."
+        }
+      ],
+      "ticker": "TSM",
+      "valuation_context": "예탁증서 비율과 주식 기준이 확인되지 않아 제공자 멀티플을 저평가나 고평가의 근거로 사용하기 어렵다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e0d708a0ce64006b8bd5",
+            "decision-evidence:992c955815b329a31eb6"
+          ],
+          "summary": "Robotaxi 기술·승인·fleet 확대가 유료 이용과 매출 성장으로 연결되는 사업 경로가 형성되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:de936e1f44097f49e0b7"
+          ],
+          "summary": "대형 플랫폼 파트너십이 실제 매출로 전환되면 지역 확장의 효율을 높일 수 있다."
+        }
+      ],
+      "core_judgment": "상용화 진전과 성장 선택권은 있으나 이용률·마진·현금소진 경제성이 입증되지 않았고 가격 확인도 부재해 관망이 합리적이다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "decision-evidence:e0d708a0ce64006b8bd5",
+        "decision-evidence:b6654e5fc384c0d33bda",
+        "decision-evidence:992c955815b329a31eb6",
+        "decision-evidence:de936e1f44097f49e0b7",
+        "decision-evidence:5ba1286806d9b069c093",
+        "decision-evidence:8b7f93a5f707ad6158af",
+        "decision-evidence:112f654571f1b88b463d",
+        "decision-evidence:2719c49ada648bd2940e",
+        "decision-evidence:30c083a28e4735f5aadc",
+        "decision-evidence:3ac5a1a0a9faff90d400",
+        "decision-evidence:7c0a4f93f99c8eba6f8f",
+        "decision-evidence:92481a1db730eb298a24",
+        "decision-evidence:fb5b2ba311cf06c9cb4f",
+        "decision-evidence:f8726a5875c3915b0de0",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:book_quality"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 5.3,
+        "invalidation_condition": "규제·안전 문제로 서비스 확장이 구조적으로 중단되거나, 상용화 확대에도 단위경제성이 개선되지 않고 대규모 희석이 지속되면 사업 논리를 무효화한다.",
+        "stance": "REVIEW",
+        "summary": "가격 약세만으로 사업 논리를 훼손했다고 보지는 않되 상용화 경제성과 자금조달 위험을 재검토해야 한다. 반등 시 저항 구간은 의무 매도 목표가가 아니라 비중 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 6.153512,
+        "trim_zone_low": 5.906488
+      },
+      "market_expectation_context": "승인 지역과 fleet 확대 기대가 반영됐지만 차량당 이용률·마진·현금소진 경제성은 아직 증명되지 않았다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 확인 수준을 종가로 회복하고 이용률·마진·손실 지표가 함께 개선되는지 확인한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:5ba1286806d9b069c093",
+          "decision-evidence:8b7f93a5f707ad6158af"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 6.68,
+        "entry_zone_low": 6.68,
+        "stance": "WAIT",
+        "summary": "활성 지지가 없고 상용화 경제성도 미확인이므로 등록된 가격 확인 전 신규 진입을 기다린다."
+      },
+      "price_timing_context": "현재 등록 지지를 하회하고 활성 지지가 없으며 차트 상태도 관망이다. 저항 구간 접촉만으로 매매 판단을 자동 변경할 수 없다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:112f654571f1b88b463d",
+            "decision-evidence:fb5b2ba311cf06c9cb4f"
+          ],
+          "summary": "매출 성장보다 operating loss가 더 확대되거나 fleet 확대에도 차량당 이용률이 정체되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:30c083a28e4735f5aadc",
+            "decision-evidence:2719c49ada648bd2940e"
+          ],
+          "summary": "현금소진 가속과 자금조달 의존으로 대규모 희석이 지속되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:92481a1db730eb298a24",
+            "decision-evidence:3ac5a1a0a9faff90d400"
+          ],
+          "summary": "규제 승인 지연이나 서비스 지역 축소가 구조적 확장 중단으로 이어지면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:5ba1286806d9b069c093",
+            "decision-evidence:992c955815b329a31eb6"
+          ],
+          "summary": "유료 서비스 지역과 fleet 확대가 차량당 이용률 및 Robotaxi 매출 증가로 이어지면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7f93a5f707ad6158af"
+          ],
+          "summary": "마진이 개선되고 operating loss가 축소되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:de936e1f44097f49e0b7"
+          ],
+          "summary": "플랫폼 파트너십의 실제 매출 전환이 확대되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e0d708a0ce64006b8bd5",
+            "decision-evidence:b6654e5fc384c0d33bda"
+          ],
+          "summary": "차량당 이용률·마진·현금소진 경제성이 미증명이고 operating loss도 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:price_transition",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 지지를 하회했고 활성 지지나 유효한 진입 설정이 확인되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "예탁증서 환산과 장부가치 기준이 검증되지 않아 현재 멀티플의 신뢰성과 저평가 근거를 확인할 수 없다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f8726a5875c3915b0de0"
+          ],
+          "summary": "위험선호 약화에 민감하지만 해당 시장 신호는 사업의 근본적 확인으로 사용할 수 없다."
+        }
+      ],
+      "ticker": "WRD",
+      "valuation_context": "예탁증서 환산과 장부가치 기준 검증이 실패해 신뢰할 만한 상대가치 결론을 내릴 수 없으며 저평가 근거도 확인되지 않는다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:866626b17b737cd1fc94",
+            "decision-evidence:907f40aa087d5eaa718c"
+          ],
+          "summary": "HPC 임대 매출이 사업의 중심으로 이동했고 가동 용량과 건설 물량이 성장 기반을 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:866626b17b737cd1fc94",
+            "decision-evidence:07364f280f1b5d129a26",
+            "decision-evidence:ac42471a86f5aaa6e0fa"
+          ],
+          "summary": "장기 고객계약은 준공과 청구가 이행될 경우 가시성 높은 성장 선택권이다."
+        }
+      ],
+      "core_judgment": "AI/HPC 임대 전환은 실제 매출과 가동 용량으로 진전됐지만 영업현금흐름 적자, 막대한 설비투자, 희석과 높은 평가가 주주가치 전환을 압도한다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.5,
+        "sell": 6.5
+      },
+      "evidence_refs": [
+        "decision-evidence:866626b17b737cd1fc94",
+        "decision-evidence:ac42471a86f5aaa6e0fa",
+        "decision-evidence:907f40aa087d5eaa718c",
+        "decision-evidence:07364f280f1b5d129a26",
+        "decision-evidence:98e532edddad4ffd7f34",
+        "decision-evidence:2dcc661f5df22aa2765f",
+        "decision-evidence:1a3adac8a9993eb06c19",
+        "decision-evidence:233199fe9a178e3d9222",
+        "decision-evidence:25605f390a39836dfe90",
+        "decision-evidence:4e1a4fbf129b9478c0c8",
+        "decision-evidence:76c6f85f248d815d8aa2",
+        "decision-evidence:bcbc6fa35d4518f7f217",
+        "decision-evidence:d2e313f2c1c9f94c3e8f",
+        "decision-evidence:ede656d249779160185b",
+        "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+        "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+        "canonical:valuation:current",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:trailing_earnings",
+        "canonical:valuation:book_quality",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 14.8,
+        "invalidation_condition": "핵심 고객계약의 취소·대규모 축소, 반복적인 준공 실패, 또는 외부자금 없이는 성장이 어려운 상태가 확인되면 사업 논리를 무효화한다.",
+        "stance": "REDUCE",
+        "summary": "기존 보유자는 성장 계약보다 현금소모와 희석이 주당가치에 미치는 영향을 우선해 비중 축소를 검토할 수 있다. 저항 구간은 의무 매도 목표가가 아니라 축소 여부의 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 16.461814,
+        "trim_zone_low": 15.552386
+      },
+      "market_expectation_context": "장기 고객계약과 증설의 대규모 매출 전환 기대가 선반영된 반면 준공·청구·마진·현금흐름은 아직 검증 전이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 확인 수준을 종가로 회복한 뒤 거래량과 준공·청구·수익성 개선이 동반되는지 확인한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:ede656d249779160185b"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 18.4,
+        "entry_zone_low": 18.4,
+        "stance": "WAIT",
+        "summary": "사업 전환의 경제성과 가격 회복이 함께 확인되기 전에는 신규 진입을 기다린다."
+      },
+      "price_timing_context": "가격이 경고 수준 아래이고 등록된 무효화 수준에 근접했으며 활성 지지도 없다. 차트 상태가 관망이므로 반등만으로 판단을 바꾸기 어렵다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+            "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+            "decision-evidence:1a3adac8a9993eb06c19"
+          ],
+          "summary": "설비투자와 현금소모가 커져 추가 증자나 부채 의존이 상승하면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:233199fe9a178e3d9222",
+            "decision-evidence:d2e313f2c1c9f94c3e8f"
+          ],
+          "summary": "HPC 준공·가동이 지연되거나 핵심 고객계약이 취소·축소되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4e1a4fbf129b9478c0c8",
+            "decision-evidence:25605f390a39836dfe90"
+          ],
+          "summary": "HPC 매출과 가동 용량이 증가해도 수익성과 현금흐름이 구조적으로 개선되지 않으면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:907f40aa087d5eaa718c"
+          ],
+          "summary": "건설 중인 용량이 계획대로 준공되고 HPC 임대 매출이 빠르게 증가하면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:07364f280f1b5d129a26"
+          ],
+          "summary": "장기 계약의 실제 청구가 확대되고 추가 대형 고객을 확보하면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:98e532edddad4ffd7f34"
+          ],
+          "summary": "조정 수익성이 흑자로 전환되고 영업현금흐름이 개선되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+            "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+            "decision-evidence:1a3adac8a9993eb06c19"
+          ],
+          "summary": "영업현금흐름이 적자이고 설비투자가 매우 커 외부자금 의존과 희석 위험이 높다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:trailing_earnings",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 평가는 역사적 범위의 최상단이며 후행 이익도 적자다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:bcbc6fa35d4518f7f217",
+            "decision-evidence:76c6f85f248d815d8aa2",
+            "decision-evidence:ac42471a86f5aaa6e0fa"
+          ],
+          "summary": "주식보상과 신규 발행이 성장 성과를 주당가치 개선으로 전환하지 못하게 할 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:price_transition",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격은 경고 수준 아래이고 무효화 수준에 근접했으며 활성 지지가 확인되지 않았다."
+        }
+      ],
+      "ticker": "WULF",
+      "valuation_context": "장부가치 기준 평가는 고품질 이력의 최상단에 있고 이익도 적자여서 준공 지연이나 추가 희석을 흡수할 가치 여유가 작다."
+    }
+  ],
+  "adjudications": [
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:72b58683c752b41efcce5e3fe47f150e567e3c49fc748c830845571347b224e2",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "CORZ"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "CORZ"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:ed503f41e713d26c1e5ac7ec61846c17f408b710a3becde76edb3f51e6b87b72",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "ticker": "CPNG"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "CPNG"
+    },
+    {
+      "diagnostic": "AGREES_WITH_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:f8928bdadedd0713155e7b7294eae4a13e5d730955afe17037649a20e8f003b9",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "CRCL"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "CRCL"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:24d380954ac3e176b1314a73d475cc2593842060e178aefaf7926fdf41e3bba3",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "GOOGL"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "GOOGL"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:b8f4db8f819344dd0e62895015ca08a8d3cd044e5d224445093a53c10df7ec2e",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        },
+        "ticker": "HUT"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "HUT"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:a4523766b31e2400fa58226c9202e3ecb4b0262e9212c4896e2b91f5b9da179a",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "ticker": "IBM"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "IBM"
+    },
+    {
+      "diagnostic": "AGREES_WITH_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:6be7b734bd608dc118ab4866b17d2355d0fa45b2388a3991a9635c2eb39a741f",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "ticker": "MU"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "MU"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:e60aa15f6bb5803e0b55f0c1ea9bf1e955be9ea6d35ee8a69c11362477fe2da9",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "RXRX"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "RXRX"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:5f5c5db19a3a4e7c74f0b26f3ef788bb95bdbed727b462360f8b7f8e76f3f3fc",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "SKHY"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "SKHY"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:02e549be726afbbefa66f88ce731cea2717c5063d0e3090a49229bd6910b3023",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "ticker": "SNDK"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "SNDK"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:d99e235541ecf3768da337da325cfb0f1fc5ca4ee9d2ac9dc8908a575ac7e985",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 2.5,
+          "sell": 7.5
+        },
+        "ticker": "TSLA"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "TSLA"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:68a841cc25b06181ae6803c8192820a77f3fefb0340e49c4c8d0248f731ddbe9",
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "ticker": "TSM"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "TSM"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "HOLD",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:5a94f4acf28d8a5c49c7fb998ef982fa9198fb9404858670372682528e2a73f1",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        },
+        "ticker": "WRD"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "WRD"
+    },
+    {
+      "diagnostic": "DIFFERS_FROM_PRIOR",
+      "fresh_shadow": {
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        }
+      },
+      "prior_accepted": {
+        "accepted_decision_id": "v2-accepted-decision:sha256:27c88b8fce1ee1e174591760c24ad8d82432d77d533347e88092556dee91bd92",
+        "decision": "SELL",
+        "directional_balance": {
+          "buy": 3.0,
+          "sell": 7.0
+        },
+        "ticker": "WULF"
+      },
+      "production_state_write": 0,
+      "resolution": "KEEP_FRESH_SHADOW_FOR_BLIND_EXPERIMENT",
+      "ticker": "WULF"
+    }
+  ],
+  "base_sha": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "candidates": [
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:acea5134d19f8ded2449"
+          ],
+          "summary": "코로케이션 전환이 매출 구성, 청구 전력, 계약 기반과 마진에서 실체를 보였다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a"
+          ],
+          "summary": "영업활동에서 현금이 창출되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f4a5b684431292d9085f"
+          ],
+          "summary": "AI 데이터센터 투자 확대가 추가 계약과 가동 수요로 이어질 수 있다."
+        }
+      ],
+      "core_judgment": "AI/HPC 코로케이션 전환은 실제 가동·청구와 수익성으로 강화됐다. 다만 막대한 투자지출, 레버리지, 희석과 높은 시장 기대가 이를 상쇄해 관망이 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:acea5134d19f8ded2449",
+        "decision-evidence:464fa6687c0246031611",
+        "canonical:cashflow-reported:211beda9a2734f3e3167c264",
+        "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a",
+        "canonical:cashflow:1b8f3742f33dd3b66f8f7673",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:trailing_earnings",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:risk_reward:support_entry",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:06164bafce7057b20b52",
+        "decision-evidence:8906a34193399a6c5d0a",
+        "decision-evidence:35d4bb9f5d7d5501418f",
+        "decision-evidence:359d3801bde7f3625d6c",
+        "decision-evidence:fb3e833eaecedb42e2ae",
+        "decision-evidence:cc2821e2af21b4635a68",
+        "decision-evidence:d9ef83e7a574c9185b09",
+        "decision-evidence:f988e9a6083fdac84102",
+        "decision-evidence:02b2ecf8c9efa8dce70a",
+        "decision-evidence:0f836ab7e80714aed726",
+        "decision-evidence:36090e913951b40587f1",
+        "decision-evidence:f4a5b684431292d9085f"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 12.257319,
+        "invalidation_condition": "핵심 고객계약의 축소나 반복적인 준공 실패가 발생하고, 성장투자가 주주 귀속가치를 계속 훼손하는 경우다.",
+        "stance": "REVIEW",
+        "summary": "사업 전환의 진전은 인정되지만 등록된 가격 기준이 훼손돼 보유 근거를 재점검해야 한다. 저항 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 18.382585,
+        "trim_zone_low": 17.447415
+      },
+      "market_expectation_context": "AI/HPC 전환과 대형 계약의 상당 부분이 반영돼 있어, 계약 규모보다 실제 가동·청구·현금 전환이 추가 상승의 기준이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 방어와 가격 구조 안정이 확인될 때 매수 매력을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 13.463829,
+        "entry_zone_low": 12.911171,
+        "stance": "WAIT",
+        "summary": "현재 위치의 추격보다 검증된 하단 지지의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "등록 기준 아래에 있고 현재 추격 손익비도 불리하다. 신규 매수는 검증된 지지 방어를 기다리는 편이 낫다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:359d3801bde7f3625d6c"
+          ],
+          "summary": "계약된 전력의 준공·가동이 지연되거나 고객계약이 축소된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fb3e833eaecedb42e2ae"
+          ],
+          "summary": "코로케이션 마진 하락과 투자지출 증가가 함께 나타난다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cc2821e2af21b4635a68",
+            "decision-evidence:d9ef83e7a574c9185b09",
+            "decision-evidence:f988e9a6083fdac84102"
+          ],
+          "summary": "희석과 부채 부담이 확대되고 내부통제 취약점이 장기화된다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:06164bafce7057b20b52"
+          ],
+          "summary": "청구 전력이 계획대로 늘고 신규 장기계약이 추가된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8906a34193399a6c5d0a"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 개선되고 레버리지가 안정된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:35d4bb9f5d7d5501418f"
+          ],
+          "summary": "잠재 희석 부담이 줄고 주당가치 증가가 희석을 상회한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:211beda9a2734f3e3167c264",
+            "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a",
+            "canonical:cashflow:1b8f3742f33dd3b66f8f7673"
+          ],
+          "summary": "투자지출이 영업현금창출을 크게 웃돌아 잉여현금흐름 부담이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:acea5134d19f8ded2449",
+            "decision-evidence:cc2821e2af21b4635a68",
+            "decision-evidence:f988e9a6083fdac84102"
+          ],
+          "summary": "부채, 잠재 희석과 내부통제 부담이 주당가치와 자금조달을 압박한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:464fa6687c0246031611"
+          ],
+          "summary": "전환 기대가 이미 매우 높아 가동과 현금 전환의 지연에 취약하다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "가격이 등록 무효화 기준 아래에 있고 현재 손익비도 불리하다."
+        }
+      ],
+      "ticker": "CORZ",
+      "valuation_context": "손실과 음의 장부가치 때문에 이익·장부가치 배수는 투자 판단에 부적합하며 역사 비교도 제한적이다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "핵심 커머스의 매출 성장 기반은 유지되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "신규사업 매출 성장과 손실 축소가 나타났다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "사고 이후 비용과 마진 우려가 주가에 상당 부분 반영됐다."
+        }
+      ],
+      "core_judgment": "핵심 커머스 성장 기반은 남아 있지만 마진과 현금흐름 악화가 투자 논리를 약화시켰다. 신규사업 손실 개선은 긍정적이나 정상화 확인 전까지 관망이 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "decision-evidence:c6b338c45aaae1f1cb71",
+        "decision-evidence:a335519fd9d606b5650d",
+        "canonical:earnings:2026-06-30",
+        "canonical:financial_quality:2026-06-30",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:current",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:risk_reward:support_entry",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:e71c5614d7ffd54ea5f1",
+        "decision-evidence:0ef84cb409ca7f82f5e9",
+        "decision-evidence:0d741ce1e9c5866c6512",
+        "decision-evidence:1a001f061b284baba978",
+        "decision-evidence:f4c0cea0d38305985210",
+        "decision-evidence:1a88821e3293abdd188d"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 14.45936,
+        "invalidation_condition": "핵심 커머스 경쟁력 약화와 마진 회복 실패가 신규사업 손실 확대 및 현금흐름 부진과 겹치는 경우다.",
+        "stance": "REVIEW",
+        "summary": "핵심 사업 경쟁력은 유지되지만 수익성과 현금흐름 회복 전까지 보유 근거를 재점검해야 한다. 저항 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 17.157304,
+        "trim_zone_low": 16.507696
+      },
+      "market_expectation_context": "핵심 마진 훼손과 현금흐름 부진은 상당 부분 반영됐지만 정상화가 확인되지 않아 기대는 균형적이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간의 방어가 확인되거나 등록 확인선 회복과 실적 정상화가 함께 나타날 때 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 15.22279,
+        "entry_zone_low": 14.72721,
+        "stance": "WAIT",
+        "summary": "현재 추격보다 검증된 지지 구간의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "지지 위이지만 상향 확인선 아래에 있고 현재 추격 손익비도 불리하다. 눌림 방어나 상향 확인이 먼저다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1a001f061b284baba978"
+          ],
+          "summary": "핵심 커머스 마진이 회복되지 않는 가운데 신규사업 손실이 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f4c0cea0d38305985210"
+          ],
+          "summary": "현금흐름이 회복되지 않고 차입과 자본배분 부담이 커진다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1a88821e3293abdd188d"
+          ],
+          "summary": "규제나 보안 문제로 고객 신뢰와 영업경제성이 장기 훼손된다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e71c5614d7ffd54ea5f1"
+          ],
+          "summary": "핵심 커머스 마진이 빠르게 회복되고 고객 성장도 재가속된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0ef84cb409ca7f82f5e9"
+          ],
+          "summary": "신규사업 성장과 함께 손실이 지속 축소되거나 흑자 가시성이 높아진다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0d741ce1e9c5866c6512"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 의미 있게 회복된다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c6b338c45aaae1f1cb71",
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "핵심 커머스 마진과 현금흐름이 크게 약화됐다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a335519fd9d606b5650d"
+          ],
+          "summary": "신규사업은 여전히 손실 상태여서 통합 수익성 회복이 미완성이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "증권 기준이 검증되지 않아 공급된 장부가치 배수로 저평가를 논증할 수 없다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "가격은 상향 확인 전이며 현재 추격 손익비가 낮다."
+        }
+      ],
+      "ticker": "CPNG",
+      "valuation_context": "증권 정체성과 주식 기준이 검증되지 않아 장부가치 배수를 사용할 수 없고, 다른 검증 배수도 없어 저평가 판단은 유보한다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:9c63f15c0cc9d7846eacb167",
+            "canonical:cashflow-reported:f4ba92dfb0abaa1ec5fbb775",
+            "canonical:cashflow:402041c63553616360d17391"
+          ],
+          "summary": "영업현금흐름과 투자지출 후 현금창출이 견조하다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f97a9d471eb72b218274"
+          ],
+          "summary": "USDC 유통량과 온체인 사용 확대가 플랫폼 성장의 장기 축이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 등록 확인선 위를 유지하고 있다."
+        }
+      ],
+      "core_judgment": "현금창출과 상향 확인 유지가 긍정적이지만 비이자 수익 전환은 검증이 부족하고 기대와 배수 부담도 크다. 신규 매수는 지지 확인 전 대기가 낫다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "canonical:cashflow-reported:9c63f15c0cc9d7846eacb167",
+        "canonical:cashflow-reported:f4ba92dfb0abaa1ec5fbb775",
+        "canonical:cashflow:402041c63553616360d17391",
+        "decision-evidence:f97a9d471eb72b218274",
+        "decision-evidence:194457c71ac726c17374",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:consensus_forward_earnings",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:7cac10279a2a9ce88d13",
+        "decision-evidence:2fc3dcbc87507a0909fd",
+        "decision-evidence:568b87f1490205922073",
+        "decision-evidence:e35ff3fd6aad2793aa06",
+        "decision-evidence:52b3b639e2122ecd51bd",
+        "decision-evidence:ce096eec7439591c0246",
+        "decision-evidence:65dab49dc52c42ea2eb0",
+        "decision-evidence:f9389a85c4423a03dbee",
+        "decision-evidence:beee0feed84acc8fe672"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 78.914109,
+        "invalidation_condition": "USDC 기반이 구조적으로 약해지거나 준비금 수익 의존 심화로 정상화 수익성이 크게 훼손되는 경우다.",
+        "stance": "HOLDABLE",
+        "summary": "등록 확인선 위 유지로 보유는 가능하지만 비이자 수익 검증과 가까운 지지의 훼손 여부를 함께 봐야 한다.",
+        "trim_basis": [],
+        "trim_zone_high": null,
+        "trim_zone_low": null
+      },
+      "market_expectation_context": "유통량 성장과 스테이블코인 인프라 확장 기대가 투기적으로 높아, 비이자 수익의 대체 속도에 민감하다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 방어와 가격 구조 안정이 확인될 때 매수 매력을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 86.529549,
+        "entry_zone_low": 82.010451,
+        "stance": "WAIT",
+        "summary": "확인선 위에 있지만 검증된 저항이 없어 추격보다 가까운 지지의 방어 확인이 우선이다."
+      },
+      "price_timing_context": "등록 확인선 위를 유지하지만 검증된 저항이 없어 상단 손익비 판단 근거가 부족하다. 가까운 지지 방어 확인이 필요하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:65dab49dc52c42ea2eb0"
+          ],
+          "summary": "USDC 점유율과 유통량이 구조적으로 하락한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f9389a85c4423a03dbee"
+          ],
+          "summary": "준비금 수익 의존이 지속되는 가운데 금리 하락으로 정상화 수익성이 크게 악화된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:beee0feed84acc8fe672"
+          ],
+          "summary": "규제 변화가 핵심 스테이블코인 사업모델을 구조적으로 훼손한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e35ff3fd6aad2793aa06"
+          ],
+          "summary": "USDC 점유율과 유통량이 함께 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:52b3b639e2122ecd51bd"
+          ],
+          "summary": "비이자성 플랫폼과 결제 수익의 비중이 확대된다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:ce096eec7439591c0246"
+          ],
+          "summary": "금리 하락 환경에서도 조정 영업이익과 잉여현금흐름이 개선된다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:194457c71ac726c17374"
+          ],
+          "summary": "시장은 유통량 성장과 인프라 확장을 투기적으로 선반영하고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:book_quality",
+            "canonical:valuation:consensus_forward_earnings"
+          ],
+          "summary": "검증 가능한 선행 이익과 장부가치 배수가 높은 성장 기대를 요구한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f97a9d471eb72b218274",
+            "decision-evidence:305a91dd774b63e72a70",
+            "decision-evidence:50a8854112f9b0152dae"
+          ],
+          "summary": "비이자 수익이 준비금 수익 의존을 대체할지는 아직 확인되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:2fc3dcbc87507a0909fd",
+            "decision-evidence:568b87f1490205922073",
+            "decision-evidence:7cac10279a2a9ce88d13"
+          ],
+          "summary": "금리와 위험선호의 상반된 전달경로가 수익성과 배수 변동성을 높인다."
+        }
+      ],
+      "ticker": "CRCL",
+      "valuation_context": "검증 가능한 선행 이익과 장부가치 배수는 성장 기대를 많이 요구하지만 역사 비교가 제한돼 적정가치 확신이 낮다."
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:55c968b74bb8bf591006",
+            "decision-evidence:2b6d4fb027ec96785224",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6"
+          ],
+          "summary": "Search의 방어력과 Cloud·AI 수요가 이익 성장의 핵심 기반으로 유지되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "후행 이익평가는 자체 역사 대비 낮고 장부가치 평가는 중간권이어서 과도한 고평가 신호는 제한적이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:nearest_supports:1",
+            "canonical:chart:structure:risk_reward:support_entry"
+          ],
+          "summary": "검증된 하단 지지 구간에서는 신규 진입의 가격 조건이 현 위치보다 개선된다."
+        }
+      ],
+      "core_judgment": "핵심 사업 논리는 유지되지만 AI 투자 부담과 높아진 시장 기대, 불리한 단기 가격 구조가 상승 여력을 상쇄한다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:55c968b74bb8bf591006",
+        "decision-evidence:47e26c6f53f6504d798d",
+        "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+        "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+        "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2",
+        "canonical:valuation:historical_pe",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:multiple_relation",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "decision-evidence:119eb75d8acc25305dc3",
+        "decision-evidence:e557bc193349d6c5e071"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "downside_review_level": 340.0,
+        "invalidation_condition": "Search와 Cloud 둔화가 함께 장기화하거나 AI 투자 이후 현금창출과 자본효율이 구조적으로 악화될 때",
+        "stance": "REVIEW",
+        "summary": "등록 재점검선을 하회해 점검이 필요하지만 사업 논리 훼손이 확인된 것은 아니므로 즉시 축소보다 실적 검증이 우선이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 353.787998,
+        "trim_zone_low": 343.652002
+      },
+      "market_expectation_context": "Search 방어와 Cloud·AI 성장이 이미 높게 기대되며, 투자 확대가 현금창출 회복으로 이어져야 추가 재평가가 가능하다.",
+      "new_buyer_view": {
+        "confirmation_condition": "검증된 지지 구간에서 종가 방어와 수급 개선이 함께 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 321.878566,
+        "entry_zone_low": 312.373234,
+        "stance": "WAIT",
+        "summary": "현 위치의 추격 여건은 불리하므로 검증된 하단 지지 구간의 반응을 기다리는 편이 낫다."
+      },
+      "price_timing_context": "기존 등록 지지 구간과 재점검선 아래에 있으며 근접 저항도 있어 현 위치의 추격 매력은 낮다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:9a44445c9140d82dae68",
+            "decision-evidence:119eb75d8acc25305dc3",
+            "decision-evidence:da18106c96f53ecfd7b8"
+          ],
+          "summary": "Search 수익화 약화가 지속되거나 Search와 Cloud가 함께 둔화할 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1eab5946cbdbeae961f6",
+            "decision-evidence:e91745bd16fef5ba4649"
+          ],
+          "summary": "Cloud 성장·수주잔고의 동력이 약해지고 인프라 비용으로 수익성 압박이 확대될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e557bc193349d6c5e071",
+            "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+            "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+            "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2"
+          ],
+          "summary": "AI 투자 확대 이후에도 잉여현금흐름과 자본효율이 구조적으로 악화될 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:2b6d4fb027ec96785224",
+            "decision-evidence:3d5f5063af522b75f15d",
+            "decision-evidence:e3d2493f5eba998dc6c6"
+          ],
+          "summary": "Search 수익화가 유지되고 Cloud 성장·수익성과 수주잔고가 함께 개선될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:47e26c6f53f6504d798d",
+            "decision-evidence:f99b2da186a81fc1c21d"
+          ],
+          "summary": "AI 투자 부담에도 잉여현금흐름 회복이 예상보다 빠르게 확인될 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록된 종가 확인선을 회복해 가격 추세 전환이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+            "canonical:cashflow-reported:cb723b07ce5a8ac2a3715c70",
+            "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2",
+            "decision-evidence:f99b2da186a81fc1c21d"
+          ],
+          "summary": "대규모 AI 투자가 잉여현금흐름 여력을 크게 압박해 투자 회수의 가시성이 중요해졌다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:47e26c6f53f6504d798d"
+          ],
+          "summary": "Search 방어와 Cloud 성장 기대가 높아 실적이 기대에 못 미칠 때 하방 민감도가 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 재점검선 아래에 있고 근접 저항과 불리한 현 위치 손익 구조가 추격 매수를 제약한다."
+        }
+      ],
+      "ticker": "GOOGL",
+      "valuation_context": "후행 이익 기준 평가는 자체 역사보다 낮지만 선행 평가는 더 높고 장부가치 기준은 중간권이어서, 명확한 저평가보다 실적 회복을 요구하는 혼합 신호다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:4cfce0c1d1d7f61e130c"
+          ],
+          "summary": "대규모 계약 용량과 장기 계약가치, 우량 고객 기반은 AI 데이터센터 전환의 큰 선택가치를 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:7f12a241fbf8249e9ea5",
+            "decision-evidence:85cc2f47424078a0d841"
+          ],
+          "summary": "프로젝트 금융 확대와 장기 인프라 수익 비중 증가는 모회사 부담과 채굴 변동성을 낮출 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fe783c093a24882e06a6"
+          ],
+          "summary": "AI 데이터센터 수요가 실제 장기 임대와 가동 프로젝트로 연결되면 성장 여력이 크다."
+        }
+      ],
+      "core_judgment": "장기 인프라 전환 잠재력은 크지만 계약의 준공·가동·수익 전환이 검증되지 않았고, 매우 높은 기대와 평가 부담 및 가격 경고가 우세하다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.5,
+        "sell": 6.5
+      },
+      "evidence_refs": [
+        "decision-evidence:4cfce0c1d1d7f61e130c",
+        "decision-evidence:4c28d1cc7a794cc4171c",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:state",
+        "decision-evidence:1ab32a7d65e4aa419957",
+        "decision-evidence:457d43794a37d4fc9955",
+        "decision-evidence:a9a5a806fa52791bb318",
+        "decision-evidence:0750ded5723b45b38bd9",
+        "decision-evidence:e12752508a662d6e988d"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "downside_review_level": 83.0,
+        "invalidation_condition": "핵심 고객계약이 취소·대폭 축소되거나 인프라 전환 실패로 채굴 변동성 의존이 구조적으로 유지될 때",
+        "stance": "REDUCE",
+        "summary": "등록 기준 훼손과 높은 실행·자금조달 위험 때문에 비중 축소 검토가 합리적이며, 반등 저항대는 재평가 구간일 뿐 자동 매도 목표가 아니다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 89.670191,
+        "trim_zone_low": 84.109809
+      },
+      "market_expectation_context": "대형 AI 인프라 계약과 장기 수익 전환이 매우 높게 반영돼 있어 계약 규모보다 준공·가동·수익 실현이 핵심이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 종가 확인선을 회복하고 거래량 개선이 동반될 때 추세 전환을 재평가한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:b939d70a17422e43c177"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 97.0,
+        "entry_zone_low": 97.0,
+        "stance": "WAIT",
+        "summary": "지지와 저항이 겹치고 등록 기준도 훼손돼 있어 신규 진입은 명확한 상향 확인 이후가 적절하다."
+      },
+      "price_timing_context": "등록 경고선과 무효화선 아래이며 지지와 저항이 겹치는 대기 상태라 반등만으로 바닥을 확인하기 어렵다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1ab32a7d65e4aa419957",
+            "decision-evidence:8fea96b768334f56d13c"
+          ],
+          "summary": "프로젝트 준공·전력 인입이 지연되거나 계약 용량과 예상 수익이 하향될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:a9a5a806fa52791bb318",
+            "decision-evidence:5540a963a80231f49a70"
+          ],
+          "summary": "모회사 자본투입과 희석 위험이 프로젝트 금융보다 빠르게 커지고 자유현금이 부족해질 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0750ded5723b45b38bd9",
+            "decision-evidence:1b0709720f50a6bda8e2",
+            "decision-evidence:e12752508a662d6e988d"
+          ],
+          "summary": "핵심 고객계약 훼손이나 장기 인프라 전환 실패로 주주가치 창출 논리가 무너질 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b040f8545884d2f40f7"
+          ],
+          "summary": "대형 AI 데이터센터 프로젝트가 계획대로 준공·가동돼 계약 매출과 수익이 실제 인식될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:7f12a241fbf8249e9ea5",
+            "decision-evidence:85cc2f47424078a0d841"
+          ],
+          "summary": "프로젝트 금융으로 모회사 부담이 제한되고 안정적인 인프라 수익 비중이 뚜렷하게 늘어날 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "decision-evidence:b939d70a17422e43c177"
+          ],
+          "summary": "등록된 종가 확인선을 회복한 뒤 거래량을 동반한 안착이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c",
+            "decision-evidence:1ab32a7d65e4aa419957",
+            "decision-evidence:8fea96b768334f56d13c"
+          ],
+          "summary": "시장 기대가 매우 높은 반면 프로젝트 준공·가동과 실제 수익 실현에는 큰 실행 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 프리미엄과 무거운 선행 이익평가가 실행 지연에 대한 가치 완충력을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:457d43794a37d4fc9955",
+            "decision-evidence:5540a963a80231f49a70",
+            "decision-evidence:a9a5a806fa52791bb318"
+          ],
+          "summary": "현재 실적의 채굴 변동성, 제한된 자유현금, 모회사 자본투입 위험이 사업 전환의 질을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_supports:1",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 경고 기준을 밑돌고 지지·저항이 중첩돼 기술적 반전 확인이 부족하다."
+        }
+      ],
+      "ticker": "HUT",
+      "valuation_context": "장부가치 기준 프리미엄이고 선행 이익평가 부담도 매우 크며 역사 비교 신뢰도는 낮아, 계약 실행이 지연될 때 가치 방어력이 약하다."
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:a4e33fdbb619e8a75ec6",
+            "decision-evidence:d746b38e4f88e9088509"
+          ],
+          "summary": "Software·Red Hat·AI와 반복매출 확대가 중기 성장 기반을 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:f132b335d1d8e29e1a93b9f1",
+            "canonical:cashflow-reported:2e36e787851ab8640db90dcd",
+            "canonical:cashflow:a158304539a9269c66f6d2cb"
+          ],
+          "summary": "영업현금흐름 대비 설비투자 부담이 제한적이어서 현금창출력이 사업 전환을 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pe",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:daada1e8e154d258cf46"
+          ],
+          "summary": "시장 기대가 균형적이고 후행 이익평가와 장부가치 평가는 자체 역사에서 과도한 수준이 아니다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:state",
+            "canonical:chart:structure:nearest_supports:2",
+            "canonical:chart:structure:risk_reward:current_price"
+          ],
+          "summary": "주요 지지 구조가 유지되고 현 위치의 손익 구조도 조건부로 개선됐다."
+        }
+      ],
+      "core_judgment": "현금창출력과 Software·AI 성장 기반은 유지되지만 전사 성장과 Consulting 회복의 증명이 부족해 보유는 가능하되 신규 추격 근거는 약하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "decision-evidence:f5f5d02d68353ae33d2d",
+        "decision-evidence:daada1e8e154d258cf46",
+        "canonical:cashflow-reported:f132b335d1d8e29e1a93b9f1",
+        "canonical:cashflow-reported:2e36e787851ab8640db90dcd",
+        "canonical:cashflow:a158304539a9269c66f6d2cb",
+        "canonical:valuation:historical_pe",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:multiple_relation",
+        "canonical:price:current",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_supports:2",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "decision-evidence:972c4c6634d9dcdfd155",
+        "decision-evidence:e5705361ce4c4132cde7",
+        "decision-evidence:ed03d8f73e419de39113"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 228.180854,
+        "invalidation_condition": "Software·AI 성장에도 전사 매출과 잉여현금흐름이 장기간 정체되거나 대규모 투자 이후 자본효율이 구조적으로 악화될 때",
+        "stance": "HOLDABLE",
+        "summary": "지지 구조와 현금창출력이 유지돼 보유 가능하지만, 성장 증명이 부족하므로 추가 확대는 상향 확인 이후가 적절하다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 250.256325,
+        "trim_zone_low": 237.103675
+      },
+      "market_expectation_context": "Software·Red Hat·AI 기대는 반영돼 있지만 Consulting 회복과 전사 성장, 잉여현금흐름 가속은 아직 충분히 반영되거나 증명되지 않았다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 종가 확인선을 회복하고 그 위에서 안착이 확인될 때 신규 진입을 재평가한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:monitoring:confirmation_transition"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 250.0,
+        "entry_zone_low": 250.0,
+        "stance": "WAIT",
+        "summary": "지지는 유지되지만 인접 저항과 미확인 성장 과제가 있어 상향 확인 전에는 기다리는 편이 낫다."
+      },
+      "price_timing_context": "지지 구조는 유지되지만 인접 저항과 상향 확인선 미도달로 신규 추격보다 확인이 우선이다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:972c4c6634d9dcdfd155",
+            "decision-evidence:e9b769462b74d97c8dbc"
+          ],
+          "summary": "Consulting 정체가 이어지고 Software 또는 Red Hat 성장 동력이 약화될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e5705361ce4c4132cde7",
+            "decision-evidence:54f61a882c928f99e40b"
+          ],
+          "summary": "인수와 AI 투자 확대에도 잉여현금흐름이 정체되고 부채와 자본효율이 악화될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:ed03d8f73e419de39113",
+            "decision-evidence:a68244a9f6772590082d"
+          ],
+          "summary": "Software·AI 성장에도 전사 매출과 현금창출이 장기간 개선되지 않아 투자 논리가 무효화될 때"
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:a4e33fdbb619e8a75ec6",
+            "decision-evidence:d746b38e4f88e9088509"
+          ],
+          "summary": "Software와 Red Hat 성장이 가속되고 AI 계약이 전사 매출 개선으로 연결될 때"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1e35c6622a824b5fbe74"
+          ],
+          "summary": "잉여현금흐름 성장이 다시 빨라지고 부채 관리가 개선될 때"
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:stored_price_rules",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록된 종가 확인선을 회복해 상향 추세 전환이 확인될 때"
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:f5f5d02d68353ae33d2d",
+            "decision-evidence:972c4c6634d9dcdfd155"
+          ],
+          "summary": "Consulting 회복과 전사 매출 성장 가속이 아직 충분히 증명되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:multiple_relation",
+            "decision-evidence:e5705361ce4c4132cde7"
+          ],
+          "summary": "선행 이익평가가 후행 기준보다 높아 향후 이익과 잉여현금흐름 가속이 미흡하면 평가 부담이 커질 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:nearest_resistance:1",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 상향 확인선 아래에 있고 근접 저항이 있어 신규 매수의 즉각적인 상승 여력이 제한된다."
+        }
+      ],
+      "ticker": "IBM",
+      "valuation_context": "후행 이익평가는 자체 역사보다 낮고 장부가치 평가는 중간권이지만 선행 평가는 더 높아, 저평가보다는 실적 가속 여부가 중요한 수준이다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:31b3afdedc39a02d46b5",
+            "decision-evidence:e7b80cece0f60bb16c47"
+          ],
+          "summary": "AI 서버와 고부가 메모리 수요, 장기 고객계약이 가격·믹스와 이익 가시성을 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:earnings:2026-05-28",
+            "canonical:cashflow-reported:413266fe8659a8b24e238de2",
+            "canonical:cashflow:96e9c3b873f3678d4dec0ff3"
+          ],
+          "summary": "최근 실적과 영업현금흐름은 사업의 강한 현금창출력을 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:multiple_relation",
+            "canonical:valuation:consensus_forward_earnings"
+          ],
+          "summary": "합의 선행 이익 기준 배수는 후행 배수보다 낮아 이익 지속 시 평가 부담이 완화될 여지가 있다."
+        }
+      ],
+      "core_judgment": "AI 메모리 수요와 현금창출력은 사업 논리를 강화했지만, 높은 시장 기대와 장부가치 평가 부담, 거래량이 약한 돌파가 신규 매수 확신을 제한한다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "decision-evidence:31b3afdedc39a02d46b5",
+        "decision-evidence:2c7de5970a1beda446d7",
+        "canonical:earnings:2026-05-28",
+        "canonical:cashflow-reported:413266fe8659a8b24e238de2",
+        "canonical:cashflow:96e9c3b873f3678d4dec0ff3",
+        "canonical:valuation:multiple_relation",
+        "canonical:valuation:historical_pb",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:nearest_supports:1",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:6ce38081e8f272ad68a3",
+        "decision-evidence:76ac8d9e50fd630777ff",
+        "decision-evidence:beeedb93a3d123acbe7b"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 839.757164,
+        "invalidation_condition": "AI 메모리 수요와 가격 약세가 장기화되고 장기계약의 수요 가시성까지 훼손될 때 사업 논리를 무효화한다.",
+        "stance": "HOLDABLE",
+        "summary": "사업과 현금흐름은 보유를 지지하지만 기대 수준이 높아 하방 구조와 업황 변화를 함께 점검해야 한다. 상단 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 1278.851879,
+        "trim_zone_low": 1231.148121
+      },
+      "market_expectation_context": "AI 메모리 성장, 가격·믹스 강세, 장기계약과 강한 현금창출이 상당 부분 반영돼 작은 실망에도 민감한 상태다.",
+      "new_buyer_view": {
+        "confirmation_condition": "해당 지지 구간에서 주요 구조 보존과 재지지가 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 911.748329,
+        "entry_zone_low": 867.516671,
+        "stance": "WAIT",
+        "summary": "돌파 직후 추격보다 검증된 지지 구간의 재지지를 기다리는 편이 낫다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량 확인이 부족하고 재시험을 기다리는 상태다. 주요 지지 구조는 아직 유지된다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:b19318d37863cd366850",
+            "decision-evidence:cc362633dd4b99be7455"
+          ],
+          "summary": "메모리 가격 상승 둔화와 재고 증가, 마진 정상화가 예상보다 빠르면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b4450f1f4ffd534fe72c",
+            "decision-evidence:76ac8d9e50fd630777ff"
+          ],
+          "summary": "차세대 HBM 경쟁력과 고객 점유율이 구조적으로 약화되면 핵심 성장 가설을 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:00cb0b2759fcf17f5a54",
+            "decision-evidence:beeedb93a3d123acbe7b"
+          ],
+          "summary": "설비투자가 현금창출 개선을 지속적으로 앞서고 재무구조가 악화되면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:7d84dda8918aa8dbcf26",
+            "decision-evidence:a28e6663801fec8ab611"
+          ],
+          "summary": "메모리 가격과 고부가 믹스 강세가 지속되고 차세대 HBM 고객 채택이 확대되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:fc21b074ee6020ea8322",
+            "decision-evidence:a3ecd96de1e2ab92ea19"
+          ],
+          "summary": "장기계약의 수요 가시성과 높은 현금창출의 지속성이 함께 확인되면 확신을 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:472cc5c042bf61014917",
+            "canonical:chart:price_transition"
+          ],
+          "summary": "상향 확인선 안착과 거래량 확대, 후속 저항 회복이 확인되면 가격 타이밍을 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:2c7de5970a1beda446d7",
+            "canonical:valuation:historical_pb"
+          ],
+          "summary": "성장과 현금흐름 기대가 이미 높고 장부가치 기준 평가는 역사적으로 부담스러운 구간이다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8101aa12a05f32d84593",
+            "decision-evidence:b19318d37863cd366850",
+            "decision-evidence:00cb0b2759fcf17f5a54"
+          ],
+          "summary": "메모리 업황 반전과 공급 확대, 설비투자 부담이 현금창출의 지속성을 훼손할 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:risk_reward_transition"
+          ],
+          "summary": "돌파 거래량이 충분하지 않고 재시험 전이며 가격 구조의 보상도 이전보다 악화됐다."
+        }
+      ],
+      "ticker": "MU",
+      "valuation_context": "선행 이익 기준 부담은 낮아 보이지만 장부가치 기준 평가는 역사적으로 높아, 현재 이익의 지속성을 보수적으로 판단해야 한다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:774e2e7f46d2025d7257",
+            "decision-evidence:cf625978558ad8aee418",
+            "decision-evidence:cff20610893f66f3069a"
+          ],
+          "summary": "파트너 타깃 선택과 임상 후보 진전은 플랫폼 가설에 초기 검증 신호를 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 평가는 자체 역사에서 낮은 구간에 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:risk_reward_transition"
+          ],
+          "summary": "상향 확인선 돌파와 가격 구조의 보상 개선은 단기 회복 가능성을 높였다."
+        }
+      ],
+      "core_judgment": "파트너 진전은 플랫폼 가설을 다소 강화했지만 임상 성공과 반복 가능한 경제성은 아직 미증명이며, 지속적인 현금소진과 희석 위험이 더 강하다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "evidence_refs": [
+        "decision-evidence:774e2e7f46d2025d7257",
+        "decision-evidence:bb19872705545d1af04f",
+        "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+        "canonical:cashflow:498c289d4304c0822d861ec3",
+        "canonical:valuation:historical_pb",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:5c119a38e114ea930b42",
+        "decision-evidence:76019cf1946660a50862",
+        "decision-evidence:89c4eda6b0a5385fecf8",
+        "decision-evidence:a46a61d055249bee0708"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 3.279337,
+        "invalidation_condition": "핵심 임상 실패가 반복되고 파트너 성과도 정체되는 가운데 현금소진과 희석이 지속될 때 투자 논리를 무효화한다.",
+        "stance": "REDUCE",
+        "summary": "임상·경제성 검증 전까지 위험축소가 적절하다. 상단 구간은 자동 매도 목표가 아니라 반등 시 비중을 재평가하는 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 3.678704,
+        "trim_zone_low": 3.581096
+      },
+      "market_expectation_context": "플랫폼 가능성과 파트너 진전이 반영된 투기적 기대 상태이며, 임상 실패나 현금소진 확대에 대한 민감도가 높다.",
+      "new_buyer_view": {
+        "confirmation_condition": "임상과 파트너 경제성이 실증되고 현금소진 완화가 함께 확인될 때 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [],
+        "entry_type": "NONE",
+        "entry_zone_high": null,
+        "entry_zone_low": null,
+        "stance": "AVOID",
+        "summary": "가격 확인만으로 임상·자금조달 위험을 상쇄하기 어려워 신규 진입을 피한다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량이 약하고 재시험을 기다리고 있다. 인접 저항까지의 가격 보상도 조건부다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:00b417dd6fd4fc571834",
+            "decision-evidence:76019cf1946660a50862"
+          ],
+          "summary": "주요 임상 일정이 지연되거나 실패가 반복되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4f0bc47466e1016adb48",
+            "decision-evidence:b7dbcfcc7a8af1559f33",
+            "decision-evidence:89c4eda6b0a5385fecf8"
+          ],
+          "summary": "현금소진 확대와 대규모 희석이 지속되면 위험 판단을 강화한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cb8ca0214f6312e64b75",
+            "decision-evidence:5c119a38e114ea930b42"
+          ],
+          "summary": "파트너 프로그램 진전이 둔화되고 플랫폼이 경제적 가치로 전환되지 않으면 핵심 가설을 낮춘다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:cf625978558ad8aee418",
+            "decision-evidence:49f131c127e173452c39"
+          ],
+          "summary": "신규 파트너 타깃 선택과 마일스톤 수익이 반복적으로 확대되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:cff20610893f66f3069a",
+            "decision-evidence:00b417dd6fd4fc571834"
+          ],
+          "summary": "주요 임상 후보가 계획대로 진행되고 긍정적 데이터가 확인되면 플랫폼 신뢰도를 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b1d79226f524ced701e5",
+            "decision-evidence:4f0bc47466e1016adb48"
+          ],
+          "summary": "현금소진이 감소해 자금조달과 희석 위험이 완화되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+            "canonical:cashflow:498c289d4304c0822d861ec3",
+            "canonical:earnings:2026-06-30"
+          ],
+          "summary": "영업현금흐름과 잉여현금흐름이 적자인 가운데 매출 기반도 아직 제한적이다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:5c119a38e114ea930b42",
+            "decision-evidence:76019cf1946660a50862",
+            "decision-evidence:00b417dd6fd4fc571834"
+          ],
+          "summary": "플랫폼의 임상 성공과 반복 가능한 경제성이 검증되지 않았고 프로그램 실패 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4f0bc47466e1016adb48",
+            "decision-evidence:b7dbcfcc7a8af1559f33",
+            "decision-evidence:a46a61d055249bee0708"
+          ],
+          "summary": "현금소진과 희석 가능성이 높으며 자금조달 환경 악화가 부담을 키울 수 있다."
+        }
+      ],
+      "ticker": "RXRX",
+      "valuation_context": "장부가치 기준 평가는 역사적으로 낮지만 이익 기반 평가가 성립하지 않으며, 현금소진과 임상 불확실성을 충분히 보상한다고 단정하기 어렵다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7febdf06f514f5954d",
+            "decision-evidence:7182bfe7297ce4ab39d6"
+          ],
+          "summary": "AI 메모리 기술·공급 리더십과 차세대 제품 전환 가능성이 기초기업의 성장 논리를 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:329c162763d982913954",
+            "decision-evidence:ca3b9c4c10a3eed64161"
+          ],
+          "summary": "메모리 가격 환경과 데이터센터 투자가 유지되면 고부가 메모리 수요와 수익성에 우호적이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "가격은 상향 확인선을 넘어 단기 회복 신호를 보였다."
+        }
+      ],
+      "core_judgment": "기초기업의 AI 메모리 리더십은 매력적이지만 최신 재무 검증이 부족하고 ADR 희소성 프리미엄과 주당 기준 불확실성이 커서 관망이 적절하다.",
+      "decision": "HOLD",
+      "decision_confidence": "LOW",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "evidence_refs": [
+        "decision-evidence:8b7febdf06f514f5954d",
+        "decision-evidence:c78bf1321a16a218b60c",
+        "canonical:financial_quality:latest",
+        "canonical:security_basis:current",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:41dfa075e4353b22e62d",
+        "decision-evidence:c0b7de949ffba7459112",
+        "decision-evidence:f298d7c0d8736a7ff594"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 143.0,
+        "invalidation_condition": "주요 고객에서 HBM 기술·공급 우위를 구조적으로 잃고 메모리 수요 둔화와 재무 악화가 장기화될 때 투자 논리를 무효화한다.",
+        "stance": "REVIEW",
+        "summary": "기초기업 논리는 보유를 지지하지만 ADR 고유의 프리미엄과 재무 검증 공백을 별도로 점검해야 한다. 상단 구간은 의무 매도가 아닌 비중 재평가 영역이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 182.003405,
+        "trim_zone_low": 174.856595
+      },
+      "market_expectation_context": "차세대 HBM 램프업과 높은 메모리 수익성뿐 아니라 ADR 희소성 프리미엄 유지까지 반영된 투기적 기대 상태다.",
+      "new_buyer_view": {
+        "confirmation_condition": "상향 확인선 위 재지지와 거래량 개선이 함께 확인될 때 진입을 재검토한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 163.0,
+        "entry_zone_low": 163.0,
+        "stance": "WAIT",
+        "summary": "확인선 돌파만으로는 부족하며 재지지와 거래량 확인을 기다려야 한다."
+      },
+      "price_timing_context": "상향 확인선을 넘었지만 거래량 확인이 부족하고 재시험 전이다. 차트 상태도 신규 진입 구조가 충분하지 않음을 가리킨다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:84563b2bc741359a15fe",
+            "decision-evidence:39b48eb6fa509ca4efc2"
+          ],
+          "summary": "차세대 HBM 출하·채택이 지연되거나 경쟁사에 기술·점유율 우위를 내주면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:21b5d954a474cea0f4aa",
+            "decision-evidence:c7c64228106e41b1702e",
+            "decision-evidence:f298d7c0d8736a7ff594"
+          ],
+          "summary": "메모리 가격 하락과 재고 증가 속에서 설비투자 부담이 현금창출을 훼손하면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:d2f6c30fdb85a421401f",
+            "decision-evidence:c78bf1321a16a218b60c"
+          ],
+          "summary": "ADR 희소성 프리미엄이 실적 개선과 괴리되거나 급격히 축소되면 증권 자체의 위험을 높인다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:7182bfe7297ce4ab39d6",
+            "decision-evidence:0ed690872e22b916098a"
+          ],
+          "summary": "차세대 HBM 램프업과 신규 고객 채택이 확인되고 고부가 믹스가 유지되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:d5166789b23ccac34611",
+            "decision-evidence:8b7febdf06f514f5954d"
+          ],
+          "summary": "장기공급계약 확대로 중장기 수요 가시성이 높아지면 사업 논리의 확신을 높인다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f2e01b3b63d7b1477309",
+            "canonical:chart:price_transition"
+          ],
+          "summary": "확인선 위 재지지와 본주 모멘텀·수급 개선이 함께 나타나면 가격 타이밍을 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7febdf06f514f5954d",
+            "decision-evidence:c78bf1321a16a218b60c",
+            "decision-evidence:d2f6c30fdb85a421401f"
+          ],
+          "summary": "ADR 희소성 프리미엄이 기초기업 실적보다 빠르게 확대될 수 있어 증권 자체의 가격 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:financial_quality:latest",
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "최신 재무 정보와 ADR 주당 기준의 검증이 부족해 제공된 평가배수를 판단 근거로 쓰기 어렵다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:21b5d954a474cea0f4aa",
+            "decision-evidence:39b48eb6fa509ca4efc2",
+            "decision-evidence:c7c64228106e41b1702e"
+          ],
+          "summary": "메모리 가격 하락, 경쟁사의 HBM 개선, 설비투자 부담이 성장 프리미엄을 훼손할 수 있다."
+        }
+      ],
+      "ticker": "SKHY",
+      "valuation_context": "ADR 주당 기준과 재무 계보가 충분히 검증되지 않아 제공된 이익·장부가치 배수를 신뢰도 높은 평가 근거로 사용할 수 없다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e7f88110afad8a0a90bc",
+            "canonical:cashflow:1b8db0b46c63ae9369231151",
+            "canonical:earnings:2026-07-03"
+          ],
+          "summary": "데이터센터 저장 수요와 장기 계약이 매출과 현금창출을 뒷받침하고 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:security_basis:current"
+          ],
+          "summary": "선행 이익 기준 밸류에이션 부담은 낮아 보인다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "확인선 위 상태가 유지돼 가격 구조가 훼손되지는 않았다."
+        }
+      ],
+      "core_judgment": "강한 현금창출은 사업 논리를 강화했지만, 사이클 의존성과 투기적으로 높아진 기대를 감안하면 추격 매수보다 검증 대기가 타당하다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "canonical:cashflow:1b8db0b46c63ae9369231151",
+        "canonical:earnings:2026-07-03",
+        "canonical:security_basis:current",
+        "canonical:valuation:current",
+        "canonical:valuation:book_quality",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:06e6f847342760f52d96",
+        "decision-evidence:0b9fa704d15bffb77dac",
+        "decision-evidence:1a43e68befc2686f2759",
+        "decision-evidence:687af24c7385d2caf4a4",
+        "decision-evidence:6a7d8f2de9200a7e4de7",
+        "decision-evidence:86645d2f1e1d8c65d8d6",
+        "decision-evidence:995d5eeddc1f86a7abbc",
+        "decision-evidence:e7f88110afad8a0a90bc",
+        "decision-evidence:eaef4247b3e9e73a8809",
+        "decision-evidence:fb61100929e38148b8ed"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 998.0,
+        "invalidation_condition": "NAND 약세와 데이터센터 수요 둔화가 동반되고 계약의 매출·현금흐름 전환도 실패하는 경우다.",
+        "stance": "REVIEW",
+        "summary": "보유는 가능하지만 높은 기대와 사이클 민감도를 감안해 저항 구간에서는 비중을 재평가할 필요가 있다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 2392.674432,
+        "trim_zone_low": 2316.105368
+      },
+      "market_expectation_context": "NAND 강세와 데이터센터 수요, 계약 전환 기대가 투기적으로 반영돼 실제 매출 전환과 마진 지속이 관건이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "지지 구간에서 가격 구조가 유지되고 계약 전환과 마진 지속이 확인될 때다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "entry_type": "SUPPORT",
+        "entry_zone_high": 1125.0,
+        "entry_zone_low": 1100.0,
+        "stance": "WAIT",
+        "summary": "사업 논리는 강화됐지만 현재 추격 여건이 불리해 검증된 지지 구간까지 기다리는 편이 낫다."
+      },
+      "price_timing_context": "확인선 위 구조는 유지되지만 현재 추격 손익비가 불리하고 공급 확인도 없어 눌림 대기가 적절하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:1a43e68befc2686f2759"
+          ],
+          "summary": "NAND 가격 약세와 데이터센터 수요 둔화가 함께 지속될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:86645d2f1e1d8c65d8d6",
+            "decision-evidence:6a7d8f2de9200a7e4de7"
+          ],
+          "summary": "장기 계약이 매출과 현금흐름으로 전환되지 않거나 마진과 현금창출이 장기간 약화될 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:06e6f847342760f52d96",
+            "decision-evidence:0b9fa704d15bffb77dac"
+          ],
+          "summary": "장기 계약과 수주잔고의 매출 전환이 확대되고 데이터센터 수요가 이어질 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:995d5eeddc1f86a7abbc",
+            "decision-evidence:fb61100929e38148b8ed"
+          ],
+          "summary": "높은 마진과 현금창출이 유지되며 NAND 공급 규율이 확인될 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:687af24c7385d2caf4a4"
+          ],
+          "summary": "NAND 강세와 계약 전환 기대가 이미 투기적으로 반영돼 실적 검증 부담이 크다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:e7f88110afad8a0a90bc",
+            "decision-evidence:eaef4247b3e9e73a8809"
+          ],
+          "summary": "마진의 가격 사이클 의존성과 NAND 약세 전환 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "현재 구간의 추격 손익비가 불리하고 공급 확인도 없다."
+        }
+      ],
+      "ticker": "SNDK",
+      "valuation_context": "선행 이익 기준 부담은 낮아 보이나 역사 비교가 제한되고 장부가치 기준 프리미엄이 있어 저평가를 확정하기 어렵다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:01253b856674f1f9fabd",
+            "decision-evidence:07cbedff4c2b25a7f0cc"
+          ],
+          "summary": "Robotaxi와 자율주행 소프트웨어의 고마진 수익화 가능성은 장기 선택가치로 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:monitoring:confirmation_transition"
+          ],
+          "summary": "등록 확인선 위 가격 구조는 유지되고 있다."
+        }
+      ],
+      "core_judgment": "장기 선택가치는 남아 있지만 자동차 수익성 약화와 투자 부담으로 사업 논리가 약해졌고, 높은 기대와 밸류에이션이 추가 안전마진을 제공하지 않는다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "evidence_refs": [
+        "canonical:cashflow-reported:9d3bf8b7dc198173af97abb1",
+        "canonical:cashflow-reported:c1737ceffc87ec63cb6b0ba1",
+        "canonical:cashflow:68666c261434dab50ab88a8d",
+        "canonical:valuation:current",
+        "canonical:valuation:historical_pe",
+        "canonical:chart:price_transition",
+        "canonical:monitoring:confirmation_transition",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:chart:structure:invalidation",
+        "decision-evidence:01253b856674f1f9fabd",
+        "decision-evidence:01fa8f7aaa1f70a9fddc",
+        "decision-evidence:03b5853364f073ce37ea",
+        "decision-evidence:07cbedff4c2b25a7f0cc",
+        "decision-evidence:0cbb33d247bc3d3facec",
+        "decision-evidence:14d67efcafb67911e795",
+        "decision-evidence:31cc4350366b95a54e12",
+        "decision-evidence:78738239503d582a1819",
+        "decision-evidence:a399508186fff1c1fd00",
+        "decision-evidence:b99b830cf03964463742",
+        "decision-evidence:bd7317649d95840d757e"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "downside_review_level": 328.096407,
+        "invalidation_condition": "Robotaxi와 자율주행 수익화가 장기간 지연되고 자동차 저마진과 자본소모가 고착되는 경우다.",
+        "stance": "REDUCE",
+        "summary": "논리 약화와 높은 기대를 감안하면 축소 검토가 타당하며, 저항 구간은 자동 매도선이 아닌 비중 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 382.678777,
+        "trim_zone_low": 358.961223
+      },
+      "market_expectation_context": "Robotaxi와 자율주행, 인공지능 선택가치가 크게 반영돼 자동차 마진과 현금창출의 동반 회복이 요구된다.",
+      "new_buyer_view": {
+        "confirmation_condition": "자동차 마진과 현금창출이 회복되고 Robotaxi 경제성이 검증될 때다.",
+        "currency": null,
+        "entry_basis": [
+          "decision-evidence:0cbb33d247bc3d3facec",
+          "canonical:valuation:historical_pe",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "NONE",
+        "entry_zone_high": null,
+        "entry_zone_low": null,
+        "stance": "AVOID",
+        "summary": "가격 지지 여부만으로 약해진 사업 논리와 높은 기대 부담을 상쇄하기 어려워 신규 진입을 피하는 편이 낫다."
+      },
+      "price_timing_context": "확인선 위에 있지만 중기 저항이 가깝고 현재 추격 손익비가 불리해 가격도 신규 진입을 지지하지 않는다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:78738239503d582a1819",
+            "decision-evidence:a399508186fff1c1fd00"
+          ],
+          "summary": "Robotaxi 상용화가 지연되거나 경제성이 확인되지 않고 자동차 저마진 구조가 고착될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:14d67efcafb67911e795",
+            "decision-evidence:31cc4350366b95a54e12"
+          ],
+          "summary": "자본소모가 지속되면서 주요 지역의 자동차 수요와 점유율이 구조적으로 하락할 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:01253b856674f1f9fabd",
+            "decision-evidence:07cbedff4c2b25a7f0cc"
+          ],
+          "summary": "Robotaxi 유료 운행과 단위경제성이 확대되고 자율주행 관련 매출이 빠르게 성장할 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:b99b830cf03964463742",
+            "decision-evidence:0cbb33d247bc3d3facec"
+          ],
+          "summary": "자동차 마진과 현금창출이 함께 회복되고 투자 대비 현금창출력이 개선될 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:bd7317649d95840d757e",
+            "decision-evidence:01fa8f7aaa1f70a9fddc"
+          ],
+          "summary": "영업수익성 저하가 사업 논리에 초기 균열을 만들었다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:9d3bf8b7dc198173af97abb1",
+            "canonical:cashflow-reported:c1737ceffc87ec63cb6b0ba1",
+            "canonical:cashflow:68666c261434dab50ab88a8d",
+            "decision-evidence:03b5853364f073ce37ea"
+          ],
+          "summary": "대규모 투자 부담이 영업현금의 대부분을 흡수해 현금창출 여력이 약하다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:0cbb33d247bc3d3facec",
+            "canonical:valuation:current",
+            "canonical:valuation:historical_pe"
+          ],
+          "summary": "장기 선택가치가 크게 반영됐고 이익 기준 밸류에이션도 자사 역사에서 높은 구간이다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가까운 저항과 불리한 추격 손익비가 가격 부담을 더한다."
+        }
+      ],
+      "ticker": "TSLA",
+      "valuation_context": "이익 기준 멀티플이 자사 역사에서도 높은 구간이고 선행 기준 부담도 크다. 장부가치 기준의 중립적 위치만으로 이를 상쇄하기 어렵다."
+    },
+    {
+      "business_thesis_change": "STRENGTHENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:a82017fe9cb283a18521",
+            "decision-evidence:488571d04949915641a6"
+          ],
+          "summary": "인공지능과 고성능컴퓨팅 수요, 첨단공정 지배력이 높은 수익성과 현금창출을 지지한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:earnings:2026-06-30",
+            "canonical:financial_quality:2026-06-30"
+          ],
+          "summary": "최근 잠정 실적의 높은 영업수익성은 사업 경쟁력과 마진 방어를 뒷받침한다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:price_transition",
+            "canonical:chart:stored_price_rules"
+          ],
+          "summary": "등록 지지 구간을 회복해 가격 구조의 즉각적인 훼손은 제한됐다."
+        }
+      ],
+      "core_judgment": "높은 영업수익성이 핵심 사업 논리를 강화했지만 시장 기대가 매우 높고 밸류에이션 기준도 불완전해, 확인선 회복 전에는 보유 관점의 관망이 적절하다.",
+      "decision": "HOLD",
+      "decision_confidence": "LOW",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "evidence_refs": [
+        "canonical:earnings:2026-06-30",
+        "canonical:financial_quality:2026-06-30",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:multiple_relation",
+        "canonical:chart:price_transition",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:risk_reward:current_price",
+        "canonical:chart:structure:state",
+        "canonical:chart:structure:nearest_resistance:1",
+        "decision-evidence:08a1db369b9003e5047d",
+        "decision-evidence:154bfac696d5e730161e",
+        "decision-evidence:1887c6577a65ceec3a44",
+        "decision-evidence:488571d04949915641a6",
+        "decision-evidence:6a454b19944a355a5ebf",
+        "decision-evidence:6f4e42c1f2c48790d2a1",
+        "decision-evidence:752b64bdc2bef3de9afc",
+        "decision-evidence:a82017fe9cb283a18521",
+        "decision-evidence:b21475d9a36d91c1124d",
+        "decision-evidence:ba6b3b6ef4c2f66a7952",
+        "decision-evidence:beb13ef1dcffeb355bad",
+        "decision-evidence:c1b4eea017821045c953"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 398.0,
+        "invalidation_condition": "인공지능과 고성능컴퓨팅 수요가 구조적으로 둔화되고 첨단공정 경쟁력과 마진이 함께 약화되는 경우다.",
+        "stance": "HOLDABLE",
+        "summary": "핵심 사업 논리가 강화돼 보유 가능하지만, 높은 기대를 감안해 저항 구간에서는 비중을 재평가해야 한다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 439.781794,
+        "trim_zone_low": 432.298206
+      },
+      "market_expectation_context": "인공지능 성장과 첨단공정 가격결정력, 높은 마진 지속 기대가 매우 높아 실행 상회가 추가 재평가의 전제다.",
+      "new_buyer_view": {
+        "confirmation_condition": "종가 기준 상향 확인이 유지되고 첨단공정 수요와 마진 방어가 이어질 때다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "canonical:chart:price_transition",
+          "canonical:chart:structure:state"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 432.0,
+        "entry_zone_low": 432.0,
+        "stance": "WAIT",
+        "summary": "사업 경쟁력은 강하지만 높은 기대와 불완전한 밸류에이션 근거를 고려해 상향 확인을 기다리는 편이 낫다."
+      },
+      "price_timing_context": "지지 구간은 회복했지만 상향 확인선 아래에 있고 현재 추격 손익비도 불리해 신규 진입 확인이 부족하다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:c1b4eea017821045c953",
+            "decision-evidence:b21475d9a36d91c1124d"
+          ],
+          "summary": "인공지능 고객의 투자 지침이 둔화되고 주요 고객 주문 지연이나 재고조정이 확대될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:6f4e42c1f2c48790d2a1",
+            "decision-evidence:ba6b3b6ef4c2f66a7952"
+          ],
+          "summary": "마진이 구조적으로 하락하고 선단공정 경쟁력 약화로 점유율 하락이 확인될 때다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:08a1db369b9003e5047d",
+            "decision-evidence:154bfac696d5e730161e",
+            "decision-evidence:752b64bdc2bef3de9afc"
+          ],
+          "summary": "인공지능 고객 수요와 투자가 이어지고 첨단공정 가동률과 가격 방어가 강화될 때다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:1887c6577a65ceec3a44",
+            "decision-evidence:beb13ef1dcffeb355bad"
+          ],
+          "summary": "높은 마진이 유지되고 해외 생산시설의 비용 희석이 예상보다 작을 때다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:beb13ef1dcffeb355bad"
+          ],
+          "summary": "시장 기대가 매우 높아 양호한 실행만으로는 추가 재평가가 제한될 수 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:6a454b19944a355a5ebf"
+          ],
+          "summary": "해외 생산시설 비용에 따른 마진 희석 위험이 남아 있다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_identity:current",
+            "canonical:security_basis:current",
+            "canonical:valuation:multiple_relation"
+          ],
+          "summary": "예탁증서 비율과 주식 기준이 확인되지 않아 제공자 멀티플을 신뢰성 있게 해석하기 어렵다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:chart:structure:risk_reward:current_price",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "상향 확인 전의 추격 손익비가 불리해 가격 측면의 안전마진이 부족하다."
+        }
+      ],
+      "ticker": "TSM",
+      "valuation_context": "예탁증서 비율과 주식 기준이 확인되지 않아 제공자 멀티플을 저평가나 고평가의 근거로 사용하기 어렵다."
+    },
+    {
+      "business_thesis_change": "UNRESOLVED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e0d708a0ce64006b8bd5",
+            "decision-evidence:992c955815b329a31eb6"
+          ],
+          "summary": "Robotaxi 기술·승인·fleet 확대가 유료 이용과 매출 성장으로 연결되는 사업 경로가 형성되고 있다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:de936e1f44097f49e0b7"
+          ],
+          "summary": "대형 플랫폼 파트너십이 실제 매출로 전환되면 지역 확장의 효율을 높일 수 있다."
+        }
+      ],
+      "core_judgment": "상용화 진전과 성장 선택권은 있으나 이용률·마진·현금소진 경제성이 입증되지 않았고 가격 확인도 부재해 관망이 합리적이다.",
+      "decision": "HOLD",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "evidence_refs": [
+        "decision-evidence:e0d708a0ce64006b8bd5",
+        "decision-evidence:b6654e5fc384c0d33bda",
+        "decision-evidence:992c955815b329a31eb6",
+        "decision-evidence:de936e1f44097f49e0b7",
+        "decision-evidence:5ba1286806d9b069c093",
+        "decision-evidence:8b7f93a5f707ad6158af",
+        "decision-evidence:112f654571f1b88b463d",
+        "decision-evidence:2719c49ada648bd2940e",
+        "decision-evidence:30c083a28e4735f5aadc",
+        "decision-evidence:3ac5a1a0a9faff90d400",
+        "decision-evidence:7c0a4f93f99c8eba6f8f",
+        "decision-evidence:92481a1db730eb298a24",
+        "decision-evidence:fb5b2ba311cf06c9cb4f",
+        "decision-evidence:f8726a5875c3915b0de0",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1",
+        "canonical:security_basis:current",
+        "canonical:security_identity:current",
+        "canonical:valuation:book_quality"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 5.3,
+        "invalidation_condition": "규제·안전 문제로 서비스 확장이 구조적으로 중단되거나, 상용화 확대에도 단위경제성이 개선되지 않고 대규모 희석이 지속되면 사업 논리를 무효화한다.",
+        "stance": "REVIEW",
+        "summary": "가격 약세만으로 사업 논리를 훼손했다고 보지는 않되 상용화 경제성과 자금조달 위험을 재검토해야 한다. 반등 시 저항 구간은 의무 매도 목표가가 아니라 비중 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 6.153512,
+        "trim_zone_low": 5.906488
+      },
+      "market_expectation_context": "승인 지역과 fleet 확대 기대가 반영됐지만 차량당 이용률·마진·현금소진 경제성은 아직 증명되지 않았다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 확인 수준을 종가로 회복하고 이용률·마진·손실 지표가 함께 개선되는지 확인한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:5ba1286806d9b069c093",
+          "decision-evidence:8b7f93a5f707ad6158af"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 6.68,
+        "entry_zone_low": 6.68,
+        "stance": "WAIT",
+        "summary": "활성 지지가 없고 상용화 경제성도 미확인이므로 등록된 가격 확인 전 신규 진입을 기다린다."
+      },
+      "price_timing_context": "현재 등록 지지를 하회하고 활성 지지가 없으며 차트 상태도 관망이다. 저항 구간 접촉만으로 매매 판단을 자동 변경할 수 없다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "decision-evidence:112f654571f1b88b463d",
+            "decision-evidence:fb5b2ba311cf06c9cb4f"
+          ],
+          "summary": "매출 성장보다 operating loss가 더 확대되거나 fleet 확대에도 차량당 이용률이 정체되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:30c083a28e4735f5aadc",
+            "decision-evidence:2719c49ada648bd2940e"
+          ],
+          "summary": "현금소진 가속과 자금조달 의존으로 대규모 희석이 지속되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:92481a1db730eb298a24",
+            "decision-evidence:3ac5a1a0a9faff90d400"
+          ],
+          "summary": "규제 승인 지연이나 서비스 지역 축소가 구조적 확장 중단으로 이어지면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:5ba1286806d9b069c093",
+            "decision-evidence:992c955815b329a31eb6"
+          ],
+          "summary": "유료 서비스 지역과 fleet 확대가 차량당 이용률 및 Robotaxi 매출 증가로 이어지면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:8b7f93a5f707ad6158af"
+          ],
+          "summary": "마진이 개선되고 operating loss가 축소되면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:de936e1f44097f49e0b7"
+          ],
+          "summary": "플랫폼 파트너십의 실제 매출 전환이 확대되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:e0d708a0ce64006b8bd5",
+            "decision-evidence:b6654e5fc384c0d33bda"
+          ],
+          "summary": "차량당 이용률·마진·현금소진 경제성이 미증명이고 operating loss도 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:price_transition",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격이 등록 지지를 하회했고 활성 지지나 유효한 진입 설정이 확인되지 않았다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:security_identity:current",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "예탁증서 환산과 장부가치 기준이 검증되지 않아 현재 멀티플의 신뢰성과 저평가 근거를 확인할 수 없다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:f8726a5875c3915b0de0"
+          ],
+          "summary": "위험선호 약화에 민감하지만 해당 시장 신호는 사업의 근본적 확인으로 사용할 수 없다."
+        }
+      ],
+      "ticker": "WRD",
+      "valuation_context": "예탁증서 환산과 장부가치 기준 검증이 실패해 신뢰할 만한 상대가치 결론을 내릴 수 없으며 저평가 근거도 확인되지 않는다."
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "decision-evidence:866626b17b737cd1fc94",
+            "decision-evidence:907f40aa087d5eaa718c"
+          ],
+          "summary": "HPC 임대 매출이 사업의 중심으로 이동했고 가동 용량과 건설 물량이 성장 기반을 제공한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:866626b17b737cd1fc94",
+            "decision-evidence:07364f280f1b5d129a26",
+            "decision-evidence:ac42471a86f5aaa6e0fa"
+          ],
+          "summary": "장기 고객계약은 준공과 청구가 이행될 경우 가시성 높은 성장 선택권이다."
+        }
+      ],
+      "core_judgment": "AI/HPC 임대 전환은 실제 매출과 가동 용량으로 진전됐지만 영업현금흐름 적자, 막대한 설비투자, 희석과 높은 평가가 주주가치 전환을 압도한다.",
+      "decision": "SELL",
+      "decision_confidence": "MEDIUM",
+      "directional_balance": {
+        "buy": 3.5,
+        "sell": 6.5
+      },
+      "evidence_refs": [
+        "decision-evidence:866626b17b737cd1fc94",
+        "decision-evidence:ac42471a86f5aaa6e0fa",
+        "decision-evidence:907f40aa087d5eaa718c",
+        "decision-evidence:07364f280f1b5d129a26",
+        "decision-evidence:98e532edddad4ffd7f34",
+        "decision-evidence:2dcc661f5df22aa2765f",
+        "decision-evidence:1a3adac8a9993eb06c19",
+        "decision-evidence:233199fe9a178e3d9222",
+        "decision-evidence:25605f390a39836dfe90",
+        "decision-evidence:4e1a4fbf129b9478c0c8",
+        "decision-evidence:76c6f85f248d815d8aa2",
+        "decision-evidence:bcbc6fa35d4518f7f217",
+        "decision-evidence:d2e313f2c1c9f94c3e8f",
+        "decision-evidence:ede656d249779160185b",
+        "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+        "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+        "canonical:valuation:current",
+        "canonical:valuation:historical_pb",
+        "canonical:valuation:trailing_earnings",
+        "canonical:valuation:book_quality",
+        "canonical:price:current",
+        "canonical:chart:price_transition",
+        "canonical:chart:structure:state",
+        "canonical:chart:stored_price_rules",
+        "canonical:chart:structure:nearest_resistance:1"
+      ],
+      "holder_view": {
+        "currency": "USD",
+        "downside_review_basis": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "downside_review_level": 14.8,
+        "invalidation_condition": "핵심 고객계약의 취소·대규모 축소, 반복적인 준공 실패, 또는 외부자금 없이는 성장이 어려운 상태가 확인되면 사업 논리를 무효화한다.",
+        "stance": "REDUCE",
+        "summary": "기존 보유자는 성장 계약보다 현금소모와 희석이 주당가치에 미치는 영향을 우선해 비중 축소를 검토할 수 있다. 저항 구간은 의무 매도 목표가가 아니라 축소 여부의 재평가 구간이다.",
+        "trim_basis": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "trim_zone_high": 16.461814,
+        "trim_zone_low": 15.552386
+      },
+      "market_expectation_context": "장기 고객계약과 증설의 대규모 매출 전환 기대가 선반영된 반면 준공·청구·마진·현금흐름은 아직 검증 전이다.",
+      "new_buyer_view": {
+        "confirmation_condition": "등록된 확인 수준을 종가로 회복한 뒤 거래량과 준공·청구·수익성 개선이 동반되는지 확인한다.",
+        "currency": "USD",
+        "entry_basis": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:ede656d249779160185b"
+        ],
+        "entry_type": "BREAKOUT_CONFIRMATION",
+        "entry_zone_high": 18.4,
+        "entry_zone_low": 18.4,
+        "stance": "WAIT",
+        "summary": "사업 전환의 경제성과 가격 회복이 함께 확인되기 전에는 신규 진입을 기다린다."
+      },
+      "price_timing_context": "가격이 경고 수준 아래이고 등록된 무효화 수준에 근접했으며 활성 지지도 없다. 차트 상태가 관망이므로 반등만으로 판단을 바꾸기 어렵다.",
+      "reevaluation_down": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+            "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+            "decision-evidence:1a3adac8a9993eb06c19"
+          ],
+          "summary": "설비투자와 현금소모가 커져 추가 증자나 부채 의존이 상승하면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:233199fe9a178e3d9222",
+            "decision-evidence:d2e313f2c1c9f94c3e8f"
+          ],
+          "summary": "HPC 준공·가동이 지연되거나 핵심 고객계약이 취소·축소되면 하향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:4e1a4fbf129b9478c0c8",
+            "decision-evidence:25605f390a39836dfe90"
+          ],
+          "summary": "HPC 매출과 가동 용량이 증가해도 수익성과 현금흐름이 구조적으로 개선되지 않으면 하향 재평가한다."
+        }
+      ],
+      "reevaluation_up": [
+        {
+          "evidence_refs": [
+            "decision-evidence:907f40aa087d5eaa718c"
+          ],
+          "summary": "건설 중인 용량이 계획대로 준공되고 HPC 임대 매출이 빠르게 증가하면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:07364f280f1b5d129a26"
+          ],
+          "summary": "장기 계약의 실제 청구가 확대되고 추가 대형 고객을 확보하면 상향 재평가한다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:98e532edddad4ffd7f34"
+          ],
+          "summary": "조정 수익성이 흑자로 전환되고 영업현금흐름이 개선되면 상향 재평가한다."
+        }
+      ],
+      "sell_drivers": [
+        {
+          "evidence_refs": [
+            "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+            "canonical:cashflow-reported:2bf71a89306e0bc00285e2a2",
+            "decision-evidence:1a3adac8a9993eb06c19"
+          ],
+          "summary": "영업현금흐름이 적자이고 설비투자가 매우 커 외부자금 의존과 희석 위험이 높다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:valuation:current",
+            "canonical:valuation:historical_pb",
+            "canonical:valuation:trailing_earnings",
+            "canonical:valuation:book_quality"
+          ],
+          "summary": "장부가치 기준 평가는 역사적 범위의 최상단이며 후행 이익도 적자다."
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:bcbc6fa35d4518f7f217",
+            "decision-evidence:76c6f85f248d815d8aa2",
+            "decision-evidence:ac42471a86f5aaa6e0fa"
+          ],
+          "summary": "주식보상과 신규 발행이 성장 성과를 주당가치 개선으로 전환하지 못하게 할 위험이 크다."
+        },
+        {
+          "evidence_refs": [
+            "canonical:price:current",
+            "canonical:chart:price_transition",
+            "canonical:chart:stored_price_rules",
+            "canonical:chart:structure:state"
+          ],
+          "summary": "가격은 경고 수준 아래이고 무효화 수준에 근접했으며 활성 지지가 확인되지 않았다."
+        }
+      ],
+      "ticker": "WULF",
+      "valuation_context": "장부가치 기준 평가는 고품질 이력의 최상단에 있고 이익도 적자여서 준공 지연이나 추가 희석을 흡수할 가치 여유가 작다."
+    }
+  ],
+  "contract": "codex-shadow-decision-comparison-v1",
+  "distribution": {
+    "BUY": 0,
+    "HOLD": 10,
+    "SELL": 4
+  },
+  "model": "gpt-5.6-sol",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "phase1_freeze": {
+    "accepted_sha256": "fcbdb4712c54efd0b512bc5788129feb48e6fc98a9423106a1ebddce60b816fb",
+    "base_message_sha256": "fa8df4c59ffed56f4f8f3151c73a5d0c14cd07e344a0fa501845daa2712ba012",
+    "batch_output_sha256": [
+      "de3ad170a05a41710f575e5bf1a09ff6ddc7b7f8e04a23d69387d6a2a772571e",
+      "0a2c61972829a3964ddb06194140fc79128dcef03bbf2a929be00c70765a2f8a",
+      "942cd9ac0edd1c7f63c545af2a4e8b90f78930332b4a6a6b7ecedc54fa898396",
+      "610e987797a48d3aa41c1eb43ba9f8ec7dabea75c4a220c9cf9a28ac2b3baf0c",
+      "cf88dc47f6d9e918d4b4c18fecd9018ddd0e1639c938e7dfa6c9f4ccee974d5f"
+    ],
+    "batch_prompt_sha256": {
+      "batch-01": "ffa4aebc5e54e1fd9a10ad328e2bae8526609aaa1215c9f734d5e0d455011241",
+      "batch-02": "bbd3b2c9567b3e74d01640bdb7436563b4d3478cdf9f3bc86eb0980d4f348496",
+      "batch-03": "3153d35d16631246a8f90fabe763c22e7a2f69976b8afff068acf66682f11b3e",
+      "batch-04": "753d982ea5a2df6271f70657ea6c010775ee871bc97c8167d07ce5ef86608bc2",
+      "batch-05": "a55922120fa9723cf487f21eb92a06cce8f4f9b2706bf5960fd7e4fa04f8d7fe"
+    },
+    "bounded_reference_repair_sha256": "0547c497418ae54ab429e79fbb44b933ae938d2fa4f53dc35f6a20cbc3d78d4f",
+    "candidate_sha256": "249079a79abba30d08d020d69732a92ede55c62f4641f1ff05690d8e89f682f5",
+    "combined_message_sha256": "6ba07b9cc0e404514a38240191f2e2ba63b92c3d6a0e3d313dd4339932003b93",
+    "contract": "shadow-phase1-freeze-v1",
+    "evidence_fingerprints": {
+      "CORZ": "b3e0620200cbcc2ffc36e06d86ea8b64976702b143720b06295c763e0f0c4e54",
+      "CPNG": "4e5ec6d9dd20e3d7de192c81b26c5337b976ddf6cbd063fe954ce322df03cc0a",
+      "CRCL": "24e05bfd98e7b20e2fba1270e81d769ba714e4136975a999e3512f0abd0aa3e6",
+      "GOOGL": "46c26d00e2b87c3f3670b8af5c5ecb80e5c0a9b9f408e8c2366c97f1ec0f2255",
+      "HUT": "b8261e2fa61dd3cc99d60e90befd64d83be8088a63a4f24e38522a1e7ea8fbd2",
+      "IBM": "5fdffdbbb336cc6dc66df88600f34a064e7bd9fd4c7483a0c3207c5075d24096",
+      "MU": "ab1dd37739519cb103903a951ec00155dd54577f6472367fd85b52623b2c7bb6",
+      "RXRX": "e4395ca1fb599ea9963fd4212bac3eb8826f7833ff54c4e8427cda065484dd01",
+      "SKHY": "b2b8b74db322a138f223fca4156ad7263bf0898172196cef1f363ac535476410",
+      "SNDK": "9f548fbd751a92296174093d5d6dc4866c18c201ccc9adbd389a41c96b8d3a1f",
+      "TSLA": "5bcd4aef26ecffb6a3d432a822df6cfa65ed6f87e23774432d22f0de77c65286",
+      "TSM": "7348e948acd62584bacdf810eecf701c118dcb3bef1ec53b1d080939d5ab8739",
+      "WRD": "fe1b02502ea42b92ebf52a34812f600f6e7393dcce4287adf32d4b1847b96c42",
+      "WULF": "b78e92fb7bd157bd28a552f6b93f9f7b7f12ab32c582b596827a0e97349fdf0d"
+    },
+    "frozen_at": "2026-09-03T05:13:57.589034+00:00",
+    "message_quality": {
+      "common_order_disclaimer_occurrence": 0,
+      "rows": [
+        {
+          "char_count": 1662,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "6173eea3a870f6d77a23b6fcebbbae99b68fcbe880909f3fc4dbf370f0aefde4",
+          "quality": "PASS",
+          "ticker": "CORZ"
+        },
+        {
+          "char_count": 1679,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "a923bcbc786dd8e265177d1f60a6acb8a8217c06c51cb5fa7fbb2bee302cc203",
+          "quality": "PASS",
+          "ticker": "CPNG"
+        },
+        {
+          "char_count": 1471,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "bba17c07835193d3fe3a650d7cdcb4f8d767d7d3357fabf3b42c51ab8620d2b4",
+          "quality": "PASS",
+          "ticker": "CRCL"
+        },
+        {
+          "char_count": 1605,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "fa37b4deec07b6f967739333c65e593f7095838eeefe562e82c37f570cbed54a",
+          "quality": "PASS",
+          "ticker": "GOOGL"
+        },
+        {
+          "char_count": 1642,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "50f42e9d1bc320864e0c0e50ceb05571ad3eac1fcf78fd18061758e36a48fe5a",
+          "quality": "PASS",
+          "ticker": "HUT"
+        },
+        {
+          "char_count": 1791,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "08268b2322f00dc5d25e0d08a1822d0e49d9617f178f89fee3840d1539959fd3",
+          "quality": "PASS",
+          "ticker": "IBM"
+        },
+        {
+          "char_count": 1925,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "8985bc047f6de588b19740c77444719d400e9a6c7a927c171376515d3508a532",
+          "quality": "PASS",
+          "ticker": "MU"
+        },
+        {
+          "char_count": 1492,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "608b882e317ede7371553ca4b7bb842862bac065c204a4b46eab8732dbc21709",
+          "quality": "PASS",
+          "ticker": "RXRX"
+        },
+        {
+          "char_count": 1469,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "e87e8ee512165db6cc94beab0d5a147c718a5f32bdae3cfd5279423631d3256f",
+          "quality": "PASS",
+          "ticker": "SKHY"
+        },
+        {
+          "char_count": 1461,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "4d3cac717884bdd4a1e1515dc204275aaad1bd65b3d224bd600d9dc616263d23",
+          "quality": "PASS",
+          "ticker": "SNDK"
+        },
+        {
+          "char_count": 1561,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "38d8a42ae7ef95f9e1516fb9b4324a7062225cf3593650a3e3b0c4831bc3db1e",
+          "quality": "PASS",
+          "ticker": "TSLA"
+        },
+        {
+          "char_count": 1391,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "c470fc4c6cbaec89754555047dd753e3d405eb658643136dfa115b518f1d65dd",
+          "quality": "PASS",
+          "ticker": "TSM"
+        },
+        {
+          "char_count": 1467,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "95ffcbde0a1bb9f1f67fb48ee022b71bf221ab5b3afe90a2feec34731baa0f33",
+          "quality": "PASS",
+          "ticker": "WRD"
+        },
+        {
+          "char_count": 1794,
+          "duplicate_substantive_lines": [],
+          "message_sha256": "4211791677c7e564e51098ca2f9664491a1d9b6df7ab5b27591a607d48b430e5",
+          "quality": "PASS",
+          "ticker": "WULF"
+        }
+      ],
+      "status": "PASS"
+    },
+    "model": "gpt-5.6-sol",
+    "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+    "phase1_artifacts_frozen": "PASS",
+    "price_map_fingerprints": {
+      "CORZ": "23cd19bd6321f4b26c8880774830ee0224a8388d4cf4314c8f68c9d66e55ef84",
+      "CPNG": "c1256ea5dee3165234237fc1c8513641b731f602daa6d4bdf0ed58ee0604db0a",
+      "CRCL": "5af7742f40d9375b4d9e8957fdb7572320474fe5dcb22bf5d0eaa569f7c09e9f",
+      "GOOGL": "64ef08619cb3e498cbfdbaca1cd4f3386bb54a0392d1d88ad2dd22825d19fb8c",
+      "HUT": "de92dadff4e68569a6fb3198f57cd6e8878cf35a6b9be86913381567133e0774",
+      "IBM": "74481f0d5de2f53b0086d2c43b8614fa6b2326e491e4a2a6acd4c95e25f72b62",
+      "MU": "2e3085db34468bf56677ad112aa6a62d8c567bc60be0bded427243bb862c09d4",
+      "RXRX": "4d92ccd87eaa46fd2600316b9c4d0a1afcd3e694a21649533ffe996a77f901c0",
+      "SKHY": "f2778ce2e7fa8c2ee1837f4f1fbb011fb3fe8f10d4d889664454280a50a43e61",
+      "SNDK": "a5c6d19c09292be335463a34d0dc387f7f0ee55f25ede1127ed4f2810787b2de",
+      "TSLA": "a8c88bb57296a0a77ebf345c861bba1af2e2b4e8452aff7e0690f09f98cf5e21",
+      "TSM": "a616f6de8259c10cf62ba73d6ab4b158c5a63e90f510bcd3b282d83655b9d1e2",
+      "WRD": "ee0a24684b44f60e0d312634c613b77af5ca026bc2015c1b79f79fb76e122213",
+      "WULF": "cd6f179a366e1262ed06e371c8f5c6d66184e822e7a0565697f0e59b354dadda"
+    },
+    "prior_accepted_used_to_anchor_fresh_balance": 0,
+    "production_accepted_state_mutation": 0,
+    "production_delivery_intent": 0,
+    "production_recipient_send": 0,
+    "reasoning_effort": "xhigh",
+    "reference_manual_view_visible_during_generation": 0,
+    "rendered_message_fingerprints": {
+      "CORZ": "6173eea3a870f6d77a23b6fcebbbae99b68fcbe880909f3fc4dbf370f0aefde4",
+      "CPNG": "a923bcbc786dd8e265177d1f60a6acb8a8217c06c51cb5fa7fbb2bee302cc203",
+      "CRCL": "bba17c07835193d3fe3a650d7cdcb4f8d767d7d3357fabf3b42c51ab8620d2b4",
+      "GOOGL": "fa37b4deec07b6f967739333c65e593f7095838eeefe562e82c37f570cbed54a",
+      "HUT": "50f42e9d1bc320864e0c0e50ceb05571ad3eac1fcf78fd18061758e36a48fe5a",
+      "IBM": "08268b2322f00dc5d25e0d08a1822d0e49d9617f178f89fee3840d1539959fd3",
+      "MU": "8985bc047f6de588b19740c77444719d400e9a6c7a927c171376515d3508a532",
+      "RXRX": "608b882e317ede7371553ca4b7bb842862bac065c204a4b46eab8732dbc21709",
+      "SKHY": "e87e8ee512165db6cc94beab0d5a147c718a5f32bdae3cfd5279423631d3256f",
+      "SNDK": "4d3cac717884bdd4a1e1515dc204275aaad1bd65b3d224bd600d9dc616263d23",
+      "TSLA": "38d8a42ae7ef95f9e1516fb9b4324a7062225cf3593650a3e3b0c4831bc3db1e",
+      "TSM": "c470fc4c6cbaec89754555047dd753e3d405eb658643136dfa115b518f1d65dd",
+      "WRD": "95ffcbde0a1bb9f1f67fb48ee022b71bf221ab5b3afe90a2feec34731baa0f33",
+      "WULF": "4211791677c7e564e51098ca2f9664491a1d9b6df7ab5b27591a607d48b430e5"
+    },
+    "shadow_candidate_count": 14,
+    "shadow_model_reached": "PASS",
+    "shadow_validation_pass_count": 14,
+    "source_packet_canonical_sha256": "1434a5c8cc7e197d348299aacaa38366cb989867ec5fd1b43eebfc70b6b1e9fc",
+    "source_packet_file_sha256": "969b52387ca9eee504f922fced85f629aaf85bffaf43234514b2ffa2ea5ac7d1"
+  },
+  "reasoning_effort": "xhigh",
+  "work_instruction_commit": "3281e59e33c1ae5ba85c78f8a26433fed0efb502"
+}

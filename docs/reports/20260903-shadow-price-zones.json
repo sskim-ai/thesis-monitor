@@ -1,0 +1,1589 @@
+{
+  "contract": "shadow-price-zone-audit-v1",
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "price_maps": {
+    "CORZ": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 0.653852,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 13.1875,
+        "price": 12.257319,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 12.911171,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 16.81,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 3.79188,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 18.382585,
+          "zone_low": 17.447415
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 19.905836,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 13.463829,
+          "zone_low": 12.911171
+        }
+      ],
+      "price_map_fingerprint": "23cd19bd6321f4b26c8880774830ee0224a8388d4cf4314c8f68c9d66e55ef84",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 22.4,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -24.9554,
+          "invalidation_distance_pct": -6.0894,
+          "support_high_distance_pct": -18.3981,
+          "support_low_distance_pct": -13.3505,
+          "warning_distance_pct": -12.9016
+        },
+        "invalidation_price": 17.9,
+        "support_zone_high": 20.6,
+        "support_zone_low": 19.4,
+        "warning_price": 19.3
+      },
+      "ticker": "CORZ"
+    },
+    "CPNG": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 0.26785,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 14.975,
+        "price": 14.45936,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 14.72721,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 15.97,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 3.366913,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 17.157304,
+          "zone_low": 16.507696
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 4.678835,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 15.22279,
+          "zone_low": 14.72721
+        }
+      ],
+      "price_map_fingerprint": "c1256ea5dee3165234237fc1c8513641b731f602daa6d4bdf0ed58ee0604db0a",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 17.9,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -10.7821,
+          "support_high_distance_pct": 1.7197,
+          "support_low_distance_pct": 3.3657,
+          "warning_distance_pct": 7.1812
+        },
+        "support_zone_high": 15.7,
+        "support_zone_low": 15.45,
+        "warning_price": 14.9
+      },
+      "ticker": "CPNG"
+    },
+    "CRCL": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 3.096342,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 84.27,
+        "price": 78.914109,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 82.010451,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 88.64,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 2.380924,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 86.529549,
+          "zone_low": 82.010451
+        }
+      ],
+      "price_map_fingerprint": "5af7742f40d9375b4d9e8957fdb7572320474fe5dcb22bf5d0eaa569f7c09e9f",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 72.7,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 21.9257,
+          "invalidation_distance_pct": 53.3564,
+          "support_high_distance_pct": 41.824,
+          "support_low_distance_pct": 47.7333
+        },
+        "invalidation_price": 57.8,
+        "support_zone_high": 62.5,
+        "support_zone_low": 60.0
+      },
+      "ticker": "CRCL"
+    },
+    "GOOGL": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 4.149835,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 317.1259,
+        "price": 308.223399,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 312.373234,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 337.12,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 1.93759,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 353.787998,
+          "zone_low": 343.652002
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 4.521071,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 321.878566,
+          "zone_low": 312.373234
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 11.440219,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 298.552733,
+          "zone_low": 291.777267
+        }
+      ],
+      "price_map_fingerprint": "64ef08619cb3e498cbfdbaca1cd4f3386bb54a0392d1d88ad2dd22825d19fb8c",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 375.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -10.1013,
+          "invalidation_distance_pct": -0.8471,
+          "support_high_distance_pct": -4.7684,
+          "support_low_distance_pct": -3.68
+        },
+        "invalidation_price": 340.0,
+        "support_zone_high": 354.0,
+        "support_zone_low": 350.0
+      },
+      "ticker": "GOOGL"
+    },
+    "HUT": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 3.992265,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 83.3,
+        "price": 76.64856,
+        "scenario": "support_entry",
+        "status": "wick_only_review",
+        "support_low": 80.640825,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 80.68,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 4.251127,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 89.670191,
+          "zone_low": 84.109809
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_to_lower_pct": 0.048556,
+          "distance_to_upper_pct": 6.54335,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 85.959175,
+          "zone_low": 80.640825
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 27.704401,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 58.328089,
+          "zone_low": 55.831811
+        }
+      ],
+      "price_map_fingerprint": "de92dadff4e68569a6fb3198f57cd6e8878cf35a6b9be86913381567133e0774",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 97.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -16.8247,
+          "invalidation_distance_pct": -2.7952,
+          "support_high_distance_pct": -10.3556,
+          "support_low_distance_pct": -7.2644,
+          "warning_distance_pct": -5.0824
+        },
+        "invalidation_price": 83.0,
+        "support_zone_high": 90.0,
+        "support_zone_low": 87.0,
+        "warning_price": 85.0
+      },
+      "ticker": "HUT"
+    },
+    "IBM": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 3.377788,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 233.555,
+        "price": 228.180854,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 231.558643,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 231.7,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 2.332186,
+          "strength": "Medium",
+          "timeframe": "weekly",
+          "zone_high": 250.256325,
+          "zone_low": 237.103675
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_to_lower_pct": 0.061009,
+          "distance_to_upper_pct": 1.662217,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 235.551357,
+          "zone_low": 231.558643
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_to_lower_pct": 2.67805,
+          "distance_to_upper_pct": 0.308607,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 232.415043,
+          "zone_low": 225.494957
+        }
+      ],
+      "price_map_fingerprint": "74481f0d5de2f53b0086d2c43b8614fa6b2326e491e4a2a6acd4c95e25f72b62",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 250.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -7.32,
+          "invalidation_distance_pct": 3.9013,
+          "support_high_distance_pct": 0.7391,
+          "support_low_distance_pct": 3.9013
+        },
+        "invalidation_price": 223.0,
+        "support_zone_high": 230.0,
+        "support_zone_low": 223.0
+      },
+      "ticker": "IBM"
+    },
+    "MU": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 27.759507,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 889.6325,
+        "price": 839.757164,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 867.516671,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 956.08,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 28.770408,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 1278.851879,
+          "zone_low": 1231.148121
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 4.636816,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 911.748329,
+          "zone_low": 867.516671
+        }
+      ],
+      "price_map_fingerprint": "2e3085db34468bf56677ad112aa6a62d8c567bc60be0bded427243bb862c09d4",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 950.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 0.64,
+          "invalidation_distance_pct": 29.7259,
+          "support_high_distance_pct": 10.5295,
+          "support_low_distance_pct": 13.2796,
+          "warning_distance_pct": 15.6082
+        },
+        "invalidation_price": 737.0,
+        "support_zone_high": 865.0,
+        "support_zone_low": 844.0,
+        "warning_price": 827.0
+      },
+      "ticker": "MU"
+    },
+    "RXRX": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 0.094646,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 3.42,
+        "price": 3.279337,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 3.373983,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 3.38,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 5.949586,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 3.678704,
+          "zone_low": 3.581096
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_to_lower_pct": 0.178018,
+          "distance_to_upper_pct": 2.544882,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 3.466017,
+          "zone_low": 3.373983
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 12.371538,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 2.961842,
+          "zone_low": 2.878158
+        }
+      ],
+      "price_map_fingerprint": "4d92ccd87eaa46fd2600316b9c4d0a1afcd3e694a21649533ffe996a77f901c0",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 3.36,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 0.5952,
+          "invalidation_distance_pct": 19.0141,
+          "support_high_distance_pct": 9.7403,
+          "support_low_distance_pct": 12.6667
+        },
+        "invalidation_price": 2.84,
+        "support_zone_high": 3.08,
+        "support_zone_low": 3.0
+      },
+      "ticker": "RXRX"
+    },
+    "SKHY": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": null,
+      "currency": "USD",
+      "current_close": 164.98,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 5.986541,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 182.003405,
+          "zone_low": 174.856595
+        }
+      ],
+      "nearest_supports": [],
+      "price_map_fingerprint": "f2778ce2e7fa8c2ee1837f4f1fbb011fb3fe8f10d4d889664454280a50a43e61",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 163.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 1.2147,
+          "invalidation_distance_pct": 32.1955,
+          "support_high_distance_pct": 9.2583,
+          "support_low_distance_pct": 12.2313,
+          "warning_distance_pct": 15.3706
+        },
+        "invalidation_price": 124.8,
+        "support_zone_high": 151.0,
+        "support_zone_low": 147.0,
+        "warning_price": 143.0
+      },
+      "ticker": "SKHY"
+    },
+    "SNDK": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 145.957046,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 998.19,
+        "price": 777.410484,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 923.36753,
+        "timeframe": "weekly"
+      },
+      "currency": "USD",
+      "current_close": 1553.4,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 49.099097,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 2392.674432,
+          "zone_low": 2316.105368
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 30.924909,
+          "strength": "Medium",
+          "timeframe": "weekly",
+          "zone_high": 1073.01247,
+          "zone_low": 923.36753
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 32.661709,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 1046.033008,
+          "zone_low": 950.346992
+        }
+      ],
+      "price_map_fingerprint": "a5c6d19c09292be335463a34d0dc387f7f0ee55f25ede1127ed4f2810787b2de",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 1310.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 18.5802,
+          "invalidation_distance_pct": 55.6513,
+          "support_high_distance_pct": 38.08,
+          "support_low_distance_pct": 41.2182
+        },
+        "invalidation_price": 998.0,
+        "support_zone_high": 1125.0,
+        "support_zone_low": 1100.0
+      },
+      "ticker": "SNDK"
+    },
+    "TSLA": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 6.776604,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 338.0,
+        "price": 328.096407,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 334.873011,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 357.01,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 0.546546,
+          "strength": "Medium",
+          "timeframe": "weekly",
+          "zone_high": 382.678777,
+          "zone_low": 358.961223
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 4.448898,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 341.126989,
+          "zone_low": 334.873011
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 4.495621,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 340.960185,
+          "zone_low": 333.519815
+        }
+      ],
+      "price_map_fingerprint": "a8c88bb57296a0a77ebf345c861bba1af2e2b4e8452aff7e0690f09f98cf5e21",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 342.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": 4.3889,
+          "invalidation_distance_pct": 20.2054,
+          "support_high_distance_pct": 10.5294,
+          "support_low_distance_pct": 12.2673
+        },
+        "invalidation_price": 297.0,
+        "support_zone_high": 323.0,
+        "support_zone_low": 318.0
+      },
+      "ticker": "TSLA"
+    },
+    "TSM": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": {
+        "basis_ref": "canonical:chart:structure:invalidation",
+        "buffer": 5.786644,
+        "chart_only": true,
+        "currency": "USD",
+        "entry": 385.54,
+        "price": 374.987393,
+        "scenario": "support_entry",
+        "status": "intact",
+        "support_low": 380.774037,
+        "timeframe": "daily"
+      },
+      "currency": "USD",
+      "current_close": 415.5,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 4.04289,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 439.781794,
+          "zone_low": 432.298206
+        }
+      ],
+      "nearest_supports": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:1",
+          "currency": "USD",
+          "distance_pct": 6.063547,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 390.305963,
+          "zone_low": 380.774037
+        },
+        {
+          "basis_ref": "canonical:chart:structure:nearest_supports:2",
+          "currency": "USD",
+          "distance_pct": 23.892915,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 316.224939,
+          "zone_low": 305.055061
+        }
+      ],
+      "price_map_fingerprint": "a616f6de8259c10cf62ba73d6ab4b158c5a63e90f510bcd3b282d83655b9d1e2",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 432.0,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -3.8194,
+          "invalidation_distance_pct": 4.397,
+          "support_high_distance_pct": 0.3623,
+          "support_low_distance_pct": 2.0885
+        },
+        "invalidation_price": 398.0,
+        "support_zone_high": 414.0,
+        "support_zone_low": 407.0
+      },
+      "ticker": "TSM"
+    },
+    "WRD": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": null,
+      "currency": "USD",
+      "current_close": 5.77,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 2.365477,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 6.153512,
+          "zone_low": 5.906488
+        }
+      ],
+      "nearest_supports": [],
+      "price_map_fingerprint": "ee0a24684b44f60e0d312634c613b77af5ca026bc2015c1b79f79fb76e122213",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 6.68,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -13.6228,
+          "invalidation_distance_pct": 8.8679,
+          "support_high_distance_pct": -3.8333,
+          "support_low_distance_pct": -2.2034
+        },
+        "invalidation_price": 5.3,
+        "support_zone_high": 6.0,
+        "support_zone_low": 5.9
+      },
+      "ticker": "WRD"
+    },
+    "WULF": {
+      "as_of": "2026-09-02",
+      "chart_invalidation": null,
+      "currency": "USD",
+      "current_close": 14.82,
+      "current_price_ref": "canonical:price:current",
+      "major_resistance": null,
+      "major_support": null,
+      "nearest_resistances": [
+        {
+          "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+          "currency": "USD",
+          "distance_pct": 4.941876,
+          "strength": "Medium",
+          "timeframe": "daily",
+          "zone_high": 16.461814,
+          "zone_low": 15.552386
+        }
+      ],
+      "nearest_supports": [],
+      "price_map_fingerprint": "cd6f179a366e1262ed06e371c8f5c6d66184e822e7a0565697f0e59b354dadda",
+      "registered_price_rules": {
+        "basis": "close",
+        "basis_ref": "canonical:chart:stored_price_rules",
+        "confirmation_price": 18.4,
+        "currency": "USD",
+        "distance_pct": {
+          "confirmation_distance_pct": -19.4565,
+          "invalidation_distance_pct": 0.1351,
+          "support_high_distance_pct": -11.7857,
+          "support_low_distance_pct": -8.5185,
+          "warning_distance_pct": -7.375
+        },
+        "invalidation_price": 14.8,
+        "support_zone_high": 16.8,
+        "support_zone_low": 16.2,
+        "warning_price": 16.0
+      },
+      "ticker": "WULF"
+    }
+  },
+  "zone_audits": [
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 12.257319
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "high": 13.463829,
+        "low": 12.911171,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 18.382585,
+        "low": 17.447415,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 16.81,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 18.38,
+          "low": 17.45
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 26.0105,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 26.7474
+      },
+      "ticker": "CORZ",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 18.38,
+          "low": 17.45
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0148,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0141
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 14.45936
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "high": 15.22279,
+        "low": 14.72721,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 17.157304,
+        "low": 16.507696,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 15.97,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 15.7,
+          "low": 15.45
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 4.6783,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 3.0396
+      },
+      "ticker": "CPNG",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 17.16,
+          "low": 16.51
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.014,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0157
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 78.914109
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:state"
+        ],
+        "high": 86.529549,
+        "low": 82.010451,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [],
+        "high": null,
+        "low": null,
+        "quality": "NOT_ACTIONABLE"
+      },
+      "currency": "USD",
+      "current_close": 88.64,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 86.5,
+          "low": 82.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0127,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0342
+      },
+      "ticker": "CRCL",
+      "trim_reference_comparison": {
+        "best_reference": null,
+        "classification": "SAME_ZONE",
+        "detail": "both withheld",
+        "numeric": false,
+        "overlap": null
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "level": 340.0
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_supports:1",
+          "canonical:chart:structure:risk_reward:support_entry"
+        ],
+        "high": 321.878566,
+        "low": 312.373234,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 353.787998,
+        "low": 343.652002,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 337.12,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 322.0,
+          "low": 312.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1196,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0377
+      },
+      "ticker": "GOOGL",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 354.0,
+          "low": 344.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1012,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0599
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "canonical:price:current"
+        ],
+        "level": 83.0
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:b939d70a17422e43c177"
+        ],
+        "high": 97.0,
+        "low": 97.0,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 89.670191,
+        "low": 84.109809,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 80.68,
+      "entry_reference_comparison": {
+        "best_reference": null,
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "reference withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "ticker": "HUT",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 90.0,
+          "low": 84.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.1307,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.3665
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 228.180854
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "canonical:monitoring:confirmation_transition"
+        ],
+        "high": 250.0,
+        "low": 250.0,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 250.256325,
+        "low": 237.103675,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 231.7,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 235.0,
+          "low": 228.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 9.6491,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 6.383
+      },
+      "ticker": "IBM",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 250.0,
+          "low": 237.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0437,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.1025
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 839.757164
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_supports:1"
+        ],
+        "high": 911.748329,
+        "low": 867.516671,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 1278.851879,
+        "low": 1231.148121,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 956.08,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 912.0,
+          "low": 868.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0557,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0276
+      },
+      "ticker": "MU",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 1279.0,
+          "low": 1231.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.012,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0116
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 3.279337
+      },
+      "codex_entry": {
+        "basis_refs": [],
+        "high": null,
+        "low": null,
+        "quality": "NOT_ACTIONABLE",
+        "type": "NONE"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 3.678704,
+        "low": 3.581096,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 3.38,
+      "entry_reference_comparison": {
+        "best_reference": [
+          3.37,
+          3.47,
+          "SUPPORT"
+        ],
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "Codex withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "ticker": "RXRX",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 3.68,
+          "low": 3.58
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0306,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0352
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "level": 143.0
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "high": 163.0,
+        "low": 163.0,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 182.003405,
+        "low": 174.856595,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 164.98,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 151.0,
+          "low": 147.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 10.8844,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 7.947
+      },
+      "ticker": "SKHY",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 182.0,
+          "low": 175.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0819,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0019
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "level": 998.0
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "high": 1125.0,
+        "low": 1100.0,
+        "quality": "SUPPORTED",
+        "type": "SUPPORT"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 2392.674432,
+        "low": 2316.105368,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 1553.4,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 1125.0,
+          "low": 1100.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0
+      },
+      "ticker": "SNDK",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 2393.0,
+          "low": 2316.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0045,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0136
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:structure:invalidation"
+        ],
+        "level": 328.096407
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "decision-evidence:0cbb33d247bc3d3facec",
+          "canonical:valuation:historical_pe",
+          "canonical:chart:structure:state"
+        ],
+        "high": null,
+        "low": null,
+        "quality": "NOT_ACTIONABLE",
+        "type": "NONE"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 382.678777,
+        "low": 358.961223,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 357.01,
+      "entry_reference_comparison": {
+        "best_reference": [
+          335.0,
+          341.0,
+          "BUSINESS_CONFIRMATION"
+        ],
+        "classification": "ONE_SIDE_WITHHELD",
+        "detail": "Codex withheld",
+        "numeric": false,
+        "overlap": null
+      },
+      "ticker": "TSLA",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 383.0,
+          "low": 359.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0108,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0839
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "level": 398.0
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "canonical:chart:price_transition",
+          "canonical:chart:structure:state"
+        ],
+        "high": 432.0,
+        "low": 432.0,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 439.781794,
+        "low": 432.298206,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 415.5,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "SUPPORT",
+          "high": 414.0,
+          "low": 407.0
+        },
+        "classification": "DIFFERENT_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 6.1425,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 4.3478
+      },
+      "ticker": "TSM",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 440.0,
+          "low": 432.0
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.069,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0496
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "level": 5.3
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:5ba1286806d9b069c093",
+          "decision-evidence:8b7f93a5f707ad6158af"
+        ],
+        "high": 6.68,
+        "low": 6.68,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 6.153512,
+        "low": 5.906488,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 5.77,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 6.15,
+          "low": 5.9
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 13.2203,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 8.6179
+      },
+      "ticker": "WRD",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 6.15,
+          "low": 5.91
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0594,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.0571
+      }
+    },
+    {
+      "codex_downside": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules"
+        ],
+        "level": 14.8
+      },
+      "codex_entry": {
+        "basis_refs": [
+          "canonical:chart:stored_price_rules",
+          "decision-evidence:ede656d249779160185b"
+        ],
+        "high": 18.4,
+        "low": 18.4,
+        "quality": "SUPPORTED",
+        "type": "BREAKOUT_CONFIRMATION"
+      },
+      "codex_trim": {
+        "basis_refs": [
+          "canonical:chart:structure:nearest_resistance:1"
+        ],
+        "high": 16.461814,
+        "low": 15.552386,
+        "quality": "SUPPORTED"
+      },
+      "currency": "USD",
+      "current_close": 14.82,
+      "entry_reference_comparison": {
+        "best_reference": {
+          "basis": "BREAKOUT_CONFIRMATION",
+          "high": 16.8,
+          "low": 16.2
+        },
+        "classification": "DIFFERENT_BUT_SAME_BASIS",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 13.5802,
+        "numeric": true,
+        "overlap": false,
+        "upper_bound_delta_pct": 9.5238
+      },
+      "ticker": "WULF",
+      "trim_reference_comparison": {
+        "best_reference": {
+          "basis": "ANY",
+          "high": 16.46,
+          "low": 15.55
+        },
+        "classification": "SAME_ZONE",
+        "detail": "numeric comparison",
+        "lower_bound_delta_pct": 0.0153,
+        "numeric": true,
+        "overlap": true,
+        "upper_bound_delta_pct": 0.011
+      }
+    }
+  ]
+}
