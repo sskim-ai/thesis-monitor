@@ -711,6 +711,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.stop_after_first and args.resume_first_checkpoint:
         parser.error("--stop-after-first and --resume-first-checkpoint are mutually exclusive")
+    # Fresh-generation policy is stricter than the reusable legacy runner default.
+    args.resume_existing = False
     args.output_dir = args.output_dir.resolve()
     args.report_dir = args.report_dir.resolve()
     if args.output_dir.exists():
