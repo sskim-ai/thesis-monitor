@@ -1,0 +1,9 @@
+{
+  "contract": "structured-autonomy-same-evidence-stability-v1",
+  "decision_averaging": 0,
+  "first_run_excluded_from_stability": true,
+  "majority_vote": 0,
+  "reason": "FIRST_RUN_VALIDATION_GATE_FAILED",
+  "rows": [],
+  "status": "NOT_RUN"
+}

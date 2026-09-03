@@ -1,0 +1,10 @@
+{
+  "candidate_count": 0,
+  "contract": "uskr22-structured-autonomy-run-v1",
+  "cross_run_visibility": 0,
+  "post_result_tuning": 0,
+  "reason": "FIRST_RUN_VALIDATION_GATE_FAILED",
+  "run": "b",
+  "status": "NOT_RUN",
+  "validation_pass_count": 0
+}

@@ -1,0 +1,522 @@
+{
+  "$defs": {
+    "ClassifiedSellDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "SECTOR_NORMAL",
+            "DETERIORATION_SIGNAL",
+            "STRUCTURAL_RISK",
+            "OTHER_EVIDENCE"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs",
+        "classification"
+      ],
+      "title": "ClassifiedSellDriver",
+      "type": "object"
+    },
+    "DirectionalBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "buy": {
+          "title": "Buy",
+          "type": "number"
+        },
+        "sell": {
+          "title": "Sell",
+          "type": "number"
+        }
+      },
+      "required": [
+        "buy",
+        "sell"
+      ],
+      "title": "DirectionalBalance",
+      "type": "object"
+    },
+    "EvidenceClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs"
+      ],
+      "title": "EvidenceClaim",
+      "type": "object"
+    },
+    "HolderViewV2": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Currency"
+        },
+        "downside_review_basis": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Downside Review Basis",
+          "type": "array"
+        },
+        "downside_review_level": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Downside Review Level"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "upside_trim_basis": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Upside Trim Basis",
+          "type": "array"
+        },
+        "upside_trim_zone_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upside Trim Zone High"
+        },
+        "upside_trim_zone_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Upside Trim Zone Low"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "upside_trim_zone_low",
+        "upside_trim_zone_high",
+        "upside_trim_basis",
+        "downside_review_level",
+        "downside_review_basis",
+        "currency",
+        "business_invalidation_condition"
+      ],
+      "title": "HolderViewV2",
+      "type": "object"
+    },
+    "NewBuyerViewV2": {
+      "additionalProperties": false,
+      "properties": {
+        "breakout_confirmation_basis": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Breakout Confirmation Basis",
+          "type": "array"
+        },
+        "breakout_confirmation_level": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Breakout Confirmation Level"
+        },
+        "confirmation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Condition",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Currency"
+        },
+        "preferred_entry_mode": {
+          "enum": [
+            "PULLBACK",
+            "CONFIRMATION",
+            "BOTH",
+            "NONE"
+          ],
+          "title": "Preferred Entry Mode",
+          "type": "string"
+        },
+        "preferred_entry_reason": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Preferred Entry Reason",
+          "type": "string"
+        },
+        "pullback_entry_basis": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Pullback Entry Basis",
+          "type": "array"
+        },
+        "pullback_entry_zone_high": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pullback Entry Zone High"
+        },
+        "pullback_entry_zone_low": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pullback Entry Zone Low"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "pullback_entry_zone_low",
+        "pullback_entry_zone_high",
+        "pullback_entry_basis",
+        "breakout_confirmation_level",
+        "breakout_confirmation_basis",
+        "currency",
+        "preferred_entry_mode",
+        "preferred_entry_reason",
+        "confirmation_condition"
+      ],
+      "title": "NewBuyerViewV2",
+      "type": "object"
+    },
+    "StructuredAutonomyCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "business_thesis_change": {
+          "enum": [
+            "STRENGTHENED",
+            "UNCHANGED",
+            "WEAKENED",
+            "UNRESOLVED"
+          ],
+          "title": "Business Thesis Change",
+          "type": "string"
+        },
+        "business_thesis_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "buy_drivers": {
+          "items": {
+            "$ref": "#/$defs/EvidenceClaim"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Buy Drivers",
+          "type": "array"
+        },
+        "core_judgment": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "decision": {
+          "enum": [
+            "BUY",
+            "HOLD",
+            "SELL"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "decision_confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Decision Confidence",
+          "type": "string"
+        },
+        "directional_balance": {
+          "$ref": "#/$defs/DirectionalBalance"
+        },
+        "dominant_evidence": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "earnings_estimate_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "holder_view": {
+          "$ref": "#/$defs/HolderViewV2"
+        },
+        "market_expectation_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "new_buyer_view": {
+          "$ref": "#/$defs/NewBuyerViewV2"
+        },
+        "price_timing_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "reevaluation_down": {
+          "items": {
+            "$ref": "#/$defs/EvidenceClaim"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Reevaluation Down",
+          "type": "array"
+        },
+        "reevaluation_up": {
+          "items": {
+            "$ref": "#/$defs/EvidenceClaim"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Reevaluation Up",
+          "type": "array"
+        },
+        "risk_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "sector_interpretation": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "sell_drivers": {
+          "items": {
+            "$ref": "#/$defs/ClassifiedSellDriver"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Sell Drivers",
+          "type": "array"
+        },
+        "ticker": {
+          "title": "Ticker",
+          "type": "string"
+        },
+        "uncertainty_limit": {
+          "$ref": "#/$defs/EvidenceClaim"
+        },
+        "unknown_treatments": {
+          "items": {
+            "$ref": "#/$defs/UnknownTreatment"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Unknown Treatments",
+          "type": "array"
+        },
+        "valuation_context": {
+          "$ref": "#/$defs/EvidenceClaim"
+        }
+      },
+      "required": [
+        "ticker",
+        "decision",
+        "directional_balance",
+        "decision_confidence",
+        "business_thesis_change",
+        "business_thesis_context",
+        "earnings_estimate_context",
+        "market_expectation_context",
+        "valuation_context",
+        "price_timing_context",
+        "risk_context",
+        "sector_interpretation",
+        "buy_drivers",
+        "sell_drivers",
+        "dominant_evidence",
+        "uncertainty_limit",
+        "core_judgment",
+        "unknown_treatments",
+        "new_buyer_view",
+        "holder_view",
+        "reevaluation_up",
+        "reevaluation_down"
+      ],
+      "title": "StructuredAutonomyCandidate",
+      "type": "object"
+    },
+    "UnknownTreatment": {
+      "additionalProperties": false,
+      "properties": {
+        "directional_negative_basis": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "title": "Directional Negative Basis",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "CONFIDENCE_LIMIT",
+            "CONFIRMATION_REQUIRED",
+            "DIRECTIONAL_NEGATIVE"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "evidence_refs",
+        "treatment",
+        "directional_negative_basis"
+      ],
+      "title": "UnknownTreatment",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/StructuredAutonomyCandidate"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Candidates",
+      "type": "array"
+    },
+    "contract": {
+      "const": "structured-autonomy-decision-v2-shadow-output",
+      "title": "Contract",
+      "type": "string"
+    },
+    "packet_id": {
+      "title": "Packet Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "packet_id",
+    "candidates"
+  ],
+  "title": "StructuredAutonomyBatch",
+  "type": "object"
+}

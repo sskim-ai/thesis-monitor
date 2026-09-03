@@ -1,0 +1,68 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "bytes": 150138,
+      "sha256": "d61f3c5789341c7b281ed7c169b8f10d3861d84f12acb5b120ca3d44904cd05d",
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL"
+      ]
+    },
+    {
+      "batch": 2,
+      "bytes": 160422,
+      "sha256": "376bd7c0cc91e04345870c0dc842a143004df91b8503694a5bceb6ce511b6c54",
+      "tickers": [
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX"
+      ]
+    },
+    {
+      "batch": 3,
+      "bytes": 149817,
+      "sha256": "9fe357563834e51cc23a826003b1707610d1503aee96c3861e4e28063a32bb68",
+      "tickers": [
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM"
+      ]
+    },
+    {
+      "batch": 4,
+      "bytes": 70783,
+      "sha256": "d1c7263bf73ec23d6a9e19663f2b905d8169790b135b9cb039c01f601d5b5cb7",
+      "tickers": [
+        "WRD",
+        "WULF"
+      ]
+    },
+    {
+      "batch": 5,
+      "bytes": 151501,
+      "sha256": "dcc678aa34f6010d5b2581d0f92cc0bffc61baef406dfe85fc42e2cce3b138d7",
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    },
+    {
+      "batch": 6,
+      "bytes": 151429,
+      "sha256": "a859e6aededbb308a88951487ca6b85ab5464f214b0d318165f32498b863ac0e",
+      "tickers": [
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ]
+    }
+  ]
+}
