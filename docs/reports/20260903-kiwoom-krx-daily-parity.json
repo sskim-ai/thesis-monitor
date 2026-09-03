@@ -1,0 +1,42 @@
+{
+  "contract": "kiwoom-krx-night-daily-parity-v1",
+  "comparison_convention": {
+    "absolute_difference": "abs(kiwoom - krx)",
+    "percentage_difference": "abs(kiwoom - krx) / abs(krx) * 100"
+  },
+  "kiwoom_2026-09-01": {
+    "ohlc": [1061.0, 1061.4, 1031.3, 1040.5],
+    "vs_krx_night_2026-09-01": {
+      "absolute_difference": [6.0, 11.05, 22.5, 24.0],
+      "percentage_difference": [0.5623242737, 1.0303510653, 2.1351300057, 2.2545796148],
+      "exact_match": [false, false, false, false]
+    },
+    "vs_krx_night_2026-09-02": {
+      "absolute_difference": [0.0, 0.0, 0.0, 0.0],
+      "percentage_difference": [0.0, 0.0, 0.0, 0.0],
+      "exact_match": [true, true, true, true]
+    },
+    "verdict": "MATCHES_NEXT_BAS_DD"
+  },
+  "kiwoom_2026-09-02": {
+    "ohlc": [1023.0, 1048.35, 1020.25, 1043.6],
+    "vs_krx_night_2026-09-02": {
+      "absolute_difference": [38.0, 13.05, 11.05, 3.1],
+      "percentage_difference": [3.5815268615, 1.2295081967, 1.0714632018, 0.2979336857],
+      "exact_match": [false, false, false, false]
+    },
+    "vs_krx_night_2026-09-03": {
+      "absolute_difference": [null, null, null, null],
+      "percentage_difference": [null, null, null, null],
+      "exact_match": [null, null, null, null],
+      "reason": "KRX_BAS_DD_20260903_NOT_AVAILABLE"
+    },
+    "verdict": "INSUFFICIENT_EVIDENCE"
+  },
+  "xkrx_preceding_session": {
+    "2026-09-01": "2026-08-31",
+    "2026-09-02": "2026-09-01",
+    "2026-09-03": "2026-09-02"
+  },
+  "session_date_mapping": "NOT_CONFIRMED"
+}

@@ -1,0 +1,114 @@
+{
+  "contract": "krx-night-kiwoom-value-only-reconciliation-v1",
+  "source": {
+    "provider": "KRX Open API",
+    "service": "fut_bydd_trd",
+    "endpoint": "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd",
+    "repository_adapter": "app.jobs.probe_krx_night_futures",
+    "mode": "READ_ONLY_LIVE_NO_CACHE_WRITE",
+    "fetched_at_utc": "2026-09-03T03:10:46.349717+00:00",
+    "fetched_at_kst": "2026-09-03T12:10:46.349717+09:00",
+    "request_count": 3,
+    "success_count": 3,
+    "failure_count": 0,
+    "cache_write_count": 0,
+    "raw_row_rewrite_count": 0,
+    "stored_cache_sha_match_count": 3
+  },
+  "kospi200_202609": {
+    "contract_code": "A0169000",
+    "2026-09-01": {
+      "status": "AVAILABLE",
+      "http_status": 200,
+      "raw_payload_sha256": "485fe0dea1649c735c709fcad2cd87df5f4ee76d34a46a3545f0eaad9eb40881",
+      "row_count": 385,
+      "night": {
+        "BAS_DD": "20260901",
+        "MKT_NM": "야간",
+        "ISU_CD": "A0169000",
+        "ISU_NM": "코스피200 F 202609 (야간)",
+        "TDD_OPNPRC": "1067.00",
+        "TDD_HGPRC": "1072.45",
+        "TDD_LWPRC": "1053.80",
+        "TDD_CLSPRC": "1064.50",
+        "ACC_TRDVOL": "22349",
+        "CMPPREVDD_PRC": "-3.35",
+        "SETL_PRC": "",
+        "SPOT_PRC": "1075.30",
+        "derived_change_pct": -0.3137145938,
+        "change_pct_basis": "CMPPREVDD_PRC / (TDD_CLSPRC - CMPPREVDD_PRC)",
+        "raw_row_sha256": "df185bdf75c8b6604947a7d73f759a752abca60ca96478bdc289e1a35a1a9372",
+        "normalized_fingerprint": "c15e7e951bbcff286edb717acdf5a72132989c3aa70fec6ba949bf2b6811b5bc"
+      },
+      "day": {
+        "BAS_DD": "20260901",
+        "MKT_NM": "정규",
+        "ISU_CD": "A0169000",
+        "ISU_NM": "코스피200 F 202609 (주간)",
+        "TDD_OPNPRC": "1068.65",
+        "TDD_HGPRC": "1080.25",
+        "TDD_LWPRC": "1056.95",
+        "TDD_CLSPRC": "1078.15",
+        "ACC_TRDVOL": "101957",
+        "CMPPREVDD_PRC": "10.30",
+        "SETL_PRC": "1078.15",
+        "SPOT_PRC": "1075.30",
+        "raw_row_sha256": "35d80182213759bc96443c4b28384166876ab1e2ef74c2dd47211e669a9d90ef"
+      }
+    },
+    "2026-09-02": {
+      "status": "AVAILABLE",
+      "http_status": 200,
+      "raw_payload_sha256": "ec9b3efbbb65f21b26261b07978c3ed1e3ed206b0910093818d00ce47adc08d6",
+      "row_count": 385,
+      "night": {
+        "BAS_DD": "20260902",
+        "MKT_NM": "야간",
+        "ISU_CD": "A0169000",
+        "ISU_NM": "코스피200 F 202609 (야간)",
+        "TDD_OPNPRC": "1061.00",
+        "TDD_HGPRC": "1061.40",
+        "TDD_LWPRC": "1031.30",
+        "TDD_CLSPRC": "1040.50",
+        "ACC_TRDVOL": "30651",
+        "CMPPREVDD_PRC": "-37.65",
+        "SETL_PRC": "",
+        "SPOT_PRC": "1031.53",
+        "derived_change_pct": -3.4920938645,
+        "change_pct_basis": "CMPPREVDD_PRC / KRX_DAY_20260901.TDD_CLSPRC",
+        "raw_row_sha256": "c198e65c4b5d336dfa0cd2f69ac3db3e60f49884bd43fa04a561f5419d4c4aee",
+        "normalized_fingerprint": "f906ac11c38ff2635a37d83fc42d9e57ba12a90d06851a41712a839d1851c137"
+      },
+      "day": {
+        "BAS_DD": "20260902",
+        "MKT_NM": "정규",
+        "ISU_CD": "A0169000",
+        "ISU_NM": "코스피200 F 202609 (주간)",
+        "TDD_OPNPRC": "1041.00",
+        "TDD_HGPRC": "1052.60",
+        "TDD_LWPRC": "1029.15",
+        "TDD_CLSPRC": "1029.15",
+        "ACC_TRDVOL": "109785",
+        "CMPPREVDD_PRC": "-49.00",
+        "SETL_PRC": "1029.15",
+        "SPOT_PRC": "1031.53",
+        "raw_row_sha256": "b95cffd656c27a6792d3b30b1ca694b34ea5c6bb6a3ce3be5d1d53cfd3f3e541"
+      }
+    },
+    "2026-09-03": {
+      "status": "NOT_AVAILABLE",
+      "http_status": 200,
+      "raw_payload_sha256": "82c0031bc13af348ac1e1304aca28f309632975110f2508534e93216791dfa90",
+      "raw_size_bytes": 17,
+      "row_count": 0,
+      "night": null,
+      "day": null
+    }
+  },
+  "kosdaq150_202609_optional_control": {
+    "contract_code": "A0669000",
+    "2026-09-01_night_ohlc": [1440.0, 1447.0, 1415.5, 1432.8],
+    "2026-09-02_night_ohlc": [1384.1, 1385.8, 1342.8, 1367.0],
+    "2026-09-03": "NOT_AVAILABLE"
+  }
+}

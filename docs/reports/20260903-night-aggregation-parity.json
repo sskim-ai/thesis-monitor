@@ -1,0 +1,27 @@
+{
+  "contract": "krx-night-same-contract-kiwoom-aggregation-parity-v1",
+  "contract_code": "A0169000",
+  "contract_maturity": "2026-09",
+  "weekly": {
+    "kiwoom_label": "2026-08-31",
+    "required_krx_bas_dd": ["2026-09-01", "2026-09-02", "2026-09-03"],
+    "available_krx_bas_dd": ["2026-09-01", "2026-09-02"],
+    "missing_krx_bas_dd": ["2026-09-03"],
+    "partial_krx_ohlc": [1067.0, 1072.45, 1031.3, 1040.5],
+    "kiwoom_ohlc": [1067.0, 1072.45, 1020.25, 1043.6],
+    "partial_field_match": {"open": true, "high": true, "low": false, "close": false},
+    "parity": "INSUFFICIENT"
+  },
+  "monthly": {
+    "kiwoom_label": "2026-09-01",
+    "required_krx_bas_dd": ["2026-09-02", "2026-09-03"],
+    "available_krx_bas_dd": ["2026-09-02"],
+    "missing_krx_bas_dd": ["2026-09-03"],
+    "partial_krx_ohlc": [1061.0, 1061.4, 1031.3, 1040.5],
+    "kiwoom_ohlc": [1061.0, 1061.4, 1020.25, 1043.6],
+    "partial_field_match": {"open": true, "high": true, "low": false, "close": false},
+    "parity": "INSUFFICIENT"
+  },
+  "contract_splice_count": 0,
+  "day_night_mix_count": 0
+}

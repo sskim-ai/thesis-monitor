@@ -1,0 +1,32 @@
+{
+  "contract": "krx-night-kiwoom-date-mapping-verdict-v1",
+  "verdict": "B. DATE_MAPPING_LIKELY_BUT_0903_ROW_MISSING",
+  "session_date_mapping": "NOT_CONFIRMED",
+  "confirmed_evidence": [
+    "KIWOOM_20260901_OHLC_EQUALS_KRX_NIGHT_BAS_DD_20260902",
+    "KIWOOM_20260901_POPUP_ROUNDS_FROM_1064_50_BASELINE",
+    "KIWOOM_20260902_POPUP_ROUNDS_FROM_1040_50_BASELINE",
+    "XKRX_PRECEDING_SESSION_20260902_IS_20260901",
+    "XKRX_PRECEDING_SESSION_20260903_IS_20260902",
+    "WEEKLY_PARTIAL_OPEN_HIGH_MATCH",
+    "MONTHLY_PARTIAL_OPEN_HIGH_MATCH"
+  ],
+  "missing_evidence": [
+    "KRX_NIGHT_BAS_DD_20260903_ROW",
+    "KIWOOM_20260902_TO_KRX_20260903_EXACT_PARITY",
+    "COMPLETE_WEEKLY_AGGREGATION_PARITY",
+    "COMPLETE_MONTHLY_AGGREGATION_PARITY"
+  ],
+  "header_reference_1029_15": {
+    "value_parity": "PASS",
+    "krx_rows": [
+      "KRX_DAY_20260902_A0169000.TDD_CLSPRC",
+      "KRX_DAY_20260902_A0169000.SETL_PRC"
+    ],
+    "ui_semantic_identity": "NOT_DISAMBIGUATED_BY_VALUE_ONLY"
+  },
+  "code_change": 0,
+  "production_mutation": 0,
+  "production_send": 0,
+  "cache_or_raw_row_rewrite": 0
+}
