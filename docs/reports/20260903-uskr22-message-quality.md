@@ -1,10 +1,10 @@
 # USKR22 Message Quality
 
-- Candidate/message structural validation: `21/22`
-- Average characters: `1536.77`
-- Maximum characters: `1741`
-- Repeated substantive spans: `0`
-- Repeated text: `[]`
-- Invalid provenance refs: `0`
-- Validation failures: `[{"ticker": "047810", "status": "FAIL", "errors": ["confirmation_business_condition_contains_price_structure_semantics"], "unsupported_evidence_refs": []}]`
-- Candidate overrides and synonym repair: `0`
+| Run | Status | Average chars | Max chars | Repeated spans | Errors |
+| --- | --- | --- | --- | --- | --- |
+| first | PASS | 1536.59 | 1699 | 0 | none |
+| a | FAIL | 1542.45 | 1705 | 0 | candidate_or_message_validation_failed |
+| b | PASS | 1516.68 | 1674 | 0 | none |
+| c | FAIL | 1530.36 | 1689 | 0 | candidate_or_message_validation_failed |
+
+Internal contradictions: `2`. Substantive repetition failures: `0`. Exact first-run messages are preserved per ticker with separate US/KR previews.
