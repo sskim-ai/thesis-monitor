@@ -371,6 +371,9 @@ def test_future_metric_checkpoint_passes_only_with_owned_evidence(text: str) -> 
         "FCF와 ROIC가 장기 악화하거나 수익성 확보에 실패하면 재검토한다.",
         "현금 전환과 인수 이후 ROIC가 더 중요하다.",
         "FCF와 ROIC가 높아진 기대를 넘어야 한다.",
+        "대규모 인수 이후 ROIC가 구조적으로 악화될 위험이 있다.",
+        "향후 ROIC와 가치평가가 구조적으로 압박받을 수 있다.",
+        "대규모 투자 뒤 ROIC까지 낮아지면 자본집약 성장의 경제성이 훼손된다.",
     ),
 )
 def test_evidence_owned_metric_policy_and_condition_language_is_allowed(
@@ -411,6 +414,9 @@ def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
         "ROIC가 장기 악화하거나 수익성 확보에 실패하면 재검토한다.",
         "인수 이후 ROIC가 더 중요하다.",
         "ROIC가 높아진 기대를 넘어야 한다.",
+        "대규모 인수 이후 ROIC가 구조적으로 악화될 위험이 있다.",
+        "향후 ROIC와 가치평가가 구조적으로 압박받을 수 있다.",
+        "대규모 투자 뒤 ROIC까지 낮아지면 자본집약 성장의 경제성이 훼손된다.",
     ),
 )
 def test_future_metric_policy_without_owned_evidence_is_rejected(text: str) -> None:
@@ -437,6 +443,7 @@ def test_future_metric_policy_without_owned_evidence_is_rejected(text: str) -> N
         "DSO는 42일로 개선됐다.",
         "ROIC 개선이 증명됐다.",
         "ROIC 개선이 확인되었다.",
+        "현재 ROIC가 낮아졌다.",
     ),
 )
 def test_current_or_historical_metric_values_remain_rejected(text: str) -> None:
