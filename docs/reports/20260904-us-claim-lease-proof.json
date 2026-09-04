@@ -1,0 +1,25 @@
+{
+  "backup_after_primary_death": "PASS",
+  "backup_while_primary_healthy": "SAFE_NOOP_PRIMARY_ACTIVE",
+  "blocking_call_heartbeat": "PASS",
+  "claim_fields": [
+    "owner",
+    "claim_id",
+    "fencing_token",
+    "claim_generation",
+    "lease_expires_at",
+    "last_heartbeat_at",
+    "last_renewed_at",
+    "heartbeat_count",
+    "terminal_state"
+  ],
+  "contract": "us-claim-lease-proof-v1",
+  "e2e_fencing_token_preserved": true,
+  "e2e_renewal_count": 444,
+  "fallback_late_ai_duplicate": 0,
+  "heartbeat_interval_seconds": 60,
+  "new_generation_on_reclaim": "PASS",
+  "renewal_owner_and_token_match_required": true,
+  "stale_primary_finalization": "REJECTED",
+  "static_duration_only_repair": false
+}

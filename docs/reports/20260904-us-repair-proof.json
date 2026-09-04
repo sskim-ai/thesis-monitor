@@ -1,0 +1,52 @@
+{
+  "base": {
+    "contains_natural_operating_revision": true,
+    "main_merge": 0,
+    "selected_sha": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+    "shadow_only_decision_contract_imported": 0
+  },
+  "branch": "codex/20260904-us-natural-tls-lease-validator-repair",
+  "commits": {
+    "bounded_quality_repair": "21296c0bd879b4b6a77488af9be9459c636a5cfe",
+    "implementation": "1a50853",
+    "work_instruction": "c6e2f94"
+  },
+  "contract": "us-natural-tls-lease-validator-repair-proof-v1",
+  "gates": {
+    "abc_terminal": "PASS",
+    "claim_renewal": "PASS",
+    "fallback_late_ai_duplicate": 0,
+    "fresh_primary_blocks_backup": "PASS",
+    "stale_primary_reclaim_and_fence": "PASS",
+    "tls_preflight": "PASS",
+    "tls_verification_bypass": 0,
+    "validator_22_classified": 22,
+    "validator_repaired_errors": 0
+  },
+  "production_safety": {
+    "database_mutation": 0,
+    "recipient_send": 0,
+    "scheduler_change": 0,
+    "structured_autonomy_promotion": 0
+  },
+  "readiness": "READY_FOR_NATURAL_PROOF",
+  "test_e2e": {
+    "accepted": 15,
+    "duplicate": 0,
+    "fallback": 0,
+    "market_sent": 1,
+    "stock_sent": 14
+  },
+  "validation": {
+    "bounded_quality_repair_actions": "PASS",
+    "controlled_matrix": "28 passed",
+    "diff_check": "PASS",
+    "fallback_matrix": "3 passed",
+    "full_pytest": "2180 passed",
+    "knowledge_parity": "PASS",
+    "openapi_operation_ids": "20/20 unique",
+    "public_action_version": "0.4.5",
+    "ruff": "PASS",
+    "secret_scan": "PASS"
+  }
+}
