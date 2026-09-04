@@ -37,7 +37,12 @@ def main() -> None:
     parser.add_argument("command", choices=("generate",))
     parser.add_argument("--packet-id", required=True)
     parser.add_argument("--claim-id", required=True)
-    parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=1800,
+        help="Authoritative timeout for each signed-in model invocation",
+    )
     with v2_interruption_signal_context():
         asyncio.run(_run(parser.parse_args()))
 

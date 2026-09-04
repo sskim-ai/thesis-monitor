@@ -349,7 +349,7 @@ def _invoke_signed_in_codex(
         "-",
     ]
     invocation_paths["log"].unlink(missing_ok=True)
-    deadline = time.monotonic() + timeout
+    deadline = V2CommandDeadline.start(timeout)
     total_network_probe_attempts = 0
     for transport_attempt in range(1, V2_TRANSPORT_ATTEMPT_LIMIT + 1):
         readiness = probe_codex_network_readiness()
@@ -370,12 +370,7 @@ def _invoke_signed_in_codex(
                 attempts=total_network_probe_attempts,
             )
 
-        remaining_timeout = int(deadline - time.monotonic())
-        if remaining_timeout < 1:
-            raise CodexTransportError(
-                classify_codex_transport_failure("", timed_out=True),
-                attempts=transport_attempt,
-            )
+        remaining_timeout = deadline.require_remaining_seconds()
         invocation_paths["output"].unlink(missing_ok=True)
         attempt_log = invocation_paths["log"].with_name(
             f"{invocation_paths['log'].name}.attempt-{transport_attempt:02d}.tmp"
@@ -464,7 +459,7 @@ def _invoke_signed_in_codex(
         can_retry = (
             retryable_codex_transport_failure(failure_type)
             and transport_attempt < V2_TRANSPORT_ATTEMPT_LIMIT
-            and deadline - time.monotonic() > V2_TRANSPORT_BACKOFF_SECONDS + 1
+            and deadline.remaining_seconds() > V2_TRANSPORT_BACKOFF_SECONDS + 1
         )
         if can_retry:
             logger.warning(
@@ -858,7 +853,6 @@ async def _generate_claim_owned(
     *,
     timeout: int,
 ) -> dict[str, object]:
-    deadline = V2CommandDeadline.start(timeout)
     prepared = await prepare_context(packet_id, claim_id)
     if prepared.get("status") != "CONTEXT_READY":
         return prepared
@@ -901,7 +895,7 @@ async def _generate_claim_owned(
                 log=batch_log,
                 schema=Path(str(prepared["schema_path"])),
                 cwd=paths["prompt"].parent,
-                timeout=deadline.require_remaining_seconds(),
+                timeout=timeout,
                 state_namespace=claim_id,
             )
         )
@@ -944,7 +938,7 @@ async def _generate_claim_owned(
                     log=schema_repair_log,
                     schema=Path(str(prepared["schema_path"])),
                     cwd=paths["prompt"].parent,
-                    timeout=deadline.require_remaining_seconds(),
+                    timeout=timeout,
                     state_namespace=claim_id,
                 )
             )
@@ -997,7 +991,7 @@ async def _generate_claim_owned(
                     log=repair_log,
                     schema=Path(str(prepared["schema_path"])),
                     cwd=paths["prompt"].parent,
-                    timeout=deadline.require_remaining_seconds(),
+                    timeout=timeout,
                     state_namespace=claim_id,
                 )
             )
@@ -1218,7 +1212,12 @@ def main() -> None:
     parser.add_argument("command", choices=("prepare", "validate", "generate"))
     parser.add_argument("--packet-id", required=True)
     parser.add_argument("--claim-id", required=True)
-    parser.add_argument("--timeout", type=int, default=1800)
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=1800,
+        help="Authoritative timeout for each signed-in model invocation",
+    )
     with v2_interruption_signal_context():
         asyncio.run(_run(parser.parse_args()))
 
