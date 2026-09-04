@@ -583,6 +583,20 @@ def test_quality_audit_classifies_required_structural_templates() -> None:
             "선행 이익 기준 값은 <numeric>입니다.",
             "typed_neutral_absolute_valuation_statement",
         ),
+        (
+            "valuation_analysis",
+            "valuation",
+            "trailing_pe",
+            "<numeric> 기준도 확인합니다.",
+            "typed_neutral_absolute_valuation_statement",
+        ),
+        (
+            "valuation_analysis",
+            "valuation",
+            "price_to_book",
+            "<numeric> 기준을 확인합니다.",
+            "typed_neutral_absolute_valuation_statement",
+        ),
     ],
 )
 def test_quality_audit_allows_only_typed_structural_numeric_templates(
@@ -614,6 +628,21 @@ def test_quality_audit_allows_only_typed_structural_numeric_templates(
         )
         == "canonical_current_price_rr_unavailable_state"
     )
+
+
+def test_quality_audit_allows_typed_current_price_support_summary() -> None:
+    assert _typed_structural_template_exception(
+        {
+            "section": "core_judgment",
+            "owner": "decision_summary",
+            "semantic_types": ["share_price", "support_zone_price"],
+            "relation": "metric_set",
+            "skeleton": (
+                "현재 가격은 <numeric> 수준이고 동적 지지 하단은 "
+                "<numeric> 경계입니다."
+            ),
+        }
+    ) == "canonical_current_price_support_summary_v1"
 
 
 @pytest.mark.parametrize(

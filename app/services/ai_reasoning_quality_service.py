@@ -414,6 +414,15 @@ def _typed_structural_template_exception(
     ):
         return "canonical_current_price_tuple_v1"
     if (
+        metadata["section"] == "core_judgment"
+        and metadata["owner"] == "decision_summary"
+        and metadata["relation"] == "metric_set"
+        and semantic_types == {"share_price", "support_zone_price"}
+        and skeleton
+        == "현재 가격은 <numeric> 수준이고 동적 지지 하단은 <numeric> 경계입니다."
+    ):
+        return "canonical_current_price_support_summary_v1"
+    if (
         metadata["section"] == "price_positioning"
         and metadata["owner"] == "price_context"
         and metadata["relation"] == "single_metric"
@@ -436,12 +445,20 @@ def _typed_structural_template_exception(
         and (
             (semantic_types == {"trailing_pe"} and skeleton == "회사 전체의 이익 기준 값은 <numeric>입니다.")
             or (
+                semantic_types == {"trailing_pe"}
+                and skeleton == "<numeric> 기준도 확인합니다."
+            )
+            or (
                 semantic_types == {"forward_pe"}
                 and skeleton == "선행 이익 기준 값은 <numeric>입니다."
             )
             or (
                 semantic_types == {"price_to_book"}
                 and skeleton == "회사 전체의 장부가 기준 값은 <numeric>입니다."
+            )
+            or (
+                semantic_types == {"price_to_book"}
+                and skeleton == "<numeric> 기준을 확인합니다."
             )
         )
     ):

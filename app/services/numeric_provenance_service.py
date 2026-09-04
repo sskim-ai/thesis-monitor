@@ -760,6 +760,224 @@ def _interpretation_span_sha256(value: str) -> str:
     ).hexdigest()
 
 
+def _legacy_valuation_sentences(text: str) -> list[str]:
+    return [
+        value.strip()
+        for value in re.split(r"(?<=[.!?])\s+", _normalize_interpretation_span(text))
+        if value.strip()
+    ]
+
+
+def _legacy_quality_unknown_fact(
+    sentence: str,
+    facts: list[dict[str, object]],
+) -> tuple[str, str] | None:
+    metrics = _valuation_metrics_in_span(sentence)
+    preferred_types: set[str]
+    metric: str
+    if metrics & {"pe", "forward_pe", "earnings"}:
+        preferred_types = {"financial_quality", "security_basis", "security_identity"}
+        metric = "earnings"
+    elif metrics & {"pbr", "forward_pbr", "book"}:
+        preferred_types = {"valuation_quality", "security_basis", "security_identity"}
+        metric = "book"
+    else:
+        preferred_types = {
+            "financial_quality",
+            "valuation_quality",
+            "security_basis",
+            "security_identity",
+        }
+        metric = "book"
+    candidates = [
+        fact
+        for fact in facts
+        if str(fact.get("fact_type") or "") in preferred_types
+        and fact.get("interpretation_eligible") is not False
+    ]
+    if len(candidates) != 1:
+        return None
+    return str(candidates[0].get("fact_id") or ""), metric
+
+
+def _upgrade_legacy_valuation_interpretations(
+    review: dict[str, object],
+    stock: dict[str, object],
+) -> list[dict[str, object]]:
+    if review.get(VALUATION_INTERPRETATION_REFERENCE_FIELD):
+        return []
+    section = review.get("valuation_analysis")
+    if not isinstance(section, dict) or not isinstance(section.get("text"), str):
+        return []
+    text = _normalize_interpretation_span(str(section["text"]))
+    section_fact_ids = _section_fact_ids(review, "valuation_analysis.text")
+    facts = [
+        fact
+        for fact in stock.get("fact_catalog", [])
+        if isinstance(fact, dict)
+        and str(fact.get("fact_id") or "") in section_fact_ids
+    ] if isinstance(stock.get("fact_catalog"), list) else []
+    registry = {
+        (str(item.get("fact_id") or ""), str(item.get("field_path") or "")): item
+        for item in stock.get("numeric_registry", [])
+        if isinstance(item, dict)
+    } if isinstance(stock.get("numeric_registry"), list) else {}
+    claims = review.get("numeric_claims")
+    claims = claims if isinstance(claims, list) else []
+    numeric_refs = review.get(NUMERIC_REFERENCE_FIELD)
+    numeric_refs = list(numeric_refs) if isinstance(numeric_refs, list) else []
+    typed_refs: list[dict[str, object]] = []
+    consumed_claim_ids: set[int] = set()
+    upgrades: list[dict[str, object]] = []
+
+    for sentence_index, sentence in enumerate(_legacy_valuation_sentences(text), start=1):
+        directional = _directional_valuation_occurrences(sentence)
+        if directional:
+            historical_claims = []
+            for claim_index, claim in enumerate(claims):
+                if not isinstance(claim, dict) or claim_index in consumed_claim_ids:
+                    continue
+                semantic = str(claim.get("semantic_type") or "")
+                usage = str(claim.get("usage") or "")
+                source = registry.get(
+                    (
+                        str(claim.get("fact_id") or ""),
+                        str(claim.get("field_path") or ""),
+                    )
+                )
+                if (
+                    semantic not in {"historical_pe_percentile", "historical_pb_percentile"}
+                    or not usage
+                    or sentence.count(usage) != 1
+                    or source is None
+                    or source.get("registered") is not True
+                    or source.get("prose_allowed") is not True
+                    or str(source.get("semantic_type") or "") != semantic
+                    or str(source.get("unit") or "") != str(claim.get("unit") or "")
+                ):
+                    continue
+                try:
+                    value_matches = math.isclose(
+                        float(source.get("value")),
+                        float(claim.get("value")),
+                        rel_tol=1e-9,
+                        abs_tol=1e-9,
+                    )
+                except (TypeError, ValueError):
+                    value_matches = False
+                if value_matches:
+                    historical_claims.append((claim_index, claim, source))
+            if len(historical_claims) != 1:
+                continue
+            claim_index, claim, source = historical_claims[0]
+            semantic = str(claim.get("semantic_type") or "")
+            metric = "pbr" if semantic == "historical_pb_percentile" else "pe"
+            fact_id = "valuation:historical_pb" if metric == "pbr" else "valuation:historical_pe"
+            interpretation_fact = next(
+                (
+                    fact
+                    for fact in facts
+                    if str(fact.get("fact_id") or "") == fact_id
+                    and fact.get("interpretation_eligible") is not False
+                ),
+                None,
+            )
+            if interpretation_fact is None:
+                continue
+            ref_id = f"legacy_valuation_numeric_{sentence_index}"
+            usage = str(claim.get("usage") or "")
+            placeholder = f"{{{{numeric:{ref_id}}}}}"
+            sentence_template = sentence.replace(usage, placeholder)
+            text = text.replace(sentence, sentence_template, 1)
+            numeric_refs.append(
+                {
+                    "ref_id": ref_id,
+                    "fact_id": claim.get("fact_id"),
+                    "field_path": claim.get("field_path"),
+                    "text_ref": "valuation_analysis.text",
+                    "role": "value",
+                }
+            )
+            typed_refs.append(
+                {
+                    "ref_id": f"legacy_valuation_interpretation_{sentence_index}",
+                    "interpretation_type": "historical",
+                    "metric": metric,
+                    "fact_id": fact_id,
+                    "text_ref": "valuation_analysis.text",
+                    "exact_text_span": sentence_template,
+                    "comparison_numeric_ref_ids": [ref_id],
+                    "basis_status": "verified",
+                    "source_type": "canonical_legacy_adapter",
+                    "direction": "observed",
+                    "economic_scope": str(
+                        interpretation_fact.get("valuation_scope") or "unknown"
+                    ),
+                }
+            )
+            consumed_claim_ids.add(claim_index)
+            upgrades.append(
+                {
+                    "type": "historical_numeric_interpretation",
+                    "fact_id": fact_id,
+                    "semantic_type": semantic,
+                    "text_ref": "valuation_analysis.text",
+                }
+            )
+            continue
+        if not (
+            _VALUATION_UNKNOWN_LANGUAGE.search(sentence)
+            and (
+                _VALUATION_METRIC_LANGUAGE.search(sentence)
+                or _VALUATION_GENERIC_LANGUAGE.search(sentence)
+            )
+        ):
+            continue
+        selected = _legacy_quality_unknown_fact(sentence, facts)
+        if selected is None:
+            continue
+        fact_id, metric = selected
+        interpretation_fact = next(
+            fact for fact in facts if str(fact.get("fact_id") or "") == fact_id
+        )
+        typed_refs.append(
+            {
+                "ref_id": f"legacy_valuation_unknown_{sentence_index}",
+                "interpretation_type": "quality_unknown",
+                "metric": metric,
+                "fact_id": fact_id,
+                "text_ref": "valuation_analysis.text",
+                "exact_text_span": sentence,
+                "comparison_numeric_ref_ids": [],
+                "basis_status": "unavailable",
+                "source_type": "canonical_legacy_adapter",
+                "direction": "unknown",
+                "economic_scope": str(
+                    interpretation_fact.get("valuation_scope") or "unknown"
+                ),
+            }
+        )
+        upgrades.append(
+            {
+                "type": "quality_unknown_interpretation",
+                "fact_id": fact_id,
+                "metric": metric,
+                "text_ref": "valuation_analysis.text",
+            }
+        )
+
+    if not typed_refs:
+        return []
+    section["text"] = text
+    review[NUMERIC_REFERENCE_FIELD] = numeric_refs
+    review[VALUATION_INTERPRETATION_REFERENCE_FIELD] = typed_refs
+    if consumed_claim_ids:
+        review["numeric_claims"] = [
+            claim for index, claim in enumerate(claims) if index not in consumed_claim_ids
+        ]
+    return upgrades
+
+
 def _bound_interpretation_span(
     value: object,
     binding_by_id: dict[str, dict[str, object]],
@@ -1175,6 +1393,7 @@ def bind_numeric_fact_references(
     bindings: list[dict[str, object]] = []
     typed_interpretations: list[dict[str, object]] = []
     typed_interpretation_errors: list[str] = []
+    legacy_valuation_upgrades: list[dict[str, object]] = []
     semantic_claims: list[dict[str, object]] = []
     semantic_claim_errors: list[str] = []
     valuation_contexts: list[dict[str, object]] = []
@@ -1213,6 +1432,11 @@ def bind_numeric_fact_references(
                 continue
             ticker = str(review.get("ticker") or f"stock_reviews[{index}]")
             stock = packet_stocks.get(ticker)
+            if isinstance(stock, dict):
+                legacy_valuation_upgrades.extend(
+                    {"ticker": ticker, **item}
+                    for item in _upgrade_legacy_valuation_interpretations(review, stock)
+                )
             stock_errors, stock_bindings, stock_counts = _bind_review(
                 review,
             stock.get("numeric_registry") if isinstance(stock, dict) else None,
@@ -1305,6 +1529,11 @@ def bind_numeric_fact_references(
             "accepted": len(typed_interpretations),
             "errors": list(dict.fromkeys(typed_interpretation_errors)),
             "references": typed_interpretations,
+        },
+        "legacy_valuation_interpretation_adapter": {
+            "contract": "legacy-valuation-interpretation-adapter-v1",
+            "upgrade_count": len(legacy_valuation_upgrades),
+            "upgrades": legacy_valuation_upgrades,
         },
         "semantic_claims": {
             "contract": SEMANTIC_SCOPE_CONTRACT,

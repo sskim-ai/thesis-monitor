@@ -8,6 +8,7 @@ from app.services.numeric_provenance_service import (
     TYPED_VALUATION_CONTRACT,
     _directional_valuation_occurrences,
     _typed_valuation_reference_errors,
+    bind_numeric_fact_references,
 )
 
 
@@ -148,6 +149,112 @@ def test_peak_earnings_without_multiple_is_not_valuation_direction() -> None:
     assert _directional_valuation_occurrences(
         "높은 마진 기대는 유지되지만 피크 이익이 아니라 현금 전환을 봅니다."
     ) == []
+
+
+def test_legacy_historical_claim_is_upgraded_without_text_change() -> None:
+    text = (
+        "현재 PBR 4.33배 기준입니다. "
+        "PBR 역사적 백분위 85.2% 위치는 자체 과거보다 높은 구간입니다."
+    )
+    review = _review(text, "valuation:historical_pb")
+    review["facts_used"] = ["valuation:current", "valuation:historical_pb"]
+    review["numeric_claims"] = [
+        {
+            "fact_id": "valuation:current",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "semantic_type": "historical_pb_percentile",
+            "text_ref": "valuation_analysis.text",
+            "unit": "pct",
+            "usage": "PBR 역사적 백분위 85.2%",
+            "value": 85.2,
+        }
+    ]
+    stock = _stock(
+        "valuation:historical_pb",
+        fact_type="valuation_interpretation",
+        valuation_scope="listed_security",
+    )
+    stock["semantic_scope_contract"] = "semantic-scope-and-decision-hierarchy-v1"
+    stock["numeric_registry"] = [
+        {
+            "fact_id": "valuation:current",
+            "field_path": "fields.historical_pb_statistics.current_percentile",
+            "semantic_type": "historical_pb_percentile",
+            "unit": "pct",
+            "value": 85.2,
+            "registered": True,
+            "prose_allowed": True,
+            "scope": "stock",
+            "approved_labels": ["PBR 역사적 백분위"],
+            "declaration_fact_ids": ["valuation:historical_pb"],
+        }
+    ]
+    packet = {"stocks": [{"ticker": "TEST", **stock}]}
+    review["ticker"] = "TEST"
+
+    binding = bind_numeric_fact_references(packet, {"stock_reviews": [review]})
+
+    assert binding.errors == ()
+    assert binding.output["stock_reviews"][0]["valuation_analysis"]["text"] == text
+    assert binding.report["typed_valuation_interpretations"]["accepted"] == 1
+    assert binding.report["typed_valuation_interpretations"]["errors"] == []
+    assert binding.report["legacy_valuation_interpretation_adapter"]["upgrade_count"] == 1
+
+
+def test_legacy_quality_unknowns_upgrade_only_with_unique_safe_facts() -> None:
+    review = _review(
+        "안전한 주당 이익 기준이 확인되지 않아 이익 배수는 제시하지 않습니다. "
+        "장부가 기준도 확인되지 않아 자산 배수는 제시하지 않습니다.",
+        "financial_quality:current",
+    )
+    review["ticker"] = "TEST"
+    review["facts_used"] = ["financial_quality:current", "valuation:book_quality"]
+    review["valuation_analysis"]["fact_ids"] = [
+        "financial_quality:current",
+        "valuation:book_quality",
+    ]
+    packet = {
+        "stocks": [
+            {
+                "ticker": "TEST",
+                "typed_valuation_interpretation_contract": TYPED_VALUATION_CONTRACT,
+                "semantic_scope_contract": "semantic-scope-and-decision-hierarchy-v1",
+                "numeric_registry": [],
+                "fact_catalog": [
+                    {
+                        "fact_id": "financial_quality:current",
+                        "fact_type": "financial_quality",
+                    },
+                    {
+                        "fact_id": "valuation:book_quality",
+                        "fact_type": "valuation_quality",
+                    },
+                ],
+            }
+        ]
+    }
+
+    binding = bind_numeric_fact_references(packet, {"stock_reviews": [review]})
+
+    assert binding.errors == ()
+    assert binding.report["typed_valuation_interpretations"]["accepted"] == 2
+    assert binding.report["typed_valuation_interpretations"]["errors"] == []
+    assert binding.report["legacy_valuation_interpretation_adapter"]["upgrade_count"] == 2
+
+
+def test_legacy_directional_current_multiple_remains_rejected() -> None:
+    review = _review("현재 PBR 4.33배는 높은 수준입니다.")
+    review["ticker"] = "TEST"
+    binding = bind_numeric_fact_references(
+        {"stocks": [{"ticker": "TEST", **_stock("valuation:current")}]},
+        {"stock_reviews": [review]},
+    )
+
+    assert binding.report["legacy_valuation_interpretation_adapter"]["upgrade_count"] == 0
+    assert any(
+        "valuation_interpretation_occurrence_uncovered" in error
+        for error in binding.report["typed_valuation_interpretations"]["errors"]
+    )
 
 
 @pytest.mark.parametrize(
