@@ -62,10 +62,10 @@ from app.services.structured_autonomy_stability_service import (
 US_PACKET_ID = "2026-09-03-us-run-53-055ae8ea01f6"
 KR_PACKET_ID = "2026-09-03-kr-run-54-f19bb379daa7"
 KR_LATER_PACKET_ID = "2026-09-03-kr-run-54-78ed269de3df"
-SHADOW_PACKET_ID = "2026-09-04-uskr22-validator-ownership-repair"
-REPAIR_BASE_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
+SHADOW_PACKET_ID = "2026-09-04-uskr22-production-promotion-review"
+REPAIR_BASE_SHA = "906b092749511dc42d5799ed335165819efee2ea"
 PRIOR_EXPERIMENT_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
-WORK_INSTRUCTION_SHA = "5a3c0fa397f72b208e7d0920b3e9226594ceef4e"
+WORK_INSTRUCTION_SHA = "1091f531b1f13cbeff424fc71247c71f8b647912"
 US_COHORT = (
     "CORZ",
     "CPNG",

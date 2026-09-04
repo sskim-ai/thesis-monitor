@@ -21,9 +21,9 @@ from app.services.structured_autonomy_stability_service import (
 )
 
 
-BASE_SHA = "7a71494c9ca67d6fce4495c278311bc50a1ae82c"
-WORK_INSTRUCTION_SHA = "5a3c0faccdbfdb272056419b099d40c6ccd19962"
-GENERATION_ID = "2026-09-04-uskr22-validator-ownership-repair"
+BASE_SHA = "906b092749511dc42d5799ed335165819efee2ea"
+WORK_INSTRUCTION_SHA = "1091f531b1f13cbeff424fc71247c71f8b647912"
+GENERATION_ID = "2026-09-04-uskr22-production-promotion-review"
 RUNS = ("first", "a", "b", "c")
 FIRST_CHECKPOINT_CONTRACT = "uskr22-validator-first-checkpoint-v1"
 TARGET_VALIDATOR_ERRORS = {
@@ -218,6 +218,38 @@ def prior_validator_regression(
         price_map=price_maps["010120"],
         industry=str(stocks["010120"].get("industry") or ""),
     )
+    failed_checkpoint = read_json(
+        repo / "docs" / "reports" / "20260904-uskr22-fresh-first-run.json"
+    )
+    modal_candidate = next(
+        candidate_from_row(row)
+        for row in failed_checkpoint["candidates"]
+        if row["ticker"] == "005490"
+    )
+    modal_result = validate_structured_autonomy_candidate(
+        evidence["005490"],
+        modal_candidate,
+        price_map=price_maps["005490"],
+        industry=str(stocks["005490"].get("industry") or ""),
+    )
+    modal_claim = modal_candidate.sell_drivers[1]
+    unowned_modal_candidate = modal_candidate.model_copy(
+        update={
+            "sell_drivers": (
+                modal_candidate.sell_drivers[0],
+                modal_claim.model_copy(
+                    update={"evidence_refs": ("canonical:price:current",)}
+                ),
+                *modal_candidate.sell_drivers[2:],
+            )
+        }
+    )
+    unowned_modal_result = validate_structured_autonomy_candidate(
+        evidence["005490"],
+        unowned_modal_candidate,
+        price_map=price_maps["005490"],
+        industry=str(stocks["005490"].get("industry") or ""),
+    )
     return {
         "contract": "future-metric-claim-type-regression-v1",
         "prior_false_positive_rows": rows,
@@ -246,6 +278,27 @@ def prior_validator_regression(
             "status": (
                 "PASS"
                 if "unsupported_current_metric_value" in current_result.errors
+                else "FAIL"
+            ),
+        },
+        "fresh_first_owned_future_modal": {
+            "ticker": "005490",
+            "errors": list(modal_result.errors),
+            "status": (
+                "PASS"
+                if "unsupported_future_checkpoint_metric" not in modal_result.errors
+                and "unsupported_metric_or_inference" not in modal_result.errors
+                else "FAIL"
+            ),
+        },
+        "unowned_future_modal": {
+            "ticker": "005490",
+            "errors": list(unowned_modal_result.errors),
+            "status": (
+                "PASS"
+                if "unsupported_future_checkpoint_metric"
+                in unowned_modal_result.errors
+                and "unsupported_metric_or_inference" in unowned_modal_result.errors
                 else "FAIL"
             ),
         },
@@ -383,6 +436,13 @@ def write_reports(
     crcl_class = str(crcl_row["classification"]) if crcl_row else "NOT_MEASURED"
     gates: dict[str, object] = {
         "BASE": f"{BASE_SHA} / DESCENDANT",
+        "INFRA_MAIN_SHA": BASE_SHA,
+        "INFRA_OPERATING_SHA": BASE_SHA,
+        "KR_NATURAL_INFRA_PROOF": "PENDING",
+        "US_NATURAL_INFRA_PROOF": "PENDING",
+        "STRUCTURED_AUTONOMY_LATEST_BLOCKER": (
+            "005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP"
+        ),
         "JUDGMENT_LOGIC_CHANGED": 0,
         "BALANCE_THRESHOLD_CHANGED": 0,
         "MODEL_OWNED_MANDATORY_TRADE_DIRECTIVE": mandatory_count,
@@ -391,6 +451,10 @@ def write_reports(
         "UNSUPPORTED_CURRENT_METRIC_VALUE": current_metric_count,
         "UNSUPPORTED_FUTURE_CHECKPOINT_METRIC": future_metric_count,
         "FUTURE_METRIC_GROUNDING": metric["prior_false_positive_repair"],
+        "005490_FUTURE_MODAL_REGRESSION": metric[
+            "fresh_first_owned_future_modal"
+        ]["status"],
+        "UNOWNED_FUTURE_MODAL_BLOCK": metric["unowned_future_modal"]["status"],
         "CURRENT_METRIC_VALUE_GROUNDING": metric["unsupported_current_value"]["status"],
         "047810_FALSE_POSITIVE": sum(
             row["ticker"] == "047810" and row["status"] != "PASS"
@@ -739,6 +803,11 @@ def main() -> None:
             "metric_claim_type_regression_failed:"
             + json.dumps(failed, ensure_ascii=False, sort_keys=True)
         )
+    if (
+        metric["fresh_first_owned_future_modal"]["status"] != "PASS"
+        or metric["unowned_future_modal"]["status"] != "PASS"
+    ):
+        raise ValueError("future_modal_metric_regression_failed")
     if args.preflight_only:
         print(
             json.dumps(

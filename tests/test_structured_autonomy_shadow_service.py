@@ -364,6 +364,7 @@ def test_future_metric_checkpoint_passes_only_with_owned_evidence(text: str) -> 
         "CAPEX 이후 현금창출과 ROIC의 지속성을 우선한다.",
         "실제 ROIC와 FCF 증명이 방향을 가를 구간이다.",
         "대규모 CAPEX 이후에도 FCF와 ROIC가 장기 악화되면 논리를 재평가한다.",
+        "대규모 CAPEX가 FCF 감소, 순부채 증가와 향후 ROIC 악화로 이어질 수 있다.",
         "선박 투자가 FCF 및 ROIC 개선으로 회수되지 않으면 자본효율을 재점검한다.",
     ),
 )
@@ -390,6 +391,23 @@ def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
 
     result = validate_structured_autonomy_candidate(
         _packet(), candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_future_checkpoint_metric" in result.errors
+    assert "unsupported_metric_or_inference" in result.errors
+
+
+def test_future_metric_modal_without_owned_evidence_is_rejected() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "sector_interpretation": _claim(
+                "ref:thesis", "향후 ROIC 악화로 이어질 수 있다."
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=_price_map(), industry="Industrials"
     )
 
     assert "unsupported_future_checkpoint_metric" in result.errors
