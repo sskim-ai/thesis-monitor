@@ -1,8 +1,90 @@
 {
   "contract": "mandatory-trade-semantic-validator-v1",
-  "mandatory_case_count": 8,
+  "mandatory_cases": [
+    {
+      "directive_matches": [
+        "반드시 매도"
+      ],
+      "status": "PASS",
+      "text": "반드시 매도해야 한다."
+    },
+    {
+      "directive_matches": [
+        "즉시 매도"
+      ],
+      "status": "PASS",
+      "text": "즉시 매도한다."
+    },
+    {
+      "directive_matches": [
+        "자동으로 매도"
+      ],
+      "status": "PASS",
+      "text": "자동으로 매도한다."
+    },
+    {
+      "directive_matches": [
+        "자동 매도한다"
+      ],
+      "status": "PASS",
+      "text": "자동 매도한다."
+    },
+    {
+      "directive_matches": [
+        "무조건 비중을 줄인다"
+      ],
+      "status": "PASS",
+      "text": "무조건 비중을 줄인다."
+    },
+    {
+      "directive_matches": [
+        "손절해야"
+      ],
+      "status": "PASS",
+      "text": "이 가격에서는 손절해야 한다."
+    },
+    {
+      "directive_matches": [
+        "must sell"
+      ],
+      "status": "PASS",
+      "text": "must sell immediately."
+    },
+    {
+      "directive_matches": [
+        "automatically reduce"
+      ],
+      "status": "PASS",
+      "text": "automatically reduce the position."
+    }
+  ],
   "mandatory_true_positive_block": "PASS",
-  "nonmandatory_case_count": 5,
-  "nonmandatory_false_positive_count": 0,
-  "status": "PASS"
+  "nonmandatory_cases": [
+    {
+      "directive_matches": [],
+      "status": "PASS",
+      "text": "자동 매도보다 사업 성과 재점검이 우선이다."
+    },
+    {
+      "directive_matches": [],
+      "status": "PASS",
+      "text": "상단에서는 자동 매도보다 회복의 질을 평가한다."
+    },
+    {
+      "directive_matches": [],
+      "status": "PASS",
+      "text": "무조건 매도할 가격대로 보지는 않는다."
+    },
+    {
+      "directive_matches": [],
+      "status": "PASS",
+      "text": "기계적 매도 대신 Valuation 정당화를 확인한다."
+    },
+    {
+      "directive_matches": [],
+      "status": "PASS",
+      "text": "자동 축소가 아니라 사업 성과를 확인한다."
+    }
+  ],
+  "nonmandatory_false_positive_count": 0
 }

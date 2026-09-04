@@ -1,7 +1,5 @@
 # Future Metric Claim-Type Contract
 
-`ROIC`, `CCC`, `DSO`, and `DPO` prose is allowed only as a future checkpoint when the cited evidence owns the same metric. Current or historical values remain blocked without canonical value evidence.
+`ROIC`, `CCC`, `DSO`, and `DPO` are no longer rejected by token identity alone. A qualitative future validation condition is allowed only when its own evidence references name the same metric. Current or historical numeric claims remain blocked, as do FCF yield, per-share FCF, EV/FCF, P/FCF, and runway-month inference. No missing metric is calculated.
 
-The fresh-first run exposed one remaining semantic boundary: `005490` used evidence-owned ROIC in a sell-driver modal sentence, `향후 ROIC 악화로 이어질 수 있다`. The phrase is future-facing, but the classifier does not currently recognize the `-ㄹ 수 있다` modal form outside an explicit reevaluation role.
-
-This report records the failure only. No validator, candidate, phrase, or threshold was changed after observing it.
+Grounded future checkpoint: `PASS`. Unsupported future checkpoint block: `PASS`. Current-value block: `PASS`.

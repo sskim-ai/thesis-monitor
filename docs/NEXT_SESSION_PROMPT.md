@@ -1,5 +1,24 @@
 # Next Session Prompt
 
+Latest shadow result is the 2026-09-04 Structured Autonomy production-promotion review. Read
+`docs/reports/20260904-structured-autonomy-promotion-review.md` and
+`docs/reports/20260904-v3-v5-temporal-grammar-root-cause.md`. Infrastructure main/operating is
+`906b092749511dc42d5799ed335165819efee2ea`; keep the decision work on its separate branch.
+
+The latest new ALL22 fresh-first set completed but validated `20/22`; GOOGL and MU were rejected by
+evidence-owned future-metric temporal grammar false positives. A/B/C was not run. Add generic
+support for future recovery forms such as `회수돼야`, scope current/historical markers to the
+metric-bearing clause, and retain strict rejection of actual current/historical ROIC/CCC/DSO/DPO
+claims. Add positive and negative tests. Then perform one new ALL22 fresh-first gate; run A/B/C once
+only after `22/22 PASS`. Do not loop automatically or tune candidates after seeing results.
+
+KR natural infrastructure proof is PASS, while US natural AI validation failed and fallback sent
+`15/15`; production promotion therefore remains blocked independently. Production decision
+mutation, renderer/send changes, scheduler/DB changes, and main merge remain zero. Production
+Assist is OFF.
+
+---
+
 Latest authoritative infrastructure work is the 2026-09-04 KR/US monitoring integration. Read
 `docs/reports/20260904-infrastructure-artifact-index.md` and
 `docs/reports/20260904-infra-readiness.json` first. Exact instruction commit is

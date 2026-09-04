@@ -1,10 +1,17 @@
 {
-  "boundary_uncertainty_count": "NOT_MEASURED",
-  "contract": "uskr22-stability-v1",
-  "crcl_stability_class": "NOT_MEASURED",
-  "reason": "first_run_validated_21_of_22",
-  "same_evidence_buy_sell_reversal_count": "NOT_MEASURED",
+  "buy_sell_reversal_count": "NOT_MEASURED",
+  "contract": "structured-autonomy-same-evidence-stability-v1",
+  "counts": {
+    "BOUNDARY_UNCERTAINTY": 0,
+    "STABLE": 0,
+    "UNSTABLE": 0
+  },
+  "rows": [],
+  "runs": [
+    "a",
+    "b",
+    "c"
+  ],
   "status": "NOT_RUN_FIRST_GATE_FAILED",
-  "unexplained_hold_lean_flip_count": "NOT_MEASURED",
-  "unstable_ticker_count": "NOT_MEASURED"
+  "unexplained_hold_lean_flip_count": "NOT_MEASURED"
 }

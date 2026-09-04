@@ -1,5 +1,25 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-04 Structured Autonomy Promotion-Review Handoff
+
+Start with `docs/reports/20260904-structured-autonomy-promotion-review.md` and the v3/v5 temporal
+grammar root-cause report. Infrastructure main/operating is
+`906b092749511dc42d5799ed335165819efee2ea`; the review branch remains separate. The latest new
+ALL22 fresh-first generation completed all six model calls but validated `20/22`, so A/B/C was not
+run and promotion is `NEEDS_MORE_SHADOW_WORK`.
+
+Both failures are bounded validator false positives with metric ownership present. GOOGL used
+future `ROIC` recovery wording through `회수돼야`, and MU contrasted `현재 수익성` with a separate
+`향후 FCF와 ROIC` clause. Earlier v3 GOOGL/MU candidates still pass the current validator; fresh
+wording variance exposed incomplete temporal grammar. Open P0/material P1 is `0/1`. Do not reuse or
+edit candidates. Repair the two grammar classes generically with strict negative controls, then run
+one new ALL22 fresh-first gate. Run A/B/C only after `22/22 PASS`.
+
+KR natural infrastructure proof is PASS. US natural AI validation failed and deterministic fallback
+sent `15/15`, so the cross-market natural gate is not clean. Production decision mutation,
+renderer/send changes, scheduler/DB changes, and Phase-2 main merge are zero. Production Assist
+remains OFF.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and

@@ -1,9 +1,5 @@
-# Nonmandatory Trade Language Root Cause
+# Nonmandatory Trade-Language Root Cause
 
-The former validator treated any sell-related surface as an order. The implemented repair separates mandatory directives from negated or comparative language such as `automatic sell is not preferred`.
+The prior shadow validator treated the raw `자동 매도` substring as an affirmative directive. It therefore rejected comparison and negation clauses that explicitly assigned ownership to business or valuation reassessment. The repair removes recognized non-directive spans before requiring both a trade action and execution/mandatory semantics.
 
-- Model-owned mandatory directive count: `0`
-- Nonmandatory false positives in focused regression: `0`
-- Mandatory true-positive block: `PASS`
-
-No decision threshold, production renderer, or production delivery path changed.
+Nonmandatory false positives: `0`. True directive block: `PASS`.

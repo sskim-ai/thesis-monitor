@@ -179,16 +179,16 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260904-kr-us-monitoring-infra-integration"
+        "codex/20260904-structured-autonomy-production-promotion-review"
     )
     assert state["current_phase"] == (
-        "kr_us_monitoring_infrastructure_integrated_awaiting_natural_proof"
+        "structured_autonomy_promotion_review_needs_bounded_validator_repair"
     )
     assert state["last_completed_phase"] == (
         "20260904_kr_us_monitoring_infrastructure_integration"
     )
     assert state["next_default_phase"] == (
-        "structured_autonomy_production_promotion_review_shadow_only"
+        "bounded_temporal_metric_grammar_repair_shadow_only"
     )
     integration = state["kr_us_monitoring_infrastructure_integration_20260904"]
     assert integration["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_PROOF"
@@ -212,9 +212,17 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert integration["open_material_p1"] == []
     autonomy = state["structured_autonomy_production_promotion_handoff_20260904"]
     assert autonomy["latest_blocker"] == (
-        "005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP"
+        "GOOGL_MU_TEMPORAL_METRIC_GRAMMAR_FALSE_POSITIVE"
     )
-    assert autonomy["all22_first_run"] == "NOT_STARTED"
+    assert autonomy["all22_first_run"] == "20_OF_22"
+    assert autonomy["run_a"] == "NOT_RUN_FIRST_GATE_FAILED"
+    assert autonomy["run_b"] == "NOT_RUN_FIRST_GATE_FAILED"
+    assert autonomy["run_c"] == "NOT_RUN_FIRST_GATE_FAILED"
+    assert autonomy["promotion_readiness"] == "NEEDS_MORE_SHADOW_WORK"
+    assert autonomy["open_p0"] == []
+    assert autonomy["open_material_p1"] == [
+        "evidence_owned_future_temporal_grammar_generalization"
+    ]
     assert autonomy["production_mutation"] == 0
     readiness_base = "c1c43070cd944e273c53f952c29a768a33fefdee"
     readiness_instruction = "57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3"

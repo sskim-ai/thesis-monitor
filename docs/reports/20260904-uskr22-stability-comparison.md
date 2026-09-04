@@ -1,5 +1,5 @@
 # USKR22 Stability Comparison
 
-`A_B_C_GATE = NOT_RUN_FIRST_GATE_FAILED`
+`NOT_MEASURED`
 
-Stable, boundary, reversal, HOLD-lean flip, and unstable counts are `NOT_MEASURED`. No stability conclusion is inferred from the single fresh-first generation.
+Counts: `{"BOUNDARY_UNCERTAINTY": 0, "STABLE": 0, "UNSTABLE": 0}`. BUY/SELL reversals: `NOT_MEASURED`. HOLD-lean flips: `NOT_MEASURED`.

@@ -1,15 +1,88 @@
 {
-  "contract": "evidence-grounded-metric-claim-type-v1",
-  "focused_pre_model_regression": "PASS",
-  "fresh_first_failure": {
+  "contract": "future-metric-claim-type-regression-v1",
+  "fresh_first_owned_future_modal": {
+    "errors": [],
+    "status": "PASS",
+    "ticker": "005490"
+  },
+  "grounded_future_checkpoint": {
+    "errors": [],
+    "status": "PASS",
+    "ticker": "010120"
+  },
+  "prior_false_positive_repair": "PASS",
+  "prior_false_positive_rows": [
+    {
+      "new_target_errors": [],
+      "prior_target_errors": [
+        "mandatory_sell_language",
+        "mandatory_trade_language"
+      ],
+      "run": "a",
+      "status": "PASS",
+      "ticker": "GOOGL"
+    },
+    {
+      "new_target_errors": [],
+      "prior_target_errors": [
+        "unsupported_metric_or_inference"
+      ],
+      "run": "a",
+      "status": "PASS",
+      "ticker": "010120"
+    },
+    {
+      "new_target_errors": [],
+      "prior_target_errors": [
+        "mandatory_sell_language",
+        "mandatory_trade_language"
+      ],
+      "run": "a",
+      "status": "PASS",
+      "ticker": "047810"
+    },
+    {
+      "new_target_errors": [],
+      "prior_target_errors": [
+        "mandatory_sell_language",
+        "mandatory_trade_language",
+        "unsupported_metric_or_inference"
+      ],
+      "run": "a",
+      "status": "PASS",
+      "ticker": "086280"
+    },
+    {
+      "new_target_errors": [],
+      "prior_target_errors": [
+        "unsupported_metric_or_inference"
+      ],
+      "run": "c",
+      "status": "PASS",
+      "ticker": "005490"
+    }
+  ],
+  "unowned_future_modal": {
     "errors": [
       "unsupported_future_checkpoint_metric",
       "unsupported_metric_or_inference"
     ],
-    "evidence_owns_metric": true,
-    "metric": "ROIC",
-    "role": "sell_driver",
+    "status": "PASS",
     "ticker": "005490"
   },
-  "status": "FAIL_FRESH_MODAL_BOUNDARY"
+  "unsupported_current_value": {
+    "errors": [
+      "unsupported_current_metric_value",
+      "unsupported_metric_or_inference",
+      "numeric_prose_outside_structured_fields"
+    ],
+    "status": "PASS"
+  },
+  "unsupported_future_checkpoint": {
+    "errors": [
+      "unsupported_future_checkpoint_metric",
+      "unsupported_metric_or_inference"
+    ],
+    "status": "PASS"
+  }
 }

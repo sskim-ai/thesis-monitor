@@ -1,10 +1,23 @@
-# US Live Pause / Resume Log
+# US Live Pause and Resume Log
 
-- Protected-window pause began: `2026-09-04T07:55:15+09:00`
-- Authoritative run: `2026-09-04-us-run-55-54cd536c6e4d`
-- Delivery terminal: `PASS`
-- Shared runtime released: `PASS`
-- Shadow resumed: `2026-09-04T08:41:37+09:00`
-- Production process termination by shadow work: `0`
-
-The final fresh-first generation was started after the separate forensic reporting task had closed.
+| Field | Value |
+| --- | --- |
+| authoritative_run_id | 2026-09-04-us-run-55-54cd536c6e4d |
+| classification_reason | Production and shadow used separate state directories, but signed-in authentication and model/account capacity were shared and isolation was not proven. |
+| delivery_terminal | PASS |
+| delivery_terminal_detail | Deterministic fallback sent 15/15 at 2026-09-04T08:40:04.201264+09:00 with pending_count=0. |
+| model_phase_terminal | PASS |
+| model_phase_terminal_detail | Primary completed with stale_claim_output fencing after lease takeover; backup completed with validation rejection and no finalized AI output. |
+| pause_required | YES |
+| pause_started_at | 2026-09-04T07:55:15+09:00 |
+| pre_window_shadow_checkpoint_count | 0 |
+| pre_window_shadow_model_output_count | 0 |
+| pre_window_shadow_transport_attempt_count | 1 |
+| production_process_termination | 0 |
+| production_scheduler_mutation | 0 |
+| production_send_from_shadow | 0 |
+| resource_interference | POSSIBLE |
+| shadow_model_calls_during_protected_window | 0 |
+| shadow_resumed_at | 2026-09-04T08:41:37+09:00 |
+| shared_runtime_release_evidence | No accepted_decision runtime, codex exec, ai_review, monitor_daily, or shadow runner process remained at 2026-09-04T08:41:22+09:00. |
+| shared_runtime_released | PASS |

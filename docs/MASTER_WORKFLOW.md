@@ -2493,3 +2493,21 @@ still independently pending. Structured Autonomy production mutation is zero. It
 phase begins at `005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, then requires new ALL22 generation
 and clean A/B/C. Production activation remains gated on both promotion readiness and sufficiently
 clean natural infrastructure proof. Production Assist remains OFF.
+
+### 40.40 Structured Autonomy Production-Promotion Review
+
+Phase 2 continued on a separate branch from infrastructure main/operating
+`906b092749511dc42d5799ed335165819efee2ea`. The latest frozen US14/KR8 fresh-first generation
+completed six signed-in Codex CLI calls without transport failure but validated `20/22`; A/B/C was
+not run. `GOOGL` and `MU` both selected evidence that explicitly owns ROIC, but the temporal
+validator rejected valid future-checkpoint prose: it did not recognize `회수돼야`, and it applied a
+sentence-wide `현재` marker to a separate `향후 ROIC` clause.
+
+The earlier v3 set remains `22/22` under the current validator because it used already-recognized
+future constructions. This proves prose variance exposed a bounded validator grammar gap rather
+than source or ownership drift. Open P0 is `0`; open material P1 is `1`. Promotion remains
+`NEEDS_MORE_SHADOW_WORK`; production decision mutation, renderer change, scheduler/DB change,
+Telegram shadow send, and Phase-2 main merge are `0`. KR natural infrastructure proof is PASS; US
+natural AI validation failed and delivered deterministic fallback `15/15`, so the cross-market
+natural gate is not clean. The next step is one bounded temporal-grammar repair followed by one new
+ALL22 fresh-first gate; A/B/C runs only after `22/22 PASS`.

@@ -1,35 +1,100 @@
 # USKR22 Validator and Coexistence Artifact Index
 
-## Validator contracts
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| 20260904-crcl-clean-stability-audit.md | 89c238a87fe599d3372f32c9f59a160c880294736a90c623a449e45ac6560684 | 149 |
+| 20260904-cross-market-claim-delivery-matrix.md | 61af5fd82a84571d4fadd75dd9aa56815f76ef575ed2371619467d5352820beb | 981 |
+| 20260904-cross-market-regression.json | ec4e9dfe75d2b4a8ec43703d2668a4f4946f841fca5690dba8be6458a3f33eca | 686 |
+| 20260904-current-abc-terminal-preflight.md | 2f8114c3acc8417bf7facf26f4f345c51d4ade54ef8cedc0fb7fa8d0c47ed2de | 732 |
+| 20260904-future-metric-claim-type-contract.md | 239b9552b2ff6837d32e883f5778ddd3263cdf1fce7eef5fd104fcded01a50aa | 502 |
+| 20260904-infra-readiness.json | f5fb424508fe29232f772f3642583de34578bbba0578124af9a56d8a8182cdf3 | 1083 |
+| 20260904-infrastructure-artifact-index.md | 459400b78939998106848be0364080b9f60b96731d9abb59e8f39f88f1bc921f | 1221 |
+| 20260904-infrastructure-main-readiness.md | 1c5b49ac2e2167edb851946059614920113c4194a7d1f816ff388b217f675fbc | 879 |
+| 20260904-integrated-kr-test-e2e.md | 38bf1ebb7fbebe3e22870bf82206e7ea49021e5b7b184b3da41c692ff00e1284 | 636 |
+| 20260904-integrated-us-test-e2e.md | dbaafe1b0c8d8ad0e819eaf1092218b5a77abaeca6ea86db96e78e5057d9f213 | 720 |
+| 20260904-integration-lineage.json | 1ce593489b5c1eb500182a5ef6e9d0a738bf0eb7ae2fd483ccf3f5abbfc6aa62 | 589 |
+| 20260904-kr-frozen-replay-validation.md | 6ff7f6ac217be37ae459770018787f9b30c26e7fb562d0a81a31668dce7bc3df | 700 |
+| 20260904-kr-frozen-replay.json | 5951745fe242e03eaac709faae35740f6340ba2b35d53d54249e25573febde27 | 729 |
+| 20260904-kr-frozen-replay.md | 37b437e442f77358b59dd11b8d072755613123cbdbf96c130a35b1ae9be9558c | 986 |
+| 20260904-kr-real-test-e2e.md | 810349e558e9c37c924f42c61a626ba360823cd789aa1b0b4cdb054572b7a000 | 702 |
+| 20260904-kr-test-e2e.json | 75bd1644b86fe4d64ee2b9458b1ac68eb4449bd9341b46ba0ba2818e6f4ad89d | 637 |
+| 20260904-kr-us-integration-conflict-audit.md | 7f1c0022f997fa3182e1c7b1d10e75a10c1bff1a1cf39055333a589eee3445eb | 945 |
+| 20260904-kr-us-integration-lineage.md | 831d51c2153b1b4c3871a5c3c8beb1a12106448e981679258fe5707446b18889 | 735 |
+| 20260904-main-operating-lineage.md | 032e0f9337fd4ecc520d06bde1ad9d92c3c4225974c7007026d3891aaf0aee87 | 746 |
+| 20260904-mandatory-trade-semantic-validator-contract.md | eef6939e82383cf3839b348be4b549d011ccaf498330e2742eaee942c2f4ba8a | 1327 |
+| 20260904-metric-claim-type-regression.json | 0730558817a9ec2f40a66778b1360bf731d389dfcb824d33ba16aeca5e11809a | 2008 |
+| 20260904-natural-proof-plan.md | 66b25e0c713cf21e78931c4405072d49c2e08489db89126a545cafcaae1d0483 | 718 |
+| 20260904-nonmandatory-trade-language-root-cause.md | a00ee7da69f5e966c43b2078565f860da62fadf61c5b5f1a0fed8ca14280679a | 456 |
+| 20260904-roic-fcf-metric-grounding-regression.md | 06ee9a09515152d231d78f57a07c30efe511cbf5a8d8bcc7e15096e5cdf27f4e | 626 |
+| 20260904-structured-autonomy-promotion-review.json | 587e3aec946e1e13ff7106d87a2da39cbcb9752b01c47434be18910f00f6c375 | 2215 |
+| 20260904-structured-autonomy-promotion-review.md | 4311e5751ef30a5bc5c5225541891d1a417ef1dcfa875cde91b08c030472e8a7 | 3701 |
+| 20260904-trade-language-regression.json | 08fd34488bdb76f587c70d63850529b85073213d8ead31e2f88bacc26736ea03 | 2104 |
+| 20260904-us-backup-model-runtime.md | 5334965271449ae0305e97561bf408e381e894642556a8e60cff617e74ca90d7 | 1091 |
+| 20260904-us-backup-reclaim-fencing-contract.md | cebc2b269af1e63926c088336992ce4de258e2d21a3320260becab6b790d4890 | 969 |
+| 20260904-us-candidate-validation-accepted-lineage.md | 3f71dab54088d85492cdc81374e83ff0b419ec3b1d4fe12185eb2c8a166f1674 | 1238 |
+| 20260904-us-claim-lease-proof.json | 84bc9f2f486d0d0806f1a527be5eb024f9edf25096a1fd2288a8940289f0360d | 709 |
+| 20260904-us-claim-lease-renewal-contract.md | 9db61b9935c1640389a6be8b77ac26d3b5d2bb009411781ad17c9edb469b1fb6 | 1063 |
+| 20260904-us-correction-contract.md | a9bc598d0d156c66180778c1a9b24674db7f722df6f654519bda644c55d54d98 | 1050 |
+| 20260904-us-delivery-results.json | 48e2c5507904405e91db5dc41c8bcf1232c96b87c57b45b4e479f2bf2980e9e1 | 11727 |
+| 20260904-us-event-timeline.json | a3460976a2cfdc2238f0a57184377d01d0601ce7c34aa1e7c6bfa9b52e22d0ab | 6599 |
+| 20260904-us-exact-delivery-results.md | a985f262a930bb7a2acdfd49b1c8e2d5ef397e35e485c2b998b835e11864a8d9 | 1803 |
+| 20260904-us-fallback-late-ai-contract.md | ba028a77be633f2a3ade6e04fbf34a4912912e39e84a06c281dab23f1e250056 | 620 |
+| 20260904-us-first-failure-and-root-cause.md | ed36ba51c521d6390c3956eec925349ac6a41b9a1f8f5b95ed8530e7de2ce063 | 1641 |
+| 20260904-us-forensic-proof.json | dabdfb1ed48c0a11169bc8dd177d0e4898426dff7df44a45d57142dbb12f5814 | 2385 |
+| 20260904-us-holder-decision-variable-repair.md | 436883ecd33fc67d0e71b066c577451bf6c2727a4b2bf305305bae9a2714a583 | 657 |
+| 20260904-us-live-coexistence-preflight.md | 2c2b5bff4d0e7225d5af2a6c1f0fb6309c93657c02b58d1b71a49366cd5106dd | 379 |
+| 20260904-us-live-coexistence.json | 9c7c72b432bfd13a7dbda2cf8d486ec6bb052d100d11a61a4a7985481a7d1528 | 1298 |
+| 20260904-us-live-path-e2e-failure-matrix.md | 32aae070bcdc28f86f58f2c6c76750421f1c9b848681f8e9eab713726a5f620a | 1401 |
+| 20260904-us-live-path-e2e-proof.json | f01eec05a3471a49d5cd34fb7fdeb933116296e5d76e8515937ca9bab1e98a52 | 1215 |
+| 20260904-us-live-path-e2e-success.md | 839797d6512efd5f14f7e8b7012b37c0442d39e1c0bc411cc8dfbff50b927303 | 1532 |
+| 20260904-us-live-pause-resume-log.md | 12ae24481a936c1b73d8a0e7ceb164dbbceee63ce95f5c587fa9ca76c0e043d3 | 1335 |
+| 20260904-us-live-runtime-isolation-verdict.md | 4b15c9758dac841fef7251044e138a2e9bb9ee2d9b4cbd818abcad5c9d9be27c | 284 |
+| 20260904-us-market-semantic-provenance-repair.md | 3e598cef8703f5af3da02250bb921889fa686ac26be3394e995fd349ba967be1 | 889 |
+| 20260904-us-natural-artifact-index.md | 3471ec26c2e79da9073f53562490cd2f61457a088b73540bd1787ed4ec985bc8 | 4683 |
+| 20260904-us-natural-event-timeline.md | 1063f72df2ea3deb3f31e4a404b8c071bf07fad3081ac8e05db6d3927dd818a9 | 4568 |
+| 20260904-us-natural-forensic-executive-summary.md | 27c566f02d266077eb52d98c1dd62f3c66d1212c1986453f025ce39d55a624f3 | 2185 |
+| 20260904-us-natural-run-anomalies.md | 4516eb9796a2d79cfec4e37a653167a9ed890d81de5f5887c04a617f3641a014 | 1258 |
+| 20260904-us-natural-run-lineage.md | 7ecd175d110fbca9dd11211815fd80cac12a6ba56f26ba8cff45b5426287270e | 1304 |
+| 20260904-us-pipeline-stages.json | 0681df18a731d21830822ef4d5d87494788bde5fa185a181999642f4e9779e83 | 2026 |
+| 20260904-us-primary-backup-concurrency.md | 3ad1146ca6f6ef9904bb1dc77f4c2bf6712896386d578a4ba170f802ffdffc24 | 1094 |
+| 20260904-us-primary-checker-identity.json | 6022113f7ad52a9b4054f18aa9236cf36b790dc57e591858b8dc3ae734de23af | 2444 |
+| 20260904-us-primary-late-result-handling.md | a196ec07541b53afb91bf0b3a5a9289ec324636c567ce016c55892a816b5b1d3 | 1181 |
+| 20260904-us-primary-missing-flag-source.md | 8620e821d3b1e3abdcb1fcb894422e68b25defdbc20af6f6675e62fd04f50782 | 1062 |
+| 20260904-us-primary-model-runtime.md | 1f7d036bb4b580aa4221426607bb2b429e830e16fd3a790c976cdfade204fc83 | 1212 |
+| 20260904-us-primary-state-at-0820.md | b5869c1e10573e1982843b9355778a655cb052cf9b5389ac3293ba3f5cd4d7e9 | 1029 |
+| 20260904-us-primary-vs-checker-identity.md | db5f7c6c9bbcb39af7f7baf77debf7af74cf8a9fe9ac440980655e44c627f199 | 1357 |
+| 20260904-us-repair-artifact-index.md | 0f13b148456dcfe2eea8f7b43d46a1000a347e1c3cd4398901bb602c332346c0 | 1768 |
+| 20260904-us-repair-base-selection.md | 9356b35d5bb3bd47eb47f7e3528428eb5d4d568dc48bb3431715259646efe93d | 963 |
+| 20260904-us-repair-proof.json | 12ebe3ba621b9599bf6084b7a75a60472d5f31399a338486d943bae21dfcb6fb | 1507 |
+| 20260904-us-repair-readiness.md | 988e423b57adf1f53e591add0848a2731a9ef6596cde96c1ec42898321529463 | 2677 |
+| 20260904-us-run-lineage.json | 90fa905a125bfd8b07b9d0f00e803ca32b5baa260121752f605def40ef87644d | 4861 |
+| 20260904-us-shadow-vs-natural-tls-runtime.md | 3aeeb7596e0391f93f89c3b8c0b68849cf383f702f598983db51e3cab6746493 | 1249 |
+| 20260904-us-signed-in-cli-tls-preflight.md | 7cfbca20894ef6da82d4d843731a28a31f1f8b70c3eeffd59b42a747f7bf625d | 765 |
+| 20260904-us-tls-chain-root-cause.md | a113c8bda51ec2e473d18fa8c04a6b7384e77b67b9f5bdfe279083910ace53d0 | 1200 |
+| 20260904-us-tls-runtime-differential.md | 264c19e209f2d3efa7ed7ed047d5579c825e1ce5ff1ef3eca0ebf1244260ad73 | 1500 |
+| 20260904-us-transport-error-taxonomy.md | 09267e8ea2fe87dda764d7d8f8a2aecdeb047efac70b7d1dab2a4bfa8bce3a17 | 1178 |
+| 20260904-us-transport-proof.json | 35c5556a9b08c9db3dd550baad61c7ae2b6a5387107fedf9d396339efad8fb8a | 902 |
+| 20260904-us-typed-valuation-coverage-repair.md | 6d3c96aee6b04601bb528b2fda4b5af83aad04b79f95036d2e8cca7f335b66ba | 1096 |
+| 20260904-us-v2-selector-delivery-lineage.md | de73df8abba88f1571d2c3670cc38729f8771f4977a4993b570838d26176a78a | 1064 |
+| 20260904-us-validator-22-error-inventory.md | 68bdb013c75101f9e99765f633c015e50f7ee02364d23510b1c63d46677d2473 | 3458 |
+| 20260904-us-validator-22-proof.json | 8eebb8c19d2d9b9dda5c1767023c832524d673992ded595732a485a3925f4016 | 886 |
+| 20260904-us-watchdog-deadline-semantics.md | 87a60bbb26314950d92420e0f92c122c050b34e6bd180ec29edd5adef7cf310d | 1233 |
+| 20260904-us-working-capital-ownership-repair.md | 1bdfdf2c03b6b727e49c15345dd89594f3d81eaafb8de292370ea9211de9df39 | 867 |
+| 20260904-uskr22-fresh-first-run-validation.md | fa6dc46e5eb44b037260b327d77a2d756613249cec555f9a3d44558af9bcecdf | 1422 |
+| 20260904-uskr22-fresh-first-run.json | fbde605c204c367c690881f478952fc51cb0afc5838371836c6c5f16f2acc6a2 | 917322 |
+| 20260904-uskr22-fresh-first-run.md | 065bff02469a233c868fbb7cf727787103aeb1346fd9ffb881efda70c44326a6 | 2047 |
+| 20260904-uskr22-message-quality.md | f1b97d34c62baa442d4e3036432a04b7706f9aeabfaa05e5c6e3e41ec4357310 | 297 |
+| 20260904-uskr22-promotion-readiness.md | 0d8bbbb728f78d02a3930134f2225e73418dfedad5f3831b5c3f687fea6d9025 | 2858 |
+| 20260904-uskr22-proof.json | cc6897d0d14326f349bcf0fc7a61c93995a4cfe66d6facb6e14ca9525490a9b7 | 17843 |
+| 20260904-uskr22-run-a.json | 257dcbae51606e973ba0c638d1c770c838525a84be9e7e3076757ea6dbc655a6 | 58 |
+| 20260904-uskr22-run-a.md | 16f98e1062d6a5bf4f19920d8793532eaf606820619a711ed0039fcb8012eb9a | 44 |
+| 20260904-uskr22-run-b.json | 70112a988f588f0c3100d3188f04ae99149c71e04f4aaa3e5b25c97fe4c954bf | 58 |
+| 20260904-uskr22-run-b.md | 23f276d4b92d3611a8de344ae2e1c81238b4ab8941488f52af77cf14bfc091f4 | 44 |
+| 20260904-uskr22-run-c.json | a55500d3962e5dc0069ae988bcb68df1d1406ee819c0228a4b8ea78c219767cf | 58 |
+| 20260904-uskr22-run-c.md | 1434c03334087b2a4faf0a11b41dd8fbe053952e65dc6fa245cc7f5170f61a7f | 44 |
+| 20260904-uskr22-stability-comparison.md | fdf5f74591fa209fdad0a20a96c9c9b958cff917ab9d72e391f26a7f24b69c8e | 183 |
+| 20260904-uskr22-stability.json | 4aac63437855731ac758d6b29d86b60db03d7733a8fbeda5d2611e7b99e763b2 | 349 |
+| 20260904-uskr22-validator-repair-source-lock.md | 7015a6928a973ed2fafabf003726f1f3057cfe8f3fbb9ffd7a8fd1ffd4deb95b | 350 |
+| 20260904-v3-v5-temporal-grammar-root-cause.md | 4b9a21234beb4d2f1a70b5b7905c557cc7faa23e2916a23936e0322e26294c67 | 2764 |
 
-- `20260904-nonmandatory-trade-language-root-cause.md`
-- `20260904-mandatory-trade-semantic-validator-contract.md`
-- `20260904-future-metric-claim-type-contract.md`
-- `20260904-roic-fcf-metric-grounding-regression.md`
-- `20260904-trade-language-regression.json`
-- `20260904-metric-claim-type-regression.json`
-
-## Coexistence
-
-- `20260904-us-live-coexistence-preflight.md`
-- `20260904-us-live-pause-resume-log.md`
-- `20260904-us-live-runtime-isolation-verdict.md`
-- `20260904-us-live-coexistence.json`
-
-## Fresh generation and hard gate
-
-- `20260904-uskr22-validator-repair-source-lock.md`
-- `20260904-uskr22-fresh-first-run.md`
-- `20260904-uskr22-fresh-first-run-validation.md`
-- `20260904-uskr22-fresh-first-run.json`
-- `20260904-uskr22-run-a.md` and `.json`
-- `20260904-uskr22-run-b.md` and `.json`
-- `20260904-uskr22-run-c.md` and `.json`
-- `20260904-uskr22-stability-comparison.md`
-- `20260904-uskr22-stability.json`
-- `20260904-crcl-clean-stability-audit.md`
-- `20260904-uskr22-message-quality.md`
-- `20260904-uskr22-promotion-readiness.md`
-- `20260904-uskr22-proof.json`
-
-Raw CLI logs, credentials, recipient identifiers, and production runtime state are excluded. A/B/C artifacts explicitly record `NOT_RUN_FIRST_GATE_FAILED`; they are not synthetic model results.
+Indexed artifacts: `94`. Logs, credentials, recipient IDs, and runtime state are excluded.

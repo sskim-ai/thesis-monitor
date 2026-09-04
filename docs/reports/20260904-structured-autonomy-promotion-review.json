@@ -1,0 +1,62 @@
+{
+  "contract": "structured-autonomy-production-promotion-review-v1",
+  "work_instruction_commit": "1091f531b1f13cbeff424fc71247c71f8b647912",
+  "infrastructure_main_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "infrastructure_operating_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "review_branch": "codex/20260904-structured-autonomy-production-promotion-review",
+  "implementation_sha_before_report_closure": "81d961b59071df858109613186bda540aaccad20",
+  "fresh_first": {
+    "generation": "2026-09-04-uskr22-production-promotion-review",
+    "subjects": 22,
+    "model_calls": 6,
+    "validated": 20,
+    "message_quality": "FAIL",
+    "repetition_count": 0,
+    "nonexistent_evidence_ref_count": 0,
+    "failures": [
+      {
+        "ticker": "GOOGL",
+        "error": "unsupported_future_checkpoint_metric",
+        "classification": "VALIDATOR_FALSE_POSITIVE_FUTURE_GRAMMAR",
+        "metric_evidence_owned": true
+      },
+      {
+        "ticker": "MU",
+        "error": "unsupported_current_metric_value",
+        "classification": "VALIDATOR_FALSE_POSITIVE_TEMPORAL_CLAUSE_SCOPE",
+        "metric_evidence_owned": true
+      }
+    ]
+  },
+  "prior_pass_comparison": {
+    "v3_recorded": "PASS_22_OF_22",
+    "v3_googl_current_validator": "PASS",
+    "v3_mu_current_validator": "PASS",
+    "cause": "FRESH_PROSE_VARIANCE_EXPOSED_INCOMPLETE_TEMPORAL_GRAMMAR"
+  },
+  "runs_a_b_c": "NOT_RUN_FIRST_GATE_FAILED",
+  "kr_natural_infrastructure_proof": "PASS",
+  "us_natural_infrastructure_proof": "FAIL_AI_VALIDATION_FALLBACK_SENT",
+  "open_p0": [],
+  "open_material_p1": [
+    "evidence_owned_future_temporal_grammar_generalization"
+  ],
+  "validation": {
+    "focused_pytest": 195,
+    "full_pytest": 2380,
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "changed_json_parse": "PASS",
+    "secret_pattern_scan": "PASS",
+    "public_action_version": "0.4.5",
+    "operation_id_uniqueness": "20_OF_20"
+  },
+  "production_decision_mutation": 0,
+  "production_renderer_change": 0,
+  "production_send": 0,
+  "scheduler_change": 0,
+  "database_change": 0,
+  "main_merge": 0,
+  "promotion_readiness": "NEEDS_MORE_SHADOW_WORK",
+  "next_action": "BOUNDED_TEMPORAL_GRAMMAR_REPAIR_THEN_ONE_NEW_ALL22_GATE"
+}
