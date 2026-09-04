@@ -305,6 +305,8 @@ def _relative_fact(
         fact_type = "market_sector_relative"
     elif subject_fact.get("fact_type") == "market_style":
         fact_type = "market_style_relative"
+    elif subject == "IWM":
+        fact_type = "market_small_cap_relative"
     else:
         fact_type = "market_growth_relative"
     return {

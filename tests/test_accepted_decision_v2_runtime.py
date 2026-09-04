@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -8,6 +9,7 @@ import pytest
 from app.jobs import accepted_decision_v2_runtime as runtime
 from app.jobs.accepted_decision_v2_runtime import (
     V2CLIPathPreconditionError,
+    _ClaimLeaseHeartbeat,
     _invoke_signed_in_codex,
     _paths,
     _signed_in_codex_bin,
@@ -404,9 +406,9 @@ def test_signed_in_codex_network_preflight_failure_never_starts_subprocess(
             port=443,
             attempts=3,
             resolved_address_count=0,
-            failure_type=CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+            failure_type=CodexTransportFailureType.DNS_FAILURE,
             failure_history=(
-                CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+                CodexTransportFailureType.DNS_FAILURE,
             )
             * 3,
         ),
@@ -414,7 +416,7 @@ def test_signed_in_codex_network_preflight_failure_never_starts_subprocess(
 
     with pytest.raises(
         CodexTransportError,
-        match="LOCAL_DNS_RESOLUTION_FAILURE:attempts=3",
+        match="DNS_FAILURE:attempts=3",
     ):
         _invoke_signed_in_codex(
             codex_bin="/bin/echo",
@@ -428,6 +430,66 @@ def test_signed_in_codex_network_preflight_failure_never_starts_subprocess(
         )
 
     assert called is False
+
+
+def test_unknown_issuer_fails_fast_without_wrapper_retry(monkeypatch, tmp_path: Path) -> None:
+    claims = tmp_path / "data/ai_review/claims"
+    claims.mkdir(parents=True)
+    prompt = claims / "claim.prompt.txt"
+    schema = claims / "claim.schema.json"
+    prompt.write_text("prompt", encoding="utf-8")
+    schema.write_text("{}", encoding="utf-8")
+    run_count = 0
+
+    def fake_run(command, **kwargs):
+        nonlocal run_count
+        run_count += 1
+        kwargs["stdout"].write("invalid peer certificate: UnknownIssuer")
+        return SimpleNamespace(returncode=1)
+
+    monkeypatch.setattr(runtime, "_repository_root", lambda: tmp_path)
+    monkeypatch.setattr(runtime.subprocess, "run", fake_run)
+
+    with pytest.raises(CodexTransportError) as error:
+        _invoke_signed_in_codex(
+            codex_bin="/bin/echo",
+            prompt=prompt,
+            output=claims / "claim.output.json",
+            log=claims / "claim.log",
+            schema=schema,
+            cwd=claims,
+            timeout=30,
+            state_namespace="test-unknown-issuer",
+        )
+
+    assert run_count == 1
+    assert error.value.failure_type == CodexTransportFailureType.TLS_CERTIFICATE_UNKNOWN_ISSUER
+    assert error.value.raw_diagnostic_token == "UnknownIssuer"
+
+
+def test_claim_heartbeat_renews_while_caller_is_blocked(monkeypatch) -> None:
+    renewal_count = 0
+
+    def renew(*args, **kwargs):
+        nonlocal renewal_count
+        renewal_count += 1
+        return SimpleNamespace(status="renewed", heartbeat_count=renewal_count)
+
+    monkeypatch.setattr(runtime, "renew_ai_review_claim", renew)
+    heartbeat = _ClaimLeaseHeartbeat(
+        packet_id="packet",
+        claim_id="claim",
+        owner="primary",
+        fencing_token="claim",
+        interval_seconds=0.01,
+    )
+
+    with heartbeat:
+        assert heartbeat._thread.is_alive()
+        time.sleep(0.035)
+
+    assert renewal_count >= 3
+    assert heartbeat.ownership_lost is False
 
 
 def test_run50_natural_claim_paths_use_one_canonical_repository_root(

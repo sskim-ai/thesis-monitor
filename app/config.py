@@ -117,6 +117,7 @@ class Settings(BaseSettings):
     telegram_retry_base_seconds: float = 2.0
     ai_review_mode: Literal["off", "shadow", "assist"] = "shadow"
     ai_review_claim_lease_minutes: int = 30
+    ai_review_claim_heartbeat_seconds: int = 60
     ai_review_backup_delay_minutes: int = 40
     ai_review_claim_safety_margin_minutes: int = 5
     ai_review_shadow_catchup_hours: int = 24
@@ -149,6 +150,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_ai_review_schedule(self) -> "Settings":
+        if self.ai_review_claim_heartbeat_seconds < 1:
+            raise ValueError("AI review claim heartbeat must be positive")
         if self.onboarding_retry_base_minutes < 1:
             raise ValueError("Onboarding retry base must be at least one minute")
         if self.onboarding_retry_max_minutes < self.onboarding_retry_base_minutes:

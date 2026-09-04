@@ -78,6 +78,56 @@ def test_correction_context_uses_validated_visible_text_for_diagnostics() -> Non
     assert contexts[0]["numeric_diagnostics"][0]["candidate_fact_binding_attempt"] == []
 
 
+def test_valuation_correction_context_offers_grounded_quality_unknown() -> None:
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "ADR",
+                "valuation_analysis": {
+                    "text": "현재 상장 증권의 검증 가능한 배수 근거가 부족합니다.",
+                    "fact_ids": [],
+                },
+            }
+        ]
+    }
+    packet = {
+        "stocks": [
+            {
+                "ticker": "ADR",
+                "numeric_registry": [],
+                "fact_catalog": [
+                    {
+                        "fact_id": "security_basis:current",
+                        "fact_type": "security_basis",
+                        "valuation_scope": "listed_security",
+                        "interpretation_eligible": True,
+                    }
+                ],
+            }
+        ]
+    }
+
+    contexts = _numeric_correction_context(
+        packet,
+        candidate,
+        [
+            "ADR:valuation_interpretation_occurrence_uncovered:"
+            "valuation_analysis.text:7"
+        ],
+    )
+
+    assert contexts[0]["text_ref"] == "valuation_analysis.text"
+    assert contexts[0]["quality_candidates"] == [
+        {
+            "fact_id": "security_basis:current",
+            "fact_type": "security_basis",
+            "valuation_scope": "listed_security",
+            "interpretation_eligible": True,
+        }
+    ]
+    assert "add_typed_quality_unknown_reference" in contexts[0]["allowed_actions"]
+
+
 @pytest.fixture
 def canonical_identifier_context() -> dict[str, object]:
     return {

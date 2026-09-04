@@ -135,6 +135,24 @@ def test_inventory_owner_scope_numeric_and_unknown_contract_passes() -> None:
     assert _working_capital_user_visible_errors(_review(), _stock()) == []
 
 
+def test_inventory_relation_can_support_qualitative_core_summary() -> None:
+    review = _review()
+    review.core_judgment.fact_ids.append(RELATION_ID)
+    review.core_judgment.text = "재고 전환은 사업 판단의 보조 근거입니다."
+
+    assert _working_capital_user_visible_errors(review, _stock()) == []
+
+
+def test_inventory_lineage_cannot_move_to_core_summary() -> None:
+    review = _review()
+    review.core_judgment.fact_ids.append(FACT_IDS[0])
+
+    assert any(
+        "working_capital_owner_mismatch" in error
+        for error in _working_capital_user_visible_errors(review, _stock())
+    )
+
+
 def test_inventory_rejects_trade_ar_mode_causal_overclaim_and_wrong_owner() -> None:
     stock = _stock()
     stock["working_capital_user_visible"] = {

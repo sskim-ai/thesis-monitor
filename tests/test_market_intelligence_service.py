@@ -136,6 +136,7 @@ def test_market_fact_selection_uses_verified_changes_and_excludes_stale() -> Non
         2.1422 - 0.2194
     )
     assert "market:relative:IWM:SPY" in facts
+    assert facts["market:relative:IWM:SPY"]["fact_type"] == "market_small_cap_relative"
     assert facts["market:relative:IWM:SPY"]["fields"]["relative_return_pct"] == (
         0.6446 - 0.2194
     )
