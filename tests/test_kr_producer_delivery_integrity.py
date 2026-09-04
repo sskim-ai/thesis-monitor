@@ -336,6 +336,50 @@ def test_packet_bound_intent_is_provisional_until_hold(
     }
 
 
+def test_reuse_queue_preserves_existing_ai_delivery_owner(monkeypatch) -> None:
+    primary_packet = "2026-09-03-kr-run-54-primary"
+    backup_packet = "2026-09-03-kr-run-54-backup"
+    with Session(_engine()) as session:
+        delivery = NotificationDelivery(
+            ticker=KR_DAILY_DIGEST_MARKER,
+            assessment_date=date(2026, 9, 3),
+            channel="telegram",
+            status="pending",
+            payload=json.dumps(
+                {
+                    "type": "ai_assisted_pilot_market",
+                    AI_ASSISTED_PILOT_METADATA_KEY: {
+                        "packet_id": primary_packet,
+                        "market": "kr",
+                        "assessment_date": "2026-09-03",
+                        "state": "ai_assisted_pending",
+                    },
+                }
+            ),
+        )
+        session.add(delivery)
+        session.commit()
+        monkeypatch.setattr(
+            "app.services.daily_monitor_service.queue_daily_digest_notification",
+            lambda *args, **kwargs: delivery,
+        )
+
+        _queue_scoped_notifications(
+            session,
+            date(2026, 9, 3),
+            [],
+            "kr",
+            None,
+            packet_id=backup_packet,
+        )
+        session.refresh(delivery)
+
+    metadata = json.loads(delivery.payload)[AI_ASSISTED_PILOT_METADATA_KEY]
+    assert metadata["packet_id"] == primary_packet
+    assert metadata["state"] == "ai_assisted_pending"
+    assert metadata["observed_reuse_packet_ids"] == [backup_packet]
+
+
 def test_shadow_suppressed_packet_bound_pending_remains_fallback_deliverable(
     monkeypatch,
     tmp_path: Path,

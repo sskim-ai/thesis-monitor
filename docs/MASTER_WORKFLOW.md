@@ -2446,3 +2446,26 @@ and passed authenticated API health after a thesis-monitor-only restart. Open P0
 `DEPLOYED_AWAITING_NATURAL_US_LIVE`, not natural `LIVE_PASS`. The next action is read-only review of
 the next ordinary US cycle. Manual task invocation and production resend remain prohibited;
 Production Assist remains OFF.
+
+### 40.38 Run-54 KR Live V2 Delivery Orchestration Repair
+
+Exact instruction commit `20d052dee5f4ea0d6b2630a284434a98ca52596a` precedes implementation
+`d00741abbe227bd199c8383de0cad9bbd740ceeb` on operating base
+`5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The incident's final failure was not the initial
+candidate rejection. A corrected `9/9` candidate had passed quality and entered pending state, but
+a later analysis-reuse packet replaced its delivery ownership; retry discovery and execution then
+used incompatible state vocabularies and returned `no_pending_ai_delivery`.
+
+Analysis identity, content identity, and delivery-generation identity are now separate. AI-owned
+rows retain their packet owner across analysis reuse; pending, held, retry, fallback, terminal, and
+late-validation transitions have persistent machine receipts. Claim-bound accepted V2 generation
+also records stage completion so `V2_DECISION_SUPPRESSED_SAFE` is independently diagnosable.
+
+An isolated full-path rehearsal used the production entrypoint, signed-in Codex CLI
+`gpt-5.6-sol / xhigh`, real selector, persisted SQLite state, retry/fallback logic, and the real
+Telegram adapter pointed only at the dedicated test sink. It accepted market `1` plus stock V2
+`8`, recovered pending `9` in a new process, and sent `9/9` with fallback and duplicates `0/0`.
+Backup and post-send fallback sent `0`; the controlled unavailable-AI case sent fallback `9/9`.
+Production recipient send, production-state mutation, and main merge are all `0`. Full regression
+is `2161 passed`; open P0/material P1 are `0/0`. State is `READY_FOR_NATURAL_PROOF`, not natural
+`LIVE_PASS`. Observe the next ordinary KR cycle read-only; do not run or resend it manually.

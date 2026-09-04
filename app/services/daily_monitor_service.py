@@ -19,6 +19,7 @@ from app.services.monitoring_state_service import persist_monitoring_states
 from app.services.monitoring_service import assessment_to_read
 from app.services.notification_service import (
     AI_ASSISTED_PILOT_METADATA_KEY,
+    AI_ASSISTED_OWNED_STATES,
     PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
     dispatch_pending_notifications,
     queue_daily_digest_notification,
@@ -102,6 +103,18 @@ def _queue_scoped_notifications(
             payload = json.loads(delivery.payload)
             if not isinstance(payload, dict):
                 raise ValueError("Notification payload must be a JSON object")
+            existing = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
+            if isinstance(existing, dict) and existing.get("state") in (
+                AI_ASSISTED_OWNED_STATES
+            ):
+                observed = list(existing.get("observed_reuse_packet_ids") or [])
+                if packet_id != existing.get("packet_id") and packet_id not in observed:
+                    observed.append(packet_id)
+                existing["observed_reuse_packet_ids"] = observed
+                payload[AI_ASSISTED_PILOT_METADATA_KEY] = existing
+                delivery.payload = json.dumps(payload, ensure_ascii=False)
+                session.add(delivery)
+                continue
             payload[AI_ASSISTED_PILOT_METADATA_KEY] = {
                 "delivery_intent_contract": PACKET_BOUND_DELIVERY_INTENT_CONTRACT,
                 "packet_id": packet_id,

@@ -158,6 +158,15 @@ TELEGRAM_DELIVERY_METADATA_KEY = "_telegram_delivery"
 STOCK_NOTIFICATION_METADATA_KEY = "_stock_notification"
 MORNING_GATE_METADATA_KEY = "_morning_gate"
 AI_ASSISTED_PILOT_METADATA_KEY = "_ai_assisted_pilot"
+AI_ASSISTED_OWNED_STATES = {
+    "packet_bound_pending_hold",
+    "held",
+    "ai_assisted_pending",
+    "ai_assisted_sent",
+    "fallback_pending",
+    "fallback_sent",
+    "partial_integrity_rejected",
+}
 PACKET_BOUND_DELIVERY_INTENT_CONTRACT = "packet-bound-delivery-intent-v1"
 
 
@@ -384,12 +393,16 @@ def _logical_notification_payload(payload: dict[str, object]) -> dict[str, objec
 
 def _ai_assisted_pilot_holds(payload: dict[str, object]) -> bool:
     metadata = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
-    return isinstance(metadata, dict) and metadata.get("state") == "held"
+    return isinstance(metadata, dict) and metadata.get("state") in {
+        "packet_bound_pending_hold",
+        "held",
+    }
 
 
 def _ai_assisted_pilot_owns_pending_payload(payload: dict[str, object]) -> bool:
     metadata = payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
     return isinstance(metadata, dict) and metadata.get("state") in {
+        "packet_bound_pending_hold",
         "held",
         "ai_assisted_pending",
         "fallback_pending",

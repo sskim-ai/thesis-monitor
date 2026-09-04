@@ -109,6 +109,7 @@ class Settings(BaseSettings):
     macro_alert_min_magnitude: int = 3
     notification_dry_run: bool = True
     notification_channel: str = "telegram"
+    notification_recipient_class: Literal["production", "test"] = "production"
     telegram_bot_token: str | None = None
     telegram_chat_id: str | None = None
     telegram_test_chat_id: str | None = None

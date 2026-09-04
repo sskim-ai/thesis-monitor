@@ -1,0 +1,23 @@
+{
+  "contract": "ai-delivery-lifecycle-proof-v1",
+  "implementation_sha": "d00741abbe227bd199c8383de0cad9bbd740ceeb",
+  "states": [
+    "packet_bound_pending_hold",
+    "held",
+    "ai_assisted_pending",
+    "ai_assisted_sent",
+    "fallback_pending",
+    "fallback_sent",
+    "partial_integrity_rejected"
+  ],
+  "analysis_reuse_preserves_owner": true,
+  "fresh_process_retry": true,
+  "dry_run_pending_reactivation_requires_non_dry_run": true,
+  "late_validation_mutates_terminal_delivery": false,
+  "partial_ai_fallback_mixing": false,
+  "controlled_failure": {
+    "ai_sent": 0,
+    "fallback_sent": 9,
+    "duplicate_sent": 0
+  }
+}

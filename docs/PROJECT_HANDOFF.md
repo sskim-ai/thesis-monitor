@@ -90,6 +90,25 @@ fallback route, message quality, and exactly-once delivery. Do not manually invo
 replay production messages, expose recipient values, or treat test-sink evidence as natural proof.
 Production Assist remains OFF.
 
+## 2026-09-03 Run-54 KR Live V2 Delivery Orchestration Repair Handoff
+
+Start with `docs/reports/20260903-live-orchestration-repair-verdict.md` and its artifact index.
+Exact instruction commit is `20d052dee5f4ea0d6b2630a284434a98ca52596a`; implementation is
+`d00741abbe227bd199c8383de0cad9bbd740ceeb`.
+
+The primary incident was a delivery-owner overwrite during analysis reuse combined with mismatched
+pending/retry state vocabularies. V2 suppression was a separate missing claim-bound accepted
+artifact. Both now have explicit persistent lifecycle receipts. The isolated production-path E2E
+reached signed-in `gpt-5.6-sol / xhigh`, accepted `1` market plus `8` stock V2 messages, recovered
+all `9` pending rows across a process boundary, and delivered exactly `9/9` to the dedicated test
+sink with fallback and duplicate counts `0/0`. Production send/state mutation and main merge are
+zero.
+
+Next action: review the next naturally scheduled KR cycle read-only for accepted V2 ownership,
+pending-to-sent transition, fallback zero, exactly-once receipt, and orphan zero. Do not manually
+run or resend the task. This branch is `READY_FOR_NATURAL_PROOF`, not natural `LIVE_PASS`.
+Production Assist remains OFF.
+
 ## 2026-09-01 Malformed OHLC Provider Integrity Handoff
 
 Start with `docs/reports/20260901-ohlc-integrity-readiness.json`,

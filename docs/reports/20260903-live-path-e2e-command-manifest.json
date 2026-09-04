@@ -1,0 +1,29 @@
+{
+  "contract": "live-path-e2e-command-manifest-v1",
+  "secrets_redacted": true,
+  "data_root": "<isolated-data-root>",
+  "database": "<isolated-sqlite-backup>",
+  "environment": {
+    "ENABLE_LIVE_PROVIDERS": "false",
+    "INCLUDE_MOCK_PROVIDER": "false",
+    "NOTIFICATION_RECIPIENT_CLASS": "test",
+    "VISIBLE_STOCK_DECISION_ENGINE": "v2_accepted",
+    "V2_PRODUCTION_ENABLED": "true",
+    "V2_FULL_MONITORED_STOCK_COVERAGE_TARGET": "true",
+    "FREE_ANALYST_ADAPTIVE_MODE": "free_analyst_adaptive_canary",
+    "TELEGRAM_CHAT_ID": "<dedicated-test-sink-secret>",
+    "TELEGRAM_BOT_TOKEN": "<existing-secret>"
+  },
+  "commands": [
+    "python -m app.jobs.monitor_daily --market kr",
+    "python -m app.jobs.ai_review claim --market kr --owner <e2e-owner> --wait-seconds 0 --lease-minutes 60",
+    "python -m app.jobs.accepted_decision_v2_runtime generate --packet-id <packet> --claim-id <claim> --timeout <bounded-timeout>",
+    "python -m app.jobs.ai_review validate --packet-id <packet> --claim-id <claim>",
+    "python -m app.jobs.ai_review retry-delivery --market kr --date 2026-09-03",
+    "python -m app.jobs.monitor_daily --market kr",
+    "python -m app.jobs.ai_review fallback --market kr --date 2026-09-03"
+  ],
+  "scheduled_task_invoked": false,
+  "production_database_used": false,
+  "production_recipient_used": false
+}
