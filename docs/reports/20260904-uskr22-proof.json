@@ -1,0 +1,31 @@
+{
+  "a_b_c_gate": "NOT_RUN_FIRST_GATE_FAILED",
+  "base": "7a71494c9ca67d6fce4495c278311bc50a1ae82c",
+  "first_run": {
+    "candidate_count": 22,
+    "decision_distribution": {
+      "BUY": 6,
+      "HOLD": 13,
+      "SELL": 3
+    },
+    "failed_tickers": [
+      "005490"
+    ],
+    "message_quality": "FAIL",
+    "model_calls": 6,
+    "validated": 21
+  },
+  "main_merge": 0,
+  "manual_candidate_override": 0,
+  "new_experiment_generation": "PASS",
+  "old_candidate_reuse": 0,
+  "open_p0": 0,
+  "open_p1": 1,
+  "production_decision_mutation": 0,
+  "production_renderer_change": 0,
+  "production_send": 0,
+  "promotion_readiness": "NOT_READY",
+  "scheduler_change": 0,
+  "selective_ticker_rerun": 0,
+  "work_instruction_sha": "5a3c0fa397f72b208e7d0920b3e9226594ceef4e"
+}

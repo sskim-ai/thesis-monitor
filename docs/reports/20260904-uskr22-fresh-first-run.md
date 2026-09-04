@@ -1,0 +1,30 @@
+# USKR22 Fresh First Run
+
+The completely new generation used six signed-in Codex CLI xhigh calls and produced all 22 candidates. Validation passed for 21 subjects. The hard gate stopped the program before A/B/C.
+
+| Ticker | Decision | Buy:Sell | Lean | Confidence | New buyer | Holder | Entry |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| CORZ | HOLD | 5.0:5.0 | NEUTRAL | MEDIUM | WAIT | REVIEW | BOTH |
+| CPNG | HOLD | 4.5:5.5 | SELL_LEAN | LOW | WAIT | REVIEW | BOTH |
+| CRCL | HOLD | 4.5:5.5 | SELL_LEAN | LOW | WAIT | REVIEW | PULLBACK |
+| GOOGL | BUY | 6.5:3.5 | NOT_HOLD | MEDIUM | WAIT | HOLDABLE | BOTH |
+| HUT | SELL | 3.5:6.5 | NOT_HOLD | MEDIUM | AVOID | REDUCE | CONFIRMATION |
+| IBM | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | WAIT | HOLDABLE | BOTH |
+| MU | BUY | 6.0:4.0 | NOT_HOLD | MEDIUM | WAIT | HOLDABLE | PULLBACK |
+| RXRX | HOLD | 5.0:5.0 | NEUTRAL | LOW | WAIT | REVIEW | BOTH |
+| SKHY | HOLD | 5.5:4.5 | BUY_LEAN | LOW | WAIT | HOLDABLE | BOTH |
+| SNDK | HOLD | 5.5:4.5 | BUY_LEAN | MEDIUM | WAIT | REVIEW | BOTH |
+| TSLA | SELL | 3.5:6.5 | NOT_HOLD | MEDIUM | AVOID | REDUCE | BOTH |
+| TSM | BUY | 6.0:4.0 | NOT_HOLD | LOW | WAIT | HOLDABLE | BOTH |
+| WRD | HOLD | 4.5:5.5 | SELL_LEAN | LOW | WAIT | REVIEW | CONFIRMATION |
+| WULF | SELL | 4.0:6.0 | NOT_HOLD | MEDIUM | AVOID | REDUCE | CONFIRMATION |
+| 000660 | HOLD | 5.0:5.0 | NEUTRAL | MEDIUM | WAIT | REVIEW | PULLBACK |
+| 003690 | BUY | 6.0:4.0 | NOT_HOLD | MEDIUM | ATTRACTIVE | HOLDABLE | PULLBACK |
+| 005490 | HOLD | 5.5:4.5 | BUY_LEAN | LOW | WAIT | HOLDABLE | CONFIRMATION |
+| 005930 | HOLD | 4.5:5.5 | SELL_LEAN | MEDIUM | WAIT | REVIEW | PULLBACK |
+| 010120 | BUY | 6.0:4.0 | NOT_HOLD | MEDIUM | WAIT | HOLDABLE | PULLBACK |
+| 012450 | BUY | 6.5:3.5 | NOT_HOLD | MEDIUM | ATTRACTIVE | HOLDABLE | PULLBACK |
+| 047810 | HOLD | 4.5:5.5 | SELL_LEAN | MEDIUM | WAIT | REVIEW | BOTH |
+| 086280 | HOLD | 5.0:5.0 | NEUTRAL | MEDIUM | WAIT | HOLDABLE | CONFIRMATION |
+
+Distribution: `BUY 6 / HOLD 13 / SELL 3`.

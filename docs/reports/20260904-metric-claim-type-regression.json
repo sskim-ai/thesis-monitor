@@ -1,0 +1,15 @@
+{
+  "contract": "evidence-grounded-metric-claim-type-v1",
+  "focused_pre_model_regression": "PASS",
+  "fresh_first_failure": {
+    "errors": [
+      "unsupported_future_checkpoint_metric",
+      "unsupported_metric_or_inference"
+    ],
+    "evidence_owns_metric": true,
+    "metric": "ROIC",
+    "role": "sell_driver",
+    "ticker": "005490"
+  },
+  "status": "FAIL_FRESH_MODAL_BOUNDARY"
+}
