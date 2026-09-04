@@ -1,0 +1,327 @@
+{
+  "base_sha": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "contract": "structured-autonomy-v2-proof",
+  "fresh_freeze": {
+    "accepted_sha256": "bda10ccb35a509c6c873bd82905c68ac32d48f179defda1d3590d84354874aad",
+    "batch_hashes": [
+      {
+        "output": "9f2502f9d4f678ba5096f7719c499998fd2b8937ea8d1a894207689d4202909e",
+        "prompt": "1fe8dd04e74e6e7602a02c8d0900513c438d9cbf3684623999aa66c079a8b10c"
+      },
+      {
+        "output": "bed58c5a710ff1bea02137af2d50e6958cfaacf97155bc33a4eb9fdfbb0ea4a6",
+        "prompt": "0305449055726cf2e3128fe6410e36f1cf86ba05c1ed824d3baf26f4ba2b88af"
+      },
+      {
+        "output": "dfbe07f8cb89d4bca03b26b338ff27223d187d286ef4153976ab8862c4e62ea0",
+        "prompt": "c04542408087f83071dd5e718d6250cf495365d47f6c0f25dfc6837fb74681b5"
+      },
+      {
+        "output": "1f3de9e7f5feb43317fa50b3d51043f0ec1be68ea8559c9a9f95a7abd1bab527",
+        "prompt": "1ee7771ce53137ae9ccba359a19e561d7565bc626a6646e24221de4b97b665e3"
+      },
+      {
+        "output": "01fe232603a14cdabe59e64525f75ea3768d5715a190e0488f8ce18abaacde91",
+        "prompt": "55370a1e969d587a1f39855daae947cea0b50a1a1bdd45db6f738b537dfdce5e"
+      }
+    ],
+    "candidate_count": 14,
+    "candidate_override_sha256": "86b4d29048d3152017e15ef3b7b85dc40573b751f0b08be146fc4e420544a3cf",
+    "candidate_sha256": "b0cfdb6a8465882d59cb6b6c931f246a553747e11e75d6dab2c36ad58d9044e3",
+    "combined_preview_sha256": "dbbee76445b796376159cab3e7340f86a72ef5004a4eb59b7f186947f9beeff1",
+    "contract": "structured-autonomy-v2-fresh-freeze",
+    "frozen_at": "2026-09-03T07:16:49.783483+00:00",
+    "model_reached": "PASS",
+    "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+    "phase1_frozen": "PASS",
+    "prior_accepted_visible_before_fresh_balance": 0,
+    "rendered_message_fingerprints": {
+      "CORZ": "dbe4f028ce2f9c632f5d6a012c6a9ad5bc4c6dec62aacc6e12a48f522b86f117",
+      "CPNG": "8d01928032655809efa3750aa2e26ef36c0f7f87750a138f20f98f0314c430c3",
+      "CRCL": "0bc7a0366f744c321169dd8ca3891165cb20014451ce1f7911168ff9dbbdf4bb",
+      "GOOGL": "75d634f82f139faa49f2cc135161ac48d1e54c8f44e4d30f0ce34ba4084ddf07",
+      "HUT": "5405dff42ef8ccae6a785b86d922363b286b63be92f54df43619f01a7419f688",
+      "IBM": "834f4e8b9087d607048f8b46ecdb0ba2796fbec0898e1233a8d435b825567127",
+      "MU": "02c7575392fe325094340078846430154cb8afae4e8ab1754d73cfdcd9d4e7ed",
+      "RXRX": "92bbbd74cad0a8cffe965b1db1d03fb98ccca22f58699de78f0ab1ef03b1275c",
+      "SKHY": "2b764332edfbc8f84a05cda4069a30aa5f4be6aa478f8a4895e6fac76684f511",
+      "SNDK": "d3630a813d25fc20dd34770d632fb34a3f6617cbe2c77bc536f4cffd8a64f087",
+      "TSLA": "5d11ae0ca59a929bc6c32dc2debb1047459ca9498e54defdd49259da52c40246",
+      "TSM": "b77954613c4a24a2b5c9ed401fe3a602be395b2315126f122932c0a90c86f76d",
+      "WRD": "fb05bbed7df9f1f9d56f34ef1851d564b0b9a3536797536ea03cc9e06b20f673",
+      "WULF": "8625a8ad7d2d77cc6915a78352b3262289be82ac30ca46ad2527f3cf8bb4558f"
+    },
+    "source_lock_sha256": "924ccfbb2844b7f4682398143926f138bb5cb05110ec5b066bbf6939c3f131af",
+    "validated_count": 14,
+    "work_instruction_sha": "a2d73ec6f8d053a176e9944a457d591c045e5f3f"
+  },
+  "gates": {
+    "BALANCE_AS_PROBABILITY": 0,
+    "CANDIDATE_COUNT": 14,
+    "CONTRADICTORY_THESIS_STATE_LINES": 0,
+    "DUPLICATE_JUDGMENT_AUTHORITY": 0,
+    "FIXED_FACTOR_WEIGHTING": 0,
+    "FRESH_FACT_COLLECTION": 0,
+    "FROZEN_EVIDENCE_COUNT": 14,
+    "HOLD_LEAN_FLIP_INVISIBLE": 0,
+    "MANDATORY_TRADE_LANGUAGE": 0,
+    "MESSAGE_INTERNAL_CONTRADICTION": 0,
+    "MODEL_REACHED": "PASS",
+    "PRIOR_ACCEPTED_VISIBLE_BEFORE_FRESH_BALANCE": 0,
+    "PRODUCTION_ACCEPTED_STATE_MUTATION": 0,
+    "PRODUCTION_RECIPIENT_SEND": 0,
+    "REFINED_MESSAGE_STYLE": "READY_STYLE",
+    "REFINED_STRUCTURE_VERDICT": "PROMISING",
+    "SECTOR_NORMAL_ATTRIBUTE_AUTOMATIC_SELL_PENALTY": 0,
+    "SUBSCORE_SUMMATION_FORMULA": 0,
+    "UNIVERSAL_SECTOR_AGNOSTIC_SCORECARD": 0,
+    "UNKNOWN_AUTOMATIC_SELL_PENALTY": 0,
+    "UNSUPPORTED_CONFIRMATION_LEVEL": 0,
+    "UNSUPPORTED_PRICE_NUMERIC": 0,
+    "UNSUPPORTED_PULLBACK_ZONE": 0,
+    "VALIDATION_PASS_COUNT": 14
+  },
+  "model_runtime": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "signed_in_codex_cli": true
+  },
+  "packet_id": "2026-09-03-us-run-53-055ae8ea01f6",
+  "production_mutations": 0,
+  "production_send": 0,
+  "special_audits": {
+    "MU": {
+      "balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "canonical:cashflow:96e9c3b873f3678d4dec0ff3",
+          "decision-evidence:2c7de5970a1beda446d7",
+          "canonical:valuation:historical_pb",
+          "canonical:chart:price_transition"
+        ],
+        "text": "Micron의 AI 메모리 수요와 강한 현금창출은 긍정적이지만, 높은 기대와 장부가치 기준 부담 때문에 가격 확인을 동반한 제한적 매수 판단이 적절하다."
+      },
+      "cycle_expectation_valuation_combined": true,
+      "decision": "BUY",
+      "low_forward_per_alone_determined_buy": false
+    },
+    "RXRX": {
+      "balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "decision-evidence:774e2e7f46d2025d7257",
+          "decision-evidence:bb19872705545d1af04f",
+          "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+          "canonical:chart:price_transition"
+        ],
+        "text": "파트너와 임상 진전은 플랫폼 가치를 지지하지만 반복 가능한 경제성은 미증명이고 가격 돌파도 약해, 신규 확신보다 관찰을 우선하는 보유 판단이 적절하다."
+      },
+      "decision": "HOLD",
+      "sector_normal_alone_determined_sell": false,
+      "sell_driver_classification_counts": {
+        "OTHER_EVIDENCE": 1,
+        "SECTOR_NORMAL": 1,
+        "STRUCTURAL_RISK": 2
+      },
+      "sell_has_deterioration_or_structural_risk": true
+    },
+    "WRD": {
+      "balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "core_judgment": {
+        "evidence_refs": [
+          "decision-evidence:e0d708a0ce64006b8bd5",
+          "decision-evidence:b6654e5fc384c0d33bda",
+          "canonical:price:current",
+          "canonical:chart:structure:state"
+        ],
+        "text": "Robotaxi 확장 가능성은 남아 있지만 이용률과 수익성 검증이 부족하고 가격도 확인 상태가 아니어서 어느 방향으로도 강한 판단은 이르다."
+      },
+      "decision": "HOLD",
+      "unknown_alone_determined_sell": false,
+      "unknown_treatment_counts": {
+        "CONFIDENCE_LIMIT": 2,
+        "CONFIRMATION_REQUIRED": 2
+      }
+    }
+  },
+  "validation": {
+    "message_quality": {
+      "average_character_count": 1525.43,
+      "contract": "structured-autonomy-message-quality-v2-shadow",
+      "errors": [],
+      "max_character_count": 1692,
+      "message_count": 14,
+      "repeated_substantive_span_count": 0,
+      "repeated_substantive_spans": [],
+      "rows": [
+        {
+          "character_count": 1587,
+          "duplicate_substantive_lines": [],
+          "ticker": "CORZ",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1560,
+          "duplicate_substantive_lines": [],
+          "ticker": "CPNG",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1442,
+          "duplicate_substantive_lines": [],
+          "ticker": "CRCL",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1692,
+          "duplicate_substantive_lines": [],
+          "ticker": "GOOGL",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1556,
+          "duplicate_substantive_lines": [],
+          "ticker": "HUT",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1672,
+          "duplicate_substantive_lines": [],
+          "ticker": "IBM",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1633,
+          "duplicate_substantive_lines": [],
+          "ticker": "MU",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1543,
+          "duplicate_substantive_lines": [],
+          "ticker": "RXRX",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1423,
+          "duplicate_substantive_lines": [],
+          "ticker": "SKHY",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1490,
+          "duplicate_substantive_lines": [],
+          "ticker": "SNDK",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1562,
+          "duplicate_substantive_lines": [],
+          "ticker": "TSLA",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1346,
+          "duplicate_substantive_lines": [],
+          "ticker": "TSM",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1293,
+          "duplicate_substantive_lines": [],
+          "ticker": "WRD",
+          "validation": "PASS"
+        },
+        {
+          "character_count": 1557,
+          "duplicate_substantive_lines": [],
+          "ticker": "WULF",
+          "validation": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    "rows": [
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "CORZ"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "CPNG"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "CRCL"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "GOOGL"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "HUT"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "IBM"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "MU"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "RXRX"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "SKHY"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "SNDK"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "TSLA"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "TSM"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "WRD"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "WULF"
+      }
+    ]
+  },
+  "work_instruction_sha": "a2d73ec6f8d053a176e9944a457d591c045e5f3f"
+}

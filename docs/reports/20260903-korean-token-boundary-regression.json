@@ -1,0 +1,316 @@
+{
+  "business_false_positive_fixture_count": 17,
+  "business_false_positive_fixture_pass_count": 17,
+  "business_language": [
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "USDC 점유율과 비이자성 수익 확대가 정상화 이익을 지지함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "HBM 출하와 고객 채택이 확대되고 가격과 제품구성 강세 및 현금창출이 유지되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "양산 인도와 경공격기 해외 수주가 확대되고 수익성과 현금흐름이 회복되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "가격 결정력이 마진 방어를 지원함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "customer demand supports utilization."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "pricing power supports margins."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "supplier support improves execution."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "customer support helps close execution gaps."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "수주가 확대되고 영업현금흐름이 개선되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "해외 발주가 증가하고 생산 효율이 회복되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "신규수주가 유지되고 수익성이 개선되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "해외수주가 회복되고 생산 효율이 개선되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "최종가격 상승이 수익성 개선을 지지함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "제품 가격 회복이 마진 개선을 지원함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "평균판매가격 개선이 현금창출을 지지함."
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "원재료 가격이 안정되고 마진이 회복되는 것"
+    },
+    {
+      "detected_as_price_structure": false,
+      "kind": "BUSINESS_LANGUAGE_MUST_PASS",
+      "korean_subject_actions": [],
+      "text": "판매가격 강세가 이익을 지지함."
+    }
+  ],
+  "contract": "korean-price-token-boundary-regression-v1",
+  "generic_business_word_false_positive": 0,
+  "price_structure": [
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "돌파",
+          "subject": "종가"
+        }
+      ],
+      "text": "종가 돌파가 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "저항선 위로 안착해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "지지선 회복이 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "확인선 회복이 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "돌파",
+          "subject": "주가"
+        }
+      ],
+      "text": "주가 돌파가 필요하다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "close above resistance."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "breakout through confirmation."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "support-level retest."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [],
+      "text": "registered confirmation price recovery."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "돌파",
+          "subject": "주가"
+        }
+      ],
+      "text": "주가가 확인선을 돌파해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "회복",
+          "subject": "주가"
+        }
+      ],
+      "text": "주가는 저항선을 회복해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "상회",
+          "subject": "현재 주가"
+        }
+      ],
+      "text": "현재 주가가 저항 상단을 상회해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "회복",
+          "subject": "현재주가"
+        }
+      ],
+      "text": "현재주가가 지지선을 회복해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "돌파",
+          "subject": "당일주가"
+        }
+      ],
+      "text": "당일주가가 확인 가격을 돌파해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "돌파",
+          "subject": "종가"
+        }
+      ],
+      "text": "종가가 확인선을 돌파해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "안착",
+          "subject": "정규장 종가"
+        }
+      ],
+      "text": "정규장 종가가 저항 상단에 안착해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "상회",
+          "subject": "정규장종가"
+        }
+      ],
+      "text": "정규장종가가 확인 가격을 상회해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "하회",
+          "subject": "전일 종가"
+        }
+      ],
+      "text": "전일 종가를 하회했다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "하회",
+          "subject": "전일종가"
+        }
+      ],
+      "text": "전일종가보다 하회했다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "이탈",
+          "subject": "현재주가"
+        }
+      ],
+      "text": "현재주가가 지지선을 이탈해야 한다."
+    },
+    {
+      "detected_as_price_structure": true,
+      "kind": "PRICE_STRUCTURE_MUST_BLOCK",
+      "korean_subject_actions": [
+        {
+          "action": "붕괴",
+          "subject": "당일 주가"
+        }
+      ],
+      "text": "당일 주가가 지지 구간을 붕괴했다."
+    }
+  ],
+  "regressions": {
+    "047810": "PASS",
+    "CRCL": "PASS",
+    "MU": "PASS"
+  },
+  "technical_ownership_fixture_miss": 0,
+  "technical_true_positive_fixture_count": 21,
+  "technical_true_positive_fixture_pass_count": 21
+}

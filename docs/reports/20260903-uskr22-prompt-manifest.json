@@ -1,0 +1,80 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "prompt_bytes": 141403,
+      "prompt_sha256": "e2b053a6cea8f360ae2eb6f48ca53c516dc011e07cb5e524e9b5a2e84b186046",
+      "schema_bytes": 57943,
+      "schema_sha256": "b789e658a49ba59ac5b58dc19fe6b9c7add43de19b4a9b82108e8cba413c145a",
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL"
+      ]
+    },
+    {
+      "batch": 2,
+      "prompt_bytes": 150570,
+      "prompt_sha256": "d4aefbf0361abc4d32bd8edcc49a68f20c58a97af8f1e56565499cc3c14bbdd1",
+      "schema_bytes": 58298,
+      "schema_sha256": "1fb7c654a2cd2cc0fc80631a96be79ee182b0abb9943c2392e1c588d57721263",
+      "tickers": [
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX"
+      ]
+    },
+    {
+      "batch": 3,
+      "prompt_bytes": 140933,
+      "prompt_sha256": "dfa3749dd45d04573973e7f6d433d3bff07a5460ec8e16a6a7227cb995f6eb6f",
+      "schema_bytes": 57911,
+      "schema_sha256": "2b3972bffa73e894db7b7e1f18dffb93231290fcce0a39a94fd21dbfef1b715e",
+      "tickers": [
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM"
+      ]
+    },
+    {
+      "batch": 4,
+      "prompt_bytes": 67279,
+      "prompt_sha256": "a19b215c0c320e36d68dbc1fc3c5664c2b7948217930f1a26d3e7787169af750",
+      "schema_bytes": 29095,
+      "schema_sha256": "08c32ae7f3f4dbfabefed134994bdd96791b05e4453fa6c0b3716c8609672ef3",
+      "tickers": [
+        "WRD",
+        "WULF"
+      ]
+    },
+    {
+      "batch": 5,
+      "prompt_bytes": 142446,
+      "prompt_sha256": "feb59547732295004506205113b01db3ed16a8d768afafc4e732ab4324088344",
+      "schema_bytes": 58010,
+      "schema_sha256": "31a52585adf2aef1fe26a6e888bcd88e4f5b5923030977550592353eaccc301f",
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    },
+    {
+      "batch": 6,
+      "prompt_bytes": 142037,
+      "prompt_sha256": "a21390a5cfd84a8d33e7e17e0b1a265b375693da70a971b809ff3dd28d814e81",
+      "schema_bytes": 58130,
+      "schema_sha256": "b42c30b156691b5a954c721e190bf3964a5815be569a6c133827f97e57059dc1",
+      "tickers": [
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ]
+    }
+  ]
+}

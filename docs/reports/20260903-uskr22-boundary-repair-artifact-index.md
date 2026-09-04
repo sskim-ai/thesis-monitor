@@ -1,0 +1,56 @@
+# USKR22 Boundary Repair Artifact Index
+
+| Artifact | SHA-256 | Bytes |
+| --- | --- | --- |
+| 20260903-korean-price-token-boundary-root-cause.md | b60a0bcf858eaac45cebb4d623557e03b56257d8cc6f3f2e947c53f10bf9b06f | 500 |
+| 20260903-korean-price-subject-detector-contract.md | ccf270773dc6bdc1c77d655dfd85ffc0532a78dbf69375029a1a1b72d1054980 | 530 |
+| 20260903-korean-business-compound-regression-matrix.md | 7a88bd6c8e28f59969d969fd8409c6cd2206cdb1eae2f093524a0f48052f3eaf | 1613 |
+| 20260903-korean-technical-subject-regression-matrix.md | 22255e8da64cc268ea1bd80a4e4234c6f7fd77a141e84fe8cfa64043a89abb8c | 1927 |
+| 20260903-047810-false-positive-regression-proof.md | d10f137fa8d418ba596f22c62be2cfe1af84026b0849f6cecf359829feec18e6 | 774 |
+| 20260903-uskr22-boundary-repair-source-lock.md | 2ff0af4a3a81bd61acf14aa2ace059502dfad09d392054b510bedd7acf607010 | 686 |
+| 20260903-uskr22-boundary-repair-first-run.md | 1ab126883474ddfdec56825304a1ae5d100b91e21a52fd180498ceebbe4d3afb | 2002 |
+| 20260903-uskr22-boundary-repair-validation.md | 3db97850500b624d4204318fa44fe894f268f11e33acc55d01cb57e236417da4 | 828 |
+| 20260903-uskr22-prior21-vs-new-first-run.md | 5d6c0a18b2847cc33903751a901399e47f6e3e68a97ea962c337854af5647d25 | 2075 |
+| 20260903-uskr22-run-a.md | d13705705a699bebd4ae1753d2284b70e303ca4752490dcec10e3e881ec1360f | 1973 |
+| 20260903-uskr22-run-b.md | a9ee56f9fa5f5ecbf83800c61e4ad4a9582483fca2e8143cf8d1c0743907284c | 1963 |
+| 20260903-uskr22-run-c.md | c9219dbc462d3e8bfec124fcad4bfd6204a10532939d098d4ea2baac09a8a89c | 1977 |
+| 20260903-uskr22-stability-comparison.md | e796a2b6c6f5aeb726dacd6a6ab412521181242d5f7c32c5a8de422a4d9e567e | 3802 |
+| 20260903-uskr22-hold-lean-stability.md | 84a648eb61319cb601d4ff8daf2bf798968122b5e58bf06d88f52e62df81901a | 1662 |
+| 20260903-uskr22-action-context-stability.md | 13baa4e9a90c8f264b99d9d6329f890d1a2219970c02249eb0156c4d55136a77 | 2787 |
+| 20260903-uskr22-evidence-selection-variance.md | 36a37d6d5371347225c900527bae621c6834458cd29380ce5d8ee4a849f79f15 | 12339 |
+| 20260903-uskr22-message-quality.md | a92df715ff98f3ef404a95b82d2fdc14ea41ab3ecf8578c48b9c73fa37a6a06f | 520 |
+| 20260903-uskr22-promotion-readiness.md | f1b11585fbbd28f2b87120c043bc98c1a9bac4a6f2a3c97e5dc37c5a2da60d1d | 3294 |
+| 20260903-korean-token-boundary-regression.json | 5e4ad8075e1b850484a14ddfd56a12564abb06073e25812be07af8b8d5741bf9 | 9440 |
+| 20260903-uskr22-boundary-repair-first-run.json | 27ffffbd41529fcb0f704150cd3eeab675a3509d76333ad5370449aed93ba92e | 919018 |
+| 20260903-uskr22-run-a.json | ac77f92b2de680b9848c599cc79321998d1da343f72aa41530762bb5817b7745 | 953282 |
+| 20260903-uskr22-run-b.json | 6f6db1a81bd8d962abe8d27a1846a7c02bc56d139b976beceb74fc05c95b6bf8 | 903987 |
+| 20260903-uskr22-run-c.json | c9ef0fca0cce1fa1393b00e3895610a9fede7d7be8ec7d4c127dbeb508d0cdbe | 910958 |
+| 20260903-uskr22-stability.json | 0454cf86ff4abf4b0dcb71b9cae79804c0624578aa6de0e9c77091042cfc740b | 91837 |
+| 20260903-uskr22-boundary-repair-proof.json | f34eff9696307f1bd9f75c6d71e40d17035aa87d2ee5de8c00bf95491febfb33 | 193130 |
+| 20260903-uskr22-boundary-repair-evidence-alias-map.json | 57b01fcaa351ee53313c61abe70a7a583935529c8506782668d7a4a23bed36c7 | 1112344 |
+| 20260903-uskr22-boundary-repair-us14-message-preview.md | 49aeb6e667c6f2380f0dc9dc50aba44b19a3ec2da290bc1bc27dae83cb1ba140 | 43522 |
+| 20260903-uskr22-boundary-repair-kr8-message-preview.md | bcd7355569424f39d407dd901f2a512178d07fa32c95a13f4638fb310e48a79a | 26901 |
+| uskr22-boundary-repair-messages/000660.txt | 325536051af594ae9656c570d97d2301e9288de51ac47199b6909a5421e2ebaa | 2812 |
+| uskr22-boundary-repair-messages/003690.txt | f7e555808b85d2a89b2c6292fa131d7a22ac8ee55289ba35ee0365f8be866921 | 2504 |
+| uskr22-boundary-repair-messages/005490.txt | 8ee1d9cb653b3f3c055e08da65cd212bd54f5d776d10c3875f2f44e581c7d1de | 3527 |
+| uskr22-boundary-repair-messages/005930.txt | e0c7fd5bc7e5f7cad89b57112dc03a6196e5ccd6ef528b33204400f1f26ab449 | 3556 |
+| uskr22-boundary-repair-messages/010120.txt | 36751885e5587d742dd2b6f7edb11e230030a968af6419115d29dc082061202e | 3567 |
+| uskr22-boundary-repair-messages/012450.txt | e1308bc4b75d05b14c5996b5a96735140596264d70347e6f705f561d2d31c357 | 3680 |
+| uskr22-boundary-repair-messages/047810.txt | 376a012f9320d1b8edb9a3b79337a261a858c1f7011f49cb7ab973e25d2f0dd8 | 3467 |
+| uskr22-boundary-repair-messages/086280.txt | bae6c7031a4918e6364d464198b26c342854bf158784cafb292ac957ecae18bc | 3551 |
+| uskr22-boundary-repair-messages/CORZ.txt | 36f8eb79d09409d2b870db95012af340a1149400b972479194c2b8fe668649bd | 3136 |
+| uskr22-boundary-repair-messages/CPNG.txt | 21c36a9c888cf876698c975512483f67bfaca3e19c967f5b6db96eb074d51f7b | 3074 |
+| uskr22-boundary-repair-messages/CRCL.txt | 4b96ba25e27a96f81286d1b4db74b6f45456216a407a3e50c6ea69f056e72e8b | 2906 |
+| uskr22-boundary-repair-messages/GOOGL.txt | 93a0769f5231751ec0037b7686c675ceece48bc2ef2c16793ebb4a2990de1139 | 3267 |
+| uskr22-boundary-repair-messages/HUT.txt | db5c9084ace427764c09e76c3658ac4f14fc4d77861162d10bbce6b8a737dae7 | 3058 |
+| uskr22-boundary-repair-messages/IBM.txt | 11a821afc89844e129ceb04ca8cb5a8b84f849cef1580fb347423243849f5ea5 | 3052 |
+| uskr22-boundary-repair-messages/MU.txt | 22a92b6046ef5f82cac11978a02030fa6e5740a32022038cfa559dfc62ce6afc | 3184 |
+| uskr22-boundary-repair-messages/RXRX.txt | fe665747339aa8430125e5d984ce4a0c5fdcafb6209a7e9b74dc4778b0b3b092 | 3288 |
+| uskr22-boundary-repair-messages/SKHY.txt | 1c33cb2644cdd88bc19e21ba43567606963f9d95654fc0e598c5e94a48140e0c | 3038 |
+| uskr22-boundary-repair-messages/SNDK.txt | b7a630ef6b746b4ca640dec522fa3043b351c843d0260818f8ab7960b92f3b55 | 3200 |
+| uskr22-boundary-repair-messages/TSLA.txt | cb0a24da01f82d369d90bcd818b496da99dc952c29d0e4a988028198cf5cf834 | 3298 |
+| uskr22-boundary-repair-messages/TSM.txt | af64df3f50026bfd4cbb9c3b102b8f537b2eaf11f3bd1346ccb3c3814949a1a6 | 2768 |
+| uskr22-boundary-repair-messages/WRD.txt | 23b268480d1371100b5e9270e4a67d49aabafa240a1dace82b4f282d25da9872 | 2750 |
+| uskr22-boundary-repair-messages/WULF.txt | 3ce40e8f8e8a3ab8f8a2c2a4d07441d5e45e0ccd0428fe561b20b83f14c4340b | 3154 |
+
+Indexed artifacts: `50`. Recipient identifiers and credentials are excluded.

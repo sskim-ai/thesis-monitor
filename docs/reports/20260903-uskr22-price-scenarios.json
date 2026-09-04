@@ -1,0 +1,1285 @@
+{
+  "contract": "uskr22-price-scenario-audit-v1",
+  "rows": [
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 18.382585
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 22.4
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 12.257319
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 13.463829,
+            "low": 12.911171
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 18.382585,
+            "low": 17.447415
+          }
+        ],
+        "currency": "USD",
+        "current_close": 16.81
+      },
+      "first_selected": {
+        "confirmation": 18.382585,
+        "downside_review": 12.257319,
+        "pullback": [
+          12.911171,
+          13.463829
+        ],
+        "trim": [
+          17.447415,
+          18.382585
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "6ee2b30d5958f44dafb0c51aab9836b407f508ef3029c412bb9fe1520df1d4b4",
+      "ticker": "CORZ"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 17.157304
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 17.9
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 14.9
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 14.45936
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 15.22279,
+            "low": 14.72721
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 15.7,
+            "low": 15.45
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 17.157304,
+            "low": 16.507696
+          }
+        ],
+        "currency": "USD",
+        "current_close": 15.97
+      },
+      "first_selected": {
+        "confirmation": 17.9,
+        "downside_review": 14.9,
+        "pullback": [
+          15.45,
+          15.7
+        ],
+        "trim": [
+          16.507696,
+          17.157304
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "6a5e6617717419778d6168ed8b4ab57fe19f92271356fefcce97e476b7bf8081",
+      "ticker": "CPNG"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 57.8
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 78.914109
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 86.529549,
+            "low": 82.010451
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 62.5,
+            "low": 60.0
+          }
+        ],
+        "allowed_trim_zones": [],
+        "currency": "USD",
+        "current_close": 88.64
+      },
+      "first_selected": {
+        "confirmation": null,
+        "downside_review": 78.914109,
+        "pullback": [
+          82.010451,
+          86.529549
+        ],
+        "trim": [
+          null,
+          null
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "a7cfb02fb13b38ccc45e9a08367948072e8f8341c54e62c8929b1c5e67fcec67",
+      "ticker": "CRCL"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 353.787998
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 375.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 308.223399
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 321.878566,
+            "low": 312.373234
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 298.552733,
+            "low": 291.777267
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 353.787998,
+            "low": 343.652002
+          }
+        ],
+        "currency": "USD",
+        "current_close": 337.12
+      },
+      "first_selected": {
+        "confirmation": 353.787998,
+        "downside_review": 308.223399,
+        "pullback": [
+          312.373234,
+          321.878566
+        ],
+        "trim": [
+          343.652002,
+          353.787998
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "5c0908248c27a2273117eadb842e4fae99895e8da2176906b9a7810f33f247b6",
+      "ticker": "GOOGL"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 89.670191
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 97.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 76.64856
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 85.959175,
+            "low": 80.640825
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 58.328089,
+            "low": 55.831811
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 89.670191,
+            "low": 84.109809
+          }
+        ],
+        "currency": "USD",
+        "current_close": 80.68
+      },
+      "first_selected": {
+        "confirmation": 89.670191,
+        "downside_review": 76.64856,
+        "pullback": [
+          80.640825,
+          85.959175
+        ],
+        "trim": [
+          84.109809,
+          89.670191
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "74700da763b22cca00fc040808c38856e40ee3071b9f54274b04a4f3280eafe1",
+      "ticker": "HUT"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 250.256325
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 250.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 223.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 228.180854
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 235.551357,
+            "low": 231.558643
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 232.415043,
+            "low": 225.494957
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 230.0,
+            "low": 223.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 250.256325,
+            "low": 237.103675
+          }
+        ],
+        "currency": "USD",
+        "current_close": 231.7
+      },
+      "first_selected": {
+        "confirmation": 250.256325,
+        "downside_review": 228.180854,
+        "pullback": [
+          231.558643,
+          235.551357
+        ],
+        "trim": [
+          237.103675,
+          250.256325
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "b615c7aa912d8508f9379436e0e77a54dff8065e3abe956ef353ef74c0059197",
+      "ticker": "IBM"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 1278.851879
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 827.0
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 737.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 839.757164
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 911.748329,
+            "low": 867.516671
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 865.0,
+            "low": 844.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 1278.851879,
+            "low": 1231.148121
+          }
+        ],
+        "currency": "USD",
+        "current_close": 956.08
+      },
+      "first_selected": {
+        "confirmation": 1278.851879,
+        "downside_review": 839.757164,
+        "pullback": [
+          867.516671,
+          911.748329
+        ],
+        "trim": [
+          1231.148121,
+          1278.851879
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "d7b5b4819879757ff83d088b37a6f4769a2723cab586c908a74c952741934352",
+      "ticker": "MU"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 3.678704
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 2.84
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 3.279337
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 3.466017,
+            "low": 3.373983
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 2.961842,
+            "low": 2.878158
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 3.08,
+            "low": 3.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 3.678704,
+            "low": 3.581096
+          }
+        ],
+        "currency": "USD",
+        "current_close": 3.38
+      },
+      "first_selected": {
+        "confirmation": 3.678704,
+        "downside_review": 3.279337,
+        "pullback": [
+          3.373983,
+          3.466017
+        ],
+        "trim": [
+          3.581096,
+          3.678704
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "c6cd8afec910f07970c91b966f97c396b211fefa690a0971ccb6e93bcb622d45",
+      "ticker": "RXRX"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 182.003405
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 143.0
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 124.8
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 151.0,
+            "low": 147.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 182.003405,
+            "low": 174.856595
+          }
+        ],
+        "currency": "USD",
+        "current_close": 164.98
+      },
+      "first_selected": {
+        "confirmation": 182.003405,
+        "downside_review": 143.0,
+        "pullback": [
+          147.0,
+          151.0
+        ],
+        "trim": [
+          174.856595,
+          182.003405
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "eae813ddde4eac8238f7f73dfb6be556a42ec3d336e472770299bce802918e16",
+      "ticker": "SKHY"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 2392.674432
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 998.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 777.410484
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 1073.01247,
+            "low": 923.36753
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 1046.033008,
+            "low": 950.346992
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 1125.0,
+            "low": 1100.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 2392.674432,
+            "low": 2316.105368
+          }
+        ],
+        "currency": "USD",
+        "current_close": 1553.4
+      },
+      "first_selected": {
+        "confirmation": 2392.674432,
+        "downside_review": 998.0,
+        "pullback": [
+          1100.0,
+          1125.0
+        ],
+        "trim": [
+          2316.105368,
+          2392.674432
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "e26f96f59ecad164eeb8faebc5cc0e117a3bd25dcc9a91820d23beb2fa72c1e3",
+      "ticker": "SNDK"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 382.678777
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 297.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 328.096407
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 341.126989,
+            "low": 334.873011
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 340.960185,
+            "low": 333.519815
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 323.0,
+            "low": 318.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 382.678777,
+            "low": 358.961223
+          }
+        ],
+        "currency": "USD",
+        "current_close": 357.01
+      },
+      "first_selected": {
+        "confirmation": 382.678777,
+        "downside_review": 328.096407,
+        "pullback": [
+          334.873011,
+          341.126989
+        ],
+        "trim": [
+          358.961223,
+          382.678777
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "9de41272ee446e7531962e9d72f28a8caf229ddf5af0572a547eb5774cd9ddbc",
+      "ticker": "TSLA"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 439.781794
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 432.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 398.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 374.987393
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 390.305963,
+            "low": 380.774037
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 316.224939,
+            "low": 305.055061
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 414.0,
+            "low": 407.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 439.781794,
+            "low": 432.298206
+          }
+        ],
+        "currency": "USD",
+        "current_close": 415.5
+      },
+      "first_selected": {
+        "confirmation": 439.781794,
+        "downside_review": 398.0,
+        "pullback": [
+          407.0,
+          414.0
+        ],
+        "trim": [
+          432.298206,
+          439.781794
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "24ac0d16b861a772cabd638ce1cb2ad01cfca4d693515e982d3b08642c94ca94",
+      "ticker": "TSM"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 6.153512
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 6.68
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 5.3
+          }
+        ],
+        "allowed_pullback_zones": [],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 6.153512,
+            "low": 5.906488
+          }
+        ],
+        "currency": "USD",
+        "current_close": 5.77
+      },
+      "first_selected": {
+        "confirmation": 6.153512,
+        "downside_review": 5.3,
+        "pullback": [
+          null,
+          null
+        ],
+        "trim": [
+          5.906488,
+          6.153512
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "ff98de3c6710f3451ad70c19efaa2ed2d2fa4aeb1d8637d165e00b94e97d4cc5",
+      "ticker": "WRD"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 16.461814
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 18.4
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 14.8
+          }
+        ],
+        "allowed_pullback_zones": [],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 16.461814,
+            "low": 15.552386
+          }
+        ],
+        "currency": "USD",
+        "current_close": 14.82
+      },
+      "first_selected": {
+        "confirmation": 18.4,
+        "downside_review": 14.8,
+        "pullback": [
+          null,
+          null
+        ],
+        "trim": [
+          15.552386,
+          16.461814
+        ]
+      },
+      "market": "us",
+      "price_map_fingerprint": "227525180b4b7e86dd5ee9bdbca1a082ccb85314401c4c72a55a6f3c169828b4",
+      "ticker": "WULF"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 3039041.7428
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 1320000.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 1124227.136784
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 1301679.459988,
+            "low": 1190320.540012
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 252506.747861,
+            "low": 242493.252139
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 1420000.0,
+            "low": 1397000.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 3039041.7428,
+            "low": 2934958.2572
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 1596000.0
+      },
+      "first_selected": {
+        "confirmation": 3039041.7428,
+        "downside_review": 1320000.0,
+        "pullback": [
+          1397000.0,
+          1420000.0
+        ],
+        "trim": [
+          2934958.2572,
+          3039041.7428
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "f05cb74fb14ec9968a991adce618ca2f3492fc31f566927cc8c79ace27d86e95",
+      "ticker": "000660"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 12900.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 14995.574219
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 15635.400944,
+            "low": 15264.599056
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 15608.64138,
+            "low": 15191.35862
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 13100.0,
+            "low": 12900.0
+          }
+        ],
+        "allowed_trim_zones": [],
+        "currency": "KRW",
+        "current_close": 15470.0
+      },
+      "first_selected": {
+        "confirmation": null,
+        "downside_review": 14995.574219,
+        "pullback": [
+          15264.599056,
+          15635.400944
+        ],
+        "trim": [
+          null,
+          null
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "6bde39dfa7179c500b84c4209be192a23cc13c19122ceea55b1b45614a6b7238",
+      "ticker": "003690"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 402936.224195
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 344000.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 298000.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 325568.697293
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 347476.134583,
+            "low": 332523.865417
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 345609.868121,
+            "low": 333390.131879
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 320000.0,
+            "low": 313000.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 402936.224195,
+            "low": 385063.775805
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 342000.0
+      },
+      "first_selected": {
+        "confirmation": 344000.0,
+        "downside_review": 325568.697293,
+        "pullback": [
+          332523.865417,
+          347476.134583
+        ],
+        "trim": [
+          385063.775805,
+          402936.224195
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "98bfa0c74e8368afb5cfc18f8ec34ab53b8dcbac8b7ad0f529b28b8e534afca5",
+      "ticker": "005490"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 293295.836386
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 255000.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 218000.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 213360.219246
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 233134.006183,
+            "low": 221865.993817
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 195476.221425,
+            "low": 182923.778575
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 233000.0,
+            "low": 228000.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 293295.836386,
+            "low": 282704.163614
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 250000.0
+      },
+      "first_selected": {
+        "confirmation": 255000.0,
+        "downside_review": 218000.0,
+        "pullback": [
+          221865.993817,
+          233134.006183
+        ],
+        "trim": [
+          282704.163614,
+          293295.836386
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "c5719ea5dd56a329474dcfce60c90a568f09ef8541db1b5712ebdd49bdf84da5",
+      "ticker": "005930"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 219883.2181
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 171043.950693
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 185745.114859,
+            "low": 178054.885141
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 182188.944429,
+            "low": 170811.055571
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 219883.2181,
+            "low": 209116.7819
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 192100.0
+      },
+      "first_selected": {
+        "confirmation": 219883.2181,
+        "downside_review": 171043.950693,
+        "pullback": [
+          178054.885141,
+          185745.114859
+        ],
+        "trim": [
+          209116.7819,
+          219883.2181
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "e59292bf5a693e93cf4940d790c54557a2f14eb3b136d5bbb78b280a7117fcbd",
+      "ticker": "010120"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 1217823.518708
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 989979.726448
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 1073858.466106,
+            "low": 1024141.533894
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 806584.577579,
+            "low": 767415.422421
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 1217823.518708,
+            "low": 1182176.481292
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 1047000.0
+      },
+      "first_selected": {
+        "confirmation": 1217823.518708,
+        "downside_review": 989979.726448,
+        "pullback": [
+          1024141.533894,
+          1073858.466106
+        ],
+        "trim": [
+          1182176.481292,
+          1217823.518708
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "b9449919277212aa9eb74812cfeb83d8307fdd87dd33d0955d225c6e74783210",
+      "ticker": "012450"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 155380.261741
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "confirmation_semantics": "REGISTERED_PRICE_CONFIRMATION",
+            "level": 155800.0
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 111092.633779
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 120020.871437,
+            "low": 115279.128563
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 113061.916311,
+            "low": 106938.083689
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 126500.0,
+            "low": 120500.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 155380.261741,
+            "low": 150619.738259
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 125000.0
+      },
+      "first_selected": {
+        "confirmation": 155800.0,
+        "downside_review": 111092.633779,
+        "pullback": [
+          120500.0,
+          126500.0
+        ],
+        "trim": [
+          150619.738259,
+          155380.261741
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "2b2ecf07af010ede2aeb7d11ef4d7c94bae65504dbb20b02307393f9a99b469a",
+      "ticker": "047810"
+    },
+    {
+      "allowed": {
+        "allowed_confirmation_levels": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "confirmation_semantics": "VERIFIED_RESISTANCE_BREAKOUT",
+            "level": 211872.542821
+          }
+        ],
+        "allowed_downside_levels": [
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "level": 176000.0
+          },
+          {
+            "basis_ref": "canonical:chart:structure:invalidation",
+            "level": 185103.437005
+          }
+        ],
+        "allowed_pullback_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:1",
+            "high": 210197.264245,
+            "low": 197802.735755
+          },
+          {
+            "basis_ref": "canonical:chart:structure:nearest_supports:2",
+            "high": 208349.957482,
+            "low": 200150.042518
+          },
+          {
+            "basis_ref": "canonical:chart:stored_price_rules",
+            "high": 180000.0,
+            "low": 176000.0
+          }
+        ],
+        "allowed_trim_zones": [
+          {
+            "basis_ref": "canonical:chart:structure:nearest_resistance:1",
+            "high": 211872.542821,
+            "low": 206127.457179
+          }
+        ],
+        "currency": "KRW",
+        "current_close": 202000.0
+      },
+      "first_selected": {
+        "confirmation": 211872.542821,
+        "downside_review": 185103.437005,
+        "pullback": [
+          197802.735755,
+          210197.264245
+        ],
+        "trim": [
+          206127.457179,
+          211872.542821
+        ]
+      },
+      "market": "kr",
+      "price_map_fingerprint": "829d0f7e7fd43f8c7c26e9539e6578ea1a3f55078bbf43e6e3556c11d55d9a7e",
+      "ticker": "086280"
+    }
+  ]
+}

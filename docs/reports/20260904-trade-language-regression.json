@@ -1,0 +1,8 @@
+{
+  "contract": "mandatory-trade-semantic-validator-v1",
+  "mandatory_case_count": 8,
+  "mandatory_true_positive_block": "PASS",
+  "nonmandatory_case_count": 5,
+  "nonmandatory_false_positive_count": 0,
+  "status": "PASS"
+}
