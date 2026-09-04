@@ -1,5 +1,32 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
+
+Start with `docs/reports/20260904-infrastructure-artifact-index.md` and
+`docs/reports/20260904-infra-readiness.json`. Exact work instructions were committed first as
+`1091f531b1f13cbeff424fc71247c71f8b647912` on common base
+`5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The integrated history contains KR repair
+`90cc52231c7343056c853c355ea90dfea10de25b`, US repair
+`deb4dc511aafa6e435b0af00436d690e2e498c0b`, and bounded integration implementation
+`f23e973b8d874ae8eb156415c215df53870e05de`.
+
+Immutable KR Run-54 passes `9/9` with accounting, valuation, typed provenance, supply grounding,
+and final-message quality all clean. The combined branch then completed real signed-in
+`gpt-5.6-sol / xhigh` TEST E2Es: KR accepted and sent market `1` plus stocks `8`; US accepted and
+sent market `1` plus stocks `14`. Both used isolated database copies and the dedicated distinct
+TEST sink. Fallback, duplicate, healthy-primary backup reclaim, production-recipient send,
+production DB mutation, and scheduler mutation are all zero; US TLS UnknownIssuer is zero.
+
+Focused/state-matrix/full tests are `498/15/2195 PASS`; Ruff and diff check pass. Implementation
+Actions run `33835104414` passes Test/Lint. Open P0/material P1 are `0/0`. Controlled TEST proof is
+not natural proof: KR and US remain independently `PENDING_NEXT_ORDINARY_SCHEDULED_RUN`.
+
+Structured Autonomy production behavior was not changed. Its separate next phase begins from
+`005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, followed by a new ALL22 generation and clean A/B/C
+review. Shadow review may proceed after infrastructure promotion, but production decision mutation
+requires both promotion readiness and sufficiently clean natural KR/US infrastructure proof.
+Production Assist remains OFF.
+
 ## 2026-09-03 Packet AI Consumability Readiness Handoff
 
 Start with `docs/reports/20260903-readiness-repair-readiness.json`, the Run-53 root-cause,

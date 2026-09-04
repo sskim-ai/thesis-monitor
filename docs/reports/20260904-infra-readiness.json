@@ -1,0 +1,25 @@
+{
+  "contract": "kr-us-monitoring-infrastructure-readiness-v1",
+  "implementation_actions": {"run_id": 33835104414, "status": "PASS"},
+  "implementation_commit": "f23e973b8d874ae8eb156415c215df53870e05de",
+  "infra_integration_readiness": "READY_FOR_MAIN",
+  "kr_accounting_safety": "PASS",
+  "kr_accounting_valuation_safety": "PASS",
+  "kr_frozen_replay_validated": 9,
+  "main_sha": "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE",
+  "natural_infrastructure_proof": {"kr": "PENDING", "us": "PENDING"},
+  "open_material_p1": [],
+  "open_p0": [],
+  "operating_sha": "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE",
+  "production_mutations": {"database": 0, "recipient_send": 0, "scheduler": 0, "structured_autonomy": 0},
+  "public_action": {"operation_ids": "20/20_UNIQUE", "version": "0.4.5"},
+  "status": "PASS",
+  "structured_autonomy_handoff": {
+    "all22_first_run": "NOT_STARTED",
+    "latest_blocker": "005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP",
+    "promotion_readiness": "NOT_STARTED",
+    "run_a": "NOT_STARTED",
+    "run_b": "NOT_STARTED",
+    "run_c": "NOT_STARTED"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "branch": "codex/20260904-kr-us-monitoring-infra-integration",
+  "common_base": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "implementation_commit": "f23e973b8d874ae8eb156415c215df53870e05de",
+  "kr_merge_commit": "d365c31c79c4853d535985005b98bc2e0b7f3dbb",
+  "kr_repair_ancestor": true,
+  "kr_repair_sha": "90cc52231c7343056c853c355ea90dfea10de25b",
+  "us_merge_commit": "3b413cf8b9facc42b1e46495a1509ddd9f3acbfd",
+  "us_repair_ancestor": true,
+  "us_repair_sha": "deb4dc511aafa6e435b0af00436d690e2e498c0b",
+  "work_instruction_commit": "1091f531b1f13cbeff424fc71247c71f8b647912"
+}

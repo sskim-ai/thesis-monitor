@@ -2469,3 +2469,27 @@ Backup and post-send fallback sent `0`; the controlled unavailable-AI case sent 
 Production recipient send, production-state mutation, and main merge are all `0`. Full regression
 is `2161 passed`; open P0/material P1 are `0/0`. State is `READY_FOR_NATURAL_PROOF`, not natural
 `LIVE_PASS`. Observe the next ordinary KR cycle read-only; do not run or resend it manually.
+
+### 40.39 KR/US Monitoring Infrastructure Integration
+
+Exact instructions were committed first as `1091f531b1f13cbeff424fc71247c71f8b647912`
+on common base `5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The integration preserves KR repair
+`90cc52231c7343056c853c355ea90dfea10de25b` and US repair
+`deb4dc511aafa6e435b0af00436d690e2e498c0b` in one history. Runtime replay found one cross-branch
+semantic mismatch: strict US typed-valuation validation exposed six uniquely grounded legacy KR
+interpretations. Implementation `f23e973b8d874ae8eb156415c215df53870e05de` adds deterministic
+typed ownership only for exact historical/quality-unknown evidence and two exact neutral
+structures; ambiguous directional valuation prose remains rejected.
+
+Immutable KR Run-54 is `9/9 PASS` with zero accounting, valuation, provenance, supply, numeric,
+contradiction, or repetition errors. Real combined-branch signed-in `gpt-5.6-sol / xhigh` TEST E2Es
+pass KR market `1` plus stocks `8` and US market `1` plus stocks `14`. Both have fallback and
+duplicate `0/0`, healthy-primary backup reclaim `0`, fencing preserved, and production recipient,
+DB, and scheduler mutation `0/0/0`; US TLS UnknownIssuer is `0`.
+
+Focused/state-matrix/full regression is `498/15/2195 PASS`; Ruff and diff check pass; implementation
+Actions run `33835104414` passes. The infrastructure is `READY_FOR_MAIN`, with natural KR/US proof
+still independently pending. Structured Autonomy production mutation is zero. Its next separate
+phase begins at `005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, then requires new ALL22 generation
+and clean A/B/C. Production activation remains gated on both promotion readiness and sufficiently
+clean natural infrastructure proof. Production Assist remains OFF.

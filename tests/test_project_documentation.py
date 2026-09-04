@@ -156,6 +156,9 @@ DOCUMENTS = (
     ROOT / "docs" / "reports" / "20260903-readiness-repair-test-sink.md",
     ROOT / "docs" / "reports" / "20260903-readiness-repair-readiness.json",
     ROOT / "docs" / "reports" / "20260903-readiness-repair-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260904-infrastructure-artifact-index.md",
+    ROOT / "docs" / "reports" / "20260904-infra-readiness.json",
+    ROOT / "docs" / "reports" / "20260904-cross-market-regression.json",
     ROOT / "docs" / "operations" / "AI_ASSISTED_PILOT.md",
     ROOT / "docs" / "operations" / "CASH_FLOW_USER_VISIBLE_KILL_SWITCH.md",
     ROOT / "docs" / "operations" / "WORKING_CAPITAL_USER_VISIBLE_KILL_SWITCH.md",
@@ -176,15 +179,43 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260903-packet-ai-consumability-readiness-repair"
+        "codex/20260904-kr-us-monitoring-infra-integration"
     )
     assert state["current_phase"] == (
-        "packet_ai_consumability_repair_deployed_awaiting_natural_us_live"
+        "kr_us_monitoring_infrastructure_integrated_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
-        "20260903_packet_ai_consumability_readiness_repair"
+        "20260904_kr_us_monitoring_infrastructure_integration"
     )
-    assert state["next_default_phase"] == "wait_for_next_natural_us_live"
+    assert state["next_default_phase"] == (
+        "structured_autonomy_production_promotion_review_shadow_only"
+    )
+    integration = state["kr_us_monitoring_infrastructure_integration_20260904"]
+    assert integration["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_PROOF"
+    assert integration["work_instruction_commit"] == (
+        "1091f531b1f13cbeff424fc71247c71f8b647912"
+    )
+    assert integration["kr_repair_commit"] == (
+        "90cc52231c7343056c853c355ea90dfea10de25b"
+    )
+    assert integration["us_repair_commit"] == (
+        "deb4dc511aafa6e435b0af00436d690e2e498c0b"
+    )
+    assert integration["kr_frozen_replay"] == "PASS_9_OF_9"
+    assert integration["integrated_kr_test"] == "PASS_MARKET_1_STOCKS_8"
+    assert integration["integrated_us_test"] == "PASS_MARKET_1_STOCKS_14"
+    assert integration["integrated_us_tls_unknown_issuer"] == 0
+    assert integration["healthy_primary_backup_reclaim"] == 0
+    assert integration["late_ai_duplicate"] == 0
+    assert integration["structured_autonomy_production_mutation"] == 0
+    assert integration["open_p0"] == []
+    assert integration["open_material_p1"] == []
+    autonomy = state["structured_autonomy_production_promotion_handoff_20260904"]
+    assert autonomy["latest_blocker"] == (
+        "005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP"
+    )
+    assert autonomy["all22_first_run"] == "NOT_STARTED"
+    assert autonomy["production_mutation"] == 0
     readiness_base = "c1c43070cd944e273c53f952c29a768a33fefdee"
     readiness_instruction = "57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3"
     readiness_implementation = "c0964a31380f0bd7cb759e09f395d8c780c8b781"
@@ -324,11 +355,15 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_price_structure_commit = "631e82f202b6f081866ef83c8b67b2138a8b51d8"
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
-    assert state["recorded_base_commit"] == readiness_base
+    assert state["recorded_base_commit"] == (
+        "5d5f3363d3a762b62698943b1feb4fa121d0d0f9"
+    )
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == readiness_report_runtime
+    assert state["deployed_code_commit"] == (
+        "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
+    )
     assert state["main_code_commit"] == "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
     assert state["operating_code_commit"] == (
         "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"

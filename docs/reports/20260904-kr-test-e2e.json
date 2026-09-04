@@ -1,0 +1,13 @@
+{
+  "contract": "kr-us-monitoring-infra-kr-live-e2e-v1",
+  "delivery": {"accepted": 9, "duplicate": 0, "fallback": 0, "market": 1, "stocks": 8},
+  "lease": {"fencing_preserved": true, "healthy_backup": "SAFE_NOOP_PRIMARY_ACTIVE", "renewals": 19},
+  "model": {"reasoning_effort": "xhigh", "signed_in_results": 8},
+  "packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "production": {"database_mutation": 0, "recipient_send": 0, "scheduler_mutation": 0},
+  "source_ready_count": 9,
+  "status": "PASS",
+  "structured_autonomy_production_promotion": 0,
+  "test_sink": "DEDICATED_NON_PRODUCTION_DISTINCT",
+  "validator_status": "completed"
+}

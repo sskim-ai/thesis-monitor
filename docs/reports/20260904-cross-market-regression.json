@@ -1,0 +1,11 @@
+{
+  "contract": "cross-market-claim-delivery-regression-v1",
+  "feature_loss": {"kr": 0, "us": 0},
+  "focused_tests": {"count": 498, "status": "PASS"},
+  "full_pytest": {"count": 2195, "status": "PASS", "warnings": 1},
+  "integrated_kr": {"accepted": 9, "duplicate": 0, "fallback": 0, "healthy_primary_backup_reclaim": 0, "sent_market": 1, "sent_stocks": 8, "status": "PASS"},
+  "integrated_us": {"accepted": 15, "duplicate": 0, "fallback": 0, "healthy_primary_backup_reclaim": 0, "sent_market": 1, "sent_stocks": 14, "status": "PASS", "tls_unknown_issuer": 0},
+  "ruff": "PASS",
+  "state_matrix_tests": {"count": 15, "status": "PASS"},
+  "structured_autonomy_production_mutation": 0
+}

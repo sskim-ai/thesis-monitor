@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "b09f5a47e92469eb0e761b4a8f5b3fb1defe7aae676a8a5e147367ae2aa22d41",
+  "contract": "kr-frozen-replay-v1",
+  "errors": {
+    "accounting": 0,
+    "binding": 0,
+    "contradiction": 0,
+    "supply_grounding": 0,
+    "typed": 0,
+    "unsupported_numeric": 0,
+    "validation": 0,
+    "valuation": 0
+  },
+  "legacy_typed_upgrade_count": 6,
+  "messages": {"market": 1, "stocks": 8, "total": 9},
+  "offline_calls": {"fresh_fact": 0, "model": 0, "telegram": 0},
+  "packet_id": "2026-09-03-kr-run-54-f19bb379daa7",
+  "packet_sha256": "ad0ce85e77f6918ff455e5d2c1cf90e9b91de6e3ea2ce331020a28fa6154ecbb",
+  "quality_receipt": {"status": "passed", "verified": true},
+  "status": "PASS",
+  "validated_scope_count": 9
+}

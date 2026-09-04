@@ -1,5 +1,28 @@
 # Next Session Prompt
 
+Latest authoritative infrastructure work is the 2026-09-04 KR/US monitoring integration. Read
+`docs/reports/20260904-infrastructure-artifact-index.md` and
+`docs/reports/20260904-infra-readiness.json` first. Exact instruction commit is
+`1091f531b1f13cbeff424fc71247c71f8b647912`; common base is
+`5d5f3363d3a762b62698943b1feb4fa121d0d0f9`; KR/US repair SHAs are
+`90cc52231c7343056c853c355ea90dfea10de25b` and
+`deb4dc511aafa6e435b0af00436d690e2e498c0b`; implementation is
+`f23e973b8d874ae8eb156415c215df53870e05de`.
+
+Combined real TEST proof is KR `1+8` and US `1+14`, accepted and sent exactly once with fallback,
+duplicate, production send/mutation, and healthy-primary backup reclaim all zero. US TLS
+UnknownIssuer is zero. Full pytest is `2195 PASS`; open P0/material P1 is `0/0`. These are
+controlled proofs, so separately observe the next ordinary KR and US runs read-only.
+
+The next implementation phase is a separate Structured Autonomy shadow/promotion review. Start
+with bounded repair of `005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, then generate a new ALL22
+set and run clean A/B/C. Do not reuse the prior 21 passing candidates. Do not activate production
+decision mutation until promotion readiness passes and natural infrastructure proof is sufficiently
+clean. Do not manually invoke or resend a scheduled run, and do not expose recipient values.
+Production Assist remains OFF.
+
+---
+
 Latest authoritative repair is the 2026-09-03 Run-54 KR live V2 delivery orchestration work.
 Read `docs/reports/20260903-live-orchestration-repair-verdict.md` and the artifact index first.
 Exact instruction commit is `20d052dee5f4ea0d6b2630a284434a98ca52596a`; implementation is
