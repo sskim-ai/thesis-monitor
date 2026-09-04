@@ -4,13 +4,18 @@ import argparse
 import asyncio
 import json
 import logging
+import math
 import os
+import signal
 import shutil
 import subprocess
 import threading
 import time
 from collections.abc import Mapping
+from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
 
 from pydantic import ValidationError
@@ -44,6 +49,7 @@ from app.services.codex_runtime_state_service import (
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
     CodexTransportError,
+    CodexTransportFailureType,
     codex_tls_environment,
     classify_codex_transport_failure,
     diagnose_codex_transport_failure,
@@ -67,6 +73,90 @@ V2_TRANSPORT_BACKOFF_SECONDS = 2.0
 
 logger = logging.getLogger(__name__)
 V2_STAGE_RECEIPT_CONTRACT = "accepted-v2-generation-stage-v1"
+
+
+class V2InterruptionReason(StrEnum):
+    COMMAND_TIMEOUT = "COMMAND_TIMEOUT"
+    AUTHORIZED_CANCEL = "AUTHORIZED_CANCEL"
+    PRODUCTION_DEADLINE = "PRODUCTION_DEADLINE"
+    CLAIM_OWNERSHIP_LOST = "CLAIM_OWNERSHIP_LOST"
+    PROCESS_SHUTDOWN = "PROCESS_SHUTDOWN"
+    OTHER_INTERRUPTION = "OTHER_INTERRUPTION"
+
+
+class V2GenerationInterrupted(RuntimeError):
+    def __init__(self, reason: V2InterruptionReason) -> None:
+        self.reason = reason
+        super().__init__(reason.value)
+
+
+@dataclass(frozen=True)
+class V2CommandDeadline:
+    started_at: float
+    timeout_seconds: int
+
+    @classmethod
+    def start(cls, timeout_seconds: int) -> "V2CommandDeadline":
+        if timeout_seconds < 1:
+            raise ValueError("v2_command_timeout_must_be_positive")
+        return cls(started_at=time.monotonic(), timeout_seconds=timeout_seconds)
+
+    def remaining_seconds(self, *, now: float | None = None) -> int:
+        current = time.monotonic() if now is None else now
+        return max(0, math.ceil(self.started_at + self.timeout_seconds - current))
+
+    def require_remaining_seconds(self) -> int:
+        remaining = self.remaining_seconds()
+        if remaining < 1:
+            raise CodexTransportError(
+                CodexTransportFailureType.MODEL_TIMEOUT,
+                attempts=0,
+            )
+        return remaining
+
+
+_INTERRUPTION_LOCK = threading.Lock()
+_INTERRUPTION_REASON: V2InterruptionReason | None = None
+
+
+def _requested_interruption() -> V2InterruptionReason | None:
+    with _INTERRUPTION_LOCK:
+        return _INTERRUPTION_REASON
+
+
+@contextmanager
+def v2_interruption_signal_context():
+    """Translate process signals into a claim-bound terminal V2 outcome."""
+
+    if threading.current_thread() is not threading.main_thread():
+        yield
+        return
+
+    global _INTERRUPTION_REASON
+    previous: dict[int, object] = {}
+
+    def request_interruption(signum: int, _frame: object) -> None:
+        global _INTERRUPTION_REASON
+        reason = (
+            V2InterruptionReason.AUTHORIZED_CANCEL
+            if signum == signal.SIGINT
+            else V2InterruptionReason.PROCESS_SHUTDOWN
+        )
+        with _INTERRUPTION_LOCK:
+            _INTERRUPTION_REASON = reason
+
+    with _INTERRUPTION_LOCK:
+        _INTERRUPTION_REASON = None
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        previous[signum] = signal.getsignal(signum)
+        signal.signal(signum, request_interruption)
+    try:
+        yield
+    finally:
+        for signum, handler in previous.items():
+            signal.signal(signum, handler)
+        with _INTERRUPTION_LOCK:
+            _INTERRUPTION_REASON = None
 
 
 class V2CLIPathPreconditionError(ValueError):
@@ -323,6 +413,23 @@ def _invoke_signed_in_codex(
             combined_log.write(log_text)
         attempt_log.unlink(missing_ok=True)
 
+        requested_interruption = _requested_interruption()
+        signal_returncodes = {
+            -signal.SIGINT,
+            -signal.SIGTERM,
+            128 + signal.SIGINT,
+            128 + signal.SIGTERM,
+        }
+        if requested_interruption is not None:
+            raise V2GenerationInterrupted(requested_interruption)
+        if process is not None and process.returncode in signal_returncodes:
+            reason = (
+                V2InterruptionReason.AUTHORIZED_CANCEL
+                if abs(process.returncode) in {signal.SIGINT, 128 + signal.SIGINT}
+                else V2InterruptionReason.PROCESS_SHUTDOWN
+            )
+            raise V2GenerationInterrupted(reason)
+
         if (
             not timed_out
             and process is not None
@@ -403,6 +510,35 @@ def _stage_receipt_path(paths: Mapping[str, Path]) -> Path:
     )
 
 
+def _generation_identity(
+    packet_id: str,
+    claim_id: str,
+    claim: Mapping[str, object],
+) -> dict[str, object]:
+    if (
+        str(claim.get("packet_id") or "") != packet_id
+        or str(claim.get("claim_id") or "") != claim_id
+    ):
+        raise ValueError("v2_generation_claim_identity_mismatch")
+    packet: dict[str, object] = {}
+    packet_path = Path(str(claim.get("packet_path") or ""))
+    if packet_path.name:
+        try:
+            packet = _read_json(_repository_path(packet_path))
+        except (FileNotFoundError, ValueError, json.JSONDecodeError):
+            packet = {}
+    claim_generation = int(claim.get("claim_generation") or 0)
+    return {
+        "generation_id": f"{packet_id}:{claim_id}:{claim_generation}",
+        "market": str(claim.get("market") or packet.get("market") or ""),
+        "business_date": str(packet.get("assessment_date") or ""),
+        "run_id": str(packet.get("source_monitor_run_id") or ""),
+        "claim_owner": str(claim.get("owner") or ""),
+        "fencing_token": str(claim.get("fencing_token") or claim_id),
+        "claim_generation": claim_generation,
+    }
+
+
 def _record_stage(
     packet_id: str,
     claim_id: str,
@@ -411,28 +547,47 @@ def _record_stage(
     batch_number: int | None = None,
     subject_count: int | None = None,
     reason: str | None = None,
+    terminal_state: str | None = None,
+    claim_snapshot: Mapping[str, object] | None = None,
 ) -> None:
     try:
-        claim = _claim(packet_id, claim_id)
+        claim = dict(claim_snapshot) if claim_snapshot is not None else _claim(packet_id, claim_id)
         paths = _paths(claim, claim_id)
         path = _stage_receipt_path(paths)
+        identity = _generation_identity(packet_id, claim_id, claim)
         receipt = _read_json(path) if path.exists() else {
             "contract": V2_STAGE_RECEIPT_CONTRACT,
             "packet_id": packet_id,
             "claim_id": claim_id,
+            **identity,
+            "terminal_state": "ACTIVE",
             "stages": [],
         }
+        if (
+            receipt.get("generation_id") is not None
+            and any(receipt.get(key) != identity[key] for key in identity)
+        ):
+            return
+        receipt.update(identity)
+        recorded_at = datetime.now(UTC).isoformat()
         stages = receipt.setdefault("stages", [])
         if isinstance(stages, list):
             stages.append(
                 {
                     "stage": stage,
+                    "generation_id": identity["generation_id"],
+                    "fencing_token": identity["fencing_token"],
                     "batch_number": batch_number,
                     "subject_count": subject_count,
                     "reason": reason,
-                    "recorded_at": datetime.now(UTC).isoformat(),
+                    "recorded_at": recorded_at,
                 }
             )
+        receipt["latest_stage"] = stage
+        receipt["updated_at"] = recorded_at
+        if terminal_state is not None:
+            receipt["terminal_state"] = terminal_state
+            receipt["completed_at"] = recorded_at
         _atomic_json(path, receipt)
     except (FileNotFoundError, ValueError, json.JSONDecodeError):
         return
@@ -510,6 +665,7 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
 def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     claim = _claim(packet_id, claim_id)
     paths = _paths(claim, claim_id)
+    identity = _generation_identity(packet_id, claim_id, claim)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
     output = AcceptedV2ProductionBatchOutput.model_validate(_read_json(paths["temp"]))
     artifact = validate_accepted_v2_production_output(context, output)
@@ -521,6 +677,11 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
         "status": artifact.status,
         "packet_id": packet_id,
         "claim_id": claim_id,
+        **identity,
+        "terminal_state": "ACCEPTED",
+        "accepted": True,
+        "delivery_eligible": True,
+        "compatibility_fallback_eligible": False,
         "subjects": list(artifact.selected_subjects),
         "ready_count": artifact.ready_count,
         "not_ready_count": artifact.not_ready_count,
@@ -542,27 +703,153 @@ def _safe_suppression_receipt(
     reason: str,
     transport_failure_type: str | None = None,
     transport_diagnostic_token: str | None = None,
+    terminal_state: str = "SUPPRESSED",
+    interruption_reason: V2InterruptionReason | None = None,
+    claim_snapshot: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
+    claim: dict[str, object] | None = None
+    paths: dict[str, Path] | None = None
+    identity: dict[str, object] = {}
+    try:
+        claim = dict(claim_snapshot) if claim_snapshot is not None else _claim(packet_id, claim_id)
+        paths = _paths(claim, claim_id)
+        identity = _generation_identity(packet_id, claim_id, claim)
+        if paths["receipt"].exists():
+            existing = _read_json(paths["receipt"])
+            if (
+                existing.get("status") in {"PASS", "PARTIAL_SAFE"}
+                and existing.get("packet_id") == packet_id
+                and existing.get("claim_id") == claim_id
+            ):
+                return existing
+        if paths["final"].exists():
+            accepted_artifact = _read_json(paths["final"])
+            if (
+                accepted_artifact.get("status") in {"PASS", "PARTIAL_SAFE"}
+                and accepted_artifact.get("packet_id") == packet_id
+                and accepted_artifact.get("claim_id") == claim_id
+            ):
+                preserved = {
+                    "contract": RECEIPT_CONTRACT,
+                    "status": accepted_artifact["status"],
+                    "packet_id": packet_id,
+                    "claim_id": claim_id,
+                    **identity,
+                    "terminal_state": "ACCEPTED",
+                    "accepted": True,
+                    "delivery_eligible": True,
+                    "compatibility_fallback_eligible": False,
+                    "accepted_artifact_preserved": True,
+                    "recorded_at": datetime.now(UTC).isoformat(),
+                }
+                _atomic_json(paths["receipt"], preserved)
+                return preserved
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        claim = None
+        paths = None
+        identity = {}
+
+    candidate_persisted = False
+    if paths is not None:
+        candidate_persisted = paths["temp"].exists() or any(
+            paths["temp"].parent.glob(f"{paths['temp'].stem}.batch-*.json")
+        )
+    completed_at = datetime.now(UTC).isoformat()
     receipt = {
         "contract": RECEIPT_CONTRACT,
         "status": "V2_DECISION_SUPPRESSED_SAFE",
         "packet_id": packet_id,
         "claim_id": claim_id,
+        **identity,
         "reason": reason,
+        "terminal_state": terminal_state,
+        "interruption_reason": interruption_reason.value if interruption_reason else None,
+        "candidate_persisted": candidate_persisted,
+        "accepted": False,
+        "delivery_eligible": False,
+        "compatibility_fallback_eligible": True,
+        "fallback_eligibility_preserved": True,
         "raw_candidate_visible": 0,
         "rejected_decision_sent": 0,
-        "recorded_at": datetime.now(UTC).isoformat(),
+        "completed_at": completed_at,
+        "recorded_at": completed_at,
     }
     if transport_failure_type:
         receipt["transport_failure_type"] = transport_failure_type
     if transport_diagnostic_token:
         receipt["transport_diagnostic_token"] = transport_diagnostic_token
     try:
-        paths = _paths(_claim(packet_id, claim_id), claim_id)
+        if paths is None:
+            raise FileNotFoundError
         _atomic_json(paths["receipt"], receipt)
     except (FileNotFoundError, ValueError, json.JSONDecodeError):
         pass
     return receipt
+
+
+def _terminal_suppression_receipt(
+    packet_id: str,
+    claim_id: str,
+    *,
+    claim: Mapping[str, object],
+    reason: str,
+    terminal_state: str,
+    interruption_reason: V2InterruptionReason | None = None,
+    transport_failure_type: str | None = None,
+    transport_diagnostic_token: str | None = None,
+) -> dict[str, object]:
+    receipt = _safe_suppression_receipt(
+        packet_id,
+        claim_id,
+        reason=reason,
+        terminal_state=terminal_state,
+        interruption_reason=interruption_reason,
+        transport_failure_type=transport_failure_type,
+        transport_diagnostic_token=transport_diagnostic_token,
+        claim_snapshot=claim,
+    )
+    if receipt.get("status") in {"PASS", "PARTIAL_SAFE"}:
+        return receipt
+    stage = {
+        "INTERRUPTED": "interrupted",
+        "TIMED_OUT": "timed_out",
+        "FAILED": "failed",
+    }.get(terminal_state, "suppressed_safe")
+    _record_stage(
+        packet_id,
+        claim_id,
+        stage=stage,
+        reason=reason,
+        terminal_state=terminal_state,
+        claim_snapshot=claim,
+    )
+    return receipt
+
+
+def record_unexpected_terminal_failure(
+    packet_id: str,
+    claim_id: str,
+    *,
+    reason: str,
+) -> dict[str, object]:
+    """Persist a terminal failure before allowing an unexpected defect to surface."""
+
+    try:
+        claim = _claim(packet_id, claim_id)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError):
+        return _safe_suppression_receipt(
+            packet_id,
+            claim_id,
+            reason=reason,
+            terminal_state="FAILED",
+        )
+    return _terminal_suppression_receipt(
+        packet_id,
+        claim_id,
+        claim=claim,
+        reason=reason,
+        terminal_state="FAILED",
+    )
 
 
 async def _generate_claim_owned(
@@ -571,6 +858,7 @@ async def _generate_claim_owned(
     *,
     timeout: int,
 ) -> dict[str, object]:
+    deadline = V2CommandDeadline.start(timeout)
     prepared = await prepare_context(packet_id, claim_id)
     if prepared.get("status") != "CONTEXT_READY":
         return prepared
@@ -613,7 +901,7 @@ async def _generate_claim_owned(
                 log=batch_log,
                 schema=Path(str(prepared["schema_path"])),
                 cwd=paths["prompt"].parent,
-                timeout=timeout,
+                timeout=deadline.require_remaining_seconds(),
                 state_namespace=claim_id,
             )
         )
@@ -656,7 +944,7 @@ async def _generate_claim_owned(
                     log=schema_repair_log,
                     schema=Path(str(prepared["schema_path"])),
                     cwd=paths["prompt"].parent,
-                    timeout=timeout,
+                    timeout=deadline.require_remaining_seconds(),
                     state_namespace=claim_id,
                 )
             )
@@ -709,7 +997,7 @@ async def _generate_claim_owned(
                     log=repair_log,
                     schema=Path(str(prepared["schema_path"])),
                     cwd=paths["prompt"].parent,
-                    timeout=timeout,
+                    timeout=deadline.require_remaining_seconds(),
                     state_namespace=claim_id,
                 )
             )
@@ -754,12 +1042,19 @@ async def _generate_claim_owned(
             adjudications=tuple(adjudications),
         ).model_dump(mode="json"),
     )
+    _record_stage(
+        packet_id,
+        claim_id,
+        stage="validating",
+        subject_count=len(context.selected_subjects),
+    )
     receipt = validate_output(packet_id, claim_id)
     _record_stage(
         packet_id,
         claim_id,
         stage="accepted_artifact_created",
         subject_count=len(context.selected_subjects),
+        terminal_state="ACCEPTED",
     )
     receipt["batch_schema_repair_count"] = batch_schema_repair_count
     receipt["candidate_repair_count"] = candidate_repair_count
@@ -790,10 +1085,87 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
         fencing_token=fencing_token,
         interval_seconds=float(get_settings().ai_review_claim_heartbeat_seconds),
     )
-    with heartbeat:
-        receipt = await _generate_claim_owned(packet_id, claim_id, timeout=timeout)
+    _record_stage(
+        packet_id,
+        claim_id,
+        stage="started",
+        claim_snapshot=claim,
+    )
+    try:
+        with heartbeat:
+            receipt = await _generate_claim_owned(packet_id, claim_id, timeout=timeout)
+    except V2GenerationInterrupted as exc:
+        receipt = _terminal_suppression_receipt(
+            packet_id,
+            claim_id,
+            claim=claim,
+            reason=exc.reason.value,
+            terminal_state="INTERRUPTED",
+            interruption_reason=exc.reason,
+        )
+    except asyncio.CancelledError:
+        receipt = _terminal_suppression_receipt(
+            packet_id,
+            claim_id,
+            claim=claim,
+            reason=V2InterruptionReason.AUTHORIZED_CANCEL.value,
+            terminal_state="INTERRUPTED",
+            interruption_reason=V2InterruptionReason.AUTHORIZED_CANCEL,
+        )
+    except CodexTransportError as exc:
+        command_timed_out = exc.failure_type == CodexTransportFailureType.MODEL_TIMEOUT
+        interruption_reason = (
+            V2InterruptionReason.COMMAND_TIMEOUT if command_timed_out else None
+        )
+        receipt = _terminal_suppression_receipt(
+            packet_id,
+            claim_id,
+            claim=claim,
+            reason=(
+                V2InterruptionReason.COMMAND_TIMEOUT.value
+                if command_timed_out
+                else str(exc)
+            ),
+            terminal_state="TIMED_OUT" if command_timed_out else "SUPPRESSED",
+            interruption_reason=interruption_reason,
+            transport_failure_type=exc.failure_type.value,
+            transport_diagnostic_token=exc.raw_diagnostic_token,
+        )
+    except (
+        CodexRuntimeStateError,
+        FileNotFoundError,
+        ValueError,
+        json.JSONDecodeError,
+        subprocess.TimeoutExpired,
+    ) as exc:
+        reason = str(exc) if isinstance(exc, CodexRuntimeStateError) else type(exc).__name__
+        terminal_state = (
+            "INTERRUPTED"
+            if reason == "v2_production_stale_claim"
+            else "FAILED"
+        )
+        interruption_reason = (
+            V2InterruptionReason.CLAIM_OWNERSHIP_LOST
+            if terminal_state == "INTERRUPTED"
+            else None
+        )
+        receipt = _terminal_suppression_receipt(
+            packet_id,
+            claim_id,
+            claim=claim,
+            reason=reason,
+            terminal_state=terminal_state,
+            interruption_reason=interruption_reason,
+        )
     if heartbeat.ownership_lost:
-        raise ValueError("v2_production_stale_claim")
+        receipt = _terminal_suppression_receipt(
+            packet_id,
+            claim_id,
+            claim=claim,
+            reason=V2InterruptionReason.CLAIM_OWNERSHIP_LOST.value,
+            terminal_state="INTERRUPTED",
+            interruption_reason=V2InterruptionReason.CLAIM_OWNERSHIP_LOST,
+        )
     receipt["claim_lease_renewal_count"] = heartbeat.renewal_count
     receipt["claim_fencing_token_preserved"] = True
     claim_paths = _paths(claim, claim_id)
@@ -847,7 +1219,8 @@ def main() -> None:
     parser.add_argument("--packet-id", required=True)
     parser.add_argument("--claim-id", required=True)
     parser.add_argument("--timeout", type=int, default=1800)
-    asyncio.run(_run(parser.parse_args()))
+    with v2_interruption_signal_context():
+        asyncio.run(_run(parser.parse_args()))
 
 
 if __name__ == "__main__":

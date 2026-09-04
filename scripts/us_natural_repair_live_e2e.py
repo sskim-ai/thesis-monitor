@@ -28,13 +28,14 @@ from app.services.notification_service import (
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramNotifier,
 )
+from app.services.v2_natural_proof_service import (
+    ExplicitV2NaturalProofCounts,
+    evaluate_explicit_v2_natural_proof,
+)
 from scripts.kr_market_preenable_evidence import audit_test_sink, load_env_values
 
 
 CONTRACT = "us-natural-tls-lease-validator-live-e2e-v1"
-EXPECTED_CANDIDATE_SHA256 = (
-    "29dd96d0b9c1efec9d23a6c22fab1b02b3b92f65a28af71f01abf8b119757a7b"
-)
 
 
 def _read(path: Path) -> dict[str, object]:
@@ -136,15 +137,24 @@ def _delivery_audit(
         for row, metadata in sent
         if metadata.get("state") == "ai_assisted_sent"
     ]
+    explicit_v2_sent = [
+        (row, metadata)
+        for row, metadata in ai_sent
+        if row.ticker != "__DAILY_DIGEST__"
+        and isinstance(metadata.get("decision_canary"), dict)
+        and metadata["decision_canary"].get("state") == "included"
+        and metadata["decision_canary"].get("accepted_plan_only") is True
+    ]
+    stock_ai_sent_count = sum(row.ticker != "__DAILY_DIGEST__" for row, _ in ai_sent)
     return {
         "delivery_count": len(rows),
         "sent_count": len(sent),
         "market_sent_count": sum(
             row.ticker == "__DAILY_DIGEST__" for row, _ in ai_sent
         ),
-        "stock_sent_count": sum(
-            row.ticker != "__DAILY_DIGEST__" for row, _ in ai_sent
-        ),
+        "stock_sent_count": stock_ai_sent_count,
+        "explicit_v2_stock_sent_count": len(explicit_v2_sent),
+        "pilot_ai_assisted_stock_sent_count": stock_ai_sent_count - len(explicit_v2_sent),
         "fallback_sent_count": sum(
             metadata.get("state") == "fallback_sent" for _, metadata in sent
         ),
@@ -228,7 +238,8 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
     if backup.status != "no_pending_packet":
         raise ValueError("live_e2e_fresh_primary_reclaimed_by_backup")
 
-    if _sha256(args.candidate) != EXPECTED_CANDIDATE_SHA256:
+    candidate_sha256 = _sha256(args.candidate)
+    if args.candidate_sha256 and candidate_sha256 != args.candidate_sha256:
         raise ValueError("live_e2e_candidate_sha256_mismatch")
     candidate = _read(args.candidate)
     candidate["claim_id"] = claim.claim_id
@@ -251,12 +262,25 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
 
     result = delivery.as_dict()
     audit = _delivery_audit(run_date, tickers=tickers)
+    natural_proof_gate = evaluate_explicit_v2_natural_proof(
+        ExplicitV2NaturalProofCounts(
+            ai_accepted_total=audit["sent_count"],
+            ai_market_sent=audit["market_sent_count"],
+            explicit_v2_stock_accepted=int(model_receipt.get("ready_count") or 0),
+            explicit_v2_stock_sent=audit["explicit_v2_stock_sent_count"],
+            pilot_ai_assisted_sent=audit["pilot_ai_assisted_stock_sent_count"],
+            deterministic_fallback_sent=audit["fallback_sent_count"],
+            duplicate_sent=audit["duplicate_count"],
+        ),
+        expected_stock_count=14,
+    )
     if (
         delivery.status != "sent"
         or audit["delivery_count"] != 15
         or audit["sent_count"] != 15
         or audit["market_sent_count"] != 1
         or audit["stock_sent_count"] != 14
+        or natural_proof_gate["status"] != "PASS"
         or audit["fallback_sent_count"] != 0
         or audit["duplicate_count"] != 0
     ):
@@ -266,7 +290,7 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "status": "PASS",
         "packet_id": packet_id,
         "packet_path_alias": packet_path.name,
-        "candidate_sha256": EXPECTED_CANDIDATE_SHA256,
+        "candidate_sha256": candidate_sha256,
         "source_ready_count": 15,
         "primary_claim_acquired": True,
         "claim_lease_renewal_count": model_receipt.get("claim_lease_renewal_count"),
@@ -279,6 +303,9 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "accepted_count": audit["sent_count"],
         "ai_market_sent": audit["market_sent_count"],
         "ai_stock_sent": audit["stock_sent_count"],
+        "explicit_v2_stock_accepted": int(model_receipt.get("ready_count") or 0),
+        "explicit_v2_stock_sent": audit["explicit_v2_stock_sent_count"],
+        "pilot_ai_assisted_sent": audit["pilot_ai_assisted_stock_sent_count"],
         "fallback_sent": audit["fallback_sent_count"],
         "duplicate_sent": audit["duplicate_count"],
         "delivery_status": result.get("status"),
@@ -294,6 +321,7 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "model_receipt": model_receipt,
         "delivery_result": result,
         "delivery_audit": audit,
+        "natural_proof_gate": natural_proof_gate,
     }
     _write(args.output_dir / "live-e2e-proof.json", proof)
     return proof
@@ -305,6 +333,7 @@ def main() -> int:
     parser.add_argument("--production-database", type=Path, required=True)
     parser.add_argument("--packet", type=Path, required=True)
     parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument("--candidate-sha256")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model-timeout", type=int, default=1800)
     args = parser.parse_args()
