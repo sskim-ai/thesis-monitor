@@ -28,6 +28,10 @@ from app.services.notification_service import (
     TELEGRAM_DELIVERY_METADATA_KEY,
     TelegramNotifier,
 )
+from app.services.v2_natural_proof_service import (
+    ExplicitV2NaturalProofCounts,
+    evaluate_explicit_v2_natural_proof,
+)
 from scripts.kr_market_preenable_evidence import audit_test_sink, load_env_values
 
 
@@ -126,11 +130,22 @@ def _delivery_audit(run_date: date, *, tickers: set[str]) -> dict[str, int]:
         for row, metadata in sent
         if metadata.get("state") == "ai_assisted_sent"
     ]
+    explicit_v2_sent = [
+        (row, metadata)
+        for row, metadata in ai_sent
+        if row.ticker != MARKET_TICKER
+        and isinstance(metadata.get("decision_canary"), dict)
+        and metadata["decision_canary"].get("state") == "included"
+        and metadata["decision_canary"].get("accepted_plan_only") is True
+    ]
+    stock_ai_sent_count = sum(row.ticker != MARKET_TICKER for row, _ in ai_sent)
     return {
         "delivery_count": len(rows),
         "sent_count": len(sent),
         "market_sent_count": sum(row.ticker == MARKET_TICKER for row, _ in ai_sent),
-        "stock_sent_count": sum(row.ticker != MARKET_TICKER for row, _ in ai_sent),
+        "stock_sent_count": stock_ai_sent_count,
+        "explicit_v2_stock_sent_count": len(explicit_v2_sent),
+        "pilot_ai_assisted_stock_sent_count": stock_ai_sent_count - len(explicit_v2_sent),
         "fallback_sent_count": sum(
             metadata.get("state") == "fallback_sent" for _, metadata in sent
         ),
@@ -240,12 +255,25 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
 
     result = delivery.as_dict()
     audit = _delivery_audit(run_date, tickers=tickers)
+    natural_proof_gate = evaluate_explicit_v2_natural_proof(
+        ExplicitV2NaturalProofCounts(
+            ai_accepted_total=audit["sent_count"],
+            ai_market_sent=audit["market_sent_count"],
+            explicit_v2_stock_accepted=int(model_receipt.get("ready_count") or 0),
+            explicit_v2_stock_sent=audit["explicit_v2_stock_sent_count"],
+            pilot_ai_assisted_sent=audit["pilot_ai_assisted_stock_sent_count"],
+            deterministic_fallback_sent=audit["fallback_sent_count"],
+            duplicate_sent=audit["duplicate_count"],
+        ),
+        expected_stock_count=8,
+    )
     if (
         delivery.status != "sent"
         or audit["delivery_count"] != 9
         or audit["sent_count"] != 9
         or audit["market_sent_count"] != 1
         or audit["stock_sent_count"] != 8
+        or natural_proof_gate["status"] != "PASS"
         or audit["fallback_sent_count"] != 0
         or audit["duplicate_count"] != 0
     ):
@@ -268,6 +296,9 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "accepted_count": audit["sent_count"],
         "ai_market_sent": audit["market_sent_count"],
         "ai_stock_sent": audit["stock_sent_count"],
+        "explicit_v2_stock_accepted": int(model_receipt.get("ready_count") or 0),
+        "explicit_v2_stock_sent": audit["explicit_v2_stock_sent_count"],
+        "pilot_ai_assisted_sent": audit["pilot_ai_assisted_stock_sent_count"],
         "fallback_sent": audit["fallback_sent_count"],
         "duplicate_sent": audit["duplicate_count"],
         "delivery_status": result.get("status"),
@@ -283,6 +314,7 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "model_receipt": model_receipt,
         "delivery_result": result,
         "delivery_audit": audit,
+        "natural_proof_gate": natural_proof_gate,
     }
     _write(args.output_dir / "live-e2e-proof.json", proof)
     return proof
