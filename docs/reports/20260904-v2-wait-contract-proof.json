@@ -1,0 +1,14 @@
+{
+  "active_child_no_candidate_treated_as_failure": 0,
+  "base_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "command_owned_timeout_seconds": 1800,
+  "contract": "v2-wait-ownership-proof-v1",
+  "cross_claim_receipt_accept": 0,
+  "cross_generation_receipt_accept": 0,
+  "forensic_premature_interrupt_seconds": 168.3,
+  "outer_shorter_hidden_timeout": 0,
+  "premature_child_ctrl_c": 0,
+  "single_authoritative_timeout_owner": "PASS",
+  "timeout_scope": "PER_SIGNED_IN_MODEL_INVOCATION",
+  "v2_generation_stage_persisted": "PASS"
+}

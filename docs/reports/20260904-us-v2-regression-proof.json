@@ -1,0 +1,22 @@
+{
+  "combined_quality_errors": [
+    "typed_template_skeleton_repeat:supply_analysis:volume_ratio_20:14",
+    "typed_template_skeleton_repeat:price_positioning:share_price:14"
+  ],
+  "combined_quality_status": "FAIL",
+  "contract": "us-shared-v2-regression-proof-v1",
+  "deterministic_fallback_sent": 0,
+  "duplicate_sent": 0,
+  "explicit_v2_stock_accepted": 14,
+  "explicit_v2_stock_sent": 0,
+  "generation_duration_seconds": 2371.7,
+  "lease_renewal_count": 40,
+  "market_sent": 0,
+  "model_terminal_state": "ACCEPTED",
+  "not_ready_count": 0,
+  "packet_id": "2026-09-02-us-run-51-39a4d4eec53e",
+  "production_recipient_send": 0,
+  "reasoning_effort": "xhigh",
+  "status": "BLOCKED_AFTER_V2_ACCEPTANCE",
+  "tls_unknown_issuer": 0
+}

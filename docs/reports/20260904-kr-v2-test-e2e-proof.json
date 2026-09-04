@@ -1,0 +1,23 @@
+{
+  "ai_market_sent": 1,
+  "claim_lease_renewal_count": 19,
+  "contract": "kr-explicit-v2-test-e2e-proof-v1",
+  "deterministic_fallback_sent": 0,
+  "duplicate_sent": 0,
+  "explicit_v2_stock_accepted": 8,
+  "explicit_v2_stock_sent": 8,
+  "fencing": "PASS",
+  "generation_duration_seconds": 1092.99,
+  "healthy_primary_backup_reclaim": 0,
+  "model": "gpt-5.6-sol",
+  "natural_proof_test_gate": "PASS",
+  "packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e",
+  "pilot_ai_assisted_sent": 0,
+  "production_database_mutation": 0,
+  "production_recipient_send": 0,
+  "production_scheduler_change": 0,
+  "reasoning_effort": "xhigh",
+  "status": "PASS",
+  "test_sink": "DEDICATED_REDACTED_DISTINCT",
+  "tls_unknown_issuer": 0
+}

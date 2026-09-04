@@ -1,0 +1,44 @@
+{
+  "base_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "contract": "kr-v2-child-wait-repair-proof-v1",
+  "full_tests": {
+    "github_actions_implementation_run": 33883241223,
+    "github_actions_implementation_status": "PASS",
+    "local": "2206_PASS",
+    "ruff": "PASS"
+  },
+  "implementation_commits": [
+    "42374284e1ec16b41823f993ab93c40364c9c95d",
+    "35028fe9a6fd48b1111e84addca161401cbc5fe4",
+    "057208060f5da088ca3c22561edeb13bfc96789e"
+  ],
+  "investment_judgment_logic_changed": 0,
+  "kr_test": {
+    "explicit_v2_stock_accepted": 8,
+    "explicit_v2_stock_sent": 8,
+    "market_sent": 1,
+    "status": "PASS"
+  },
+  "main_merge": 0,
+  "main_sha": "NOT_MERGED",
+  "open_p0": [],
+  "open_p1": [
+    "US_COMBINED_TYPED_PROSE_SKELETON_REPETITION"
+  ],
+  "operating_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "production_database_mutation": 0,
+  "production_recipient_send": 0,
+  "production_scheduler_change": 0,
+  "readiness": "NEEDS_MORE_REPAIR",
+  "renderer_semantic_policy_changed": 0,
+  "structured_autonomy_modified": 0,
+  "ticker_specific_exception": 0,
+  "us_test": {
+    "explicit_v2_stock_accepted": 14,
+    "explicit_v2_stock_sent": 0,
+    "market_sent": 0,
+    "status": "BLOCKED_BY_COMBINED_QUALITY_GATE"
+  },
+  "validator_threshold_weakened": 0,
+  "work_instruction_commit": "5f6043dba8d7e22654e0f3cd74b4d49f52ba9393"
+}

@@ -1,0 +1,18 @@
+{
+  "accepted_artifact_preserved_after_late_suppression": true,
+  "authorized_cancel_terminal_state": "INTERRUPTED",
+  "command_timeout_terminal_state": "TIMED_OUT",
+  "compatibility_fallback_eligibility_preserved": true,
+  "contract": "v2-interruption-terminal-proof-v1",
+  "interrupted_child_ambiguous_in_progress": 0,
+  "partial_v2_send": 0,
+  "reasons": [
+    "COMMAND_TIMEOUT",
+    "AUTHORIZED_CANCEL",
+    "PRODUCTION_DEADLINE",
+    "CLAIM_OWNERSHIP_LOST",
+    "PROCESS_SHUTDOWN",
+    "OTHER_INTERRUPTION"
+  ],
+  "traceback_only_terminal_state": 0
+}
