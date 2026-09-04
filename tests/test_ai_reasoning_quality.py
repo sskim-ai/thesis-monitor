@@ -128,6 +128,67 @@ def test_quality_audit_fails_identical_observer_and_holder_decisions() -> None:
     assert report["hard_checks_passed"] is False
 
 
+def test_quality_audit_allows_fact_bound_canonical_monitoring_transition() -> None:
+    payload = _output().model_dump()
+    for review in payload["stock_reviews"]:
+        review["price_positioning"]["text"] = (
+            "등록 확인선 돌파 후 그 위를 유지하는 상태입니다."
+        )
+        review["price_positioning"]["fact_ids"] = [
+            "monitoring:confirmation_transition"
+        ]
+    packet = {
+        "stocks": [
+            {
+                "ticker": review["ticker"],
+                "fact_catalog": [
+                    {
+                        "fact_id": "monitoring:confirmation_transition",
+                        "source": "deterministic_monitoring_state",
+                        "fields": {"transition": "crossed_to_holding_above"},
+                    }
+                ],
+            }
+            for review in payload["stock_reviews"]
+        ]
+    }
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload),
+        packet=packet,
+    )
+
+    repeated = next(
+        item
+        for item in report["repeated_sentences"]
+        if item["sentence"] == "등록 확인선 돌파 후 그 위를 유지하는 상태입니다."
+    )
+    assert repeated["classification"] == "required_structural_safety"
+    assert any(
+        item["reason"] == "canonical_monitoring_transition_contract"
+        for item in report["template_skeleton_exceptions"]
+    )
+
+
+def test_quality_audit_rejects_unbound_monitoring_transition_repetition() -> None:
+    payload = _output().model_dump()
+    for review in payload["stock_reviews"]:
+        review["price_positioning"]["text"] = (
+            "등록 확인선 돌파 후 그 위를 유지하는 상태입니다."
+        )
+
+    report = relational_reasoning_quality_report(
+        AIDailyReviewOutput.model_validate(payload),
+        packet={"stocks": []},
+    )
+
+    assert any(
+        item["sentence"] == "등록 확인선 돌파 후 그 위를 유지하는 상태입니다."
+        and item["classification"] == "substantive"
+        for item in report["repeated_sentences"]
+    )
+
+
 def test_normalization_does_not_create_synonym_only_credit() -> None:
     assert normalize_decision_text("  • 같은   판단입니다. ") == "같은 판단입니다."
     assert normalize_decision_text("수급이 없습니다.") != normalize_decision_text(
@@ -488,6 +549,63 @@ def test_quality_audit_classifies_required_structural_templates() -> None:
             "<numeric>, <numeric>.",
         )
         == "kr_actor_horizon_numeric_pair"
+    )
+
+
+@pytest.mark.parametrize(
+    ("section", "owner", "semantic", "skeleton", "expected"),
+    [
+        (
+            "price_positioning",
+            "price_context",
+            "share_price",
+            "가격 기준: <numeric>.",
+            "canonical_current_price_tuple_v1",
+        ),
+        (
+            "price_positioning",
+            "price_context",
+            "current_price_risk_reward_ratio",
+            "<numeric>으로 현재 가격의 추격 비대칭은 불리합니다.",
+            "canonical_current_price_rr_interpretation_v1",
+        ),
+        (
+            "business_earnings",
+            "business_earnings",
+            "revenue",
+            "최근 확인값: <numeric>.",
+            "canonical_primary_earnings_fact_v1",
+        ),
+        (
+            "valuation_analysis",
+            "valuation",
+            "forward_pe",
+            "선행 이익 기준 값은 <numeric>입니다.",
+            "typed_neutral_absolute_valuation_statement",
+        ),
+    ],
+)
+def test_quality_audit_allows_only_typed_structural_numeric_templates(
+    section: str,
+    owner: str,
+    semantic: str,
+    skeleton: str,
+    expected: str,
+) -> None:
+    metadata = {
+        "section": section,
+        "owner": owner,
+        "semantic_types": [semantic],
+        "relation": "single_metric",
+        "skeleton": skeleton,
+    }
+
+    assert _typed_structural_template_exception(metadata) == expected
+    assert (
+        _typed_structural_template_exception(
+            {**metadata, "semantic_types": ["operating_margin"]}
+        )
+        is None
     )
     assert (
         _structural_template_exception(

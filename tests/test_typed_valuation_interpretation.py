@@ -98,6 +98,58 @@ def test_neutral_absolute_multiple_with_typed_reference_passes() -> None:
     assert len(accepted) == 1
 
 
+def test_absolute_forward_pe_uses_bound_semantic_as_canonical_metric() -> None:
+    review = _review("시장 예상 fPER 16.62배를 확인합니다.")
+    review["valuation_interpretation_refs"] = [
+        _typed(
+            interpretation_type="absolute",
+            metric="pe",
+            fact_id="valuation:current",
+            numeric_refs=["forward"],
+            exact_span="시장 예상 fPER 16.62배를 확인합니다.",
+        )
+    ]
+
+    errors, accepted = _typed_valuation_reference_errors(
+        review,
+        _stock("valuation:current"),
+        [_binding("forward", "forward_pe", "시장 예상 fPER 16.62배")],
+        prefix="TEST",
+    )
+
+    assert errors == []
+    assert accepted[0]["metric"] == "forward_pe"
+    assert accepted[0]["authored_metric"] == "pe"
+
+
+def test_absolute_metric_normalization_does_not_cross_metric_families() -> None:
+    review = _review("시장 예상 fPER 16.62배를 확인합니다.")
+    review["valuation_interpretation_refs"] = [
+        _typed(
+            interpretation_type="absolute",
+            metric="pbr",
+            fact_id="valuation:current",
+            numeric_refs=["forward"],
+            exact_span="시장 예상 fPER 16.62배를 확인합니다.",
+        )
+    ]
+
+    errors, _accepted = _typed_valuation_reference_errors(
+        review,
+        _stock("valuation:current"),
+        [_binding("forward", "forward_pe", "시장 예상 fPER 16.62배")],
+        prefix="TEST",
+    )
+
+    assert any("metric_evidence_mismatch" in error for error in errors)
+
+
+def test_peak_earnings_without_multiple_is_not_valuation_direction() -> None:
+    assert _directional_valuation_occurrences(
+        "높은 마진 기대는 유지되지만 피크 이익이 아니라 현금 전환을 봅니다."
+    ) == []
+
+
 @pytest.mark.parametrize(
     "text",
     [

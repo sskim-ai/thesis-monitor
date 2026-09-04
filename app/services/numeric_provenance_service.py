@@ -798,7 +798,7 @@ def _valuation_metrics_in_span(value: str) -> set[str]:
     if re.search(r"(?<!f)PBR|자산\s*배수", value, re.I):
         metrics.add("pbr")
     if re.search(
-        r"EPS|이익.{0,12}배수|피크\s*이익|(?:실적|이익)\s*기반\s*가치평가",
+        r"EPS|이익.{0,12}배수|(?:실적|이익)\s*기반\s*가치평가",
         value,
         re.I,
     ):
@@ -970,6 +970,27 @@ def _typed_valuation_reference_errors(
             for value in comparison_bindings
             if value is not None
         }
+        authored_metric = metric
+        if interpretation_type == "absolute" and len(semantics) == 1:
+            canonical_metric = {
+                "trailing_pe": "pe",
+                "forward_pe": "forward_pe",
+                "price_to_book": "pbr",
+                "forward_price_to_book": "forward_pbr",
+            }.get(next(iter(semantics)))
+            metric_family = {
+                "pe": "earnings",
+                "forward_pe": "earnings",
+                "earnings": "earnings",
+                "pbr": "book",
+                "forward_pbr": "book",
+                "book": "book",
+            }
+            if (
+                canonical_metric is not None
+                and metric_family.get(metric) == metric_family.get(canonical_metric)
+            ):
+                metric = canonical_metric
         if semantics and not semantics.intersection(
             _VALUATION_METRIC_SEMANTICS.get(metric, set())
         ):
@@ -1064,6 +1085,7 @@ def _typed_valuation_reference_errors(
                 "ref_id": ref_id,
                 "interpretation_type": interpretation_type,
                 "metric": metric,
+                "authored_metric": authored_metric,
                 "fact_id": fact_id,
                 "text_ref": text_ref,
                 "exact_text_span": exact_span,

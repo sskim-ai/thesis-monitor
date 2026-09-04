@@ -32,6 +32,7 @@ from app.services.ai_review_service import (
     investment_framework_routing,
     knowledge_manifest,
     production_packet_persistence_decision,
+    renew_ai_review_claim,
     try_write_ai_review_packet,
     validate_ai_review_output,
     write_ai_review_packet,
@@ -1737,6 +1738,104 @@ def test_us_primary_short_lease_allows_0830_backup_reclaim(
     assert backup.claim_id != primary.claim_id
     assert json.loads(Path(backup.claim_path).read_text())["owner"] == "us-backup"
     assert primary.temp_output_path != backup.temp_output_path
+
+
+def test_claim_renewal_requires_matching_owner_and_fencing_token(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+    claimed_at = datetime(2026, 8, 14, 0, 15, tzinfo=UTC)
+    primary = claim_next_ai_review_packet(
+        "us",
+        owner="us-primary",
+        now=claimed_at,
+        lease_minutes=10,
+    )
+
+    renewed = renew_ai_review_claim(
+        primary.packet_id,
+        primary.claim_id,
+        owner="us-primary",
+        fencing_token=primary.fencing_token,
+        now=claimed_at + timedelta(minutes=9),
+    )
+    wrong_owner = renew_ai_review_claim(
+        primary.packet_id,
+        primary.claim_id,
+        owner="us-backup",
+        fencing_token=primary.fencing_token,
+        now=claimed_at + timedelta(minutes=9),
+    )
+    wrong_token = renew_ai_review_claim(
+        primary.packet_id,
+        primary.claim_id,
+        owner="us-primary",
+        fencing_token="foreign-token",
+        now=claimed_at + timedelta(minutes=9),
+    )
+
+    assert primary.claim_id == primary.fencing_token
+    assert renewed.status == "renewed"
+    assert renewed.heartbeat_count == 1
+    assert renewed.lease_expires_at == "2026-08-14T00:34:00+00:00"
+    assert wrong_owner.status == "ownership_lost"
+    assert wrong_token.status == "ownership_lost"
+
+
+def test_fresh_primary_heartbeat_blocks_backup_then_stale_claim_reclaims(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    _settings(monkeypatch, tmp_path)
+    with Session(_engine()) as session:
+        _seed(session)
+        write_ai_review_packet(
+            session,
+            RUN_DATE,
+            "us",
+            generated_at=datetime(2026, 8, 14, 0, 10, tzinfo=UTC),
+        )
+    claimed_at = datetime(2026, 8, 14, 0, 15, tzinfo=UTC)
+    primary = claim_next_ai_review_packet(
+        "us",
+        owner="us-primary",
+        now=claimed_at,
+        lease_minutes=10,
+    )
+    renewal = renew_ai_review_claim(
+        primary.packet_id,
+        primary.claim_id,
+        owner="us-primary",
+        fencing_token=primary.fencing_token,
+        now=claimed_at + timedelta(minutes=9),
+    )
+    healthy_backup = claim_next_ai_review_packet(
+        "us",
+        owner="us-backup",
+        now=claimed_at + timedelta(minutes=15),
+    )
+    stale_backup = claim_next_ai_review_packet(
+        "us",
+        owner="us-backup",
+        now=claimed_at + timedelta(minutes=20),
+    )
+
+    assert renewal.status == "renewed"
+    assert healthy_backup.status == "no_pending_packet"
+    assert stale_backup.status == "claimed"
+    assert stale_backup.claim_id != primary.claim_id
+    active = json.loads(Path(stale_backup.claim_path).read_text(encoding="utf-8"))
+    assert active["claim_generation"] == 2
+    assert active["fencing_token"] == stale_backup.claim_id
 
 
 def test_expired_claim_can_finalize_when_no_worker_reclaims(

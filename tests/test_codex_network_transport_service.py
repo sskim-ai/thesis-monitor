@@ -9,7 +9,9 @@ from app.services import codex_network_transport_service as service
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
     CodexTransportFailureType,
+    codex_tls_environment,
     classify_codex_transport_failure,
+    diagnose_codex_transport_failure,
     probe_codex_network_readiness,
     retryable_codex_transport_failure,
 )
@@ -43,7 +45,7 @@ def test_network_readiness_recovers_after_bounded_dns_retry(monkeypatch) -> None
     assert result.attempts == 2
     assert result.resolved_address_count == 4
     assert result.failure_history == (
-        CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+        CodexTransportFailureType.DNS_FAILURE,
     )
     assert delays == [0.25]
 
@@ -53,7 +55,7 @@ def test_network_readiness_recovers_after_bounded_dns_retry(monkeypatch) -> None
     (
         (
             socket.gaierror("resolver unavailable"),
-            CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE,
+            CodexTransportFailureType.DNS_FAILURE,
         ),
         (
             ConnectionError("network unavailable"),
@@ -61,7 +63,7 @@ def test_network_readiness_recovers_after_bounded_dns_retry(monkeypatch) -> None
         ),
         (
             ssl.SSLError("certificate verify failed"),
-            CodexTransportFailureType.TLS_HANDSHAKE_FAILURE,
+            CodexTransportFailureType.TLS_CERTIFICATE_OTHER,
         ),
     ),
 )
@@ -102,7 +104,7 @@ def test_codex_log_failure_taxonomy_prioritizes_dns_root_cause() -> None:
 
     assert (
         classify_codex_transport_failure(log)
-        == CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE
+        == CodexTransportFailureType.DNS_FAILURE
     )
 
 
@@ -112,7 +114,27 @@ def test_codex_log_failure_taxonomy_prioritizes_dns_root_cause() -> None:
         (
             "certificate verify failed during TLS handshake",
             False,
-            CodexTransportFailureType.TLS_HANDSHAKE_FAILURE,
+            CodexTransportFailureType.TLS_CERTIFICATE_OTHER,
+        ),
+        (
+            "invalid peer certificate: UnknownIssuer",
+            False,
+            CodexTransportFailureType.TLS_CERTIFICATE_UNKNOWN_ISSUER,
+        ),
+        (
+            "invalid peer certificate: unknown issuer",
+            False,
+            CodexTransportFailureType.TLS_CERTIFICATE_UNKNOWN_ISSUER,
+        ),
+        (
+            "certificate has expired",
+            False,
+            CodexTransportFailureType.TLS_CERTIFICATE_EXPIRED,
+        ),
+        (
+            "hostname mismatch while verifying peer certificate",
+            False,
+            CodexTransportFailureType.TLS_CERTIFICATE_HOSTNAME_MISMATCH,
         ),
         (
             "HTTP status 429: too many requests",
@@ -125,7 +147,7 @@ def test_codex_log_failure_taxonomy_prioritizes_dns_root_cause() -> None:
             CodexTransportFailureType.CODEX_APP_SERVER_TRANSPORT_FAILURE,
         ),
         ("", True, CodexTransportFailureType.MODEL_TIMEOUT),
-        ("unexpected provider response", False, CodexTransportFailureType.MODEL_PROVIDER_RESPONSE_FAILURE),
+        ("unexpected transport response", False, CodexTransportFailureType.OTHER_TRANSPORT_FAILURE),
     ),
 )
 def test_codex_log_failure_taxonomy(
@@ -138,7 +160,7 @@ def test_codex_log_failure_taxonomy(
 
 def test_only_transient_transport_failures_are_retryable() -> None:
     assert retryable_codex_transport_failure(
-        CodexTransportFailureType.LOCAL_DNS_RESOLUTION_FAILURE
+        CodexTransportFailureType.DNS_FAILURE
     )
     assert retryable_codex_transport_failure(
         CodexTransportFailureType.CODEX_APP_SERVER_TRANSPORT_FAILURE
@@ -149,3 +171,39 @@ def test_only_transient_transport_failures_are_retryable() -> None:
     assert not retryable_codex_transport_failure(
         CodexTransportFailureType.MODEL_PROVIDER_RESPONSE_FAILURE
     )
+    assert not retryable_codex_transport_failure(
+        CodexTransportFailureType.TLS_CERTIFICATE_UNKNOWN_ISSUER
+    )
+    assert not retryable_codex_transport_failure(
+        CodexTransportFailureType.TLS_CERTIFICATE_EXPIRED
+    )
+
+
+def test_unknown_issuer_diagnostic_preserves_safe_raw_token() -> None:
+    diagnostic = diagnose_codex_transport_failure(
+        "failed to connect: invalid peer certificate: UnknownIssuer"
+    )
+
+    assert diagnostic.failure_type == CodexTransportFailureType.TLS_CERTIFICATE_UNKNOWN_ISSUER
+    assert diagnostic.raw_diagnostic_token == "UnknownIssuer"
+
+
+def test_codex_tls_environment_uses_explicit_ca_without_replacement(tmp_path) -> None:
+    explicit = tmp_path / "enterprise-ca.pem"
+    configured = codex_tls_environment({"CODEX_CA_CERTIFICATE": str(explicit)})
+
+    assert configured.trust_source == "EXPLICIT_CODEX_CA_CERTIFICATE"
+    assert configured.ca_bundle_path == str(explicit)
+    assert configured.environment["CODEX_CA_CERTIFICATE"] == str(explicit)
+
+
+def test_codex_tls_environment_uses_approved_system_bundle(monkeypatch, tmp_path) -> None:
+    bundle = tmp_path / "system-ca.pem"
+    bundle.write_text("certificate bundle", encoding="utf-8")
+    monkeypatch.setattr(service, "SYSTEM_CA_BUNDLE_CANDIDATES", (bundle,))
+    monkeypatch.setattr(service, "_is_approved_system_ca_bundle", lambda path: path == bundle)
+
+    configured = codex_tls_environment({})
+
+    assert configured.trust_source == "ROOT_OWNED_SYSTEM_CA_BUNDLE"
+    assert configured.environment["CODEX_CA_CERTIFICATE"] == str(bundle)

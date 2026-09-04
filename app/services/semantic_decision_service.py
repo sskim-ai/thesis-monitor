@@ -44,7 +44,8 @@ _OBSERVER_DECISION = re.compile(
 _HOLDER_DECISION = re.compile(
     r"논리|무효화|실적|이익|수익성|마진|margin|현금흐름|FCF|CAPEX|재고|"
     r"현금창출|반복성|경고|지지\s*유지|실행|자본|부채|희석|계약|billing|"
-    r"합산비율|손해율|대형재해|언더라이팅|펀더멘털\s*훼손"
+    r"합산비율|손해율|대형재해|언더라이팅|펀더멘털\s*훼손|"
+    r"준비금|비이자\s*수익|자금조달|현금\s*회수|프로젝트\s*지연|가동"
 )
 _DENIED_ECHO_PATTERNS = {
     "revenue": re.compile(r"외형\s*(?:성장|증가|둔화|감소)|매출.{0,10}(?:성장|증가|둔화|감소|개선|악화)"),
@@ -220,7 +221,11 @@ def assign_listed_security_valuation_scope(
     for fact in facts:
         fact_type = str(fact.get("fact_type") or "")
         fact_id = str(fact.get("fact_id") or "")
-        if not (fact_type.startswith("valuation") or fact_id.startswith("valuation:")):
+        if not (
+            fact_type.startswith("valuation")
+            or fact_id.startswith("valuation:")
+            or fact_type in {"security_identity", "security_basis"}
+        ):
             continue
         scope = str(fact.get("valuation_scope") or "")
         if scope not in VALUATION_SCOPES:

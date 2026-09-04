@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import subprocess
+import threading
 import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -34,6 +35,7 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     build_decision_evidence_packet,
 )
+from app.services.ai_review_service import renew_ai_review_claim
 from app.services.codex_runtime_state_service import (
     RUNTIME_STATE_NOT_READY,
     CodexRuntimeStateError,
@@ -42,7 +44,9 @@ from app.services.codex_runtime_state_service import (
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
     CodexTransportError,
+    codex_tls_environment,
     classify_codex_transport_failure,
+    diagnose_codex_transport_failure,
     probe_codex_network_readiness,
     retryable_codex_transport_failure,
 )
@@ -67,6 +71,59 @@ V2_STAGE_RECEIPT_CONTRACT = "accepted-v2-generation-stage-v1"
 
 class V2CLIPathPreconditionError(ValueError):
     """Raised before Codex starts when a local invocation path is invalid."""
+
+
+class _ClaimLeaseHeartbeat:
+    def __init__(
+        self,
+        *,
+        packet_id: str,
+        claim_id: str,
+        owner: str,
+        fencing_token: str,
+        interval_seconds: float,
+    ) -> None:
+        self.packet_id = packet_id
+        self.claim_id = claim_id
+        self.owner = owner
+        self.fencing_token = fencing_token
+        self.interval_seconds = interval_seconds
+        self.renewal_count = 0
+        self.ownership_lost = False
+        self._stop = threading.Event()
+        self._thread = threading.Thread(
+            target=self._run,
+            name=f"claim-heartbeat-{claim_id[:8]}",
+            daemon=True,
+        )
+
+    def _renew(self) -> None:
+        result = renew_ai_review_claim(
+            self.packet_id,
+            self.claim_id,
+            owner=self.owner,
+            fencing_token=self.fencing_token,
+        )
+        if result.status != "renewed":
+            self.ownership_lost = True
+            self._stop.set()
+            return
+        self.renewal_count = result.heartbeat_count
+
+    def _run(self) -> None:
+        while not self._stop.wait(self.interval_seconds):
+            self._renew()
+
+    def __enter__(self) -> "_ClaimLeaseHeartbeat":
+        self._renew()
+        if self.ownership_lost:
+            raise ValueError("v2_production_stale_claim")
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        self._stop.set()
+        self._thread.join(timeout=max(1.0, self.interval_seconds * 2))
 
 
 def _read_json(path: Path) -> dict[str, object]:
@@ -175,6 +232,12 @@ def _invoke_signed_in_codex(
         runtime_state.sqlite_wal_probe,
         runtime_state.signed_in_auth_reference,
     )
+    tls_configuration = codex_tls_environment(runtime_state.environment())
+    logger.info(
+        "v2_codex_tls_preflight trust_source=%s ca_bundle_path=%s verification=enabled",
+        tls_configuration.trust_source,
+        tls_configuration.ca_bundle_path or "codex-built-in",
+    )
 
     command = [
         codex_bin,
@@ -236,7 +299,7 @@ def _invoke_signed_in_codex(
                 process = subprocess.run(
                     command,
                     cwd=invocation_paths["cwd"],
-                    env=runtime_state.environment(),
+                    env=tls_configuration.environment,
                     stdin=stdin,
                     stdout=stdout,
                     stderr=subprocess.STDOUT,
@@ -286,10 +349,11 @@ def _invoke_signed_in_codex(
                 f"{RUNTIME_STATE_NOT_READY}:codex_app_server_initialization_failed"
             )
 
-        failure_type = classify_codex_transport_failure(
+        diagnostic = diagnose_codex_transport_failure(
             log_text,
             timed_out=timed_out,
         )
+        failure_type = diagnostic.failure_type
         can_retry = (
             retryable_codex_transport_failure(failure_type)
             and transport_attempt < V2_TRANSPORT_ATTEMPT_LIMIT
@@ -304,7 +368,11 @@ def _invoke_signed_in_codex(
             )
             time.sleep(V2_TRANSPORT_BACKOFF_SECONDS)
             continue
-        raise CodexTransportError(failure_type, attempts=transport_attempt)
+        raise CodexTransportError(
+            failure_type,
+            attempts=transport_attempt,
+            raw_diagnostic_token=diagnostic.raw_diagnostic_token,
+        )
 
     raise CodexTransportError(
         classify_codex_transport_failure(""),
@@ -472,6 +540,8 @@ def _safe_suppression_receipt(
     claim_id: str,
     *,
     reason: str,
+    transport_failure_type: str | None = None,
+    transport_diagnostic_token: str | None = None,
 ) -> dict[str, object]:
     receipt = {
         "contract": RECEIPT_CONTRACT,
@@ -483,6 +553,10 @@ def _safe_suppression_receipt(
         "rejected_decision_sent": 0,
         "recorded_at": datetime.now(UTC).isoformat(),
     }
+    if transport_failure_type:
+        receipt["transport_failure_type"] = transport_failure_type
+    if transport_diagnostic_token:
+        receipt["transport_diagnostic_token"] = transport_diagnostic_token
     try:
         paths = _paths(_claim(packet_id, claim_id), claim_id)
         _atomic_json(paths["receipt"], receipt)
@@ -491,7 +565,12 @@ def _safe_suppression_receipt(
     return receipt
 
 
-async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, object]:
+async def _generate_claim_owned(
+    packet_id: str,
+    claim_id: str,
+    *,
+    timeout: int,
+) -> dict[str, object]:
     prepared = await prepare_context(packet_id, claim_id)
     if prepared.get("status") != "CONTEXT_READY":
         return prepared
@@ -698,6 +777,30 @@ async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, 
     return receipt
 
 
+async def generate(packet_id: str, claim_id: str, *, timeout: int) -> dict[str, object]:
+    claim = _claim(packet_id, claim_id)
+    owner = str(claim.get("owner") or "")
+    fencing_token = str(claim.get("fencing_token") or claim_id)
+    if not owner or not fencing_token:
+        raise ValueError("v2_production_claim_ownership_missing")
+    heartbeat = _ClaimLeaseHeartbeat(
+        packet_id=packet_id,
+        claim_id=claim_id,
+        owner=owner,
+        fencing_token=fencing_token,
+        interval_seconds=float(get_settings().ai_review_claim_heartbeat_seconds),
+    )
+    with heartbeat:
+        receipt = await _generate_claim_owned(packet_id, claim_id, timeout=timeout)
+    if heartbeat.ownership_lost:
+        raise ValueError("v2_production_stale_claim")
+    receipt["claim_lease_renewal_count"] = heartbeat.renewal_count
+    receipt["claim_fencing_token_preserved"] = True
+    claim_paths = _paths(claim, claim_id)
+    _atomic_json(claim_paths["receipt"], receipt)
+    return receipt
+
+
 async def _run(args: argparse.Namespace) -> None:
     try:
         if args.command == "prepare":
@@ -722,6 +825,12 @@ async def _run(args: argparse.Namespace) -> None:
             args.packet_id,
             args.claim_id,
             reason=reason,
+            transport_failure_type=(
+                exc.failure_type.value if isinstance(exc, CodexTransportError) else None
+            ),
+            transport_diagnostic_token=(
+                exc.raw_diagnostic_token if isinstance(exc, CodexTransportError) else None
+            ),
         )
         _record_stage(
             args.packet_id,

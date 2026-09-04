@@ -532,9 +532,10 @@ def _inject_valuation_owners(
             }
         )
     unknown_pattern = re.compile(
-        r"현재 (?P<us>미국 )?(?P<listing>상장|거래) 증권의 "
+        r"현재 (?P<us>미국 )?(?P<listing>상장|거래) 증권의 (?:"
         r"주식·통화 denominator가 검증되지 않아 "
-        r"per-share valuation 해석을 보류합니다\."
+        r"per-share valuation 해석을 보류합니다|"
+        r"검증 가능한 배수 근거가 없어 .{1,96} 가치평가가 필요합니다)\."
     )
     match = unknown_pattern.fullmatch(text)
     if match is not None and _eligible_fact(stock, "security_basis:current") is not None:
@@ -554,7 +555,10 @@ def _inject_valuation_owners(
                 "text_ref": "valuation_analysis.text",
                 "exact_text_span": text,
                 "comparison_numeric_ref_ids": [],
+                "basis_status": "insufficient_metadata",
+                "source_type": "canonical_quality_gate",
                 "direction": "unknown",
+                "economic_scope": "listed_security",
             }
         )
         review["facts_used"] = _append_unique(

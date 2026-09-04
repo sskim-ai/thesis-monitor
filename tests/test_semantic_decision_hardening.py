@@ -287,6 +287,31 @@ def test_observer_holder_cash_generation_and_asymmetry_variables_pass() -> None:
     assert error is None
 
 
+@pytest.mark.parametrize(
+    "holder",
+    [
+        "보유자는 준비금 수익 의존도와 비이자 수익 전환을 봅니다.",
+        "보유자는 프로젝트 지연, 자금조달, 가동 후 현금 회수를 봅니다.",
+    ],
+)
+def test_holder_industry_operating_variables_pass(holder: str) -> None:
+    error = observer_holder_semantic_error(
+        "신규 관찰자는 현재 손익비와 가까운 저항을 봅니다.",
+        holder,
+    )
+
+    assert error is None
+
+
+def test_holder_price_only_wording_remains_rejected() -> None:
+    error = observer_holder_semantic_error(
+        "신규 관찰자는 현재 손익비와 가까운 저항을 봅니다.",
+        "보유자는 현재가를 봅니다.",
+    )
+
+    assert error == "holder_decision_variable_missing"
+
+
 def test_reinsurance_holder_variables_are_supported() -> None:
     error = observer_holder_semantic_error(
         "신규 관찰자는 현재 손익비와 가까운 저항을 봅니다.",

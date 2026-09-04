@@ -1,0 +1,31 @@
+{
+  "candidate_sha256": "29dd96d0b9c1efec9d23a6c22fab1b02b3b92f65a28af71f01abf8b119757a7b",
+  "candidate_sha256_matches": true,
+  "classification_counts": {
+    "CORRECTION_CONTEXT_DEFECT": 1,
+    "PROVENANCE_BINDING_DEFECT": 2,
+    "SCHEMA_OWNERSHIP_MISMATCH": 16,
+    "TRUE_CANDIDATE_VIOLATION": 0,
+    "VALIDATOR_FALSE_POSITIVE": 3
+  },
+  "classified_error_count": 22,
+  "contract": "us-validator-22-proof-v1",
+  "incident_category_counts": {
+    "holder_decision_variable": 2,
+    "market_semantic_provenance": 2,
+    "typed_valuation": 16,
+    "working_capital_ownership": 2
+  },
+  "model_rerun": 0,
+  "original_error_count": 22,
+  "repaired_replay": {
+    "accepted": true,
+    "binding_errors": 0,
+    "ownership_status": "passed",
+    "typed_errors": 0,
+    "validation_errors": 0
+  },
+  "ticker_specific_exceptions": 0,
+  "unclassified": 0,
+  "validator_global_weakening": 0
+}

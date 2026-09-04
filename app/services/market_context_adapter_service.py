@@ -738,6 +738,7 @@ class MarketContextAdapter:
         for fact in _facts(
             fact_catalog,
             "market_growth_relative",
+            "market_small_cap_relative",
             "market_sector_relative",
             "market_style_relative",
         ):

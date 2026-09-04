@@ -577,3 +577,56 @@ def test_candidate_owner_normalizer_removes_unsupported_peak_multiple_direction(
         item.get("reason") == "unsupported_peak_multiple_direction_removed"
         for item in report["handoffs"]
     )
+
+
+def test_candidate_owner_normalizer_grounds_security_basis_unknown() -> None:
+    packet = {
+        "stocks": [
+            {
+                "ticker": "ADR",
+                "fact_catalog": [
+                    {
+                        "fact_id": "security_basis:current",
+                        "fact_type": "security_basis",
+                        "interpretation_eligible": True,
+                        "valuation_scope": "listed_security",
+                        "fields": {
+                            "earnings_per_share_security_basis": "unknown",
+                        },
+                    }
+                ],
+            }
+        ]
+    }
+    candidate = {
+        "stock_reviews": [
+            {
+                "ticker": "ADR",
+                "facts_used": [],
+                "valuation_analysis": {
+                    "text": (
+                        "현재 미국 상장 증권의 검증 가능한 배수 근거가 없어 "
+                        "업황과 증권 프리미엄을 분리한 가치평가가 필요합니다."
+                    ),
+                    "fact_ids": [],
+                },
+            }
+        ]
+    }
+
+    output, report = apply_candidate_ownership_contracts(packet, candidate)
+    review = output["stock_reviews"][0]
+    typed = review["valuation_interpretation_refs"][0]
+
+    assert review["valuation_analysis"]["text"] == (
+        "현재 미국 상장 증권의 주식·통화 기준이 검증되지 않아 "
+        "실적 기반 가치평가 해석을 보류합니다."
+    )
+    assert typed["fact_id"] == "security_basis:current"
+    assert typed["interpretation_type"] == "quality_unknown"
+    assert typed["economic_scope"] == "listed_security"
+    assert "security_basis:current" in review["facts_used"]
+    assert any(
+        item.get("reason") == "typed_valuation_quality_unknown_handoff"
+        for item in report["handoffs"]
+    )

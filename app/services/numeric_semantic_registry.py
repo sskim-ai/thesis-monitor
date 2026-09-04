@@ -491,6 +491,17 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="both",
     ),
+    "small_cap_relative_return_pct": _spec(
+        "small_cap_relative_return_pct",
+        ("pct",),
+        ("Russell 2000 상대수익률", "S&P500 대비 Russell 2000"),
+        (
+            r"(?:russell\s*2000.*상대수익률|s&p\s*500.*대비.*russell\s*2000|"
+            r"russell\s*2000.*웃돌|russell\s*2000.*밑돌)",
+        ),
+        "signed_percentage",
+        scope="both",
+    ),
     "sector_relative_return_pct": _spec(
         "sector_relative_return_pct",
         ("pct",),
@@ -1847,6 +1858,12 @@ _FIELD_RULES = (
         "pct",
     ),
     NumericFieldRule(
+        ("market_small_cap_relative",),
+        r"fields\.relative_return_pct",
+        "small_cap_relative_return_pct",
+        "pct",
+    ),
+    NumericFieldRule(
         ("market_sector_relative",),
         r"fields\.relative_return_pct",
         "sector_relative_return_pct",
@@ -2085,6 +2102,12 @@ def resolve_numeric_semantic(
         if semantic_type is None:
             return None, "number"
         return semantic_spec(semantic_type), str(fields.get("currency") or "unknown")
+    if (
+        fact_type == "market_growth_relative"
+        and field_path == "fields.relative_return_pct"
+        and str(fields.get("subject") or "") == "IWM"
+    ):
+        return semantic_spec("small_cap_relative_return_pct"), "pct"
     for rule in _FIELD_RULES:
         if (fact_type in rule.fact_types or "*" in rule.fact_types) and re.fullmatch(
             rule.field_pattern, field_path
@@ -2183,6 +2206,7 @@ _INSTRUMENT_LABEL_SEMANTICS = {
     "style_return_pct",
     "style_proxy_level",
     "growth_relative_return_pct",
+    "small_cap_relative_return_pct",
     "sector_relative_return_pct",
     "style_relative_return_pct",
     "futures_close",
@@ -2305,6 +2329,7 @@ def _source_aware_label(
             return "S&P500 동일가중 수준"
     if semantic_type in {
         "growth_relative_return_pct",
+        "small_cap_relative_return_pct",
         "sector_relative_return_pct",
         "style_relative_return_pct",
     }:

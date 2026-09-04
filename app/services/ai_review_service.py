@@ -241,6 +241,20 @@ class ClaimResult:
     claim_path: str | None = None
     temp_output_path: str | None = None
     final_output_path: str | None = None
+    owner: str | None = None
+    fencing_token: str | None = None
+    lease_expires_at: str | None = None
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
+class ClaimLeaseRenewalResult:
+    status: Literal["renewed", "ownership_lost", "terminal"]
+    packet_id: str
+    claim_id: str
+    fencing_token: str
+    lease_expires_at: str | None = None
+    heartbeat_count: int = 0
     reason: str | None = None
 
 
@@ -3894,9 +3908,11 @@ def claim_next_ai_review_packet(
         with _packet_lock(packet_id):
             if final_path.exists():
                 continue
+            previous_generation = 0
             if claim_path.exists():
                 try:
                     claim = _read_json(claim_path)
+                    previous_generation = int(claim.get("claim_generation") or 0)
                     expires_at = datetime.fromisoformat(str(claim["expires_at"]))
                     if expires_at.tzinfo is None:
                         expires_at = expires_at.replace(tzinfo=UTC)
@@ -3905,6 +3921,8 @@ def claim_next_ai_review_packet(
                 except (KeyError, ValueError, json.JSONDecodeError):
                     pass
             claim_id = str(uuid.uuid4())
+            claim_owner = owner or socket.gethostname()
+            lease_expires_at = (current + lease).isoformat()
             temp_path = final_path.parent / f"{final_path.stem}--{claim_id}.json.tmp"
             claim = {
                 "packet_id": packet_id,
@@ -3918,10 +3936,17 @@ def claim_next_ai_review_packet(
                 "chart_knowledge_sha256": str(
                     _dict(packet.get("chart_knowledge")).get("sha256") or ""
                 ),
-                "owner": owner or socket.gethostname(),
+                "owner": claim_owner,
+                "fencing_token": claim_id,
+                "claim_generation": previous_generation + 1,
                 "claimed_at": current.isoformat(),
-                "expires_at": (current + lease).isoformat(),
-                "lease_expires_at": (current + lease).isoformat(),
+                "last_heartbeat_at": current.isoformat(),
+                "last_renewed_at": current.isoformat(),
+                "heartbeat_count": 0,
+                "lease_duration_seconds": int(lease.total_seconds()),
+                "expires_at": lease_expires_at,
+                "lease_expires_at": lease_expires_at,
+                "terminal_state": "ACTIVE",
                 "packet_path": str(packet_path),
                 "temp_output_path": str(temp_path),
                 "final_output_path": str(final_path),
@@ -3935,6 +3960,9 @@ def claim_next_ai_review_packet(
             claim_path=str(claim_path),
             temp_output_path=str(temp_path),
             final_output_path=str(final_path),
+            owner=claim_owner,
+            fencing_token=claim_id,
+            lease_expires_at=lease_expires_at,
         )
     return ClaimResult(
         status="no_pending_packet",
@@ -3943,6 +3971,74 @@ def claim_next_ai_review_packet(
             if expected_us_session is not None
             else "no_eligible_unclaimed_packet"
         ),
+    )
+
+
+def renew_ai_review_claim(
+    packet_id: str,
+    claim_id: str,
+    *,
+    owner: str,
+    fencing_token: str,
+    now: datetime | None = None,
+) -> ClaimLeaseRenewalResult:
+    ensure_ai_review_layout()
+    current = (now or datetime.now(UTC)).astimezone(UTC)
+    claim_path = _directory("claims") / f"{packet_id}.json"
+    with _packet_lock(packet_id):
+        try:
+            claim = _read_json(claim_path)
+        except (FileNotFoundError, ValueError, json.JSONDecodeError):
+            return ClaimLeaseRenewalResult(
+                status="terminal",
+                packet_id=packet_id,
+                claim_id=claim_id,
+                fencing_token=fencing_token,
+                reason="claim_not_active",
+            )
+        active_token = str(claim.get("fencing_token") or claim.get("claim_id") or "")
+        if (
+            str(claim.get("packet_id") or "") != packet_id
+            or str(claim.get("claim_id") or "") != claim_id
+            or str(claim.get("owner") or "") != owner
+            or active_token != fencing_token
+            or str(claim.get("terminal_state") or "ACTIVE") != "ACTIVE"
+        ):
+            return ClaimLeaseRenewalResult(
+                status="ownership_lost",
+                packet_id=packet_id,
+                claim_id=claim_id,
+                fencing_token=fencing_token,
+                reason="owner_or_fencing_token_mismatch",
+            )
+        lease_seconds = int(claim.get("lease_duration_seconds") or 0)
+        if lease_seconds < 1:
+            claimed_at = datetime.fromisoformat(str(claim["claimed_at"]))
+            expires_at = datetime.fromisoformat(str(claim["expires_at"]))
+            if claimed_at.tzinfo is None:
+                claimed_at = claimed_at.replace(tzinfo=UTC)
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=UTC)
+            lease_seconds = max(1, int((expires_at - claimed_at).total_seconds()))
+        lease_expires_at = (current + timedelta(seconds=lease_seconds)).isoformat()
+        heartbeat_count = int(claim.get("heartbeat_count") or 0) + 1
+        claim.update(
+            {
+                "last_heartbeat_at": current.isoformat(),
+                "last_renewed_at": current.isoformat(),
+                "heartbeat_count": heartbeat_count,
+                "expires_at": lease_expires_at,
+                "lease_expires_at": lease_expires_at,
+            }
+        )
+        _atomic_json(claim_path, claim)
+    return ClaimLeaseRenewalResult(
+        status="renewed",
+        packet_id=packet_id,
+        claim_id=claim_id,
+        fencing_token=fencing_token,
+        lease_expires_at=lease_expires_at,
+        heartbeat_count=heartbeat_count,
     )
 
 
@@ -5314,7 +5410,6 @@ def _working_capital_user_visible_errors(
     non_business_facts = {
         fact_id
         for item in (
-            review.core_judgment,
             review.price_positioning,
             review.supply_analysis,
             review.valuation_analysis,
@@ -5322,6 +5417,11 @@ def _working_capital_user_visible_errors(
         for fact_id in item.fact_ids
         if fact_id in working_capital_fact_ids
     }
+    non_business_facts.update(
+        fact_id
+        for fact_id in review.core_judgment.fact_ids
+        if fact_id in lineage_fact_ids
+    )
     if non_business_facts:
         errors.append(
             f"{review.ticker}:working_capital_owner_mismatch:"
@@ -5890,6 +5990,7 @@ def validate_ai_review_output(
     output_value: object,
 ) -> tuple[AIDailyReviewOutput | None, list[str]]:
     packet = ensure_semantic_scope_contract(ensure_relation_semantics(packet))
+    _refresh_market_numeric_registry(packet)
     directional_output, _ = normalize_directional_numeric_refs(packet, output_value)
     normalized_output, _ = apply_candidate_ownership_contracts(packet, directional_output)
     binding = bind_numeric_fact_references(packet, normalized_output)
@@ -5900,6 +6001,35 @@ def validate_ai_review_output(
         return None, list(dict.fromkeys([*binding.errors, *typed_errors]))
     output, errors = _validate_bound_ai_review_output(session, packet, binding.output)
     return output, list(dict.fromkeys([*errors, *typed_errors]))
+
+
+def _refresh_market_numeric_registry(packet: dict[str, object]) -> None:
+    market_context = packet.get("market_context")
+    if not isinstance(market_context, dict):
+        return
+    facts = market_context.get("fact_catalog")
+    if not isinstance(facts, list):
+        return
+    refreshed = build_numeric_registry(
+        [fact for fact in facts if isinstance(fact, dict)]
+    )
+    refreshed_by_key = {
+        (str(item.get("fact_id") or ""), str(item.get("field_path") or "")): item
+        for item in refreshed
+    }
+    current = market_context.get("numeric_registry")
+    current = current if isinstance(current, list) else []
+    merged: list[dict[str, object]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in current:
+        if not isinstance(item, dict):
+            continue
+        key = (str(item.get("fact_id") or ""), str(item.get("field_path") or ""))
+        source = refreshed_by_key.get(key)
+        merged.append({**item, **source} if source is not None else dict(item))
+        seen.add(key)
+    merged.extend(item for key, item in refreshed_by_key.items() if key not in seen)
+    market_context["numeric_registry"] = merged
 
 
 def _comparison_payload(
@@ -6337,6 +6467,11 @@ def _numeric_correction_context(
             review = candidate.get("market_review")
             market_context = packet.get("market_context")
             canonical_context = market_context
+            facts = (
+                market_context.get("fact_catalog", [])
+                if isinstance(market_context, dict)
+                else []
+            )
             registry = (
                 market_context.get("numeric_registry", [])
                 if isinstance(market_context, dict)
@@ -6346,6 +6481,7 @@ def _numeric_correction_context(
             review = candidate_stocks.get(prefix)
             stock = packet_stocks.get(prefix)
             canonical_context = stock
+            facts = stock.get("fact_catalog", []) if isinstance(stock, dict) else []
             registry = stock.get("numeric_registry", []) if isinstance(stock, dict) else []
         text_ref = None
         tokens: set[str] = set()
@@ -6354,6 +6490,10 @@ def _numeric_correction_context(
             _, remainder = error.split(marker, maxsplit=1)
             text_ref, _, token_text = remainder.partition(":")
             tokens = {item for item in token_text.split(",") if item}
+        elif ":valuation_interpretation_" in error:
+            text_ref = "valuation_analysis.text"
+        elif error.endswith(":holder_decision_variable_missing"):
+            text_ref = "price_positioning.holder_view"
         rendered_phrase = (
             _raw_text_at_ref(review, text_ref) if isinstance(review, dict) and text_ref else None
         )
@@ -6383,12 +6523,53 @@ def _numeric_correction_context(
                     "approved_formatted_value": source.get("canonical_display_value"),
                 }
             )
+        quality_candidates = [
+            {
+                "fact_id": source.get("fact_id"),
+                "fact_type": source.get("fact_type"),
+                "valuation_scope": source.get("valuation_scope"),
+                "interpretation_eligible": source.get("interpretation_eligible"),
+            }
+            for source in (facts if isinstance(facts, list) else [])
+            if isinstance(source, dict)
+            and str(source.get("fact_type") or "")
+            in {
+                "financial_quality",
+                "security_basis",
+                "security_identity",
+                "valuation_quality",
+            }
+            and source.get("interpretation_eligible") is not False
+        ]
+        allowed_actions = [
+            "correct_reference",
+            "correct_wording",
+            "remove_unsafe_number",
+        ]
+        if error.endswith(":holder_decision_variable_missing"):
+            allowed_actions = [
+                "name_holder_business_or_risk_variable",
+                "remove_label_only_holder_sentence",
+            ]
+        elif ":working_capital_owner_mismatch:" in error:
+            allowed_actions = [
+                "keep_exact_numeric_relation_in_business_earnings",
+                "use_relation_fact_in_core_only_for_qualitative_summary",
+                "remove_working_capital_fact_from_other_sections",
+            ]
+        elif ":valuation_interpretation_" in error:
+            allowed_actions = [
+                "bind_absolute_metric_to_canonical_numeric_semantic",
+                "add_typed_quality_unknown_reference",
+                "remove_unsupported_valuation_interpretation",
+            ]
         contexts.append(
             {
                 "error": error,
                 "text_ref": text_ref,
                 "rendered_phrase": rendered_phrase,
                 "canonical_candidates": candidates,
+                "quality_candidates": quality_candidates,
                 "numeric_diagnostics": [
                     {
                         **diagnostic,
@@ -6401,11 +6582,7 @@ def _numeric_correction_context(
                     )
                     if not tokens or str(diagnostic["normalized_token"]) in tokens
                 ],
-                "allowed_actions": [
-                    "correct_reference",
-                    "correct_wording",
-                    "remove_unsafe_number",
-                ],
+                "allowed_actions": allowed_actions,
             }
         )
     return contexts
@@ -6464,7 +6641,10 @@ def finalize_ai_review_output(
             active_claim = _read_json(claim_path)
         except (FileNotFoundError, ValueError, json.JSONDecodeError):
             active_claim = {}
-        if str(active_claim.get("claim_id") or "") != claim_id:
+        if (
+            str(active_claim.get("claim_id") or "") != claim_id
+            or str(active_claim.get("fencing_token") or claim_id) != claim_id
+        ):
             if temp_path.exists():
                 rejected = _directory("rejected") / (f"{output_name}.{claim_id}.stale_claim_output")
                 os.replace(temp_path, rejected)
@@ -6486,7 +6666,8 @@ def finalize_ai_review_output(
         return OutputValidationResult(
             status="rejected", packet_id=packet_id, errors=(type(exc).__name__,)
         )
-    packet = ensure_relation_semantics(packet)
+    packet = ensure_semantic_scope_contract(ensure_relation_semantics(packet))
+    _refresh_market_numeric_registry(packet)
     directional_candidate, relation_report = normalize_directional_numeric_refs(packet, candidate)
     normalized_candidate, ownership_report = apply_candidate_ownership_contracts(
         packet, directional_candidate
@@ -6581,6 +6762,7 @@ def finalize_ai_review_output(
         claim_identity_matches = all(
             (
                 str(final_claim.get("claim_id") or "") == claim_id,
+                str(final_claim.get("fencing_token") or claim_id) == claim_id,
                 str(final_claim.get("packet_id") or "") == packet_id,
                 str(final_claim.get("analysis_policy_version") or "") == policy_version,
                 str(final_claim.get("knowledge_sha256") or "") == knowledge_sha,

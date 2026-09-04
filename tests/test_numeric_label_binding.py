@@ -1317,6 +1317,28 @@ def test_relative_market_metric_uses_subject_and_benchmark_identity() -> None:
     assert "S&P500 대비 반도체 상대수익률 -0.1%" in text
 
 
+def test_legacy_iwm_relative_fact_uses_small_cap_semantics() -> None:
+    fact = _fact(
+        "small-cap",
+        "market_growth_relative",
+        {"subject": "IWM", "benchmark": "SPY", "relative_return_pct": -0.6},
+    )
+    registry = build_numeric_registry([fact])
+    row = next(item for item in registry if item["field_path"] == "fields.relative_return_pct")
+
+    assert row["semantic_type"] == "small_cap_relative_return_pct"
+    assert row["canonical_label"] == "S&P500 대비 Russell 2000 상대수익률"
+    result = _bind_market(
+        [fact],
+        "{{numeric:small_cap}}",
+        [_ref("small_cap", "small-cap", "fields.relative_return_pct")],
+    )
+    assert result.errors == ()
+    assert "S&P500 대비 Russell 2000 상대수익률 -0.6%" in (
+        result.output["market_review"]["core_judgment"]["text"]
+    )
+
+
 def test_unknown_relative_identity_does_not_use_first_approved_label() -> None:
     fact = _fact(
         "relative",

@@ -1,0 +1,32 @@
+{
+  "ca_bundle": {
+    "certificate_count": 128,
+    "mode": "0644",
+    "owner": "root:wheel",
+    "path": "/etc/ssl/cert.pem",
+    "sha256": "9dae8d76e55cb08991f2b672d58999ea15560d910759c16b544f843bdffbb994"
+  },
+  "certificate_verification_bypass": 0,
+  "cli": {
+    "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "sandbox": "read-only",
+    "version": "codex-cli 0.148.0-alpha.15"
+  },
+  "contract": "us-transport-proof-v1",
+  "preflight": {
+    "certificate_verify_error_count": 0,
+    "cli_exit_code": 0,
+    "model_result_count": 1,
+    "telegram_send": 0,
+    "tls_unknown_issuer_count": 0,
+    "transport_attempts": 1
+  },
+  "root_cause_identified": true,
+  "trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+  "unknown_issuer": {
+    "canonical_class": "TLS_CERTIFICATE_UNKNOWN_ISSUER",
+    "raw_safe_token": "UnknownIssuer",
+    "retryable": false,
+    "retry_storm": 0
+  }
+}
