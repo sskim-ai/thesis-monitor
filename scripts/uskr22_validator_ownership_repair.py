@@ -226,21 +226,43 @@ def prior_validator_regression(
         for row in failed_checkpoint["candidates"]
         if row["ticker"] == "005490"
     )
+    modal_metric_refs = tuple(
+        row.ref_id
+        for row in evidence["005490"].evidence
+        if "ROIC" in f"{row.label}\n{row.statement}"
+    )
+    if not modal_metric_refs:
+        raise ValueError("fresh_first_owned_future_modal_evidence_missing")
+    modal_claim = modal_candidate.sell_drivers[0].model_copy(
+        update={
+            "text": (
+                "대규모 CAPEX가 FCF 감소, 순부채 증가와 "
+                "향후 ROIC 악화로 이어질 수 있다."
+            ),
+            "evidence_refs": modal_metric_refs,
+        }
+    )
+    modal_candidate = modal_candidate.model_copy(
+        update={
+            "sell_drivers": (
+                modal_claim,
+                *modal_candidate.sell_drivers[1:],
+            )
+        }
+    )
     modal_result = validate_structured_autonomy_candidate(
         evidence["005490"],
         modal_candidate,
         price_map=price_maps["005490"],
         industry=str(stocks["005490"].get("industry") or ""),
     )
-    modal_claim = modal_candidate.sell_drivers[1]
     unowned_modal_candidate = modal_candidate.model_copy(
         update={
             "sell_drivers": (
-                modal_candidate.sell_drivers[0],
                 modal_claim.model_copy(
                     update={"evidence_refs": ("canonical:price:current",)}
                 ),
-                *modal_candidate.sell_drivers[2:],
+                *modal_candidate.sell_drivers[1:],
             )
         }
     )
