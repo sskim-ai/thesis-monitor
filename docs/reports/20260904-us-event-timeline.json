@@ -1,0 +1,197 @@
+{
+  "packet_id": "2026-09-04-us-run-55-54cd536c6e4d",
+  "events": [
+    {
+      "at_kst": "2026-09-04T08:05:31.682759+09:00",
+      "component": "daily producer",
+      "event": "monitor run 55 started",
+      "status": "success path"
+    },
+    {
+      "at_kst": "2026-09-04T08:06:41.488234+09:00",
+      "component": "daily producer",
+      "event": "14/14 analysis completed",
+      "status": "success"
+    },
+    {
+      "at_kst": "2026-09-04T08:06:44.108602+09:00",
+      "component": "packet builder",
+      "event": "immutable AI packet persisted",
+      "status": "ready_for_ai=true"
+    },
+    {
+      "at_kst": "2026-09-04T08:10:02.492291+09:00",
+      "component": "daily producer",
+      "event": "existing analysis reused",
+      "status": "held_for_ai_review"
+    },
+    {
+      "at_kst": "2026-09-04T08:15:03.079209+09:00",
+      "component": "daily producer",
+      "event": "existing analysis reused",
+      "status": "held_for_ai_review"
+    },
+    {
+      "at_kst": "2026-09-04T08:15:45.571000+09:00",
+      "component": "US primary Codex automation",
+      "event": "task started",
+      "status": "running"
+    },
+    {
+      "at_kst": "2026-09-04T08:16:08.184000+09:00",
+      "component": "US primary claim",
+      "event": "claim result observed: 1e008869-f2e3-4a52-ba32-fe7b31bf472e",
+      "status": "claimed; exact write occurred in 08:16:05.870..08:16:08.184"
+    },
+    {
+      "at_kst": "2026-09-04T08:20:00.125000+09:00",
+      "component": "US primary Codex automation",
+      "event": "tool output while inspecting packet facts",
+      "status": "running_active"
+    },
+    {
+      "at_kst": "2026-09-04T08:20:04.232304+09:00",
+      "component": "daily producer attempt 4",
+      "event": "existing successful analysis reused",
+      "status": "held_for_ai_review; no primary checker"
+    },
+    {
+      "at_kst": "2026-09-04T08:21:18.264000+09:00",
+      "component": "US primary Codex automation",
+      "event": "reported gates passed and US14 present",
+      "status": "running_active"
+    },
+    {
+      "at_kst": "2026-09-04T08:26:05.870+09:00",
+      "component": "primary claim lease",
+      "event": "earliest bounded lease expiry",
+      "status": "expired but still current until reclaim"
+    },
+    {
+      "at_kst": "2026-09-04T08:29:47.946000+09:00",
+      "component": "US primary",
+      "event": "market + 14-stock candidate written",
+      "status": "candidate persisted"
+    },
+    {
+      "at_kst": "2026-09-04T08:29:59.712000+09:00",
+      "component": "US primary",
+      "event": "candidate preflight confirmed US14 and 125 numeric refs",
+      "status": "pass"
+    },
+    {
+      "at_kst": "2026-09-04T08:30:09.290378+09:00",
+      "component": "primary V2 decision canary",
+      "event": "signed-in Codex CLI xhigh started",
+      "status": "model request path reached"
+    },
+    {
+      "at_kst": "2026-09-04T08:30:13.659620+09:00",
+      "component": "primary V2 decision canary",
+      "event": "first invalid peer certificate: UnknownIssuer",
+      "status": "TLS failure"
+    },
+    {
+      "at_kst": "2026-09-04T08:30:15.594000+09:00",
+      "component": "US backup Codex automation",
+      "event": "scheduled task started",
+      "status": "running"
+    },
+    {
+      "at_kst": "2026-09-04T08:30:39.046046+09:00",
+      "component": "US backup claim",
+      "event": "expired primary lease reclaimed as 15e1258f-7654-47d5-a58d-23d22310dedd",
+      "status": "owner transferred; same packet and output generation"
+    },
+    {
+      "at_kst": "2026-09-04T08:33:17+09:00",
+      "component": "US backup",
+      "event": "same-packet primary draft copied to backup claim and claim ID adapted",
+      "status": "market + US14 candidate"
+    },
+    {
+      "at_kst": "2026-09-04T08:33:37.239119+09:00",
+      "component": "backup V2 decision canary",
+      "event": "signed-in Codex CLI xhigh started",
+      "status": "model request path reached"
+    },
+    {
+      "at_kst": "2026-09-04T08:33:41.594080+09:00",
+      "component": "backup V2 decision canary",
+      "event": "first invalid peer certificate: UnknownIssuer",
+      "status": "TLS failure"
+    },
+    {
+      "at_kst": "2026-09-04T08:35:15.425000+09:00",
+      "component": "primary V2 decision canary",
+      "event": "interrupted after retry remained blocked",
+      "status": "exit 130; wrapper had logged LOCAL_NETWORK_CONNECTIVITY_FAILURE"
+    },
+    {
+      "at_kst": "2026-09-04T08:35:20.732000+09:00",
+      "component": "US primary validator",
+      "event": "primary candidate rejected",
+      "status": "stale_claim_output"
+    },
+    {
+      "at_kst": "2026-09-04T08:36:03.855000+09:00",
+      "component": "US primary Codex automation",
+      "event": "task completed",
+      "status": "no accepted output; no delivery"
+    },
+    {
+      "at_kst": "2026-09-04T08:37:08.504000+09:00",
+      "component": "backup V2 decision canary",
+      "event": "interrupted after retry remained blocked",
+      "status": "exit 130; wrapper had logged LOCAL_NETWORK_CONNECTIVITY_FAILURE"
+    },
+    {
+      "at_kst": "2026-09-04T08:37:15.059000+09:00",
+      "component": "US backup validator",
+      "event": "first validation rejected",
+      "status": "26 raw Korean postposition errors; fallback preserved"
+    },
+    {
+      "at_kst": "2026-09-04T08:40:04.201264+09:00",
+      "component": "hard fallback",
+      "event": "deterministic fallback dispatch began",
+      "status": "15 selected"
+    },
+    {
+      "at_kst": "2026-09-04T08:40:06.363050+09:00",
+      "component": "Telegram delivery",
+      "event": "market digest sent",
+      "status": "sent; delivery 497"
+    },
+    {
+      "at_kst": "2026-09-04T08:40:07.450053+09:00",
+      "component": "Telegram delivery",
+      "event": "first stock message sent",
+      "status": "CORZ; delivery 498"
+    },
+    {
+      "at_kst": "2026-09-04T08:40:21.613300+09:00",
+      "component": "Telegram delivery",
+      "event": "last stock message sent",
+      "status": "WULF; delivery 511; 15/15 terminal"
+    },
+    {
+      "at_kst": "2026-09-04T08:41:37+09:00",
+      "component": "US backup",
+      "event": "one allowed corrected candidate persisted",
+      "status": "candidate persisted"
+    },
+    {
+      "at_kst": "2026-09-04T08:41:48.029000+09:00",
+      "component": "US backup validator",
+      "event": "final validation rejected",
+      "status": "22 errors; no held session after fallback"
+    },
+    {
+      "at_kst": "2026-09-04T08:42:26.746000+09:00",
+      "component": "US backup Codex automation",
+      "event": "task completed",
+      "status": "no accepted output; no delivery"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "target_date": "2026-09-04",
+  "market": "us",
+  "operating_revision": "5d5f3363d3a762b62698943b1feb4fa121d0d0f9",
+  "monitor_run": {
+    "id": 55,
+    "run_type": "daily_us",
+    "started_at_kst": "2026-09-04T08:05:31.682759+09:00",
+    "completed_at_kst": "2026-09-04T08:06:41.488234+09:00",
+    "status": "success",
+    "ticker_count": 14,
+    "success_count": 14,
+    "failure_count": 0
+  },
+  "packet": {
+    "packet_id": "2026-09-04-us-run-55-54cd536c6e4d",
+    "generated_at_kst": "2026-09-04T08:06:44.108602+09:00",
+    "source_monitor_run_id": "55",
+    "analysis_policy_version": "daily-review-v3.10",
+    "schema_version": "1",
+    "output_schema_version": "4",
+    "sha256": "fd2579aaf562142470e1b419fb01c30e23bd3303333ca18a461f3c538e9f8e23"
+  },
+  "primary": {
+    "automation_id": "thesis-monitor-ai-review-us-primary",
+    "session_id": "01a0698e-883b-7942-8a2c-0a5b3913fa34",
+    "scheduled_at_kst": "08:15",
+    "started_at_kst": "2026-09-04T08:15:45.571+09:00",
+    "finished_at_kst": "2026-09-04T08:36:03.855+09:00",
+    "claim_id": "1e008869-f2e3-4a52-ba32-fe7b31bf472e",
+    "claim_observed_at_kst": "2026-09-04T08:16:08.184+09:00",
+    "lease_minutes": 10,
+    "candidate_count": {
+      "market": 1,
+      "stocks": 14,
+      "total": 15
+    },
+    "candidate_sha256": "3dfaea9ce0643e56a676b6740cae7aedab2a7f01fdff090265923c4562d4b276",
+    "validation": {
+      "status": "rejected",
+      "errors": [
+        "stale_claim_output"
+      ]
+    },
+    "accepted_count": 0,
+    "delivery_count": 0
+  },
+  "backup": {
+    "automation_id": "thesis-monitor-ai-review-us-backup",
+    "session_id": "01a0699b-cec4-7842-8e22-ee6bd7c13357",
+    "scheduled_at_kst": "08:30",
+    "started_at_kst": "2026-09-04T08:30:15.594+09:00",
+    "finished_at_kst": "2026-09-04T08:42:26.746+09:00",
+    "claim_id": "15e1258f-7654-47d5-a58d-23d22310dedd",
+    "claimed_at_kst": "2026-09-04T08:30:39.046046+09:00",
+    "lease_expires_at_kst": "2026-09-04T09:00:39.046046+09:00",
+    "candidate_count": {
+      "market": 1,
+      "stocks": 14,
+      "total": 15
+    },
+    "first_candidate_sha256": "fa1499059847e3a1bd3283fef2e266385960e4e1e18550f9f41e9cd0d9f24d11",
+    "corrected_candidate_sha256": "29dd96d0b9c1efec9d23a6c22fab1b02b3b92f65a28af71f01abf8b119757a7b",
+    "correction_count": 1,
+    "final_validation": {
+      "status": "rejected",
+      "error_count": 22,
+      "errors": [
+        "CRCL:holder_decision_variable_missing",
+        "HUT:holder_decision_variable_missing",
+        "MU:working_capital_owner_mismatch:working-capital-relation:dbdfd04e725e83528d8fdd31",
+        "TSLA:working_capital_owner_mismatch:working-capital-relation:36181e61768dfd580d9ede01",
+        "market_review:numeric_usage_semantic_mismatch:market:relative:IWM:SPY:fields.relative_return_pct",
+        "market_review:numbers_without_provenance:important_changes[1].text:-0.6",
+        "CRCL:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "CRCL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 99.09배",
+        "GOOGL:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "GOOGL:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 16.62배",
+        "HUT:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "HUT:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 149.31배",
+        "IBM:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "IBM:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 19.04배",
+        "MU:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "MU:valuation_interpretation_occurrence_uncovered:core_judgment.text:11",
+        "MU:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 5.87배",
+        "SKHY:valuation_interpretation_occurrence_uncovered:valuation_analysis.text:42",
+        "SNDK:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "SNDK:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 6.5배",
+        "TSLA:valuation_interpretation_metric_evidence_mismatch:valuation_fpe:pe",
+        "TSLA:valuation_interpretation_numeric_occurrence_uncovered:valuation_analysis.text:시장 예상 fPER 145.9배"
+      ]
+    },
+    "accepted_count": 0,
+    "delivery_count": 0
+  },
+  "fallback": {
+    "scheduled_at_kst": "08:40",
+    "dispatch_started_at_kst": "2026-09-04T08:40:04.201264+09:00",
+    "last_send_at_kst": "2026-09-04T08:40:21.613300+09:00",
+    "mode": "deterministic_fallback",
+    "market_count": 1,
+    "stock_count": 14,
+    "total": 15,
+    "pending": 0,
+    "duplicates": 0
+  }
+}

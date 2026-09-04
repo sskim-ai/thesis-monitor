@@ -1,0 +1,77 @@
+{
+  "packet_id": "2026-09-04-us-run-55-54cd536c6e4d",
+  "stages": [
+    {
+      "stage": "source_and_technical",
+      "owner": "monitor run 55",
+      "status": "PASS",
+      "output": "US14 14/14"
+    },
+    {
+      "stage": "packet",
+      "owner": "daily packet builder",
+      "status": "PASS",
+      "output": "ready_for_ai=true"
+    },
+    {
+      "stage": "primary_review_authoring",
+      "owner": "codex-us-primary",
+      "status": "COMPLETED",
+      "output": "market 1 + stocks 14; 125 numeric refs"
+    },
+    {
+      "stage": "primary_v2_canary",
+      "owner": "claim-scoped signed-in Codex CLI",
+      "status": "FAILED_TLS",
+      "output": "UnknownIssuer; no model result"
+    },
+    {
+      "stage": "primary_validation",
+      "owner": "AI review validator",
+      "status": "REJECTED",
+      "output": "stale_claim_output after backup reclaim"
+    },
+    {
+      "stage": "backup_review_authoring",
+      "owner": "codex-us-backup",
+      "status": "COMPLETED_REUSE",
+      "output": "same packet and prior draft, claim fence adapted"
+    },
+    {
+      "stage": "backup_v2_canary",
+      "owner": "claim-scoped signed-in Codex CLI",
+      "status": "FAILED_TLS",
+      "output": "UnknownIssuer; no model result"
+    },
+    {
+      "stage": "backup_validation_1",
+      "owner": "AI review validator",
+      "status": "REJECTED",
+      "output": "26 numeric postposition errors"
+    },
+    {
+      "stage": "backup_correction",
+      "owner": "codex-us-backup",
+      "status": "COMPLETED",
+      "output": "one allowed repair"
+    },
+    {
+      "stage": "backup_validation_2",
+      "owner": "AI review validator",
+      "status": "REJECTED",
+      "output": "22 decision/ownership/provenance/valuation errors"
+    },
+    {
+      "stage": "accepted",
+      "owner": "AI review finalizer",
+      "status": "NOT_CREATED",
+      "output": null
+    },
+    {
+      "stage": "delivery",
+      "owner": "08:40 hard fallback",
+      "status": "SENT",
+      "output": "deterministic fallback 15/15"
+    }
+  ]
+}
