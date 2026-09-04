@@ -97,6 +97,19 @@ def test_signal_terminated_child_is_interruption_not_transport_failure(
         "run",
         lambda *args, **kwargs: SimpleNamespace(returncode=128 + signal.SIGINT),
     )
+    monkeypatch.setattr(
+        runtime,
+        "prepare_codex_runtime_state",
+        lambda *args, **kwargs: SimpleNamespace(
+            contract="test-runtime-state",
+            namespace_hash="signal-test",
+            ownership="test",
+            mode="0700",
+            sqlite_wal_probe="PASS",
+            signed_in_auth_reference="TEST_DOUBLE",
+            environment=lambda: {},
+        ),
+    )
 
     with pytest.raises(runtime.V2GenerationInterrupted) as error:
         runtime._invoke_signed_in_codex(
