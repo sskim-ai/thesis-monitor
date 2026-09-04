@@ -586,6 +586,69 @@ def test_avoid_renderer_uses_reconsideration_not_actionable_entry() -> None:
     assert "눌림 진입 검토:" not in rendered.text
 
 
+def test_avoid_with_retained_confirmation_cannot_select_none_mode() -> None:
+    price_map = {
+        **_price_map(),
+        "nearest_supports": [],
+        "registered_price_rules": {
+            "basis_ref": "ref:price",
+            "warning_price": 86.0,
+            "invalidation_price": 82.0,
+        },
+    }
+    buyer = _candidate().new_buyer_view.model_copy(
+        update={
+            "stance": "AVOID",
+            "pullback_entry_zone_low": None,
+            "pullback_entry_zone_high": None,
+            "pullback_entry_basis": (),
+            "preferred_entry_mode": "NONE",
+        }
+    )
+    candidate = _candidate().model_copy(update={"new_buyer_view": buyer})
+
+    result = validate_structured_autonomy_candidate(
+        _packet(), candidate, price_map=price_map, industry="Software"
+    )
+
+    assert "preferred_entry_mode_inconsistent" in result.errors
+
+
+def test_avoid_with_retained_confirmation_uses_future_confirmation_mode() -> None:
+    price_map = {
+        **_price_map(),
+        "nearest_supports": [],
+        "registered_price_rules": {
+            "basis_ref": "ref:price",
+            "warning_price": 86.0,
+            "invalidation_price": 82.0,
+        },
+    }
+    buyer = _candidate().new_buyer_view.model_copy(
+        update={
+            "stance": "AVOID",
+            "pullback_entry_zone_low": None,
+            "pullback_entry_zone_high": None,
+            "pullback_entry_basis": (),
+            "preferred_entry_mode": "CONFIRMATION",
+        }
+    )
+    candidate = _candidate().model_copy(update={"new_buyer_view": buyer})
+
+    rendered = render_structured_autonomy_message(
+        _packet(),
+        candidate,
+        price_map=price_map,
+        industry="Software",
+        base_detail_text="",
+    )
+
+    assert rendered.validation.valid is True
+    assert "현재 신규진입: AVOID" in rendered.text
+    assert "상향 재검토: $112 저항 상단 돌파 확인" in rendered.text
+    assert "현재 선호: 추세 확인" in rendered.text
+
+
 def test_model_owned_confirmation_business_condition_rejects_price_structure() -> None:
     candidate = _candidate().model_copy(
         update={
