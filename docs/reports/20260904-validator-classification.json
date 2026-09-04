@@ -1,0 +1,394 @@
+{
+  "class_counts": {
+    "HARD_DETERMINISTIC": 33,
+    "SEMANTIC_HARD": 16,
+    "SOFT_QUALITY": 15
+  },
+  "contract": "validator-classification-v1",
+  "rules": [
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "deterministic schema",
+      "rule_id": "schema.output_shape"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "numeric registry",
+      "rule_id": "numeric.fact_identity"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "numeric registry",
+      "rule_id": "numeric.value_exactness"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "numeric registry",
+      "rule_id": "numeric.semantic_unit"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "numeric registry",
+      "rule_id": "numeric.currency_security_basis"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "remain hard; detach from style aggregate",
+      "owner": "numeric binder",
+      "rule_id": "numeric.bound_label_source"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning or one rewrite",
+      "owner": "AI writer quality",
+      "rule_id": "numeric.postposition"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning unless ownership is contradictory",
+      "owner": "AI writer quality",
+      "rule_id": "numeric.cross_section_repetition"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "structured semantic planner",
+      "rule_id": "numeric.primary_owner"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard only on explicit metadata mismatch",
+      "owner": "structured semantic planner",
+      "rule_id": "numeric.business_valuation_owner"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "structured semantic planner",
+      "rule_id": "semantic.evidence_exists"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "structured semantic planner",
+      "rule_id": "semantic.evidence_section_fencing"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "migrate lexical ownership to claim metadata",
+      "owner": "structured semantic planner",
+      "rule_id": "semantic.denied_fact_echo"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on explicit scope contradiction",
+      "owner": "structured semantic planner",
+      "rule_id": "semantic.valuation_scope"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "unchanged semantic hard gate",
+      "owner": "structured semantic planner",
+      "rule_id": "semantic.typed_valuation"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard only on material contradiction",
+      "owner": "structured decision fields",
+      "rule_id": "semantic.holder_observer"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft by default; material spam separately reviewed",
+      "owner": "AI writer quality",
+      "rule_id": "quality.exact_sentence_repeat"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "taxonomy plus one bounded rewrite",
+      "owner": "AI writer quality",
+      "rule_id": "quality.typed_skeleton_repeat"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning",
+      "owner": "AI writer quality",
+      "rule_id": "quality.generic_methodology"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning",
+      "owner": "AI writer quality",
+      "rule_id": "quality.generic_numeric_summary"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning or rewrite",
+      "owner": "AI writer quality",
+      "rule_id": "quality.next_unknown_repeat"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning",
+      "owner": "AI writer quality",
+      "rule_id": "quality.watch_next_overlap"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft unless structured stances contradict",
+      "owner": "AI writer quality",
+      "rule_id": "quality.observer_holder_distinct_wording"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on semantic family mismatch; wording itself soft",
+      "owner": "structured semantic planner",
+      "rule_id": "quality.us_kr_supply_language"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "evidence ownership",
+      "rule_id": "quality.supply_grounding"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "quality.financial_period"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "valuation lineage",
+      "rule_id": "quality.valuation_evidence"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery integrity",
+      "rule_id": "quality.message_completeness"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft unless schema is unparseable",
+      "owner": "thin renderer",
+      "rule_id": "quality.rendered_heading"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on structured identity contradiction",
+      "owner": "structured security identity",
+      "rule_id": "quality.identity_prose"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning or rewrite",
+      "owner": "thin renderer",
+      "rule_id": "quality.internal_lexicon"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning",
+      "owner": "AI writer quality",
+      "rule_id": "quality.korean_grammar"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "financial.raw_mapping"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "financial.period_basis"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "financial.attribution"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "financial.quality_taint"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "financial lineage",
+      "rule_id": "financial.book_coherence"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "price lineage",
+      "rule_id": "price.current_context"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "price lineage",
+      "rule_id": "price.fallback_context"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "price structure lineage",
+      "rule_id": "price.structure_numeric"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard only when a structured stale occurrence is identified",
+      "owner": "structured render occurrence",
+      "rule_id": "price.legacy_token"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on material required-slot contradiction",
+      "owner": "structured semantic planner",
+      "rule_id": "market.us_evidence_utilization"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on material required-slot contradiction",
+      "owner": "structured semantic planner",
+      "rule_id": "market.kr_evidence_utilization"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery integrity",
+      "rule_id": "market.us_payload_identity"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "split structural completeness from soft wording",
+      "owner": "AI writer and thin renderer",
+      "rule_id": "market.us_wording_quality"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "decision evidence packet",
+      "rule_id": "decision.evidence_ownership"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "numeric registry",
+      "rule_id": "decision.numeric_fencing"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard only on explicit mandatory contradiction",
+      "owner": "structured semantic planner",
+      "rule_id": "decision.trade_contradiction"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "migrate condition type from prose to metadata",
+      "owner": "structured decision fields",
+      "rule_id": "decision.confirmation_condition"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "accepted-decision owner",
+      "rule_id": "decision.accepted_candidate"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "thin renderer",
+      "rule_id": "decision.accepted_render"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "numeric remains hard; repetition becomes soft",
+      "owner": "split numeric binder and soft reviewer",
+      "rule_id": "decision.accepted_message_quality"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "accepted-decision owner",
+      "rule_id": "decision.consistency"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on explicit polarity mismatch",
+      "owner": "structured semantic planner",
+      "rule_id": "decision.polarity"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft warning or rewrite",
+      "owner": "AI writer quality",
+      "rule_id": "decision.localization"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "structured semantic planner",
+      "rule_id": "free_analyst.claim_ownership"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "hard on explicit unsupported inference",
+      "owner": "structured semantic planner",
+      "rule_id": "free_analyst.synthesis"
+    },
+    {
+      "class": "SEMANTIC_HARD",
+      "gate": "split hard binding from soft prose",
+      "owner": "thin renderer",
+      "rule_id": "free_analyst.rendered_safety"
+    },
+    {
+      "class": "SOFT_QUALITY",
+      "gate": "soft quality only",
+      "owner": "AI writer quality",
+      "rule_id": "free_analyst.novelty"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery state machine",
+      "rule_id": "delivery.claim_fencing"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery state machine",
+      "rule_id": "delivery.receipt_integrity"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery state machine",
+      "rule_id": "delivery.exactly_once"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery state machine",
+      "rule_id": "delivery.terminal_immutability"
+    },
+    {
+      "class": "HARD_DETERMINISTIC",
+      "gate": "unchanged hard gate",
+      "owner": "delivery state machine",
+      "rule_id": "delivery.orphan_reconciliation"
+    }
+  ]
+}

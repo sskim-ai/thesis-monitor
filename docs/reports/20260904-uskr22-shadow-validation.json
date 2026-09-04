@@ -1,0 +1,1794 @@
+{
+  "contract": "uskr22-shadow-validation-v1",
+  "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+  "model": "gpt-5.5",
+  "reasoning_effort": "xhigh",
+  "rows": [
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "corz-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:06164bafce7057b20b52"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "billing_mw",
+            "customer_contracts"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "billing MW 증가와 신규 장기 고객계약이 함께 확인될 때 CORZ의 AI/HPC 전환 논리가 더 설득력을 얻습니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "CORZ",
+          "topic": "ai_hpc_contract_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "corz-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:02b2ecf8c9efa8dce70a"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "contract_retention",
+            "project_completion"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "핵심 AI/HPC 계약 축소나 준공 실패가 반복되면 CORZ의 데이터센터 전환 가정은 무효화됩니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "CORZ",
+          "topic": "contract_execution_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "CORZ"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "cpng-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:0d741ce1e9c5866c6512"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "operating_cash_flow",
+            "fcf",
+            "buybacks"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "영업현금흐름과 TTM FCF 회복이 자사주 매입 재원을 설명할 때 CPNG의 자본환원 논리가 강화됩니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "CPNG",
+          "topic": "cash_generation_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "cpng-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:0161f7d6049c1c82ac49"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "order_size",
+            "commerce_demand"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "주문 규모가 확인되지 않아 CPNG의 커머스 수요 강도를 매출 경로로 연결하기 어렵습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "CPNG",
+          "topic": "order_size_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "CPNG"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "crcl-alpha",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:0f037107ecd5d22b0468"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "discount_rate",
+            "fintech_multiple"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "실질금리 부담이 커져 고성장 핀테크 멀티플이 눌리면 CRCL의 평가 여력은 제한될 수 있습니다.",
+          "text_ref": "valuation_analysis.text",
+          "ticker": "CRCL",
+          "topic": "discount_rate_sensitivity",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "crcl-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:12ce8ebba122f10d4c69"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "revenue_impact",
+            "stablecoin_usage"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "매출 영향이 확인되지 않아 CRCL의 결제·스테이블코인 사용 확대를 실적 판단으로 연결할 수 없습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "CRCL",
+          "topic": "revenue_impact_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [
+          {
+            "claim_ids": [
+              "crcl-beta"
+            ],
+            "code": "UNSUPPORTED_UNKNOWN_CONTEXT",
+            "confidence": "MEDIUM",
+            "evidence_refs": [
+              "decision-evidence:12ce8ebba122f10d4c69"
+            ],
+            "explanation": "The cited evidence only states that revenue impact is unknown. The claim adds payment/stablecoin usage expansion as the unresolved driver, which is not present in the subject evidence."
+          }
+        ],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "WARN"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "CRCL"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "googl-alpha",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:119eb75d8acc25305dc3"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "search_growth",
+            "cloud_growth"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "Search와 Cloud 둔화가 동시에 길어지면 GOOGL의 광고·클라우드 복합 성장 논리는 훼손됩니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "GOOGL",
+          "topic": "search_cloud_slowdown",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "googl-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:154c9d8fa75e041e1369"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "order_size",
+            "cloud_demand"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "주문 규모가 확인되지 않아 GOOGL의 클라우드 수요를 매출 가속 신호로 보기에는 근거가 부족합니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "GOOGL",
+          "topic": "cloud_order_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "GOOGL"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "hut-alpha",
+          "claim_type": "MARKET_EXPECTATION_INTERPRETATION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "mixed",
+          "evidence_refs": [
+            "decision-evidence:4c28d1cc7a794cc4171c"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "ai_hpc_contracts",
+            "noi_realization"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "HUT에는 AI/HPC 계약과 인프라 전환 기대가 이미 크게 반영돼, 추가 평가는 준공과 NOI 실현에 달려 있습니다.",
+          "text_ref": "valuation_analysis.text",
+          "ticker": "HUT",
+          "topic": "priced_in_infrastructure_expectation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "hut-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:0750ded5723b45b38bd9"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "datacenter_contracts",
+            "project_delivery"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "데이터센터 고객계약 축소나 프로젝트 준공 실패가 반복되면 HUT의 인프라 전환 논리는 약해집니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "HUT",
+          "topic": "datacenter_execution_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "HUT"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "ibm-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:1e35c6622a824b5fbe74"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "fcf_growth",
+            "debt_management"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "FCF 성장 재가속과 부채 관리 개선이 함께 보여야 IBM의 현금창출 논리가 강화됩니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "IBM",
+          "topic": "cash_flow_and_debt_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "ibm-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:1a151770791d651c2c75"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "unverified_report",
+            "investment_impact"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "원문이 확인되지 않은 보도는 IBM의 투자 판단에 반영할 만한 근거로 보기 어렵습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "IBM",
+          "topic": "unverified_news_exclusion",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "IBM"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "mu-alpha",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:00cb0b2759fcf17f5a54"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "capex",
+            "fcf",
+            "net_cash"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "CAPEX 부담이 FCF 개선을 계속 앞서면 MU의 메모리 업황 회복 가정은 현금흐름으로 확인되지 못합니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "MU",
+          "topic": "capex_cash_flow_risk",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "mu-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:0132775faf09a4f3d96e"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "revenue_impact",
+            "memory_demand"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "매출 영향이 확인되지 않아 MU의 고부가 메모리 수요를 실적 상향 논리로 연결하기에는 이릅니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "MU",
+          "topic": "revenue_impact_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "MU"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "rxrx-alpha",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:00b417dd6fd4fc571834"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "clinical_timeline",
+            "early_data"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "주요 임상 일정이 밀리거나 초기 데이터가 부진하면 RXRX의 플랫폼 가치 가정은 약화됩니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "RXRX",
+          "topic": "clinical_validation_risk",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "rxrx-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:379d41323efd5d31492f"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "revenue_impact",
+            "platform_commercialization"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "매출 영향이 확인되지 않아 RXRX의 연구 성과를 사업 확장 근거로 단정할 수 없습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "RXRX",
+          "topic": "commercial_impact_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [
+          {
+            "claim_ids": [
+              "rxrx-alpha"
+            ],
+            "code": "CLAIM_TYPE_SEVERITY_MISMATCH",
+            "confidence": "MEDIUM",
+            "evidence_refs": [
+              "decision-evidence:00b417dd6fd4fc571834"
+            ],
+            "explanation": "The evidence is a thesis-weakening condition, and the text says the platform value assumption weakens. The claim type labels it as a business invalidation condition, which overstates the cited evidence."
+          },
+          {
+            "claim_ids": [
+              "rxrx-beta"
+            ],
+            "code": "UNSUPPORTED_UNKNOWN_CONTEXT",
+            "confidence": "MEDIUM",
+            "evidence_refs": [
+              "decision-evidence:379d41323efd5d31492f"
+            ],
+            "explanation": "The cited evidence only states that revenue impact is unknown. The claim adds research achievement and business expansion context that is not stated in the subject evidence."
+          }
+        ],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "WARN"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "RXRX"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "skhy-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:0ed690872e22b916098a"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "hbm",
+            "dram",
+            "nand",
+            "fcf"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "HBM·DRAM·NAND 가격과 고부가 믹스가 유지될 때 SKHY의 이익률·FCF 논리가 강화됩니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "SKHY",
+          "topic": "memory_mix_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "skhy-beta",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:21b5d954a474cea0f4aa"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "asp",
+            "inventory"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "DRAM과 NAND 가격 하락이 재고 증가와 겹치면 SKHY의 업사이클 논리는 약해질 수 있습니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "SKHY",
+          "topic": "memory_cycle_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "SKHY"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "sndk-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:06e6f847342760f52d96"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "rpo",
+            "long_term_contracts",
+            "revenue_conversion"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "RPO와 장기 고객계약이 실제 매출로 전환될 때 SNDK의 스토리지 회복 논리가 강화됩니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "SNDK",
+          "topic": "contract_revenue_conversion",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "sndk-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:1a43e68befc2686f2759"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "nand_pricing",
+            "datacenter_demand"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "NAND 가격 하락과 Datacenter 수요 둔화가 이어지면 SNDK의 업황 개선 가정은 흔들립니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "SNDK",
+          "topic": "storage_cycle_invalidation",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "SNDK"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "tsla-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:01253b856674f1f9fabd"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "robotaxi_scale",
+            "unit_economics"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "Robotaxi 유료 운행과 단위경제성 개선이 확인돼야 TSLA의 선택형 성장 논리가 힘을 얻습니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "TSLA",
+          "topic": "robotaxi_unit_economics",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "tsla-beta",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:01fa8f7aaa1f70a9fddc"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "operating_margin",
+            "pricing_competition"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "영업이익률 추가 하락이나 가격 인하 경쟁 심화는 TSLA의 자동차 수익성 회복 가정을 압박합니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "TSLA",
+          "topic": "auto_margin_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "TSLA"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "tsm-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:08a1db369b9003e5047d"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "ai_hpc_demand",
+            "advanced_node_orders"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "AI/HPC 수요와 첨단공정 주문이 이어질 때 TSM의 파운드리 가격 결정력 논리가 강화됩니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "TSM",
+          "topic": "advanced_foundry_demand",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "tsm-beta",
+          "claim_type": "VALUATION_INTERPRETATION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "neutral",
+          "evidence_refs": [
+            "canonical:security_basis:current",
+            "canonical:valuation:book"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "security_identity",
+            "valuation_basis"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "미국 상장 증권의 신원 기준이 확인되지 않아 TSM의 멀티플 해석은 사업 지표와 분리해야 합니다.",
+          "text_ref": "valuation_analysis.text",
+          "ticker": "TSM",
+          "topic": "valuation_basis_caution",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [
+          {
+            "claim_ids": [
+              "tsm-beta"
+            ],
+            "code": "INELIGIBLE_VALUATION_REF_OWNERSHIP",
+            "confidence": "HIGH",
+            "evidence_refs": [
+              "canonical:security_basis:current",
+              "canonical:valuation:book"
+            ],
+            "explanation": "The valuation caution is supported by the security-basis evidence, which says security identity is unknown and valuation fields are not prose eligible. Citing the raw valuation book fact risks using an ineligible multiple as interpretation support."
+          }
+        ],
+        "proposed_fact_refs": [
+          "canonical:security_basis:current"
+        ],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "WARN"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "TSM"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "wrd-alpha",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:02cfce79aef9fea67345"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "risk_appetite",
+            "growth_premium"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "소형 고성장 중국 ADR 위험회피가 커지면 WRD의 자율주행 성장 프리미엄은 압박받을 수 있습니다.",
+          "text_ref": "valuation_analysis.text",
+          "ticker": "WRD",
+          "topic": "risk_appetite_sensitivity",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "wrd-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:112f654571f1b88b463d"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "revenue_growth",
+            "operating_loss"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "매출 성장보다 operating loss 확대가 두드러지면 WRD의 사업 확장 논리는 약화됩니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "WRD",
+          "topic": "loss_scaling_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "WRD"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "wulf-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:07364f280f1b5d129a26"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "billing",
+            "customer_contracts"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "장기 고객계약의 billing 확대와 추가 대형 고객 확보가 WULF의 데이터센터 전환을 검증합니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "WULF",
+          "topic": "datacenter_contract_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "wulf-beta",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:1a3adac8a9993eb06c19"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "capex",
+            "cash_burn",
+            "external_financing"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "CAPEX와 현금소모가 커져 외부 조달 의존이 높아지면 WULF의 성장 품질은 낮아집니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "WULF",
+          "topic": "financing_dependency_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "us",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "WULF"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "skhynix-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:2f9c52beb624deab15d0"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "hyperscaler_capex",
+            "hbm",
+            "server_dram"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "Hyperscaler AI CAPEX가 HBM과 서버 DRAM 주문으로 이어질 때 SK하이닉스의 수요 가정은 강화됩니다.",
+          "text_ref": "core_judgment.text",
+          "ticker": "000660",
+          "topic": "hbm_demand_transmission",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "skhynix-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:01342282a8000e8a07bc"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "unverified_report",
+            "hbm_investment_case"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "원문이 확인되지 않은 보도는 SK하이닉스의 HBM 투자 논리에 반영하지 않는 미확인 변수로 남습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "000660",
+          "topic": "unverified_news_exclusion",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "000660"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "koreanre-alpha",
+          "claim_type": "MARKET_EXPECTATION_INTERPRETATION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "neutral",
+          "evidence_refs": [
+            "decision-evidence:06b7f50ebb7ed7843c6d"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "underwriting",
+            "capital_return",
+            "roe"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "보험영업 안정성과 배당 기대가 반영된 만큼 코리안리는 지속 가능한 ROE 확인이 핵심입니다.",
+          "text_ref": "valuation_analysis.text",
+          "ticker": "003690",
+          "topic": "insurance_expectation_balance",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "koreanre-beta",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:21ddf2dc43fc2951402b"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "renewal_rates",
+            "loss_ratio"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "갱신요율 약화와 손해율 악화가 겹치면 코리안리의 언더라이팅 회복 논리는 약해집니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "003690",
+          "topic": "underwriting_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "003690"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "posco-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:120e5e8a3ca67f7ceb2f"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "steel_spread",
+            "operating_margin"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "철강 스프레드와 연결 영업이익률이 함께 개선될 때 POSCO홀딩스의 본업 회복 논리가 강화됩니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "005490",
+          "topic": "steel_margin_recovery",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "posco-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:18dfe4a154ecc2809a09"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "lithium_profitability",
+            "materials_expansion"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "리튬 사업의 장기 수익성 확보가 실패하면 POSCO홀딩스의 소재 확장 가정은 무효화됩니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "005490",
+          "topic": "lithium_profitability_invalidation",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "005490"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "samsung-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:043e66f308e46ff53bd2"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "ai_server_capex",
+            "hbm",
+            "server_dram"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "AI 서버 증설이 HBM·서버 DRAM 주문으로 이어질 때 삼성전자의 메모리 회복 논리는 강화됩니다.",
+          "text_ref": "core_judgment.text",
+          "ticker": "005930",
+          "topic": "memory_demand_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "samsung-beta",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:0c46003fb1a3502a8789"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "hbm_competitiveness",
+            "customer_adoption"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "차세대 HBM 경쟁력이 약해져 주요 고객 채택에 실패하면 삼성전자의 고부가 메모리 가정은 훼손됩니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "005930",
+          "topic": "hbm_customer_adoption_risk",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "005930"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "lselectric-alpha",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:00742ebb0c0328cffa0c"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "orders",
+            "receivables",
+            "inventory",
+            "working_capital"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "수주 확대가 매출채권·재고 부담으로 번지면 LS일렉트릭의 전력 인프라 성장 논리는 현금화되지 못합니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "010120",
+          "topic": "working_capital_conversion_risk",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "lselectric-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:60458ef914f03ae493b0"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "fcf_impact",
+            "working_capital"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "FCF 영향이 확인되지 않아 LS일렉트릭의 운전자본 부담을 기업가치 개선으로 연결하기 어렵습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "010120",
+          "topic": "fcf_impact_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "010120"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "hanwhaaero-alpha",
+          "claim_type": "BUSINESS_INVALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:0308e79765a08c9e605d"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "defense_demand",
+            "order_backlog"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "유럽·중동 방산 수요 둔화가 대형 수주 감소로 이어지면 한화에어로스페이스의 잔고 확대 논리는 약해집니다.",
+          "text_ref": "priority_watch[0]",
+          "ticker": "012450",
+          "topic": "defense_order_risk",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "hanwhaaero-beta",
+          "claim_type": "UNKNOWN",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "unknown",
+          "evidence_refs": [
+            "decision-evidence:445bebbd8eacfc745ba6"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "fcf_impact",
+            "order_conversion"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "FCF 영향이 확인되지 않아 한화에어로스페이스의 수주 확대를 현금창출 개선으로 단정하기 어렵습니다.",
+          "text_ref": "unknowns[0]",
+          "ticker": "012450",
+          "topic": "fcf_impact_unknown",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [
+          {
+            "claim_ids": [
+              "hanwhaaero-beta"
+            ],
+            "code": "UNSUPPORTED_UNKNOWN_CONTEXT",
+            "confidence": "MEDIUM",
+            "evidence_refs": [
+              "decision-evidence:445bebbd8eacfc745ba6"
+            ],
+            "explanation": "The cited evidence only states that FCF impact is unknown. The claim adds a positive order-expansion premise, while the subject evidence provided for orders is an invalidation risk about demand slowdown causing order decline and backlog contraction."
+          }
+        ],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "WARN"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "012450"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "kai-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:0a5b8adc601e0481e3cd"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "aircraft_production",
+            "export_orders",
+            "aftermarket_revenue"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "완제기 양산과 해외 수주, 후속지원 매출이 함께 늘어야 한국항공우주의 성장 논리가 강화됩니다.",
+          "text_ref": "core_judgment.text",
+          "ticker": "047810",
+          "topic": "aircraft_order_conversion",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "kai-beta",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:1fecf60e218f20969a50"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "defense_policy_investment",
+            "orders",
+            "revenue"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "국내 항공우주 정책 투자가 실제 발주와 매출로 이어지는지 확인해야 합니다.",
+          "text_ref": "next_checks[0]",
+          "ticker": "047810",
+          "topic": "policy_order_transmission",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "047810"
+    },
+    {
+      "claim_count": 2,
+      "claims": [
+        {
+          "claim_id": "glovis-alpha",
+          "claim_type": "FUTURE_VALIDATION_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "positive",
+          "evidence_refs": [
+            "decision-evidence:28d1cff5b27c18030fca"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "non_affiliated_cargo",
+            "pctc_rates",
+            "shipping_capacity",
+            "logistics_margin"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "비계열 화주 확대와 PCTC 운임·선복 개선이 동반돼야 현대글로비스의 물류 마진 논리가 강화됩니다.",
+          "text_ref": "core_judgment.text",
+          "ticker": "086280",
+          "topic": "logistics_margin_validation",
+          "trade_action": null,
+          "trade_force": null
+        },
+        {
+          "claim_id": "glovis-beta",
+          "claim_type": "RISK_CONDITION",
+          "contract": "structured-semantic-claim-v1",
+          "direction": "negative",
+          "evidence_refs": [
+            "decision-evidence:155f1b543ba355440123"
+          ],
+          "generation_id": "validation-shadow:632f3f3b6502c43a0c50:1",
+          "metrics": [
+            "capex",
+            "fcf",
+            "fleet_investment"
+          ],
+          "numeric_refs": [],
+          "owner": "AI_WRITER",
+          "text": "CAPEX 증가에도 FCF가 줄어들면 현대글로비스의 선박 투자 회수 가정은 약해집니다.",
+          "text_ref": "business_earnings.text",
+          "ticker": "086280",
+          "topic": "fleet_capex_cash_return",
+          "trade_action": null,
+          "trade_force": null
+        }
+      ],
+      "class_a_issues": [],
+      "class_b_issues": [],
+      "class_c_warnings": [],
+      "market": "kr",
+      "policy": {
+        "class_a_failures": 0,
+        "class_b_failures": 0,
+        "class_c_warnings": 0,
+        "new_shadow_policy_eligible": true,
+        "old_policy_eligible": true,
+        "reason": "all Class A/B checks passed and no Class C warning was observed",
+        "rewrite_disposition": "NOT_ATTEMPTED"
+      },
+      "reviewer": {
+        "contract": "ai-semantic-reviewer-shadow-v1",
+        "external_fetch_performed": false,
+        "issues": [],
+        "proposed_fact_refs": [],
+        "proposed_numeric_refs": [],
+        "rewrite_performed": false,
+        "verdict": "PASS"
+      },
+      "reviewer_contract": {
+        "errors": [],
+        "production_hard_gate": false,
+        "valid": true
+      },
+      "ticker": "086280"
+    }
+  ],
+  "subject_count": 22,
+  "totals": {
+    "class_a_failures": 0,
+    "class_b_failures": 0,
+    "class_c_warnings": 0,
+    "freeform_unbound_numeric": 0,
+    "new_policy_eligible": 22,
+    "old_policy_eligible": 22,
+    "reviewer_contract_failures": 0,
+    "reviewer_pass": 18,
+    "reviewer_warn": 4,
+    "temporal_grammar_required_for_metric_ownership": 0
+  }
+}

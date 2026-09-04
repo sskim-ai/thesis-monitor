@@ -1,0 +1,85 @@
+{
+  "contract": "old-new-policy-frozen-comparison-v1",
+  "hard_remainders": {
+    "financial_period_error_count": 0,
+    "identity_prose_mismatch_count": 0,
+    "message_set_completeness": true,
+    "numeric_label_quality": true,
+    "numeric_primary_ownership": true,
+    "rendered_identity_prose_mismatch_count": 0,
+    "supply_grounding_error_count": 0,
+    "valuation_evidence_error_count": 0
+  },
+  "new_class_ab_passed": true,
+  "new_shadow_policy_eligible": true,
+  "old_hard_checks_passed": false,
+  "old_policy_eligible": false,
+  "old_status": "failed",
+  "repetition_rows": [
+    {
+      "new_taxonomy": {
+        "classification": "BENIGN_TEMPLATE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "short structural or bound-numeric pattern carries little substantive rationale"
+      },
+      "owner": "positioning",
+      "relation": "single_metric",
+      "section": "supply_analysis",
+      "semantic_types": [
+        "volume_ratio_20"
+      ],
+      "skeleton": "<numeric> 수준의 거래량 참여입니다.",
+      "stock_count": 14,
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL",
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX",
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM",
+        "WRD",
+        "WULF"
+      ],
+      "typed_skeleton": "supply_analysis|positioning|single_metric|<numeric> 수준의 거래량 참여입니다."
+    },
+    {
+      "new_taxonomy": {
+        "classification": "BENIGN_TEMPLATE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "short structural or bound-numeric pattern carries little substantive rationale"
+      },
+      "owner": "price_context",
+      "relation": "single_metric",
+      "section": "price_positioning",
+      "semantic_types": [
+        "share_price"
+      ],
+      "skeleton": "<numeric> 수준의 현재 가격을 기준으로 봅니다.",
+      "stock_count": 14,
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL",
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX",
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM",
+        "WRD",
+        "WULF"
+      ],
+      "typed_skeleton": "price_positioning|price_context|single_metric|<numeric> 수준의 현재 가격을 기준으로 봅니다."
+    }
+  ],
+  "us_repetition_class": "BENIGN_TEMPLATE_REPEAT"
+}
