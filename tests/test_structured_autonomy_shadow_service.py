@@ -358,6 +358,31 @@ def test_future_metric_checkpoint_passes_only_with_owned_evidence(text: str) -> 
     assert "unsupported_metric_or_inference" not in result.errors
 
 
+@pytest.mark.parametrize(
+    "text",
+    (
+        "CAPEX 이후 현금창출과 ROIC의 지속성을 우선한다.",
+        "실제 ROIC와 FCF 증명이 방향을 가를 구간이다.",
+        "대규모 CAPEX 이후에도 FCF와 ROIC가 장기 악화되면 논리를 재평가한다.",
+        "선박 투자가 FCF 및 ROIC 개선으로 회수되지 않으면 자본효율을 재점검한다.",
+    ),
+)
+def test_evidence_owned_metric_policy_and_condition_language_is_allowed(
+    text: str,
+) -> None:
+    packet = _packet_with_metric_evidence("FCF와 ROIC는 향후 자본효율 검증 조건입니다.")
+    candidate = _candidate().model_copy(
+        update={"sector_interpretation": _claim("ref:thesis", text)}
+    )
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Industrials"
+    )
+
+    assert "unsupported_future_checkpoint_metric" not in result.errors
+    assert "unsupported_metric_or_inference" not in result.errors
+
+
 def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
     candidate = _candidate().model_copy(
         update={"reevaluation_up": (_claim("ref:thesis", "ROIC 개선 여부를 확인한다."),)}
@@ -378,6 +403,8 @@ def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
         "ROIC가 전년 8%에서 14%로 상승했다.",
         "현재 CCC는 31일이다.",
         "DSO는 42일로 개선됐다.",
+        "ROIC 개선이 증명됐다.",
+        "ROIC 개선이 확인되었다.",
     ),
 )
 def test_current_or_historical_metric_values_remain_rejected(text: str) -> None:
