@@ -121,13 +121,33 @@ def _delivery_audit(
                 NotificationDelivery.ticker.in_(tickers),
             )
         ).all()
-    sent = [row for row in rows if row.status == "sent"]
+    audited = []
+    for row in rows:
+        payload = json.loads(row.payload)
+        metadata = (
+            payload.get(AI_ASSISTED_PILOT_METADATA_KEY)
+            if isinstance(payload, dict)
+            else None
+        )
+        audited.append((row, metadata if isinstance(metadata, dict) else {}))
+    sent = [(row, metadata) for row, metadata in audited if row.status == "sent"]
+    ai_sent = [
+        (row, metadata)
+        for row, metadata in sent
+        if metadata.get("state") == "ai_assisted_sent"
+    ]
     return {
         "delivery_count": len(rows),
         "sent_count": len(sent),
-        "market_sent_count": sum(row.ticker == "__DAILY_DIGEST__" for row in sent),
-        "stock_sent_count": sum(row.ticker != "__DAILY_DIGEST__" for row in sent),
-        "fallback_sent_count": 0,
+        "market_sent_count": sum(
+            row.ticker == "__DAILY_DIGEST__" for row, _ in ai_sent
+        ),
+        "stock_sent_count": sum(
+            row.ticker != "__DAILY_DIGEST__" for row, _ in ai_sent
+        ),
+        "fallback_sent_count": sum(
+            metadata.get("state") == "fallback_sent" for _, metadata in sent
+        ),
         "duplicate_count": sum(max(row.attempt_count - 1, 0) for row in rows),
     }
 

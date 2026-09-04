@@ -333,6 +333,46 @@ def _structural_template_exception(sentence: str, skeleton: str) -> str | None:
         return "canonical_nearest_resistance_rr_contract"
     if skeleton == "현재가 손익비는 필요한 동적 구조가 완성되지 않아 제공되지 않습니다.":
         return "canonical_current_price_rr_unavailable_state"
+
+
+def _monitoring_transition_template_exception(
+    review: AIStockReview,
+    stock: dict[str, object],
+    *,
+    text_ref: str,
+    sentence: str,
+) -> str | None:
+    if (
+        text_ref != "price_positioning.text"
+        or "monitoring:confirmation_transition" not in review.price_positioning.fact_ids
+    ):
+        return None
+    expected = {
+        "crossed_to_holding_above": "등록 확인선 돌파 후 그 위를 유지하는 상태입니다.",
+        "holding_above_to_holding_above": "등록 확인선 위 안착 상태는 유지됩니다.",
+    }
+    facts = stock.get("fact_catalog")
+    if not isinstance(facts, list):
+        return None
+    occurrence = next(
+        (
+            fact
+            for fact in facts
+            if isinstance(fact, dict)
+            and fact.get("fact_id") == "monitoring:confirmation_transition"
+            and fact.get("source") == "deterministic_monitoring_state"
+        ),
+        None,
+    )
+    if occurrence is None:
+        return None
+    fields = occurrence.get("fields")
+    if not isinstance(fields, dict):
+        return None
+    transition = str(fields.get("transition") or "")
+    if sentence != normalize_decision_text(expected.get(transition, "")):
+        return None
+    return "canonical_monitoring_transition_contract"
     return None
 
 
@@ -357,6 +397,7 @@ def _typed_structural_template_exception(
     metadata: dict[str, object],
 ) -> str | None:
     semantic_types = frozenset(str(value) for value in metadata["semantic_types"])
+    skeleton = str(metadata["skeleton"])
     if (
         metadata["section"] == "supply_analysis"
         and metadata["owner"] == "positioning"
@@ -364,6 +405,47 @@ def _typed_structural_template_exception(
         and semantic_types in _CANONICAL_KR_SUPPLY_PAIRS
     ):
         return "canonical_supply_flow_tuple_v1"
+    if (
+        metadata["section"] == "price_positioning"
+        and metadata["owner"] == "price_context"
+        and metadata["relation"] == "single_metric"
+        and semantic_types == {"share_price"}
+        and skeleton == "가격 기준: <numeric>."
+    ):
+        return "canonical_current_price_tuple_v1"
+    if (
+        metadata["section"] == "price_positioning"
+        and metadata["owner"] == "price_context"
+        and metadata["relation"] == "single_metric"
+        and semantic_types == {_CURRENT_PRICE_RR_SEMANTIC}
+        and skeleton == "<numeric>으로 현재 가격의 추격 비대칭은 불리합니다."
+    ):
+        return "canonical_current_price_rr_interpretation_v1"
+    if (
+        metadata["section"] == "business_earnings"
+        and metadata["owner"] == "business_earnings"
+        and metadata["relation"] == "single_metric"
+        and semantic_types == {"revenue"}
+        and skeleton == "최근 확인값: <numeric>."
+    ):
+        return "canonical_primary_earnings_fact_v1"
+    if (
+        metadata["section"] == "valuation_analysis"
+        and metadata["owner"] == "valuation"
+        and metadata["relation"] == "single_metric"
+        and (
+            (semantic_types == {"trailing_pe"} and skeleton == "회사 전체의 이익 기준 값은 <numeric>입니다.")
+            or (
+                semantic_types == {"forward_pe"}
+                and skeleton == "선행 이익 기준 값은 <numeric>입니다."
+            )
+            or (
+                semantic_types == {"price_to_book"}
+                and skeleton == "회사 전체의 장부가 기준 값은 <numeric>입니다."
+            )
+        )
+    ):
+        return "typed_neutral_absolute_valuation_statement"
     return None
 
 
@@ -790,9 +872,16 @@ def relational_reasoning_quality_report(
             )
             template_tickers[typed_key].add(review.ticker)
             template_metadata[typed_key] = typed_metadata
-            reason = _typed_structural_template_exception(
-                typed_metadata
-            ) or _structural_template_exception(sentence, skeleton)
+            reason = (
+                _typed_structural_template_exception(typed_metadata)
+                or _monitoring_transition_template_exception(
+                    review,
+                    stock,
+                    text_ref=text_ref,
+                    sentence=sentence,
+                )
+                or _structural_template_exception(sentence, skeleton)
+            )
             if reason is not None:
                 template_exception_reasons[typed_key][review.ticker] = reason
                 sentence_exception_reasons[sentence][review.ticker] = reason
