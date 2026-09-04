@@ -1,0 +1,18 @@
+{
+  "artifact_present": false,
+  "candidate_stock_v2_count": 0,
+  "claim_id": "939e44d1-3e85-4b31-9a20-ab53bd742ad5",
+  "contract": "v2-accepted-production-runtime-v1",
+  "engine": "v2_accepted",
+  "explicit_stock_v2_eligible": false,
+  "packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e",
+  "reason_code": "accepted_daily_review_ready_explicit_v2_unavailable",
+  "required_artifact_suffix": "decision-v2-accepted.json",
+  "required_predicates": [
+    "artifact exists for exact packet and claim",
+    "artifact validates against packet and claim",
+    "completion receipt and message quality pass during generation",
+    "selected blocks are renderer-ready"
+  ],
+  "state": "V2_DECISION_SUPPRESSED_SAFE"
+}

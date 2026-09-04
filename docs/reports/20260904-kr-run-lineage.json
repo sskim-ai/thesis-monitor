@@ -1,0 +1,49 @@
+{
+  "accepted_generation": "content-8779159382a3d85ca57885b7",
+  "analysis_generation_id": "analysis-3a64e08e95f9dd9816401afa",
+  "authoritative_packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e",
+  "claim_id": "939e44d1-3e85-4b31-9a20-ab53bd742ad5",
+  "delivery_generation": "delivery-65d328f01a46170aec890f24",
+  "main_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "market": "KR",
+  "monitor_run": {
+    "completed_at_utc": "2026-09-04T07:06:27.403186",
+    "failure_count": 0,
+    "id": 56,
+    "run_type": "daily_kr",
+    "started_at_utc": "2026-09-04T07:05:31.183433",
+    "status": "success",
+    "success_count": 8,
+    "ticker_count": 8
+  },
+  "operating_repair_state": "KR_US_INTEGRATED",
+  "operating_sha": "906b092749511dc42d5799ed335165819efee2ea",
+  "packets": [
+    {
+      "authoritative_delivery_owner": false,
+      "generated_at_utc": "2026-09-04T07:20:06.337531+00:00",
+      "packet_id": "2026-09-04-kr-run-56-128e4097e823",
+      "sha256": "35573e41753b9a0241dcb789dc47d48687d0ca63ca09df411d6d46b1d8702873",
+      "source_monitor_run_id": "56",
+      "stock_count": 8
+    },
+    {
+      "authoritative_delivery_owner": false,
+      "generated_at_utc": "2026-09-04T07:50:07.236723+00:00",
+      "packet_id": "2026-09-04-kr-run-56-6a9ef43bb878",
+      "sha256": "794925a9a73752925a6f36bc8c39cd23d5e41f0f9da9eccbf9d2a659acf9f528",
+      "source_monitor_run_id": "56",
+      "stock_count": 8
+    },
+    {
+      "authoritative_delivery_owner": true,
+      "generated_at_utc": "2026-09-04T07:06:27.418320+00:00",
+      "packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e",
+      "sha256": "b0436de5d5f0a223385f32a9bfd14b4724b10c836ee3fbe31d70697e3caac388",
+      "source_monitor_run_id": "56",
+      "stock_count": 8
+    }
+  ],
+  "selector_generation": "939e44d1-3e85-4b31-9a20-ab53bd742ad5",
+  "target_date": "2026-09-04"
+}

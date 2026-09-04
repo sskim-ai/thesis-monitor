@@ -1,0 +1,56 @@
+[
+  {
+    "evidence": "model reached; no TLS error marker",
+    "stage": "transport",
+    "status": "PASS"
+  },
+  {
+    "evidence": "claim retained; interrupted V2 terminal receipt absent",
+    "stage": "claim_lease",
+    "status": "PASS_WITH_RECEIPT_GAP"
+  },
+  {
+    "count": 9,
+    "stage": "regular_candidate",
+    "status": "PASS"
+  },
+  {
+    "count": 0,
+    "reason": "caller_interrupted_batch_1",
+    "stage": "explicit_v2_candidate",
+    "status": "FAIL_CLOSED"
+  },
+  {
+    "final_errors": 0,
+    "initial_errors": 17,
+    "stage": "regular_validation",
+    "status": "PASS_AFTER_ONE_CORRECTION"
+  },
+  {
+    "count": 9,
+    "stage": "accepted_regular",
+    "status": "PASS"
+  },
+  {
+    "eligible": false,
+    "stage": "explicit_v2_selector",
+    "status": "SUPPRESSED_SAFE"
+  },
+  {
+    "count": 9,
+    "stage": "pilot_renderer",
+    "status": "PASS"
+  },
+  {
+    "duplicate": 0,
+    "sent": 9,
+    "stage": "delivery",
+    "status": "PASS"
+  },
+  {
+    "sent": 0,
+    "stage": "backup",
+    "status": "PASS_ARCHIVE_ONLY",
+    "v2_ready": 8
+  }
+]

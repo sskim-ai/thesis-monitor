@@ -1,0 +1,33 @@
+{
+  "classes": {
+    "confirmation_transition_current_state_mismatch": 1,
+    "kr_supply_actor_horizon_grounding_missing": 16
+  },
+  "correction_attempts": 1,
+  "errors": [
+    "000660:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "000660:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "003690:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "003690:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "005490:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "005930:confirmation_transition_current_state_mismatch:price_positioning.text:not_reached:crossed",
+    "005930:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "005930:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "010120:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "012450:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "012450:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "047810:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "047810:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d",
+    "086280:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:외국인:1d",
+    "086280:kr_supply_actor_horizon_grounding_missing:supply_analysis.text:기관:1d"
+  ],
+  "final_candidate_sha256": "c3f766bd4eec402ac2f8addcc8bd7a3bba2fd2c12cd04d4e87b5ab393d78aff4",
+  "final_error_count": 0,
+  "final_status": "passed",
+  "initial_candidate_sha256": "07fcdc7fd7b8f0d9e3ad1d9c5c4cbcc8e8200b4e6a94b4e778a508d752ff5c91",
+  "initial_error_count": 17,
+  "initial_status": "rejected",
+  "packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e"
+}

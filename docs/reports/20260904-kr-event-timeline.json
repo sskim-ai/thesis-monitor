@@ -1,0 +1,121 @@
+[
+  {
+    "event": "KR producer started",
+    "evidence": "monitorrun.id=56",
+    "time_kst": "16:05:31.183"
+  },
+  {
+    "event": "Run 56 completed: 8/8",
+    "evidence": "data/runs/2026-09-04.json",
+    "time_kst": "16:06:27.403"
+  },
+  {
+    "event": "Authoritative packet persisted",
+    "packet_id": "2026-09-04-kr-run-56-ea785fbd2c9e",
+    "time_kst": "16:06:27.418"
+  },
+  {
+    "event": "9 deliveries pending",
+    "evidence": "delivery-state-receipt.json",
+    "time_kst": "16:06:36.942"
+  },
+  {
+    "event": "KR primary automation started",
+    "owner": "codex-kr-primary",
+    "time_kst": "16:15:49.771"
+  },
+  {
+    "claim_id": "939e44d1-3e85-4b31-9a20-ab53bd742ad5",
+    "event": "Claim acquired; 30-minute lease",
+    "time_kst": "16:16:05.738"
+  },
+  {
+    "event": "Second producer packet persisted",
+    "packet_id": "2026-09-04-kr-run-56-128e4097e823",
+    "time_kst": "16:20:06.338"
+  },
+  {
+    "event": "Initial regular schema-4 draft persisted",
+    "sha256": "07fcdc7fd7b8f0d9e3ad1d9c5c4cbcc8e8200b4e6a94b4e778a508d752ff5c91",
+    "time_kst": "16:24:14"
+  },
+  {
+    "event": "Primary invoked stock_decision V2",
+    "time_kst": "16:25:31.825",
+    "timeout_seconds": 1800
+  },
+  {
+    "event": "V2 batch 1 model invocation started",
+    "subject_count": 3,
+    "time_kst": "16:25:32.525"
+  },
+  {
+    "classification": "PRIMARY_ROOT_CAUSE",
+    "event": "Outer automation sent Ctrl-C",
+    "time_kst": "16:28:20.151"
+  },
+  {
+    "error": "OTHER_TRANSPORT_FAILURE:attempts=1",
+    "event": "stock_decision exited 1",
+    "time_kst": "16:28:20.679"
+  },
+  {
+    "error_count": 17,
+    "event": "Regular validation rejected",
+    "time_kst": "16:28:33.867"
+  },
+  {
+    "event": "Corrected regular review finalized and delivery claimed",
+    "sha256": "c3f766bd4eec402ac2f8addcc8bd7a3bba2fd2c12cd04d4e87b5ab393d78aff4",
+    "time_kst": "16:29:41.720"
+  },
+  {
+    "delivery_id": 512,
+    "event": "KR market digest sent",
+    "time_kst": "16:29:43.606"
+  },
+  {
+    "delivery_id": 513,
+    "event": "First stock sent",
+    "ticker": "000660",
+    "time_kst": "16:29:44.689"
+  },
+  {
+    "delivery_id": 520,
+    "event": "Last stock sent; 9/9 complete",
+    "ticker": "086280",
+    "time_kst": "16:29:52.653"
+  },
+  {
+    "event": "Primary automation completed",
+    "time_kst": "16:31:12.905"
+  },
+  {
+    "event": "Third producer packet persisted",
+    "packet_id": "2026-09-04-kr-run-56-6a9ef43bb878",
+    "time_kst": "16:50:07.237"
+  },
+  {
+    "count": 9,
+    "event": "Third packet deduped against authoritative send",
+    "time_kst": "16:50:16.430"
+  },
+  {
+    "event": "KR backup automation started",
+    "owner": "codex-kr-backup",
+    "time_kst": "16:56:49"
+  },
+  {
+    "event": "Backup V2 generation began",
+    "time_kst": "17:02:32.005"
+  },
+  {
+    "event": "Backup V2 accepted artifact created",
+    "subject_count": 8,
+    "time_kst": "17:30:19.026"
+  },
+  {
+    "event": "Backup completed archive-only; no send",
+    "time_kst": "17:31:34.084"
+  }
+]
