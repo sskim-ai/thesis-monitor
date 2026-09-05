@@ -1,0 +1,26 @@
+{
+  "contract": "bounded-production-validation-policy-proof-v1",
+  "status": "PASS",
+  "hard_deterministic_preserved": true,
+  "semantic_hard_preserved": true,
+  "benign_repeat_hard_block": 0,
+  "material_spam_safety": "PASS",
+  "bounded_rewrite_invariance": "PASS",
+  "rewrite_attempt_limit": 1,
+  "ai_semantic_reviewer_production_hard_veto": 0,
+  "investment_judgment_logic_changed": 0,
+  "run57_second_candidate": {
+    "normalization_rewrite_count": 6,
+    "normalization_invariant_errors": 0,
+    "binding_errors_after_normalization": 0,
+    "soft_quality_warning_count": 3,
+    "delivery_eligible": true
+  },
+  "tests": {
+    "focused_contract": "26_PASS",
+    "preexisting_targeted_regression": "350_PASS",
+    "full_pytest_before_e2e": "2224_PASS",
+    "ruff": "PASS",
+    "diff_check": "PASS"
+  }
+}

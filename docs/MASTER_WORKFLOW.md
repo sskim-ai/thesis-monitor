@@ -2493,3 +2493,27 @@ still independently pending. Structured Autonomy production mutation is zero. It
 phase begins at `005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, then requires new ALL22 generation
 and clean A/B/C. Production activation remains gated on both promotion readiness and sufficiently
 clean natural infrastructure proof. Production Assist remains OFF.
+
+### 40.40 Validation Policy Production Integration
+
+Exact work instructions were committed first as `35dab28b0a8c714b236a7ac36582461fcb4fbf67`
+on main/operating base `906b092749511dc42d5799ed335165819efee2ea`. The 2026-09-05 US Run-57
+failure is a related validation-policy root cause: monitoring completed `14/14`, but daily-review
+quality rejected the AI path and deterministic fallback delivered `15/15`. Natural V2 candidate,
+accepted, and explicit stock delivery remained zero.
+
+`source-owned-logical-condition-v1` makes the source tree the owner of `ANY_OF`/`ALL_OF`, severity,
+condition IDs, and coverage. `bounded-production-validation-policy-v1` keeps deterministic and
+semantic safety hard while classifying benign typed/renderer repetition as soft. A one-pass
+numeric language normalizer repairs redundant labels, Korean postpositions, and one uniquely
+identified legacy typed-span grammar corruption without changing numeric or interpretation
+identity. Material spam remains blocked.
+
+Production-equivalent dedicated-sink E2E passes KR market `1` plus explicit V2 stocks `8` and US
+market `1` plus explicit V2 stocks `14` using signed-in `gpt-5.6-sol / xhigh`. Pilot,
+compatibility, fallback, duplicate, UnknownIssuer, production recipient, production DB, and
+scheduler mutation are zero. The US finalization used a same-claim continuation after a pre-send
+validator repair and did not rerun the accepted 14-subject model output. Full regression is
+`2227 passed`; implementation Actions run `33949330754` passes pytest and Ruff. Open P0/material
+P1 are `0/0`; state is `READY_FOR_MAIN`. Natural KR/US proof and Structured Autonomy promotion
+remain separate. Production Assist remains OFF.

@@ -1,0 +1,18 @@
+{
+  "contract": "source-owned-logical-condition-proof-v1",
+  "status": "PASS",
+  "primary_owner": "STRUCTURED_METADATA",
+  "operators": ["LEAF", "ANY_OF", "ALL_OF"],
+  "coverage_modes": ["FULL", "NON_EXHAUSTIVE_EXAMPLE", "PARTIAL"],
+  "full_any_of_to_all_of": "REJECTED",
+  "full_all_of_to_any_of": "REJECTED",
+  "full_branch_deletion": "REJECTED",
+  "non_exhaustive_single_branch": "ACCEPTED",
+  "cross_condition_branch": "REJECTED",
+  "severity_mutation": "REJECTED",
+  "subject_generation_mismatch": "REJECTED",
+  "unsupported_operator_mutation_accepted": 0,
+  "corz_ticker_exception": 0,
+  "hut_ticker_exception": 0,
+  "output_prose_operator_inference": 0
+}

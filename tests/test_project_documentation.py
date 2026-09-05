@@ -166,6 +166,35 @@ DOCUMENTS = (
 )
 INVESTMENT_SHA = "dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312"
 CHART_SHA = "beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b"
+PRODUCTION_INTEGRATION_REPORTS = tuple(
+    ROOT / "docs" / "reports" / name
+    for name in (
+        "20260905-us-natural-v2-readonly-forensic.md",
+        "20260905-us-natural-vs-prior-quality-root-cause.md",
+        "20260905-logical-condition-ownership-contract.md",
+        "20260905-logical-condition-coverage-contract.md",
+        "20260905-corz-hut-or-and-regression.md",
+        "20260905-bounded-validation-production-change-set.md",
+        "20260905-production-repetition-policy.md",
+        "20260905-production-bounded-rewrite-contract.md",
+        "20260905-integration-lineage.md",
+        "20260905-release-equivalent-model-effort.md",
+        "20260905-integrated-kr-real-test-e2e.md",
+        "20260905-integrated-us-real-test-e2e.md",
+        "20260905-cross-market-validation-infra-matrix.md",
+        "20260905-main-readiness.md",
+        "20260905-main-operating-lineage.md",
+        "20260905-natural-proof-plan.md",
+        "20260905-structured-autonomy-handoff.md",
+        "20260905-production-integration-artifact-index.md",
+        "20260905-us-natural-forensic.json",
+        "20260905-logical-condition-proof.json",
+        "20260905-production-validation-policy-proof.json",
+        "20260905-kr-test-e2e-proof.json",
+        "20260905-us-test-e2e-proof.json",
+        "20260905-integration-proof.json",
+    )
+)
 
 
 def _sha256(path: Path) -> str:
@@ -174,22 +203,40 @@ def _sha256(path: Path) -> str:
 
 def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     assert all(path.exists() for path in DOCUMENTS)
+    assert all(path.exists() for path in PRODUCTION_INTEGRATION_REPORTS)
     state = json.loads((ROOT / "docs" / "project-state.json").read_text())
 
     assert state["repository"] == "sskim-ai/thesis-monitor"
     assert state["branch"] == "main"
     assert state["experimental_branch"] == (
-        "codex/20260904-kr-us-monitoring-infra-integration"
+        "codex/20260905-kr-v2-validation-policy-production-integration"
     )
     assert state["current_phase"] == (
-        "kr_us_monitoring_infrastructure_integrated_awaiting_natural_proof"
+        "validation_policy_production_integration_ready_for_main"
     )
     assert state["last_completed_phase"] == (
-        "20260904_kr_us_monitoring_infrastructure_integration"
+        "20260905_validation_policy_production_integration"
     )
-    assert state["next_default_phase"] == (
-        "structured_autonomy_production_promotion_review_shadow_only"
+    assert state["next_default_phase"] == "read_only_natural_kr_us_validation_proof"
+    policy = state["validation_policy_production_integration_20260905"]
+    assert policy["status"] == "READY_FOR_MAIN"
+    assert policy["work_instruction_commit"] == (
+        "35dab28b0a8c714b236a7ac36582461fcb4fbf67"
     )
+    assert policy["implementation_commit"] == (
+        "03e230da22c1482339b4bb7b1c1883ce0ac01076"
+    )
+    assert policy["implementation_actions_run"] == 33949330754
+    assert policy["logical_condition_owner"] == "STRUCTURED_METADATA"
+    assert policy["kr_test"] == "PASS_MARKET_1_EXPLICIT_V2_8"
+    assert policy["us_test"] == "PASS_MARKET_1_EXPLICIT_V2_14"
+    assert policy["test_fallback_duplicate"] == "0/0"
+    assert policy["tls_unknown_issuer"] == 0
+    assert policy["full_pytest"] == 2227
+    assert policy["production_recipient_send"] == 0
+    assert policy["structured_autonomy_production_mutation"] == 0
+    assert policy["open_p0"] == []
+    assert policy["open_material_p1"] == []
     integration = state["kr_us_monitoring_infrastructure_integration_20260904"]
     assert integration["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_PROOF"
     assert integration["work_instruction_commit"] == (
@@ -356,7 +403,7 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     prior_fibonacci_commit = "0dfef76bba606f018893d6e68e7beaf410aa7438"
     shadow_code_commit = "f28d4bb3b8eacebe7fb48a3ca7800094711793eb"
     assert state["recorded_base_commit"] == (
-        "5d5f3363d3a762b62698943b1feb4fa121d0d0f9"
+        "906b092749511dc42d5799ed335165819efee2ea"
     )
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"

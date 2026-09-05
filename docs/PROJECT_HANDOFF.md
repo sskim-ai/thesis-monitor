@@ -2550,3 +2550,22 @@ Observe the next ordinary KR and US cycles read-only for network/model reach, V2
 zero, enriched US market output, and exactly-once delivery. Report/runtime commit
 `deab50a122075b5fc710e97b74d9fbb63f2ac1e4` passed Actions run `33629221858`, clean linear main and
 operating parity, and post-restart API health. Production Assist remains OFF.
+
+## 2026-09-05 Validation Policy Production Integration Handoff
+
+Start with `docs/reports/20260905-production-integration-artifact-index.md` and
+`docs/reports/20260905-main-readiness.md`. Work instructions are
+`35dab28b0a8c714b236a7ac36582461fcb4fbf67`; final implementation before documentation is
+`03e230da22c1482339b4bb7b1c1883ce0ac01076` on base
+`906b092749511dc42d5799ed335165819efee2ea`.
+
+Structured logical conditions now own connector meaning and coverage. Bounded validation keeps
+truth, provenance, lifecycle, accounting, valuation, and material-spam safety hard while benign
+typed repetition is soft. KR/US dedicated TEST proof passes `1+8` and `1+14` with fallback,
+duplicates, production send, DB mutation, and scheduler mutation at zero. Full pytest is `2227`
+and implementation Actions `33949330754` passes.
+
+After main/operating closure, observe the next ordinary KR and US cycles read-only. Do not replay
+Run-57, manually invoke a Scheduled Task, resend production, expose recipient values, or treat
+TEST evidence as natural proof. Structured Autonomy may resume as a separate shadow/promotion
+program; production mutation remains zero and Production Assist remains OFF.

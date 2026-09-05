@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
+integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
+`docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact
+instruction commit is `35dab28b0a8c714b236a7ac36582461fcb4fbf67`; final implementation before
+documentation is `03e230da22c1482339b4bb7b1c1883ce0ac01076` on base
+`906b092749511dc42d5799ed335165819efee2ea`.
+
+The source owns structured logical connectors and coverage; production validation keeps hard
+safety separate from soft natural-language quality. Dedicated TEST proof passes KR `1+8` and US
+`1+14` with signed-in `gpt-5.6-sol / xhigh`; fallback, duplicates, UnknownIssuer, and production
+mutations are zero. Full pytest is `2227`, and implementation Actions run `33949330754` passes.
+
+Next actions: verify the documented main/operating closure, then observe the next ordinary KR and
+US runs read-only. Structured Autonomy may resume separately with a fresh ALL22 generation and
+A/B/C stability; do not activate it from this infrastructure change. Do not manually invoke or
+resend a scheduled run, expose recipient values, or call dedicated-sink evidence natural proof.
+Production Assist remains OFF.
+
+---
+
 Latest authoritative infrastructure work is the 2026-09-04 KR/US monitoring integration. Read
 `docs/reports/20260904-infrastructure-artifact-index.md` and
 `docs/reports/20260904-infra-readiness.json` first. Exact instruction commit is
