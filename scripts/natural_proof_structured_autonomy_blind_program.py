@@ -12,6 +12,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+from pydantic import ValidationError
+
 from app.services.structured_autonomy_shadow_service import (
     StructuredAutonomyCandidate,
     derive_hold_lean,
@@ -279,6 +281,7 @@ def build_blind_pack(
     *,
     root: Path,
     generation_id: str,
+    created_at: str,
     evidence: Mapping[str, object],
     price_maps: Mapping[str, Mapping[str, object]],
     stocks: Mapping[str, Mapping[str, object]],
@@ -346,7 +349,7 @@ def build_blind_pack(
     manifest = {
         "contract": "blind-fact-pack-manifest-v1",
         "generation_id": generation_id,
-        "created_at": datetime.now(UTC).isoformat(),
+        "created_at": created_at,
         "neutral_order": "ticker_lexicographic",
         "subjects": subject_manifest,
         "subject_count": len(subject_manifest),
@@ -362,6 +365,7 @@ def build_ai_pack(
     *,
     root: Path,
     generation_id: str,
+    created_at: str,
     candidates: Sequence[StructuredAutonomyCandidate],
     run_document: Mapping[str, object],
 ) -> dict[str, object]:
@@ -397,7 +401,7 @@ def build_ai_pack(
     manifest = {
         "contract": "ai-decision-pack-manifest-v1",
         "generation_id": generation_id,
-        "created_at": datetime.now(UTC).isoformat(),
+        "created_at": created_at,
         "subjects": subject_manifest,
         "subject_count": len(subject_manifest),
         "ai_decision_pack_sha256": payload_sha,
@@ -529,10 +533,320 @@ def zip_paths(destination: Path, root: Path, paths: Sequence[Path]) -> None:
         for path in paths:
             if path.is_dir():
                 for item in sorted(candidate for candidate in path.rglob("*") if candidate.is_file()):
-                    archive.write(item, item.relative_to(root))
+                    _write_deterministic_zip_member(archive, item, item.relative_to(root))
             else:
-                archive.write(path, path.relative_to(root))
+                _write_deterministic_zip_member(archive, path, path.relative_to(root))
     temporary.replace(destination)
+
+
+def _write_deterministic_zip_member(
+    archive: zipfile.ZipFile,
+    source: Path,
+    member: Path,
+) -> None:
+    info = zipfile.ZipInfo(str(member), date_time=(1980, 1, 1, 0, 0, 0))
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.external_attr = 0o100644 << 16
+    archive.writestr(info, source.read_bytes())
+
+
+def _safe_validation_failure(exc: Exception) -> dict[str, object]:
+    details: list[dict[str, str]] = []
+    if isinstance(exc, ValidationError):
+        for row in exc.errors(include_input=False, include_url=False):
+            details.append(
+                {
+                    "location": ".".join(str(value) for value in row.get("loc") or ()),
+                    "type": str(row.get("type") or "validation_error"),
+                    "message": str(row.get("msg") or "validation failed"),
+                }
+            )
+    return {
+        "exception_type": type(exc).__name__,
+        "summary": str(exc).splitlines()[0][:500],
+        "details": details,
+    }
+
+
+def _write_blind_intake_bundle(
+    *,
+    output_root: Path,
+    review_root: Path,
+    blind_manifest: Mapping[str, object],
+    ai_manifest: Mapping[str, object],
+) -> Path:
+    write_text(
+        review_root / "SHA256SUMS.txt",
+        f"{blind_manifest['blind_pack_sha256']}  BLIND_FACT_PACK payload\n"
+        f"{ai_manifest['ai_decision_pack_sha256']}  AI_DECISION_PACK sealed payload\n",
+    )
+    blind_zip = (
+        output_root / "thesis-monitor-structured-autonomy-blind-review-bundle.zip"
+    )
+    zip_paths(
+        blind_zip,
+        review_root,
+        [
+            review_root / "BLIND_FACT_PACK",
+            review_root / "COMPARISON_PROTOCOL.md",
+            review_root / "external-comparison-template.json",
+            review_root / "SHA256SUMS.txt",
+        ],
+    )
+    return blind_zip
+
+
+def _write_incomplete_reports(
+    *,
+    output_root: Path,
+    public_reports: Path,
+    sealed_reports: Path,
+    machine_dir: Path,
+    review_root: Path,
+    generation_id: str,
+    source_lock: Mapping[str, object],
+    run_documents: Mapping[str, Mapping[str, object]],
+    failed_run: str,
+    failure: Mapping[str, object],
+    blind_manifest: Mapping[str, object],
+    ai_manifest: Mapping[str, object],
+) -> dict[str, object]:
+    completed_runs = [run for run in RUNS if run in run_documents]
+    hard_errors = sum(
+        row["status"] != "PASS"
+        for run in completed_runs
+        for row in run_documents[run]["validation"]
+    )
+    failed_batches = sorted(
+        path.name for path in (output_root / "engine" / f"run-{failed_run}").glob("batch-*.json")
+    )
+    run_failure = {
+        "contract": "structured-autonomy-run-failure-v1",
+        "generation_id": generation_id,
+        "run": failed_run,
+        "status": "FAILED_SCHEMA_VALIDATION",
+        "completed_run_document": False,
+        "batch_output_artifacts": failed_batches,
+        "selective_ticker_rerun": 0,
+        "post_result_candidate_edit": 0,
+        "validation_triggered_rerun": 0,
+        "approved_infrastructure_resume_count": 1,
+        "approved_infrastructure_resume_scope": "run_a_batch_05",
+        "failed_batch_retry": 0,
+        "remaining_model_calls_started": 0,
+        "failure": dict(failure),
+    }
+    stability = {
+        "contract": "structured-autonomy-stability-v1",
+        "generation_id": generation_id,
+        "status": "NOT_MEASURED_INCOMPLETE_ABC",
+        "runs_completed": [run for run in ("a", "b", "c") if run in run_documents],
+        "failed_run": failed_run,
+        "counts": {
+            "STABLE": "NOT_MEASURED",
+            "BOUNDARY_UNCERTAINTY": "NOT_MEASURED",
+            "UNSTABLE": "NOT_MEASURED",
+        },
+        "majority_vote": 0,
+        "decision_averaging": 0,
+    }
+    bias = {
+        "contract": "structured-autonomy-judgment-bias-audit-v1",
+        "generation_id": generation_id,
+        "status": "INSUFFICIENT_EVIDENCE_INCOMPLETE_ABC",
+        "unknown_negative_bias": "INSUFFICIENT_EVIDENCE",
+        "valuation_bias": "INSUFFICIENT_EVIDENCE",
+        "timing_bias": "INSUFFICIENT_EVIDENCE",
+        "action_context_bias": "INSUFFICIENT_EVIDENCE",
+    }
+    promotion = {
+        "contract": "structured-autonomy-promotion-review-v1",
+        "generation_id": generation_id,
+        "current_operating_sha": BASE_SHA,
+        "current_model": engine.REASONING_MODEL,
+        "current_reasoning_effort": engine.REASONING_EFFORT,
+        "kr_natural_explicit_v2_proof": "PENDING",
+        "us_natural_explicit_v2_proof": "PENDING",
+        "fresh_experiment_generation": "PASS",
+        "old_candidate_reuse": 0,
+        "selective_ticker_rerun": 0,
+        "validation_triggered_rerun": 0,
+        "approved_infrastructure_resume_count": 1,
+        "source_packet_us": US_PACKET_ID,
+        "source_packet_kr": KR_PACKET_ID,
+        "source_as_of_us": source_lock["sources"]["us"]["assessment_date"],
+        "source_as_of_kr": source_lock["sources"]["kr"]["assessment_date"],
+        "model_equivalence": "PASS",
+        "first_run_validated": run_documents["first"]["validation_pass_count"],
+        "a_b_c_gate": "RUN_INCOMPLETE",
+        "ai_judgment_leakage_in_blind_pack": blind_manifest[
+            "ai_judgment_leakage_count"
+        ],
+        "blind_pack_sha256": blind_manifest["blind_pack_sha256"],
+        "ai_decision_pack_sha256": ai_manifest["ai_decision_pack_sha256"],
+        "external_blind_judgment_status": "NOT_STARTED",
+        "run_a_validated": run_documents.get("a", {}).get(
+            "validation_pass_count", "NOT_RUN"
+        ),
+        "run_b_validated": run_documents.get("b", {}).get(
+            "validation_pass_count", "NOT_RUN"
+        ),
+        "run_c_validated": "OTHER",
+        "stable_count": "NOT_MEASURED",
+        "boundary_uncertainty_count": "NOT_MEASURED",
+        "unstable_count": "NOT_MEASURED",
+        "ai_vs_external_full_agreement": "NOT_MEASURED",
+        "ai_vs_external_boundary_difference": "NOT_MEASURED",
+        "ai_vs_external_meaningful_difference": "NOT_MEASURED",
+        "ai_vs_external_major_difference": "NOT_MEASURED",
+        "buy_sell_direct_reversal": "NOT_MEASURED",
+        "unknown_negative_bias": "INSUFFICIENT_EVIDENCE",
+        "valuation_bias": "INSUFFICIENT_EVIDENCE",
+        "timing_bias": "INSUFFICIENT_EVIDENCE",
+        "action_context_bias": "INSUFFICIENT_EVIDENCE",
+        "hard_safety_regression": hard_errors + 1,
+        "message_quality_failures": sum(
+            run_documents[run]["message_quality"]["status"] != "PASS"
+            for run in completed_runs
+        ),
+        "production_decision_mutation": 0,
+        "production_renderer_mutation": 0,
+        "production_telegram_send": 0,
+        "production_db_mutation": 0,
+        "main_merge": 0,
+        "promotion_readiness": "NEEDS_MORE_SHADOW_WORK",
+        "promotion_blockers": [
+            f"run_{failed_run}_schema_validation_failed",
+            "abc_stability_not_measured",
+            "internal_shadow_gate_not_clean",
+            "external_blind_judgment_not_frozen",
+            "kr_natural_explicit_v2_proof_pending",
+            "us_natural_explicit_v2_proof_pending",
+        ],
+    }
+    for run in completed_runs:
+        name = "fresh-first.json" if run == "first" else f"run-{run}.json"
+        write_json(machine_dir / name, run_documents[run])
+    write_json(machine_dir / f"run-{failed_run}.json", run_failure)
+    write_json(machine_dir / f"run-{failed_run}-failure.json", run_failure)
+    write_json(machine_dir / "abc-stability.json", stability)
+    write_json(machine_dir / "judgment-bias-audit.json", bias)
+    write_json(machine_dir / "promotion-review.json", promotion)
+    write_json(machine_dir / "structured-autonomy-source-lock.json", source_lock)
+
+    report_values = {
+        "20260905-structured-autonomy-fresh-first.md": (
+            "# Structured Autonomy Fresh First\n\n"
+            f"- Generation: `{generation_id}`\n"
+            f"- Validation: `{run_documents['first']['validation_pass_count']}/22`\n"
+            f"- Message quality: `{run_documents['first']['message_quality']['status']}`\n"
+            "- Candidate decisions: `SEALED_PENDING_EXTERNAL_BLIND_FREEZE`\n"
+        ),
+        "20260905-structured-autonomy-fresh-first-validation.md": (
+            "# Structured Autonomy Fresh-First Validation\n\n"
+            f"`FIRST_RUN_VALIDATED = {run_documents['first']['validation_pass_count']}`\n\n"
+            "Old candidate reuse, selective rerun, and production send: `0`.\n"
+        ),
+        "20260905-run-a.md": (
+            "# Structured Autonomy Run A\n\n"
+            f"- Validated: `{run_documents.get('a', {}).get('validation_pass_count', 'NOT_RUN')}/22`\n"
+            "- Candidate decisions: `SEALED`\n"
+            "- Validation failures: `MU`, `005490`; future-checkpoint metric policy.\n"
+            "- Unsupported evidence refs: `0`\n"
+            "- Numeric, accounting/security-basis, and material-repetition failures: `0`\n"
+            "- Candidate edits or validation-triggered reruns: `0`\n\n"
+            "The selected evidence owned the named checkpoint metric, but one or more qualitative future-risk/checkpoint phrases fell outside the validator's accepted future-context grammar. This run remains failed and frozen; it was not repaired in place.\n"
+        ),
+        "20260905-run-b.md": (
+            "# Structured Autonomy Run B\n\n"
+            f"- Validated: `{run_documents.get('b', {}).get('validation_pass_count', 'NOT_RUN')}/22`\n"
+            "- Candidate decisions: `SEALED`\n"
+            "- Validation failures: `GOOGL`, `005490`; future-checkpoint metric policy.\n"
+            "- Unsupported evidence refs: `0`\n"
+            "- Directional Unknown, sector-normal SELL, ADR basis, and KR accounting-basis audit findings: `0`\n"
+            "- Material repetition: `0`\n"
+            "- Candidate edits or reruns: `0`\n\n"
+            "As in Run A, the evidence owned the metric while the phrasing did not satisfy the current future-checkpoint language gate. No current/historical metric value was accepted.\n"
+        ),
+        "20260905-run-c.md": (
+            "# Structured Autonomy Run C\n\n"
+            "- Status: `FAILED_SCHEMA_VALIDATION`\n"
+            "- Failure point: `batch-05` logical-condition leaf shape.\n"
+            "- Batch retry: `0`\n- C6 model call: `0`\n"
+            "- Candidate decisions: `NOT_ACCEPTED_OR_REVEALED`\n"
+            "\nBoth failures were under `reevaluation_down`: a logical-condition expression declared a `LEAF` while retaining an invalid child shape. The structured schema rejected the batch before a complete Run C candidate set or run document could exist.\n"
+        ),
+        "20260905-abc-stability.md": (
+            "# Structured Autonomy A/B/C Stability\n\n"
+            "`STATUS = NOT_MEASURED_INCOMPLETE_ABC`\n\n"
+            "C did not produce a complete canonical run document. No majority vote or partial-run stability claim was made.\n"
+        ),
+        "20260905-external-blind-comparison.md": (
+            "# External Blind Comparison\n\n"
+            "`EXTERNAL_BLIND_JUDGMENT_STATUS = NOT_STARTED`\n\n"
+            "No external judgment was supplied or fabricated. AI decisions remain sealed.\n"
+        ),
+        "20260905-judgment-bias-audit.md": (
+            "# Structured Autonomy Judgment Bias Audit\n\n"
+            "`STATUS = INSUFFICIENT_EVIDENCE_INCOMPLETE_ABC`\n\n"
+            "A/B/C and external comparison are incomplete, so no bias conclusion is promoted.\n"
+        ),
+        "20260905-structured-autonomy-promotion-review.md": (
+            "# Structured Autonomy Promotion Review\n\n"
+            "`PROMOTION_READINESS = NEEDS_MORE_SHADOW_WORK`\n\n"
+            "Blockers: incomplete C schema validation, A/B validation policy failures, external blind judgment not frozen, and KR/US natural proof pending.\n\n"
+            "Production decision, renderer, Telegram, database, and main mutation: `0`.\n"
+            "\nOpen P0 is `0` because every unsafe or nonconforming candidate failed closed. Open P1 is `2`: future-checkpoint semantic ownership generalization and logical-condition leaf-shape conformance. A new generation is required after those repairs; this generation must not be tuned or resumed.\n"
+        ),
+        "20260905-next-production-handoff.md": (
+            "# Next Production Handoff\n\n"
+            "1. Treat this generation as a frozen failed experiment; do not tune or resume it.\n"
+            "2. Repair logical-condition generation/schema conformance and future-checkpoint semantic ownership generically.\n"
+            "3. Start a new generation only after focused regression passes.\n"
+            "4. Freeze external blind judgment from the blind-only intake before revealing AI decisions.\n"
+            "5. Observe authoritative KR and US natural runs independently.\n"
+        ),
+    }
+    for name, content in report_values.items():
+        write_text(public_reports / name, content)
+        if name in {
+            "20260905-run-c.md",
+            "20260905-abc-stability.md",
+            "20260905-external-blind-comparison.md",
+            "20260905-judgment-bias-audit.md",
+            "20260905-structured-autonomy-promotion-review.md",
+            "20260905-next-production-handoff.md",
+        }:
+            write_text(sealed_reports / name, content)
+
+    blind_zip = _write_blind_intake_bundle(
+        output_root=output_root,
+        review_root=review_root,
+        blind_manifest=blind_manifest,
+        ai_manifest=ai_manifest,
+    )
+    artifact_rows = [
+        ["generation", generation_id],
+        ["blind fact pack", str(review_root / "BLIND_FACT_PACK")],
+        ["blind intake ZIP", str(blind_zip)],
+        ["machine promotion review", str(machine_dir / "promotion-review.json")],
+        ["sealed AI decision pack", "SEALED_PENDING_EXTERNAL_BLIND_FREEZE"],
+    ]
+    artifact_index = (
+        "# Program Artifact Index\n\n"
+        + markdown_table(["Artifact", "Value"], artifact_rows)
+        + "\n"
+    )
+    write_text(public_reports / "20260905-program-artifact-index.md", artifact_index)
+    write_text(sealed_reports / "20260905-program-artifact-index.md", artifact_index)
+    return {
+        "promotion": promotion,
+        "stability": stability,
+        "bias": bias,
+        "failure": run_failure,
+        "blind_intake_zip": str(blind_zip),
+        "blind_intake_zip_sha256": file_sha256(blind_zip),
+    }
 
 
 def _write_first_reports(
@@ -822,7 +1136,9 @@ def main() -> None:
         f"- US: `{US_PACKET_ID}` / `{source_lock['sources']['us']['assessment_date']}`\n"
         f"- KR: `{KR_PACKET_ID}` / `{source_lock['sources']['kr']['assessment_date']}`\n"
         f"- Model: `{engine.REASONING_MODEL}` / `{engine.REASONING_EFFORT}`\n"
-        "- Fresh facts: `0`\n- Old candidate reuse: `0`\n- Cross-market leakage: `0`\n",
+        "- Live provider fact fetches: `0`\n"
+        "- Old candidate reuse: `0`\n"
+        "- Cross-market leakage: `0`\n",
     )
     if args.prepare_only:
         print(
@@ -860,6 +1176,7 @@ def main() -> None:
     blind_manifest, leaks = build_blind_pack(
         root=review_root / "BLIND_FACT_PACK",
         generation_id=generation_id,
+        created_at=str(state["created_at"]),
         evidence=evidence,
         price_maps=price_maps,
         stocks=stocks,
@@ -867,6 +1184,7 @@ def main() -> None:
     ai_manifest = build_ai_pack(
         root=sealed_root / "AI_DECISION_PACK",
         generation_id=generation_id,
+        created_at=str(state["created_at"]),
         candidates=first_candidates,
         run_document=first_document,
     )
@@ -924,15 +1242,52 @@ def main() -> None:
         return
 
     for run in ("a", "b", "c"):
-        candidates, document, _rendered = engine.execute_run(
-            run=run,
-            args=engine_args,
-            evidence_packets=evidence,
-            alias_catalogs=aliases,
-            price_maps=price_maps,
-            stock_by_ticker=stocks,
-            base_messages=base_messages,
-        )
+        try:
+            candidates, document, _rendered = engine.execute_run(
+                run=run,
+                args=engine_args,
+                evidence_packets=evidence,
+                alias_catalogs=aliases,
+                price_maps=price_maps,
+                stock_by_ticker=stocks,
+                base_messages=base_messages,
+            )
+        except Exception as exc:
+            result = _write_incomplete_reports(
+                output_root=output_root,
+                public_reports=public_reports,
+                sealed_reports=sealed_reports,
+                machine_dir=machine_dir,
+                review_root=review_root,
+                generation_id=generation_id,
+                source_lock=source_lock,
+                run_documents=run_documents,
+                failed_run=run,
+                failure=_safe_validation_failure(exc),
+                blind_manifest=blind_manifest,
+                ai_manifest=ai_manifest,
+            )
+            print(
+                json.dumps(
+                    {
+                        "generation_id": generation_id,
+                        "status": "INCOMPLETE_ABC",
+                        "failed_run": run,
+                        "failure": result["failure"]["failure"],
+                        "external_blind_judgment_status": "NOT_STARTED",
+                        "promotion_readiness": result["promotion"][
+                            "promotion_readiness"
+                        ],
+                        "blind_intake_zip": result["blind_intake_zip"],
+                        "blind_intake_zip_sha256": result[
+                            "blind_intake_zip_sha256"
+                        ],
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+            return
         run_candidates[run] = candidates
         run_documents[run] = document
         _write_run_report(sealed_reports, run, candidates, document)
@@ -962,21 +1317,11 @@ def main() -> None:
         )
         + "\n",
     )
-    write_text(
-        review_root / "SHA256SUMS.txt",
-        f"{blind_manifest['blind_pack_sha256']}  BLIND_FACT_PACK payload\n"
-        f"{ai_manifest['ai_decision_pack_sha256']}  AI_DECISION_PACK sealed payload\n",
-    )
-    blind_zip = output_root / "thesis-monitor-structured-autonomy-blind-intake.zip"
-    zip_paths(
-        blind_zip,
-        review_root,
-        [
-            review_root / "BLIND_FACT_PACK",
-            review_root / "COMPARISON_PROTOCOL.md",
-            review_root / "external-comparison-template.json",
-            review_root / "SHA256SUMS.txt",
-        ],
+    blind_zip = _write_blind_intake_bundle(
+        output_root=output_root,
+        review_root=review_root,
+        blind_manifest=blind_manifest,
+        ai_manifest=ai_manifest,
     )
     print(
         json.dumps(
