@@ -18,6 +18,7 @@ def _source(operator: LogicalOperator = LogicalOperator.ANY_OF) -> SourceLogical
     return SourceLogicalCondition(
         subject="GENERIC",
         generation_id="packet-1",
+        source_condition_ref="K1",
         severity=LogicalSeverity.INVALIDATION_CANDIDATE,
         expression=SourceLogicalExpression(
             condition_id="K1",
@@ -134,4 +135,3 @@ def test_subject_and_generation_are_part_of_source_identity() -> None:
     assert _errors(source, _claim(LogicalOperator.ANY_OF)) == (
         "logical_condition_owner_mismatch",
     )
-

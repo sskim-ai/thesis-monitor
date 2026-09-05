@@ -5,7 +5,7 @@ import re
 from enum import StrEnum
 from typing import Iterable
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 CONTRACT_VERSION = "source-owned-logical-condition-v1"
@@ -39,19 +39,43 @@ class SourceLogicalExpression(FrozenModel):
     statement: str | None = None
     children: tuple[SourceLogicalExpression, ...] = ()
 
+    @model_validator(mode="after")
+    def validate_shape(self) -> SourceLogicalExpression:
+        if self.type == LogicalOperator.LEAF and self.children:
+            raise ValueError("logical_leaf_cannot_have_children")
+        if self.type != LogicalOperator.LEAF and len(self.children) < 2:
+            raise ValueError("logical_composite_requires_two_children")
+        return self
+
 
 class SourceLogicalCondition(FrozenModel):
     contract: str = CONTRACT_VERSION
     subject: str = Field(min_length=1)
     generation_id: str = Field(min_length=1)
+    source_condition_ref: str = Field(min_length=1)
     severity: LogicalSeverity
     expression: SourceLogicalExpression
+
+    @model_validator(mode="after")
+    def validate_root_identity(self) -> SourceLogicalCondition:
+        if self.source_condition_ref != self.expression.condition_id:
+            raise ValueError("logical_source_root_identity_mismatch")
+        return self
 
 
 class ClaimLogicalExpression(FrozenModel):
     type: LogicalOperator
     condition_ref: str | None = None
     children: tuple[ClaimLogicalExpression, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_shape(self) -> ClaimLogicalExpression:
+        if self.type == LogicalOperator.LEAF:
+            if not self.condition_ref or self.children:
+                raise ValueError("logical_claim_leaf_shape_invalid")
+        elif self.condition_ref is not None or len(self.children) < 2:
+            raise ValueError("logical_claim_composite_shape_invalid")
+        return self
 
 
 class ClaimLogicalCondition(FrozenModel):
@@ -108,6 +132,7 @@ def source_logical_condition(
     return SourceLogicalCondition(
         subject=subject,
         generation_id=generation_id,
+        source_condition_ref=root_id,
         severity=severity,
         expression=expression,
     )
@@ -164,7 +189,7 @@ def logical_condition_errors(
 ) -> tuple[str, ...]:
     source_values = tuple(source_conditions)
     sources = {
-        item.expression.condition_id: item
+        item.source_condition_ref: item
         for item in source_values
         if item.subject == subject and item.generation_id == generation_id
     }
