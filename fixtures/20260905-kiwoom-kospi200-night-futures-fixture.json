@@ -1,0 +1,22 @@
+{
+  "contract": "202609",
+  "instrument": "KOSPI200 Futures",
+  "session_type": "NIGHT",
+  "session_business_date": "2026-09-04",
+  "ohlcv": {
+    "open": 1055.65,
+    "high": 1097.65,
+    "low": 1043.85,
+    "close": 1093.9,
+    "volume": 32666
+  },
+  "header_change": {
+    "change": 41.4,
+    "pct": 3.93,
+    "arithmetically_implied_reference": 1052.5,
+    "reference_type": "MUST_BE_CONFIRMED_FROM_PROVIDER_SEMANTICS"
+  },
+  "prior_night_close": 1049.05,
+  "night_close_to_night_close_pct": 4.275297,
+  "fixture_role": "HUMAN_ACCEPTANCE_FIXTURE_NOT_PRODUCTION_PROVIDER"
+}
