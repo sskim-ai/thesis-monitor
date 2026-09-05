@@ -646,8 +646,6 @@ def main() -> None:
     run_candidates: dict[str, Sequence[StructuredAutonomyCandidate]] = {}
     run_documents: dict[str, Mapping[str, object]] = {}
     for run in RUNS:
-        if run != "first" and not run_passes(run_documents["first"]):
-            break
         candidates, document, _rendered = engine.execute_run(
             run=run,
             args=run_args,
@@ -659,17 +657,30 @@ def main() -> None:
         )
         run_candidates[run] = candidates
         run_documents[run] = document
-        if run == "first" and not run_passes(document):
-            write_json(proofs_dir / "fresh-first.json", document)
-            write_text(report_dir / "20260905-fresh-uskr22-first.md", run_report(run, candidates, document))
+        proof_name = "fresh-first.json" if run == "first" else f"run-{run}.json"
+        report_name = (
+            "20260905-fresh-uskr22-first.md"
+            if run == "first"
+            else f"20260905-run-{run}.md"
+        )
+        write_json(proofs_dir / proof_name, document)
+        write_text(report_dir / report_name, run_report(run, candidates, document))
+        if not run_passes(document):
             write_json(
                 output_root / "program-state.json",
                 {
                     "contract": CONTRACT_VERSION,
                     "generation_id": generation_id,
-                    "state": "STOPPED_FIRST_GATE",
-                    "validation_pass_count": document["validation_pass_count"],
-                    "message_quality": document["message_quality"]["status"],
+                    "state": f"STOPPED_{run.upper()}_GATE",
+                    "completed_runs": list(run_documents),
+                    "run_validation": {
+                        name: value["validation_pass_count"]
+                        for name, value in run_documents.items()
+                    },
+                    "message_quality": {
+                        name: value["message_quality"]["status"]
+                        for name, value in run_documents.items()
+                    },
                     "selective_ticker_rerun": 0,
                 },
             )

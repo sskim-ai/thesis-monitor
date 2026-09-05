@@ -105,6 +105,64 @@ def test_nonfuture_semantic_direction_remains_bounded(
         )
 
 
+@pytest.mark.parametrize(
+    ("claim_type", "time_scope", "checkpoint_kind", "direction"),
+    (
+        (
+            ClaimType.EVIDENCE_INTERPRETATION,
+            ClaimTimeScope.CURRENT,
+            None,
+            None,
+        ),
+        (
+            ClaimType.EVIDENCE_INTERPRETATION,
+            ClaimTimeScope.HISTORICAL,
+            None,
+            None,
+        ),
+        (
+            ClaimType.UNKNOWN_LIMIT,
+            ClaimTimeScope.CURRENT,
+            None,
+            MetricDirection.OBSERVE,
+        ),
+        (
+            ClaimType.FUTURE_CHECKPOINT,
+            ClaimTimeScope.FUTURE_CHECKPOINT,
+            CheckpointKind.STRENGTHEN,
+            MetricDirection.IMPROVE,
+        ),
+        (
+            ClaimType.FUTURE_CHECKPOINT,
+            ClaimTimeScope.FUTURE_CHECKPOINT,
+            CheckpointKind.WEAKEN,
+            MetricDirection.DETERIORATE,
+        ),
+        (
+            ClaimType.FUTURE_CHECKPOINT,
+            ClaimTimeScope.FUTURE_CHECKPOINT,
+            CheckpointKind.REASSESSMENT,
+            MetricDirection.OBSERVE,
+        ),
+    ),
+)
+def test_normal_claim_type_directional_semantics_remain_available(
+    claim_type: ClaimType,
+    time_scope: ClaimTimeScope,
+    checkpoint_kind: CheckpointKind | None,
+    direction: MetricDirection | None,
+) -> None:
+    semantic = ClaimSemanticMetadata(
+        claim_type=claim_type,
+        time_scope=time_scope,
+        checkpoint_kind=checkpoint_kind,
+        direction=direction,
+    )
+
+    assert semantic.claim_type == claim_type
+    assert semantic.direction == direction
+
+
 def _packet() -> DecisionEvidencePacket:
     return DecisionEvidencePacket(
         packet_id="packet-shadow-v2",
