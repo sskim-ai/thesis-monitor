@@ -727,7 +727,7 @@ def _checkpoint_metadata_errors(
     errors: list[str] = []
     text_metrics = _metric_names(text)
     metadata_metrics = set(semantic.metric_refs)
-    if text_metrics != metadata_metrics:
+    if not text_metrics <= metadata_metrics:
         errors.append("checkpoint_metric_metadata_mismatch")
 
     future_roles = {

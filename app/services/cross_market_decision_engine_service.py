@@ -29,6 +29,7 @@ from app.services.logical_condition_service import (
     checkpoint_metric_refs,
     logical_condition_errors,
     logical_expression_is_composite,
+    source_checkpoint_metric_refs,
     source_logical_condition,
 )
 
@@ -258,6 +259,25 @@ def _category_for_fact(row: Mapping[str, object]) -> EvidenceCategory:
     return EvidenceCategory.EARNINGS_QUALITY
 
 
+_FACT_TYPE_CHECKPOINT_METRICS = {
+    "cash_flow_ocf": (CheckpointMetric.OCF,),
+    "cash_flow_ppe_capex": (CheckpointMetric.PPE_CAPEX,),
+    "cash_flow_fcf_ppe": (CheckpointMetric.FCF,),
+}
+
+
+def _checkpoint_metrics_for_fact(
+    row: Mapping[str, object],
+) -> tuple[CheckpointMetric, ...]:
+    fact_type = str(row.get("fact_type") or "").lower()
+    structured = _FACT_TYPE_CHECKPOINT_METRICS.get(fact_type)
+    if structured is not None:
+        return structured
+    return checkpoint_metric_refs(
+        f"{row.get('fact_type') or ''} {_compact(row.get('fields') or {})}"
+    )
+
+
 def _add_text_refs(
     refs: list[DecisionEvidenceRef],
     *,
@@ -285,7 +305,7 @@ def _add_text_refs(
                 statement=_compact(value),
                 as_of=as_of,
                 source_ref=source_ref,
-                metric_refs=checkpoint_metric_refs(_compact(value)),
+                metric_refs=source_checkpoint_metric_refs(_compact(value)),
                 logical_condition=(
                     source_logical_condition(
                         subject=ticker,
@@ -436,9 +456,7 @@ def build_decision_evidence_packet(
                     statement=_compact(row.get("fields") or {}),
                     as_of=str(row.get("as_of_date") or assessment_date),
                     source_ref=f"stock.fact_catalog.{fact_id}",
-                    metric_refs=checkpoint_metric_refs(
-                        f"{row.get('fact_type') or ''} {_compact(row.get('fields') or {})}"
-                    ),
+                    metric_refs=_checkpoint_metrics_for_fact(row),
                 )
             )
 

@@ -58,6 +58,22 @@ def checkpoint_metric_refs(value: str) -> tuple[CheckpointMetric, ...]:
     return tuple(metric for metric in CheckpointMetric if metric.value in normalized)
 
 
+_SOURCE_METRIC_ALIASES = {
+    "영업현금흐름": CheckpointMetric.OCF,
+    "영업활동현금흐름": CheckpointMetric.OCF,
+    "PPE 취득 현금지출": CheckpointMetric.PPE_CAPEX,
+    "잉여현금흐름": CheckpointMetric.FCF,
+}
+
+
+def source_checkpoint_metric_refs(value: str) -> tuple[CheckpointMetric, ...]:
+    owned = set(checkpoint_metric_refs(value))
+    owned.update(
+        metric for alias, metric in _SOURCE_METRIC_ALIASES.items() if alias in value
+    )
+    return tuple(metric for metric in CheckpointMetric if metric in owned)
+
+
 class SourceLogicalLeaf(FrozenModel):
     condition_id: str = Field(min_length=1)
     type: Literal[LogicalOperator.LEAF] = LogicalOperator.LEAF
@@ -170,7 +186,7 @@ def source_logical_condition(
         generation_id=generation_id,
         source_condition_ref=root_id,
         severity=severity,
-        metric_refs=checkpoint_metric_refs(compact),
+        metric_refs=source_checkpoint_metric_refs(compact),
         expression=expression,
     )
 

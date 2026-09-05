@@ -13,7 +13,9 @@ from app.services.logical_condition_service import (
     SourceLogicalCondition,
     SourceLogicalComposite,
     SourceLogicalLeaf,
+    CheckpointMetric,
     logical_condition_errors,
+    source_checkpoint_metric_refs,
     source_claim_expression,
     source_logical_condition,
 )
@@ -82,6 +84,22 @@ def test_source_adapter_owns_explicit_or_before_writer() -> None:
     assert source.expression.type == LogicalOperator.ANY_OF
     assert len(source.expression.children) == 2
     assert "또는" not in (source.expression.children[0].statement or "")
+
+
+def test_source_metric_aliases_are_exact_and_do_not_parse_future_grammar() -> None:
+    assert source_checkpoint_metric_refs(
+        "영업현금흐름이 개선되고 잉여현금흐름을 점검"
+    ) == (CheckpointMetric.OCF, CheckpointMetric.FCF)
+    assert source_checkpoint_metric_refs("CAPEX 증가를 점검") == ()
+
+    source = source_logical_condition(
+        subject="GENERIC",
+        generation_id="packet-1",
+        evidence_ref="cash-flow-1",
+        statement="영업현금흐름이 개선",
+        severity=LogicalSeverity.STRENGTHENING,
+    )
+    assert source.metric_refs == (CheckpointMetric.OCF,)
 
 
 def test_full_any_of_to_all_of_is_rejected_without_reading_prose() -> None:

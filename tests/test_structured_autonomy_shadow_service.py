@@ -467,6 +467,29 @@ def test_evidence_owned_metric_policy_and_condition_language_is_allowed(
     assert "unsupported_metric_or_inference" not in result.errors
 
 
+def test_metric_metadata_may_preserve_owned_lineage_superset() -> None:
+    packet = _packet_with_metric_evidence("OCF와 PPE CAPEX 및 FCF 근거입니다.")
+    candidate = _candidate().model_copy(
+        update={
+            "earnings_estimate_context": StructuredEvidenceClaim(
+                text="FCF는 음수였습니다.",
+                evidence_refs=("ref:thesis",),
+                semantic=ClaimSemanticMetadata(
+                    metric_refs=checkpoint_metric_refs("OCF PPE CAPEX FCF"),
+                    time_scope=ClaimTimeScope.HISTORICAL,
+                ),
+            )
+        }
+    )
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "checkpoint_metric_metadata_mismatch" not in result.errors
+    assert "unsupported_future_checkpoint_metric" not in result.errors
+
+
 def test_evidence_owned_metric_required_improvement_language_is_allowed() -> None:
     packet = _packet_with_metric_evidence(
         "FCF와 ROIC는 향후 자본효율 검증 조건입니다."

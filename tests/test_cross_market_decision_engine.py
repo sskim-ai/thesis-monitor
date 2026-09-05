@@ -13,6 +13,7 @@ from app.services.cross_market_decision_engine_service import (
     validate_decision_candidate,
 )
 from app.services.logical_condition_service import (
+    CheckpointMetric,
     ClaimLogicalCondition,
     LogicalCoverageMode,
     LogicalOperator,
@@ -33,6 +34,47 @@ def _bars(count: int) -> list[dict[str, object]]:
         }
         for index in range(count)
     ]
+
+
+def test_canonical_cash_flow_fact_types_own_checkpoint_metrics() -> None:
+    packet = build_decision_evidence_packet(
+        packet={
+            "packet_id": "2026-01-01-us-run-cash-flow",
+            "market": "us",
+            "assessment_date": "2026-01-01",
+        },
+        stock={
+            "ticker": "TEST",
+            "fact_catalog": [
+                {
+                    "fact_id": "cashflow-reported:ocf",
+                    "fact_type": "cash_flow_ocf",
+                    "fields": {"value": 10},
+                },
+                {
+                    "fact_id": "cashflow-reported:capex",
+                    "fact_type": "cash_flow_ppe_capex",
+                    "fields": {"value": 3},
+                },
+                {
+                    "fact_id": "cashflow:fcf",
+                    "fact_type": "cash_flow_fcf_ppe",
+                    "fields": {"value": 7},
+                },
+            ],
+        },
+    )
+    metrics = {
+        ref.label: ref.metric_refs
+        for ref in packet.evidence
+        if ref.label.startswith("cash_flow_")
+    }
+
+    assert metrics == {
+        "cash_flow_ocf": (CheckpointMetric.OCF,),
+        "cash_flow_ppe_capex": (CheckpointMetric.PPE_CAPEX,),
+        "cash_flow_fcf_ppe": (CheckpointMetric.FCF,),
+    }
 
 
 def _packet_and_candidate() -> tuple[object, DecisionCandidate]:
