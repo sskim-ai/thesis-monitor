@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
@@ -70,6 +71,38 @@ def _future_claim(
             direction=direction,
         ),
     )
+
+
+def test_unknown_limit_allows_neutral_observe_without_checkpoint_kind() -> None:
+    semantic = ClaimSemanticMetadata(
+        claim_type=ClaimType.UNKNOWN_LIMIT,
+        time_scope=ClaimTimeScope.CURRENT,
+        checkpoint_kind=None,
+        direction=MetricDirection.OBSERVE,
+    )
+
+    assert semantic.direction == MetricDirection.OBSERVE
+
+
+@pytest.mark.parametrize(
+    ("claim_type", "direction"),
+    (
+        (ClaimType.EVIDENCE_INTERPRETATION, MetricDirection.OBSERVE),
+        (ClaimType.UNKNOWN_LIMIT, MetricDirection.IMPROVE),
+        (ClaimType.UNKNOWN_LIMIT, MetricDirection.DETERIORATE),
+    ),
+)
+def test_nonfuture_semantic_direction_remains_bounded(
+    claim_type: ClaimType,
+    direction: MetricDirection,
+) -> None:
+    with pytest.raises(ValidationError):
+        ClaimSemanticMetadata(
+            claim_type=claim_type,
+            time_scope=ClaimTimeScope.CURRENT,
+            checkpoint_kind=None,
+            direction=direction,
+        )
 
 
 def _packet() -> DecisionEvidencePacket:

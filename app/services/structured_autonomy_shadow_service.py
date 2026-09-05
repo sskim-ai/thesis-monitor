@@ -151,8 +151,18 @@ class ClaimSemanticMetadata(FrozenModel):
             raise ValueError("future_checkpoint_time_scope_mismatch")
         if future and (self.checkpoint_kind is None or self.direction is None):
             raise ValueError("future_checkpoint_metadata_incomplete")
-        if not future and (self.checkpoint_kind is not None or self.direction is not None):
-            raise ValueError("nonfuture_claim_has_checkpoint_metadata")
+        if not future and self.checkpoint_kind is not None:
+            raise ValueError("nonfuture_claim_has_checkpoint_kind")
+        if (
+            self.claim_type == ClaimType.EVIDENCE_INTERPRETATION
+            and self.direction is not None
+        ):
+            raise ValueError("evidence_interpretation_has_direction")
+        if self.claim_type == ClaimType.UNKNOWN_LIMIT and self.direction not in {
+            None,
+            MetricDirection.OBSERVE,
+        }:
+            raise ValueError("unknown_limit_direction_invalid")
         if self.claim_type == ClaimType.UNKNOWN_LIMIT and self.time_scope not in {
             ClaimTimeScope.CURRENT,
             ClaimTimeScope.HISTORICAL,
