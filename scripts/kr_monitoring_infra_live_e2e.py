@@ -154,12 +154,16 @@ def _delivery_audit(run_date: date, *, tickers: set[str]) -> dict[str, int]:
 
 
 def _prepare_isolated_runtime(args: argparse.Namespace) -> tuple[dict[str, object], Path]:
-    if args.output_dir.exists() and any(args.output_dir.iterdir()):
-        raise FileExistsError("live_e2e_output_dir_must_be_empty")
     data_dir = Path(get_settings().data_dir).resolve()
     expected_data_dir = (args.output_dir / "data").resolve()
     if data_dir != expected_data_dir:
         raise ValueError("DATA_DIR_must_target_live_e2e_output_dir")
+    existing = tuple(args.output_dir.iterdir()) if args.output_dir.exists() else ()
+    if any(
+        path.resolve() != expected_data_dir or (path.is_dir() and any(path.iterdir()))
+        for path in existing
+    ):
+        raise FileExistsError("live_e2e_output_dir_must_be_empty")
     database_path = data_dir / "thesis_monitor.sqlite3"
     database_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(args.production_database, database_path)
