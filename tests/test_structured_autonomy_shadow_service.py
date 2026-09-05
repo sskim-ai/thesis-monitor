@@ -8,7 +8,10 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidenceRef,
     EvidenceCategory,
 )
-from app.services.directional_balance_service import DirectionalBalance
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_language_errors,
+)
 from app.services.structured_autonomy_shadow_service import (
     CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
     CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
@@ -24,22 +27,30 @@ from app.services.structured_autonomy_shadow_service import (
     HolderViewV2,
     MetricDirection,
     NewBuyerViewV2,
-    StructuredAutonomyCandidate,
-    StructuredEvidenceClaim,
     RenderedStructuredAutonomy,
+    RepetitionSemanticRole,
+    StructuredAutonomyCandidate,
     StructuredAutonomyValidation,
+    StructuredEvidenceClaim,
+    TradeLanguageSemantic,
     UnknownTreatment,
     confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
     hold_lean_flip,
     korean_price_subject_action_matches,
     mandatory_trade_directive_matches,
+    repetition_semantic_role,
     render_structured_autonomy_message,
     sanitize_detail_body,
     structured_autonomy_message_quality,
+    trade_language_semantic,
     validate_structured_autonomy_candidate,
 )
-from app.services.logical_condition_service import checkpoint_metric_refs
+from app.services.logical_condition_service import (
+    LogicalSeverity,
+    checkpoint_metric_refs,
+    source_logical_condition,
+)
 from app.services.structured_autonomy_stability_service import (
     classify_same_evidence_runs,
     stability_summary,
@@ -433,6 +444,47 @@ def test_nonmandatory_trade_comparisons_are_not_directives(text: str) -> None:
 
 
 @pytest.mark.parametrize(
+    ("text", "semantic"),
+    (
+        ("즉시 매수가 아니다.", TradeLanguageSemantic.NEGATED),
+        ("매도 명령이 아니다.", TradeLanguageSemantic.NEGATED),
+        ("자동 손절선이 아니다.", TradeLanguageSemantic.NEGATED),
+        ("향후 재검토 조건이다.", TradeLanguageSemantic.NONE),
+        ("즉시 매수한다.", TradeLanguageSemantic.ACTIONABLE),
+        ("반드시 매도한다.", TradeLanguageSemantic.ACTIONABLE),
+    ),
+)
+def test_trade_language_semantic_distinguishes_action_and_negation(
+    text: str,
+    semantic: TradeLanguageSemantic,
+) -> None:
+    assert trade_language_semantic(text) == semantic
+
+
+def test_trade_negation_does_not_swallow_later_actionable_directive() -> None:
+    text = "즉시 매수가 아닌 것 같지만 결국 지금 매수해야 한다."
+
+    assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
+    assert mandatory_trade_directive_matches(text) == ("매수해야",)
+
+
+def test_probability_tokens_do_not_match_embedded_rate_metrics() -> None:
+    assert directional_balance_language_errors(("승률 70%",)) == (
+        "directional_balance_probability_language",
+    )
+    assert directional_balance_language_errors(("성공확률이 높다",)) == (
+        "directional_balance_probability_language",
+    )
+    for text in (
+        "주가 상승률 8%",
+        "매출 성장률 20%",
+        "하락률과 증가율을 함께 확인합니다.",
+        "수익률과 마진율은 비율 지표입니다.",
+    ):
+        assert directional_balance_language_errors((text,)) == ()
+
+
+@pytest.mark.parametrize(
     "text",
     (
         "반드시 매도해야 한다.",
@@ -463,6 +515,171 @@ def _packet_with_metric_evidence(metric_text: str) -> DecisionEvidencePacket:
         for row in packet.evidence
     )
     return packet.model_copy(update={"evidence": evidence})
+
+
+def _packet_with_logical_metric_evidence(
+    rows: tuple[tuple[str, str, LogicalSeverity], ...],
+) -> DecisionEvidencePacket:
+    packet = _packet()
+    conditions = {
+        ref_id: source_logical_condition(
+            subject=packet.ticker,
+            generation_id=packet.packet_id,
+            evidence_ref=ref_id,
+            statement=statement,
+            severity=severity,
+        )
+        for ref_id, statement, severity in rows
+    }
+    return packet.model_copy(
+        update={
+            "evidence": tuple(
+                evidence.model_copy(
+                    update={
+                        "statement": conditions[evidence.ref_id].expression.statement,
+                        "metric_refs": conditions[evidence.ref_id].metric_refs,
+                        "logical_condition": conditions[evidence.ref_id],
+                    }
+                )
+                if evidence.ref_id in conditions
+                else evidence
+                for evidence in packet.evidence
+            )
+        }
+    )
+
+
+def _multi_ref_future_claim(
+    refs: tuple[str, ...],
+    text: str,
+    *,
+    kind: CheckpointKind,
+    direction: MetricDirection,
+) -> StructuredEvidenceClaim:
+    return StructuredEvidenceClaim(
+        text=text,
+        evidence_refs=refs,
+        semantic=ClaimSemanticMetadata(
+            claim_type=ClaimType.FUTURE_CHECKPOINT,
+            metric_refs=checkpoint_metric_refs(text),
+            time_scope=ClaimTimeScope.FUTURE_CHECKPOINT,
+            checkpoint_kind=kind,
+            direction=direction,
+        ),
+    )
+
+
+def test_same_severity_selected_evidence_metrics_form_bounded_union() -> None:
+    packet = _packet_with_logical_metric_evidence(
+        (
+            ("ref:thesis", "FCF 악화는 무효화 후보입니다.", LogicalSeverity.INVALIDATION_CANDIDATE),
+            ("ref:risk", "ROIC 악화는 무효화 후보입니다.", LogicalSeverity.INVALIDATION_CANDIDATE),
+        )
+    )
+    claim = _multi_ref_future_claim(
+        ("ref:thesis", "ref:risk"),
+        "FCF와 ROIC가 악화되면 논리를 무효화 후보로 재검토한다.",
+        kind=CheckpointKind.INVALIDATION,
+        direction=MetricDirection.DETERIORATE,
+    )
+    candidate = _candidate().model_copy(update={"reevaluation_down": (claim,)})
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "future_checkpoint_kind_not_owned" not in result.errors
+    assert "unsupported_future_checkpoint_metric" not in result.errors
+
+
+def test_metric_union_never_crosses_logical_severity() -> None:
+    packet = _packet_with_logical_metric_evidence(
+        (
+            ("ref:thesis", "FCF 개선은 강화 조건입니다.", LogicalSeverity.STRENGTHENING),
+            ("ref:risk", "ROIC 악화는 무효화 후보입니다.", LogicalSeverity.INVALIDATION_CANDIDATE),
+        )
+    )
+    claim = _multi_ref_future_claim(
+        ("ref:thesis", "ref:risk"),
+        "FCF와 ROIC가 개선되면 논리를 강화한다.",
+        kind=CheckpointKind.STRENGTHEN,
+        direction=MetricDirection.IMPROVE,
+    )
+    candidate = _candidate().model_copy(update={"reevaluation_up": (claim,)})
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "future_checkpoint_kind_not_owned" in result.errors
+
+
+def test_metric_owned_without_strengthening_severity_remains_fail_closed() -> None:
+    packet = _packet_with_logical_metric_evidence(
+        (
+            ("ref:thesis", "FCF 악화는 무효화 후보입니다.", LogicalSeverity.INVALIDATION_CANDIDATE),
+        )
+    )
+    claim = _multi_ref_future_claim(
+        ("ref:thesis",),
+        "FCF가 개선되면 논리를 강화한다.",
+        kind=CheckpointKind.STRENGTHEN,
+        direction=MetricDirection.IMPROVE,
+    )
+    candidate = _candidate().model_copy(update={"reevaluation_up": (claim,)})
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_future_checkpoint_metric" not in result.errors
+    assert "future_checkpoint_kind_not_owned" in result.errors
+
+
+def test_unselected_packet_evidence_cannot_contribute_metric_ownership() -> None:
+    packet = _packet_with_logical_metric_evidence(
+        (
+            ("ref:thesis", "FCF 개선은 강화 조건입니다.", LogicalSeverity.STRENGTHENING),
+            ("ref:risk", "ROIC 개선은 강화 조건입니다.", LogicalSeverity.STRENGTHENING),
+        )
+    )
+    claim = _multi_ref_future_claim(
+        ("ref:thesis",),
+        "FCF와 ROIC가 개선되면 논리를 강화한다.",
+        kind=CheckpointKind.STRENGTHEN,
+        direction=MetricDirection.IMPROVE,
+    )
+    candidate = _candidate().model_copy(update={"reevaluation_up": (claim,)})
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "unsupported_future_checkpoint_metric" in result.errors
+    assert "future_checkpoint_kind_not_owned" in result.errors
+
+
+def test_owned_strengthening_metric_union_remains_eligible() -> None:
+    packet = _packet_with_logical_metric_evidence(
+        (
+            ("ref:thesis", "FCF 개선은 강화 조건입니다.", LogicalSeverity.STRENGTHENING),
+            ("ref:risk", "ROIC 개선은 강화 조건입니다.", LogicalSeverity.STRENGTHENING),
+        )
+    )
+    claim = _multi_ref_future_claim(
+        ("ref:thesis", "ref:risk"),
+        "FCF와 ROIC가 개선되면 논리를 강화한다.",
+        kind=CheckpointKind.STRENGTHEN,
+        direction=MetricDirection.IMPROVE,
+    )
+    candidate = _candidate().model_copy(update={"reevaluation_up": (claim,)})
+
+    result = validate_structured_autonomy_candidate(
+        packet, candidate, price_map=_price_map(), industry="Software"
+    )
+
+    assert "future_checkpoint_kind_not_owned" not in result.errors
+    assert "unsupported_future_checkpoint_metric" not in result.errors
 
 
 @pytest.mark.parametrize(
@@ -721,6 +938,55 @@ def test_cross_ticker_repetition_still_rejects_new_judgment_template() -> None:
 
     assert result["status"] == "FAIL"
     assert "cross_ticker_substantive_repetition" in result["errors"]
+
+
+def test_repeated_negated_action_wrapper_is_classified_but_not_blocked() -> None:
+    repeated = (
+        "현재는 진입을 피하며 보존된 두 가격 경로는 모두 "
+        "즉시 매수가 아닌 향후 재검토 조건이다."
+    )
+    validation = StructuredAutonomyValidation(valid=True, errors=())
+    rendered = tuple(
+        RenderedStructuredAutonomy(
+            ticker=ticker,
+            decision="HOLD",
+            lean=HoldLean.NEUTRAL,
+            text=f"🧠 AI 분석 판단:\n{repeated}\n",
+            validation=validation,
+        )
+        for ticker in ("ONE", "TWO")
+    )
+
+    result = structured_autonomy_message_quality(rendered)
+
+    assert repetition_semantic_role(repeated) == (
+        RepetitionSemanticRole.ACTION_CONTEXT_WRAPPER_REPEAT
+    )
+    assert result["status"] == "PASS"
+    assert result["repeated_substantive_span_count"] == 0
+    assert result["repetition_taxonomy"]["ACTION_CONTEXT_WRAPPER_REPEAT"] == 2
+
+
+def test_repeated_required_safety_sentence_is_not_substantive_spam() -> None:
+    repeated = "해당 가격은 자동 손절선이 아닙니다."
+    validation = StructuredAutonomyValidation(valid=True, errors=())
+    rendered = tuple(
+        RenderedStructuredAutonomy(
+            ticker=ticker,
+            decision="HOLD",
+            lean=HoldLean.NEUTRAL,
+            text=f"🧠 AI 분석 판단:\n{repeated}\n",
+            validation=validation,
+        )
+        for ticker in ("ONE", "TWO")
+    )
+
+    result = structured_autonomy_message_quality(rendered)
+
+    assert repetition_semantic_role(repeated) == (
+        RepetitionSemanticRole.REQUIRED_SAFETY_REPEAT
+    )
+    assert result["status"] == "PASS"
 
 
 def test_detail_sanitizer_removes_legacy_judgment_authority() -> None:

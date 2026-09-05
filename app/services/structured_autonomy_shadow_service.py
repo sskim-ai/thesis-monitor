@@ -137,6 +137,21 @@ class MetricDirection(StrEnum):
     OBSERVE = "OBSERVE"
 
 
+class TradeLanguageSemantic(StrEnum):
+    ACTIONABLE = "ACTIONABLE"
+    NEGATED = "NEGATED"
+    DESCRIPTIVE = "DESCRIPTIVE"
+    NONE = "NONE"
+
+
+class RepetitionSemanticRole(StrEnum):
+    REQUIRED_SAFETY_REPEAT = "REQUIRED_SAFETY_REPEAT"
+    ACTION_CONTEXT_WRAPPER_REPEAT = "ACTION_CONTEXT_WRAPPER_REPEAT"
+    RENDERER_OWNED_REPEAT = "RENDERER_OWNED_REPEAT"
+    MODEL_OWNED_SUBSTANTIVE_REPEAT = "MODEL_OWNED_SUBSTANTIVE_REPEAT"
+    MATERIAL_SPAM_REPEAT = "MATERIAL_SPAM_REPEAT"
+
+
 class ClaimSemanticMetadata(FrozenModel):
     claim_type: ClaimType = ClaimType.EVIDENCE_INTERPRETATION
     metric_refs: tuple[CheckpointMetric, ...] = Field(default=(), max_length=7)
@@ -336,6 +351,16 @@ _MANDATORY_SELL = re.compile(
     r"\b(?:sell|reduce)\b",
     re.IGNORECASE,
 )
+_TRADE_NEGATION_SUFFIX = re.compile(
+    r"^\s*(?:"
+    r"(?:선|명령|권고|조건)?(?:이|가|은|는|을|를)?\s*"
+    r"(?:아니다|아닙니다|아닌|아니며|아니고|아니라|않는다|않습니다|않으며|않고)"
+    r"|[^,.!?;\n]{0,28}?(?:"
+    r"필요(?:가)?\s*없\w*|권고하지\s*않\w*|보지(?:는)?\s*않\w*"
+    r")"
+    r")"
+)
+_TRADE_COMPARISON_SUFFIX = re.compile(r"^\s*(?:보다|대신|보다는)(?:\s|$)")
 _STOP_LOSS = re.compile(r"손절|stop[- ]?loss", re.IGNORECASE)
 _TARGET_PRICE = re.compile(r"목표가|적정가|target\s*price", re.IGNORECASE)
 _UNSUPPORTED_METRIC = re.compile(
@@ -591,15 +616,46 @@ def _has_assertive_match(pattern: re.Pattern[str], text: str) -> bool:
     return False
 
 
+def _directive_is_bounded_negated(sentence: str, match: re.Match[str]) -> bool:
+    suffix = sentence[match.end() : match.end() + 36]
+    return bool(
+        _TRADE_NEGATION_SUFFIX.search(suffix)
+        or _TRADE_COMPARISON_SUFFIX.search(suffix)
+    )
+
+
+def trade_language_semantic(text: str) -> TradeLanguageSemantic:
+    has_trade_language = False
+    has_negated_directive = False
+    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
+        action_matches = tuple(_TRADE_ACTION.finditer(sentence))
+        if not action_matches:
+            continue
+        has_trade_language = True
+        directives = tuple(_MANDATORY_TRADE_DIRECTIVE.finditer(sentence))
+        if any(not _directive_is_bounded_negated(sentence, match) for match in directives):
+            return TradeLanguageSemantic.ACTIONABLE
+        if (
+            directives
+            or _NON_DIRECTIVE_TRADE_SPAN.search(sentence)
+            or any(_directive_is_bounded_negated(sentence, match) for match in action_matches)
+        ):
+            has_negated_directive = True
+    if has_negated_directive:
+        return TradeLanguageSemantic.NEGATED
+    if has_trade_language:
+        return TradeLanguageSemantic.DESCRIPTIVE
+    return TradeLanguageSemantic.NONE
+
+
 def mandatory_trade_directive_matches(text: str) -> tuple[str, ...]:
     matches: list[str] = []
     for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
         if not _TRADE_ACTION.search(sentence):
             continue
-        directive_surface = _NON_DIRECTIVE_TRADE_SPAN.sub("", sentence)
-        match = _MANDATORY_TRADE_DIRECTIVE.search(directive_surface)
-        if match:
-            matches.append(match.group(0))
+        for match in _MANDATORY_TRADE_DIRECTIVE.finditer(sentence):
+            if not _directive_is_bounded_negated(sentence, match):
+                matches.append(match.group(0))
     return tuple(matches)
 
 
@@ -773,12 +829,15 @@ def _checkpoint_metadata_errors(
         for condition in source_conditions
     ):
         errors.append("future_checkpoint_owner_mismatch")
-    if required_severity is not None and not any(
-        condition.severity == required_severity
-        and metadata_metrics <= set(condition.metric_refs)
-        for condition in source_conditions
-    ):
-        errors.append("future_checkpoint_kind_not_owned")
+    if required_severity is not None:
+        same_severity_owned_metrics = {
+            metric
+            for condition in source_conditions
+            if condition.severity == required_severity
+            for metric in condition.metric_refs
+        }
+        if not metadata_metrics <= same_severity_owned_metrics:
+            errors.append("future_checkpoint_kind_not_owned")
     return tuple(errors)
 
 
@@ -1067,6 +1126,43 @@ def _judgment_owned_text(text: str) -> str:
     return text[: min(boundaries)] if boundaries else text
 
 
+def repetition_semantic_role(text: str) -> RepetitionSemanticRole:
+    normalized = re.sub(r"\s+", " ", text.strip().removeprefix("• "))
+    if normalized.startswith(
+        (
+            "🏢 ",
+            "🧠 ",
+            "🎯 ",
+            "🆕 ",
+            "💼 ",
+            "🔄 ",
+            "종합 방향:",
+            "판단 균형:",
+            "판단 방향:",
+            "판단 확신도:",
+            "사업 논리 상태:",
+            "현재 신규진입:",
+            "재검토 가격 조건:",
+            "눌림 진입 검토:",
+            "현재 선호:",
+            "현재 관점:",
+            "상방 보유 관점 재검토:",
+            "하방 재점검:",
+        )
+    ):
+        return RepetitionSemanticRole.RENDERER_OWNED_REPEAT
+    trade_semantic = trade_language_semantic(normalized)
+    if trade_semantic == TradeLanguageSemantic.NEGATED:
+        if _STOP_LOSS.search(normalized) or "명령" in normalized:
+            return RepetitionSemanticRole.REQUIRED_SAFETY_REPEAT
+        return RepetitionSemanticRole.ACTION_CONTEXT_WRAPPER_REPEAT
+    if trade_semantic == TradeLanguageSemantic.DESCRIPTIVE and any(
+        marker in normalized for marker in ("조건", "재검토", "향후", "가격 경로")
+    ):
+        return RepetitionSemanticRole.ACTION_CONTEXT_WRAPPER_REPEAT
+    return RepetitionSemanticRole.MODEL_OWNED_SUBSTANTIVE_REPEAT
+
+
 def _display_number(value: float) -> str:
     if abs(value) >= 1000:
         return f"{value:,.2f}".rstrip("0").rstrip(".")
@@ -1252,6 +1348,7 @@ def structured_autonomy_message_quality(
     if any(len(row.text) > 4096 for row in rendered):
         errors.append("message_too_long")
     substantive: list[str] = []
+    taxonomy = Counter({role.value: 0 for role in RepetitionSemanticRole})
     per_ticker: list[dict[str, object]] = []
     for row in rendered:
         local: list[str] = []
@@ -1262,28 +1359,13 @@ def structured_autonomy_message_quality(
                 normalized = normalized.partition(" + ")[2]
             elif normalized.startswith("사업 확인 조건:"):
                 normalized = normalized.partition(":")[2].strip()
-            elif normalized.startswith(
-                (
-                    "🏢 ",
-                    "🧠 ",
-                    "🎯 ",
-                    "🆕 ",
-                    "💼 ",
-                    "🔄 ",
-                    "종합 방향:",
-                    "판단 균형:",
-                    "판단 방향:",
-                    "판단 확신도:",
-                    "사업 논리 상태:",
-                    "현재 신규진입:",
-                    "재검토 가격 조건:",
-                    "눌림 진입 검토:",
-                    "현재 선호:",
-                    "현재 관점:",
-                    "상방 보유 관점 재검토:",
-                    "하방 재점검:",
-                )
-            ):
+            role = repetition_semantic_role(normalized)
+            taxonomy[role.value] += 1
+            if role in {
+                RepetitionSemanticRole.RENDERER_OWNED_REPEAT,
+                RepetitionSemanticRole.REQUIRED_SAFETY_REPEAT,
+                RepetitionSemanticRole.ACTION_CONTEXT_WRAPPER_REPEAT,
+            }:
                 continue
             minimum_length = 12 if "확인" in normalized else 36
             if len(normalized) >= minimum_length:
@@ -1303,6 +1385,7 @@ def structured_autonomy_message_quality(
     repeated = sorted({line for line, count in Counter(substantive).items() if count > 1})
     if repeated:
         errors.append("cross_ticker_substantive_repetition")
+        taxonomy[RepetitionSemanticRole.MATERIAL_SPAM_REPEAT.value] = len(repeated)
     return {
         "contract": "structured-autonomy-message-quality-v2-shadow",
         "status": "PASS" if not errors else "FAIL",
@@ -1316,5 +1399,6 @@ def structured_autonomy_message_quality(
         "max_character_count": max((len(row.text) for row in rendered), default=0),
         "repeated_substantive_span_count": len(repeated),
         "repeated_substantive_spans": repeated,
+        "repetition_taxonomy": dict(taxonomy),
         "rows": per_ticker,
     }

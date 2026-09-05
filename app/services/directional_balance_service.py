@@ -10,8 +10,14 @@ from app.services.cross_market_decision_engine_service import Decision, FrozenMo
 
 
 CONTRACT_VERSION = "v2-directional-balance-v1"
+_KOREAN_TOKEN_PARTICLE = r"(?:은|는|이|가|을|를|도|만)?"
 _PROBABILITY_LANGUAGE = re.compile(
-    r"확률|승률|기대\s*수익률|probability|expected\s+return|odds",
+    rf"(?<![가-힣A-Za-z0-9_])(?:성공\s*)?확률{_KOREAN_TOKEN_PARTICLE}"
+    rf"(?![가-힣A-Za-z0-9_])|"
+    rf"(?<![가-힣A-Za-z0-9_])승률{_KOREAN_TOKEN_PARTICLE}"
+    rf"(?![가-힣A-Za-z0-9_])|"
+    r"기대\s*수익률|\bprobability\b|\bexpected\s+return\b|\bodds\b|"
+    r"\bwin\s+rate\b",
     re.IGNORECASE,
 )
 _FIXED_SCORE_LANGUAGE = re.compile(
