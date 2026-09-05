@@ -12,6 +12,12 @@ from app.services.cross_market_decision_engine_service import (
     render_shadow_decision,
     validate_decision_candidate,
 )
+from app.services.logical_condition_service import (
+    ClaimLogicalCondition,
+    LogicalCoverageMode,
+    LogicalOperator,
+    source_claim_expression,
+)
 from app.services.ohlcv_feature_engine_service import build_multi_timeframe_feature_packet
 
 
@@ -268,4 +274,75 @@ def test_change_conditions_must_be_asymmetric_and_evidence_owned() -> None:
     )
     assert "unknown_evidence_ref:missing:condition" in validate_decision_candidate(
         packet, unowned
+    ).errors
+
+
+def test_source_owned_or_condition_survives_packet_and_candidate_validation() -> None:
+    packet, candidate = _packet_and_candidate()
+    source = next(
+        ref
+        for ref in packet.evidence
+        if ref.label == "무효화 조건" and ref.logical_condition is not None
+    )
+    logical = source.logical_condition
+    assert logical is not None
+    assert logical.expression.type == LogicalOperator.LEAF
+
+    source_packet = build_decision_evidence_packet(
+        packet={
+            "packet_id": "2026-01-01-us-run-logical",
+            "market": "us",
+            "assessment_date": "2026-01-01",
+        },
+        stock={
+            "ticker": "GENERIC",
+            "thesis": {
+                "core_thesis": "계약 전환이 장기 논리의 중심이다.",
+                "invalidation_signals": ["계약 취소 또는 반복적인 준공 실패"],
+            },
+        },
+    )
+    source_ref = next(
+        ref
+        for ref in source_packet.evidence
+        if ref.label == "무효화 조건" and ref.logical_condition is not None
+    )
+    source_logical = source_ref.logical_condition
+    assert source_logical is not None
+    assert source_logical.expression.type == LogicalOperator.ANY_OF
+
+    valid_claim = EvidenceClaim(
+        text="원천 무효화 조건을 그대로 재점검한다.",
+        evidence_refs=(source_ref.ref_id,),
+        logical_condition=ClaimLogicalCondition(
+            source_condition_ref=source_logical.expression.condition_id,
+            coverage_mode=LogicalCoverageMode.FULL,
+            severity=source_logical.severity,
+            expression=source_claim_expression(source_logical.expression),
+        ),
+    )
+    generic_candidate = candidate.model_copy(
+        update={"ticker": "GENERIC", "downgrade_condition": valid_claim}
+    )
+    errors = validate_decision_candidate(source_packet, generic_candidate).errors
+    assert not any(error.startswith("logical_condition_") for error in errors)
+
+    narrowed = valid_claim.logical_condition
+    assert narrowed is not None
+    narrowed = narrowed.model_copy(
+        update={
+            "expression": narrowed.expression.model_copy(
+                update={"type": LogicalOperator.ALL_OF}
+            )
+        }
+    )
+    broken = generic_candidate.model_copy(
+        update={
+            "downgrade_condition": valid_claim.model_copy(
+                update={"logical_condition": narrowed}
+            )
+        }
+    )
+    assert "logical_condition_full_semantic_mismatch" in validate_decision_candidate(
+        source_packet, broken
     ).errors

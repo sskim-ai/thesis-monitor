@@ -21,6 +21,13 @@ from app.services.fact_consumer_scope_service import (
     FactConsumer,
     project_fact_catalog_for_consumer,
 )
+from app.services.logical_condition_service import (
+    ClaimLogicalCondition,
+    LogicalSeverity,
+    SourceLogicalCondition,
+    logical_condition_errors,
+    source_logical_condition,
+)
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -100,6 +107,7 @@ class DecisionEvidenceRef(FrozenModel):
     unit: str | None = None
     source_ref: str
     numeric_prose_eligible: bool = False
+    logical_condition: SourceLogicalCondition | None = None
 
 
 class DecisionEvidencePacket(FrozenModel):
@@ -124,6 +132,7 @@ class DecisionEvidencePacket(FrozenModel):
 class EvidenceClaim(FrozenModel):
     text: str = Field(min_length=1, max_length=420)
     evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
+    logical_condition: ClaimLogicalCondition | None = None
 
 
 class PolarityEvidenceClaim(EvidenceClaim):
@@ -254,21 +263,35 @@ def _add_text_refs(
     values: object,
     source_ref: str,
     as_of: str | None,
+    generation_id: str | None = None,
+    logical_severity: LogicalSeverity | None = None,
 ) -> None:
     rows = values if isinstance(values, list) else [values]
     for index, value in enumerate(rows):
         if value is None or not str(value).strip():
             continue
+        ref_id = _stable_ref(
+            "decision-evidence", ticker, category, label, index, _compact(value)
+        )
         refs.append(
             DecisionEvidenceRef(
-                ref_id=_stable_ref(
-                    "decision-evidence", ticker, category, label, index, _compact(value)
-                ),
+                ref_id=ref_id,
                 category=category,
                 label=label,
                 statement=_compact(value),
                 as_of=as_of,
                 source_ref=source_ref,
+                logical_condition=(
+                    source_logical_condition(
+                        subject=ticker,
+                        generation_id=generation_id,
+                        evidence_ref=ref_id,
+                        statement=_compact(value),
+                        severity=logical_severity,
+                    )
+                    if generation_id and logical_severity
+                    else None
+                ),
             )
         )
 
@@ -313,6 +336,8 @@ def build_decision_evidence_packet(
         values=thesis.get("strengthen_signals") or [],
         source_ref="stock.thesis.strengthen_signals",
         as_of=assessment_date,
+        generation_id=packet_id,
+        logical_severity=LogicalSeverity.STRENGTHENING,
     )
     _add_text_refs(
         refs,
@@ -322,6 +347,8 @@ def build_decision_evidence_packet(
         values=thesis.get("weaken_signals") or [],
         source_ref="stock.thesis.weaken_signals",
         as_of=assessment_date,
+        generation_id=packet_id,
+        logical_severity=LogicalSeverity.WEAKENING,
     )
     _add_text_refs(
         refs,
@@ -331,6 +358,8 @@ def build_decision_evidence_packet(
         values=thesis.get("invalidation_signals") or [],
         source_ref="stock.thesis.invalidation_signals",
         as_of=assessment_date,
+        generation_id=packet_id,
+        logical_severity=LogicalSeverity.INVALIDATION_CANDIDATE,
     )
     expectations = (
         thesis.get("market_expectations")
@@ -521,6 +550,11 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
                 "value": str(ref.value) if ref.value is not None else None,
                 "unit": ref.unit,
                 "numeric_prose_eligible": ref.numeric_prose_eligible,
+                "logical_condition": (
+                    ref.logical_condition.model_dump(mode="json")
+                    if ref.logical_condition is not None
+                    else None
+                ),
             }
             for ref in packet.evidence
         ],
@@ -597,6 +631,24 @@ def validate_decision_candidate(
         for ref_id in claim.evidence_refs:
             if ref_id not in refs:
                 errors.append(f"unknown_evidence_ref:{ref_id}")
+    for condition_claim in (candidate.upgrade_condition, candidate.downgrade_condition):
+        source_conditions = tuple(
+            refs[ref_id].logical_condition
+            for ref_id in condition_claim.evidence_refs
+            if ref_id in refs and refs[ref_id].logical_condition is not None
+        )
+        composite_sources = tuple(
+            item for item in source_conditions if item is not None and item.expression.children
+        )
+        if composite_sources or condition_claim.logical_condition is not None:
+            errors.extend(
+                logical_condition_errors(
+                    subject=packet.ticker,
+                    generation_id=packet.packet_id,
+                    source_conditions=(item for item in source_conditions if item is not None),
+                    claim=condition_claim.logical_condition,
+                )
+            )
     selected_categories = set(candidate.selected_evidence_plan)
     used_categories = {
         refs[ref_id].category

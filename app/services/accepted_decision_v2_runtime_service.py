@@ -20,6 +20,10 @@ from app.services.accepted_decision_v2_service import (
     resolve_accepted_v2_decision,
     validate_accepted_v2_decision,
 )
+from app.services.production_validation_policy_service import (
+    RepetitionClass,
+    classify_repeated_span,
+)
 from app.services.cross_market_decision_engine_service import (
     Decision,
     DecisionEvidencePacket,
@@ -325,6 +329,8 @@ The prior accepted decision and balance are continuity evidence, not a target di
 
 Change conditions are reassessment conditions, not automatic trades. Never describe a self transition: BUY must not be raised to BUY, HOLD must not be lowered to HOLD, and SELL must not be lowered to SELL. Refer to confidence/timing/risk when staying inside the same top-level decision.
 
+Canonical evidence may include logical_condition metadata. When an upgrade_condition or downgrade_condition cites a composite logical condition, emit EvidenceClaim.logical_condition. Copy source_condition_ref, severity, operator, and condition IDs from the source metadata. Use coverage_mode=FULL only when the full source tree is represented without changing ANY_OF to ALL_OF or ALL_OF to ANY_OF and without deleting a branch. A one-branch illustration must use NON_EXHAUSTIVE_EXAMPLE. Do not infer or reconstruct condition IDs.
+
 Do not state or infer ROIC, CCC, DSO, DPO, runway months, FCF yield, per-share FCF, EV/FCF, or P/FCF. Never abbreviate, truncate, or reconstruct an evidence ref ID; copy every cited ref exactly from the supplied context.
 
 Return strict JSON only. Copy every PRODUCTION_V2_IDENTITY field exactly and include no candidate or adjudication outside the supplied ticker set.
@@ -433,15 +439,35 @@ def _production_message_quality(
                 and not normalized.startswith("판단 확신도:")
             ):
                 substantive.append(normalized)
-    repeated = [text for text, count in Counter(substantive).items() if count >= 2]
-    if repeated:
-        errors.append("cross_ticker_substantive_repetition")
+    repeated = [(text, count) for text, count in Counter(substantive).items() if count >= 2]
+    repetition_assessments = [
+        {
+            "span": text,
+            "stock_count": count,
+            "classification": classify_repeated_span(
+                text,
+                stock_count=count,
+                evidence_signature_count=count,
+            ),
+        }
+        for text, count in repeated
+    ]
+    if any(
+        item["classification"] == RepetitionClass.MATERIAL_SPAM_REPEAT
+        for item in repetition_assessments
+    ):
+        errors.append("cross_ticker_material_spam_repetition")
     return {
         "contract": "v2-accepted-production-message-quality-v1",
         "status": "PASS" if not errors else "FAIL",
         "errors": list(dict.fromkeys(errors)),
         "message_count": len(rendered),
         "repeated_substantive_span_count": len(repeated),
+        "repetition_assessments": repetition_assessments,
+        "soft_quality_warning_count": sum(
+            item["classification"] != RepetitionClass.MATERIAL_SPAM_REPEAT
+            for item in repetition_assessments
+        ),
         "numeric_claim_count": 0,
         "manual_numeric_count": 0,
         "unresolved_numeric_count": 0,

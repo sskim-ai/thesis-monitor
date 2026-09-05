@@ -39,6 +39,7 @@ _KOREAN_PARTICLE = r"(?:은|는|이|가|을|를|와|과)?"
 _ZONE_ROLE_PATH = re.compile(r"(?:^|\.)(?:zone|support_zone|box)_(low|high)$")
 _RAW_POSTPOSITION = re.compile(r"^(은|는|이|가|을|를|와|과)")
 _COPULA_SUFFIX = re.compile(r"^(?:입니다|이었습니다|였습니다)")
+_SAFE_CONNECTIVE_COPULA = re.compile(r"^(?:이며|이고|이지만)")
 _POSTPOSITION_FAMILIES = {
     "은/는": "은",
     "는/은": "은",
@@ -512,7 +513,7 @@ def _bind_review(
             continue
         marker_start = text.index(placeholder)
         raw_suffix = text[marker_start + len(placeholder) :]
-        if _RAW_POSTPOSITION.match(raw_suffix):
+        if _RAW_POSTPOSITION.match(raw_suffix) and not _SAFE_CONNECTIVE_COPULA.match(raw_suffix):
             errors.append(
                 f"{prefix}:numeric_fact_ref_raw_postposition:"
                 f"{ref_id}:{text_ref}"

@@ -30,6 +30,11 @@ from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
 )
 from app.services.scenario_asymmetry_service import Asymmetry
+from app.services.logical_condition_service import logical_condition_errors
+from app.services.production_validation_policy_service import (
+    RepetitionClass,
+    classify_repeated_span,
+)
 
 
 CONTRACT_VERSION = "v2-accepted-decision-ownership-v1"
@@ -599,6 +604,30 @@ def validate_accepted_v2_decision(
         for ref_id in claim.evidence_refs:
             if ref_id not in allowed_refs:
                 errors.append(f"unknown_accepted_evidence_ref:{ref_id}")
+    refs = {row.ref_id: row for row in packet.evidence}
+    for condition_claim in (
+        plan.accepted_upgrade_condition,
+        plan.accepted_downgrade_condition,
+    ):
+        if condition_claim is None:
+            continue
+        source_conditions = tuple(
+            refs[ref_id].logical_condition
+            for ref_id in condition_claim.evidence_refs
+            if ref_id in refs and refs[ref_id].logical_condition is not None
+        )
+        composite_sources = tuple(
+            item for item in source_conditions if item is not None and item.expression.children
+        )
+        if composite_sources or condition_claim.logical_condition is not None:
+            errors.extend(
+                logical_condition_errors(
+                    subject=packet.ticker,
+                    generation_id=packet.packet_id,
+                    source_conditions=(item for item in source_conditions if item is not None),
+                    claim=condition_claim.logical_condition,
+                )
+            )
     if plan.accepted_decision is not None:
         errors.extend(
             decision_change_condition_errors(
@@ -821,9 +850,24 @@ def accepted_message_quality(
             normalized = re.sub(r"\s+", " ", line.strip().removeprefix("• "))
             if len(normalized) >= 36 and not normalized.startswith("Shadow 연구 분류이며"):
                 substantive.append(normalized)
-    repeated = [text for text, count in Counter(substantive).items() if count >= 2]
-    if repeated:
-        errors.append("cross_ticker_substantive_repetition")
+    repeated = [(text, count) for text, count in Counter(substantive).items() if count >= 2]
+    repetition_assessments = [
+        {
+            "span": text,
+            "stock_count": count,
+            "classification": classify_repeated_span(
+                text,
+                stock_count=count,
+                evidence_signature_count=count,
+            ),
+        }
+        for text, count in repeated
+    ]
+    if any(
+        item["classification"] == RepetitionClass.MATERIAL_SPAM_REPEAT
+        for item in repetition_assessments
+    ):
+        errors.append("cross_ticker_material_spam_repetition")
     return {
         "contract": "v2-accepted-decision-message-quality-v1",
         "status": "PASS" if not errors else "FAIL",
@@ -835,4 +879,5 @@ def accepted_message_quality(
         "manual_numeric_count": 0,
         "unresolved_numeric_count": 0,
         "repeated_substantive_span_count": len(repeated),
+        "repetition_assessments": repetition_assessments,
     }

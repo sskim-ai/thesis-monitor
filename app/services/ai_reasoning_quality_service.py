@@ -13,6 +13,10 @@ from app.services.numeric_provenance_service import (
     numeric_conjunction_error,
     redundant_numeric_label_before,
 )
+from app.services.production_validation_policy_service import (
+    CONTRACT_VERSION as PRODUCTION_VALIDATION_POLICY,
+    evaluate_production_quality,
+)
 
 
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+|\n+")
@@ -866,9 +870,24 @@ def relational_reasoning_quality_report(
         if isinstance(item, dict)
     }
     sentence_tickers: dict[str, set[str]] = defaultdict(set)
+    sentence_evidence_signatures: dict[str, set[tuple[tuple[str, str, str], ...]]] = defaultdict(
+        set
+    )
     for review in output.stock_reviews:
-        for sentence in set(_review_sentences(review)):
+        for text_ref, sentence in set(_review_sentence_rows(review)):
             sentence_tickers[sentence].add(review.ticker)
+            sentence_evidence_signatures[sentence].add(
+                tuple(
+                    sorted(
+                        (
+                            claim.fact_id,
+                            claim.field_path,
+                            claim.semantic_type,
+                        )
+                        for claim in _claims_for_sentence(review, text_ref, sentence)
+                    )
+                )
+            )
     template_tickers: dict[tuple[object, ...], set[str]] = defaultdict(set)
     template_metadata: dict[tuple[object, ...], dict[str, object]] = {}
     template_exception_reasons: dict[tuple[object, ...], dict[str, str]] = defaultdict(dict)
@@ -918,6 +937,7 @@ def relational_reasoning_quality_report(
             "sentence": sentence,
             "stock_count": len(tickers),
             "tickers": sorted(tickers),
+            "evidence_signature_count": len(sentence_evidence_signatures[sentence]),
             "classification": (
                 "required_common_safety"
                 if sentence in common_safety
@@ -1358,16 +1378,22 @@ def runtime_message_quality_receipt(
         rendered_messages=[item["text"] for item in messages],
         expected_stock_tickers=expected_stock_tickers,
     )
+    production_policy = evaluate_production_quality(
+        quality,
+        binding_errors=binding_error_values,
+        validation_errors=validation_error_values,
+    )
     status = (
         "passed"
-        if quality.get("hard_checks_passed") is True
+        if production_policy["delivery_eligible"] is True
         and len(messages) == len(output.stock_reviews) + 1
-        and not binding_error_values
-        and not validation_error_values
         else "failed"
     )
-    errors = [*binding_error_values, *validation_error_values]
-    if quality.get("hard_checks_passed") is not True:
+    errors = [
+        *production_policy["hard_deterministic"],
+        *production_policy["semantic_hard"],
+    ]
+    if production_policy["delivery_eligible"] is not True:
         errors.append("runtime_message_quality_gate_failed")
     return {
         "contract": "runtime-message-quality-receipt-v2",
@@ -1384,6 +1410,7 @@ def runtime_message_quality_receipt(
             sorted(set(expected_stock_tickers)) if expected_stock_tickers is not None else None
         ),
         "check_results": quality,
+        "production_policy": production_policy,
         "errors": errors,
         "status": status,
         "checked_at": (checked_at or datetime.now(UTC)).isoformat(),
@@ -1407,6 +1434,7 @@ def verify_runtime_message_quality_receipt(
         for item in rendered_messages
     ]
     quality = receipt.get("check_results")
+    production_policy = receipt.get("production_policy")
     errors = receipt.get("errors")
     checked_at = receipt.get("checked_at")
     checked_at_valid = False
@@ -1434,8 +1462,20 @@ def verify_runtime_message_quality_receipt(
         == (sorted(set(expected_stock_tickers)) if expected_stock_tickers is not None else None)
         and isinstance(quality, dict)
         and quality.get("contract") == "relational-reasoning-quality-v2"
-        and quality.get("hard_checks_passed") is True
-        and quality.get("deterministic_quality_gate_passed") is True
+        and (
+            (
+                isinstance(production_policy, dict)
+                and production_policy.get("contract") == PRODUCTION_VALIDATION_POLICY
+                and production_policy.get("delivery_eligible") is True
+                and int(production_policy.get("hard_deterministic_count") or 0) == 0
+                and int(production_policy.get("semantic_hard_count") or 0) == 0
+            )
+            or (
+                production_policy is None
+                and quality.get("hard_checks_passed") is True
+                and quality.get("deterministic_quality_gate_passed") is True
+            )
+        )
         and isinstance(errors, list)
         and not errors
         and checked_at_valid

@@ -38,6 +38,7 @@ from app.services.scenario_asymmetry_service import (
     PreconfirmationErrorCostAssessment,
     ScenarioSet,
 )
+from app.services.logical_condition_service import logical_condition_errors
 
 
 CONTRACT_VERSION = "preconfirmation-asymmetry-decision-engine-v2"
@@ -364,6 +365,24 @@ def validate_preconfirmation_candidate(
 
     if candidate.upgrade_condition.text.strip() == candidate.downgrade_condition.text.strip():
         errors.append("symmetric_decision_change_conditions")
+    for condition_claim in (candidate.upgrade_condition, candidate.downgrade_condition):
+        source_conditions = tuple(
+            refs[ref_id].logical_condition
+            for ref_id in condition_claim.evidence_refs
+            if ref_id in refs and refs[ref_id].logical_condition is not None
+        )
+        composite_sources = tuple(
+            item for item in source_conditions if item is not None and item.expression.children
+        )
+        if composite_sources or condition_claim.logical_condition is not None:
+            errors.extend(
+                logical_condition_errors(
+                    subject=packet.ticker,
+                    generation_id=packet.packet_id,
+                    source_conditions=(item for item in source_conditions if item is not None),
+                    claim=condition_claim.logical_condition,
+                )
+            )
 
     return PreconfirmationValidationResult(
         valid=not errors,

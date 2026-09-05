@@ -73,6 +73,9 @@ from app.services.working_capital_user_visible_preintegration_service import (
     resolve_selected_inventory_unknowns,
     safe_select_user_visible_inventory,
 )
+from app.services.numeric_reference_language_normalizer_service import (
+    normalize_numeric_reference_language,
+)
 from app.services.company_profile_service import (
     company_profile_coverage,
     read_profile_provenance,
@@ -5993,7 +5996,8 @@ def validate_ai_review_output(
     _refresh_market_numeric_registry(packet)
     directional_output, _ = normalize_directional_numeric_refs(packet, output_value)
     normalized_output, _ = apply_candidate_ownership_contracts(packet, directional_output)
-    binding = bind_numeric_fact_references(packet, normalized_output)
+    language_normalized, _ = normalize_numeric_reference_language(packet, normalized_output)
+    binding = bind_numeric_fact_references(packet, language_normalized)
     typed_errors = list(
         _dict(binding.report.get("typed_valuation_interpretations")).get("errors", [])
     )
@@ -6672,8 +6676,12 @@ def finalize_ai_review_output(
     normalized_candidate, ownership_report = apply_candidate_ownership_contracts(
         packet, directional_candidate
     )
-    binding = bind_numeric_fact_references(packet, normalized_candidate)
+    language_normalized, language_normalization_report = normalize_numeric_reference_language(
+        packet, normalized_candidate
+    )
+    binding = bind_numeric_fact_references(packet, language_normalized)
     binding_report = dict(binding.report)
+    binding_report["language_normalization"] = language_normalization_report
     binding_report["candidate_ownership"] = ownership_report
     binding_report["working_capital_relation_semantics"] = relation_report
     typed_errors = list(
