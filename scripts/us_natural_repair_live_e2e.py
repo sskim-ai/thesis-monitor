@@ -176,6 +176,7 @@ def _prepare_isolated_runtime(args: argparse.Namespace) -> tuple[dict[str, objec
     database_path = data_dir / "thesis_monitor.sqlite3"
     database_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(args.production_database, database_path)
+    engine.dispose()
 
     packet = _read(args.packet)
     packet_id = str(packet.get("packet_id") or "")
