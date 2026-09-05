@@ -5,8 +5,10 @@ import hashlib
 import json
 import re
 import subprocess
+import tempfile
+from contextlib import contextmanager
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -309,7 +311,7 @@ def _batch_prompt(contexts: Sequence[Mapping[str, object]], tickers: Sequence[st
         "tickers": list(tickers),
     }
     return (
-        """You are producing a blind, non-production Structured Autonomy V2 shadow judgment. Use only the supplied frozen alias-owned evidence and verified price choices. Do not browse, fetch, use later facts, infer a prior decision, or use another ticker's evidence. No prior or cross-run candidate is present.
+        """You are producing a blind, non-production Structured Autonomy V2 shadow judgment. Use only the supplied frozen alias-owned evidence and verified price choices. Do not browse, fetch, inspect the filesystem, use later facts, infer a prior decision, or use another ticker's evidence. All permitted evidence is supplied in this prompt. No prior or cross-run candidate is present.
 
 Reason in this order: facts; business and earnings; market expectations; valuation; price and timing; risks; BUY drivers; SELL drivers; qualitative synthesis; coarse directional balance; deterministic overall direction; new-buyer view; holder view; price scenarios. You decide which evidence matters and how sector context changes importance. Never use fixed weights, subscores, a universal scorecard, probability, odds, or expected-return language.
 
@@ -722,6 +724,16 @@ def _run_document(
     }
 
 
+@contextmanager
+def isolated_model_working_directory(*, run: str, batch: int) -> Iterator[Path]:
+    prefix = f"thesis-monitor-{run}-batch-{batch:02d}-"
+    with tempfile.TemporaryDirectory(prefix=prefix) as directory:
+        path = Path(directory)
+        if any(path.iterdir()):
+            raise ValueError(f"model_working_directory_not_empty:{run}:{batch}")
+        yield path
+
+
 def execute_run(
     *,
     run: str,
@@ -763,16 +775,17 @@ def execute_run(
             raise ValueError(f"existing_output_requires_explicit_resume:{output}")
         if not output.exists():
             print(f"RUN_{run.upper()}_BATCH_START {number} {','.join(batch)}", flush=True)
-            _invoke_signed_in_codex(
-                codex_bin=codex_bin,
-                prompt=prompt,
-                output=output,
-                log=log,
-                schema=schema,
-                cwd=run_dir,
-                timeout=args.timeout,
-                state_namespace=f"USKR22_VALIDATOR_OWNERSHIP_{run.upper()}_20260904",
-            )
+            with isolated_model_working_directory(run=run, batch=number) as batch_cwd:
+                _invoke_signed_in_codex(
+                    codex_bin=codex_bin,
+                    prompt=prompt,
+                    output=output,
+                    log=log,
+                    schema=schema,
+                    cwd=batch_cwd,
+                    timeout=args.timeout,
+                    state_namespace=f"USKR22_VALIDATOR_OWNERSHIP_{run.upper()}_20260904",
+                )
         parsed = read_json(output)
         if parsed.get("contract") != OUTPUT_CONTRACT:
             raise ValueError(f"run_contract_identity_mismatch:{run}:{number}")
@@ -802,6 +815,7 @@ def execute_run(
                 "schema_sha256": sha256(schema),
                 "output_sha256": sha256(output),
                 "state_namespace": f"USKR22_VALIDATOR_OWNERSHIP_{run.upper()}_20260904",
+                "working_directory_isolation": "EMPTY_EPHEMERAL_PER_INVOCATION",
             }
         )
         print(f"RUN_{run.upper()}_BATCH_COMPLETE {number} {','.join(batch)}", flush=True)
