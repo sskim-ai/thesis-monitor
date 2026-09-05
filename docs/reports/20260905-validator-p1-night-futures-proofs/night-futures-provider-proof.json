@@ -1,0 +1,9 @@
+{
+  "contract": "night-futures-provider-discovery-proof-v1",
+  "current_night_futures_provider": "KRX official fut_bydd_trd archive/history path",
+  "current_provider_support": "PARTIAL",
+  "live_provider_calls": 0,
+  "new_external_dependency_required": "NO",
+  "secondary_existing_capability": "Kiwoom OpenAPI+ capability probe PARTIAL and not production enabled",
+  "webpage_scraper_added": 0
+}

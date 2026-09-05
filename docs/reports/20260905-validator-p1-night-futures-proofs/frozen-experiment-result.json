@@ -1,0 +1,98 @@
+{
+  "contract": "validator-p1-frozen-experiment-result-v1",
+  "completed_at_kst": "2026-09-06",
+  "generation_id": "20260905-uskr22-validator-night-20260905T161259Z-1a32918a3962",
+  "state": "STOPPED_B_GATE",
+  "source": {
+    "source_lock_sha256": "f3b7d4c08c32312c2207acae2cb9353926940e41a2bcf254a7214a041d246be0",
+    "us_packet_sha256": "db9a3173a938dacf633f75e482b0ec19bfbb338cf150265cb6ee200eb5fc7b61",
+    "kr_packet_sha256": "794925a9a73752925a6f36bc8c39cd23d5e41f0f9da9eccbf9d2a659acf9f528"
+  },
+  "runs": {
+    "first": {
+      "status": "PASS",
+      "validated": 22,
+      "run_json_sha256": "85532989ab5815b2957cf8a08ecd331433b560ce7c98a22457d13b14723c3d8c",
+      "output_sha256": [
+        "891c026f8096e18263bf18bf0141f47b7113316667d995326a275b5b27930d4d",
+        "42b9aafe7772ccc375ba788ca42087aced153f8d5bc037503c8e8faa336be02d",
+        "55b5620f17be1135a678b700ac827e7b1feb2a0b933849ba562da1ba99f4400f",
+        "d5662f2ae05eadfebb9639a51a7d15eee9e97143cd59761d665a1acecbf8abfd",
+        "2441fa18b14bb826724b69f1c5f5d0b046a486149e8b3149de512eef2461da52",
+        "db5b5ed45efea2c2ac8b3c5e924e4c7a67aefa1a1ae9cca9dc4fbee26e718084"
+      ],
+      "metric_ownership_failures": 0,
+      "future_checkpoint_false_rejects": 0,
+      "leaf_schema_failures": 0,
+      "hard_safety_regressions": 0
+    },
+    "a": {
+      "status": "PASS",
+      "validated": 22,
+      "run_json_sha256": "a30209726f1bcb9152bcdbd237508123cc8b9a1b7f0fdc7f021258793812f9ba",
+      "output_sha256": [
+        "7acf823892f18f26da636f959ad4c3d74bb714b544fb19983df2b747865972a2",
+        "954e7daeff6d76569769e6743980d34de880e00a85f8471732dcbefc9a1a7823",
+        "55fca176fc07db22017077af67600cf1e382983d5b8acab890485fa4b9de104c",
+        "a690f5ce28d6b56c1da71068704252461cb9482962b7693d15a0faa7a48bb31c",
+        "3a65630f8ea11a72f82841c0f4a0fda26039dce97ccd50842e2b0653df1ee4e9",
+        "b5a502751c7bcad29a76023887c34cb77dc559d7f0d1315c8efc28b9293e5445"
+      ],
+      "metric_ownership_failures": 0,
+      "future_checkpoint_false_rejects": 0,
+      "leaf_schema_failures": 0,
+      "hard_safety_regressions": 0
+    },
+    "b": {
+      "status": "FAIL",
+      "validated": 17,
+      "run_json_sha256": "7f18ce5cda8293d8dba5ca17e66b454d132f4ed1239c8239c923e51e2fce52a1",
+      "output_sha256": [
+        "e00e557b4b0d812ab51a4810f3b30016296bb6160af79725dfa29cac967a7c37",
+        "6016cb684925c0eb5fb575ccada40444609902ee8c0cb0e22a93aeb74f810bbf",
+        "b5b0a7f7f85de36de234586e39dd9485f4bd7676379cfc6a16bfa60a8f86aeb4",
+        "95aea384f8c4fa0409abfe40309f8f11e1b64c3b22c56d542c68378195fa02a2",
+        "2d2dea694a85ffec3f398907a491bf521ac0f9b1cfe0c7c3d8e14e017b401855",
+        "a9a0af558672945cef8d49c1dd309e75d74cd20e6c1329df232e40b065a05cb9"
+      ],
+      "metric_ownership_failures": 2,
+      "actual_unowned_metric_failures": 0,
+      "future_checkpoint_false_rejects": 1,
+      "other_false_rejects": 3,
+      "leaf_schema_failures": 0,
+      "hard_safety_regressions": 0,
+      "failed_tickers": {
+        "GOOGL": ["future_checkpoint_kind_not_owned", "unsupported_metric_or_inference"],
+        "IBM": ["future_checkpoint_kind_not_owned", "unsupported_metric_or_inference"],
+        "MU": ["directional_balance_probability_language"],
+        "SNDK": ["mandatory_trade_language"],
+        "TSLA": ["mandatory_trade_language"]
+      }
+    },
+    "c": {
+      "status": "NOT_RUN",
+      "validated": 0,
+      "run_json_sha256": null,
+      "output_sha256": [],
+      "metric_ownership_failures": null,
+      "future_checkpoint_false_rejects": null,
+      "leaf_schema_failures": 0,
+      "hard_safety_regressions": 0
+    }
+  },
+  "prompt_schema_contract": {
+    "same_source_packet": true,
+    "same_model": true,
+    "same_effort": true,
+    "same_schema": true,
+    "same_validator": true,
+    "same_renderer": true,
+    "post_start_code_or_config_change": 0
+  },
+  "night_futures": {
+    "injected_into_decision_packet": false,
+    "mode": "SEPARATE_FROZEN_SHADOW_MARKET_DATA_PROOF",
+    "fixture_sha256": "742cff0c55ea28401fbde0d294951e4d14ba0f830f1e8f6643a93bdef08f71cb",
+    "refresh_between_runs": 0
+  }
+}

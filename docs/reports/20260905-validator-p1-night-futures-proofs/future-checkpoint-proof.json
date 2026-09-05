@@ -1,0 +1,48 @@
+{
+  "contract": "future-checkpoint-structured-ownership-proof-v1",
+  "fields": [
+    "claim_type",
+    "metric_refs",
+    "time_scope",
+    "checkpoint_kind",
+    "direction",
+    "evidence_refs"
+  ],
+  "global_semantic_threshold_weakened": 0,
+  "hard_safety_true_positive_regression": 0,
+  "frozen_generation_id": "20260905-uskr22-validator-night-20260905T161259Z-1a32918a3962",
+  "run_results": {
+    "first": "22/22",
+    "a": "22/22",
+    "b": "17/22",
+    "c": "NOT_RUN"
+  },
+  "metric_ownership_failures": {
+    "first": 0,
+    "a": 0,
+    "b": 2,
+    "c": null
+  },
+  "actual_unowned_metric_failures": {
+    "first": 0,
+    "a": 0,
+    "b": 0,
+    "c": null
+  },
+  "audited_future_checkpoint_false_rejects": {
+    "first": 0,
+    "a": 0,
+    "b": 1,
+    "c": null
+  },
+  "directional_semantics_regression": {
+    "EVIDENCE_INTERPRETATION": "PASS",
+    "UNKNOWN_LIMIT": "PASS",
+    "FUTURE_CHECKPOINT": "PASS"
+  },
+  "post_result_hotfix": 0,
+  "selective_ticker_rerun": 0,
+  "korean_future_regex_added": 0,
+  "primary_owner": "STRUCTURED_METADATA",
+  "ticker_exception_added": 0
+}
