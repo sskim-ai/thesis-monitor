@@ -174,6 +174,12 @@ def _prepare_isolated_runtime(args: argparse.Namespace) -> tuple[dict[str, objec
     ):
         raise FileExistsError("live_e2e_output_dir_must_be_empty")
     database_path = data_dir / "thesis_monitor.sqlite3"
+    configured_database = engine.url.database
+    if (
+        not configured_database
+        or Path(str(configured_database)).resolve() != database_path.resolve()
+    ):
+        raise ValueError("DATABASE_URL_must_target_live_e2e_output_dir")
     database_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(args.production_database, database_path)
     engine.dispose()
@@ -185,6 +191,60 @@ def _prepare_isolated_runtime(args: argparse.Namespace) -> tuple[dict[str, objec
     packet_path = data_dir / "ai_review" / "inbox" / f"{packet_id}.json"
     _write(packet_path, packet)
     return packet, packet_path
+
+
+def _resume_isolated_runtime(
+    args: argparse.Namespace,
+) -> tuple[dict[str, object], Path, dict[str, object], dict[str, object]]:
+    data_dir = Path(get_settings().data_dir).resolve()
+    expected_data_dir = (args.output_dir / "data").resolve()
+    if data_dir != expected_data_dir:
+        raise ValueError("DATA_DIR_must_target_live_e2e_output_dir")
+    database_path = data_dir / "thesis_monitor.sqlite3"
+    if not database_path.is_file():
+        raise FileNotFoundError("live_e2e_resume_database_missing")
+    configured_database = engine.url.database
+    if (
+        not configured_database
+        or Path(str(configured_database)).resolve() != database_path.resolve()
+    ):
+        raise ValueError("DATABASE_URL_must_target_live_e2e_output_dir")
+    engine.dispose()
+
+    source_packet = _read(args.packet)
+    packet_id = str(source_packet.get("packet_id") or "")
+    packet_path = data_dir / "ai_review" / "inbox" / f"{packet_id}.json"
+    if not packet_path.is_file() or _sha256(packet_path) != _sha256(args.packet):
+        raise ValueError("live_e2e_resume_packet_mismatch")
+    packet = _read(packet_path)
+    claim_path = data_dir / "ai_review" / "claims" / f"{packet_id}.json"
+    claim = _read(claim_path)
+    claim_id = str(claim.get("claim_id") or "")
+    temp_output_path = Path(str(claim.get("temp_output_path") or ""))
+    if (
+        not claim_id
+        or str(claim.get("fencing_token") or "") != claim_id
+        or temp_output_path.parent.resolve()
+        != (data_dir / "ai_review" / "outbox").resolve()
+    ):
+        raise ValueError("live_e2e_resume_claim_invalid")
+    receipt_path = (
+        data_dir
+        / "ai_review"
+        / "claims"
+        / f"{temp_output_path.name.removesuffix('.json.tmp')}.decision-v2-receipt.json"
+    )
+    model_receipt = _read(receipt_path)
+    if (
+        model_receipt.get("status") != "PASS"
+        or model_receipt.get("ready_count") != 14
+        or model_receipt.get("claim_id") != claim_id
+        or model_receipt.get("fencing_token") != claim_id
+        or model_receipt.get("reasoning_model") != "gpt-5.6-sol"
+        or model_receipt.get("reasoning_effort") != "xhigh"
+    ):
+        raise ValueError("live_e2e_resume_model_receipt_invalid")
+    return packet, packet_path, claim, model_receipt
 
 
 async def _run(args: argparse.Namespace) -> dict[str, object]:
@@ -204,56 +264,76 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
     if not get_settings().ai_review_pilot_enabled:
         raise ValueError("live_e2e_requires_isolated_ai_pilot")
 
-    packet, packet_path = _prepare_isolated_runtime(args)
+    if args.resume_after_v2:
+        packet, packet_path, resumed_claim, model_receipt = _resume_isolated_runtime(
+            args
+        )
+    else:
+        packet, packet_path = _prepare_isolated_runtime(args)
+        resumed_claim = None
+        model_receipt = None
     packet_id = str(packet["packet_id"])
     run_date = date.fromisoformat(str(packet["assessment_date"]))
     tickers = _delivery_tickers(packet)
-    reset_count = _reset_isolated_deliveries(run_date, tickers=tickers)
-    if reset_count != 15:
-        raise ValueError(f"live_e2e_delivery_scope_invalid:{reset_count}")
+    if resumed_claim is None:
+        reset_count = _reset_isolated_deliveries(run_date, tickers=tickers)
+        if reset_count != 15:
+            raise ValueError(f"live_e2e_delivery_scope_invalid:{reset_count}")
 
-    with Session(engine) as session:
-        held = hold_ai_assisted_pilot_session(session, packet_id)
-    if held.status != "held" or held.pending_count != 15:
-        raise ValueError(f"live_e2e_hold_failed:{held.status}:{held.pending_count}")
+        with Session(engine) as session:
+            held = hold_ai_assisted_pilot_session(session, packet_id)
+        if held.status != "held" or held.pending_count != 15:
+            raise ValueError(f"live_e2e_hold_failed:{held.status}:{held.pending_count}")
 
-    claimed_at = datetime.now(UTC)
-    claim = claim_next_ai_review_packet(
-        "us",
-        owner="us-natural-repair-live-e2e-primary",
-        lease_minutes=10,
-        now=claimed_at,
-    )
-    if claim.status != "claimed" or not claim.claim_id or not claim.temp_output_path:
-        raise ValueError(f"live_e2e_claim_failed:{claim.status}:{claim.reason}")
+        claimed_at = datetime.now(UTC)
+        claim = claim_next_ai_review_packet(
+            "us",
+            owner="us-natural-repair-live-e2e-primary",
+            lease_minutes=10,
+            now=claimed_at,
+        )
+        if claim.status != "claimed" or not claim.claim_id or not claim.temp_output_path:
+            raise ValueError(f"live_e2e_claim_failed:{claim.status}:{claim.reason}")
 
-    model_receipt = await generate_accepted_v2(
-        packet_id,
-        claim.claim_id,
-        timeout=args.model_timeout,
-    )
-    if model_receipt.get("status") != "PASS" or model_receipt.get("ready_count") != 14:
-        raise ValueError(f"live_e2e_accepted_v2_not_ready:{model_receipt.get('status')}")
+        model_receipt = await generate_accepted_v2(
+            packet_id,
+            claim.claim_id,
+            timeout=args.model_timeout,
+        )
+        if model_receipt.get("status") != "PASS" or model_receipt.get("ready_count") != 14:
+            raise ValueError(
+                f"live_e2e_accepted_v2_not_ready:{model_receipt.get('status')}"
+            )
 
-    backup = claim_next_ai_review_packet(
-        "us",
-        owner="us-natural-repair-live-e2e-backup",
-        now=claimed_at + timedelta(minutes=10),
-    )
-    if backup.status != "no_pending_packet":
-        raise ValueError("live_e2e_fresh_primary_reclaimed_by_backup")
+        backup = claim_next_ai_review_packet(
+            "us",
+            owner="us-natural-repair-live-e2e-backup",
+            now=claimed_at + timedelta(minutes=10),
+        )
+        if backup.status != "no_pending_packet":
+            raise ValueError("live_e2e_fresh_primary_reclaimed_by_backup")
+        claim_id = claim.claim_id
+        temp_output_path = Path(claim.temp_output_path)
+    else:
+        pre_audit = _delivery_audit(run_date, tickers=tickers)
+        if pre_audit["delivery_count"] != 15 or pre_audit["sent_count"] != 0:
+            raise ValueError("live_e2e_resume_delivery_state_invalid")
+        claim_id = str(resumed_claim["claim_id"])
+        temp_output_path = Path(str(resumed_claim["temp_output_path"]))
+
+    assert model_receipt is not None
 
     candidate_sha256 = _sha256(args.candidate)
     if args.candidate_sha256 and candidate_sha256 != args.candidate_sha256:
         raise ValueError("live_e2e_candidate_sha256_mismatch")
     candidate = _read(args.candidate)
-    candidate["claim_id"] = claim.claim_id
-    _write(Path(claim.temp_output_path), candidate)
+    candidate["claim_id"] = claim_id
+    _write(temp_output_path, candidate)
     with Session(engine) as session:
         validation = finalize_ai_review_output(
             session,
             packet_id,
-            claim_id=claim.claim_id,
+            claim_id=claim_id,
         )
         if validation.status != "completed":
             raise ValueError(
@@ -301,6 +381,12 @@ async def _run(args: argparse.Namespace) -> dict[str, object]:
         "claim_lease_renewal_count": model_receipt.get("claim_lease_renewal_count"),
         "claim_fencing_token_preserved": model_receipt.get("claim_fencing_token_preserved"),
         "backup_while_primary_healthy": "SAFE_NOOP_PRIMARY_ACTIVE",
+        "continuation_mode": (
+            "SAME_CLAIM_AFTER_PRE_SEND_VALIDATOR_REPAIR"
+            if resumed_claim is not None
+            else "FRESH_FULL_PATH"
+        ),
+        "full_model_rerun": 0 if resumed_claim is not None else 1,
         "signed_in_xhigh_result_count": int(model_receipt.get("ready_count") or 0),
         "tls_unknown_issuer_count": 0,
         "candidate_count": 15,
@@ -341,6 +427,7 @@ def main() -> int:
     parser.add_argument("--candidate-sha256")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model-timeout", type=int, default=1800)
+    parser.add_argument("--resume-after-v2", action="store_true")
     args = parser.parse_args()
     proof = asyncio.run(_run(args))
     print(

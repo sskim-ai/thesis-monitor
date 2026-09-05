@@ -165,6 +165,12 @@ def _prepare_isolated_runtime(args: argparse.Namespace) -> tuple[dict[str, objec
     ):
         raise FileExistsError("live_e2e_output_dir_must_be_empty")
     database_path = data_dir / "thesis_monitor.sqlite3"
+    configured_database = engine.url.database
+    if (
+        not configured_database
+        or Path(str(configured_database)).resolve() != database_path.resolve()
+    ):
+        raise ValueError("DATABASE_URL_must_target_live_e2e_output_dir")
     database_path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(args.production_database, database_path)
     engine.dispose()
