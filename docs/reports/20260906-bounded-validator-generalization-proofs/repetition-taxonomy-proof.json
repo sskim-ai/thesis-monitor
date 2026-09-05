@@ -1,0 +1,13 @@
+{
+  "benign_action_wrapper_hard_block": 0,
+  "contract": "action-wrapper-repetition-taxonomy-v1",
+  "exact_sentence_whitelist": 0,
+  "material_substantive_repeat_protection": "PASS",
+  "roles": [
+    "REQUIRED_SAFETY_REPEAT",
+    "ACTION_CONTEXT_WRAPPER_REPEAT",
+    "RENDERER_OWNED_REPEAT",
+    "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+    "MATERIAL_SPAM_REPEAT"
+  ]
+}

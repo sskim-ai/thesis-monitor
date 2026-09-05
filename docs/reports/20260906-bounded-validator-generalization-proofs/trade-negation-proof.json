@@ -1,0 +1,12 @@
+{
+  "actionable_trade_false_negative": 0,
+  "contract": "trade-language-semantic-v1",
+  "exact_sentence_whitelist": 0,
+  "negated_trade_language": "PASS",
+  "semantics": [
+    "ACTIONABLE",
+    "NEGATED",
+    "DESCRIPTIVE",
+    "NONE"
+  ]
+}
