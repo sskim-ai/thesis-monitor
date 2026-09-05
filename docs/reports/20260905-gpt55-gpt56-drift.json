@@ -1,0 +1,223 @@
+{
+  "comparison_performed_after_gpt56_freeze": true,
+  "contract": "gpt55-gpt56-shadow-drift-v1",
+  "gpt55": {
+    "claim_types": {
+      "BUSINESS_INVALIDATION_CONDITION": 9,
+      "FUTURE_VALIDATION_CONDITION": 14,
+      "MARKET_EXPECTATION_INTERPRETATION": 2,
+      "RISK_CONDITION": 9,
+      "UNKNOWN": 9,
+      "VALUATION_INTERPRETATION": 1
+    },
+    "class_c_warnings": 0,
+    "evidence_refs": {
+      "000660": [
+        "decision-evidence:01342282a8000e8a07bc",
+        "decision-evidence:2f9c52beb624deab15d0"
+      ],
+      "003690": [
+        "decision-evidence:06b7f50ebb7ed7843c6d",
+        "decision-evidence:21ddf2dc43fc2951402b"
+      ],
+      "005490": [
+        "decision-evidence:120e5e8a3ca67f7ceb2f",
+        "decision-evidence:18dfe4a154ecc2809a09"
+      ],
+      "005930": [
+        "decision-evidence:043e66f308e46ff53bd2",
+        "decision-evidence:0c46003fb1a3502a8789"
+      ],
+      "010120": [
+        "decision-evidence:00742ebb0c0328cffa0c",
+        "decision-evidence:60458ef914f03ae493b0"
+      ],
+      "012450": [
+        "decision-evidence:0308e79765a08c9e605d",
+        "decision-evidence:445bebbd8eacfc745ba6"
+      ],
+      "047810": [
+        "decision-evidence:0a5b8adc601e0481e3cd",
+        "decision-evidence:1fecf60e218f20969a50"
+      ],
+      "086280": [
+        "decision-evidence:155f1b543ba355440123",
+        "decision-evidence:28d1cff5b27c18030fca"
+      ],
+      "CORZ": [
+        "decision-evidence:02b2ecf8c9efa8dce70a",
+        "decision-evidence:06164bafce7057b20b52"
+      ],
+      "CPNG": [
+        "decision-evidence:0161f7d6049c1c82ac49",
+        "decision-evidence:0d741ce1e9c5866c6512"
+      ],
+      "CRCL": [
+        "decision-evidence:0f037107ecd5d22b0468",
+        "decision-evidence:12ce8ebba122f10d4c69"
+      ],
+      "GOOGL": [
+        "decision-evidence:119eb75d8acc25305dc3",
+        "decision-evidence:154c9d8fa75e041e1369"
+      ],
+      "HUT": [
+        "decision-evidence:0750ded5723b45b38bd9",
+        "decision-evidence:4c28d1cc7a794cc4171c"
+      ],
+      "IBM": [
+        "decision-evidence:1a151770791d651c2c75",
+        "decision-evidence:1e35c6622a824b5fbe74"
+      ],
+      "MU": [
+        "decision-evidence:00cb0b2759fcf17f5a54",
+        "decision-evidence:0132775faf09a4f3d96e"
+      ],
+      "RXRX": [
+        "decision-evidence:00b417dd6fd4fc571834",
+        "decision-evidence:379d41323efd5d31492f"
+      ],
+      "SKHY": [
+        "decision-evidence:0ed690872e22b916098a",
+        "decision-evidence:21b5d954a474cea0f4aa"
+      ],
+      "SNDK": [
+        "decision-evidence:06e6f847342760f52d96",
+        "decision-evidence:1a43e68befc2686f2759"
+      ],
+      "TSLA": [
+        "decision-evidence:01253b856674f1f9fabd",
+        "decision-evidence:01fa8f7aaa1f70a9fddc"
+      ],
+      "TSM": [
+        "canonical:security_basis:current",
+        "canonical:valuation:book",
+        "decision-evidence:08a1db369b9003e5047d"
+      ],
+      "WRD": [
+        "decision-evidence:02cfce79aef9fea67345",
+        "decision-evidence:112f654571f1b88b463d"
+      ],
+      "WULF": [
+        "decision-evidence:07364f280f1b5d129a26",
+        "decision-evidence:1a3adac8a9993eb06c19"
+      ]
+    },
+    "reviewer_findings": {
+      "CLAIM_TYPE_SEVERITY_MISMATCH": 1,
+      "INELIGIBLE_VALUATION_REF_OWNERSHIP": 1,
+      "UNSUPPORTED_UNKNOWN_CONTEXT": 3
+    },
+    "rewrite_attempts": 0
+  },
+  "gpt56": {
+    "claim_types": {
+      "BUSINESS_INVALIDATION_CONDITION": 7,
+      "CURRENT_FACT": 2,
+      "FUTURE_VALIDATION_CONDITION": 13,
+      "MARKET_EXPECTATION_INTERPRETATION": 2,
+      "RISK_CONDITION": 9,
+      "UNKNOWN": 8,
+      "VALUATION_INTERPRETATION": 3
+    },
+    "class_c_warnings": 0,
+    "evidence_refs": {
+      "000660": [
+        "decision-evidence:01342282a8000e8a07bc",
+        "decision-evidence:2f9c52beb624deab15d0"
+      ],
+      "003690": [
+        "decision-evidence:06b7f50ebb7ed7843c6d",
+        "decision-evidence:21ddf2dc43fc2951402b"
+      ],
+      "005490": [
+        "decision-evidence:120e5e8a3ca67f7ceb2f",
+        "decision-evidence:18dfe4a154ecc2809a09"
+      ],
+      "005930": [
+        "canonical:monitoring:confirmation_transition",
+        "decision-evidence:0c46003fb1a3502a8789"
+      ],
+      "010120": [
+        "decision-evidence:00742ebb0c0328cffa0c",
+        "decision-evidence:60458ef914f03ae493b0"
+      ],
+      "012450": [
+        "decision-evidence:0308e79765a08c9e605d",
+        "decision-evidence:445bebbd8eacfc745ba6"
+      ],
+      "047810": [
+        "decision-evidence:0a5b8adc601e0481e3cd",
+        "decision-evidence:1fecf60e218f20969a50"
+      ],
+      "086280": [
+        "decision-evidence:155f1b543ba355440123",
+        "decision-evidence:28d1cff5b27c18030fca"
+      ],
+      "CORZ": [
+        "decision-evidence:02b2ecf8c9efa8dce70a",
+        "decision-evidence:06164bafce7057b20b52"
+      ],
+      "CPNG": [
+        "decision-evidence:0161f7d6049c1c82ac49",
+        "decision-evidence:0d741ce1e9c5866c6512"
+      ],
+      "CRCL": [
+        "canonical:security_basis:current",
+        "decision-evidence:12ce8ebba122f10d4c69"
+      ],
+      "GOOGL": [
+        "decision-evidence:119eb75d8acc25305dc3",
+        "decision-evidence:154c9d8fa75e041e1369"
+      ],
+      "HUT": [
+        "decision-evidence:0750ded5723b45b38bd9",
+        "decision-evidence:4c28d1cc7a794cc4171c"
+      ],
+      "IBM": [
+        "decision-evidence:1a151770791d651c2c75",
+        "decision-evidence:1e35c6622a824b5fbe74"
+      ],
+      "MU": [
+        "canonical:monitoring:confirmation_transition",
+        "decision-evidence:00cb0b2759fcf17f5a54"
+      ],
+      "RXRX": [
+        "decision-evidence:00b417dd6fd4fc571834",
+        "decision-evidence:379d41323efd5d31492f"
+      ],
+      "SKHY": [
+        "decision-evidence:0ed690872e22b916098a",
+        "decision-evidence:21b5d954a474cea0f4aa"
+      ],
+      "SNDK": [
+        "decision-evidence:06e6f847342760f52d96",
+        "decision-evidence:1a43e68befc2686f2759"
+      ],
+      "TSLA": [
+        "decision-evidence:01253b856674f1f9fabd",
+        "decision-evidence:01fa8f7aaa1f70a9fddc"
+      ],
+      "TSM": [
+        "canonical:security_basis:current",
+        "decision-evidence:08a1db369b9003e5047d"
+      ],
+      "WRD": [
+        "canonical:security_basis:current",
+        "decision-evidence:112f654571f1b88b463d"
+      ],
+      "WULF": [
+        "decision-evidence:07364f280f1b5d129a26",
+        "decision-evidence:1a3adac8a9993eb06c19"
+      ]
+    },
+    "reviewer_findings": {
+      "MATERIAL_CONTRADICTION": 2
+    },
+    "rewrite_attempts": 0
+  },
+  "new_model": "gpt-5.6-sol",
+  "previous_model": "gpt-5.5",
+  "selection_rule_retuned_after_comparison": false,
+  "shared_subjects": 22,
+  "subjects_with_evidence_selection_change": 5
+}

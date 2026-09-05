@@ -1,0 +1,263 @@
+{
+  "case_count": 15,
+  "cases": [
+    {
+      "actual_class": "BENIGN_TEMPLATE_REPEAT",
+      "assessment": {
+        "classification": "BENIGN_TEMPLATE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "short structural or bound-numeric pattern carries little substantive rationale"
+      },
+      "case_id": "benign-heading",
+      "evidence_signature_count": 22,
+      "expected_class": "BENIGN_TEMPLATE_REPEAT",
+      "family": "benign_repeated_headings",
+      "is_structural_heading": true,
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 22,
+      "text": "핵심 판단"
+    },
+    {
+      "actual_class": "BENIGN_TEMPLATE_REPEAT",
+      "assessment": {
+        "classification": "BENIGN_TEMPLATE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "short structural or bound-numeric pattern carries little substantive rationale"
+      },
+      "case_id": "bound-numeric-wrapper",
+      "evidence_signature_count": 14,
+      "expected_class": "BENIGN_TEMPLATE_REPEAT",
+      "family": "short_bound_numeric_wrapper_repetition",
+      "has_bound_numeric_token": true,
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 14,
+      "text": "{{numeric:N1}} 수준의 거래량 참여입니다."
+    },
+    {
+      "actual_class": "REQUIRED_SAFETY_REPEAT",
+      "assessment": {
+        "classification": "REQUIRED_SAFETY_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "identical wording is owned by an explicit safety contract"
+      },
+      "case_id": "required-safety",
+      "evidence_signature_count": 0,
+      "expected_class": "REQUIRED_SAFETY_REPEAT",
+      "family": "short_safety_disclaimer_repetition",
+      "is_required_safety": true,
+      "matched": true,
+      "owner": "SAFETY_POLICY",
+      "stock_count": 22,
+      "text": "확인되지 않은 수치는 사용하지 않습니다."
+    },
+    {
+      "actual_class": "RENDERER_OWNED_REPEAT",
+      "assessment": {
+        "classification": "RENDERER_OWNED_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "renderer ownership should be thinned rather than vetoing a safe candidate"
+      },
+      "case_id": "renderer-label",
+      "evidence_signature_count": 22,
+      "expected_class": "RENDERER_OWNED_REPEAT",
+      "family": "renderer_owned_repeated_phrase",
+      "matched": true,
+      "owner": "DETERMINISTIC_RENDERER",
+      "stock_count": 22,
+      "text": "가격 기준"
+    },
+    {
+      "actual_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "assessment": {
+        "classification": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "substantive model repetition merits review or one rewrite, not an automatic veto"
+      },
+      "case_id": "short-factual",
+      "evidence_signature_count": 1,
+      "expected_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "family": "model_owned_short_factual_repetition",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 5,
+      "text": "실적 확인이 더 필요합니다."
+    },
+    {
+      "actual_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "assessment": {
+        "classification": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "substantive model repetition merits review or one rewrite, not an automatic veto"
+      },
+      "case_id": "same-evidence-long",
+      "evidence_signature_count": 1,
+      "expected_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "family": "model_owned_long_substantive_rationale_repetition",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 4,
+      "text": "동일한 사업 검증 조건을 공유하므로 다음 공식 실적에서 계약 전환과 수익성 유지 여부를 함께 확인해야 합니다."
+    },
+    {
+      "actual_class": "MATERIAL_SPAM_REPEAT",
+      "assessment": {
+        "classification": "MATERIAL_SPAM_REPEAT",
+        "hard_block_candidate": true,
+        "reason": "long identical rationale spans materially different evidence signatures"
+      },
+      "case_id": "different-evidence-long",
+      "evidence_signature_count": 8,
+      "expected_class": "MATERIAL_SPAM_REPEAT",
+      "family": "long_cross_ticker_rationale_different_evidence",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 8,
+      "text": "사업과 재무와 가격을 함께 검토하면 모든 종목에서 같은 이유로 매수해야 하며 개별 증거의 차이는 중요하지 않습니다."
+    },
+    {
+      "actual_class": "MATERIAL_SPAM_REPEAT",
+      "assessment": {
+        "classification": "MATERIAL_SPAM_REPEAT",
+        "hard_block_candidate": true,
+        "reason": "long identical rationale spans materially different evidence signatures"
+      },
+      "case_id": "numeric-substitution-long",
+      "evidence_signature_count": 6,
+      "expected_class": "MATERIAL_SPAM_REPEAT",
+      "family": "near_identical_rationale_numeric_substitutions",
+      "has_bound_numeric_token": true,
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 6,
+      "text": "{{numeric:N1}} 부근의 가격만 확인하면 사업과 재무의 차이와 무관하게 모든 종목의 매수 근거가 충분하다고 판단합니다."
+    },
+    {
+      "actual_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "assessment": {
+        "classification": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "substantive model repetition merits review or one rewrite, not an automatic veto"
+      },
+      "case_id": "single-verbosity",
+      "evidence_signature_count": 1,
+      "expected_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "family": "verbosity",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 1,
+      "text": "현재 확보된 여러 종류의 자료를 종합적으로 다시 살펴보면서 앞으로 추가로 발표될 수 있는 다양한 공식 자료까지 계속 확인할 필요가 있습니다."
+    },
+    {
+      "actual_class": "MATERIAL_SPAM_REPEAT",
+      "assessment": {
+        "classification": "MATERIAL_SPAM_REPEAT",
+        "hard_block_candidate": true,
+        "reason": "long identical rationale spans materially different evidence signatures"
+      },
+      "case_id": "portfolio-boilerplate",
+      "evidence_signature_count": 10,
+      "expected_class": "MATERIAL_SPAM_REPEAT",
+      "family": "boilerplate",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 10,
+      "text": "사업과 재무와 가격과 수급을 종합적으로 확인한 뒤 신중하게 접근해야 하며 향후 상황 변화도 계속 지켜봐야 합니다."
+    },
+    {
+      "actual_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "assessment": {
+        "classification": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "substantive model repetition merits review or one rewrite, not an automatic veto"
+      },
+      "case_id": "korean-paraphrase-a",
+      "evidence_signature_count": 1,
+      "expected_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "family": "korean_paraphrase_diversity",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 1,
+      "text": "매출 증가가 실제 현금창출로 이어지는지는 다음 정식 공시에서 확인해야 합니다."
+    },
+    {
+      "actual_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "assessment": {
+        "classification": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "substantive model repetition merits review or one rewrite, not an automatic veto"
+      },
+      "case_id": "korean-paraphrase-b",
+      "evidence_signature_count": 1,
+      "expected_class": "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+      "family": "korean_paraphrase_diversity",
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 1,
+      "text": "다음 공식 보고서가 외형 성장과 영업현금의 연결을 입증하는지 점검합니다."
+    },
+    {
+      "actual_class": "BENIGN_TEMPLATE_REPEAT",
+      "assessment": {
+        "classification": "BENIGN_TEMPLATE_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "short structural or bound-numeric pattern carries little substantive rationale"
+      },
+      "case_id": "holder-heading",
+      "evidence_signature_count": 22,
+      "expected_class": "BENIGN_TEMPLATE_REPEAT",
+      "family": "benign_repeated_headings",
+      "is_structural_heading": true,
+      "matched": true,
+      "owner": "AI_WRITER",
+      "stock_count": 22,
+      "text": "보유자 관점"
+    },
+    {
+      "actual_class": "REQUIRED_SAFETY_REPEAT",
+      "assessment": {
+        "classification": "REQUIRED_SAFETY_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "identical wording is owned by an explicit safety contract"
+      },
+      "case_id": "safety-basis",
+      "evidence_signature_count": 0,
+      "expected_class": "REQUIRED_SAFETY_REPEAT",
+      "family": "short_safety_disclaimer_repetition",
+      "is_required_safety": true,
+      "matched": true,
+      "owner": "SAFETY_POLICY",
+      "stock_count": 8,
+      "text": "검증된 기준이 없으면 계산하지 않습니다."
+    },
+    {
+      "actual_class": "RENDERER_OWNED_REPEAT",
+      "assessment": {
+        "classification": "RENDERER_OWNED_REPEAT",
+        "hard_block_candidate": false,
+        "reason": "renderer ownership should be thinned rather than vetoing a safe candidate"
+      },
+      "case_id": "renderer-period",
+      "evidence_signature_count": 11,
+      "expected_class": "RENDERER_OWNED_REPEAT",
+      "family": "renderer_owned_repeated_phrase",
+      "matched": true,
+      "owner": "DETERMINISTIC_RENDERER",
+      "stock_count": 11,
+      "text": "정식 공시 기준"
+    }
+  ],
+  "classes_covered": [
+    "BENIGN_TEMPLATE_REPEAT",
+    "MATERIAL_SPAM_REPEAT",
+    "MODEL_OWNED_SUBSTANTIVE_REPEAT",
+    "RENDERER_OWNED_REPEAT",
+    "REQUIRED_SAFETY_REPEAT"
+  ],
+  "contract": "validation-soft-quality-stress-corpus-v1",
+  "family_count": 11,
+  "label_owner": "MANUAL_SOURCE_OWNED_EXPECTATION",
+  "match_pct": 100.0,
+  "matched": 15
+}

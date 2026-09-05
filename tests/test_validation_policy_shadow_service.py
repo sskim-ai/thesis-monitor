@@ -10,6 +10,7 @@ from app.services.validation_policy_shadow_service import (
     AISemanticReviewerResult,
     ClaimOwner,
     DecisionFields,
+    EvidenceSeverity,
     EvidenceOwnership,
     NumericOwnership,
     RepetitionClass,
@@ -18,7 +19,9 @@ from app.services.validation_policy_shadow_service import (
     RewriteDisposition,
     SemanticClaimType,
     StructuredSemanticClaim,
+    UnknownEvidenceScope,
     ValidationClass,
+    ValuationEvidenceRole,
     classify_repetition,
     evaluate_bounded_rewrite,
     evaluate_shadow_policy,
@@ -52,6 +55,7 @@ def _evidence() -> dict[str, EvidenceOwnership]:
             generation_id=GENERATION,
             semantic_family="capital_efficiency",
             metric="ROIC",
+            severity=EvidenceSeverity.WEAKENING,
         ),
         "E2": EvidenceOwnership(
             evidence_ref="E2",
@@ -59,6 +63,9 @@ def _evidence() -> dict[str, EvidenceOwnership]:
             generation_id=GENERATION,
             semantic_family="valuation",
             metric="PBR",
+            numeric_eligible=True,
+            valuation_eligible=True,
+            valuation_role=ValuationEvidenceRole.INTERPRETATION,
         ),
         "E_OLD": EvidenceOwnership(
             evidence_ref="E_OLD",
@@ -95,6 +102,7 @@ def _claim(**overrides: object) -> StructuredSemanticClaim:
         "evidence_refs": ("E1",),
         "text_ref": "next_checks[0]",
         "text": "CAPEX가 현금창출과 ROIC 개선으로 이어지는지 확인해야 합니다.",
+        "severity": EvidenceSeverity.WEAKENING,
     }
     values.update(overrides)
     return StructuredSemanticClaim(**values)
@@ -160,6 +168,7 @@ def test_current_numeric_claim_is_bound_to_exact_semantic() -> None:
                 metrics=("PBR",),
                 evidence_refs=("E2",),
                 numeric_refs=("N1",),
+                valuation_role=ValuationEvidenceRole.INTERPRETATION,
                 text="현재 PBR은 {{numeric:N1}}입니다.",
             )
         ],
@@ -381,6 +390,230 @@ def test_bounded_rewrite_cannot_add_metric_or_change_decision() -> None:
     assert result.disposition == RewriteDisposition.REJECTED_INVARIANCE
     assert set(result.invariant_errors) == {"decision_fields", "metrics"}
     assert result.original_remains_eligible is True
+
+
+def test_bounded_rewrite_cannot_exceed_one_attempt() -> None:
+    snapshot = rewrite_snapshot([_claim()], _decision())
+    result = evaluate_bounded_rewrite(
+        snapshot,
+        snapshot,
+        attempted=True,
+        attempt_count=2,
+    )
+
+    assert result.disposition == RewriteDisposition.REJECTED_INVARIANCE
+    assert result.invariant_errors == ("rewrite_attempt_limit",)
+
+
+def test_ineligible_valuation_reference_is_rejected_before_reviewer() -> None:
+    evidence = _evidence()
+    evidence["E_BLOCKED"] = EvidenceOwnership(
+        evidence_ref="E_BLOCKED",
+        ticker="TEST",
+        generation_id=GENERATION,
+        semantic_family="valuation",
+        prose_eligible=False,
+        semantic_eligible=False,
+    )
+    result = validate_structured_claims(
+        [
+            _claim(
+                claim_type=SemanticClaimType.VALUATION_INTERPRETATION,
+                evidence_refs=("E_BLOCKED",),
+                valuation_role=ValuationEvidenceRole.INTERPRETATION,
+            )
+        ],
+        evidence=evidence,
+        numeric=_numeric(),
+        decision=_decision(),
+    )
+
+    assert "ineligible_valuation_evidence_ref" in {
+        item.code for item in result.semantic_issues
+    }
+
+
+def test_caution_only_valuation_evidence_cannot_own_interpretation() -> None:
+    evidence = {
+        "E_CAUTION": EvidenceOwnership(
+            evidence_ref="E_CAUTION",
+            ticker="TEST",
+            generation_id=GENERATION,
+            semantic_family="security_basis",
+            valuation_eligible=True,
+            valuation_role=ValuationEvidenceRole.CAUTION_ONLY,
+        )
+    }
+    result = validate_structured_claims(
+        [
+            _claim(
+                claim_type=SemanticClaimType.VALUATION_INTERPRETATION,
+                evidence_refs=("E_CAUTION",),
+                valuation_role=ValuationEvidenceRole.INTERPRETATION,
+            )
+        ],
+        evidence=evidence,
+        numeric={},
+        decision=_decision(),
+    )
+
+    assert "valuation_role_not_owned" in {
+        item.code for item in result.semantic_issues
+    }
+
+
+def test_caution_only_valuation_evidence_can_own_caution() -> None:
+    evidence = {
+        "E_CAUTION": EvidenceOwnership(
+            evidence_ref="E_CAUTION",
+            ticker="TEST",
+            generation_id=GENERATION,
+            semantic_family="security_basis",
+            valuation_eligible=True,
+            valuation_role=ValuationEvidenceRole.CAUTION_ONLY,
+        )
+    }
+    result = validate_structured_claims(
+        [
+            _claim(
+                claim_type=SemanticClaimType.VALUATION_INTERPRETATION,
+                evidence_refs=("E_CAUTION",),
+                valuation_role=ValuationEvidenceRole.CAUTION_ONLY,
+            )
+        ],
+        evidence=evidence,
+        numeric={},
+        decision=_decision(),
+    )
+
+    assert result.class_ab_passed is True
+
+
+def test_weakening_evidence_cannot_own_business_invalidation() -> None:
+    evidence = {
+        "E_WEAK": EvidenceOwnership(
+            evidence_ref="E_WEAK",
+            ticker="TEST",
+            generation_id=GENERATION,
+            semantic_family="risk",
+            severity=EvidenceSeverity.WEAKENING,
+        )
+    }
+    result = validate_structured_claims(
+        [
+            _claim(
+                claim_type=SemanticClaimType.BUSINESS_INVALIDATION_CONDITION,
+                evidence_refs=("E_WEAK",),
+                severity=EvidenceSeverity.INVALIDATION_CANDIDATE,
+            )
+        ],
+        evidence=evidence,
+        numeric={},
+        decision=_decision(),
+    )
+
+    assert "unsupported_severity_escalation" in {
+        item.code for item in result.semantic_issues
+    }
+
+
+def test_unknown_scope_rejects_unowned_causal_context() -> None:
+    evidence = {
+        "E_UNKNOWN": EvidenceOwnership(
+            evidence_ref="E_UNKNOWN",
+            ticker="TEST",
+            generation_id=GENERATION,
+            semantic_family="unknown",
+            unknown_scope=UnknownEvidenceScope(
+                unknown_subject="stock.unknowns",
+                unknown_effect="FCF impact is unknown",
+            ),
+        ),
+        "E_NEW_DRIVER": EvidenceOwnership(
+            evidence_ref="E_NEW_DRIVER",
+            ticker="TEST",
+            generation_id=GENERATION,
+            semantic_family="business",
+        ),
+    }
+    result = validate_structured_claims(
+        [
+            _claim(
+                claim_type=SemanticClaimType.UNKNOWN,
+                evidence_refs=("E_UNKNOWN", "E_NEW_DRIVER"),
+                unknown_scope_ref="E_UNKNOWN",
+                unknown_subject="stock.unknowns",
+                unknown_effect="FCF impact is unknown",
+                context_refs=("E_NEW_DRIVER",),
+            )
+        ],
+        evidence=evidence,
+        numeric={},
+        decision=_decision(),
+    )
+
+    assert "unsupported_unknown_context_ref" in {
+        item.code for item in result.semantic_issues
+    }
+
+
+def test_bounded_rewrite_cannot_add_unknown_causal_premise() -> None:
+    base = _claim(
+        claim_type=SemanticClaimType.UNKNOWN,
+        evidence_refs=("E1",),
+        unknown_scope_ref="E1",
+        unknown_subject="stock.unknowns",
+        unknown_effect="FCF impact is unknown",
+    )
+    changed = base.model_copy(
+        update={
+            "evidence_refs": ("E1", "E2"),
+            "context_refs": ("E2",),
+        }
+    )
+    before = rewrite_snapshot([base], _decision())
+    after = rewrite_snapshot([changed], _decision())
+    result = evaluate_bounded_rewrite(before, after, attempted=True)
+
+    assert result.disposition == RewriteDisposition.REJECTED_INVARIANCE
+    assert set(result.invariant_errors) >= {
+        "fact_refs",
+        "evidence_refs",
+        "context_refs",
+    }
+
+
+def test_expanded_soft_quality_stress_matches_source_owned_labels() -> None:
+    path = (
+        Path(__file__).parent
+        / "fixtures"
+        / "validation_soft_quality_stress_corpus.json"
+    )
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    cases = payload["cases"]
+
+    assert len(cases) >= 11
+    assert len({item["family"] for item in cases}) >= 11
+    assert {item["expected_class"] for item in cases} == {
+        item.value for item in RepetitionClass
+    }
+    for item in cases:
+        assessment = classify_repetition(
+            RepetitionObservation(
+                normalized_span=item["text"],
+                owner=ClaimOwner(item["owner"]),
+                stock_count=item["stock_count"],
+                evidence_signature_count=item["evidence_signature_count"],
+                is_required_safety=item.get("is_required_safety", False),
+                is_structural_heading=item.get("is_structural_heading", False),
+                has_bound_numeric_token=item.get(
+                    "has_bound_numeric_token", False
+                ),
+            )
+        )
+        assert assessment.classification == RepetitionClass(
+            item["expected_class"]
+        )
 
 
 def test_failed_soft_rewrite_keeps_class_ab_safe_original_eligible() -> None:

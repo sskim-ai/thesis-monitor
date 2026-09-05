@@ -1,0 +1,98 @@
+{
+  "contract": "validation-generalization-readiness-proof-v1",
+  "gates": {
+    "ACCOUNTING_BASIS_ERROR_ACCEPTED": 0,
+    "ADR_SECURITY_BASIS_ERROR_ACCEPTED": 0,
+    "BOUNDED_REWRITE_INVARIANCE": "PASS",
+    "CHART_KNOWLEDGE_PARITY": "PASS",
+    "CLASSC_STRESS_CASE_COUNT": 15,
+    "CLASSC_STRESS_EXPECTED_LABEL_MATCH": "100%",
+    "CROSS_GENERATION_EVIDENCE_ACCEPTED": 0,
+    "CROSS_TICKER_EVIDENCE_ACCEPTED": 0,
+    "EXACT_SENTENCE_WHITELIST": 0,
+    "FOCUSED_TESTS": "39 passed",
+    "FRESH_USKR22_CLASS_A_FAILURES": 0,
+    "FRESH_USKR22_CLASS_B_FAILURES": 0,
+    "FRESH_USKR22_CLASS_C_WARNINGS": 0,
+    "FRESH_USKR22_GENERATION": "PASS",
+    "FRESH_USKR22_PRIMARY_MODEL": "gpt-5.6-sol",
+    "FRESH_USKR22_REVIEWER_FINDINGS": 2,
+    "FRESH_USKR22_REVIEWER_MATERIAL_CONTRADICTIONS": 2,
+    "FRESH_USKR22_REVIEWER_WARN_SUBJECTS": 2,
+    "FRESH_USKR22_REWRITE_ATTEMPTS": 0,
+    "FRESH_USKR22_REWRITE_SUCCESS": 0,
+    "FRESH_USKR22_SUBJECT_COUNT": 22,
+    "FULL_PYTEST": "2234 passed, 1 upstream deprecation warning",
+    "GIT_DIFF_CHECK": "PASS",
+    "GPT55_SELECTION_CAUSE": "EXPLICIT_SCRIPT_OVERRIDE",
+    "GPT55_USED_IN_NEW_PROMOTION_RUN": 0,
+    "INELIGIBLE_VALUATION_REF_ACCEPTED": 0,
+    "INVESTMENT_KNOWLEDGE_PARITY": "PASS",
+    "JUDGMENT_LOGIC_CHANGED": 0,
+    "KNOWN_SAFETY_TRUE_POSITIVE_REGRESSION": 0,
+    "MAIN_MERGE": 0,
+    "MODEL_EQUIVALENCE_PREFLIGHT": "PASS",
+    "PREVIOUS_GPT55_RUN_PROMOTION_WEIGHT": 0,
+    "PRODUCTION_DB_MUTATION": 0,
+    "PRODUCTION_DECISION_MUTATION": 0,
+    "PRODUCTION_MODEL_ID": "gpt-5.6-sol",
+    "PRODUCTION_REASONING_EFFORT": "high",
+    "PRODUCTION_RENDERER_MUTATION": 0,
+    "PRODUCTION_SCHEDULER_CHANGE": 0,
+    "PRODUCTION_TARGET_REASONING_EFFORT": "xhigh",
+    "PRODUCTION_TELEGRAM_SEND": 0,
+    "PRODUCTION_VALIDATOR_MUTATION": 0,
+    "PUBLIC_ACTION_OPERATION_IDS": "20/20 unique",
+    "PUBLIC_ACTION_VERSION": "0.4.5",
+    "READINESS": "READY_FOR_BOUNDED_PRODUCTION_POLICY_REPAIR",
+    "REVIEWER_FINDINGS_CLASSIFIED": 5,
+    "REVIEWER_FINDINGS_TOTAL": 5,
+    "RUFF": "PASS",
+    "SHADOW_PRIMARY_MODEL_ID": "gpt-5.6-sol",
+    "SILENT_MODEL_FALLBACK": 0,
+    "SOURCE_BUNDLE_SHA256": "0ccdd2e91d8b0c7f6d1296644332227876380c01c11d7aef5b7c3e2dcb3ce5f1",
+    "TICKER_SPECIFIC_FIX": 0,
+    "UNKNOWN_SCOPE_PRIMARY_OWNER": "STRUCTURED_METADATA",
+    "UNSUPPORTED_NEW_CAUSAL_DRIVER_ACCEPTED": 0,
+    "UNSUPPORTED_NUMERIC_ACCEPTED": 0,
+    "UNSUPPORTED_SEVERITY_ESCALATION_ACCEPTED": 0
+  },
+  "next_handoff": {
+    "combine_with": "bounded_validation_policy_production_repair",
+    "kr_child_wait_commit": "ebc2350",
+    "main_only_after_both_pass": true,
+    "required_integration_tests": [
+      "KR explicit V2 1+8",
+      "US explicit V2 1+14"
+    ]
+  },
+  "open_p0": 0,
+  "open_p1": 2,
+  "open_p1_items": [
+    {
+      "claim_ids": [
+        "corz.invalidation"
+      ],
+      "code": "MATERIAL_CONTRADICTION",
+      "confidence": "HIGH",
+      "evidence_refs": [
+        "decision-evidence:02b2ecf8c9efa8dce70a"
+      ],
+      "explanation": "The evidence treats contract cancellation or major reduction and repeated completion failure as alternative invalidation conditions. The claim joins contract reduction with repeated completion failure, materially narrowing the source-owned condition.",
+      "ticker": "CORZ"
+    },
+    {
+      "claim_ids": [
+        "hut.invalidation"
+      ],
+      "code": "MATERIAL_CONTRADICTION",
+      "confidence": "HIGH",
+      "evidence_refs": [
+        "decision-evidence:0750ded5723b45b38bd9"
+      ],
+      "explanation": "The evidence treats contract cancellation or major reduction and repeated project-completion failure as alternative invalidation conditions. The claim joins contract reduction with repeated completion failure, materially narrowing the source-owned condition.",
+      "ticker": "HUT"
+    }
+  ],
+  "open_p2": 0
+}

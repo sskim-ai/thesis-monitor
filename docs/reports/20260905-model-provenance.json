@@ -1,0 +1,51 @@
+{
+  "contract": "gpt56-model-provenance-v1",
+  "gpt55_preceding_condition": "codex_cli_0.142.5_rejected_gpt_5_6_sol",
+  "gpt55_selection_cause": "EXPLICIT_SCRIPT_OVERRIDE",
+  "gpt55_used_in_new_promotion_run": 0,
+  "preflight": {
+    "authentication": "SIGNED_IN_CHATGPT",
+    "cli_version": "0.153.4",
+    "reasoning_effort": "xhigh",
+    "requested_model": "gpt-5.6-sol",
+    "resolved_model": "gpt-5.6-sol",
+    "result": "GPT56_XHIGH_PREFLIGHT_OK",
+    "sandbox": "read-only",
+    "status": "PASS"
+  },
+  "previous_gpt55_run_promotion_weight": 0,
+  "production": {
+    "approved_promotion_target_effort": "xhigh",
+    "configuration_mutated": false,
+    "configured_reasoning_effort": "high",
+    "model_id": "gpt-5.6-sol"
+  },
+  "silent_model_fallback": 0,
+  "source_bundle_sha256": "0ccdd2e91d8b0c7f6d1296644332227876380c01c11d7aef5b7c3e2dcb3ce5f1",
+  "stages": {
+    "ai_reviewer": {
+      "cli_version": "0.153.4",
+      "invoked": true,
+      "output_sha256": "86b70b8522303c42a41cf67aabd29612173b8817b4290e42ba45cd60c373b19a",
+      "reasoning_effort": "xhigh",
+      "requested_model": "gpt-5.6-sol",
+      "resolved_model": "gpt-5.6-sol"
+    },
+    "bounded_rewrite": {
+      "configured_model": "gpt-5.6-sol",
+      "invoked": false,
+      "reason": "no_class_c_trigger",
+      "reasoning_effort": "xhigh",
+      "resolved_model": null
+    },
+    "primary_writer": {
+      "cli_version": "0.153.4",
+      "invoked": true,
+      "output_sha256": "15294f7424853d722de0ddda3f8b848ae8dbe5ae805046a3fd30f01d55b800f0",
+      "reasoning_effort": "xhigh",
+      "requested_model": "gpt-5.6-sol",
+      "resolved_model": "gpt-5.6-sol"
+    }
+  },
+  "work_instruction_base": "e15c94ee094715f0a3ec8b0bd52e47cec0cd044c"
+}

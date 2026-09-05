@@ -8,8 +8,8 @@ from typing import Iterable, Mapping, Sequence
 from pydantic import BaseModel, ConfigDict, Field
 
 
-CONTRACT_VERSION = "validation-semantic-ownership-shadow-v1"
-SEMANTIC_CLAIM_CONTRACT = "structured-semantic-claim-v1"
+CONTRACT_VERSION = "validation-semantic-ownership-shadow-v2"
+SEMANTIC_CLAIM_CONTRACT = "structured-semantic-claim-v2"
 AI_REVIEWER_CONTRACT = "ai-semantic-reviewer-shadow-v1"
 BOUNDED_REWRITE_CONTRACT = "soft-quality-bounded-rewrite-v1"
 
@@ -67,6 +67,29 @@ class ReviewerVerdict(StrEnum):
     FAIL_ADVISORY = "FAIL_ADVISORY"
 
 
+class EvidenceSeverity(StrEnum):
+    STRENGTHENING = "STRENGTHENING"
+    MAINTAIN = "MAINTAIN"
+    WEAKENING = "WEAKENING"
+    INVALIDATION_CANDIDATE = "INVALIDATION_CANDIDATE"
+    INVALIDATION = "INVALIDATION"
+
+
+class ValuationEvidenceRole(StrEnum):
+    NONE = "NONE"
+    CAUTION_ONLY = "CAUTION_ONLY"
+    INTERPRETATION = "INTERPRETATION"
+
+
+_SEVERITY_RANK = {
+    EvidenceSeverity.STRENGTHENING: 0,
+    EvidenceSeverity.MAINTAIN: 1,
+    EvidenceSeverity.WEAKENING: 2,
+    EvidenceSeverity.INVALIDATION_CANDIDATE: 3,
+    EvidenceSeverity.INVALIDATION: 4,
+}
+
+
 class ValidatorRule(FrozenModel):
     rule_id: str
     file: str
@@ -83,6 +106,13 @@ class ValidatorRule(FrozenModel):
     production_gate_impact: str
 
 
+class UnknownEvidenceScope(FrozenModel):
+    unknown_subject: str
+    unknown_metric: str | None = None
+    unknown_effect: str
+    allowed_context_refs: tuple[str, ...] = ()
+
+
 class EvidenceOwnership(FrozenModel):
     evidence_ref: str
     ticker: str
@@ -91,6 +121,13 @@ class EvidenceOwnership(FrozenModel):
     metric: str | None = None
     current: bool = True
     denied: bool = False
+    prose_eligible: bool = True
+    semantic_eligible: bool = True
+    numeric_eligible: bool = False
+    valuation_eligible: bool = False
+    valuation_role: ValuationEvidenceRole = ValuationEvidenceRole.NONE
+    severity: EvidenceSeverity | None = None
+    unknown_scope: UnknownEvidenceScope | None = None
 
 
 class NumericOwnership(FrozenModel):
@@ -125,6 +162,13 @@ class StructuredSemanticClaim(FrozenModel):
     owner: ClaimOwner = ClaimOwner.AI_WRITER
     trade_action: str | None = None
     trade_force: str | None = None
+    severity: EvidenceSeverity | None = None
+    valuation_role: ValuationEvidenceRole | None = None
+    unknown_scope_ref: str | None = None
+    unknown_subject: str | None = None
+    unknown_metric: str | None = None
+    unknown_effect: str | None = None
+    context_refs: tuple[str, ...] = ()
 
 
 class ValidationIssue(FrozenModel):
@@ -167,6 +211,10 @@ class RewriteInvariantSnapshot(FrozenModel):
     semantic_claim_types: tuple[SemanticClaimType, ...]
     evidence_refs: tuple[str, ...]
     metrics: tuple[str, ...]
+    claim_severities: tuple[EvidenceSeverity | None, ...]
+    valuation_roles: tuple[ValuationEvidenceRole | None, ...]
+    unknown_scopes: tuple[tuple[str | None, str | None, str | None, str | None], ...]
+    context_refs: tuple[str, ...]
 
 
 class BoundedRewriteResult(FrozenModel):
@@ -175,6 +223,7 @@ class BoundedRewriteResult(FrozenModel):
     invariant_errors: tuple[str, ...] = ()
     class_ab_rerun_required: bool
     original_remains_eligible: bool
+    attempt_count: int = Field(ge=0, le=1)
 
 
 class AISemanticReviewerIssue(FrozenModel):
@@ -391,6 +440,24 @@ def validate_structured_claims(
                 hard.append(_issue("cross_generation_evidence_ref", ValidationClass.HARD_DETERMINISTIC, claim, evidence_ref))
             if owned.denied:
                 hard.append(_issue("denied_evidence_ref", ValidationClass.HARD_DETERMINISTIC, claim, evidence_ref))
+            elif not owned.semantic_eligible:
+                semantic.append(
+                    _issue(
+                        "semantic_ineligible_evidence_ref",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        evidence_ref,
+                    )
+                )
+            elif not owned.prose_eligible:
+                semantic.append(
+                    _issue(
+                        "prose_ineligible_evidence_ref",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        evidence_ref,
+                    )
+                )
 
         claim_numeric: list[NumericOwnership] = []
         for numeric_ref in claim.numeric_refs:
@@ -406,6 +473,15 @@ def validate_structured_claims(
                 hard.append(_issue("numeric_source_missing", ValidationClass.HARD_DETERMINISTIC, claim, numeric_ref))
             elif source.ticker != claim.ticker or source.generation_id != claim.generation_id:
                 hard.append(_issue("numeric_owner_mismatch", ValidationClass.HARD_DETERMINISTIC, claim, numeric_ref))
+            elif not source.numeric_eligible:
+                hard.append(
+                    _issue(
+                        "numeric_ineligible_evidence_ref",
+                        ValidationClass.HARD_DETERMINISTIC,
+                        claim,
+                        numeric_ref,
+                    )
+                )
 
         has_digit = bool(re.search(r"(?<![A-Za-z])\d", claim.text))
         if has_digit and not claim.numeric_refs:
@@ -427,12 +503,157 @@ def validate_structured_claims(
                 semantic.append(_issue("historical_evidence_asserted_current", ValidationClass.SEMANTIC_HARD, claim, "all supporting evidence is historical"))
 
         if claim.claim_type == SemanticClaimType.VALUATION_INTERPRETATION and claim_evidence:
-            if not any(item.semantic_family == "valuation" for item in claim_evidence):
-                semantic.append(_issue("valuation_interpretation_without_valuation_evidence", ValidationClass.SEMANTIC_HARD, claim, "valuation claim lacks valuation evidence"))
+            if claim.valuation_role is None:
+                semantic.append(
+                    _issue(
+                        "valuation_role_missing",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        "valuation claims require a structured valuation role",
+                    )
+                )
+            ineligible = [item.evidence_ref for item in claim_evidence if not item.valuation_eligible]
+            if ineligible:
+                semantic.append(
+                    _issue(
+                        "ineligible_valuation_evidence_ref",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        ",".join(ineligible),
+                    )
+                )
+            eligible_roles = {item.valuation_role for item in claim_evidence if item.valuation_eligible}
+            if claim.valuation_role == ValuationEvidenceRole.INTERPRETATION:
+                role_supported = ValuationEvidenceRole.INTERPRETATION in eligible_roles
+            else:
+                role_supported = bool(
+                    eligible_roles
+                    & {
+                        ValuationEvidenceRole.CAUTION_ONLY,
+                        ValuationEvidenceRole.INTERPRETATION,
+                    }
+                )
+            if not role_supported:
+                semantic.append(
+                    _issue(
+                        "valuation_role_not_owned",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        f"claim_role={claim.valuation_role}; evidence_roles={sorted(eligible_roles)}",
+                    )
+                )
 
         if claim.claim_type == SemanticClaimType.MARKET_EXPECTATION_INTERPRETATION and claim_evidence:
             if not any(item.semantic_family == "market_expectation" for item in claim_evidence):
                 semantic.append(_issue("market_expectation_without_owned_evidence", ValidationClass.SEMANTIC_HARD, claim, "expectation claim lacks expectation evidence"))
+
+        severity_requirements = {
+            SemanticClaimType.RISK_CONDITION: EvidenceSeverity.WEAKENING,
+            SemanticClaimType.BUSINESS_INVALIDATION_CONDITION: EvidenceSeverity.INVALIDATION_CANDIDATE,
+        }
+        required_severity = severity_requirements.get(claim.claim_type)
+        if required_severity is not None:
+            if claim.severity is None:
+                semantic.append(
+                    _issue(
+                        "claim_severity_missing",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        f"{claim.claim_type} requires structured severity",
+                    )
+                )
+            elif _SEVERITY_RANK[claim.severity] < _SEVERITY_RANK[required_severity]:
+                semantic.append(
+                    _issue(
+                        "claim_type_severity_mismatch",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        f"claim_type={claim.claim_type}; severity={claim.severity}",
+                    )
+                )
+            owned_severities = [item.severity for item in claim_evidence if item.severity is not None]
+            if claim.severity is not None and (
+                not owned_severities
+                or max(_SEVERITY_RANK[item] for item in owned_severities)
+                < _SEVERITY_RANK[claim.severity]
+            ):
+                semantic.append(
+                    _issue(
+                        "unsupported_severity_escalation",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        f"claim={claim.severity}; owned={sorted(owned_severities)}",
+                    )
+                )
+
+        if claim.claim_type == SemanticClaimType.UNKNOWN:
+            scope = evidence.get(claim.unknown_scope_ref or "")
+            owned_scope = scope.unknown_scope if scope is not None else None
+            if owned_scope is None:
+                semantic.append(
+                    _issue(
+                        "unknown_scope_missing",
+                        ValidationClass.SEMANTIC_HARD,
+                        claim,
+                        str(claim.unknown_scope_ref),
+                    )
+                )
+            else:
+                expected_scope = (
+                    owned_scope.unknown_subject,
+                    owned_scope.unknown_metric,
+                    owned_scope.unknown_effect,
+                )
+                actual_scope = (
+                    claim.unknown_subject,
+                    claim.unknown_metric,
+                    claim.unknown_effect,
+                )
+                if actual_scope != expected_scope:
+                    semantic.append(
+                        _issue(
+                            "unknown_scope_mismatch",
+                            ValidationClass.SEMANTIC_HARD,
+                            claim,
+                            f"expected={expected_scope}; actual={actual_scope}",
+                        )
+                    )
+                if not set(claim.context_refs).issubset(owned_scope.allowed_context_refs):
+                    semantic.append(
+                        _issue(
+                            "unsupported_unknown_context_ref",
+                            ValidationClass.SEMANTIC_HARD,
+                            claim,
+                            ",".join(claim.context_refs),
+                        )
+                    )
+                expected_refs = {claim.unknown_scope_ref, *claim.context_refs}
+                if set(claim.evidence_refs) != expected_refs:
+                    semantic.append(
+                        _issue(
+                            "unknown_evidence_scope_escape",
+                            ValidationClass.SEMANTIC_HARD,
+                            claim,
+                            f"expected={sorted(expected_refs)}; actual={sorted(claim.evidence_refs)}",
+                        )
+                    )
+        elif any(
+            value is not None
+            for value in (
+                claim.unknown_scope_ref,
+                claim.unknown_subject,
+                claim.unknown_metric,
+                claim.unknown_effect,
+            )
+        ) or claim.context_refs:
+            semantic.append(
+                _issue(
+                    "unknown_metadata_on_non_unknown_claim",
+                    ValidationClass.SEMANTIC_HARD,
+                    claim,
+                    "unknown ownership fields are exclusive to UNKNOWN claims",
+                )
+            )
 
         if claim.trade_force == "MANDATORY" and claim.trade_action == "SELL":
             if decision.overall_direction in {"BUY", "HOLD"}:
@@ -478,7 +699,7 @@ def classify_repetition(observation: RepetitionObservation) -> RepetitionAssessm
     compact = re.sub(r"\s+", " ", observation.normalized_span).strip()
     lexical_count = len(compact.split())
     if observation.is_structural_heading or (
-        lexical_count <= 8 and (observation.has_bound_numeric_token or len(compact) <= 48)
+        lexical_count <= 8 and observation.has_bound_numeric_token
     ):
         return RepetitionAssessment(
             classification=RepetitionClass.BENIGN_TEMPLATE_REPEAT,
@@ -511,6 +732,18 @@ def rewrite_snapshot(claims: Sequence[StructuredSemanticClaim], decision: Decisi
         semantic_claim_types=tuple(sorted((claim.claim_type for claim in claims), key=str)),
         evidence_refs=tuple(sorted(ref for claim in claims for ref in claim.evidence_refs)),
         metrics=tuple(sorted(metric for claim in claims for metric in claim.metrics)),
+        claim_severities=tuple(claim.severity for claim in claims),
+        valuation_roles=tuple(claim.valuation_role for claim in claims),
+        unknown_scopes=tuple(
+            (
+                claim.unknown_scope_ref,
+                claim.unknown_subject,
+                claim.unknown_metric,
+                claim.unknown_effect,
+            )
+            for claim in claims
+        ),
+        context_refs=tuple(sorted(ref for claim in claims for ref in claim.context_refs)),
     )
 
 
@@ -519,18 +752,30 @@ def evaluate_bounded_rewrite(
     after: RewriteInvariantSnapshot | None,
     *,
     attempted: bool,
+    attempt_count: int | None = None,
 ) -> BoundedRewriteResult:
+    attempts = int(attempted) if attempt_count is None else attempt_count
+    if attempts > 1:
+        return BoundedRewriteResult(
+            disposition=RewriteDisposition.REJECTED_INVARIANCE,
+            invariant_errors=("rewrite_attempt_limit",),
+            class_ab_rerun_required=False,
+            original_remains_eligible=True,
+            attempt_count=1,
+        )
     if not attempted:
         return BoundedRewriteResult(
             disposition=RewriteDisposition.NOT_ATTEMPTED,
             class_ab_rerun_required=False,
             original_remains_eligible=True,
+            attempt_count=0,
         )
     if after is None:
         return BoundedRewriteResult(
             disposition=RewriteDisposition.FAILED_KEEP_ORIGINAL,
             class_ab_rerun_required=False,
             original_remains_eligible=True,
+            attempt_count=1,
         )
     errors = tuple(
         field
@@ -541,6 +786,10 @@ def evaluate_bounded_rewrite(
             "semantic_claim_types",
             "evidence_refs",
             "metrics",
+            "claim_severities",
+            "valuation_roles",
+            "unknown_scopes",
+            "context_refs",
         )
         if getattr(before, field) != getattr(after, field)
     )
@@ -550,11 +799,13 @@ def evaluate_bounded_rewrite(
             invariant_errors=errors,
             class_ab_rerun_required=False,
             original_remains_eligible=True,
+            attempt_count=1,
         )
     return BoundedRewriteResult(
         disposition=RewriteDisposition.SUCCEEDED,
         class_ab_rerun_required=True,
         original_remains_eligible=True,
+        attempt_count=1,
     )
 
 

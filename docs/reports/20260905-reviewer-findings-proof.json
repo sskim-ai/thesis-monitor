@@ -1,0 +1,72 @@
+{
+  "classified_count": 5,
+  "contract": "reviewer-five-findings-ownership-proof-v1",
+  "exact_sentence_whitelist_count": 0,
+  "finding_count": 5,
+  "findings": [
+    {
+      "finding": "UNSUPPORTED_UNKNOWN_CONTEXT",
+      "owner": "UNKNOWN_SCOPE_STRUCTURED_METADATA",
+      "proof_scenario": "unsupported_unknown_context",
+      "subject": "CRCL"
+    },
+    {
+      "finding": "CLAIM_TYPE_SEVERITY_MISMATCH",
+      "owner": "SOURCE_SEVERITY_STRUCTURED_METADATA",
+      "proof_scenario": "severity_escalation",
+      "subject": "RXRX"
+    },
+    {
+      "finding": "UNSUPPORTED_UNKNOWN_CONTEXT",
+      "owner": "UNKNOWN_SCOPE_STRUCTURED_METADATA",
+      "proof_scenario": "unsupported_unknown_context",
+      "subject": "RXRX"
+    },
+    {
+      "finding": "INELIGIBLE_VALUATION_REF_OWNERSHIP",
+      "owner": "EVIDENCE_ELIGIBILITY_STRUCTURED_METADATA",
+      "proof_scenario": "ineligible_valuation",
+      "subject": "TSM"
+    },
+    {
+      "finding": "UNSUPPORTED_UNKNOWN_CONTEXT",
+      "owner": "UNKNOWN_SCOPE_STRUCTURED_METADATA",
+      "proof_scenario": "unsupported_unknown_context",
+      "subject": "012450"
+    }
+  ],
+  "generic_scenarios": [
+    {
+      "expected_rejection": "unsupported_unknown_context_ref",
+      "observed_codes": [
+        "unsupported_unknown_context_ref"
+      ],
+      "scenario": "unsupported_unknown_context",
+      "unsafe_claim_accepted": false
+    },
+    {
+      "expected_rejection": "unsupported_severity_escalation",
+      "observed_codes": [
+        "unsupported_severity_escalation"
+      ],
+      "scenario": "severity_escalation",
+      "unsafe_claim_accepted": false
+    },
+    {
+      "expected_rejection": "ineligible_valuation_evidence_ref",
+      "observed_codes": [
+        "ineligible_valuation_evidence_ref",
+        "semantic_ineligible_evidence_ref",
+        "valuation_role_not_owned"
+      ],
+      "scenario": "ineligible_valuation",
+      "unsafe_claim_accepted": false
+    }
+  ],
+  "ticker_specific_fix_count": 0,
+  "unsafe_acceptance": {
+    "ineligible_valuation_ref": 0,
+    "unsupported_new_causal_driver": 0,
+    "unsupported_severity_escalation": 0
+  }
+}
