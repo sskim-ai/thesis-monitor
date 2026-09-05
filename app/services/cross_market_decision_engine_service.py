@@ -22,10 +22,13 @@ from app.services.fact_consumer_scope_service import (
     project_fact_catalog_for_consumer,
 )
 from app.services.logical_condition_service import (
+    CheckpointMetric,
     ClaimLogicalCondition,
     LogicalSeverity,
     SourceLogicalCondition,
+    checkpoint_metric_refs,
     logical_condition_errors,
+    logical_expression_is_composite,
     source_logical_condition,
 )
 
@@ -107,6 +110,7 @@ class DecisionEvidenceRef(FrozenModel):
     unit: str | None = None
     source_ref: str
     numeric_prose_eligible: bool = False
+    metric_refs: tuple[CheckpointMetric, ...] = ()
     logical_condition: SourceLogicalCondition | None = None
 
 
@@ -281,6 +285,7 @@ def _add_text_refs(
                 statement=_compact(value),
                 as_of=as_of,
                 source_ref=source_ref,
+                metric_refs=checkpoint_metric_refs(_compact(value)),
                 logical_condition=(
                     source_logical_condition(
                         subject=ticker,
@@ -431,6 +436,9 @@ def build_decision_evidence_packet(
                     statement=_compact(row.get("fields") or {}),
                     as_of=str(row.get("as_of_date") or assessment_date),
                     source_ref=f"stock.fact_catalog.{fact_id}",
+                    metric_refs=checkpoint_metric_refs(
+                        f"{row.get('fact_type') or ''} {_compact(row.get('fields') or {})}"
+                    ),
                 )
             )
 
@@ -550,6 +558,7 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
                 "value": str(ref.value) if ref.value is not None else None,
                 "unit": ref.unit,
                 "numeric_prose_eligible": ref.numeric_prose_eligible,
+                "metric_refs": ref.metric_refs,
                 "logical_condition": (
                     ref.logical_condition.model_dump(mode="json")
                     if ref.logical_condition is not None
@@ -638,7 +647,9 @@ def validate_decision_candidate(
             if ref_id in refs and refs[ref_id].logical_condition is not None
         )
         composite_sources = tuple(
-            item for item in source_conditions if item is not None and item.expression.children
+            item
+            for item in source_conditions
+            if item is not None and logical_expression_is_composite(item.expression)
         )
         if composite_sources or condition_claim.logical_condition is not None:
             errors.extend(

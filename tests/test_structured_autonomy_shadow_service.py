@@ -6,7 +6,6 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
     EvidenceCategory,
-    EvidenceClaim,
 )
 from app.services.directional_balance_service import DirectionalBalance
 from app.services.structured_autonomy_shadow_service import (
@@ -16,10 +15,16 @@ from app.services.structured_autonomy_shadow_service import (
     KR_047810_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     MU_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
     ClassifiedSellDriver,
+    CheckpointKind,
+    ClaimSemanticMetadata,
+    ClaimTimeScope,
+    ClaimType,
     HoldLean,
     HolderViewV2,
+    MetricDirection,
     NewBuyerViewV2,
     StructuredAutonomyCandidate,
+    StructuredEvidenceClaim,
     RenderedStructuredAutonomy,
     StructuredAutonomyValidation,
     UnknownTreatment,
@@ -33,14 +38,38 @@ from app.services.structured_autonomy_shadow_service import (
     structured_autonomy_message_quality,
     validate_structured_autonomy_candidate,
 )
+from app.services.logical_condition_service import checkpoint_metric_refs
 from app.services.structured_autonomy_stability_service import (
     classify_same_evidence_runs,
     stability_summary,
 )
 
 
-def _claim(ref: str, text: str = "검증된 사업 근거가 판단을 지지합니다.") -> EvidenceClaim:
-    return EvidenceClaim(text=text, evidence_refs=(ref,))
+def _claim(
+    ref: str,
+    text: str = "검증된 사업 근거가 판단을 지지합니다.",
+) -> StructuredEvidenceClaim:
+    return StructuredEvidenceClaim(text=text, evidence_refs=(ref,))
+
+
+def _future_claim(
+    ref: str,
+    text: str,
+    *,
+    kind: CheckpointKind = CheckpointKind.REASSESSMENT,
+    direction: MetricDirection = MetricDirection.OBSERVE,
+) -> StructuredEvidenceClaim:
+    return StructuredEvidenceClaim(
+        text=text,
+        evidence_refs=(ref,),
+        semantic=ClaimSemanticMetadata(
+            claim_type=ClaimType.FUTURE_CHECKPOINT,
+            metric_refs=checkpoint_metric_refs(text),
+            time_scope=ClaimTimeScope.FUTURE_CHECKPOINT,
+            checkpoint_kind=kind,
+            direction=direction,
+        ),
+    )
 
 
 def _packet() -> DecisionEvidencePacket:
@@ -158,9 +187,14 @@ def _candidate() -> StructuredAutonomyCandidate:
             downside_review_basis=("ref:price",),
             currency="USD",
             business_invalidation_condition="핵심 수익화 근거가 구조적으로 훼손되는 경우입니다.",
+            business_invalidation_condition_refs=("ref:risk",),
         ),
-        reevaluation_up=(_claim("ref:earnings"),),
-        reevaluation_down=(_claim("ref:risk"),),
+        reevaluation_up=(
+            _future_claim("ref:earnings", "사업 성과 개선 여부를 재평가합니다."),
+        ),
+        reevaluation_down=(
+            _future_claim("ref:risk", "사업 위험 악화 여부를 재평가합니다."),
+        ),
     )
 
 
@@ -327,7 +361,12 @@ def test_mandatory_trade_directives_remain_blocked(text: str) -> None:
 def _packet_with_metric_evidence(metric_text: str) -> DecisionEvidencePacket:
     packet = _packet()
     evidence = tuple(
-        row.model_copy(update={"statement": metric_text})
+        row.model_copy(
+            update={
+                "statement": metric_text,
+                "metric_refs": checkpoint_metric_refs(metric_text),
+            }
+        )
         if row.ref_id == "ref:thesis"
         else row
         for row in packet.evidence
@@ -345,9 +384,11 @@ def _packet_with_metric_evidence(metric_text: str) -> DecisionEvidencePacket:
     ),
 )
 def test_future_metric_checkpoint_passes_only_with_owned_evidence(text: str) -> None:
-    packet = _packet_with_metric_evidence("ROIC와 CCC 개선 여부는 미래 검증 조건입니다.")
+    packet = _packet_with_metric_evidence(
+        "FCF와 ROIC 및 CCC 개선 여부는 미래 검증 조건입니다."
+    )
     candidate = _candidate().model_copy(
-        update={"reevaluation_up": (_claim("ref:thesis", text),)}
+        update={"reevaluation_up": (_future_claim("ref:thesis", text),)}
     )
 
     result = validate_structured_autonomy_candidate(
@@ -382,7 +423,7 @@ def test_evidence_owned_metric_policy_and_condition_language_is_allowed(
 ) -> None:
     packet = _packet_with_metric_evidence("FCF와 ROIC는 향후 자본효율 검증 조건입니다.")
     candidate = _candidate().model_copy(
-        update={"sector_interpretation": _claim("ref:thesis", text)}
+        update={"sector_interpretation": _future_claim("ref:thesis", text)}
     )
 
     result = validate_structured_autonomy_candidate(
@@ -405,6 +446,15 @@ def test_evidence_owned_metric_required_improvement_language_is_allowed() -> Non
                         "영업이익률이 개선되고 FCF와 ROIC가 함께 나아져야 한다."
                     ),
                     "confirmation_business_condition_refs": ("ref:thesis",),
+                    "confirmation_business_condition_semantic": ClaimSemanticMetadata(
+                        claim_type=ClaimType.FUTURE_CHECKPOINT,
+                        metric_refs=checkpoint_metric_refs(
+                            "영업이익률이 개선되고 FCF와 ROIC가 함께 나아져야 한다."
+                        ),
+                        time_scope=ClaimTimeScope.FUTURE_CHECKPOINT,
+                        checkpoint_kind=CheckpointKind.VALIDATION,
+                        direction=MetricDirection.IMPROVE,
+                    ),
                 }
             )
         }
@@ -420,7 +470,11 @@ def test_evidence_owned_metric_required_improvement_language_is_allowed() -> Non
 
 def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
     candidate = _candidate().model_copy(
-        update={"reevaluation_up": (_claim("ref:thesis", "ROIC 개선 여부를 확인한다."),)}
+        update={
+            "reevaluation_up": (
+                _future_claim("ref:thesis", "ROIC 개선 여부를 확인한다."),
+            )
+        }
     )
 
     result = validate_structured_autonomy_candidate(
@@ -448,7 +502,7 @@ def test_future_metric_checkpoint_without_owned_evidence_is_rejected() -> None:
 def test_future_metric_policy_without_owned_evidence_is_rejected(text: str) -> None:
     candidate = _candidate().model_copy(
         update={
-            "sector_interpretation": _claim("ref:thesis", text)
+            "sector_interpretation": _future_claim("ref:thesis", text)
         }
     )
 
@@ -475,7 +529,18 @@ def test_future_metric_policy_without_owned_evidence_is_rejected(text: str) -> N
 def test_current_or_historical_metric_values_remain_rejected(text: str) -> None:
     packet = _packet_with_metric_evidence("ROIC와 CCC 및 DSO는 미래 검증 조건입니다.")
     candidate = _candidate().model_copy(
-        update={"reevaluation_up": (_claim("ref:thesis", text),)}
+        update={
+            "reevaluation_up": (
+                StructuredEvidenceClaim(
+                    text=text,
+                    evidence_refs=("ref:thesis",),
+                    semantic=ClaimSemanticMetadata(
+                        metric_refs=checkpoint_metric_refs(text),
+                        time_scope=ClaimTimeScope.CURRENT,
+                    ),
+                ),
+            )
+        }
     )
 
     result = validate_structured_autonomy_candidate(

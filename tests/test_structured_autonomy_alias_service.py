@@ -25,8 +25,13 @@ def _alias_candidate() -> tuple[dict[str, object], object]:
         if isinstance(value, Mapping):
             return {str(child_key): replace(child, str(child_key)) for child_key, child in value.items()}
         if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
-            if key in {"confirmation_business_condition_refs", "evidence_refs"} or (
-                key and key.endswith("_basis")
+            if (
+                key in {
+                    "business_invalidation_condition_refs",
+                    "confirmation_business_condition_refs",
+                    "evidence_refs",
+                }
+                or (key and key.endswith("_basis"))
             ):
                 return [by_ref[str(child)] for child in value]
             return [replace(child, key) for child in value]
@@ -93,6 +98,7 @@ def test_dynamic_schema_constrains_every_reference_array_to_subject_aliases() ->
                 for name, child in properties.items():
                     if name in {
                         "confirmation_business_condition_refs",
+                        "business_invalidation_condition_refs",
                         "evidence_refs",
                     } or name.endswith("_basis"):
                         reference_items.append(child["items"])
@@ -107,6 +113,22 @@ def test_dynamic_schema_constrains_every_reference_array_to_subject_aliases() ->
     collect(schema)
     assert reference_items
     assert all(item == {"$ref": "#/$defs/T1_EvidenceAlias"} for item in reference_items)
+
+
+def test_dynamic_schema_namespaces_discriminator_mapping_refs() -> None:
+    catalog = build_evidence_alias_catalog(_packet())
+    schema = build_alias_constrained_batch_schema(
+        candidate_schema=StructuredAutonomyCandidate.model_json_schema(),
+        contract="contract",
+        packet_id="packet",
+        aliases_by_ticker={"TEST": [entry.alias for entry in catalog.entries]},
+    )
+    serialized = json.dumps(schema, sort_keys=True)
+
+    assert '"LEAF": "#/$defs/T1_ClaimLogicalLeaf"' in serialized
+    assert '"ANY_OF": "#/$defs/T1_ClaimLogicalComposite"' in serialized
+    assert '"ALL_OF": "#/$defs/T1_ClaimLogicalComposite"' in serialized
+    assert '"LEAF": "#/$defs/ClaimLogicalLeaf"' not in serialized
 
 
 def test_alias_resolution_restores_canonical_refs_and_records_lineage() -> None:

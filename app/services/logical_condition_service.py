@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import re
 from enum import StrEnum
-from typing import Iterable
+from typing import Annotated, Iterable, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -33,19 +33,47 @@ class LogicalSeverity(StrEnum):
     INVALIDATION_CANDIDATE = "INVALIDATION_CANDIDATE"
 
 
-class SourceLogicalExpression(FrozenModel):
-    condition_id: str = Field(min_length=1)
-    type: LogicalOperator
-    statement: str | None = None
-    children: tuple[SourceLogicalExpression, ...] = ()
+class CheckpointMetric(StrEnum):
+    OCF = "OCF"
+    PPE_CAPEX = "PPE_CAPEX"
+    FCF = "FCF"
+    ROIC = "ROIC"
+    CCC = "CCC"
+    DSO = "DSO"
+    DPO = "DPO"
 
-    @model_validator(mode="after")
-    def validate_shape(self) -> SourceLogicalExpression:
-        if self.type == LogicalOperator.LEAF and self.children:
-            raise ValueError("logical_leaf_cannot_have_children")
-        if self.type != LogicalOperator.LEAF and len(self.children) < 2:
-            raise ValueError("logical_composite_requires_two_children")
-        return self
+
+_CHECKPOINT_METRIC = re.compile(
+    r"(?<![A-Za-z0-9_])(?P<metric>ROIC|CCC|DSO|DPO|OCF|FCF|PPE[ _-]?CAPEX)"
+    r"(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+
+
+def checkpoint_metric_refs(value: str) -> tuple[CheckpointMetric, ...]:
+    normalized = {
+        match.group("metric").upper().replace(" ", "_").replace("-", "_")
+        for match in _CHECKPOINT_METRIC.finditer(value)
+    }
+    return tuple(metric for metric in CheckpointMetric if metric.value in normalized)
+
+
+class SourceLogicalLeaf(FrozenModel):
+    condition_id: str = Field(min_length=1)
+    type: Literal[LogicalOperator.LEAF] = LogicalOperator.LEAF
+    statement: str | None = None
+
+
+class SourceLogicalComposite(FrozenModel):
+    condition_id: str = Field(min_length=1)
+    type: Literal[LogicalOperator.ANY_OF, LogicalOperator.ALL_OF]
+    children: tuple[SourceLogicalExpression, ...] = Field(min_length=2)
+
+
+SourceLogicalExpression: TypeAlias = Annotated[
+    SourceLogicalLeaf | SourceLogicalComposite,
+    Field(discriminator="type"),
+]
 
 
 class SourceLogicalCondition(FrozenModel):
@@ -54,6 +82,7 @@ class SourceLogicalCondition(FrozenModel):
     generation_id: str = Field(min_length=1)
     source_condition_ref: str = Field(min_length=1)
     severity: LogicalSeverity
+    metric_refs: tuple[CheckpointMetric, ...] = ()
     expression: SourceLogicalExpression
 
     @model_validator(mode="after")
@@ -63,19 +92,28 @@ class SourceLogicalCondition(FrozenModel):
         return self
 
 
-class ClaimLogicalExpression(FrozenModel):
-    type: LogicalOperator
-    condition_ref: str | None = None
-    children: tuple[ClaimLogicalExpression, ...] = ()
+class ClaimLogicalLeaf(FrozenModel):
+    type: Literal[LogicalOperator.LEAF] = LogicalOperator.LEAF
+    leaf_ref: str = Field(min_length=1)
 
-    @model_validator(mode="after")
-    def validate_shape(self) -> ClaimLogicalExpression:
-        if self.type == LogicalOperator.LEAF:
-            if not self.condition_ref or self.children:
-                raise ValueError("logical_claim_leaf_shape_invalid")
-        elif self.condition_ref is not None or len(self.children) < 2:
-            raise ValueError("logical_claim_composite_shape_invalid")
-        return self
+
+class ClaimLogicalComposite(FrozenModel):
+    type: Literal[LogicalOperator.ANY_OF, LogicalOperator.ALL_OF]
+    children: tuple[ClaimLogicalExpression, ...] = Field(min_length=2)
+
+
+ClaimLogicalExpression: TypeAlias = Annotated[
+    ClaimLogicalLeaf | ClaimLogicalComposite,
+    Field(discriminator="type"),
+]
+
+
+SourceLogicalComposite.model_rebuild(
+    _types_namespace={"SourceLogicalExpression": SourceLogicalExpression}
+)
+ClaimLogicalComposite.model_rebuild(
+    _types_namespace={"ClaimLogicalExpression": ClaimLogicalExpression}
+)
 
 
 class ClaimLogicalCondition(FrozenModel):
@@ -111,19 +149,17 @@ def source_logical_condition(
     branches = tuple(part.strip() for part in _SOURCE_ANY_OF.split(compact) if part.strip())
     root_id = _stable_id("logical-condition", subject, generation_id, evidence_ref)
     if len(branches) <= 1:
-        expression = SourceLogicalExpression(
+        expression: SourceLogicalExpression = SourceLogicalLeaf(
             condition_id=root_id,
-            type=LogicalOperator.LEAF,
             statement=compact,
         )
     else:
-        expression = SourceLogicalExpression(
+        expression = SourceLogicalComposite(
             condition_id=root_id,
             type=LogicalOperator.ANY_OF,
             children=tuple(
-                SourceLogicalExpression(
+                SourceLogicalLeaf(
                     condition_id=_stable_id(root_id, index, branch),
-                    type=LogicalOperator.LEAF,
                     statement=branch,
                 )
                 for index, branch in enumerate(branches, start=1)
@@ -134,17 +170,15 @@ def source_logical_condition(
         generation_id=generation_id,
         source_condition_ref=root_id,
         severity=severity,
+        metric_refs=checkpoint_metric_refs(compact),
         expression=expression,
     )
 
 
 def source_claim_expression(expression: SourceLogicalExpression) -> ClaimLogicalExpression:
     if expression.type == LogicalOperator.LEAF:
-        return ClaimLogicalExpression(
-            type=LogicalOperator.LEAF,
-            condition_ref=expression.condition_id,
-        )
-    return ClaimLogicalExpression(
+        return ClaimLogicalLeaf(leaf_ref=expression.condition_id)
+    return ClaimLogicalComposite(
         type=expression.type,
         children=tuple(source_claim_expression(child) for child in expression.children),
     )
@@ -152,7 +186,7 @@ def source_claim_expression(expression: SourceLogicalExpression) -> ClaimLogical
 
 def _leaf_refs(expression: ClaimLogicalExpression) -> tuple[str, ...]:
     if expression.type == LogicalOperator.LEAF:
-        return (expression.condition_ref,) if expression.condition_ref else ()
+        return (expression.leaf_ref,)
     return tuple(ref for child in expression.children for ref in _leaf_refs(child))
 
 
@@ -164,7 +198,7 @@ def _source_leaf_refs(expression: SourceLogicalExpression) -> tuple[str, ...]:
 
 def _signature(expression: ClaimLogicalExpression) -> tuple[object, ...]:
     if expression.type == LogicalOperator.LEAF:
-        return (LogicalOperator.LEAF, expression.condition_ref)
+        return (LogicalOperator.LEAF, expression.leaf_ref)
     return (
         expression.type,
         tuple(sorted((_signature(child) for child in expression.children), key=str)),
@@ -221,3 +255,7 @@ def logical_condition_errors(
     elif set(claim_refs) == source_refs:
         errors.append("logical_condition_partial_claims_full_coverage")
     return tuple(dict.fromkeys(errors))
+
+
+def logical_expression_is_composite(expression: SourceLogicalExpression) -> bool:
+    return isinstance(expression, SourceLogicalComposite)

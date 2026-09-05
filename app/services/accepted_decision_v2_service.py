@@ -30,7 +30,10 @@ from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
 )
 from app.services.scenario_asymmetry_service import Asymmetry
-from app.services.logical_condition_service import logical_condition_errors
+from app.services.logical_condition_service import (
+    logical_condition_errors,
+    logical_expression_is_composite,
+)
 from app.services.production_validation_policy_service import (
     RepetitionClass,
     classify_repeated_span,
@@ -617,7 +620,9 @@ def validate_accepted_v2_decision(
             if ref_id in refs and refs[ref_id].logical_condition is not None
         )
         composite_sources = tuple(
-            item for item in source_conditions if item is not None and item.expression.children
+            item
+            for item in source_conditions
+            if item is not None and logical_expression_is_composite(item.expression)
         )
         if composite_sources or condition_claim.logical_condition is not None:
             errors.extend(

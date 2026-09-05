@@ -17,6 +17,7 @@ from app.services.cross_market_decision_engine_service import (
 
 CONTRACT_VERSION = "structured-autonomy-evidence-alias-v1"
 _REFERENCE_FIELDS = {
+    "business_invalidation_condition_refs",
     "confirmation_business_condition_refs",
     "directional_negative_basis",
     "evidence_refs",
@@ -49,6 +50,7 @@ class EvidenceAliasEntry(FrozenModel):
     label: str
     statement: str
     as_of: str | None
+    metric_refs: tuple[str, ...]
 
 
 class EvidenceAliasCatalog(FrozenModel):
@@ -101,6 +103,7 @@ def build_evidence_alias_catalog(
             label=ref.label,
             statement=ref.statement,
             as_of=ref.as_of,
+            metric_refs=tuple(metric.value for metric in ref.metric_refs),
         )
         for index, (content_sha, _ref_id, ref) in enumerate(ordered, start=1)
     )
@@ -157,6 +160,12 @@ def compact_alias_ai_context(
                 "numeric_prose_eligible": by_ref[
                     entry.canonical_ref
                 ].numeric_prose_eligible,
+                "metric_refs": list(entry.metric_refs),
+                "logical_condition": (
+                    by_ref[entry.canonical_ref].logical_condition.model_dump(mode="json")
+                    if by_ref[entry.canonical_ref].logical_condition is not None
+                    else None
+                ),
             }
             for entry in catalog.entries
         ],
@@ -203,14 +212,13 @@ def _is_reference_field(name: str) -> bool:
 
 
 def _namespace_schema_refs(value: object, prefix: str) -> object:
+    if isinstance(value, str) and value.startswith("#/$defs/"):
+        return "#/$defs/" + prefix + value.removeprefix("#/$defs/")
     if isinstance(value, dict):
-        result: dict[str, object] = {}
-        for key, child in value.items():
-            if key == "$ref" and isinstance(child, str) and child.startswith("#/$defs/"):
-                result[key] = "#/$defs/" + prefix + child.removeprefix("#/$defs/")
-            else:
-                result[key] = _namespace_schema_refs(child, prefix)
-        return result
+        return {
+            key: _namespace_schema_refs(child, prefix)
+            for key, child in value.items()
+        }
     if isinstance(value, list):
         return [_namespace_schema_refs(child, prefix) for child in value]
     return value

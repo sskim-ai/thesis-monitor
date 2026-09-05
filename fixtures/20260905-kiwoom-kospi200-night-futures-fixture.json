@@ -18,5 +18,13 @@
   },
   "prior_night_close": 1049.05,
   "night_close_to_night_close_pct": 4.275297,
+  "historical_sessions": [
+    {"date": "2026-08-28", "open": 1068.00, "high": 1086.30, "low": 1061.70, "close": 1064.20, "volume": 23973},
+    {"date": "2026-08-31", "open": 1067.00, "high": 1072.45, "low": 1053.80, "close": 1064.50, "volume": 22349},
+    {"date": "2026-09-01", "open": 1061.00, "high": 1061.40, "low": 1031.30, "close": 1040.50, "volume": 30651},
+    {"date": "2026-09-02", "open": 1023.00, "high": 1048.35, "low": 1020.25, "close": 1043.60, "volume": 22676},
+    {"date": "2026-09-03", "open": 1030.95, "high": 1052.45, "low": 1020.75, "close": 1049.05, "volume": 26252},
+    {"date": "2026-09-04", "open": 1055.65, "high": 1097.65, "low": 1043.85, "close": 1093.90, "volume": 32666}
+  ],
   "fixture_role": "HUMAN_ACCEPTANCE_FIXTURE_NOT_PRODUCTION_PROVIDER"
 }

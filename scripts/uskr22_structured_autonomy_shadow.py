@@ -173,11 +173,14 @@ def artifact_index_rows(report_dir: Path) -> list[list[object]]:
 
 def strict_json_schema(value: object) -> object:
     if isinstance(value, dict):
-        result = {
-            key: strict_json_schema(item)
-            for key, item in value.items()
-            if key != "default"
-        }
+        result: dict[str, object] = {}
+        for key, item in value.items():
+            if key in {"default", "discriminator"}:
+                continue
+            target = "anyOf" if key == "oneOf" else key
+            if target in result:
+                raise ValueError(f"strict_schema_keyword_collision:{target}")
+            result[target] = strict_json_schema(item)
         properties = result.get("properties")
         if isinstance(properties, dict):
             result["required"] = list(properties)
@@ -312,17 +315,17 @@ Reason in this order: facts; business and earnings; market expectations; valuati
 
 For each ticker return exactly one candidate in input order. BUY plus SELL must equal ten in half-point increments. Derive the label exactly: BUY when buy is at least six, SELL when sell is at least six, otherwise HOLD. The balance is a coarse judgment summary, not probability. overall_direction is integrated directional attractiveness; new_buyer_view is actionability at the current setup. BUY plus WAIT is valid and these meanings must remain distinct.
 
-Every interpretation, driver, Unknown, and reevaluation condition must select complete evidence aliases from that ticker's evidence_catalogue. The JSON schema is the complete allowed alias surface. Never mint, shorten, reconstruct, or copy a canonical ref. Every sell driver classifies itself as SECTOR_NORMAL, DETERIORATION_SIGNAL, STRUCTURAL_RISK, or OTHER_EVIDENCE. Unknown normally limits confidence or requires confirmation. DIRECTIONAL_NEGATIVE requires directional_negative_basis containing at least one non-Unknown evidence alias that proves the absence is economically adverse. Sector-normal features are not automatic directional penalties. For biotech, ordinary development cash burn, negative FCF, and ordinary dilution exposure are sector-normal; SELL requires separate cited deterioration or structural-risk evidence.
+Every interpretation, driver, Unknown, and reevaluation condition must select complete evidence aliases from that ticker's evidence_catalogue. The JSON schema is the complete allowed alias surface. Never mint, shorten, reconstruct, or copy a canonical ref. Every sell driver classifies itself as SECTOR_NORMAL, DETERIORATION_SIGNAL, STRUCTURAL_RISK, or OTHER_EVIDENCE. Unknown normally limits confidence or requires confirmation. DIRECTIONAL_NEGATIVE requires directional_negative_basis containing at least one non-Unknown evidence alias that proves the absence is economically adverse. Sector-normal features are not automatic directional penalties. For biotech, ordinary development cash burn, negative FCF, and ordinary dilution exposure are sector-normal; SELL requires separate cited deterioration or structural-risk evidence. Every prose-bearing claim also emits semantic metadata. Use EVIDENCE_INTERPRETATION for current or historical interpretation, UNKNOWN_LIMIT for a stated evidence gap, and FUTURE_CHECKPOINT only for a future validation condition. A future checkpoint must set time_scope FUTURE_CHECKPOINT, checkpoint_kind, direction, and every metric_refs token actually named in its prose. Current/historical claims must not masquerade as future checkpoints.
 
 Use only canonical issuer/security-basis claims. For KR, do not infer common-share, parent-attributable, consolidated, or preliminary-result equivalence beyond the evidence. For ADR or foreign issuers, do not recompute per-share values, ADR ratios, currency conversions, or issuer/security denominators. Basis uncertainty lowers confidence or blocks the unsafe inference; it is not automatic SELL evidence.
 
-Do not place digits or exact numbers in any prose field. Numeric price values belong only in structured buyer/holder fields and must be copied exactly from allowed_price_choices. Do not state FCF yield, per-share FCF, EV/FCF, P/FCF, runway months, targets, expected returns, or guaranteed outcomes. ROIC, CCC, DSO, and DPO may appear only as qualitative future validation/checkpoint metrics when a selected evidence alias explicitly names that same metric. Never state or calculate their current or historical value or assert an unsupported current change.
+Do not place digits or exact numbers in any prose field. Numeric price values belong only in structured buyer/holder fields and must be copied exactly from allowed_price_choices. Do not state FCF yield, per-share FCF, EV/FCF, P/FCF, runway months, targets, expected returns, or guaranteed outcomes. ROIC, CCC, DSO, and DPO may appear only as qualitative FUTURE_CHECKPOINT metrics when a selected evidence alias explicitly owns that same metric in metric_refs. Never state or calculate their current or historical value or assert an unsupported current change. The validator reads this structured ownership and does not infer future tense from Korean wording.
 
 If allowed_pullback_zones is non-empty, preserve exactly one listed pullback zone and its exact basis_alias. If allowed_confirmation_levels is non-empty, preserve exactly one listed confirmation, basis_alias, and confirmation_semantics. Preserve both when both exist, then choose preferred_entry_mode PULLBACK, CONFIRMATION, or BOTH. This structured-mode rule also applies when stance is AVOID: the mode names the preferred later reconsideration path, not an immediate entry action. Use preferred_entry_mode NONE only when neither a pullback zone nor a confirmation level exists. When no confirmation level exists, use null, empty basis, and confirmation_semantics NONE. Do not invent technical levels, discounts, targets, or round numbers.
 
 If new-buyer stance is AVOID, describe every retained price as a later reconsideration condition, never as immediate actionable entry. AVOID may still retain required structured pullback and confirmation values. If allowed_trim_zones is non-empty, preserve exactly one listed trim zone; otherwise use null bounds and empty basis. A trim zone is a holder reassessment region, not an automatic sale. A downside review must be one listed level or null and is not a stop loss. The same resistance may serve holder rejection review and new-buyer successful-breakout reassessment when both scenario meanings are explicit.
 
-The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. confirmation_business_condition must contain only the ticker-specific business or operating condition. confirmation_business_condition_refs must cite at least one non-price business, earnings, industry, regulatory, capital-allocation, or economic evidence alias supporting that condition. Do not repeat stock-price, close-above, support/resistance-zone, breakout, recovery, or hold/settlement mechanics because the deterministic renderer owns that structure. Normal business meanings such as earnings support, product pricing, customer support, and pricing power are allowed. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
+The accepted candidate is the sole judgment authority. Keep core judgment, thesis state, buyer/holder views, and reevaluation language concise, natural, ticker-specific, and internally consistent. confirmation_business_condition and business_invalidation_condition are FUTURE_CHECKPOINT claims; preserve their evidence refs and semantic metadata explicitly. confirmation_business_condition must contain only the ticker-specific business or operating condition. confirmation_business_condition_refs must cite at least one non-price business, earnings, industry, regulatory, capital-allocation, or economic evidence alias supporting that condition. business_invalidation_condition_refs must cite the evidence that owns its invalidation or reassessment meaning. When source logical_condition metadata is used, copy its source_condition_ref, severity, operators, and leaf_ref identities exactly. LEAF owns leaf_ref and never children; ANY_OF/ALL_OF own at least two children and never leaf_ref. Do not repeat stock-price, close-above, support/resistance-zone, breakout, recovery, or hold/settlement mechanics because the deterministic renderer owns that structure. Normal business meanings such as earnings support, product pricing, customer support, and pricing power are allowed. Write every prose field in natural Korean. English tickers, names, and unavoidable abbreviations may remain, but no full judgment sentence may remain English.
 
 Return strict JSON only and match SHADOW_IDENTITY exactly.
 
@@ -592,7 +595,11 @@ def _candidate_refs(candidate: StructuredAutonomyCandidate) -> set[str]:
             for child_key, child in value.items():
                 collect(child, str(child_key))
         elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
-            if key == "evidence_refs" or (key and key.endswith("_basis")):
+            if (
+                key == "evidence_refs"
+                or (key and key.endswith("_basis"))
+                or (key and key.endswith("_refs") and key != "metric_refs")
+            ):
                 refs.update(str(item) for item in value)
             else:
                 for child in value:

@@ -38,7 +38,10 @@ from app.services.scenario_asymmetry_service import (
     PreconfirmationErrorCostAssessment,
     ScenarioSet,
 )
-from app.services.logical_condition_service import logical_condition_errors
+from app.services.logical_condition_service import (
+    logical_condition_errors,
+    logical_expression_is_composite,
+)
 
 
 CONTRACT_VERSION = "preconfirmation-asymmetry-decision-engine-v2"
@@ -372,7 +375,9 @@ def validate_preconfirmation_candidate(
             if ref_id in refs and refs[ref_id].logical_condition is not None
         )
         composite_sources = tuple(
-            item for item in source_conditions if item is not None and item.expression.children
+            item
+            for item in source_conditions
+            if item is not None and logical_expression_is_composite(item.expression)
         )
         if composite_sources or condition_claim.logical_condition is not None:
             errors.extend(

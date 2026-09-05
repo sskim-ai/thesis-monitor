@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from app.services.ai_review_service import _prose_number_occurrences
 from app.services.cross_market_decision_engine_service import (
@@ -22,6 +22,11 @@ from app.services.directional_balance_service import (
     decision_from_directional_balance,
     directional_balance_language_errors,
     render_directional_balance,
+)
+from app.services.logical_condition_service import (
+    CheckpointMetric,
+    LogicalSeverity,
+    checkpoint_metric_refs,
 )
 
 
@@ -104,6 +109,78 @@ UnknownTreatmentKind = Literal[
 ]
 
 
+class ClaimType(StrEnum):
+    EVIDENCE_INTERPRETATION = "EVIDENCE_INTERPRETATION"
+    FUTURE_CHECKPOINT = "FUTURE_CHECKPOINT"
+    UNKNOWN_LIMIT = "UNKNOWN_LIMIT"
+
+
+class ClaimTimeScope(StrEnum):
+    CURRENT = "CURRENT"
+    HISTORICAL = "HISTORICAL"
+    FUTURE_CHECKPOINT = "FUTURE_CHECKPOINT"
+
+
+class CheckpointKind(StrEnum):
+    VALIDATION = "VALIDATION"
+    STRENGTHEN = "STRENGTHEN"
+    WEAKEN = "WEAKEN"
+    INVALIDATION = "INVALIDATION"
+    REASSESSMENT = "REASSESSMENT"
+
+
+class MetricDirection(StrEnum):
+    IMPROVE = "IMPROVE"
+    DETERIORATE = "DETERIORATE"
+    MAINTAIN = "MAINTAIN"
+    FAIL_TO_CONFIRM = "FAIL_TO_CONFIRM"
+    OBSERVE = "OBSERVE"
+
+
+class ClaimSemanticMetadata(FrozenModel):
+    claim_type: ClaimType = ClaimType.EVIDENCE_INTERPRETATION
+    metric_refs: tuple[CheckpointMetric, ...] = Field(default=(), max_length=7)
+    time_scope: ClaimTimeScope = ClaimTimeScope.CURRENT
+    checkpoint_kind: CheckpointKind | None = None
+    direction: MetricDirection | None = None
+
+    @model_validator(mode="after")
+    def validate_checkpoint_shape(self) -> ClaimSemanticMetadata:
+        future = self.claim_type == ClaimType.FUTURE_CHECKPOINT
+        if future != (self.time_scope == ClaimTimeScope.FUTURE_CHECKPOINT):
+            raise ValueError("future_checkpoint_time_scope_mismatch")
+        if future and (self.checkpoint_kind is None or self.direction is None):
+            raise ValueError("future_checkpoint_metadata_incomplete")
+        if not future and (self.checkpoint_kind is not None or self.direction is not None):
+            raise ValueError("nonfuture_claim_has_checkpoint_metadata")
+        if self.claim_type == ClaimType.UNKNOWN_LIMIT and self.time_scope not in {
+            ClaimTimeScope.CURRENT,
+            ClaimTimeScope.HISTORICAL,
+        }:
+            raise ValueError("unknown_limit_time_scope_invalid")
+        return self
+
+
+def _interpretation_metadata() -> ClaimSemanticMetadata:
+    return ClaimSemanticMetadata()
+
+
+def _unknown_metadata() -> ClaimSemanticMetadata:
+    return ClaimSemanticMetadata(claim_type=ClaimType.UNKNOWN_LIMIT)
+
+
+def _future_metadata(
+    kind: CheckpointKind = CheckpointKind.VALIDATION,
+    direction: MetricDirection = MetricDirection.OBSERVE,
+) -> ClaimSemanticMetadata:
+    return ClaimSemanticMetadata(
+        claim_type=ClaimType.FUTURE_CHECKPOINT,
+        time_scope=ClaimTimeScope.FUTURE_CHECKPOINT,
+        checkpoint_kind=kind,
+        direction=direction,
+    )
+
+
 class HoldLean(StrEnum):
     BUY_LEAN = "BUY_LEAN"
     NEUTRAL = "NEUTRAL"
@@ -111,7 +188,11 @@ class HoldLean(StrEnum):
     NOT_HOLD = "NOT_HOLD"
 
 
-class ClassifiedSellDriver(EvidenceClaim):
+class StructuredEvidenceClaim(EvidenceClaim):
+    semantic: ClaimSemanticMetadata = Field(default_factory=_interpretation_metadata)
+
+
+class ClassifiedSellDriver(StructuredEvidenceClaim):
     classification: SellDriverClass
 
 
@@ -120,6 +201,7 @@ class UnknownTreatment(FrozenModel):
     evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
     treatment: UnknownTreatmentKind
     directional_negative_basis: tuple[str, ...] = Field(max_length=6)
+    semantic: ClaimSemanticMetadata = Field(default_factory=_unknown_metadata)
 
 
 class NewBuyerViewV2(FrozenModel):
@@ -138,6 +220,9 @@ class NewBuyerViewV2(FrozenModel):
     confirmation_business_condition_refs: tuple[str, ...] = Field(
         default=(), min_length=1, max_length=6
     )
+    confirmation_business_condition_semantic: ClaimSemanticMetadata = Field(
+        default_factory=_future_metadata
+    )
 
 
 class HolderViewV2(FrozenModel):
@@ -150,6 +235,13 @@ class HolderViewV2(FrozenModel):
     downside_review_basis: tuple[str, ...] = Field(max_length=6)
     currency: str | None
     business_invalidation_condition: str = Field(min_length=1, max_length=420)
+    business_invalidation_condition_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
+    business_invalidation_condition_semantic: ClaimSemanticMetadata = Field(
+        default_factory=lambda: _future_metadata(
+            CheckpointKind.INVALIDATION,
+            MetricDirection.DETERIORATE,
+        )
+    )
 
 
 class StructuredAutonomyCandidate(FrozenModel):
@@ -158,23 +250,23 @@ class StructuredAutonomyCandidate(FrozenModel):
     directional_balance: DirectionalBalance
     decision_confidence: Confidence
     business_thesis_change: BusinessThesisChange
-    business_thesis_context: EvidenceClaim
-    earnings_estimate_context: EvidenceClaim
-    market_expectation_context: EvidenceClaim
-    valuation_context: EvidenceClaim
-    price_timing_context: EvidenceClaim
-    risk_context: EvidenceClaim
-    sector_interpretation: EvidenceClaim
-    buy_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=4)
+    business_thesis_context: StructuredEvidenceClaim
+    earnings_estimate_context: StructuredEvidenceClaim
+    market_expectation_context: StructuredEvidenceClaim
+    valuation_context: StructuredEvidenceClaim
+    price_timing_context: StructuredEvidenceClaim
+    risk_context: StructuredEvidenceClaim
+    sector_interpretation: StructuredEvidenceClaim
+    buy_drivers: tuple[StructuredEvidenceClaim, ...] = Field(min_length=1, max_length=4)
     sell_drivers: tuple[ClassifiedSellDriver, ...] = Field(min_length=1, max_length=4)
-    dominant_evidence: EvidenceClaim
-    uncertainty_limit: EvidenceClaim
-    core_judgment: EvidenceClaim
+    dominant_evidence: StructuredEvidenceClaim
+    uncertainty_limit: StructuredEvidenceClaim
+    core_judgment: StructuredEvidenceClaim
     unknown_treatments: tuple[UnknownTreatment, ...] = Field(min_length=1, max_length=4)
     new_buyer_view: NewBuyerViewV2
     holder_view: HolderViewV2
-    reevaluation_up: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
-    reevaluation_down: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    reevaluation_up: tuple[StructuredEvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    reevaluation_down: tuple[StructuredEvidenceClaim, ...] = Field(min_length=1, max_length=3)
 
 
 class StructuredAutonomyBatch(FrozenModel):
@@ -240,30 +332,6 @@ _UNSUPPORTED_METRIC = re.compile(
     r"FCF\s*(?:yield|수익률|주당)|EV\s*/\s*FCF|P\s*/\s*FCF|"
     r"runway\s*(?:개월|months?)",
     re.IGNORECASE,
-)
-_EVIDENCE_GROUNDED_METRIC = re.compile(
-    r"(?<![A-Za-z0-9_])(?P<metric>ROIC|CCC|DSO|DPO)(?![A-Za-z0-9_])",
-    re.IGNORECASE,
-)
-_CURRENT_OR_HISTORICAL_METRIC = re.compile(
-    r"현재|이번|최근|전년|전분기|지난|기록|"
-    r"(?:개선|상승|악화|하락|정상화|확인|검증|증명)"
-    r"(?:됐|되었|했다|하였다)",
-)
-_FUTURE_METRIC_CONTEXT = re.compile(
-    r"향후|여부|확인|검증|증명|조건|요건|재평가|주목|지켜|본다|보겠다|중요|우선|"
-    r"지속성(?:을|이)?\s*(?:우선|확인|검증|평가)|"
-    r"(?:장기|구조적)\s*(?:악화|개선)(?:은|는)|"
-    r"(?:되|이어지|나타나|유지하|상쇄하|회수하|개선하|개선되|"
-    r"상승하|상승되|악화하|악화되|하락하|하락되|낮아지|나아지)"
-    r"(?:면|는지|는\s*경우|ㄹ\s*경우)|"
-    r"(?:될|이어질|나타날|유지할|상쇄할|회수할|개선할|개선될|"
-    r"상승할|상승될|악화할|악화될|하락할|하락될|낮아질|나아질)"
-    r"\s*(?:때|수\s*(?:있|없)|(?:위험|가능성)(?:이)?\s*(?:있|없))|"
-    r"(?:악화|개선|상승|하락|회복|전환)(?:하|되|돼)?거나|"
-    r"(?:전환돼야|전환되어야|넘어야|유지돼야|유지되어야|"
-    r"개선돼야|개선되어야|회복돼야|회복되어야|나아져야)|"
-    r"(?:되|하)지\s*않(?:으면|는\s*경우)",
 )
 _NEGATED_PROHIBITED_LANGUAGE = re.compile(
     r"아니다|아니며|아니고|아니라|아닌|않는다|않으며|않고|금지"
@@ -473,7 +541,7 @@ def allowed_downside_levels(price_map: Mapping[str, object]) -> tuple[tuple[floa
     return tuple(dict.fromkeys(rows))
 
 
-def _claim_sequence(candidate: StructuredAutonomyCandidate) -> tuple[EvidenceClaim, ...]:
+def _claim_sequence(candidate: StructuredAutonomyCandidate) -> tuple[StructuredEvidenceClaim, ...]:
     return (
         candidate.business_thesis_context,
         candidate.earnings_estimate_context,
@@ -525,30 +593,27 @@ def mandatory_trade_directive_matches(text: str) -> tuple[str, ...]:
     return tuple(matches)
 
 
-def _metric_names(text: str) -> set[str]:
-    return {
-        match.group("metric").upper()
-        for match in _EVIDENCE_GROUNDED_METRIC.finditer(text)
-    }
+def _metric_names(text: str) -> set[CheckpointMetric]:
+    return set(checkpoint_metric_refs(text))
 
 
 def _evidence_owned_metric_names(
     packet: DecisionEvidencePacket,
     refs: Sequence[str],
-) -> set[str]:
+) -> set[CheckpointMetric]:
     selected = set(refs)
     return {
         metric
         for row in packet.evidence
         if row.ref_id in selected
-        for metric in _metric_names(f"{row.label}\n{row.statement}")
+        for metric in row.metric_refs
     }
 
 
 def _metric_owned_prose(
     candidate: StructuredAutonomyCandidate,
-) -> tuple[tuple[str, tuple[str, ...], str], ...]:
-    rows: list[tuple[str, tuple[str, ...], str]] = []
+) -> tuple[tuple[str, tuple[str, ...], str, ClaimSemanticMetadata], ...]:
+    rows: list[tuple[str, tuple[str, ...], str, ClaimSemanticMetadata]] = []
     named_claims = (
         ("business_thesis_context", candidate.business_thesis_context),
         ("earnings_estimate_context", candidate.earnings_estimate_context),
@@ -565,43 +630,146 @@ def _metric_owned_prose(
         *(("reevaluation_up", claim) for claim in candidate.reevaluation_up),
         *(("reevaluation_down", claim) for claim in candidate.reevaluation_down),
     )
-    rows.extend((role, claim.evidence_refs, claim.text) for role, claim in named_claims)
     rows.extend(
-        ("unknown_treatment", unknown.evidence_refs, unknown.summary)
+        (role, claim.evidence_refs, claim.text, claim.semantic)
+        for role, claim in named_claims
+    )
+    rows.extend(
+        ("unknown_treatment", unknown.evidence_refs, unknown.summary, unknown.semantic)
         for unknown in candidate.unknown_treatments
     )
     buyer = candidate.new_buyer_view
     rows.extend(
         (
-            ("new_buyer_summary", (), buyer.summary),
-            ("preferred_entry_reason", (), buyer.preferred_entry_reason),
+            ("new_buyer_summary", (), buyer.summary, _interpretation_metadata()),
+            ("preferred_entry_reason", (), buyer.preferred_entry_reason, _interpretation_metadata()),
             (
                 "confirmation_business_condition",
                 buyer.confirmation_business_condition_refs,
                 buyer.confirmation_business_condition,
+                buyer.confirmation_business_condition_semantic,
             ),
-        )
-    )
-    downside_refs = tuple(
-        dict.fromkeys(
-            (
-                *candidate.risk_context.evidence_refs,
-                *(ref for claim in candidate.sell_drivers for ref in claim.evidence_refs),
-                *(ref for claim in candidate.reevaluation_down for ref in claim.evidence_refs),
-            )
         )
     )
     rows.extend(
         (
-            ("holder_summary", (), candidate.holder_view.summary),
+            ("holder_summary", (), candidate.holder_view.summary, _interpretation_metadata()),
             (
                 "holder_business_invalidation",
-                downside_refs,
+                candidate.holder_view.business_invalidation_condition_refs,
                 candidate.holder_view.business_invalidation_condition,
+                candidate.holder_view.business_invalidation_condition_semantic,
             ),
         )
     )
-    return tuple((text, refs, role) for role, refs, text in rows)
+    return tuple((text, refs, role, semantic) for role, refs, text, semantic in rows)
+
+
+_CHECKPOINT_KIND_SEVERITY = {
+    CheckpointKind.STRENGTHEN: LogicalSeverity.STRENGTHENING,
+    CheckpointKind.WEAKEN: LogicalSeverity.WEAKENING,
+    CheckpointKind.INVALIDATION: LogicalSeverity.INVALIDATION_CANDIDATE,
+}
+_CHECKPOINT_DIRECTION_KINDS = {
+    MetricDirection.IMPROVE: {
+        CheckpointKind.STRENGTHEN,
+        CheckpointKind.VALIDATION,
+        CheckpointKind.REASSESSMENT,
+    },
+    MetricDirection.MAINTAIN: {
+        CheckpointKind.STRENGTHEN,
+        CheckpointKind.VALIDATION,
+        CheckpointKind.REASSESSMENT,
+    },
+    MetricDirection.DETERIORATE: {
+        CheckpointKind.WEAKEN,
+        CheckpointKind.INVALIDATION,
+        CheckpointKind.VALIDATION,
+        CheckpointKind.REASSESSMENT,
+    },
+    MetricDirection.FAIL_TO_CONFIRM: {
+        CheckpointKind.WEAKEN,
+        CheckpointKind.INVALIDATION,
+        CheckpointKind.VALIDATION,
+        CheckpointKind.REASSESSMENT,
+    },
+    MetricDirection.OBSERVE: {
+        CheckpointKind.VALIDATION,
+        CheckpointKind.REASSESSMENT,
+    },
+}
+_ADVANCED_UNAVAILABLE_METRICS = {
+    CheckpointMetric.ROIC,
+    CheckpointMetric.CCC,
+    CheckpointMetric.DSO,
+    CheckpointMetric.DPO,
+}
+
+
+def _checkpoint_metadata_errors(
+    packet: DecisionEvidencePacket,
+    *,
+    refs: Sequence[str],
+    role: str,
+    text: str,
+    semantic: ClaimSemanticMetadata,
+) -> tuple[str, ...]:
+    errors: list[str] = []
+    text_metrics = _metric_names(text)
+    metadata_metrics = set(semantic.metric_refs)
+    if text_metrics != metadata_metrics:
+        errors.append("checkpoint_metric_metadata_mismatch")
+
+    future_roles = {
+        "confirmation_business_condition",
+        "holder_business_invalidation",
+        "reevaluation_up",
+        "reevaluation_down",
+    }
+    if role in future_roles and semantic.claim_type != ClaimType.FUTURE_CHECKPOINT:
+        errors.append("future_checkpoint_metadata_missing")
+
+    if not metadata_metrics:
+        return tuple(errors)
+
+    owned_metrics = _evidence_owned_metric_names(packet, refs)
+    if not metadata_metrics <= owned_metrics:
+        errors.append("unsupported_future_checkpoint_metric")
+
+    if semantic.claim_type == ClaimType.UNKNOWN_LIMIT:
+        return tuple(errors)
+    if semantic.claim_type != ClaimType.FUTURE_CHECKPOINT:
+        if metadata_metrics & _ADVANCED_UNAVAILABLE_METRICS:
+            errors.append("unsupported_current_metric_value")
+        return tuple(errors)
+
+    kind = semantic.checkpoint_kind
+    direction = semantic.direction
+    if kind is None or direction is None:
+        errors.append("future_checkpoint_metadata_incomplete")
+        return tuple(errors)
+    if kind not in _CHECKPOINT_DIRECTION_KINDS[direction]:
+        errors.append("future_checkpoint_direction_not_permitted")
+
+    required_severity = _CHECKPOINT_KIND_SEVERITY.get(kind)
+    selected = set(refs)
+    source_conditions = tuple(
+        row.logical_condition
+        for row in packet.evidence
+        if row.ref_id in selected and row.logical_condition is not None
+    )
+    if any(
+        condition.subject != packet.ticker or condition.generation_id != packet.packet_id
+        for condition in source_conditions
+    ):
+        errors.append("future_checkpoint_owner_mismatch")
+    if required_severity is not None and not any(
+        condition.severity == required_severity
+        and metadata_metrics <= set(condition.metric_refs)
+        for condition in source_conditions
+    ):
+        errors.append("future_checkpoint_kind_not_owned")
+    return tuple(errors)
 
 
 def evidence_grounded_metric_claim_errors(
@@ -609,28 +777,18 @@ def evidence_grounded_metric_claim_errors(
     candidate: StructuredAutonomyCandidate,
 ) -> tuple[str, ...]:
     errors: list[str] = []
-    future_roles = {
-        "confirmation_business_condition",
-        "holder_business_invalidation",
-        "reevaluation_up",
-        "reevaluation_down",
-    }
-    for text, refs, role in _metric_owned_prose(candidate):
-        for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
-            metrics = _metric_names(sentence)
-            if not metrics:
-                continue
-            if _has_unowned_prose_number(
-                sentence,
+    for text, refs, role, semantic in _metric_owned_prose(candidate):
+        errors.extend(
+            _checkpoint_metadata_errors(
                 packet,
-                refs,
-            ) or _CURRENT_OR_HISTORICAL_METRIC.search(sentence):
-                errors.append("unsupported_current_metric_value")
-                continue
-            is_future = role in future_roles or bool(_FUTURE_METRIC_CONTEXT.search(sentence))
-            owned_metrics = _evidence_owned_metric_names(packet, refs)
-            if not is_future or not metrics <= owned_metrics:
-                errors.append("unsupported_future_checkpoint_metric")
+                refs=refs,
+                role=role,
+                text=text,
+                semantic=semantic,
+            )
+        )
+        if semantic.metric_refs and _has_unowned_prose_number(text, packet, refs):
+            errors.append("unsupported_current_metric_value")
     if errors:
         errors.append("unsupported_metric_or_inference")
     return tuple(dict.fromkeys(errors))
@@ -700,6 +858,7 @@ def validate_structured_autonomy_candidate(
     cited.extend(buyer.confirmation_business_condition_refs)
     cited.extend(holder.upside_trim_basis)
     cited.extend(holder.downside_review_basis)
+    cited.extend(holder.business_invalidation_condition_refs)
     if any(ref not in valid_refs for ref in cited):
         errors.append("unsupported_evidence_ref")
 
