@@ -20,7 +20,7 @@ The production checkout remained clean at `d18e68b1e944d7749d093b08797fcd9498412
 | KR natural explicit V2 proof | `PENDING` | The observed Saturday executions were calendar-guard safe no-ops. |
 | US natural explicit V2 proof | `PENDING` | No authoritative post-deployment natural run exists yet. |
 | Investment-judgment promotion | `NEEDS_MORE_SHADOW_WORK` | Run C failed schema validation and A/B were not 22/22. |
-| External blind comparison | `NOT_STARTED` | No independent judgment was supplied or fabricated. |
+| External blind comparison | `FROZEN_REVEALED_NOT_COMPARED` | Independent judgment was frozen before the matching AI decision pack was revealed. |
 
 Infrastructure proof and investment-judgment quality remain separate. Neither pending natural proof nor a clean fresh-first run was promoted into a broader claim.
 
@@ -66,7 +66,9 @@ Run B completed its six planned batches with no retry. Run C completed four batc
 | AI judgment leakage | `0` |
 | Blind pack SHA-256 | `f415d4edb17393141dbcc3c81ebe7fc6d30ce57ac528f1af3d8d0f6733f70de0` |
 | AI decision pack SHA-256 | `009aa30f35ce838f49485004c3d09c6c721033b61ce1bc1f69c631d643ce4524` |
-| AI decision pack state | `SEALED_PENDING_EXTERNAL_BLIND_FREEZE` |
+| AI decision pack state | `REVEALED_AFTER_EXTERNAL_BLIND_FREEZE` |
+| External judgment SHA-256 | `4cd6247739113cba0e18f15cf72857e11b7525961ab6102e443f38eb9bf54273` |
+| Revealed AI decision ZIP SHA-256 | `9d6d4438adcfc26dc9a1967ab40182f99ceb53c8a01d17370b1e898102e78cf9` |
 | Blind-review ZIP SHA-256 | `cd9bbf37a6a7199bcb5537422e7aa9072790bc6ed1f01a4d1921c987006c7764` |
 
 The downloadable blind-review ZIP contains only the blind fact pack, comparison protocol, empty external-review template, and checksum file. It does not contain `AI_DECISION_PACK`, per-ticker AI labels, directional balances, or A/B/C decisions.
@@ -107,7 +109,7 @@ RUN_A_VALIDATED = 20
 RUN_B_VALIDATED = 20
 RUN_C_VALIDATED = OTHER
 STABILITY = NOT_MEASURED
-EXTERNAL_BLIND_JUDGMENT_STATUS = NOT_STARTED
+EXTERNAL_BLIND_JUDGMENT_STATUS = FROZEN_REVEALED_NOT_COMPARED
 HARD_SAFETY_REGRESSION = 5
 PRODUCTION_DECISION_MUTATION = 0
 PRODUCTION_RENDERER_MUTATION = 0
@@ -117,4 +119,8 @@ MAIN_MERGE = 0
 PROMOTION_READINESS = NEEDS_MORE_SHADOW_WORK
 ```
 
-This generation is frozen as a failed experiment. The next engineering step is a generic P1 repair followed by a completely new generation. The blind pack may still be used to freeze an independent reviewer judgment before any AI decision reveal, but it cannot by itself make this generation production-ready.
+This generation remains frozen as a failed experiment. The independent judgment was
+subsequently frozen and the matching fresh-first AI decision pack was revealed without
+changing the A/B/C or promotion result. No external-versus-AI comparison verdict or
+majority vote was produced. The next engineering step remains a generic P1 repair
+followed by a completely new generation.

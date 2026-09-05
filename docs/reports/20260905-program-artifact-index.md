@@ -6,4 +6,6 @@
 | blind fact pack | /Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260905-natural-proof-structured-autonomy-blind-comparison/data/structured_autonomy/20260905-blind-program-v2/review-intake/BLIND_FACT_PACK |
 | blind intake ZIP | /Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260905-natural-proof-structured-autonomy-blind-comparison/data/structured_autonomy/20260905-blind-program-v2/thesis-monitor-structured-autonomy-blind-review-bundle.zip |
 | machine promotion review | /Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260905-natural-proof-structured-autonomy-blind-comparison/data/structured_autonomy/20260905-blind-program-v2/machine/promotion-review.json |
-| sealed AI decision pack | SEALED_PENDING_EXTERNAL_BLIND_FREEZE |
+| frozen external judgment | data/structured_autonomy/20260905-blind-program-v2/review-intake/external-comparison-template.json |
+| revealed AI decision pack | data/structured_autonomy/20260905-blind-program-v2/revealed/AI_DECISION_PACK |
+| revealed AI decision ZIP | data/structured_autonomy/20260905-blind-program-v2/revealed/thesis-monitor-20260905-revealed-AI_DECISION_PACK.zip |
