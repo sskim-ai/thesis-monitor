@@ -21,6 +21,9 @@ _PARTICLE_FAMILY = {
     "과": "와/과",
 }
 _SAFE_COPULA = re.compile(r"^(?:이며|이고|이지만)")
+_TYPED_SPAN_BRIDGE_REPAIRS = (
+    (". 이 값은 이는 ", "이며, 이는 "),
+)
 
 
 def _text_target(review: dict[str, object], text_ref: str) -> tuple[dict[str, object], str] | None:
@@ -82,6 +85,47 @@ def _registry(context: object) -> dict[tuple[str, str], dict[str, object]]:
     }
 
 
+def _restore_structured_interpretation_spans(
+    review: dict[str, object],
+) -> list[dict[str, str]]:
+    refs = review.get("valuation_interpretation_refs")
+    if not isinstance(refs, list):
+        return []
+    repairs: list[dict[str, str]] = []
+    for ref in refs:
+        if not isinstance(ref, Mapping):
+            continue
+        text_ref = str(ref.get("text_ref") or "")
+        exact_span = str(ref.get("exact_text_span") or "")
+        target = _text_target(review, text_ref)
+        if target is None or not exact_span or exact_span.count("{{numeric:") != 1:
+            continue
+        parent, key = target
+        text = str(parent[key])
+        if text.count(exact_span) == 1:
+            continue
+        for malformed_bridge, canonical_bridge in _TYPED_SPAN_BRIDGE_REPAIRS:
+            if canonical_bridge not in exact_span:
+                continue
+            malformed_span = exact_span.replace(
+                canonical_bridge,
+                malformed_bridge,
+                1,
+            )
+            if text.count(malformed_span) != 1:
+                continue
+            parent[key] = text.replace(malformed_span, exact_span, 1)
+            repairs.append(
+                {
+                    "ref_id": str(ref.get("ref_id") or ""),
+                    "text_ref": text_ref,
+                    "reason": "structured_interpretation_span_restored",
+                }
+            )
+            break
+    return repairs
+
+
 def normalize_numeric_reference_language(
     packet: Mapping[str, object],
     output_value: object,
@@ -120,6 +164,8 @@ def normalize_numeric_reference_language(
     rewrites: list[dict[str, str]] = []
     invariant_errors: list[str] = []
     for scope, review, context in contexts:
+        for repair in _restore_structured_interpretation_spans(review):
+            rewrites.append({"scope": scope, **repair})
         refs = review.get("numeric_fact_refs")
         if not isinstance(refs, list):
             continue
