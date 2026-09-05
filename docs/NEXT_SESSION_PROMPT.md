@@ -7,13 +7,17 @@ instruction commit is `35dab28b0a8c714b236a7ac36582461fcb4fbf67`; final implemen
 documentation is `03e230da22c1482339b4bb7b1c1883ce0ac01076` on base
 `906b092749511dc42d5799ed335165819efee2ea`.
 
+Clean linear promotion and operating synchronization completed at
+`f031d72af76b408b90b1c9695a7143aeafad4c97`. Documentation promotion Actions `33949976793` and
+main exact-SHA Actions `33950260247` pass; API health passes after the thesis-monitor-only restart.
+
 The source owns structured logical connectors and coverage; production validation keeps hard
 safety separate from soft natural-language quality. Dedicated TEST proof passes KR `1+8` and US
 `1+14` with signed-in `gpt-5.6-sol / xhigh`; fallback, duplicates, UnknownIssuer, and production
 mutations are zero. Full pytest is `2227`, and implementation Actions run `33949330754` passes.
 
-Next actions: verify the documented main/operating closure, then observe the next ordinary KR and
-US runs read-only. Structured Autonomy may resume separately with a fresh ALL22 generation and
+Next action: observe the next ordinary KR and US runs read-only. Structured Autonomy may resume
+separately with a fresh ALL22 generation and
 A/B/C stability; do not activate it from this infrastructure change. Do not manually invoke or
 resend a scheduled run, expose recipient values, or call dedicated-sink evidence natural proof.
 Production Assist remains OFF.

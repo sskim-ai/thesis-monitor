@@ -2565,7 +2565,10 @@ typed repetition is soft. KR/US dedicated TEST proof passes `1+8` and `1+14` wit
 duplicates, production send, DB mutation, and scheduler mutation at zero. Full pytest is `2227`
 and implementation Actions `33949330754` passes.
 
-After main/operating closure, observe the next ordinary KR and US cycles read-only. Do not replay
-Run-57, manually invoke a Scheduled Task, resend production, expose recipient values, or treat
-TEST evidence as natural proof. Structured Autonomy may resume as a separate shadow/promotion
-program; production mutation remains zero and Production Assist remains OFF.
+Clean linear promotion and operating synchronization completed at
+`f031d72af76b408b90b1c9695a7143aeafad4c97`. Documentation promotion Actions `33949976793` and
+main exact-SHA Actions `33950260247` pass; the thesis-monitor-only restart and API health pass.
+Observe the next ordinary KR and US cycles read-only. Do not replay Run-57, manually invoke a
+Scheduled Task, resend production, expose recipient values, or treat TEST evidence as natural
+proof. Structured Autonomy may resume as a separate shadow/promotion program; production mutation
+remains zero and Production Assist remains OFF.

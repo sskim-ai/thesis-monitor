@@ -212,14 +212,14 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "codex/20260905-kr-v2-validation-policy-production-integration"
     )
     assert state["current_phase"] == (
-        "validation_policy_production_integration_ready_for_main"
+        "validation_policy_production_integration_deployed_awaiting_natural_proof"
     )
     assert state["last_completed_phase"] == (
         "20260905_validation_policy_production_integration"
     )
     assert state["next_default_phase"] == "read_only_natural_kr_us_validation_proof"
     policy = state["validation_policy_production_integration_20260905"]
-    assert policy["status"] == "READY_FOR_MAIN"
+    assert policy["status"] == "DEPLOYED_AWAITING_NATURAL_KR_US_PROOF"
     assert policy["work_instruction_commit"] == (
         "35dab28b0a8c714b236a7ac36582461fcb4fbf67"
     )
@@ -227,12 +227,21 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
         "03e230da22c1482339b4bb7b1c1883ce0ac01076"
     )
     assert policy["implementation_actions_run"] == 33949330754
+    assert policy["report_promotion_actions_run"] == 33949976793
+    assert policy["main_actions_run"] == 33950260247
     assert policy["logical_condition_owner"] == "STRUCTURED_METADATA"
     assert policy["kr_test"] == "PASS_MARKET_1_EXPLICIT_V2_8"
     assert policy["us_test"] == "PASS_MARKET_1_EXPLICIT_V2_14"
     assert policy["test_fallback_duplicate"] == "0/0"
     assert policy["tls_unknown_issuer"] == 0
     assert policy["full_pytest"] == 2227
+    assert policy["main_merge"] == 1
+    assert policy["main_sha"] == (
+        "f031d72af76b408b90b1c9695a7143aeafad4c97"
+    )
+    assert policy["operating_sha"] == policy["main_sha"]
+    assert policy["api_health"] == "PASS"
+    assert policy["next_action"] == "WAIT_FOR_NEXT_NATURAL_KR_US_LIVE_READ_ONLY"
     assert policy["production_recipient_send"] == 0
     assert policy["structured_autonomy_production_mutation"] == 0
     assert policy["open_p0"] == []
@@ -408,13 +417,10 @@ def test_persistent_handoff_artifacts_and_state_are_current() -> None:
     provider_integrity_promotion = "9c6919a2e35905defe380f7adcd7f0d454887abd"
     natural_runtime_implementation = "b5be74439b2e8e769b1605e539599835abbc8a84"
     natural_runtime_promotion = "26004d926247c4ef053e49b74dc8fb9654353199"
-    assert state["deployed_code_commit"] == (
-        "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
-    )
-    assert state["main_code_commit"] == "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
-    assert state["operating_code_commit"] == (
-        "RESOLVED_FROM_GIT_AT_DOCUMENTATION_CLOSURE"
-    )
+    validation_policy_runtime = "f031d72af76b408b90b1c9695a7143aeafad4c97"
+    assert state["deployed_code_commit"] == validation_policy_runtime
+    assert state["main_code_commit"] == validation_policy_runtime
+    assert state["operating_code_commit"] == validation_policy_runtime
     provider_integrity = state["ohlcv_provider_integrity_repair_20260901"]
     assert provider_integrity["status"] == "DEPLOYED_AWAITING_NATURAL_US_LIVE"
     assert provider_integrity["report_promotion_commit"] == provider_integrity_promotion

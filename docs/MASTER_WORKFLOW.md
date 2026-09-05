@@ -2514,6 +2514,9 @@ market `1` plus explicit V2 stocks `14` using signed-in `gpt-5.6-sol / xhigh`. P
 compatibility, fallback, duplicate, UnknownIssuer, production recipient, production DB, and
 scheduler mutation are zero. The US finalization used a same-claim continuation after a pre-send
 validator repair and did not rerun the accepted 14-subject model output. Full regression is
-`2227 passed`; implementation Actions run `33949330754` passes pytest and Ruff. Open P0/material
-P1 are `0/0`; state is `READY_FOR_MAIN`. Natural KR/US proof and Structured Autonomy promotion
+`2227 passed`; implementation Actions run `33949330754` passes pytest and Ruff. Documentation
+promotion Actions `33949976793` and main exact-SHA Actions `33950260247` also pass. Clean linear
+promotion and operating synchronization completed at `f031d72af76b408b90b1c9695a7143aeafad4c97`;
+the thesis-monitor-only restart and API health pass. Open P0/material P1 are `0/0`; state is
+`DEPLOYED_AWAITING_NATURAL_KR_US_PROOF`. Natural KR/US proof and Structured Autonomy promotion
 remain separate. Production Assist remains OFF.
