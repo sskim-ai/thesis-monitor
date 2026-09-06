@@ -37,6 +37,18 @@ EVIDENCE_FAMILY_CONTRACT = "fundamental-evidence-family-v1"
 SOURCE_SUFFICIENCY_CONTRACT = "pre-model-source-sufficiency-v1"
 PACKET_CONTRACT = "fundamental-enriched-coldstart-packet-v1"
 
+_US_BANK_SECTOR_CONCEPT_GROUPS = (
+    ("InterestIncomeExpenseNet",),
+    ("NoninterestIncome",),
+)
+_US_INSURANCE_SECTOR_CONCEPT_GROUPS = (
+    (
+        "LiabilityForFuturePolicyBenefits",
+        "PolicyholderBenefitsAndClaimsPayableCurrent",
+        "PolicyholderBenefitsAndClaimsPayable",
+    ),
+)
+
 
 class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -406,6 +418,197 @@ def _official_fact(
     }
 
 
+def _bank_insurer_subframework(
+    profile_payload: Mapping[str, object],
+) -> Literal["bank", "insurance"] | None:
+    text = _framework_text(
+        profile_payload.get("taxonomy_key"),
+        profile_payload.get("sector"),
+        profile_payload.get("industry"),
+        profile_payload.get("official_industry_description"),
+    )
+    if any(token in text for token in ("bank", "은행")):
+        return "bank"
+    if any(token in text for token in ("insurance", "insurer", "보험", "재보험")):
+        return "insurance"
+    return None
+
+
+def _sec_current_occurrence(
+    payload: Mapping[str, object],
+    *,
+    concept: str,
+    filing_date: date,
+    period_end: date,
+    fiscal_year: int,
+    fiscal_period: str,
+    period_scope: str,
+) -> dict[str, object] | None:
+    facts = payload.get("facts")
+    if not isinstance(facts, Mapping):
+        return None
+    taxonomy = facts.get("us-gaap")
+    if not isinstance(taxonomy, Mapping):
+        return None
+    raw = taxonomy.get(concept)
+    if not isinstance(raw, Mapping):
+        return None
+    units = raw.get("units")
+    if not isinstance(units, Mapping):
+        return None
+
+    candidates: list[dict[str, object]] = []
+    for unit, entries in units.items():
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, Mapping):
+                continue
+            if (
+                _as_date(entry.get("filed")) != filing_date
+                or _as_date(entry.get("end")) != period_end
+                or entry.get("fy") != fiscal_year
+                or str(entry.get("fp") or "") != fiscal_period
+                or str(entry.get("form") or "") not in {"10-Q", "10-K"}
+                or not isinstance(entry.get("val"), (int, float))
+                or not entry.get("accn")
+            ):
+                continue
+            start = _as_date(entry.get("start"))
+            duration_days = (period_end - start).days if start is not None else None
+            candidates.append(
+                {
+                    "taxonomy": "us-gaap",
+                    "concept": concept,
+                    "label": raw.get("label"),
+                    "value": entry.get("val"),
+                    "unit": str(unit),
+                    "period_start": start,
+                    "period_end": period_end,
+                    "duration_days": duration_days,
+                    "filing_date": filing_date,
+                    "fiscal_year": fiscal_year,
+                    "fiscal_period": fiscal_period,
+                    "form": entry.get("form"),
+                    "accession_number": entry.get("accn"),
+                    "frame": entry.get("frame"),
+                }
+            )
+    if not candidates:
+        return None
+
+    instant = [row for row in candidates if row["duration_days"] is None]
+    if instant:
+        unique = {(row["unit"], row["value"]) for row in instant}
+        return instant[0] if len(unique) == 1 else None
+
+    if fiscal_period == "FY":
+        if period_scope != "annual":
+            return None
+        expected = [
+            row
+            for row in candidates
+            if isinstance(row["duration_days"], int) and row["duration_days"] >= 300
+        ]
+        target_duration = max(
+            (int(row["duration_days"]) for row in expected), default=None
+        )
+    else:
+        expected = [
+            row
+            for row in candidates
+            if isinstance(row["duration_days"], int) and row["duration_days"] <= 130
+        ]
+        target_duration = min(
+            (int(row["duration_days"]) for row in expected), default=None
+        )
+    if target_duration is None:
+        return None
+    selected = [row for row in expected if row["duration_days"] == target_duration]
+    unique = {(row["unit"], row["value"]) for row in selected}
+    return selected[0] if len(unique) == 1 else None
+
+
+def us_bank_insurer_sector_fact(
+    *,
+    ticker: str,
+    payload: Mapping[str, object],
+    profile_payload: Mapping[str, object],
+    financial_row: object,
+    source_payload_sha256: str,
+) -> dict[str, object] | None:
+    subframework = _bank_insurer_subframework(profile_payload)
+    if subframework is None:
+        return None
+    filing_date = getattr(financial_row, "filing_date", None)
+    period_end = getattr(financial_row, "financial_period_end", None)
+    fiscal_year = getattr(financial_row, "fiscal_year", None)
+    period = str(getattr(financial_row, "period", "") or "")
+    fiscal_period = period.rsplit("-", 1)[-1]
+    period_scope = str(getattr(financial_row, "period_scope", "") or "")
+    if (
+        not isinstance(filing_date, date)
+        or not isinstance(period_end, date)
+        or not isinstance(fiscal_year, int)
+        or fiscal_period not in {"Q1", "Q2", "Q3", "FY"}
+    ):
+        return None
+    concept_groups = (
+        _US_BANK_SECTOR_CONCEPT_GROUPS
+        if subframework == "bank"
+        else _US_INSURANCE_SECTOR_CONCEPT_GROUPS
+    )
+    metrics: list[dict[str, object]] = []
+    for group in concept_groups:
+        selected = next(
+            (
+                occurrence
+                for concept in group
+                if (
+                    occurrence := _sec_current_occurrence(
+                        payload,
+                        concept=concept,
+                        filing_date=filing_date,
+                        period_end=period_end,
+                        fiscal_year=fiscal_year,
+                        fiscal_period=fiscal_period,
+                        period_scope=period_scope,
+                    )
+                )
+                is not None
+            ),
+            None,
+        )
+        if selected is None:
+            return None
+        metrics.append(selected)
+    source_document_id = (
+        f"SEC-COMPANYFACTS:{getattr(financial_row, 'ticker', ticker)}:"
+        f"{filing_date.isoformat()}:{period}"
+    )
+    return _official_fact(
+        ticker=ticker,
+        family=FundamentalEvidenceFamily.SECTOR_OPERATING_CURRENT,
+        fact_type="official_current_sector_operating",
+        as_of_date=filing_date.isoformat(),
+        source="sec_edgar_companyfacts",
+        source_document_id=source_document_id,
+        source_payload_sha256=source_payload_sha256,
+        fields={
+            "subframework": subframework,
+            "period": period,
+            "period_scope": period_scope,
+            "period_end": period_end,
+            "filing_date": filing_date,
+            "entity_scope": "issuer_level",
+            "statement_basis": "issuer_reported_entity_wide",
+            "security_basis": "issuer_not_per_share",
+            "formal_filing": True,
+            "metrics": metrics,
+        },
+    )
+
+
 class OfficialFundamentalEnricher:
     def __init__(
         self,
@@ -650,6 +853,16 @@ class OfficialFundamentalEnricher:
                     fields={**common, **earnings},
                 )
             )
+            if framework == AnalysisFramework.BANK_INSURER:
+                sector_fact = us_bank_insurer_sector_fact(
+                    ticker=item.ticker,
+                    payload=payload,
+                    profile_payload=profile_payload,
+                    financial_row=row,
+                    source_payload_sha256=source_sha,
+                )
+                if sector_fact is not None:
+                    facts.append(sector_fact)
             quality = FundamentalEvidenceQuality.CURRENT
         else:
             errors.append("validated_current_sec_financial_occurrence_unavailable")

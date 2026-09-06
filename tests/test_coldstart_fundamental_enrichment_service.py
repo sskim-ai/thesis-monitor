@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from datetime import date
+from types import SimpleNamespace
+
 from app.services.coldstart_fundamental_enrichment_service import (
     AnalysisFramework,
     FundamentalEvidenceFamily,
@@ -10,6 +13,7 @@ from app.services.coldstart_fundamental_enrichment_service import (
     enrich_assembled_packet,
     evaluate_source_sufficiency,
     resolve_financial_lifecycle_framework,
+    us_bank_insurer_sector_fact,
 )
 from app.services.coldstart_source_assembly_service import (
     SourceAssemblyResult,
@@ -158,6 +162,156 @@ def test_framework_classification_is_generic() -> None:
     assert classify_analysis_framework(
         taxonomy_key=None, sector="Technology", industry="Software"
     ) == AnalysisFramework.STANDARD_OPERATING
+
+
+def _sector_payload(
+    concepts: dict[str, list[dict[str, object]]],
+    *,
+    taxonomy: str = "us-gaap",
+) -> dict[str, object]:
+    return {
+        "facts": {
+            taxonomy: {
+                concept: {
+                    "label": concept,
+                    "units": {"USD": rows},
+                }
+                for concept, rows in concepts.items()
+            }
+        }
+    }
+
+
+def _sector_row() -> SimpleNamespace:
+    return SimpleNamespace(
+        ticker="FICTIONAL",
+        filing_date=date(2026, 8, 6),
+        financial_period_end=date(2026, 6, 30),
+        fiscal_year=2026,
+        period="2026-Q2",
+        period_scope="single-quarter",
+    )
+
+
+def _occurrence(
+    value: int,
+    *,
+    start: str | None = "2026-04-01",
+    filed: str = "2026-08-06",
+    accession: str | None = "0000000000-26-000001",
+) -> dict[str, object]:
+    return {
+        "start": start,
+        "end": "2026-06-30",
+        "filed": filed,
+        "fy": 2026,
+        "fp": "Q2",
+        "form": "10-Q",
+        "val": value,
+        "accn": accession,
+    }
+
+
+def test_current_bank_sector_metrics_map_generically_with_exact_occurrences() -> None:
+    payload = _sector_payload(
+        {
+            "InterestIncomeExpenseNet": [
+                _occurrence(200, start="2026-01-01"),
+                _occurrence(100),
+            ],
+            "NoninterestIncome": [
+                _occurrence(80, start="2026-01-01"),
+                _occurrence(40),
+            ],
+        }
+    )
+
+    fact = us_bank_insurer_sector_fact(
+        ticker="FICTIONAL",
+        payload=payload,
+        profile_payload={"taxonomy_key": "bank", "industry": "Banking"},
+        financial_row=_sector_row(),
+        source_payload_sha256="source-sha",
+    )
+
+    assert fact is not None
+    assert fact["evidence_family"] == "SECTOR_OPERATING_CURRENT"
+    assert fact["fields"]["subframework"] == "bank"
+    assert [row["value"] for row in fact["fields"]["metrics"]] == [100, 40]
+    assert all(row["taxonomy"] == "us-gaap" for row in fact["fields"]["metrics"])
+    assert all(row["accession_number"] for row in fact["fields"]["metrics"])
+
+
+def test_current_insurance_obligation_maps_to_sector_operating_not_capital() -> None:
+    payload = _sector_payload(
+        {"LiabilityForFuturePolicyBenefits": [_occurrence(500, start=None)]}
+    )
+
+    fact = us_bank_insurer_sector_fact(
+        ticker="FICTIONAL",
+        payload=payload,
+        profile_payload={"taxonomy_key": "insurance", "industry": "Insurance"},
+        financial_row=_sector_row(),
+        source_payload_sha256="source-sha",
+    )
+
+    assert fact is not None
+    assert fact["evidence_family"] == "SECTOR_OPERATING_CURRENT"
+    assert fact["fields"]["subframework"] == "insurance"
+    assert fact["fields"]["metrics"][0]["concept"] == (
+        "LiabilityForFuturePolicyBenefits"
+    )
+
+
+def test_sector_mapping_rejects_standard_company_stale_wrong_taxonomy_and_missing_provenance() -> None:
+    valid = {
+        "InterestIncomeExpenseNet": [_occurrence(100)],
+        "NoninterestIncome": [_occurrence(40)],
+    }
+    cases = (
+        (
+            _sector_payload(valid),
+            {"taxonomy_key": "retail", "industry": "Retail"},
+        ),
+        (
+            _sector_payload(
+                {
+                    "InterestIncomeExpenseNet": [
+                        _occurrence(100, filed="2026-05-01")
+                    ],
+                    "NoninterestIncome": [_occurrence(40, filed="2026-05-01")],
+                }
+            ),
+            {"taxonomy_key": "bank"},
+        ),
+        (
+            _sector_payload(valid, taxonomy="issuer-extension"),
+            {"taxonomy_key": "bank"},
+        ),
+        (
+            _sector_payload(
+                {
+                    "InterestIncomeExpenseNet": [
+                        _occurrence(100, accession=None)
+                    ],
+                    "NoninterestIncome": [_occurrence(40, accession=None)],
+                }
+            ),
+            {"taxonomy_key": "bank"},
+        ),
+    )
+
+    assert all(
+        us_bank_insurer_sector_fact(
+            ticker="FICTIONAL",
+            payload=payload,
+            profile_payload=profile,
+            financial_row=_sector_row(),
+            source_payload_sha256="source-sha",
+        )
+        is None
+        for payload, profile in cases
+    )
 
 
 def test_profitable_life_sciences_company_uses_operating_company_gate() -> None:
