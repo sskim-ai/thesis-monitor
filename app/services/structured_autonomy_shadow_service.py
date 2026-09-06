@@ -317,7 +317,7 @@ class RenderedStructuredAutonomy(FrozenModel):
 
 _TRADE_ACTION = re.compile(
     r"매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄)|손절|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄|종료)|손절|진입|청산|"
     r"(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|시장가|지정가|"
     r"\b(?:sell|buy|reduce\s+(?:the\s+)?position)\b",
     re.IGNORECASE,
@@ -325,7 +325,7 @@ _TRADE_ACTION = re.compile(
 _NON_DIRECTIVE_TRADE_SPAN = re.compile(
     r"(?:자동(?:으로)?|기계적(?:으로)?|무조건|반드시)?\s*"
     r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절(?:선)?)"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*|종료)|손절(?:선)?|진입|청산)"
     r"[^,.!?;\n]{0,40}?"
     r"(?:보다|대신|아니\w*|않\w*|필요\s*없\w*|보지\w*\s*않\w*)",
     re.IGNORECASE,
@@ -334,10 +334,10 @@ _MANDATORY_TRADE_DIRECTIVE = re.compile(
     r"(?:반드시|즉시|무조건|자동으로|기계적으로)\s*"
     r"(?:[^,.!?;\n]{0,24}?)"
     r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절)|"
-    r"자동\s*(?:매도|매수)\s*(?:한다|해야|하라|하십시오|실행)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*|종료)|손절|진입|청산)|"
+    r"자동\s*(?:매도|매수|진입|청산)\s*(?:한다|해야|하라|하십시오|실행)|"
     r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*)|손절)"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*|종료)|손절|진입|청산)"
     r"\s*(?:해야|한다|하라|하십시오|실행|권고)|"
     r"(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|"
     r"\b(?:buy|sell)\s+(?:now|immediately)\b|"
@@ -347,17 +347,31 @@ _MANDATORY_TRADE_DIRECTIVE = re.compile(
 )
 _MANDATORY_SELL = re.compile(
     r"매도|손절|비중(?:을|를)?\s*(?:축소|감축|줄)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄)|"
+    r"포지션(?:을|를)?\s*(?:축소|감축|줄|종료)|청산|"
     r"\b(?:sell|reduce)\b",
     re.IGNORECASE,
 )
+_TRADE_NOMINAL_PREDICATE_HEAD = (
+    r"(?:신호|명령|지시|권고|추천|조건|근거|사유|이유|기준|트리거)"
+)
 _TRADE_NEGATION_SUFFIX = re.compile(
     r"^\s*(?:"
-    r"(?:선|명령|권고|조건)?(?:이|가|은|는|을|를)?\s*"
-    r"(?:아니다|아닙니다|아닌|아니며|아니고|아니라|않는다|않습니다|않으며|않고)"
+    r"(?:(?:의|하라는|라는|는)\s*)?"
+    rf"(?:선|{_TRADE_NOMINAL_PREDICATE_HEAD})?"
+    r"(?:이|가|은|는|을|를)?\s*"
+    r"(?:아니다|아닙니다|아닌|아니며|아니고|아니라|아니지만|아니나|"
+    r"않는다|않습니다|않으며|않고)"
     r"|[^,.!?;\n]{0,28}?(?:"
     r"필요(?:가)?\s*없\w*|권고하지\s*않\w*|보지(?:는)?\s*않\w*"
     r")"
+    r")"
+)
+_AMBIGUOUS_TRADE_NEGATION = re.compile(
+    r"(?:"
+    r"아니(?:라고|라고는|라고도)\s*(?:보|말하|단정하|판단하)[^,.!?;\n]{0,12}"
+    r"(?:어렵|않|못)|"
+    r"아닌\s*(?:것|셈)(?:이|은|도)?\s*아니|"
+    r"아니지\s*않"
     r")"
 )
 _TRADE_COMPARISON_SUFFIX = re.compile(r"^\s*(?:보다|대신|보다는)(?:\s|$)")
@@ -369,7 +383,7 @@ _UNSUPPORTED_METRIC = re.compile(
     re.IGNORECASE,
 )
 _NEGATED_PROHIBITED_LANGUAGE = re.compile(
-    r"아니다|아니며|아니고|아니라|아닌|않는다|않으며|않고|금지"
+    r"아니다|아니며|아니고|아니라|아니지만|아니나|아닌|않는다|않으며|않고|금지"
 )
 _KOREAN_PROSE = re.compile(r"[가-힣]")
 _KOREAN_PRICE_SUBJECT_ACTION = re.compile(
@@ -632,6 +646,8 @@ def trade_language_semantic(text: str) -> TradeLanguageSemantic:
         if not action_matches:
             continue
         has_trade_language = True
+        if _AMBIGUOUS_TRADE_NEGATION.search(sentence):
+            return TradeLanguageSemantic.ACTIONABLE
         directives = tuple(_MANDATORY_TRADE_DIRECTIVE.finditer(sentence))
         if any(not _directive_is_bounded_negated(sentence, match) for match in directives):
             return TradeLanguageSemantic.ACTIONABLE
@@ -653,6 +669,9 @@ def mandatory_trade_directive_matches(text: str) -> tuple[str, ...]:
     for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
         if not _TRADE_ACTION.search(sentence):
             continue
+        ambiguous = _AMBIGUOUS_TRADE_NEGATION.search(sentence)
+        if ambiguous:
+            matches.append(ambiguous.group(0))
         for match in _MANDATORY_TRADE_DIRECTIVE.finditer(sentence):
             if not _directive_is_bounded_negated(sentence, match):
                 matches.append(match.group(0))

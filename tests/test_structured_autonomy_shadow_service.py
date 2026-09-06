@@ -468,6 +468,102 @@ def test_trade_negation_does_not_swallow_later_actionable_directive() -> None:
     assert mandatory_trade_directive_matches(text) == ("매수해야",)
 
 
+@pytest.mark.parametrize(
+    "text",
+    (
+        "즉시 매수 신호가 아니다.",
+        "즉시 매수 신호는 아니다.",
+        "즉시 매수 신호가 아니며 향후 재검토 조건이다.",
+        "지금 매도하라는 명령이 아니다.",
+        "매수의 근거가 아니다.",
+        "매수 조건은 아니다.",
+        "자동 매도 조건이 아니다.",
+        "즉시 진입 사유가 아니다.",
+        "즉시 청산 트리거가 아니다.",
+        "무조건 비중 축소 권고가 아니다.",
+        "자동 손절 지시가 아니다.",
+        "포지션 종료의 기준은 아니다.",
+    ),
+)
+def test_ticker_free_nominal_trade_negation_matrix(text: str) -> None:
+    assert trade_language_semantic(text) == TradeLanguageSemantic.NEGATED
+    assert mandatory_trade_directive_matches(text) == ()
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "즉시 매수한다.",
+        "반드시 매도해야 한다.",
+        "무조건 매수하라.",
+        "자동으로 매도한다.",
+        "기계적으로 비중을 줄인다.",
+        "반드시 포지션을 축소한다.",
+        "즉시 손절해야 한다.",
+        "즉시 진입한다.",
+        "반드시 청산한다.",
+        "무조건 포지션을 종료한다.",
+        "전량 매도하라.",
+        "매수 주문을 실행한다.",
+    ),
+)
+def test_ticker_free_actionable_trade_matrix(text: str) -> None:
+    assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
+    assert mandatory_trade_directive_matches(text)
+
+
+@pytest.mark.parametrize(
+    ("text", "semantic"),
+    (
+        ("매수세와 거래량을 함께 관찰한다.", TradeLanguageSemantic.DESCRIPTIVE),
+        ("매도 압력을 계속 관찰한다.", TradeLanguageSemantic.DESCRIPTIVE),
+        ("진입 시점은 아직 불확실하다.", TradeLanguageSemantic.DESCRIPTIVE),
+        ("향후 사업 성과를 재검토한다.", TradeLanguageSemantic.NONE),
+        ("가치평가 근거를 확인한다.", TradeLanguageSemantic.NONE),
+        ("실적 발표 뒤 판단을 갱신한다.", TradeLanguageSemantic.NONE),
+    ),
+)
+def test_ticker_free_descriptive_and_none_trade_matrix(
+    text: str,
+    semantic: TradeLanguageSemantic,
+) -> None:
+    assert trade_language_semantic(text) == semantic
+    assert mandatory_trade_directive_matches(text) == ()
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "즉시 매수 신호가 아니지만 지금은 매수해야 한다.",
+        "매도 명령은 아니나 보유자는 전량 매도하라.",
+        "자동 매수 신호가 아니다. 다만 지금 즉시 매수한다.",
+        "매수 신호가 아니라고 보긴 어렵다.",
+        "매도 조건이 아닌 것은 아니다.",
+        "즉시 진입 사유가 아니지 않다.",
+    ),
+)
+def test_ticker_free_adversarial_negation_fails_closed(text: str) -> None:
+    assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
+    assert mandatory_trade_directive_matches(text)
+
+
+def test_historical_nominal_negation_regression_after_generic_matrix() -> None:
+    text = (
+        "두 가격 경로 모두 즉시 매수 신호가 아니며 "
+        "준공과 청구 확대가 확인된 뒤에만 재고할 조건이다."
+    )
+
+    assert trade_language_semantic(text) == TradeLanguageSemantic.NEGATED
+    assert mandatory_trade_directive_matches(text) == ()
+
+
+def test_historical_nominal_negation_still_exposes_later_action() -> None:
+    text = "두 가격 경로 모두 즉시 매수 신호가 아니지만 지금은 매수해야 한다."
+
+    assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
+    assert mandatory_trade_directive_matches(text) == ("매수해야",)
+
+
 def test_probability_tokens_do_not_match_embedded_rate_metrics() -> None:
     assert directional_balance_language_errors(("승률 70%",)) == (
         "directional_balance_probability_language",
