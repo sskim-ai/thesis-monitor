@@ -1,0 +1,26 @@
+{
+  "architecture_scale_transport_status": "PASS",
+  "canary_fixture_mutation_after_first_model_call": 0,
+  "canary_results": {
+    "C1": "PASS",
+    "C2": "PASS",
+    "C3": "PASS",
+    "C4": "PASS",
+    "C5": "PASS",
+    "C6": "PASS",
+    "C7": "PASS"
+  },
+  "contract": "schema-valid-synthetic-canary-verdict-v1",
+  "max_authorized_canary_calls": 7,
+  "model_timeout_owner_count": 1,
+  "model_timeout_seconds": 1800,
+  "orphan_model_process_count": 0,
+  "secret_exposure_count": 0,
+  "status": "PASS",
+  "stop_before_real_holdout": 0,
+  "stop_reason": null,
+  "timeout_increase_this_task": 0,
+  "transport_canary_model_call_count": 7,
+  "transport_canary_status": "PASS",
+  "transport_verdict": "TRANSPORT_HEALTHY_AFTER_REVALIDATION"
+}

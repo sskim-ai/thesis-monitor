@@ -2,10 +2,9 @@
 
 | Gate | Value |
 | --- | --- |
-| contract | consumed-regression-no-rerun-v1 |
-| latest_holdout16_model_calls_this_generation | 0 |
-| latest_holdout16_rerun_count_this_generation | 0 |
-| static_artifact_inspection_only | 1 |
+| contract | resume-consumed-regression-no-rerun-v1 |
+| latest_holdout16_model_calls | 0 |
+| latest_holdout16_rerun_count | 0 |
 | status | PASS |
 
-Machine proof: `20260906-model-transport-continuation-proofs/consumed-regression-no-rerun.json`.
+Machine proof: `20260906-synthetic-canary-resume-proofs/consumed-regression-no-rerun.json`.

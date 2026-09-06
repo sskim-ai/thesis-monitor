@@ -1,0 +1,90 @@
+{
+  "contract": "natural-live-workload-coexistence-guard-v1",
+  "events": [
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c1-smoke",
+      "observed_at": "2026-09-06T12:10:49.002235+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "CLI_PROCESS_SMOKE",
+      "subject_count": 1
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c2-directional-us",
+      "observed_at": "2026-09-06T12:10:56.736438+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 1
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c3-directional-kr",
+      "observed_at": "2026-09-06T12:11:57.190611+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 1
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c4-shared-context-us4",
+      "observed_at": "2026-09-06T12:12:37.328048+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c5-shared-context-kr4",
+      "observed_at": "2026-09-06T12:14:47.085513+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c6-price-timing-us",
+      "observed_at": "2026-09-06T12:17:26.332300+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 1
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "c7-price-timing-kr",
+      "observed_at": "2026-09-06T12:17:53.989620+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 1
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "core-batch-01",
+      "observed_at": "2026-09-06T12:20:00.656258+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    }
+  ],
+  "live_workload_contention_risk": 0,
+  "natural_live_cancel_count": 0,
+  "scheduler_mutation": 0,
+  "shadow_pause_for_natural_live": 0,
+  "status": "PASS"
+}
