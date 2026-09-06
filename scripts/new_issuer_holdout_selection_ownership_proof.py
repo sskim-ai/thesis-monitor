@@ -47,8 +47,8 @@ from scripts import unseen_source_assembly_coldstart as source_assembly
 from scripts import uskr22_structured_autonomy_shadow as engine
 
 
-PROGRAM_CONTRACT = "new-issuer-holdout-selection-ownership-proof-v1"
-SELECTION_CONTRACT = "new-issuer-holdout-selection-policy-v1"
+PROGRAM_CONTRACT = "dual-market-source-coverage-new-issuer-holdout-ownership-proof-v1"
+SELECTION_CONTRACT = "dual-market-source-coverage-policy-v1"
 SELECTION_SALT = "20260907-new-issuer-holdout-selection-ownership-proof-v1"
 MODEL = "gpt-5.6-sol"
 EFFORT = "xhigh"
@@ -60,16 +60,16 @@ TARGET_US = 4
 TARGET_KR = 12
 TARGET_TOTAL = TARGET_US + TARGET_KR
 KR_RESERVE_LIMIT = 36
-REPORT_DIRECTORY = "20260907-new-issuer-holdout-selection-ownership-proof"
+REPORT_DIRECTORY = "20260907-dual-market-source-coverage-new-issuer-holdout-ownership-proof"
 FORENSIC_ZIP_SHA256 = (
     "c88368357cd4fbde183d90620194307f9e5498cfd75d2dcafad6b8d04ffbc3b4"
 )
 WORK_INSTRUCTION_PATH = (
     "docs/work-instructions/"
-    "20260907-new-issuer-holdout-selection-and-ownership-proof.md"
+    "20260907-dual-market-source-coverage-and-new-issuer-holdout-ownership-proof.md"
 )
 WORK_INSTRUCTION_SHA256 = (
-    "ffc2a4a5a94c6ae29b1bb44bad22eb58f4d19cc0c87bfc17ba5388ced40ae662"
+    "2af740911024b5f3e51118155edc2e5652368748dac80ea478fd10a3bb8e6be1"
 )
 OLD_PARTIAL = (
     "ORCL",
@@ -115,61 +115,69 @@ PROOF_NAMES = (
     "02-latest-forensic-result-integrity",
     "03-prior-real-issuer-exposure-registry",
     "04-new-holdout-exclusion-set",
-    "05-new-holdout-selection-policy",
-    "06-new-holdout-candidate-reserve-list",
-    "07-new-holdout-selection-result",
-    "08-new-source-generation",
-    "09-source-sufficiency-audit",
-    "10-source-identity-audit",
-    "11-new-source-lock",
-    "12-new-holdout-precommit",
-    "13-architecture-semantic-freeze",
-    "14-prompt-schema-freeze",
-    "15-model-context-freeze",
-    "16-transport-topology-freeze",
-    "17-holdout-unseen-reuse-gate",
-    "18-live-workload-coexistence-audit",
-    "19-first-execution-summary",
-    "20-first-context-artifact-manifest",
-    "21-first-context-partial-semantic-audits",
-    "22-first-run-ownership-gate",
-    "23-first-run-renderer-gate",
-    "24-first-run-hard-safety-gate",
-    "25-run-a-execution-summary",
-    "26-run-a-context-artifact-manifest",
-    "27-run-a-context-partial-semantic-audits",
-    "28-run-a-ownership-gate",
-    "29-run-a-renderer-gate",
-    "30-run-a-hard-safety-gate",
-    "31-run-b-execution-summary",
-    "32-run-b-context-artifact-manifest",
-    "33-run-b-context-partial-semantic-audits",
-    "34-run-b-ownership-gate",
-    "35-run-b-renderer-gate",
-    "36-run-b-hard-safety-gate",
-    "37-run-c-execution-summary",
-    "38-run-c-context-artifact-manifest",
-    "39-run-c-context-partial-semantic-audits",
-    "40-run-c-ownership-gate",
-    "41-run-c-renderer-gate",
-    "42-run-c-hard-safety-gate",
-    "43-holdout-exposure-retirement-state",
-    "44-core-stability",
-    "45-timing-stability",
-    "46-ownership-generalization",
-    "47-renderer-ownership-proof",
-    "48-hard-safety-regression",
-    "49-production-no-change",
-    "50-night-futures-no-change",
-    "51-monitoring-bootstrap-next-handoff",
-    "52-program-completion",
+    "05-dual-market-source-coverage-policy",
+    "06-us-candidate-manifest",
+    "07-us-source-coverage-audit",
+    "08-us-source-failure-detail",
+    "09-kr-candidate-manifest",
+    "10-kr-source-coverage-audit",
+    "11-kr-source-failure-detail",
+    "12-dual-market-source-coverage-summary",
+    "13-cross-market-failure-comparison",
+    "14-source-coverage-remediation-decision",
+    "15-new-holdout-selection-result",
+    "16-new-source-generation",
+    "17-source-sufficiency-audit",
+    "18-source-identity-audit",
+    "19-new-source-lock",
+    "20-new-holdout-precommit",
+    "21-architecture-semantic-freeze",
+    "22-prompt-schema-freeze",
+    "23-model-context-freeze",
+    "24-transport-topology-freeze",
+    "25-holdout-unseen-reuse-gate",
+    "26-live-workload-coexistence-audit",
+    "27-first-execution-summary",
+    "28-first-context-artifact-manifest",
+    "29-first-context-partial-semantic-audits",
+    "30-first-run-ownership-gate",
+    "31-first-run-renderer-gate",
+    "32-first-run-hard-safety-gate",
+    "33-run-a-execution-summary",
+    "34-run-a-context-artifact-manifest",
+    "35-run-a-context-partial-semantic-audits",
+    "36-run-a-ownership-gate",
+    "37-run-a-renderer-gate",
+    "38-run-a-hard-safety-gate",
+    "39-run-b-execution-summary",
+    "40-run-b-context-artifact-manifest",
+    "41-run-b-context-partial-semantic-audits",
+    "42-run-b-ownership-gate",
+    "43-run-b-renderer-gate",
+    "44-run-b-hard-safety-gate",
+    "45-run-c-execution-summary",
+    "46-run-c-context-artifact-manifest",
+    "47-run-c-context-partial-semantic-audits",
+    "48-run-c-ownership-gate",
+    "49-run-c-renderer-gate",
+    "50-run-c-hard-safety-gate",
+    "51-holdout-exposure-retirement-state",
+    "52-core-stability",
+    "53-timing-stability",
+    "54-ownership-generalization",
+    "55-renderer-ownership-proof",
+    "56-hard-safety-regression",
+    "57-production-no-change",
+    "58-night-futures-no-change",
+    "59-monitoring-bootstrap-next-handoff",
+    "60-program-completion",
 )
 
 RUN_PROOFS = {
-    "first": (19, 20, 21, 22, 23, 24),
-    "a": (25, 26, 27, 28, 29, 30),
-    "b": (31, 32, 33, 34, 35, 36),
-    "c": (37, 38, 39, 40, 41, 42),
+    "first": (27, 28, 29, 30, 31, 32),
+    "a": (33, 34, 35, 36, 37, 38),
+    "b": (39, 40, 41, 42, 43, 44),
+    "c": (45, 46, 47, 48, 49, 50),
 }
 
 SECRET_PATTERNS = {
@@ -529,6 +537,590 @@ async def evaluate_candidate(
     return row, enriched if row["directional_model_eligible"] else None
 
 
+def _family_state(row: Mapping[str, object], family: str) -> str:
+    return "PASS" if family in set(row.get("evidence_families") or []) else "UNAVAILABLE"
+
+
+def _raw_required_domain_present(
+    cache_dir: Path,
+    ticker: str,
+    missing_required_families: Sequence[object],
+) -> bool:
+    if not any(
+        "REGULATORY_CAPITAL_CURRENT" in str(value)
+        or "SECTOR_OPERATING_CURRENT" in str(value)
+        for value in missing_required_families
+    ):
+        return False
+    path = cache_dir / "sec_companyfacts" / f"{ticker}.json"
+    if not path.is_file():
+        return False
+    try:
+        payload = read_json(path)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return False
+    facts = payload.get("facts")
+    if not isinstance(facts, Mapping):
+        return False
+    tags = {
+        str(tag).lower()
+        for namespace in facts.values()
+        if isinstance(namespace, Mapping)
+        for tag in namespace
+    }
+    markers = (
+        "tier1",
+        "riskweighted",
+        "capitalrequired",
+        "assetsheldbyinsuranceregulators",
+        "premiums",
+        "policyholder",
+        "insurance",
+        "lossesincurred",
+        "noninterestincome",
+        "interestincomeexpense",
+    )
+    return any(any(marker in tag for marker in markers) for tag in tags)
+
+
+def candidate_coverage_row(
+    row: Mapping[str, object],
+    result: object | None,
+    *,
+    identity: Mapping[str, object],
+    cache_dir: Path,
+) -> dict[str, object]:
+    ticker = str(row["ticker"])
+    provider = row.get("provider_audit") or {}
+    validation_errors = [str(value) for value in row.get("validation_errors") or []]
+    missing = [str(value) for value in row.get("missing_required_families") or []]
+    source_provenance = row.get("source_provenance") or []
+    identity_valid = bool(row.get("issuer_id")) and _family_state(
+        row, "IDENTITY_SECURITY"
+    ) == "PASS"
+    profile_ok = int(provider.get("profile_successes") or 0) > 0
+    financial_ok = int(
+        provider.get("companyfacts_successes")
+        or provider.get("statement_successes")
+        or 0
+    ) > 0
+    source_sufficient = result is not None and bool(
+        row.get("directional_model_eligible")
+    )
+    base_status = str(row.get("base_status") or "NOT_RUN_SOURCE_INSUFFICIENT")
+    data_received_not_assembled = bool(
+        financial_ok
+        and row.get("sufficiency_status")
+        == "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT"
+        and base_status != "ASSEMBLED"
+    )
+    raw_required_domain_present = _raw_required_domain_present(
+        cache_dir, ticker, missing
+    )
+
+    reason_codes: list[str] = []
+    if not identity_valid:
+        reason_codes.append("IDENTITY_VALIDATION_FAILURE")
+    if not profile_ok:
+        reason_codes.append("OFFICIAL_SOURCE_UNAVAILABLE")
+    if not financial_ok:
+        reason_codes.append("OFFICIAL_FINANCIAL_SOURCE_UNAVAILABLE")
+    if any("EARNINGS_FINANCIAL_CURRENT" in value for value in missing):
+        reason_codes.append("EARNINGS_CONTEXT_INSUFFICIENT")
+    if any(
+        "REGULATORY_CAPITAL_CURRENT" in value
+        or "SECTOR_OPERATING_CURRENT" in value
+        or "BUSINESS_CURRENT" in value
+        or "LIQUIDITY_CASHFLOW_CURRENT" in value
+        for value in missing
+    ):
+        reason_codes.append("REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT")
+    if data_received_not_assembled:
+        reason_codes.append("SOURCE_FETCH_SUCCEEDED_PACKET_ASSEMBLY_FAILED")
+    if base_status == "VALIDATION_BLOCK" or validation_errors:
+        reason_codes.append("VALIDATION_FAILURE")
+    if not source_sufficient and not reason_codes:
+        reason_codes.append("SOURCE_SUFFICIENCY_RULE_REJECTED")
+
+    missing_price = any(
+        value
+        in {
+            "current_price_unavailable",
+            "price_as_of_unavailable",
+            "technical_context_not_safe:UNAVAILABLE",
+        }
+        for value in validation_errors
+    )
+    if source_sufficient:
+        failure_class = "NOT_APPLICABLE"
+    elif raw_required_domain_present:
+        failure_class = "PIPELINE_COVERAGE_GAP"
+        if "NORMALIZATION_OR_MAPPING_GAP" not in reason_codes:
+            reason_codes.append("NORMALIZATION_OR_MAPPING_GAP")
+    elif missing_price or not profile_ok or not financial_ok:
+        failure_class = "SOURCE_ABSENCE"
+    else:
+        failure_class = "UNKNOWN"
+        reason_codes.append("UNKNOWN_SOURCE_COVERAGE_FAILURE")
+
+    return {
+        "ticker": ticker,
+        "canonical_issuer_identity": row.get("issuer_key"),
+        "issuer_key": row.get("issuer_key"),
+        "company_name": identity.get("company_name"),
+        "market": row.get("market"),
+        "candidate_rank": row.get("market_sequence"),
+        "primary_or_reserve": row.get("initial_or_reserve"),
+        "identity_validation_status": "PASS" if identity_valid else "FAIL",
+        "source_pipeline_attempted": [
+            "official_profile",
+            "official_financial_enrichment",
+            *(["coldstart_packet_assembly"] if row.get("base_status") else []),
+        ],
+        "source_pipeline_status": row.get("preflight_status"),
+        "official_profile_status": "PASS" if profile_ok else "UNAVAILABLE",
+        "filing_or_official_financial_status": (
+            "PASS" if financial_ok else "UNAVAILABLE"
+        ),
+        "earnings_context_status": _family_state(
+            row, "EARNINGS_FINANCIAL_CURRENT"
+        ),
+        "valuation_input_status": _family_state(row, "VALUATION_SAFE"),
+        "price_context_status": (
+            "PASS"
+            if source_sufficient or base_status == "ASSEMBLED"
+            else "UNAVAILABLE"
+            if missing_price or not row.get("base_status")
+            else "FAIL"
+        ),
+        "other_required_domain_status": (
+            "PASS" if not missing else "INSUFFICIENT"
+        ),
+        "framework": row.get("framework"),
+        "evidence_families": list(row.get("evidence_families") or []),
+        "missing_required_families": missing,
+        "source_sufficiency_status": "PASS" if source_sufficient else "FAIL",
+        "failure_domains": missing
+        + (["PRICE_CONTEXT"] if missing_price else []),
+        "failure_reason_codes": sorted(set(reason_codes)),
+        "failure_class": failure_class,
+        "data_received_but_not_assembled": data_received_not_assembled,
+        "assembler_or_normalization_gap_suspected": (
+            failure_class == "PIPELINE_COVERAGE_GAP"
+        ),
+        "true_source_absence_suspected": failure_class == "SOURCE_ABSENCE",
+        "raw_required_domain_evidence_present": raw_required_domain_present,
+        "source_provenance": list(source_provenance),
+        "validation_errors": validation_errors,
+        "provider_audit": dict(provider),
+        "packet_created": bool(row.get("packet_sha256")),
+        "packet_hash": row.get("packet_sha256"),
+        "eligible_for_final_holdout": source_sufficient,
+        "selected": bool(row.get("selected")),
+        "duplicate_issuer": bool(row.get("duplicate_issuer")),
+        "model_calls": 0,
+    }
+
+
+async def evaluate_market_candidates(
+    *,
+    market: str,
+    rows: Sequence[Mapping[str, object]],
+    target: int,
+    as_of: datetime,
+    cache_dir: Path,
+    selected_issuer_keys: set[str],
+) -> tuple[list[object], list[dict[str, object]]]:
+    selected: list[object] = []
+    audit_rows: list[dict[str, object]] = []
+    for sequence, identity in enumerate(rows, start=1):
+        if len(selected) >= target:
+            break
+        row, result = await evaluate_candidate(
+            identity, as_of=as_of, cache_dir=cache_dir
+        )
+        issuer_key = str(row["issuer_key"])
+        duplicate = issuer_key in selected_issuer_keys
+        row.update(
+            {
+                "market_sequence": sequence,
+                "initial_or_reserve": "INITIAL" if sequence <= target else "RESERVE",
+                "duplicate_issuer": duplicate,
+                "selected": False,
+                "model_calls": 0,
+            }
+        )
+        if duplicate:
+            result = None
+            row["directional_model_eligible"] = False
+            row["preflight_status"] = "DUPLICATE_ISSUER"
+            row["validation_errors"] = ["duplicate_issuer"]
+        if result is not None:
+            row["selected"] = True
+            selected.append(result)
+            selected_issuer_keys.add(issuer_key)
+        detail = candidate_coverage_row(
+            row, result, identity=identity, cache_dir=cache_dir
+        )
+        if duplicate:
+            detail["failure_reason_codes"] = ["IDENTITY_VALIDATION_FAILURE"]
+            detail["failure_class"] = "PIPELINE_COVERAGE_GAP"
+            detail["identity_validation_status"] = "FAIL"
+            detail["eligible_for_final_holdout"] = False
+        audit_rows.append(detail)
+    return selected, audit_rows
+
+
+def market_coverage_audit(
+    market: str,
+    target: int,
+    rows: Sequence[Mapping[str, object]],
+) -> dict[str, object]:
+    sufficient = sum(bool(row.get("eligible_for_final_holdout")) for row in rows)
+    failures = [row for row in rows if not row.get("eligible_for_final_holdout")]
+    provider_keys = (
+        "profile_requests",
+        "profile_successes",
+        "companyfacts_requests",
+        "companyfacts_successes",
+        "statement_requests",
+        "statement_successes",
+        "cache_hits",
+    )
+    return {
+        "contract": f"{market}-source-coverage-audit-v1",
+        "market": market,
+        "target_count": target,
+        "attempted_count": len(rows),
+        "identity_validation_pass_count": sum(
+            row.get("identity_validation_status") == "PASS" for row in rows
+        ),
+        "source_sufficient_count": sufficient,
+        "source_insufficient_count": len(failures),
+        "pipeline_coverage_gap_count": sum(
+            row.get("failure_class") == "PIPELINE_COVERAGE_GAP"
+            for row in failures
+        ),
+        "source_absence_count": sum(
+            row.get("failure_class") == "SOURCE_ABSENCE" for row in failures
+        ),
+        "unknown_failure_count": sum(
+            row.get("failure_class") == "UNKNOWN" for row in failures
+        ),
+        "provider_totals": {
+            key: sum(
+                int((row.get("provider_audit") or {}).get(key) or 0)
+                for row in rows
+            )
+            for key in provider_keys
+        },
+        "rows": list(rows),
+        "source_target_status": "PASS" if sufficient >= target else "FAIL",
+        "real_model_calls": 0,
+        "status": "PASS" if sufficient >= target else "FAIL_CLOSED",
+    }
+
+
+def source_failure_detail(
+    market: str, audit: Mapping[str, object]
+) -> dict[str, object]:
+    failures = [
+        dict(row)
+        for row in audit.get("rows") or []
+        if isinstance(row, Mapping) and not row.get("eligible_for_final_holdout")
+    ]
+    counts = Counter(
+        code for row in failures for code in row.get("failure_reason_codes") or []
+    )
+    return {
+        "contract": f"{market}-source-failure-detail-v1",
+        "market": market,
+        "failure_count": len(failures),
+        "failure_reason_code_counts": dict(sorted(counts.items())),
+        "rows": failures,
+        "status": "PASS" if not failures else "DIAGNOSTIC_COMPLETE",
+    }
+
+
+def candidate_manifest(
+    market: str,
+    target: int,
+    rows: Sequence[Mapping[str, object]],
+) -> dict[str, object]:
+    return {
+        "contract": f"{market}-candidate-manifest-v1",
+        "market": market,
+        "target_count": target,
+        "bounded_candidate_count": len(rows),
+        "initial_candidates": [
+            str(row["ticker"]) for row in rows[:target]
+        ],
+        "ordered_reserve": [
+            str(row["ticker"]) for row in rows[target:]
+        ],
+        "candidate_rows": [
+            {
+                "candidate_rank": rank,
+                "primary_or_reserve": "INITIAL" if rank <= target else "RESERVE",
+                "ticker": row["ticker"],
+                "company_name": row.get("company_name"),
+                "exchange": row.get("exchange"),
+                "sector": row.get("sector"),
+                "industry": row.get("industry"),
+            }
+            for rank, row in enumerate(rows, start=1)
+        ],
+        "model_calls": 0,
+        "status": "FROZEN",
+    }
+
+
+def dual_market_summary(
+    us_audit: Mapping[str, object], kr_audit: Mapping[str, object]
+) -> dict[str, object]:
+    us_codes = {
+        str(code)
+        for row in us_audit.get("rows") or []
+        if isinstance(row, Mapping) and not row.get("eligible_for_final_holdout")
+        for code in row.get("failure_reason_codes") or []
+    }
+    kr_codes = {
+        str(code)
+        for row in kr_audit.get("rows") or []
+        if isinstance(row, Mapping) and not row.get("eligible_for_final_holdout")
+        for code in row.get("failure_reason_codes") or []
+    }
+    us_pass = us_audit.get("source_target_status") == "PASS"
+    kr_pass = kr_audit.get("source_target_status") == "PASS"
+    dual_status = {
+        (True, True): "BOTH_PASS",
+        (False, True): "US_FAIL_KR_PASS",
+        (True, False): "US_PASS_KR_FAIL",
+        (False, False): "BOTH_FAIL",
+    }[(us_pass, kr_pass)]
+    return {
+        "contract": "dual-market-source-coverage-summary-v1",
+        "us_target": us_audit["target_count"],
+        "us_attempted": us_audit["attempted_count"],
+        "us_source_sufficient": us_audit["source_sufficient_count"],
+        "us_source_insufficient": us_audit["source_insufficient_count"],
+        "kr_target": kr_audit["target_count"],
+        "kr_attempted": kr_audit["attempted_count"],
+        "kr_source_sufficient": kr_audit["source_sufficient_count"],
+        "kr_source_insufficient": kr_audit["source_insufficient_count"],
+        "shared_failure_reason_codes": sorted(us_codes & kr_codes),
+        "us_only_failure_reason_codes": sorted(us_codes - kr_codes),
+        "kr_only_failure_reason_codes": sorted(kr_codes - us_codes),
+        "pipeline_coverage_gap_count_us": us_audit[
+            "pipeline_coverage_gap_count"
+        ],
+        "pipeline_coverage_gap_count_kr": kr_audit[
+            "pipeline_coverage_gap_count"
+        ],
+        "source_absence_count_us": us_audit["source_absence_count"],
+        "source_absence_count_kr": kr_audit["source_absence_count"],
+        "unknown_failure_count_us": us_audit["unknown_failure_count"],
+        "unknown_failure_count_kr": kr_audit["unknown_failure_count"],
+        "dual_market_source_status": dual_status,
+        "market_failure_did_not_abort_other_market_diagnostic": 1,
+        "real_holdout_model_calls_while_source_target_failed": 0,
+        "status": "PASS" if dual_status == "BOTH_PASS" else "DIAGNOSTIC_COMPLETE",
+    }
+
+
+def remediation_decision(summary: Mapping[str, object]) -> dict[str, object]:
+    status = str(summary["dual_market_source_status"])
+    readiness, next_scope = {
+        "BOTH_PASS": (
+            "READY_FOR_NEW_HOLDOUT_FREEZE",
+            "NEW_ISSUER_HOLDOUT_OWNERSHIP_PROOF",
+        ),
+        "US_FAIL_KR_PASS": (
+            "NOT_READY_US_SOURCE_COVERAGE_BLOCKED",
+            "BOUNDED_US_SOURCE_COVERAGE_REMEDIATION",
+        ),
+        "US_PASS_KR_FAIL": (
+            "NOT_READY_KR_SOURCE_COVERAGE_BLOCKED",
+            "BOUNDED_KR_SOURCE_COVERAGE_REMEDIATION",
+        ),
+        "BOTH_FAIL": (
+            "NOT_READY_DUAL_MARKET_SOURCE_COVERAGE_BLOCKED",
+            "BOUNDED_SHARED_THEN_MARKET_SPECIFIC_SOURCE_COVERAGE_REMEDIATION",
+        ),
+    }[status]
+    return {
+        "contract": "source-coverage-remediation-decision-v1",
+        "dual_market_source_status": status,
+        "readiness": readiness,
+        "next_scope": next_scope,
+        "final_holdout_source_lock_allowed": int(status == "BOTH_PASS"),
+        "real_model_execution_allowed": int(status == "BOTH_PASS"),
+        "production_semantic_mutation": 0,
+        "status": "PASS" if status == "BOTH_PASS" else "FAIL_CLOSED",
+    }
+
+
+def write_source_blocked_proofs(
+    *,
+    args: argparse.Namespace,
+    provenance: Mapping[str, object],
+    registry: Mapping[str, object],
+    exclusion: Mapping[str, object],
+    policy: Mapping[str, object],
+    us_audit: Mapping[str, object],
+    kr_audit: Mapping[str, object],
+    summary: Mapping[str, object],
+    decision: Mapping[str, object],
+) -> None:
+    reason = str(summary["dual_market_source_status"])
+    selection = {
+        "contract": "new-holdout-selection-result-v1",
+        "ordered_final_cohort": [],
+        "required_market_mix": {"us": TARGET_US, "kr": TARGET_KR},
+        "source_sufficient_us_count": us_audit["source_sufficient_count"],
+        "source_sufficient_kr_count": kr_audit["source_sufficient_count"],
+        "final_holdout_cohort_frozen": 0,
+        "selection_after_model_output": 0,
+        "status": "NOT_RUN_SOURCE_COVERAGE_BLOCKED",
+    }
+    write_proof(args.report_dir, 15, selection)
+    for number in range(16, 57):
+        write_proof(
+            args.report_dir,
+            number,
+            {
+                "contract": f"{PROOF_NAMES[number - 1]}-v1",
+                "status": "NOT_RUN",
+                "reason": reason,
+                "real_model_calls": 0,
+            },
+        )
+    production = {
+        "contract": "production-no-change-v1",
+        "main_merge": 0,
+        "production_db_mutation": 0,
+        "production_scheduler_change": 0,
+        "production_telegram_send": 0,
+        "monitoring_registration_calls": 0,
+        "live_structured_autonomy_activation": 0,
+        "live_v2_change": 0,
+        "status": "PASS",
+    }
+    night = {
+        "contract": "night-futures-no-change-v1",
+        "night_futures_code_mutation": 0,
+        "night_futures_decision_packet_injection": 0,
+        "status": "PASS",
+    }
+    handoff = {
+        "contract": "monitoring-bootstrap-next-handoff-v1",
+        "readiness": decision["readiness"],
+        "next_scope": decision["next_scope"],
+        "status": "NOT_READY",
+    }
+    write_proof(args.report_dir, 57, production)
+    write_proof(args.report_dir, 58, night)
+    write_proof(args.report_dir, 59, handoff)
+    completion = {
+        "contract": PROGRAM_CONTRACT,
+        "base_sha": provenance["base_sha"],
+        "work_instruction_commit": provenance["work_instruction_commit"],
+        "implementation_commit": provenance["implementation_commit"],
+        "final_head_sha": git_value("rev-parse", "HEAD"),
+        "branch": provenance["branch"],
+        "latest_forensic_zip_sha256": FORENSIC_ZIP_SHA256,
+        "latest_forensic_bundle_integrity": "PASS",
+        "prior_real_issuer_exposure_registry_count": registry["registry_count"],
+        "new_holdout_exclusion_count": exclusion["new_holdout_exclusion_count"],
+        "dual_market_source_policy_hash": canonical_sha256(policy),
+        "us_target_count": us_audit["target_count"],
+        "us_candidate_attempt_count": us_audit["attempted_count"],
+        "us_source_sufficient_count": us_audit["source_sufficient_count"],
+        "us_source_insufficient_count": us_audit["source_insufficient_count"],
+        "us_pipeline_coverage_gap_count": us_audit["pipeline_coverage_gap_count"],
+        "us_source_absence_count": us_audit["source_absence_count"],
+        "us_unknown_failure_count": us_audit["unknown_failure_count"],
+        "us_source_target_status": us_audit["source_target_status"],
+        "kr_target_count": kr_audit["target_count"],
+        "kr_candidate_attempt_count": kr_audit["attempted_count"],
+        "kr_source_sufficient_count": kr_audit["source_sufficient_count"],
+        "kr_source_insufficient_count": kr_audit["source_insufficient_count"],
+        "kr_pipeline_coverage_gap_count": kr_audit["pipeline_coverage_gap_count"],
+        "kr_source_absence_count": kr_audit["source_absence_count"],
+        "kr_unknown_failure_count": kr_audit["unknown_failure_count"],
+        "kr_source_target_status": kr_audit["source_target_status"],
+        "dual_market_source_status": summary["dual_market_source_status"],
+        "real_holdout_model_calls_while_source_target_failed": 0,
+        "new_holdout_cohort": [],
+        "new_source_generation_id": "NOT_CREATED",
+        "new_source_lock": "NOT_CREATED",
+        "model": MODEL,
+        "reasoning_effort": EFFORT,
+        "model_timeout_seconds": TIMEOUT_SECONDS,
+        "model_timeout_owner_count": TIMEOUT_OWNER_COUNT,
+        "batch_semantics": BATCH_SEMANTICS,
+        "shared_context_subject_count": CONTEXT_SIZE,
+        "architecture_semantic_drift": 0,
+        "prompt_semantic_drift": "NOT_MEASURED_NO_PRECOMMIT",
+        "schema_semantic_drift": "NOT_MEASURED_NO_PRECOMMIT",
+        "model_semantic_input_drift": 0,
+        "transport_topology_mutation": 0,
+        "timeout_increase_this_task": 0,
+        "holdout_output_exposure_state": "UNEXPOSED",
+        "holdout_semantic_revelation_state": "NOT_MEASURED",
+        "holdout_retirement_state": "NOT_CREATED",
+        "future_unseen_holdout_reuse_allowed": "NOT_APPLICABLE_NO_FINAL_COHORT",
+        "first_complete_run_attempt_count": 0,
+        "real_holdout_model_invocation_count": 0,
+        "real_holdout_subject_output_count": 0,
+        "context_evidence_preservation_failure_count": 0,
+        "per_context_semantic_failure_count": 0,
+        "transport_timeout_count": 0,
+        "transport_retry_count": 0,
+        "historical_stall_pattern_recurred": 0,
+        "run_results": {run: "NOT_RUN" for run in RUNS},
+        **{
+            f"{('first' if run == 'first' else 'run_' + run)}_{gate}_gate_status": "NOT_RUN"
+            for run in RUNS
+            for gate in ("ownership", "renderer", "hard_safety")
+        },
+        "ownership_generalization_verdict": "NOT_MEASURED",
+        "ownership_proof_completion_state": "STOPPED_PRE_MODEL_SOURCE_FAILURE",
+        **{key: value for key, value in production.items() if key not in {"contract", "status"}},
+        "night_futures_code_mutation": 0,
+        "artifact_count": "PENDING_FINALIZE",
+        "artifact_hash_mismatch_count": "PENDING_FINALIZE",
+        "artifact_size_mismatch_count": "PENDING_FINALIZE",
+        "full_tests": "PENDING_FINAL_VALIDATION",
+        "ruff": "PENDING_FINAL_VALIDATION",
+        "diff_check": "PENDING_FINAL_VALIDATION",
+        "readiness": decision["readiness"],
+        "stop_reason": reason,
+        "next_scope": decision["next_scope"],
+    }
+    write_proof(args.report_dir, 60, completion)
+    state = {
+        "contract": PROGRAM_CONTRACT,
+        "state": "EVIDENCE_COMPLETE",
+        "source_gate_only": True,
+        "branch": provenance["branch"],
+        "base_sha": provenance["base_sha"],
+        "work_instruction_commit": provenance["work_instruction_commit"],
+        "implementation_commit": provenance["implementation_commit"],
+        "implementation_tree": provenance["implementation_tree"],
+        "architecture_hashes": architecture_hashes(Path.cwd().resolve()),
+        "selection_policy_sha256": canonical_sha256(policy),
+        "ordered_cohort": [],
+        "holdout_output_exposure_state": "UNEXPOSED",
+        "model_invocation_count": 0,
+        "readiness": decision["readiness"],
+        "stop_reason": reason,
+        "run_results": completion["run_results"],
+    }
+    write_json(args.output_root / "program-state.json", state)
+    write_reports(args.report_dir)
+
+
 def prepare(args: argparse.Namespace) -> None:
     if args.output_root.exists() or args.report_dir.exists():
         raise ValueError("new_output_and_report_directories_required")
@@ -574,68 +1166,81 @@ def prepare(args: argparse.Namespace) -> None:
         "candidate_universe": "frozen canonical supported-security universe",
         "supported_universe_count": len(universe),
         "exclusion_registry_sha256": canonical_sha256(registry),
-        "eligibility_criteria": [
+        "market_policies": {
+            "us": {
+                "target_issuer_count": TARGET_US,
+                "candidate_universe": [str(row["ticker"]) for row in us_candidates],
+                "initial_candidate_count": min(TARGET_US, len(us_candidates)),
+                "reserve_count": max(0, len(us_candidates) - TARGET_US),
+                "bounded_evaluation_limit": len(us_candidates),
+            },
+            "kr": {
+                "target_issuer_count": TARGET_KR,
+                "candidate_universe": [str(row["ticker"]) for row in kr_candidates],
+                "initial_candidate_count": TARGET_KR,
+                "reserve_count": max(0, len(kr_candidates) - TARGET_KR),
+                "bounded_evaluation_limit": len(kr_candidates),
+            },
+        },
+        "objective_eligibility_rules": [
             "supported common stock identity",
             "not previously model exposed",
             "not in retired partial cohort",
             "not in consumed regression cohort",
             "unique canonical issuer identity",
         ],
-        "source_sufficiency_criteria": (
-            "frozen official enrichment and assembled packet directional eligibility"
-        ),
+        "source_sufficiency_rules": [
+            "frozen official enrichment directional eligibility",
+            "assembled canonical packet directional eligibility",
+            "required identity, fundamental, valuation, and price validation gates",
+        ],
         "deterministic_ordering_rule": (
             "sector-stratified round robin ordered by SHA256(selection_salt|market|"
             "canonical_sector_or_industry|ticker)"
         ),
         "selection_seed_or_rule": SELECTION_SALT,
-        "reserve_replacement_rule": (
-            "ordered reserve only for objective pre-model identity/source/schema failure"
-        ),
+        "replacement_rules": [
+            "ordered reserve only",
+            "identity validation failure",
+            "unsupported market or duplicate issuer",
+            "source insufficiency or hard source validation failure",
+            "missing required evidence packet",
+        ],
+        "replacement_forbidden_reasons": [
+            "valuation appearance",
+            "price trend",
+            "expected direction or ownership result",
+            "transport result",
+        ],
         "diversity_rule": (
             "canonical sector/industry strata round robin; unclassified remains one stratum"
         ),
         "finalization_rule": (
             "first source-sufficient unique 4 US and 12 KR in precommitted order"
         ),
+        "stop_condition": (
+            "complete both bounded market diagnostics; freeze only when both targets pass"
+        ),
+        "MARKET_FAILURE_DOES_NOT_ABORT_OTHER_MARKET_DIAGNOSTIC": 1,
         "selection_uses_model_output": 0,
         "selection_uses_expected_direction": 0,
         "model_calls": 0,
         "status": "FROZEN",
     }
-    reserve = {
-        "contract": "new-holdout-candidate-reserve-list-v1",
-        "selection_policy_sha256": canonical_sha256(policy),
-        "initial_candidates": {
-            "us": [str(row["ticker"]) for row in us_candidates[:TARGET_US]],
-            "kr": [str(row["ticker"]) for row in kr_candidates[:TARGET_KR]],
-        },
-        "ordered_reserve": {
-            "us": [str(row["ticker"]) for row in us_candidates[TARGET_US:]],
-            "kr": [str(row["ticker"]) for row in kr_candidates[TARGET_KR:]],
-        },
-        "reserve_count": max(0, len(us_candidates) - TARGET_US)
-        + max(0, len(kr_candidates) - TARGET_KR),
-        "replacement_allowed_before_final_source_lock": 1,
-        "replacement_allowed_after_final_source_lock": 0,
-        "model_calls": 0,
-        "status": "FROZEN",
-    }
+    us_manifest = candidate_manifest("us", TARGET_US, us_candidates)
+    kr_manifest = candidate_manifest("kr", TARGET_KR, kr_candidates)
 
-    write_proof(
-        args.report_dir,
-        1,
-        {
-            "contract": "repository-provenance-v1",
-            "branch": branch,
-            "base_sha": base_sha,
-            "work_instruction_commit": work_instruction_commit,
-            "implementation_commit": implementation_commit,
-            "implementation_tree": implementation_tree,
-            "worktree_status_before_generated_evidence": git_value("status", "--short"),
-            "status": "PASS",
-        },
-    )
+    provenance = {
+        "contract": "repository-provenance-v1",
+        "branch": branch,
+        "base_sha": base_sha,
+        "work_instruction_commit": work_instruction_commit,
+        "implementation_commit": implementation_commit,
+        "implementation_tree": implementation_tree,
+        "worktree_status_before_generated_evidence": git_value("status", "--short"),
+        "status": "PASS",
+    }
+    write_proof(args.report_dir, 1, provenance)
     write_proof(
         args.report_dir,
         2,
@@ -664,48 +1269,84 @@ def prepare(args: argparse.Namespace) -> None:
     }
     write_proof(args.report_dir, 4, exclusion_document)
     write_proof(args.report_dir, 5, policy)
-    write_proof(args.report_dir, 6, reserve)
+    write_proof(args.report_dir, 6, us_manifest)
+    write_proof(args.report_dir, 9, kr_manifest)
 
     cache_dir = args.output_root / "source-cache"
-    selected: list[object] = []
-    preflight_rows: list[dict[str, object]] = []
     selected_issuer_keys: set[str] = set()
+    us_selected, us_rows = asyncio.run(
+        evaluate_market_candidates(
+            market="us",
+            rows=us_candidates,
+            target=TARGET_US,
+            as_of=args.as_of,
+            cache_dir=cache_dir,
+            selected_issuer_keys=selected_issuer_keys,
+        )
+    )
+    us_audit = market_coverage_audit("us", TARGET_US, us_rows)
+    write_proof(args.report_dir, 7, us_audit)
+    write_proof(args.report_dir, 8, source_failure_detail("us", us_audit))
 
-    async def choose(
-        market: str,
-        rows: Sequence[Mapping[str, object]],
-        target: int,
-    ) -> None:
-        selected_count = 0
-        for sequence, identity in enumerate(rows, start=1):
-            if selected_count >= target:
-                break
-            row, result = await evaluate_candidate(
-                identity, as_of=args.as_of, cache_dir=cache_dir
-            )
-            issuer_key = str(row["issuer_key"])
-            row.update(
-                {
-                    "market_sequence": sequence,
-                    "initial_or_reserve": (
-                        "INITIAL" if sequence <= target else "RESERVE"
-                    ),
-                    "duplicate_issuer": issuer_key in selected_issuer_keys,
-                    "selected": False,
-                    "model_calls": 0,
-                }
-            )
-            if result is not None and issuer_key not in selected_issuer_keys:
-                row["selected"] = True
-                selected.append(result)
-                selected_issuer_keys.add(issuer_key)
-                selected_count += 1
-            preflight_rows.append(row)
-        if selected_count != target:
-            raise ValueError(f"source_sufficient_{market}_target_unavailable:{selected_count}")
+    kr_selected, kr_rows = asyncio.run(
+        evaluate_market_candidates(
+            market="kr",
+            rows=kr_candidates,
+            target=TARGET_KR,
+            as_of=args.as_of,
+            cache_dir=cache_dir,
+            selected_issuer_keys=selected_issuer_keys,
+        )
+    )
+    kr_audit = market_coverage_audit("kr", TARGET_KR, kr_rows)
+    write_proof(args.report_dir, 10, kr_audit)
+    write_proof(args.report_dir, 11, source_failure_detail("kr", kr_audit))
+    summary = dual_market_summary(us_audit, kr_audit)
+    decision = remediation_decision(summary)
+    write_proof(args.report_dir, 12, summary)
+    write_proof(
+        args.report_dir,
+        13,
+        {
+            "contract": "cross-market-failure-comparison-v1",
+            **{
+                key: summary[key]
+                for key in (
+                    "shared_failure_reason_codes",
+                    "us_only_failure_reason_codes",
+                    "kr_only_failure_reason_codes",
+                    "pipeline_coverage_gap_count_us",
+                    "pipeline_coverage_gap_count_kr",
+                    "source_absence_count_us",
+                    "source_absence_count_kr",
+                    "unknown_failure_count_us",
+                    "unknown_failure_count_kr",
+                )
+            },
+            "status": "PASS",
+        },
+    )
+    write_proof(args.report_dir, 14, decision)
+    if summary["dual_market_source_status"] != "BOTH_PASS":
+        write_source_blocked_proofs(
+            args=args,
+            provenance=provenance,
+            registry=registry,
+            exclusion=exclusion_document,
+            policy=policy,
+            us_audit=us_audit,
+            kr_audit=kr_audit,
+            summary=summary,
+            decision=decision,
+        )
+        print(
+            json.dumps(read_json(proof_path(args.report_dir, 60)), sort_keys=True),
+            flush=True,
+        )
+        return
 
-    asyncio.run(choose("us", us_candidates, TARGET_US))
-    asyncio.run(choose("kr", kr_candidates, TARGET_KR))
+    selected = [*us_selected, *kr_selected]
+    preflight_rows = [*us_rows, *kr_rows]
     cohort = tuple(
         item.ticker
         for market in ("us", "kr")
@@ -810,7 +1451,8 @@ def prepare(args: argparse.Namespace) -> None:
         "us_count": sum(not ticker.isdigit() for ticker in cohort),
         "kr_count": sum(ticker.isdigit() for ticker in cohort),
         "selection_policy_sha256": canonical_sha256(policy),
-        "reserve_list_sha256": canonical_sha256(reserve),
+        "us_candidate_manifest_sha256": canonical_sha256(us_manifest),
+        "kr_candidate_manifest_sha256": canonical_sha256(kr_manifest),
         "exclusion_registry_sha256": canonical_sha256(registry),
         "replacement_count": sum(
             row["selected"] and row["initial_or_reserve"] == "RESERVE"
@@ -837,6 +1479,9 @@ def prepare(args: argparse.Namespace) -> None:
         "context_grouping": groups,
         "selection_policy_sha256": canonical_sha256(policy),
         "exclusion_registry_sha256": canonical_sha256(registry),
+        "us_coverage_audit_sha256": canonical_sha256(us_audit),
+        "kr_coverage_audit_sha256": canonical_sha256(kr_audit),
+        "selection_result_sha256": canonical_sha256(selection),
         "source_generation_id": generation_id,
         "source_lock_sha256": source_lock_sha,
         "packet_sha256": source_lock["packet_sha256"],
@@ -861,17 +1506,17 @@ def prepare(args: argparse.Namespace) -> None:
         "status": "FROZEN",
     }
     write_json(args.output_root / "new-holdout-precommit.json", precommit)
-    write_proof(args.report_dir, 7, selection)
-    write_proof(args.report_dir, 8, source_generation)
-    write_proof(args.report_dir, 9, source_sufficiency)
-    write_proof(args.report_dir, 10, identity_audit)
+    write_proof(args.report_dir, 15, selection)
+    write_proof(args.report_dir, 16, source_generation)
+    write_proof(args.report_dir, 17, source_sufficiency)
+    write_proof(args.report_dir, 18, identity_audit)
     write_proof(
-        args.report_dir, 11, {**source_lock, "source_lock_sha256": source_lock_sha}
+        args.report_dir, 19, {**source_lock, "source_lock_sha256": source_lock_sha}
     )
-    write_proof(args.report_dir, 12, precommit)
+    write_proof(args.report_dir, 20, precommit)
     write_proof(
         args.report_dir,
-        13,
+        21,
         {
             "contract": "architecture-semantic-freeze-v1",
             "architecture_hashes": architecture,
@@ -883,7 +1528,7 @@ def prepare(args: argparse.Namespace) -> None:
     )
     write_proof(
         args.report_dir,
-        14,
+        22,
         {
             "contract": "prompt-schema-freeze-v1",
             "prompt_schema_lock": prompt_lock,
@@ -897,7 +1542,7 @@ def prepare(args: argparse.Namespace) -> None:
     )
     write_proof(
         args.report_dir,
-        15,
+        23,
         {
             "contract": "model-context-freeze-v1",
             "context_groups": groups,
@@ -915,7 +1560,7 @@ def prepare(args: argparse.Namespace) -> None:
     )
     write_proof(
         args.report_dir,
-        16,
+        24,
         {
             "contract": "transport-topology-freeze-v1",
             "hashes": topology,
@@ -931,7 +1576,7 @@ def prepare(args: argparse.Namespace) -> None:
     )
     write_proof(
         args.report_dir,
-        17,
+        25,
         {
             "contract": "holdout-unseen-reuse-gate-v1",
             "ordered_cohort": list(cohort),
@@ -957,7 +1602,7 @@ def prepare(args: argparse.Namespace) -> None:
         "status": "PASS",
     }
     write_json(args.output_root / "live-workload-coexistence-audit.json", live_audit)
-    write_proof(args.report_dir, 18, live_audit)
+    write_proof(args.report_dir, 26, live_audit)
     state = {
         "contract": PROGRAM_CONTRACT,
         "state": "PREPARED_FROZEN",
@@ -2056,20 +2701,22 @@ def final_proofs(
         "bootstrap_production_mutation": 0,
         "status": "PASS" if readiness.startswith("READY_") else "NOT_READY",
     }
-    write_proof(args.report_dir, 43, exposure_doc)
-    write_proof(args.report_dir, 44, core_stability)
-    write_proof(args.report_dir, 45, timing_stability)
-    write_proof(args.report_dir, 46, ownership_generalization)
-    write_proof(args.report_dir, 47, renderer_proof)
-    write_proof(args.report_dir, 48, hard)
-    write_proof(args.report_dir, 49, production)
-    write_proof(args.report_dir, 50, night)
-    write_proof(args.report_dir, 51, handoff)
+    write_proof(args.report_dir, 51, exposure_doc)
+    write_proof(args.report_dir, 52, core_stability)
+    write_proof(args.report_dir, 53, timing_stability)
+    write_proof(args.report_dir, 54, ownership_generalization)
+    write_proof(args.report_dir, 55, renderer_proof)
+    write_proof(args.report_dir, 56, hard)
+    write_proof(args.report_dir, 57, production)
+    write_proof(args.report_dir, 58, night)
+    write_proof(args.report_dir, 59, handoff)
     registry = read_json(proof_path(args.report_dir, 3))
     exclusion = read_json(proof_path(args.report_dir, 4))
-    reserve = read_json(proof_path(args.report_dir, 6))
-    selection = read_json(proof_path(args.report_dir, 7))
-    source_generation = read_json(proof_path(args.report_dir, 8))
+    us_audit = read_json(proof_path(args.report_dir, 7))
+    kr_audit = read_json(proof_path(args.report_dir, 10))
+    dual_summary = read_json(proof_path(args.report_dir, 12))
+    selection = read_json(proof_path(args.report_dir, 15))
+    source_generation = read_json(proof_path(args.report_dir, 16))
     completion = {
         "contract": PROGRAM_CONTRACT,
         "base_sha": state["base_sha"],
@@ -2081,16 +2728,33 @@ def final_proofs(
         "latest_forensic_bundle_integrity": "PASS",
         "prior_real_issuer_exposure_registry_count": registry["registry_count"],
         "new_holdout_exclusion_count": exclusion["new_holdout_exclusion_count"],
-        "new_holdout_selection_policy_hash": state["selection_policy_sha256"],
+        "dual_market_source_policy_hash": state["selection_policy_sha256"],
         "new_holdout_selection_seed_or_rule": SELECTION_SALT,
-        "new_holdout_reserve_count": reserve["reserve_count"],
+        "us_target_count": us_audit["target_count"],
+        "us_candidate_attempt_count": us_audit["attempted_count"],
+        "us_source_sufficient_count": us_audit["source_sufficient_count"],
+        "us_source_insufficient_count": us_audit["source_insufficient_count"],
+        "us_pipeline_coverage_gap_count": us_audit["pipeline_coverage_gap_count"],
+        "us_source_absence_count": us_audit["source_absence_count"],
+        "us_unknown_failure_count": us_audit["unknown_failure_count"],
+        "us_source_target_status": us_audit["source_target_status"],
+        "kr_target_count": kr_audit["target_count"],
+        "kr_candidate_attempt_count": kr_audit["attempted_count"],
+        "kr_source_sufficient_count": kr_audit["source_sufficient_count"],
+        "kr_source_insufficient_count": kr_audit["source_insufficient_count"],
+        "kr_pipeline_coverage_gap_count": kr_audit["pipeline_coverage_gap_count"],
+        "kr_source_absence_count": kr_audit["source_absence_count"],
+        "kr_unknown_failure_count": kr_audit["unknown_failure_count"],
+        "kr_source_target_status": kr_audit["source_target_status"],
+        "dual_market_source_status": dual_summary["dual_market_source_status"],
+        "real_holdout_model_calls_while_source_target_failed": 0,
         "new_holdout_cohort": state["ordered_cohort"],
         "new_holdout_us_count": selection["us_count"],
         "new_holdout_kr_count": selection["kr_count"],
         "new_source_generation_id": source_generation["source_generation_id"],
         "new_source_lock": state["source_lock_sha256"],
-        "source_sufficiency_status": read_json(proof_path(args.report_dir, 9))["status"],
-        "source_identity_status": read_json(proof_path(args.report_dir, 10))["status"],
+        "source_sufficiency_status": read_json(proof_path(args.report_dir, 17))["status"],
+        "source_identity_status": read_json(proof_path(args.report_dir, 18))["status"],
         "model": MODEL,
         "reasoning_effort": EFFORT,
         "model_timeout_seconds": TIMEOUT_SECONDS,
@@ -2172,7 +2836,7 @@ def final_proofs(
         "stop_reason": stop_reason,
         "next_scope": next_scope,
     }
-    write_proof(args.report_dir, 52, completion)
+    write_proof(args.report_dir, 60, completion)
     state.update(
         {
             "state": "EVIDENCE_COMPLETE",
@@ -2259,7 +2923,7 @@ def execute(args: argparse.Namespace) -> None:
                 write_not_run(args, pending, stop_reason)
             break
     latest_live = read_json(args.output_root / "live-workload-coexistence-audit.json")
-    write_proof(args.report_dir, 18, latest_live)
+    write_proof(args.report_dir, 26, latest_live)
     final_proofs(
         args=args,
         state=state,
@@ -2267,7 +2931,7 @@ def execute(args: argparse.Namespace) -> None:
         stop_reason=stop_reason,
     )
     print(
-        json.dumps(read_json(proof_path(args.report_dir, 52)), sort_keys=True),
+        json.dumps(read_json(proof_path(args.report_dir, 60)), sort_keys=True),
         flush=True,
     )
 
@@ -2388,8 +3052,19 @@ def finalize(args: argparse.Namespace) -> None:
     state = read_json(args.output_root / "program-state.json")
     if state["state"] != "EVIDENCE_COMPLETE":
         raise ValueError("evidence_complete_state_required")
-    verify_frozen(args, state)
-    completion = read_json(proof_path(args.report_dir, 52))
+    if state.get("source_gate_only"):
+        instruction = Path.cwd().resolve() / WORK_INSTRUCTION_PATH
+        if file_sha256(instruction) != WORK_INSTRUCTION_SHA256:
+            raise ValueError("work_instruction_content_drift")
+        if architecture_hashes(Path.cwd().resolve()) != state["architecture_hashes"]:
+            raise ValueError("architecture_semantic_drift_after_source_audit")
+        if canonical_sha256(read_json(proof_path(args.report_dir, 5))) != state[
+            "selection_policy_sha256"
+        ]:
+            raise ValueError("source_coverage_policy_drift_after_audit")
+    else:
+        verify_frozen(args, state)
+    completion = read_json(proof_path(args.report_dir, 60))
     completion.update(
         {
             "final_head_sha": git_value("rev-parse", "HEAD"),
@@ -2403,7 +3078,7 @@ def finalize(args: argparse.Namespace) -> None:
     ):
         completion["readiness"] = "NOT_READY"
         completion["next_scope"] = "BOUNDED_VALIDATION_REPAIR"
-    write_proof(args.report_dir, 52, completion)
+    write_proof(args.report_dir, 60, completion)
     write_reports(args.report_dir)
     rows = artifact_rows(args)
     mismatch_hash = 0
@@ -2415,7 +3090,7 @@ def finalize(args: argparse.Namespace) -> None:
         mismatch_size += path.stat().st_size != row["byte_size"]
         secret_failures += row["secret_scan_status"] != "PASS"
     index = {
-        "contract": "new-issuer-holdout-artifact-index-v1",
+        "contract": "dual-market-source-coverage-holdout-artifact-index-v1",
         "artifact_count": len(rows),
         "artifact_hash_mismatch_count": mismatch_hash,
         "artifact_size_mismatch_count": mismatch_size,
@@ -2454,7 +3129,7 @@ def finalize(args: argparse.Namespace) -> None:
     if index["status"] != "PASS":
         completion["readiness"] = "NOT_READY"
         completion["next_scope"] = "ARTIFACT_INTEGRITY_REPAIR"
-    write_proof(args.report_dir, 52, completion)
+    write_proof(args.report_dir, 60, completion)
     write_reports(args.report_dir)
     args.zip_output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.zip_output.with_suffix(args.zip_output.suffix + ".tmp")
@@ -2511,7 +3186,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path.home()
         / "Documents/Codex/Reports/"
-        "thesis-monitor-20260907-new-issuer-holdout-selection-ownership-proof-report.zip",
+        "thesis-monitor-20260907-dual-market-source-coverage-new-issuer-holdout-ownership-proof-report.zip",
     )
     args = parser.parse_args()
     if args.prepare and args.as_of is None:

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import json
+import asyncio
 import hashlib
+import json
 from pathlib import Path
 
 from scripts import new_issuer_holdout_selection_ownership_proof as proof
@@ -115,7 +116,151 @@ def test_experiment_constants_preserve_frozen_runtime_contract() -> None:
     assert proof.TIMEOUT_OWNER_COUNT == 1
     assert proof.BATCH_SEMANTICS == "MODEL_CONTEXT_COUPLED"
     assert (proof.TARGET_US, proof.TARGET_KR, proof.TARGET_TOTAL) == (4, 12, 16)
-    assert len(proof.PROOF_NAMES) == 52
+    assert len(proof.PROOF_NAMES) == 60
+    assert proof.PROOF_NAMES[4] == "05-dual-market-source-coverage-policy"
+    assert proof.PROOF_NAMES[59] == "60-program-completion"
+
+
+def test_market_evaluation_uses_precommitted_reserve_until_target(monkeypatch) -> None:
+    async def fake_evaluate(identity, *, as_of, cache_dir):
+        ticker = str(identity["ticker"])
+        eligible = ticker in {"B", "C"}
+        row = {
+            "ticker": ticker,
+            "market": "us",
+            "issuer_id": f"issuer-{ticker}",
+            "issuer_key": f"issuer-{ticker}",
+            "evidence_families": [
+                "IDENTITY_SECURITY",
+                "EARNINGS_FINANCIAL_CURRENT",
+                "VALUATION_SAFE",
+            ],
+            "source_provenance": [],
+            "sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+            "directional_model_eligible": eligible,
+            "missing_required_families": [] if eligible else ["BUSINESS_CURRENT"],
+            "preflight_status": "ASSEMBLED" if eligible else "SOURCE_INSUFFICIENT",
+            "provider_audit": {
+                "profile_successes": 1,
+                "companyfacts_successes": 1,
+            },
+        }
+        result = object() if eligible else None
+        if eligible:
+            row.update(
+                {
+                    "base_status": "ASSEMBLED",
+                    "packet_sha256": f"packet-{ticker}",
+                    "validation_errors": [],
+                }
+            )
+        return row, result
+
+    monkeypatch.setattr(proof, "evaluate_candidate", fake_evaluate)
+    rows = [
+        {"ticker": ticker, "company_name": ticker, "market": "us"}
+        for ticker in ("A", "B", "C", "D")
+    ]
+
+    selected, audit_rows = asyncio.run(
+        proof.evaluate_market_candidates(
+            market="us",
+            rows=rows,
+            target=2,
+            as_of=proof.datetime(2026, 9, 7, tzinfo=proof.UTC),
+            cache_dir=Path("unused"),
+            selected_issuer_keys=set(),
+        )
+    )
+
+    assert len(selected) == 2
+    assert [row["ticker"] for row in audit_rows] == ["A", "B", "C"]
+    assert audit_rows[2]["primary_or_reserve"] == "RESERVE"
+
+
+def test_dual_market_summary_preserves_other_market_result_after_us_failure() -> None:
+    us = {
+        "target_count": 4,
+        "attempted_count": 5,
+        "source_sufficient_count": 2,
+        "source_insufficient_count": 3,
+        "pipeline_coverage_gap_count": 2,
+        "source_absence_count": 1,
+        "unknown_failure_count": 0,
+        "source_target_status": "FAIL",
+        "rows": [
+            {
+                "eligible_for_final_holdout": False,
+                "failure_reason_codes": ["NORMALIZATION_OR_MAPPING_GAP"],
+            }
+        ],
+    }
+    kr = {
+        "target_count": 12,
+        "attempted_count": 12,
+        "source_sufficient_count": 12,
+        "source_insufficient_count": 0,
+        "pipeline_coverage_gap_count": 0,
+        "source_absence_count": 0,
+        "unknown_failure_count": 0,
+        "source_target_status": "PASS",
+        "rows": [],
+    }
+
+    result = proof.dual_market_summary(us, kr)
+
+    assert result["dual_market_source_status"] == "US_FAIL_KR_PASS"
+    assert result["kr_attempted"] == 12
+    assert result["market_failure_did_not_abort_other_market_diagnostic"] == 1
+    assert result["real_holdout_model_calls_while_source_target_failed"] == 0
+
+
+def test_raw_regulatory_tags_classify_unmapped_bank_domain_as_pipeline_gap(
+    tmp_path: Path,
+) -> None:
+    _write_json(
+        tmp_path / "sec_companyfacts" / "BANK.json",
+        {
+            "facts": {
+                "us-gaap": {
+                    "CapitalRequiredForCapitalAdequacyToRiskWeightedAssets": {}
+                }
+            }
+        },
+    )
+    row = {
+        "ticker": "BANK",
+        "market": "us",
+        "issuer_id": "0000001",
+        "issuer_key": "issuer-bank",
+        "market_sequence": 1,
+        "initial_or_reserve": "INITIAL",
+        "evidence_families": [
+            "IDENTITY_SECURITY",
+            "EARNINGS_FINANCIAL_CURRENT",
+        ],
+        "missing_required_families": [
+            "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+        ],
+        "sufficiency_status": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+        "preflight_status": "SOURCE_INSUFFICIENT",
+        "directional_model_eligible": False,
+        "provider_audit": {
+            "profile_successes": 1,
+            "companyfacts_successes": 1,
+        },
+    }
+
+    result = proof.candidate_coverage_row(
+        row,
+        None,
+        identity={"company_name": "Bank"},
+        cache_dir=tmp_path,
+    )
+
+    assert result["failure_class"] == "PIPELINE_COVERAGE_GAP"
+    assert "NORMALIZATION_OR_MAPPING_GAP" in result["failure_reason_codes"]
+    assert result["true_source_absence_suspected"] is False
 
 
 def test_model_context_is_invoked_once_and_preserved_before_return(
