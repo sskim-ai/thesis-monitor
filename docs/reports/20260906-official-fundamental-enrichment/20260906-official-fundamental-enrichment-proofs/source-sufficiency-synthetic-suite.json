@@ -1,0 +1,98 @@
+{
+  "contract": "source-sufficiency-synthetic-suite-v1",
+  "passed": 11,
+  "price_direction_inputs_used": 0,
+  "rows": [
+    {
+      "actual": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "case": "identity_price_only",
+      "directional_model_eligible": false,
+      "expected": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "case": "identity_business_only",
+      "directional_model_eligible": false,
+      "expected": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "case": "identity_financial_only",
+      "directional_model_eligible": false,
+      "expected": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "case": "standard_business_earnings",
+      "directional_model_eligible": true,
+      "expected": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "case": "bank_earnings_regulatory",
+      "directional_model_eligible": true,
+      "expected": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "case": "biotech_clinical_liquidity",
+      "directional_model_eligible": true,
+      "expected": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SOURCE_FRESHNESS_BLOCK",
+      "case": "stale_only",
+      "directional_model_eligible": false,
+      "expected": "SOURCE_FRESHNESS_BLOCK",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "case": "validation_failed_financial",
+      "directional_model_eligible": false,
+      "expected": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "case": "valuation_missing_but_fundamentals_sufficient",
+      "directional_model_eligible": true,
+      "expected": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "case": "strong_price_no_fundamentals",
+      "directional_model_eligible": false,
+      "expected": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    },
+    {
+      "actual": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "case": "weak_price_no_fundamentals",
+      "directional_model_eligible": false,
+      "expected": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "pass": true,
+      "price_direction_inputs_used": 0
+    }
+  ],
+  "status": "PASS",
+  "ticker_specific_exception": 0,
+  "total": 11
+}

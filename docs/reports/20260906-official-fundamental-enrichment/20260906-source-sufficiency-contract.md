@@ -1,0 +1,8 @@
+# Source Sufficiency Contract
+
+| Gate | Value |
+| --- | --- |
+| contract | "pre-model-source-sufficiency-v1" |
+| directional_requirements | {"current_quality": "required", "framework_appropriate_second_anchor": "required", "identity_security": "required", "issuer_fundamental_anchor": "required", "price_direction": "prohibited", "valuation": "optional"} |
+| price_only_directional_model_calls | 0 |
+| statuses | ["SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT", "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY", "INSUFFICIENT_FUNDAMENTAL_EVIDENCE", "SECURITY_OR_ACCOUNTING_BASIS_BLOCK", "SOURCE_FRESHNESS_BLOCK"] |
