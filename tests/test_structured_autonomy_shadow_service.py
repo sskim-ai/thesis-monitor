@@ -13,6 +13,8 @@ from app.services.directional_balance_service import (
     directional_balance_language_errors,
 )
 from app.services.structured_autonomy_shadow_service import (
+    ActionRole,
+    ActionSubject,
     CONFIRMATION_BUSINESS_LANGUAGE_FIXTURES,
     CONFIRMATION_PRICE_STRUCTURE_FIXTURES,
     CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION,
@@ -32,10 +34,15 @@ from app.services.structured_autonomy_shadow_service import (
     StructuredAutonomyCandidate,
     StructuredAutonomyValidation,
     StructuredEvidenceClaim,
+    DirectiveState,
     TradeLanguageSemantic,
+    StructuredActionContext,
+    StructuredActionStance,
     UnknownTreatment,
+    build_structured_actionability,
     confirmation_business_condition_has_price_structure_semantics,
     derive_hold_lean,
+    directive_state,
     hold_lean_flip,
     korean_price_subject_action_matches,
     mandatory_trade_directive_matches,
@@ -43,6 +50,7 @@ from app.services.structured_autonomy_shadow_service import (
     render_structured_autonomy_message,
     sanitize_detail_body,
     structured_autonomy_message_quality,
+    structured_actionability_contradictions,
     trade_language_semantic,
     validate_structured_autonomy_candidate,
 )
@@ -465,7 +473,7 @@ def test_trade_negation_does_not_swallow_later_actionable_directive() -> None:
     text = "즉시 매수가 아닌 것 같지만 결국 지금 매수해야 한다."
 
     assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
-    assert mandatory_trade_directive_matches(text) == ("매수해야",)
+    assert mandatory_trade_directive_matches(text) == ("매수해야 한다",)
 
 
 @pytest.mark.parametrize(
@@ -534,17 +542,23 @@ def test_ticker_free_descriptive_and_none_trade_matrix(
 @pytest.mark.parametrize(
     "text",
     (
-        "즉시 매수 신호가 아니지만 지금은 매수해야 한다.",
-        "매도 명령은 아니나 보유자는 전량 매도하라.",
-        "자동 매수 신호가 아니다. 다만 지금 즉시 매수한다.",
         "매수 신호가 아니라고 보긴 어렵다.",
         "매도 조건이 아닌 것은 아니다.",
         "즉시 진입 사유가 아니지 않다.",
+        "청산 명령이 아니라고 단정하기 어렵다.",
+        "손절 기준이 아닌 셈은 아니다.",
+        "비중 축소 권고가 아니라고 말하기 어렵다.",
+        "포지션 종료 조건이 아니지 않다고 본다.",
+        "매수 근거가 전혀 아니라고는 못한다.",
+        "매도 신호가 아니라고 판단하기 어렵다.",
+        "진입 조건이 아닌 것은 아니라고 설명한다.",
     ),
 )
-def test_ticker_free_adversarial_negation_fails_closed(text: str) -> None:
-    assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
-    assert mandatory_trade_directive_matches(text)
+def test_ticker_free_ambiguous_action_language_is_advisory_not_hard_gate(
+    text: str,
+) -> None:
+    assert directive_state(text) != DirectiveState.ACTIONABLE_DIRECTIVE
+    assert mandatory_trade_directive_matches(text) == ()
 
 
 def test_historical_nominal_negation_regression_after_generic_matrix() -> None:
@@ -561,7 +575,7 @@ def test_historical_nominal_negation_still_exposes_later_action() -> None:
     text = "두 가격 경로 모두 즉시 매수 신호가 아니지만 지금은 매수해야 한다."
 
     assert trade_language_semantic(text) == TradeLanguageSemantic.ACTIONABLE
-    assert mandatory_trade_directive_matches(text) == ("매수해야",)
+    assert mandatory_trade_directive_matches(text) == ("매수해야 한다",)
 
 
 def test_probability_tokens_do_not_match_embedded_rate_metrics() -> None:
@@ -583,18 +597,116 @@ def test_probability_tokens_do_not_match_embedded_rate_metrics() -> None:
 @pytest.mark.parametrize(
     "text",
     (
+        "지금 매수해야 한다.",
+        "즉시 매수하라.",
+        "지금 진입하라.",
         "반드시 매도해야 한다.",
-        "즉시 매도한다.",
-        "자동으로 매도한다.",
-        "자동 매도한다.",
-        "무조건 비중을 줄인다.",
-        "이 가격에서는 손절해야 한다.",
-        "must sell immediately.",
-        "automatically reduce the position.",
+        "전량 매도하라.",
+        "무조건 매수.",
+        "지금 비중을 늘려라.",
+        "매수한다.",
+        "매도한다.",
+        "청산하라.",
+        "손절해야 한다.",
+        "비중을 줄여라.",
+        "비중을 축소한다.",
+        "비중을 감축해야 한다.",
+        "비중을 확대하라.",
+        "포지션을 종료한다.",
+        "포지션을 축소하라.",
+        "매수 주문을 실행하라.",
+        "must sell.",
+        "buy now.",
     ),
 )
 def test_mandatory_trade_directives_remain_blocked(text: str) -> None:
     assert mandatory_trade_directive_matches(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "즉시 진입점이 아니라 추후 재검토 조건이다.",
+        "즉시 진입 확신은 부족하다.",
+        "매수 매력은 낮다.",
+        "추격할 근거가 약하다.",
+        "매도 명령이 아니다.",
+        "현재는 진입보다 확인이 중요하다.",
+        "매수 의견의 근거를 검토한다.",
+        "매도 압력은 관찰 대상이다.",
+        "진입 시점은 불확실하다.",
+        "보유 근거를 재점검한다.",
+        "매수세와 거래량을 함께 본다.",
+        "매도세가 약해졌는지 확인한다.",
+        "해당 가격은 손절선이 아니다.",
+        "청산 위험은 낮다.",
+        "비중 축소 필요성은 낮다.",
+        "포지션 종료 조건은 아니다.",
+        "현재 매수할 필요가 없다.",
+        "기계적 매도를 권고하지 않는다.",
+        "자동 매수 대신 사업 성과를 확인한다.",
+        "buying interest remains weak.",
+    ),
+)
+def test_safe_action_mentions_do_not_trigger_hard_gate(text: str) -> None:
+    assert mandatory_trade_directive_matches(text) == ()
+
+
+def _action_context(
+    subject: ActionSubject,
+    stance: StructuredActionStance,
+) -> StructuredActionContext:
+    return StructuredActionContext(
+        action_subject=subject,
+        action_stance=stance,
+        entry_mode="NONE",
+        directive_state=DirectiveState.NO_DIRECTIVE,
+        action_role=ActionRole.RATIONALE,
+    )
+
+
+@pytest.mark.parametrize(
+    ("context", "text"),
+    (
+        (_action_context(ActionSubject.NEW_BUYER, "WAIT"), "지금 매수해야 한다."),
+        (_action_context(ActionSubject.NEW_BUYER, "AVOID"), "즉시 진입하라."),
+        (_action_context(ActionSubject.NEW_BUYER, "WAIT"), "비중을 늘려라."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "전량 매도하라."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "청산하라."),
+        (_action_context(ActionSubject.HOLDER, "HOLDABLE"), "전량 매도하라."),
+        (_action_context(ActionSubject.HOLDER, "REVIEW"), "비중을 줄여라."),
+        (_action_context(ActionSubject.HOLDER, "REVIEW"), "포지션을 종료하라."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "지금 매수해야 한다."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "비중을 확대하라."),
+    ),
+)
+def test_structured_actionability_contradictions_are_detected(
+    context: StructuredActionContext,
+    text: str,
+) -> None:
+    assert structured_actionability_contradictions(context, text)
+
+
+@pytest.mark.parametrize(
+    ("context", "text"),
+    (
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "지금 매수해야 한다."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "즉시 진입하라."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "비중을 늘려라."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "무조건 매수."),
+        (_action_context(ActionSubject.NEW_BUYER, "ATTRACTIVE"), "매수 주문을 실행하라."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "반드시 매도해야 한다."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "전량 매도하라."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "청산하라."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "비중을 줄여라."),
+        (_action_context(ActionSubject.HOLDER, "REDUCE"), "포지션을 종료하라."),
+    ),
+)
+def test_structured_actionability_consistent_directives_do_not_contradict(
+    context: StructuredActionContext,
+    text: str,
+) -> None:
+    assert structured_actionability_contradictions(context, text) == ()
 
 
 def _packet_with_metric_evidence(metric_text: str) -> DecisionEvidencePacket:
@@ -1122,17 +1234,21 @@ def test_renderer_uses_accepted_plan_once_and_separates_price_roles() -> None:
     )
 
     assert rendered.validation.valid is True
-    assert rendered.text.count("🧠 종합 방향:") == 1
-    assert "판단 방향: BUY 쪽 HOLD" in rendered.text
-    assert "현재 신규진입: WAIT" in rendered.text
-    assert "눌림 진입 검토: $90~$94" in rendered.text
+    assert rendered.actionability == build_structured_actionability(_candidate())
+    assert rendered.text.count("🧠 판단:") == 1
+    assert "🧠 판단: HOLD · BUY:SELL 5.5:4.5" in rendered.text
+    assert "HOLD 성향: BUY 쪽 HOLD" in rendered.text
+    assert "신규 관찰자: WAIT · 진입 방식: 눌림" in rendered.text
+    assert "보유자: HOLDABLE" in rendered.text
+    assert "가격 재점검 · 눌림: $90~$94" in rendered.text
     assert (
-        "추세 확인 재평가: $112 저항 상단 돌파 확인 + "
+        "가격 재점검 · 확인: $112 저항 상단 돌파 확인 + "
         "상용화 경제성과 공급 완화를 함께 확인합니다."
     ) in rendered.text
     assert "• 확인 조건:" not in rendered.text
-    assert "상방 보유 관점 재검토: $108~$112" in rendered.text
-    assert "하방 재점검: $86" in rendered.text
+    assert "가격 재점검 · 상방: $108~$112" in rendered.text
+    assert "가격 재점검 · 하방: $86" in rendered.text
+    assert "기업가치 무효화:" in rendered.text
     assert "투자 논리: 약화" not in rendered.text
 
 
@@ -1154,9 +1270,9 @@ def test_avoid_renderer_uses_reconsideration_not_actionable_entry() -> None:
     )
 
     assert rendered.validation.valid is True
-    assert "현재 신규진입: AVOID" in rendered.text
-    assert "재검토 가격 조건: $90~$94" in rendered.text
-    assert "상향 재검토: $112 저항 상단 돌파 확인" in rendered.text
+    assert "신규 관찰자: AVOID · 진입 방식: 눌림" in rendered.text
+    assert "가격 재점검 · 눌림: $90~$94" in rendered.text
+    assert "가격 재점검 · 확인: $112 저항 상단 돌파 확인" in rendered.text
     assert "눌림 진입 검토:" not in rendered.text
 
 
@@ -1218,9 +1334,9 @@ def test_avoid_with_retained_confirmation_uses_future_confirmation_mode() -> Non
     )
 
     assert rendered.validation.valid is True
-    assert "현재 신규진입: AVOID" in rendered.text
-    assert "상향 재검토: $112 저항 상단 돌파 확인" in rendered.text
-    assert "현재 선호: 추세 확인" in rendered.text
+    assert "신규 관찰자: AVOID · 진입 방식: 추세 확인" in rendered.text
+    assert "가격 재점검 · 확인: $112 저항 상단 돌파 확인" in rendered.text
+    assert "현재 선호:" not in rendered.text
 
 
 def test_model_owned_confirmation_business_condition_rejects_price_structure() -> None:

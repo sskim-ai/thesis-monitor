@@ -21,7 +21,6 @@ from app.services.directional_balance_service import (
     DirectionalBalance,
     decision_from_directional_balance,
     directional_balance_language_errors,
-    render_directional_balance,
 )
 from app.services.logical_condition_service import (
     CheckpointMetric,
@@ -34,6 +33,7 @@ CONTRACT_VERSION = "structured-autonomy-decision-v2-shadow"
 OUTPUT_CONTRACT = "structured-autonomy-decision-v2-shadow-output"
 VALIDATOR_CONTRACT = "structured-autonomy-decision-v2-shadow-validator"
 RENDERER_CONTRACT = "structured-autonomy-decision-v2-shadow-renderer"
+ACTIONABILITY_CONTRACT = "structured-actionability-v1"
 
 CRCL_PRIOR_CONFIRMATION_BUSINESS_CONDITION = (
     "USDC 점유율과 비이자성 수익 확대가 정상화 이익을 지지함."
@@ -107,6 +107,15 @@ UnknownTreatmentKind = Literal[
     "CONFIRMATION_REQUIRED",
     "DIRECTIONAL_NEGATIVE",
 ]
+StructuredActionStance = Literal[
+    "ATTRACTIVE",
+    "WAIT",
+    "AVOID",
+    "HOLDABLE",
+    "REVIEW",
+    "REDUCE",
+    "NONE",
+]
 
 
 class ClaimType(StrEnum):
@@ -142,6 +151,35 @@ class TradeLanguageSemantic(StrEnum):
     NEGATED = "NEGATED"
     DESCRIPTIVE = "DESCRIPTIVE"
     NONE = "NONE"
+
+
+class ActionSubject(StrEnum):
+    NEW_BUYER = "NEW_BUYER"
+    HOLDER = "HOLDER"
+    PRICE_REVIEW = "PRICE_REVIEW"
+    BUSINESS_INVALIDATION = "BUSINESS_INVALIDATION"
+    NONE = "NONE"
+
+
+class DirectiveState(StrEnum):
+    NO_DIRECTIVE = "NO_DIRECTIVE"
+    NEGATED_DIRECTIVE = "NEGATED_DIRECTIVE"
+    ACTIONABLE_DIRECTIVE = "ACTIONABLE_DIRECTIVE"
+
+
+class ActionRole(StrEnum):
+    SUMMARY = "SUMMARY"
+    RATIONALE = "RATIONALE"
+    PRICE_CONDITION = "PRICE_CONDITION"
+    REVIEW_CONDITION = "REVIEW_CONDITION"
+    NONE = "NONE"
+
+
+class ActionIntent(StrEnum):
+    BUY_OR_ENTER = "BUY_OR_ENTER"
+    SELL_OR_EXIT = "SELL_OR_EXIT"
+    INCREASE = "INCREASE"
+    REDUCE = "REDUCE"
 
 
 class RepetitionSemanticRole(StrEnum):
@@ -269,6 +307,27 @@ class HolderViewV2(FrozenModel):
     )
 
 
+class StructuredActionContext(FrozenModel):
+    action_subject: ActionSubject
+    action_stance: StructuredActionStance
+    entry_mode: PreferredEntryMode
+    directive_state: DirectiveState
+    action_role: ActionRole
+
+
+class StructuredActionability(FrozenModel):
+    contract: Literal["structured-actionability-v1"] = ACTIONABILITY_CONTRACT
+    overall_direction: Decision
+    directional_balance: DirectionalBalance
+    hold_lean: HoldLean
+    contexts: tuple[StructuredActionContext, ...] = Field(min_length=4, max_length=4)
+
+
+class ActionDirective(FrozenModel):
+    text: str
+    intent: ActionIntent
+
+
 class StructuredAutonomyCandidate(FrozenModel):
     ticker: str
     decision: Decision
@@ -313,6 +372,7 @@ class RenderedStructuredAutonomy(FrozenModel):
     lean: HoldLean
     text: str
     validation: StructuredAutonomyValidation
+    actionability: StructuredActionability | None = None
 
 
 _TRADE_ACTION = re.compile(
@@ -330,19 +390,45 @@ _NON_DIRECTIVE_TRADE_SPAN = re.compile(
     r"(?:보다|대신|아니\w*|않\w*|필요\s*없\w*|보지\w*\s*않\w*)",
     re.IGNORECASE,
 )
-_MANDATORY_TRADE_DIRECTIVE = re.compile(
-    r"(?:반드시|즉시|무조건|자동으로|기계적으로)\s*"
-    r"(?:[^,.!?;\n]{0,24}?)"
-    r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*|종료)|손절|진입|청산)|"
-    r"자동\s*(?:매도|매수|진입|청산)\s*(?:한다|해야|하라|하십시오|실행)|"
-    r"(?:매도|매수|비중(?:을|를)?\s*(?:축소|감축|줄\w*)|"
-    r"포지션(?:을|를)?\s*(?:축소|감축|줄\w*|종료)|손절|진입|청산)"
-    r"\s*(?:해야|한다|하라|하십시오|실행|권고)|"
-    r"(?:매수|매도)\s*주문|주문\s*실행|전량\s*(?:매도|매수)|"
+_NOUN_ACTION = r"(?:매수|매도|진입|청산|손절)"
+_ACTIONABLE_NOUN_DIRECTIVE = re.compile(
+    rf"{_NOUN_ACTION}\s*(?:"
+    r"해야만\s*한다|해야\s*한다|해야\s*합니다|하라|해라|하십시오|한다|합니다"
+    r")(?=\s*(?:[,.!?。;]|$))",
+    re.IGNORECASE,
+)
+_ACTIONABLE_POSITION_DIRECTIVE = re.compile(
+    r"(?:"
+    r"비중(?:을|를)?\s*(?:줄여야(?:만)?\s*한다|줄여라|줄인다|"
+    r"축소해야(?:만)?\s*한다|축소하라|축소한다|"
+    r"감축해야(?:만)?\s*한다|감축하라|감축한다|"
+    r"늘려야(?:만)?\s*한다|늘려라|늘린다|"
+    r"확대해야(?:만)?\s*한다|확대하라|확대한다)|"
+    r"포지션(?:을|를)?\s*(?:종료해야(?:만)?\s*한다|종료하라|종료한다|"
+    r"축소해야(?:만)?\s*한다|축소하라|축소한다)"
+    r")(?=\s*(?:[,.!?。;]|$))",
+    re.IGNORECASE,
+)
+_ACTIONABLE_TERMINAL_DIRECTIVE = re.compile(
+    rf"(?:무조건|반드시|지금|즉시)\s*(?:전량\s*)?{_NOUN_ACTION}"
+    r"(?=\s*(?:[.!?。]|$))",
+    re.IGNORECASE,
+)
+_ACTIONABLE_ORDER_DIRECTIVE = re.compile(
+    r"(?:(?:매수|매도)\s*주문(?:을|를)?\s*"
+    r"(?:실행하라|실행해라|실행하십시오|실행한다)|"
+    r"주문(?:을|를)?\s*실행(?:하라|해라|하십시오|한다))"
+    r"(?=\s*(?:[,.!?。;]|$))",
+    re.IGNORECASE,
+)
+_ACTIONABLE_ENGLISH_DIRECTIVE = re.compile(
     r"\b(?:buy|sell)\s+(?:now|immediately)\b|"
-    r"\b(?:must|should)\s+(?:buy|sell|reduce)\b|"
-    r"\bautomatically\s+(?:buy|sell|reduce)\b",
+    r"\b(?:must|should)\s+(?:buy|sell|reduce|exit|enter)\b|"
+    r"\bautomatically\s+(?:buy|sell|reduce|exit|enter)\b",
+    re.IGNORECASE,
+)
+_NEGATED_OR_LIMITED_ACTION = re.compile(
+    r"아니\w*|아닙\w*|않\w*|없\w*|부족\w*|낮\w*|약하\w*|보다|대신|보다는|피하\w*|금지",
     re.IGNORECASE,
 )
 _MANDATORY_SELL = re.compile(
@@ -351,30 +437,6 @@ _MANDATORY_SELL = re.compile(
     r"\b(?:sell|reduce)\b",
     re.IGNORECASE,
 )
-_TRADE_NOMINAL_PREDICATE_HEAD = (
-    r"(?:신호|명령|지시|권고|추천|조건|근거|사유|이유|기준|트리거)"
-)
-_TRADE_NEGATION_SUFFIX = re.compile(
-    r"^\s*(?:"
-    r"(?:(?:의|하라는|라는|는)\s*)?"
-    rf"(?:선|{_TRADE_NOMINAL_PREDICATE_HEAD})?"
-    r"(?:이|가|은|는|을|를)?\s*"
-    r"(?:아니다|아닙니다|아닌|아니며|아니고|아니라|아니지만|아니나|"
-    r"않는다|않습니다|않으며|않고)"
-    r"|[^,.!?;\n]{0,28}?(?:"
-    r"필요(?:가)?\s*없\w*|권고하지\s*않\w*|보지(?:는)?\s*않\w*"
-    r")"
-    r")"
-)
-_AMBIGUOUS_TRADE_NEGATION = re.compile(
-    r"(?:"
-    r"아니(?:라고|라고는|라고도)\s*(?:보|말하|단정하|판단하)[^,.!?;\n]{0,12}"
-    r"(?:어렵|않|못)|"
-    r"아닌\s*(?:것|셈)(?:이|은|도)?\s*아니|"
-    r"아니지\s*않"
-    r")"
-)
-_TRADE_COMPARISON_SUFFIX = re.compile(r"^\s*(?:보다|대신|보다는)(?:\s|$)")
 _STOP_LOSS = re.compile(r"손절|stop[- ]?loss", re.IGNORECASE)
 _TARGET_PRICE = re.compile(r"목표가|적정가|target\s*price", re.IGNORECASE)
 _UNSUPPORTED_METRIC = re.compile(
@@ -448,6 +510,66 @@ def derive_hold_lean(decision: Decision, balance: DirectionalBalance) -> HoldLea
     if balance.buy == 4.5 and balance.sell == 5.5:
         return HoldLean.SELL_LEAN
     return HoldLean.NEUTRAL
+
+
+def build_structured_actionability(
+    candidate: StructuredAutonomyCandidate,
+) -> StructuredActionability:
+    buyer = candidate.new_buyer_view
+    holder = candidate.holder_view
+    has_price_review = any(
+        value is not None
+        for value in (
+            buyer.pullback_entry_zone_low,
+            buyer.pullback_entry_zone_high,
+            buyer.breakout_confirmation_level,
+            holder.upside_trim_zone_low,
+            holder.upside_trim_zone_high,
+            holder.downside_review_level,
+        )
+    )
+    return StructuredActionability(
+        overall_direction=candidate.decision,
+        directional_balance=candidate.directional_balance,
+        hold_lean=derive_hold_lean(candidate.decision, candidate.directional_balance),
+        contexts=(
+            StructuredActionContext(
+                action_subject=ActionSubject.NEW_BUYER,
+                action_stance=buyer.stance,
+                entry_mode=buyer.preferred_entry_mode,
+                directive_state=DirectiveState.NO_DIRECTIVE,
+                action_role=ActionRole.SUMMARY,
+            ),
+            StructuredActionContext(
+                action_subject=ActionSubject.HOLDER,
+                action_stance=holder.stance,
+                entry_mode="NONE",
+                directive_state=DirectiveState.NO_DIRECTIVE,
+                action_role=ActionRole.SUMMARY,
+            ),
+            StructuredActionContext(
+                action_subject=ActionSubject.PRICE_REVIEW,
+                action_stance="REVIEW" if has_price_review else "NONE",
+                entry_mode="NONE",
+                directive_state=DirectiveState.NO_DIRECTIVE,
+                action_role=ActionRole.PRICE_CONDITION,
+            ),
+            StructuredActionContext(
+                action_subject=ActionSubject.BUSINESS_INVALIDATION,
+                action_stance="REVIEW",
+                entry_mode="NONE",
+                directive_state=DirectiveState.NO_DIRECTIVE,
+                action_role=ActionRole.REVIEW_CONDITION,
+            ),
+        ),
+    )
+
+
+def actionability_context(
+    actionability: StructuredActionability,
+    subject: ActionSubject,
+) -> StructuredActionContext:
+    return next(row for row in actionability.contexts if row.action_subject == subject)
 
 
 def hold_lean_flip(prior: HoldLean, current: HoldLean) -> bool:
@@ -630,52 +752,97 @@ def _has_assertive_match(pattern: re.Pattern[str], text: str) -> bool:
     return False
 
 
-def _directive_is_bounded_negated(sentence: str, match: re.Match[str]) -> bool:
-    suffix = sentence[match.end() : match.end() + 36]
-    return bool(
-        _TRADE_NEGATION_SUFFIX.search(suffix)
-        or _TRADE_COMPARISON_SUFFIX.search(suffix)
+def _directive_intent(text: str) -> ActionIntent:
+    lowered = text.lower()
+    if re.search(r"매도|청산|손절|종료|\b(?:sell|exit)\b", lowered):
+        return ActionIntent.SELL_OR_EXIT
+    if re.search(r"줄|축소|감축|\breduce\b", lowered):
+        return ActionIntent.REDUCE
+    if re.search(r"늘|확대", lowered):
+        return ActionIntent.INCREASE
+    return ActionIntent.BUY_OR_ENTER
+
+
+def explicit_actionable_trade_directives(text: str) -> tuple[ActionDirective, ...]:
+    directives: list[ActionDirective] = []
+    patterns = (
+        _ACTIONABLE_NOUN_DIRECTIVE,
+        _ACTIONABLE_POSITION_DIRECTIVE,
+        _ACTIONABLE_TERMINAL_DIRECTIVE,
+        _ACTIONABLE_ORDER_DIRECTIVE,
+        _ACTIONABLE_ENGLISH_DIRECTIVE,
     )
+    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
+        matches = sorted(
+            (match for pattern in patterns for match in pattern.finditer(sentence)),
+            key=lambda match: (match.start(), -len(match.group(0))),
+        )
+        covered_until = -1
+        for match in matches:
+            if match.start() < covered_until:
+                continue
+            value = match.group(0)
+            directives.append(ActionDirective(text=value, intent=_directive_intent(value)))
+            covered_until = match.end()
+    return tuple(directives)
+
+
+def directive_state(text: str) -> DirectiveState:
+    if explicit_actionable_trade_directives(text):
+        return DirectiveState.ACTIONABLE_DIRECTIVE
+    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
+        action = _TRADE_ACTION.search(sentence)
+        if action and _NEGATED_OR_LIMITED_ACTION.search(sentence[action.end() :]):
+            return DirectiveState.NEGATED_DIRECTIVE
+    return DirectiveState.NO_DIRECTIVE
 
 
 def trade_language_semantic(text: str) -> TradeLanguageSemantic:
-    has_trade_language = False
-    has_negated_directive = False
-    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
-        action_matches = tuple(_TRADE_ACTION.finditer(sentence))
-        if not action_matches:
-            continue
-        has_trade_language = True
-        if _AMBIGUOUS_TRADE_NEGATION.search(sentence):
-            return TradeLanguageSemantic.ACTIONABLE
-        directives = tuple(_MANDATORY_TRADE_DIRECTIVE.finditer(sentence))
-        if any(not _directive_is_bounded_negated(sentence, match) for match in directives):
-            return TradeLanguageSemantic.ACTIONABLE
-        if (
-            directives
-            or _NON_DIRECTIVE_TRADE_SPAN.search(sentence)
-            or any(_directive_is_bounded_negated(sentence, match) for match in action_matches)
-        ):
-            has_negated_directive = True
-    if has_negated_directive:
+    state = directive_state(text)
+    if state == DirectiveState.ACTIONABLE_DIRECTIVE:
+        return TradeLanguageSemantic.ACTIONABLE
+    if state == DirectiveState.NEGATED_DIRECTIVE:
         return TradeLanguageSemantic.NEGATED
-    if has_trade_language:
+    if _TRADE_ACTION.search(text):
         return TradeLanguageSemantic.DESCRIPTIVE
     return TradeLanguageSemantic.NONE
 
 
 def mandatory_trade_directive_matches(text: str) -> tuple[str, ...]:
-    matches: list[str] = []
-    for sentence in re.split(r"(?<=[.!?。])\s+|\n+", text):
-        if not _TRADE_ACTION.search(sentence):
-            continue
-        ambiguous = _AMBIGUOUS_TRADE_NEGATION.search(sentence)
-        if ambiguous:
-            matches.append(ambiguous.group(0))
-        for match in _MANDATORY_TRADE_DIRECTIVE.finditer(sentence):
-            if not _directive_is_bounded_negated(sentence, match):
-                matches.append(match.group(0))
-    return tuple(matches)
+    return tuple(row.text for row in explicit_actionable_trade_directives(text))
+
+
+def structured_actionability_contradictions(
+    context: StructuredActionContext,
+    text: str,
+) -> tuple[str, ...]:
+    contradictions: list[str] = []
+    for directive in explicit_actionable_trade_directives(text):
+        intent = directive.intent
+        stance = context.action_stance
+        if context.action_subject == ActionSubject.NEW_BUYER:
+            if stance in {"WAIT", "AVOID"} and intent in {
+                ActionIntent.BUY_OR_ENTER,
+                ActionIntent.INCREASE,
+            }:
+                contradictions.append(directive.text)
+            elif stance == "ATTRACTIVE" and intent in {
+                ActionIntent.SELL_OR_EXIT,
+                ActionIntent.REDUCE,
+            }:
+                contradictions.append(directive.text)
+        elif context.action_subject == ActionSubject.HOLDER:
+            if stance in {"HOLDABLE", "REVIEW"} and intent in {
+                ActionIntent.SELL_OR_EXIT,
+                ActionIntent.REDUCE,
+            }:
+                contradictions.append(directive.text)
+            elif stance == "REDUCE" and intent in {
+                ActionIntent.BUY_OR_ENTER,
+                ActionIntent.INCREASE,
+            }:
+                contradictions.append(directive.text)
+    return tuple(contradictions)
 
 
 def _metric_names(text: str) -> set[CheckpointMetric]:
@@ -1095,6 +1262,23 @@ def validate_structured_autonomy_candidate(
         errors.append("mandatory_trade_language")
     if any(_MANDATORY_SELL.search(match) for match in mandatory_trade_matches):
         errors.append("mandatory_sell_language")
+    actionability = build_structured_actionability(candidate)
+    buyer_context = actionability_context(actionability, ActionSubject.NEW_BUYER)
+    holder_context = actionability_context(actionability, ActionSubject.HOLDER)
+    buyer_prose = "\n".join(
+        (
+            buyer.summary,
+            buyer.preferred_entry_reason,
+            buyer.confirmation_business_condition,
+        )
+    )
+    holder_prose = "\n".join(
+        (holder.summary, holder.business_invalidation_condition)
+    )
+    if structured_actionability_contradictions(buyer_context, buyer_prose):
+        errors.append("structured_actionability_contradiction")
+    if structured_actionability_contradictions(holder_context, holder_prose):
+        errors.append("structured_actionability_contradiction")
     if _has_assertive_match(_STOP_LOSS, joined):
         errors.append("invented_stop_loss")
     if _TARGET_PRICE.search(joined):
@@ -1161,6 +1345,12 @@ def repetition_semantic_role(text: str) -> RepetitionSemanticRole:
             "판단 확신도:",
             "사업 논리 상태:",
             "현재 신규진입:",
+            "판단:",
+            "HOLD 성향:",
+            "신규 관찰자:",
+            "보유자:",
+            "가격 재점검",
+            "기업가치 무효화:",
             "재검토 가격 조건:",
             "눌림 진입 검토:",
             "현재 선호:",
@@ -1236,7 +1426,8 @@ def render_structured_autonomy_message(
     validation = validate_structured_autonomy_candidate(
         packet, candidate, price_map=price_map, industry=industry
     )
-    lean = derive_hold_lean(candidate.decision, candidate.directional_balance)
+    actionability = build_structured_actionability(candidate)
+    lean = actionability.hold_lean
     buyer = candidate.new_buyer_view
     holder = candidate.holder_view
     confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}[
@@ -1251,21 +1442,25 @@ def render_structured_autonomy_message(
     lines = [
         f"🏢 {packet.company_name}({packet.ticker})",
         "",
-        f"🧠 종합 방향: {candidate.decision}",
-        f"판단 균형: {render_directional_balance(candidate.directional_balance)}",
+        (
+            f"🧠 판단: {actionability.overall_direction} · "
+            f"BUY:SELL {_display_number(actionability.directional_balance.buy)}:"
+            f"{_display_number(actionability.directional_balance.sell)}"
+        ),
     ]
     if lean != HoldLean.NOT_HOLD:
-        lines.append(f"판단 방향: {_lean_language(lean)}")
+        lines.append(f"HOLD 성향: {_lean_language(lean)}")
     lines.extend(
         [
             f"판단 확신도: {confidence}",
             f"사업 논리 상태: {_thesis_language(candidate.business_thesis_change)}",
-            f"현재 신규진입: {buyer.stance}",
+            f"신규 관찰자: {buyer.stance} · 진입 방식: {preferred}",
+            f"보유자: {holder.stance}",
             "",
             "🎯 핵심 판단",
             f"• {candidate.core_judgment.text}",
             "",
-            "🆕 신규진입 관점",
+            "🆕 신규 관찰자 근거",
             f"• {buyer.summary}",
         ]
     )
@@ -1275,35 +1470,27 @@ def render_structured_autonomy_message(
             buyer.pullback_entry_zone_high,
             buyer.currency,
         )
-        if buyer.stance == "AVOID":
-            lines.append(f"• 재검토 가격 조건: {zone} · 가격만으로 진입하지 않음")
-        else:
-            lines.append(f"• 눌림 진입 검토: {zone} · 지지 확인 시 재평가")
+        lines.append(f"• 가격 재점검 · 눌림: {zone}")
     if buyer.breakout_confirmation_level is not None:
         level = _currency_value(buyer.breakout_confirmation_level, buyer.currency)
         condition = (
             f"{level} {_confirmation_structure(buyer.confirmation_semantics)}"
             f" + {buyer.confirmation_business_condition}"
         )
-        if buyer.stance == "AVOID":
-            lines.append(f"• 상향 재검토: {condition}")
-        else:
-            lines.append(f"• 추세 확인 재평가: {condition}")
+        lines.append(f"• 가격 재점검 · 확인: {condition}")
     else:
         lines.append(f"• 사업 확인 조건: {buyer.confirmation_business_condition}")
     lines.extend(
         [
-            f"• 현재 선호: {preferred}",
             f"• 이유: {buyer.preferred_entry_reason}",
             "",
-            "💼 보유자 관점",
-            f"• 현재 관점: {holder.stance}",
+            "💼 보유자 근거",
             f"• {holder.summary}",
         ]
     )
     if holder.upside_trim_zone_low is not None and holder.upside_trim_zone_high is not None:
         lines.append(
-            "• 상방 보유 관점 재검토: "
+            "• 가격 재점검 · 상방: "
             + _zone(
                 holder.upside_trim_zone_low,
                 holder.upside_trim_zone_high,
@@ -1313,12 +1500,12 @@ def render_structured_autonomy_message(
         )
     if holder.downside_review_level is not None:
         lines.append(
-            "• 하방 재점검: "
+            "• 가격 재점검 · 하방: "
             + _currency_value(holder.downside_review_level, holder.currency)
         )
     lines.extend(
         [
-            f"• 기업가치 무효화 조건: {holder.business_invalidation_condition}",
+            f"• 기업가치 무효화: {holder.business_invalidation_condition}",
             "",
             "🔄 재평가 조건",
             f"• BUY 쪽: {candidate.reevaluation_up[0].text}",
@@ -1332,12 +1519,10 @@ def render_structured_autonomy_message(
     message_errors: list[str] = []
     if _DETAIL_JUDGMENT.search(detail):
         message_errors.append("duplicate_judgment_authority")
-    if text.count("🧠 종합 방향:") != 1 or text.count("🎯 핵심 판단") != 1:
+    if text.count("🧠 판단:") != 1 or text.count("🎯 핵심 판단") != 1:
         message_errors.append("duplicate_judgment_section")
-    if text.count("현재 신규진입:") != 1:
+    if text.count("신규 관찰자:") != 1 or text.count("보유자:") != 1:
         message_errors.append("top_label_entry_stance_ambiguity")
-    if buyer.stance == "AVOID" and "눌림 진입 검토:" in text:
-        message_errors.append("avoid_rendered_as_actionable_entry")
     if candidate.core_judgment.text in detail:
         message_errors.append("duplicated_judgment_paragraph")
     if mandatory_trade_directive_matches(text):
@@ -1355,6 +1540,7 @@ def render_structured_autonomy_message(
         lean=lean,
         text=text,
         validation=validation,
+        actionability=actionability,
     )
 
 
