@@ -2,9 +2,8 @@
 
 | Gate | Value |
 | --- | --- |
-| contract | "production-integration-handoff-v1" |
-| structured_autonomy_readiness | "BLOCKED_BY_SOURCE_COVERAGE" |
-| production_integration_review | "NOT_READY_UNSEEN_PROOF_MISSING" |
-| next_bounded_task | "ASSEMBLE_IMMUTABLE_UNSEEN_SOURCE_PACKETS_WITHOUT_LOWERING_STANDARDS" |
+| contract | "production-integration-next-handoff-v1" |
 | live_structured_autonomy_activation | 0 |
 | main_merge | 0 |
+| next_bounded_task | "NEW_AUTHORIZED_ARCHITECTURE_REPAIR_AND_NEW_HOLDOUT" |
+| readiness | "NEEDS_ARCHITECTURE_WORK" |

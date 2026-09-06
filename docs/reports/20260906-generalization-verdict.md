@@ -1,0 +1,16 @@
+# Generalization Verdict
+
+| Gate | Value |
+| --- | --- |
+| contract | "unseen-coldstart-generalization-verdict-v1" |
+| decision_code_change_after_result | 0 |
+| first_abc_all_valid | false |
+| program_generation_id | "20260906-unseen-source-coldstart-20260906T045044Z-f6ba15029561" |
+| readiness | "NEEDS_ARCHITECTURE_WORK" |
+| same_generation_repair | 0 |
+| source_coverage_minimum_met | true |
+| source_packet_mutation | 0 |
+| stability_counts | {"BOUNDARY_UNCERTAINTY": 0, "STABLE": 0, "UNSTABLE": 0} |
+| verdict | "GENERALIZATION_NEEDS_ARCHITECTURE_WORK" |
+| blocking_observation | "US cold-start packets lacked non-price business evidence; FIRST failed 8 and B failed 4 on confirmation_business_condition_without_business_evidence" |
+| bounded_next_repair | "Add approved read-only business/earnings/filing evidence before a new source freeze and new holdout" |
