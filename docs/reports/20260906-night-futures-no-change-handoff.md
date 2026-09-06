@@ -3,20 +3,7 @@
 | Gate | Value |
 | --- | --- |
 | contract | "night-futures-no-change-handoff-v1" |
-| contract_month_identity | "PASS" |
-| cross_midnight_18_00_to_06_00 | "PASS" |
-| fallback_behavior | "PASS" |
-| fixture | {"close": "1093.9", "contract_month": "202609", "high": "1097.65", "low": "1043.85", "open": "1055.65", "session_business_date": "2026-09-04", "volume": 32666} |
-| market_message_placement | "PASS" |
-| night_futures_code_mutation | 0 |
-| production_mutation | 0 |
-| production_send | 0 |
-| provider | "KRX official fut_bydd_trd archive/history path" |
-| provider_support | "PARTIAL" |
-| readiness | "READY_FOR_BOUNDED_PRODUCTION_INTEGRATION" |
-| reference_basis_rendering | "PASS" |
-| roll_safety | "PASS" |
-| session_business_date | "PASS" |
-| staleness | "PASS" |
+| code_mutation | 0 |
 | structured_autonomy_injection | 0 |
-| weekend_holiday_closed_state | "PASS" |
+| production_mutation | 0 |
+| provider_calls | 0 |

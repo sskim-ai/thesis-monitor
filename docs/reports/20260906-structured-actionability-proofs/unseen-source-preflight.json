@@ -1,0 +1,158 @@
+{
+  "contract": "unseen-source-preflight-v1",
+  "db_sha256": "b04b22cf1aabe01f6d5e28349e3e539bbf165989fb808926115d436cef5fb32e",
+  "eligible": [],
+  "eligible_count": 0,
+  "evidence_standard_lowered": 0,
+  "minimum_eligible": 12,
+  "packet_inventory_root": "/Users/sskim/Codex/thesis-monitor/data/ai_review",
+  "rows": [
+    {
+      "base_message_count": 0,
+      "company_name": "010140",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "010140"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "HMM",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "011200"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "017800",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "017800"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "021240",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "021240"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "024110",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "024110"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "NAVER",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "035420"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "051160",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "051160"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "055550",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "055550"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "443060",
+      "country": "KR",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "443060"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "MSFT",
+      "country": "US",
+      "eligible": false,
+      "exclusion_reasons": [
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": "partial",
+      "packet_count": 0,
+      "ticker": "MSFT"
+    },
+    {
+      "base_message_count": 0,
+      "company_name": "NVIDIA",
+      "country": null,
+      "eligible": false,
+      "exclusion_reasons": [
+        "identity_or_market_unresolved",
+        "insufficient_required_source_packet",
+        "missing_deterministic_base_message"
+      ],
+      "identity_quality": null,
+      "packet_count": 0,
+      "ticker": "NVDA"
+    }
+  ],
+  "selected_count": 11,
+  "status": "NOT_EXECUTABLE_SOURCE_COVERAGE",
+  "unseen_generation_id": "20260906-unseen-action-coldstart-20260906T031722Z-e7085b421624"
+}

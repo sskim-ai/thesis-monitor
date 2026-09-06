@@ -1,3 +1,13 @@
-# Hard Safety Regression
+# Hard-Safety Regression
 
-Unsupported numeric, semantic mismatch, nonexistent/cross-ticker/cross-generation refs, accounting and ADR basis, valuation eligibility, severity escalation, invented Unknown causality, logical operator mutation, actionable trade language, terminal lifecycle fixtures를 재검증한다. Threshold와 투자 판단 로직 변경은 0이다.
+| Gate | Value |
+| --- | --- |
+| actionable_true_positive | "20/20" |
+| contract | "structured-actionability-hard-safety-regression-v1" |
+| full_tests | "PASS" |
+| known_hard_safety_regression | 0 |
+| numeric_evidence_accounting_security_gates | "UNCHANGED" |
+| safe_action_mention_false_positive | 0 |
+| structured_contradiction_detection | "10/10" |
+| ruff | "PASS" |
+| diff_check | "PASS" |

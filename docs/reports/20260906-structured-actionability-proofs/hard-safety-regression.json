@@ -1,0 +1,11 @@
+{
+  "actionable_true_positive": "20/20",
+  "contract": "structured-actionability-hard-safety-regression-v1",
+  "diff_check": "PASS",
+  "full_tests": "PASS",
+  "known_hard_safety_regression": 0,
+  "numeric_evidence_accounting_security_gates": "UNCHANGED",
+  "ruff": "PASS",
+  "safe_action_mention_false_positive": 0,
+  "structured_contradiction_detection": "10/10"
+}

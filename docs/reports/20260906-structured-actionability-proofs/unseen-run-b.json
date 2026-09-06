@@ -1,0 +1,12 @@
+{
+  "contract": "structured-actionability-unseen-coldstart-v1",
+  "eligible_count": 0,
+  "minimum_eligible": 12,
+  "reason": "UNSEEN_COLDSTART_NOT_EXECUTABLE_SOURCE_COVERAGE",
+  "run": "b",
+  "same_generation_repair": 0,
+  "source_lock_sha256": "NOT_CREATED_INSUFFICIENT_ELIGIBLE_COHORT",
+  "status": "NOT_RUN",
+  "unseen_generation_id": "20260906-unseen-action-coldstart-20260906T031722Z-e7085b421624",
+  "validated": "NOT_RUN"
+}
