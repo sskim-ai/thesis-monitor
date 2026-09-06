@@ -1,0 +1,15 @@
+# 02 Latest Result Integrity
+
+| Field | Value |
+| --- | --- |
+| actual_sha256 | e3f25cd718b97a178f6490533cecb7bfd48453377a743d7329b6396b0fc280fa |
+| contract | latest-result-integrity-v1 |
+| expected_sha256 | e3f25cd718b97a178f6490533cecb7bfd48453377a743d7329b6396b0fc280fa |
+| path | /Users/sskim/Documents/Codex/Reports/thesis-monitor-20260907-dual-market-source-coverage-new-issuer-holdout-ownership-proof-report.zip |
+| previous_artifact_count | 124 |
+| previous_artifact_hash_mismatch_count | 0 |
+| previous_artifact_secret_scan_failure_count | 0 |
+| previous_artifact_size_mismatch_count | 0 |
+| status | PASS |
+
+Machine proof: `proofs/02-latest-result-integrity.json`.

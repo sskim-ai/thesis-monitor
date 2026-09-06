@@ -1,0 +1,35 @@
+{
+  "contract": "us-bank-insurer-framework-classification-audit-v1",
+  "rows": [
+    {
+      "canonical_framework": "bank_or_insurer",
+      "classification_correct": 1,
+      "classification_evidence": {
+        "classification_method": "official_industry_code",
+        "industry": "Banking",
+        "official_industry_code": "6021",
+        "official_industry_description": "National Commercial Banks",
+        "sector": "Financials",
+        "taxonomy_key": "bank"
+      },
+      "classification_rule": "generic official industry token taxonomy",
+      "ticker": "JPM"
+    },
+    {
+      "canonical_framework": "bank_or_insurer",
+      "classification_correct": 1,
+      "classification_evidence": {
+        "classification_method": "official_industry_code",
+        "industry": "Insurance and Reinsurance",
+        "official_industry_code": "6331",
+        "official_industry_description": "Fire, Marine & Casualty Insurance",
+        "sector": "Financials",
+        "taxonomy_key": "insurance"
+      },
+      "classification_rule": "generic official industry token taxonomy",
+      "ticker": "BRK-B"
+    }
+  ],
+  "status": "PASS",
+  "ticker_specific_framework_override_count": 0
+}
