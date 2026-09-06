@@ -3,7 +3,7 @@
 | Gate | Value |
 | --- | --- |
 | bootstrap_production_mutation | 0 |
-| contract | direction-timing-production-no-change-v1 |
+| contract | transport-continuation-production-no-change-v1 |
 | live_structured_autonomy_activation | 0 |
 | live_v2_change | 0 |
 | main_merge | 0 |
@@ -13,4 +13,4 @@
 | production_telegram_send | 0 |
 | status | PASS |
 
-Machine proof: `20260906-direction-timing-ownership-proofs/production-no-change.json`.
+Machine proof: `20260906-model-transport-continuation-proofs/production-no-change.json`.

@@ -1,0 +1,25 @@
+{
+  "consumed_cohort": [
+    "PLTR",
+    "V",
+    "MA",
+    "AMZN",
+    "XOM",
+    "DIS",
+    "NKE",
+    "MCD",
+    "033920",
+    "104480",
+    "071320",
+    "096240",
+    "032860",
+    "060570",
+    "016600",
+    "462520"
+  ],
+  "contract": "consumed-regression-no-rerun-v1",
+  "latest_holdout16_model_calls_this_generation": 0,
+  "latest_holdout16_rerun_count_this_generation": 0,
+  "static_artifact_inspection_only": 1,
+  "status": "PASS"
+}

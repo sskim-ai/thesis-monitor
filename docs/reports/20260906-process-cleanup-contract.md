@@ -1,0 +1,13 @@
+# Process Cleanup Contract
+
+| Gate | Value |
+| --- | --- |
+| contract | model-process-cleanup-contract-v1 |
+| duplicate_timeout_receipt_count | 0 |
+| orphan_model_process_count | 0 |
+| process_session | NEW_SESSION_PROCESS_GROUP |
+| repeated_sigint_loop | 0 |
+| status | PASS |
+| timeout_sequence | ["SIGTERM_GROUP", "WAIT_ONCE", "SIGKILL_GROUP_IF_NEEDED"] |
+
+Machine proof: `20260906-model-transport-continuation-proofs/process-cleanup-contract.json`.

@@ -1,0 +1,7 @@
+{
+  "contract": "transport-canary-directional-core-v1",
+  "failure_classification": "SYNTHETIC_CANARY_FIXTURE_SCHEMA_VALIDATION_FAILURE",
+  "model_invocation_started": 0,
+  "reason": "fictional fixture used market=synthetic while DecisionEvidencePacket accepts only kr or us",
+  "status": "FAIL"
+}
