@@ -1,0 +1,26 @@
+{
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "contract": "model-semantic-input-freeze-v1",
+  "model": "gpt-5.6-sol",
+  "model_semantic_input_drift": 0,
+  "prompt_schema_manifest": {
+    "prompts/core-batch-01.txt": "73cc97228b7263ba207c333278798ea9d5cb281c9e6a9e039c615eecacba9f84",
+    "prompts/core-batch-02.txt": "5bf8257acbc6197f0f3b904714852261cf7b88cfe53486043170ad4968d3dab1",
+    "prompts/core-batch-03.txt": "20e674c7ad0bf8bcae3e3e41f55b1a08387cd6ef5ccc7aa50912fe999587620d",
+    "prompts/core-batch-04.txt": "acbfa091cbf5611bc149cd5ea9cb66be025361a6d10fc216f2123d2321d67261",
+    "schemas/core-batch-01.json": "fbb4d4e7642e9a2bed8a9d15ebd8ba4f5817d1a7eb44f2eac5942b4907875ad8",
+    "schemas/core-batch-02.json": "97ed401cc09f7173c3a8f87e780d36ae7cc2d71d94573dfef357283578c910cd",
+    "schemas/core-batch-03.json": "6b009e4fec4444b11e6847326b4f25631cca81db63a4fb7d6078a18b9e030f0e",
+    "schemas/core-batch-04.json": "6fca77a5b668ecbb417e48111560a0567f79619888986607c90f737e6374cd15",
+    "schemas/timing-batch-01.json": "bceb6ef5c78072c21da3de6d073a9f03481fc6cef6c3e368649cfc968fef374b",
+    "schemas/timing-batch-02.json": "30e4a96a2ec9b1df9c7f8a464a1637be24244f23ac28916a00bf3cb5fd90ce7f",
+    "schemas/timing-batch-03.json": "b6615b322cdb8dce26c15557265c681c9811cef5431ded064d8aa09c550695e8",
+    "schemas/timing-batch-04.json": "ede74445b2fa57c9ef9e72de1f33570220863bfb22f6b02f362260ebed7eaa31"
+  },
+  "prompt_semantic_drift": 0,
+  "real_run_batch_size": 4,
+  "reasoning_effort": "xhigh",
+  "schema_semantic_drift": 0,
+  "source_lock_sha256": "efe64d0942afa00c3b40131afc4de5fa411babc0680271d1571aaac69816050d",
+  "status": "PASS"
+}

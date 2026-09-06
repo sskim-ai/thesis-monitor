@@ -1,0 +1,27 @@
+{
+  "consumed_regression_model_calls": 0,
+  "contract": "real-holdout-resume-source-lock-v1",
+  "ordered_cohort": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520",
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620"
+  ],
+  "resume_generation_id": "20260906-real-holdout-adapter-resume-20260906T133003Z-585c983a57d9",
+  "source_drift": 0,
+  "source_generation_id": "20260906-direction-timing-holdout-20260906T093200Z-bd30668470f0",
+  "source_lock_sha256": "efe64d0942afa00c3b40131afc4de5fa411babc0680271d1571aaac69816050d",
+  "status": "PASS"
+}

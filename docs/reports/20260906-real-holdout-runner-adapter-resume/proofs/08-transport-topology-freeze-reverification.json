@@ -1,0 +1,24 @@
+{
+  "actual_hashes": {
+    "continuation_harness_file": "a30db21cc387e72559586356e90b24ec069cba4c1107a12543b5490502c79846",
+    "continuation_transport_adapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1",
+    "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd",
+    "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13",
+    "transport_service_file": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774"
+  },
+  "contract": "transport-topology-freeze-reverification-v1",
+  "expected_hashes": {
+    "continuation_harness_file": "a30db21cc387e72559586356e90b24ec069cba4c1107a12543b5490502c79846",
+    "continuation_transport_adapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1",
+    "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd",
+    "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13",
+    "transport_service_file": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774"
+  },
+  "historical_canaries_rerun": 0,
+  "historical_canaries_reused": 7,
+  "historical_canary_harness_expected_sha256": "ca310f5d018cdf927f29ec5148f8774ef6b2f127bcf1a1073b76d1540d102aef",
+  "historical_canary_harness_sha256": "ca310f5d018cdf927f29ec5148f8774ef6b2f127bcf1a1073b76d1540d102aef",
+  "model_timeout_owner_count": 1,
+  "status": "PASS",
+  "transport_topology_mutation": 0
+}
