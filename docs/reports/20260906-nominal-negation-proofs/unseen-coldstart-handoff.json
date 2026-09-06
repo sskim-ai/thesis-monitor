@@ -1,0 +1,6 @@
+{
+  "contract": "unseen-coldstart-next-handoff-v1",
+  "reason": "clean_first_abc_required_before_retirement",
+  "same_generation_hotfix": 0,
+  "status": "NOT_READY"
+}

@@ -1,0 +1,9 @@
+{
+  "contract": "nominal-negation-clean-abc-devset-retirement-v1",
+  "failure_taxonomy": "NOT_MEASURED",
+  "generation_id": "20260906-uskr22-nominal-negation-20260906T010416Z-e45acd16cf43",
+  "reason": "stopped_after_a_gate",
+  "run": "c",
+  "status": "NOT_RUN",
+  "validation_pass_count": "NOT_RUN"
+}

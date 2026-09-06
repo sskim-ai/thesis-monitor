@@ -1,5 +1,11 @@
 # A/B/C Stability
 
-`NOT_MEASURED`
-
-Stability is calculated only after FIRST, A, B, and C each validate `22/22`. FIRST stopped at `21/22`, so no partial-run stability, majority vote, or decision averaging was produced.
+| Gate | Value |
+| --- | --- |
+| contract | "same-evidence-abc-stability-v1" |
+| generation_id | "20260906-uskr22-nominal-negation-20260906T010416Z-e45acd16cf43" |
+| status | "NOT_MEASURED" |
+| reason | "stopped_after_a_gate" |
+| stable_count | "NOT_MEASURED" |
+| boundary_uncertainty_count | "NOT_MEASURED" |
+| unstable_count | "NOT_MEASURED" |

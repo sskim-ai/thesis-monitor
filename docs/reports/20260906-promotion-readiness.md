@@ -1,0 +1,40 @@
+# Promotion Readiness
+
+| Gate | Value |
+| --- | --- |
+| contract | "nominal-negation-promotion-readiness-v1" |
+| generation_id | "20260906-uskr22-nominal-negation-20260906T010416Z-e45acd16cf43" |
+| source_report_sha256 | "6ea876ee720c830fc59cd745a002960d83cb27d90abc634a58128c5d9fabf276" |
+| source_generation_resume | 0 |
+| ticker_specific_exception | 0 |
+| exact_source_phrase_whitelist | 0 |
+| writer_prompt_change_for_wulf_wording | 0 |
+| trade_negation_model | "CLAUSE_AWARE" |
+| synthetic_negation_matrix_pass | 1 |
+| later_actionable_directive_detected | "PASS" |
+| double_negation_fail_closed | "PASS" |
+| historical_fixture_is_primary_implementation_target | 0 |
+| known_hard_safety_regression | 0 |
+| metric_union_false_reject | 0 |
+| unowned_strengthening_severity_accepted | 0 |
+| probability_language_false_positive | 0 |
+| direct_negation_false_positive | 0 |
+| nominal_negation_false_positive | 2 |
+| future_checkpoint_false_reject | 0 |
+| leaf_schema_failure | 0 |
+| investment_judgment_logic_changed | 0 |
+| source_lock_drift_across_first_abc | 0 |
+| run_validation | {"a": 20, "b": "NOT_RUN", "c": "NOT_RUN", "first": 22} |
+| stability | "NOT_MEASURED" |
+| uskr22_devset_status | "NOT_RETIRED" |
+| unseen_coldstart_handoff | "NOT_READY" |
+| night_futures_code_mutation | 0 |
+| structured_autonomy_production_activation | 0 |
+| production_telegram_send | 0 |
+| production_scheduler_change | 0 |
+| production_db_mutation | 0 |
+| main_merge | 0 |
+| full_tests | "PASS_2503" |
+| ruff | "PASS" |
+| git_diff_check | "PASS" |
+| structured_autonomy_readiness | "NEEDS_MORE_SHADOW_WORK" |
