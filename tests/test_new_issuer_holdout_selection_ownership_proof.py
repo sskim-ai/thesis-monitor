@@ -263,6 +263,50 @@ def test_raw_regulatory_tags_classify_unmapped_bank_domain_as_pipeline_gap(
     assert result["true_source_absence_suspected"] is False
 
 
+def test_nested_provider_audit_keeps_eligible_candidate_free_of_failure_codes(
+    tmp_path: Path,
+) -> None:
+    row = {
+        "ticker": "PASS",
+        "market": "us",
+        "issuer_id": "0000002",
+        "issuer_key": "issuer-pass",
+        "market_sequence": 1,
+        "initial_or_reserve": "INITIAL",
+        "evidence_families": [
+            "IDENTITY_SECURITY",
+            "BUSINESS_CURRENT",
+            "EARNINGS_FINANCIAL_CURRENT",
+        ],
+        "missing_required_families": [],
+        "sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+        "preflight_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+        "directional_model_eligible": True,
+        "base_status": "ASSEMBLED",
+        "packet_sha256": "packet",
+        "provider_audit": {
+            "fundamental": {
+                "profile_successes": 1,
+                "companyfacts_successes": 1,
+            },
+            "base": {"ohlcv": "success"},
+        },
+        "selected": True,
+    }
+
+    result = proof.candidate_coverage_row(
+        row,
+        object(),
+        identity={"company_name": "Pass"},
+        cache_dir=tmp_path,
+    )
+
+    assert result["official_profile_status"] == "PASS"
+    assert result["filing_or_official_financial_status"] == "PASS"
+    assert result["failure_reason_codes"] == []
+    assert proof._provider_metric(result, "profile_successes") == 1
+
+
 def test_model_context_is_invoked_once_and_preserved_before_return(
     tmp_path: Path,
 ) -> None:

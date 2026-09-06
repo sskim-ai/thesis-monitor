@@ -541,6 +541,16 @@ def _family_state(row: Mapping[str, object], family: str) -> str:
     return "PASS" if family in set(row.get("evidence_families") or []) else "UNAVAILABLE"
 
 
+def _provider_metric(row: Mapping[str, object], key: str) -> int:
+    provider = row.get("provider_audit") or {}
+    if not isinstance(provider, Mapping):
+        return 0
+    fundamental_provider = provider.get("fundamental") or provider
+    if not isinstance(fundamental_provider, Mapping):
+        return 0
+    return int(fundamental_provider.get(key) or 0)
+
+
 def _raw_required_domain_present(
     cache_dir: Path,
     ticker: str,
@@ -592,16 +602,19 @@ def candidate_coverage_row(
 ) -> dict[str, object]:
     ticker = str(row["ticker"])
     provider = row.get("provider_audit") or {}
+    fundamental_provider = provider.get("fundamental") or provider
+    if not isinstance(fundamental_provider, Mapping):
+        fundamental_provider = {}
     validation_errors = [str(value) for value in row.get("validation_errors") or []]
     missing = [str(value) for value in row.get("missing_required_families") or []]
     source_provenance = row.get("source_provenance") or []
     identity_valid = bool(row.get("issuer_id")) and _family_state(
         row, "IDENTITY_SECURITY"
     ) == "PASS"
-    profile_ok = int(provider.get("profile_successes") or 0) > 0
+    profile_ok = int(fundamental_provider.get("profile_successes") or 0) > 0
     financial_ok = int(
-        provider.get("companyfacts_successes")
-        or provider.get("statement_successes")
+        fundamental_provider.get("companyfacts_successes")
+        or fundamental_provider.get("statement_successes")
         or 0
     ) > 0
     source_sufficient = result is not None and bool(
@@ -619,28 +632,29 @@ def candidate_coverage_row(
     )
 
     reason_codes: list[str] = []
-    if not identity_valid:
-        reason_codes.append("IDENTITY_VALIDATION_FAILURE")
-    if not profile_ok:
-        reason_codes.append("OFFICIAL_SOURCE_UNAVAILABLE")
-    if not financial_ok:
-        reason_codes.append("OFFICIAL_FINANCIAL_SOURCE_UNAVAILABLE")
-    if any("EARNINGS_FINANCIAL_CURRENT" in value for value in missing):
-        reason_codes.append("EARNINGS_CONTEXT_INSUFFICIENT")
-    if any(
-        "REGULATORY_CAPITAL_CURRENT" in value
-        or "SECTOR_OPERATING_CURRENT" in value
-        or "BUSINESS_CURRENT" in value
-        or "LIQUIDITY_CASHFLOW_CURRENT" in value
-        for value in missing
-    ):
-        reason_codes.append("REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT")
-    if data_received_not_assembled:
-        reason_codes.append("SOURCE_FETCH_SUCCEEDED_PACKET_ASSEMBLY_FAILED")
-    if base_status == "VALIDATION_BLOCK" or validation_errors:
-        reason_codes.append("VALIDATION_FAILURE")
-    if not source_sufficient and not reason_codes:
-        reason_codes.append("SOURCE_SUFFICIENCY_RULE_REJECTED")
+    if not source_sufficient:
+        if not identity_valid:
+            reason_codes.append("IDENTITY_VALIDATION_FAILURE")
+        if not profile_ok:
+            reason_codes.append("OFFICIAL_SOURCE_UNAVAILABLE")
+        if not financial_ok:
+            reason_codes.append("OFFICIAL_FINANCIAL_SOURCE_UNAVAILABLE")
+        if any("EARNINGS_FINANCIAL_CURRENT" in value for value in missing):
+            reason_codes.append("EARNINGS_CONTEXT_INSUFFICIENT")
+        if any(
+            "REGULATORY_CAPITAL_CURRENT" in value
+            or "SECTOR_OPERATING_CURRENT" in value
+            or "BUSINESS_CURRENT" in value
+            or "LIQUIDITY_CASHFLOW_CURRENT" in value
+            for value in missing
+        ):
+            reason_codes.append("REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT")
+        if data_received_not_assembled:
+            reason_codes.append("SOURCE_FETCH_SUCCEEDED_PACKET_ASSEMBLY_FAILED")
+        if base_status == "VALIDATION_BLOCK" or validation_errors:
+            reason_codes.append("VALIDATION_FAILURE")
+        if not reason_codes:
+            reason_codes.append("SOURCE_SUFFICIENCY_RULE_REJECTED")
 
     missing_price = any(
         value
@@ -809,8 +823,7 @@ def market_coverage_audit(
         ),
         "provider_totals": {
             key: sum(
-                int((row.get("provider_audit") or {}).get(key) or 0)
-                for row in rows
+                _provider_metric(row, key) for row in rows
             )
             for key in provider_keys
         },
@@ -1416,10 +1429,7 @@ def prepare(args: argparse.Namespace) -> None:
         "selected_sufficient_count": len(cohort),
         "directional_model_calls_on_source_insufficient": 0,
         "provider_totals": {
-            key: sum(
-                int((row.get("provider_audit") or {}).get(key) or 0)
-                for row in preflight_rows
-            )
+            key: sum(_provider_metric(row, key) for row in preflight_rows)
             for key in (
                 "profile_requests",
                 "profile_successes",
