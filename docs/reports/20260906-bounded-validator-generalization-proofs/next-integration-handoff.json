@@ -1,0 +1,12 @@
+{
+  "contract": "next-production-integration-handoff-v1",
+  "generation_id": "20260906-uskr22-validator-generalization-20260905T234949Z-6347e07b3702",
+  "structured_autonomy_candidate": "NEEDS_MORE_SHADOW_WORK",
+  "structured_autonomy_blocker": "NOMINAL_NEGATION_SCOPE_FALSE_POSITIVE",
+  "affected_ticker": "WULF",
+  "bounded_next_repair": "Generalize bounded post-action nominal negation without weakening actionable trade detection, then start a completely new generation.",
+  "night_futures_candidate": "READY_FOR_BOUNDED_PRODUCTION_INTEGRATION",
+  "recommended_sequence": "SEPARATE_REVIEWED_INTEGRATIONS",
+  "main_merge": 0,
+  "production_mutation": 0
+}

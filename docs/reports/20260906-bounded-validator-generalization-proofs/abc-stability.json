@@ -1,0 +1,10 @@
+{
+  "contract": "structured-autonomy-same-evidence-stability-v1",
+  "generation_id": "20260906-uskr22-validator-generalization-20260905T234949Z-6347e07b3702",
+  "runs_compared": [],
+  "stable_count": "NOT_MEASURED",
+  "boundary_uncertainty_count": "NOT_MEASURED",
+  "unstable_count": "NOT_MEASURED",
+  "reason": "FIRST_VALIDATED_21_OF_22",
+  "majority_vote": 0
+}

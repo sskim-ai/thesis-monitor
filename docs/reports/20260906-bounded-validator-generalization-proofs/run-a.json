@@ -1,0 +1,12 @@
+{
+  "contract": "uskr22-structured-autonomy-run-v1",
+  "generation_id": "20260906-uskr22-validator-generalization-20260905T234949Z-6347e07b3702",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "run": "a",
+  "source_lock_sha256": "55b8c58d25bc9db297161663fe33412b8674a6e863293f82c1451623a5c08df3",
+  "state": "NOT_RUN_FIRST_GATE_FAILED",
+  "validation_pass_count": null,
+  "selective_ticker_rerun": 0,
+  "post_result_hotfix": 0
+}
