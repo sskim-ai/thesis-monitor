@@ -1,0 +1,94 @@
+{
+  "branch": "codex/20260906-structured-actionability-unseen-coldstart",
+  "code_hashes": {
+    "builder_prompt": "2a4e6b4775db5e3f4d1b56b3f804613994e2602e4aaefd7902a9c1640cacb672",
+    "directional_balance": "2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab",
+    "logical_condition": "255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234",
+    "orchestrator_selection_policy": "4ba624004d2dfedd3981d589ce77a539fc4568ea3d539e48327523a1a976c21f",
+    "stability": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188",
+    "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f"
+  },
+  "contract": "structured-actionability-unseen-coldstart-v1",
+  "contracts": {
+    "actionability": "structured-actionability-v1",
+    "output": "structured-autonomy-decision-v2-shadow-output",
+    "renderer": "structured-autonomy-decision-v2-shadow-renderer",
+    "validator": "structured-autonomy-decision-v2-shadow-validator"
+  },
+  "frozen_at": "2026-09-06T03:17:23.274546+00:00",
+  "implementation_commit": "f49ce6c3aa9b7241571fdd08e7094fd08bdf2251",
+  "implementation_tree": "a2f9dfacdc4dc7c6c551b2b65b35a979bd38cace",
+  "investment_decision_threshold_mutation": 0,
+  "model": "gpt-5.6-sol",
+  "night_futures_injection": 0,
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "program_generation_id": "20260906-structured-actionability-20260906T031722Z-e7085b421624",
+  "prompt_hashes": {
+    "batch-01.txt": "f3bc9771758a43cdabfe7399074ff2c69a52552fe9f1eadd3a49a7249ba55e73",
+    "batch-02.txt": "048a7e3c605b946afb3792d6acec06ffcc1cb76849bf6a393382c2ab18c91f75",
+    "batch-03.txt": "8b16fc46222a492e2788c5216ff6d485c4e1b97cb4b5affd039350ef2d3c0943",
+    "batch-04.txt": "d376bd2aa20e95ea518e35fcddf6517dd3d5743444aba080066f3a7cce42349f",
+    "batch-05.txt": "35a2a9bcd4f5f66f37ff705e03d3d3dae82ecaf753ed20f049b5898926506761",
+    "batch-06.txt": "c72a52aaa61a2f3f6d4d6d0ffee1651a80a923c197b110e77191ab3fa49b2e8c"
+  },
+  "prompt_set_sha256": "95a46a8d3ac708aa981203270236eec7b21bdf196be7577245cc1e52fea50c89",
+  "reasoning_effort": "xhigh",
+  "regression_generation_id": "20260906-uskr22-action-regression-20260906T031722Z-e7085b421624",
+  "schema_hashes": {
+    "batch-01.json": "737523202c710adf7b37f14700b4da114a11fe0e879ef901b50f043c763db2eb",
+    "batch-02.json": "e7fe020f966eb0e4d0ade1570a2bdc3a6b8bf54f66796a8769a2c52e114c9f52",
+    "batch-03.json": "09874c5e28770f91dd1b09a21037ddda306c2ba3b6005c8018be1045d99d9097",
+    "batch-04.json": "4eef97af2da72be358b583a1bd33250e498373c1ed3760c7f58c0609a81ea030",
+    "batch-05.json": "0ff1cd3589b464e5d7a143d64df27220e47de7dfc55d4ddd5a699ee3a4136783",
+    "batch-06.json": "74a7e17232ebf17fb88db4f3ebfa01a03b2431cc3f3bb96ccc4c4c78124f32ae"
+  },
+  "schema_set_sha256": "e86b747a0c6f459650275598a7c3c217bb0116ef6b6f8927debf3dfa938fd668",
+  "source_eligibility_policy": {
+    "allowed": [
+      12,
+      20
+    ],
+    "candidate_sources": [
+      "watchlistitem",
+      "securitymaster"
+    ],
+    "eligibility": [
+      "resolved supported-market identity",
+      "immutable packet containing the subject",
+      "paired deterministic base message"
+    ],
+    "expected_label_visibility": 0,
+    "minimum_eligible": 12,
+    "ranking": "monitoring_requested_desc_identity_quality_desc_ticker_asc",
+    "retired_tickers_excluded": [
+      "CORZ",
+      "CPNG",
+      "CRCL",
+      "GOOGL",
+      "HUT",
+      "IBM",
+      "MU",
+      "RXRX",
+      "SKHY",
+      "SNDK",
+      "TSLA",
+      "TSM",
+      "WRD",
+      "WULF",
+      "000660",
+      "003690",
+      "005490",
+      "005930",
+      "010120",
+      "012450",
+      "047810",
+      "086280"
+    ],
+    "target": 16,
+    "version": "stored-immutable-packet-preflight-v1"
+  },
+  "source_eligibility_policy_sha256": "387cef7911a5a4e076b5169fc2e9d7f274ffe0c50f4868ab82ce3dea43362cc8",
+  "source_lock_sha256": "2b15566bffda9a7aaa7229a34503d0434d01a79a581b2de8b604e2e2fdce3595",
+  "unseen_generation_id": "20260906-unseen-action-coldstart-20260906T031722Z-e7085b421624",
+  "unseen_selection_performed": 0
+}
