@@ -1,0 +1,23 @@
+# 05 Partial Output Recovery Search
+
+Contract: `partial-output-recovery-search-v1`
+
+Status: `PASS`
+
+```json
+{
+  "batch_results": {
+    "01": "EXACT_PROVENANCE_LINKED_OUTPUT_RECOVERED",
+    "02": "EXACT_PROVENANCE_LINKED_OUTPUT_RECOVERED"
+  },
+  "contract": "partial-output-recovery-search-v1",
+  "model_recall_count": 0,
+  "search_scope": [
+    "/private/tmp/thesis-monitor-20260906-real-holdout-adapter-resume-run/run-first",
+    "/private/tmp/thesis-monitor-20260906-real-holdout-adapter-resume-run/transport-receipts",
+    "/private/tmp/thesis-monitor-20260906-direction-timing-ownership-run/schemas"
+  ],
+  "status": "PASS",
+  "unrelated_user_data_searched": 0
+}
+```

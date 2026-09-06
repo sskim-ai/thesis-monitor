@@ -1,0 +1,125 @@
+{
+  "alias_audit_sha256": "d76270926334d401b221f40eb5e8f60a8797bd27ee8047818fe9de46e491a20d",
+  "audit_rows": [
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "095570",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "058860",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "246960",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "099520",
+      "unsupported_core_refs": []
+    }
+  ],
+  "batch_id": "02",
+  "consistency": {
+    "output_bytes_match": true,
+    "output_parsed": true,
+    "prompt_hash_match": true,
+    "receipt_generation_match": true,
+    "receipt_invocation_match": true,
+    "receipt_stage_match": true,
+    "receipt_status_pass": true,
+    "receipt_subject_count_match": true,
+    "schema_hash_match": true,
+    "stdout_bytes_match": true,
+    "stdout_exact_json_plus_newline": true
+  },
+  "contract": "recovered-real-output-provenance-v1",
+  "copied_artifact_path": "recovered-real-output/first-directional-core-batch-02.raw.json",
+  "generation_id": "20260906-real-holdout-adapter-resume-20260906T133003Z-585c983a57d9",
+  "invocation_id": "20260906-real-holdout-adapter-resume-20260906T133003Z-585c983a57d9:run-first:DIRECTIONAL_CORE:02",
+  "offline_validator_status": "PASS",
+  "original_artifact_identity": "/private/tmp/thesis-monitor-20260906-real-holdout-adapter-resume-run/run-first/core-batch-02.json",
+  "preservation": {
+    "category_counts": {
+      "bearer_token": 0,
+      "named_secret": 0,
+      "openai_key": 0
+    },
+    "copied_bytes": 16361,
+    "copied_sha256": "26b793f6a0329645ad757cb2f3d8e3c741121d050028408b3400346de86ccc79",
+    "preservation_status": "EXACT_BYTES_PRESERVED",
+    "secret_exposure_count": 0,
+    "secret_scan_status": "PASS",
+    "source_bytes": 16361,
+    "source_sha256": "26b793f6a0329645ad757cb2f3d8e3c741121d050028408b3400346de86ccc79"
+  },
+  "prompt_sha256": "5bf8257acbc6197f0f3b904714852261cf7b88cfe53486043170ad4968d3dab1",
+  "raw_output_bytes": 16361,
+  "raw_output_sha256": "26b793f6a0329645ad757cb2f3d8e3c741121d050028408b3400346de86ccc79",
+  "receipt_artifact_sha256": "758c2a5dd89a5aae4bd244e9b3f58d2d51d926ee1fa3ef2ef8b5c0bdbc7e211e",
+  "receipt_output_bytes": 16361,
+  "receipt_stdout_bytes": 16362,
+  "recovery_status": "EXACT_PROVENANCE_LINKED_OUTPUT_RECOVERED",
+  "schema_preservation": {
+    "category_counts": {
+      "bearer_token": 0,
+      "named_secret": 0,
+      "openai_key": 0
+    },
+    "copied_bytes": 44305,
+    "copied_sha256": "97ed401cc09f7173c3a8f87e780d36ae7cc2d71d94573dfef357283578c910cd",
+    "preservation_status": "EXACT_BYTES_PRESERVED",
+    "secret_exposure_count": 0,
+    "secret_scan_status": "PASS",
+    "source_bytes": 44305,
+    "source_sha256": "97ed401cc09f7173c3a8f87e780d36ae7cc2d71d94573dfef357283578c910cd"
+  },
+  "schema_revalidation_status": "PASS",
+  "schema_sha256": "97ed401cc09f7173c3a8f87e780d36ae7cc2d71d94573dfef357283578c910cd",
+  "schema_validation_errors": [],
+  "secret_exposure_count": 0,
+  "stage": "DIRECTIONAL_CORE",
+  "status": "PASS",
+  "subject_count": 4,
+  "subjects": [
+    "095570",
+    "058860",
+    "246960",
+    "099520"
+  ]
+}

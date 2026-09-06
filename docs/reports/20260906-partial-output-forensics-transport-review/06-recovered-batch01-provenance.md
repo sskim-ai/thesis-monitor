@@ -1,0 +1,133 @@
+# 06 Recovered Batch01 Provenance
+
+Contract: `recovered-real-output-provenance-v1`
+
+Status: `PASS`
+
+```json
+{
+  "alias_audit_sha256": "40ce47ebfcb881356400bb0b4a5f208addfee58441a025edce329e471c382b02",
+  "audit_rows": [
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "ORCL",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "UNH",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "KO",
+      "unsupported_core_refs": []
+    },
+    {
+      "buy_without_nonprice_material_anchor": 0,
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "errors": [],
+      "overall_direction": "HOLD",
+      "sell_without_nonprice_material_anchor": 0,
+      "source_sufficient": true,
+      "status": "PASS",
+      "supply_directional_core_usage": 0,
+      "ticker": "AVGO",
+      "unsupported_core_refs": []
+    }
+  ],
+  "batch_id": "01",
+  "consistency": {
+    "output_bytes_match": true,
+    "output_parsed": true,
+    "prompt_hash_match": true,
+    "receipt_generation_match": true,
+    "receipt_invocation_match": true,
+    "receipt_stage_match": true,
+    "receipt_status_pass": true,
+    "receipt_subject_count_match": true,
+    "schema_hash_match": true,
+    "stdout_bytes_match": true,
+    "stdout_exact_json_plus_newline": true
+  },
+  "contract": "recovered-real-output-provenance-v1",
+  "copied_artifact_path": "recovered-real-output/first-directional-core-batch-01.raw.json",
+  "generation_id": "20260906-real-holdout-adapter-resume-20260906T133003Z-585c983a57d9",
+  "invocation_id": "20260906-real-holdout-adapter-resume-20260906T133003Z-585c983a57d9:run-first:DIRECTIONAL_CORE:01",
+  "offline_validator_status": "PASS",
+  "original_artifact_identity": "/private/tmp/thesis-monitor-20260906-real-holdout-adapter-resume-run/run-first/core-batch-01.json",
+  "preservation": {
+    "category_counts": {
+      "bearer_token": 0,
+      "named_secret": 0,
+      "openai_key": 0
+    },
+    "copied_bytes": 16612,
+    "copied_sha256": "4f0da671e0b273167e4d9871d2cd1fc3341a1647e429604ee2882b7c1ad43cb5",
+    "preservation_status": "EXACT_BYTES_PRESERVED",
+    "secret_exposure_count": 0,
+    "secret_scan_status": "PASS",
+    "source_bytes": 16612,
+    "source_sha256": "4f0da671e0b273167e4d9871d2cd1fc3341a1647e429604ee2882b7c1ad43cb5"
+  },
+  "prompt_sha256": "73cc97228b7263ba207c333278798ea9d5cb281c9e6a9e039c615eecacba9f84",
+  "raw_output_bytes": 16612,
+  "raw_output_sha256": "4f0da671e0b273167e4d9871d2cd1fc3341a1647e429604ee2882b7c1ad43cb5",
+  "receipt_artifact_sha256": "2f663eb3761a817033bbca9e208572ca250dcb45978c5ec831a8efae13428f50",
+  "receipt_output_bytes": 16612,
+  "receipt_stdout_bytes": 16613,
+  "recovery_status": "EXACT_PROVENANCE_LINKED_OUTPUT_RECOVERED",
+  "schema_preservation": {
+    "category_counts": {
+      "bearer_token": 0,
+      "named_secret": 0,
+      "openai_key": 0
+    },
+    "copied_bytes": 44294,
+    "copied_sha256": "fbb4d4e7642e9a2bed8a9d15ebd8ba4f5817d1a7eb44f2eac5942b4907875ad8",
+    "preservation_status": "EXACT_BYTES_PRESERVED",
+    "secret_exposure_count": 0,
+    "secret_scan_status": "PASS",
+    "source_bytes": 44294,
+    "source_sha256": "fbb4d4e7642e9a2bed8a9d15ebd8ba4f5817d1a7eb44f2eac5942b4907875ad8"
+  },
+  "schema_revalidation_status": "PASS",
+  "schema_sha256": "fbb4d4e7642e9a2bed8a9d15ebd8ba4f5817d1a7eb44f2eac5942b4907875ad8",
+  "schema_validation_errors": [],
+  "secret_exposure_count": 0,
+  "stage": "DIRECTIONAL_CORE",
+  "status": "PASS",
+  "subject_count": 4,
+  "subjects": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO"
+  ]
+}
+```

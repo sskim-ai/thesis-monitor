@@ -1,0 +1,48 @@
+{
+  "all_16_excluded_from_future_unseen_proof": 1,
+  "contract": "retired-partial-exposure-cohort-proof-v1",
+  "exposed_subjects": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520"
+  ],
+  "future_unseen_holdout_reuse_allowed": 0,
+  "holdout_output_exposure_state": "PARTIALLY_EXPOSED",
+  "holdout_retirement_state": "RETIRED_PARTIAL_EXPOSURE",
+  "holdout_semantic_revelation_state": "NOT_MEASURED",
+  "retired_holdout_cohort": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520",
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620"
+  ],
+  "same_cohort_architecture_tuning_rerun_allowed": 0,
+  "status": "PASS",
+  "unexposed_but_retired_subjects": [
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620"
+  ]
+}
