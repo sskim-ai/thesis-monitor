@@ -1,0 +1,15 @@
+# 06 New Holdout Candidate Reserve List
+
+| Field | Value |
+| --- | --- |
+| contract | new-holdout-candidate-reserve-list-v1 |
+| initial_candidates | {"kr": ["142210", "060900", "002680", "035420", "216050", "100700", "001530", "487580", "038870", "342870", "060230", "094800"], "us": ["NVDA", "JPM", "WMT", "BRK-B"]} |
+| model_calls | 0 |
+| ordered_reserve | {"kr": ["415380", "036560", "417790", "246250", "003920", "007110", "284740", "475960", "051500", "003490", "073560", "044380", "030960", "118000", "475560", "484590", "001720", "151860", "014160", "071950", "133750", "307180", "380540", "080420", "049070", "002450", "008370", "031440", "046890", "005830", "128820", "054050", "052220", "001520", "063440", "023150"], "us": ["MSFT"]} |
+| replacement_allowed_after_final_source_lock | 0 |
+| replacement_allowed_before_final_source_lock | 1 |
+| reserve_count | 37 |
+| selection_policy_sha256 | ac97c39fdb6fe9e17f55895087ecc9aa21f942b1198e6c384aa18d14fd3f3d4b |
+| status | FROZEN |
+
+Machine proof: `proofs/06-new-holdout-candidate-reserve-list.json`.
