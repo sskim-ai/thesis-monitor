@@ -2,76 +2,39 @@
 
 | Gate | Value |
 | --- | --- |
-| ai_imperative_primary_action | 0 |
-| candidate_coverage_attempt_count | 64 |
-| candidate_fundamental_sufficient_count | 55 |
-| candidate_insufficient_count | 3 |
-| candidate_limited_count | 6 |
-| candidate_real_source_failure_count | 2 |
-| cohort_count | 16 |
-| contract | "official-fundamental-enrichment-new-holdout-v1" |
-| decision_engine_hash_drift | 0 |
-| diff_check | "PASS" |
-| directional_decisions_on_insufficient_packet | 0 |
-| directional_model_calls_on_insufficient_packet | 0 |
-| final_holdout_eligible_count | 16 |
-| final_holdout_issuer_overlap | 0 |
-| final_holdout_kr_count | 8 |
-| final_holdout_selected_count | 16 |
-| final_holdout_ticker_overlap | 0 |
-| final_holdout_us_count | 8 |
+| contract | directional-core-price-timing-new-holdout-v1 |
+| diff_check | PASS |
+| directional_core_price_technical_refs | 0 |
+| directional_core_supply_refs | 0 |
+| final_direction_owner | NOT_MEASURED |
 | first_abc_source_drift | 0 |
-| full_tests | "PASS" |
-| fundamental_evidence_family_registry | "PASS" |
-| future_checkpoint_false_rejects | {"a": 0, "b": 0, "c": 0, "first": 0} |
-| generalization_verdict | "GENERALIZATION_NEEDS_ARCHITECTURE_WORK" |
-| hard_safety_regressions | {"a": 0, "b": 0, "c": 0, "first": 0} |
-| implementation_commit | "25906030070830327401ae7bc77aefb0910b6b58" |
-| kr_count | 8 |
-| leaf_schema_failures | {"a": 0, "b": 0, "c": 0, "first": 0} |
-| live_structured_autonomy_activation | 0 |
-| live_v2_change | 0 |
-| main_merge | 0 |
-| manual_ticker_fact_injection | 0 |
-| metric_ownership_failures | {"a": 0, "b": 0, "c": 0, "first": 0} |
-| monitoring_registration_calls | 0 |
-| new_paid_provider | 0 |
-| new_unseen_boundary_uncertainty_count | 8 |
-| new_unseen_first_hard_safety_true_reject | 0 |
-| new_unseen_first_ontology_gap | 0 |
-| new_unseen_first_schema_failure | 0 |
-| new_unseen_first_source_sufficiency_escape | 0 |
-| new_unseen_first_validated | "16/16" |
-| new_unseen_first_validator_false_positive | 0 |
-| new_unseen_stable_count | 7 |
-| new_unseen_unstable_count | 1 |
-| new_website_scraper | 0 |
-| night_futures_change | 0 |
+| full_tests | PASS_2580 |
+| fundamental_source_enrichment_drift | 0 |
+| implementation_commit | 447865ffb080aca32270cfa5f29b792428043be8 |
+| investment_decision_threshold_mutation | 0 |
+| invented_technical_indicator | 0 |
+| known_hard_safety_regression | NOT_MEASURED |
+| latest_holdout16_regression | FAIL_MODEL_TIMEOUT |
+| latest_holdout16_rerun_count | 1 |
 | night_futures_code_mutation | 0 |
-| pre_lock_model_calls | 0 |
-| price_only_directional_model_calls | 0 |
-| price_only_dominated_directional_review_flags | 1 |
-| primary_user_action_wording_owner | "RENDERER" |
-| prior_unseen16_fixture_limited_count | 0 |
-| prior_unseen16_fixture_real_source_failure_count | 0 |
-| prior_unseen16_fixture_sufficient_count | 16 |
-| prior_unseen16_judgment_model_calls | 0 |
-| production_db_mutation | 0 |
-| production_scheduler_change | 0 |
-| production_telegram_send | 0 |
-| program_generation_id | "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4" |
-| readiness | "NEEDS_ARCHITECTURE_WORK" |
-| root_cause_class | "COLD_START_FUNDAMENTAL_EVIDENCE_GAP" |
-| ruff | "PASS" |
-| run_generation_ids | {"a": "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4", "b": "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4", "c": "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4", "first": "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4"} |
-| run_results | {"a": "16/16", "b": "16/16", "c": "16/16", "first": "16/16"} |
-| run_source_hashes | {"a": "bc307daaf43bf5ee561e1b8a927357e91535613e101687e8872d99d030e55832", "b": "bc307daaf43bf5ee561e1b8a927357e91535613e101687e8872d99d030e55832", "c": "bc307daaf43bf5ee561e1b8a927357e91535613e101687e8872d99d030e55832", "first": "bc307daaf43bf5ee561e1b8a927357e91535613e101687e8872d99d030e55832"} |
+| ohlcv_analyst_calculation_algorithm_mutation | 0 |
+| ownership_execution_mode | TWO_STAGE_FENCED |
+| post_result_tuning | 0 |
+| price_only_directional_ownership_violations | NOT_MEASURED |
+| price_only_holder_reduce | NOT_MEASURED |
+| price_timing_new_buyer_upgrade | NOT_MEASURED |
+| production_mutation | 0 |
+| program_generation_id | 20260906-direction-timing-holdout-20260906T093200Z-bd30668470f0 |
+| readiness | NOT_READY |
+| root_cause_class | DIRECTION_TIMING_OWNERSHIP_LEAKAGE |
+| ruff | PASS |
+| run_results | {"a": "NOT_RUN", "b": "NOT_RUN", "c": "NOT_RUN", "first": "NOT_RUN"} |
 | same_generation_repair | 0 |
-| source_enrichment_mutation_after_freeze | 0 |
-| source_lock_sha256 | "bc307daaf43bf5ee561e1b8a927357e91535613e101687e8872d99d030e55832" |
-| source_report_bundle_sha256 | "d4137d320975c328f3cbfeffcc37b1ade03df8b81c22d4b5b07d28415d1821fc" |
-| source_sufficiency_policy_mutation_after_freeze | 0 |
-| source_sufficiency_synthetic_suite | "PASS" |
-| state | "COMPLETE" |
-| structured_autonomy_directional_calls_before_source_lock | 0 |
-| us_count | 8 |
+| source_sufficiency_policy_drift | 0 |
+| status | STOPPED_REGRESSION_MODEL_TIMEOUT |
+| stop_reason | LATEST_HOLDOUT16_DIRECTIONAL_CORE_BATCH_1_MODEL_TIMEOUT_ATTEMPTS_1 |
+| timing_stage_balance_mutation | NOT_MEASURED |
+| timing_stage_direction_mutation | NOT_MEASURED |
+| timing_stage_hold_lean_mutation | NOT_MEASURED |
+
+Machine proof: `20260906-direction-timing-ownership-proofs/program-completion.json`.

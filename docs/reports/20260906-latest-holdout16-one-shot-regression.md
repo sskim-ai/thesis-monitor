@@ -1,0 +1,32 @@
+# Latest Holdout16 One Shot Regression
+
+| Gate | Value |
+| --- | --- |
+| attempts | 1 |
+| completed_subjects | 0 |
+| contract | latest-holdout16-one-shot-regression-v1 |
+| error_class | MODEL_TIMEOUT |
+| failed_batch | 1 |
+| failed_stage | DIRECTIONAL_CORE |
+| failure_observed_at | 2026-09-06T19:05:35+09:00 |
+| generation_id | 20260906-direction-timing-holdout-20260906T093200Z-bd30668470f0-regression |
+| hard_safety_regression | NOT_MEASURED |
+| log_bytes | 17986 |
+| log_sha256 | e275ebf1134e2b8300075f36df8196d9261b8bd9f4aa21f00864e4e078d5caac |
+| model | gpt-5.6-sol |
+| model_output_documents | 0 |
+| post_result_tuning | 0 |
+| price_only_directional_ownership_violations | NOT_MEASURED |
+| price_only_holder_reduce | NOT_MEASURED |
+| prompt_schema_lock_file_sha256 | 7f2bdd107a59fc147b25f0b9d7a928e12bf171ca56f80a9b1b45c56944f5f02a |
+| purpose | REGRESSION_ONLY |
+| reasoning_effort | xhigh |
+| rerun_count | 1 |
+| selective_rerun | 0 |
+| status | FAIL |
+| stop_reason | MODEL_TIMEOUT:attempts=1 |
+| timeout_seconds | 1800 |
+| timing_mutation_of_core_balance | NOT_MEASURED |
+| validated | 0/16 |
+
+Machine proof: `20260906-direction-timing-ownership-proofs/latest-holdout16-one-shot-regression.json`.

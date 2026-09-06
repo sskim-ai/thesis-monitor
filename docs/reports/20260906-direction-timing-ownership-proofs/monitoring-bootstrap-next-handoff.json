@@ -1,0 +1,8 @@
+{
+  "activated": 0,
+  "contract": "monitoring-bootstrap-next-handoff-v1",
+  "initial_enrichment_recorded_as_daily_delta": 0,
+  "next_scope": "resolve one-shot regression model transport blocker under a separately authorized generation",
+  "readiness": "NOT_READY",
+  "reason": "LATEST_HOLDOUT16_REGRESSION_MODEL_TIMEOUT"
+}
