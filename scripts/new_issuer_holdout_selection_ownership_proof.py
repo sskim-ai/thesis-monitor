@@ -703,8 +703,10 @@ def candidate_coverage_row(
         "price_context_status": (
             "PASS"
             if source_sufficient or base_status == "ASSEMBLED"
+            else "NOT_ATTEMPTED_SOURCE_GATE"
+            if not row.get("base_status")
             else "UNAVAILABLE"
-            if missing_price or not row.get("base_status")
+            if missing_price
             else "FAIL"
         ),
         "other_required_domain_status": (

@@ -175,6 +175,7 @@ def test_market_evaluation_uses_precommitted_reserve_until_target(monkeypatch) -
 
     assert len(selected) == 2
     assert [row["ticker"] for row in audit_rows] == ["A", "B", "C"]
+    assert audit_rows[0]["price_context_status"] == "NOT_ATTEMPTED_SOURCE_GATE"
     assert audit_rows[2]["primary_or_reserve"] == "RESERVE"
 
 
