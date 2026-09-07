@@ -1352,8 +1352,9 @@ def _copy_scheduler_backups(repo_root: Path, destination: Path) -> None:
 
 
 def _finalize_index_and_zip(root: Path, zip_output: Path) -> dict[str, object]:
+    root_index = root / "artifact-index.json"
     payloads = sorted(
-        path for path in root.rglob("*") if path.is_file() and path.name != "artifact-index.json"
+        path for path in root.rglob("*") if path.is_file() and path != root_index
     )
     rows = []
     secret_failures = 0

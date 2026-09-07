@@ -204,3 +204,22 @@ def test_production_accounting_counts_only_authorized_pause_objects() -> None:
     assert result["investment_state_db_mutation"] == 0
     assert result["pause_transition_scheduled_invocation_count"] == 1
     assert result["production_telegram_send_initiated_by_task"] == 0
+
+
+def test_artifact_index_excludes_only_its_own_root_file(tmp_path: Path) -> None:
+    root = tmp_path / "report"
+    nested_index = root / "evidence" / "original" / "artifact-index.json"
+    nested_index.parent.mkdir(parents=True)
+    nested_index.write_text('{"historical": true}\n', encoding="utf-8")
+    (root / "payload.txt").write_text("fixture\n", encoding="utf-8")
+    zip_output = tmp_path / "report.zip"
+
+    result = closeout._finalize_index_and_zip(root, zip_output)
+    index = closeout.read_json(root / "artifact-index.json")
+
+    assert result["indexed_payload_count"] == 2
+    assert result["zip_member_count"] == 3
+    assert {row["path"] for row in index["rows"]} == {
+        "evidence/original/artifact-index.json",
+        "payload.txt",
+    }
