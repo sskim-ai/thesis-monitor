@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import zipfile
 from collections import Counter
@@ -12,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterator
 
+from app.config import get_settings
 from scripts import bounded_fictional_websocket_reconnect_diagnostic as diagnostic
 from scripts import monitoring_pause_completion_fresh_issuer_ownership_proof as prior
 from scripts import new_issuer_holdout_selection_ownership_proof as runner
@@ -486,6 +488,20 @@ def _source_blocked(
     kr_audit: Mapping[str, object],
 ) -> None:
     reason = f"US={us_audit['source_target_status']};KR={kr_audit['source_target_status']}"
+    configuration = _source_configuration_audit()
+    configuration_blocked = configuration["status"] != "PASS"
+    if configuration_blocked:
+        reason = "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE"
+    readiness = (
+        "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED"
+        if configuration_blocked
+        else "NOT_READY_SOURCE_COVERAGE_BLOCKED"
+    )
+    next_scope = (
+        "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR"
+        if configuration_blocked
+        else "BOUNDED_SOURCE_COVERAGE_REVIEW"
+    )
     runner.write_proof(
         args.report_dir,
         15,
@@ -497,18 +513,28 @@ def _source_blocked(
     )
     for run in runner.RUNS:
         runner.write_not_run(args, run, reason)
-    _write_no_change_proofs(args)
+    _write_pre_model_terminal_proofs(
+        args,
+        state=state,
+        reason=reason,
+        configuration=configuration,
+    )
     completion = {
         "contract": PROGRAM_CONTRACT,
-        "proof_status": "STOPPED_PRE_MODEL_SOURCE_FAILURE",
+        "proof_status": (
+            "STOPPED_PRE_MODEL_PREPARATION_CONFIGURATION_FAILURE"
+            if configuration_blocked
+            else "STOPPED_PRE_MODEL_SOURCE_FAILURE"
+        ),
         "us_source_target_status": us_audit["source_target_status"],
         "kr_source_target_status": kr_audit["source_target_status"],
         "run_results": {run: "NOT_RUN" for run in runner.RUNS},
         "real_model_invocation_count": 0,
         "formal_generalization": "NOT_MEASURED",
-        "readiness": "NOT_READY_SOURCE_COVERAGE_BLOCKED",
+        "readiness": readiness,
         "stop_reason": reason,
-        "next_scope": "BOUNDED_SOURCE_COVERAGE_REVIEW",
+        "next_scope": next_scope,
+        "source_configuration": configuration,
         "status": "STOPPED",
     }
     runner.write_proof(args.report_dir, 60, completion)
@@ -523,6 +549,217 @@ def _source_blocked(
     )
     write_json(args.output_root / "program-state.json", state)
     runner.write_reports(args.report_dir)
+
+
+def _source_configuration_audit() -> dict[str, object]:
+    settings = get_settings()
+    required = {
+        "SEC_USER_AGENT": bool(settings.sec_user_agent),
+        "OPENDART_API_KEY": bool(settings.opendart_api_key),
+    }
+    missing = sorted(key for key, configured in required.items() if not configured)
+    return {
+        "contract": "risk-carried-source-configuration-audit-v1",
+        "working_directory_env_file_present": (Path.cwd() / ".env").is_file(),
+        "canonical_env_override_configured": bool(
+            os.environ.get("THESIS_MONITOR_ENV_FILE")
+        ),
+        "required_setting_presence": required,
+        "missing_required_settings": missing,
+        "secret_values_recorded": 0,
+        "diagnosis": (
+            "EFFECTIVE_SOURCE_CONFIGURATION_AVAILABLE"
+            if not missing
+            else "EXECUTOR_ENV_BINDING_MISSING_REQUIRED_SOURCE_SETTINGS"
+        ),
+        "status": "PASS" if not missing else "FAIL",
+    }
+
+
+def _write_pre_model_terminal_proofs(
+    args: argparse.Namespace,
+    *,
+    state: Mapping[str, object],
+    reason: str,
+    configuration: Mapping[str, object],
+) -> None:
+    configuration_blocked = configuration.get("status") != "PASS"
+    readiness = (
+        "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED"
+        if configuration_blocked
+        else "NOT_READY_SOURCE_COVERAGE_BLOCKED"
+    )
+    next_scope = (
+        "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR"
+        if configuration_blocked
+        else "BOUNDED_SOURCE_COVERAGE_REVIEW"
+    )
+    execution = {
+        "contract": "risk-carried-execution-reconciliation-v1",
+        "planned_contexts": EXPECTED_TOTAL_CONTEXTS,
+        "attempted_contexts": 0,
+        "terminal_contexts": 0,
+        "successful_contexts": 0,
+        "failed_contexts": 0,
+        "not_run_contexts": EXPECTED_TOTAL_CONTEXTS,
+        "per_run_stage_attempts": {},
+        "per_run_stage_successes": {},
+        "raw_output_document_count": 0,
+        "raw_stage_rows": 0,
+        "accepted_stage_rows": 0,
+        "semantic_checked_rows": 0,
+        "unique_issuer_output_count": 0,
+        "unique_issuer_outputs": [],
+        "composed_rows": 0,
+        "rendered_rows": 0,
+        "context_preservation_failures": 0,
+        "wrapper_explicit_retry_count": 0,
+        "observed_cli_retry_signal_count": 0,
+        "observed_websocket_disconnect_signal_count": 0,
+        "upstream_request_attempt_count": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+        "request_accepted_observability": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+        "disconnect_then_success_count": 0,
+        "disconnect_then_timeout_count": 0,
+        "explicit_capacity_count": 0,
+        "explicit_context_failure_count": 0,
+        "watchdog_timeout_count": 0,
+        "orphan_count": 0,
+        "distinct_session_count": 0,
+        "distinct_namespace_count": 0,
+        "status": "NOT_RUN_PRE_MODEL",
+    }
+    write_json(args.output_root / "execution-reconciliation.json", execution)
+    write_json(args.output_root / "source-configuration-audit.json", configuration)
+    runner.write_proof(
+        args.report_dir,
+        14,
+        {
+            "contract": "fresh-source-coverage-decision-v1",
+            "real_model_execution_allowed": 0,
+            "root_cause": configuration.get("diagnosis"),
+            "missing_required_settings": configuration.get(
+                "missing_required_settings", []
+            ),
+            "source_retry_executed": 0,
+            "new_paid_dependency": 0,
+            "new_source_route": 0,
+            "readiness": readiness,
+            "next_scope": next_scope,
+            "status": "FAIL_CLOSED",
+        },
+    )
+    runner.write_proof(
+        args.report_dir,
+        51,
+        {
+            "contract": "holdout-exposure-retirement-state-v1",
+            "holdout_output_exposure_state": "UNEXPOSED",
+            "holdout_semantic_revelation_state": "NOT_MEASURED",
+            "holdout_retirement_state": "NOT_APPLICABLE_NO_LOCKED_COHORT",
+            "future_unseen_holdout_reuse_allowed": (
+                "SEPARATE_EXPLICIT_DECISION_REQUIRED"
+            ),
+            "same_cohort_architecture_tuning_rerun_allowed": 0,
+            "exposed_subjects": [],
+            "status": "STOPPED_PRE_MODEL",
+        },
+    )
+    for number, contract in (
+        (52, "directional-core-stability-audit-v1"),
+        (53, "price-timing-stability-audit-v1"),
+    ):
+        runner.write_proof(
+            args.report_dir,
+            number,
+            {
+                "contract": contract,
+                "counts": {
+                    "STABLE": 0,
+                    "BOUNDARY_UNCERTAINTY": 0,
+                    "UNSTABLE": 0,
+                },
+                "reason": reason,
+                "status": "NOT_MEASURED",
+            },
+        )
+    runner.write_proof(
+        args.report_dir,
+        54,
+        {
+            "contract": "ownership-generalization-proof-v1",
+            "final_direction_owner": "NOT_MEASURED",
+            "ownership_generalization_verdict": "NOT_ESTABLISHED",
+            "reason": reason,
+            "status": "NOT_MEASURED",
+        },
+    )
+    runner.write_proof(
+        args.report_dir,
+        55,
+        {
+            "contract": "renderer-ownership-proof-v1",
+            "primary_user_action_wording_owner": "NOT_MEASURED",
+            "ai_imperative_primary_action": "NOT_MEASURED",
+            "renderer_ownership_violations": "NOT_MEASURED",
+            "reason": reason,
+            "status": "NOT_MEASURED",
+        },
+    )
+    runner.write_proof(
+        args.report_dir,
+        56,
+        {
+            "contract": "hard-safety-regression-v1",
+            "known_hard_safety_regression": "NOT_MEASURED",
+            "reason": reason,
+            "status": "NOT_MEASURED",
+        },
+    )
+    _write_no_change_proofs(args)
+    runner.write_proof(
+        args.report_dir,
+        59,
+        {
+            "contract": "monitoring-bootstrap-next-handoff-v1",
+            "readiness": readiness,
+            "next_scope": next_scope,
+            "monitoring_registration_calls": 0,
+            "bootstrap_production_mutation": 0,
+            "status": "NOT_READY",
+        },
+    )
+    write_json(args.output_root / "run-gate-summary.json", _run_gate_summary(args))
+    write_json(
+        args.output_root / "advisory-message-quality-summary.json",
+        _quality_summary(args),
+    )
+    root_cause_text = (
+        "The source preparation process did not receive the existing SEC/OpenDART "
+        "configuration. The worktree had no local `.env`, and "
+        "`THESIS_MONITOR_ENV_FILE` was not bound. US official-profile requests "
+        "therefore failed and KR official profiles were unavailable."
+        if configuration_blocked
+        else "The bounded source evaluation completed without the required US4/KR12."
+    )
+    write_text(
+        args.report_dir / "preparation-environment-root-cause.md",
+        "# Preparation Root Cause\n\n"
+        f"{root_cause_text} No secret value is recorded. The frozen candidate budget "
+        "is not retried in this task, and no model subprocess was spawned.\n",
+    )
+    write_json(
+        args.report_dir / "preparation-environment-root-cause.json",
+        {
+            **configuration,
+            "model_subprocess_count": 0,
+            "source_retry_executed": 0,
+            "frozen_candidate_budget_reopened": 0,
+            "selection_policy_sha256": state.get("selection_policy_sha256"),
+            "status": "CONFIRMED_PRE_MODEL_BLOCKER",
+            "readiness": readiness,
+            "next_scope": next_scope,
+        },
+    )
 
 
 def _acceptance_protocol() -> dict[str, object]:
@@ -1498,8 +1735,112 @@ def close_reports(args: argparse.Namespace) -> None:
     state = read_json(args.output_root / "program-state.json")
     if state.get("state") != "EVIDENCE_COMPLETE":
         raise ValueError("evidence_complete_state_required")
+    if state.get("source_gate_only"):
+        configuration = _source_configuration_audit()
+        _write_pre_model_terminal_proofs(
+            args,
+            state=state,
+            reason=str(state.get("stop_reason") or "SOURCE_PREPARATION_FAILED"),
+            configuration=configuration,
+        )
     completion_path = runner.proof_path(args.report_dir, 60)
     completion = read_json(completion_path)
+    if state.get("source_gate_only"):
+        us_audit = read_json(runner.proof_path(args.report_dir, 7))
+        kr_audit = read_json(runner.proof_path(args.report_dir, 10))
+        configuration = read_json(args.output_root / "source-configuration-audit.json")
+        source_requests = {
+            "us": dict(us_audit.get("provider_totals") or {}),
+            "kr": dict(kr_audit.get("provider_totals") or {}),
+        }
+        configuration_blocked = configuration.get("status") != "PASS"
+        readiness = (
+            "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED"
+            if configuration_blocked
+            else "NOT_READY_SOURCE_COVERAGE_BLOCKED"
+        )
+        next_scope = (
+            "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR"
+            if configuration_blocked
+            else "BOUNDED_SOURCE_COVERAGE_REVIEW"
+        )
+        stop_reason = (
+            "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE"
+            if configuration_blocked
+            else str(state.get("stop_reason") or "SOURCE_COVERAGE_BLOCKED")
+        )
+        completion.update(
+            {
+                "base_sha": state.get("base_sha"),
+                "work_instruction_commit": state.get("work_instruction_commit"),
+                "implementation_commit": git_value("rev-parse", "HEAD"),
+                "branch": state.get("branch"),
+                "input_zip_sha256": DIAGNOSTIC_ZIP_SHA256,
+                "input_integrity_status": "PASS",
+                "historical_predecessor_zip_sha256": PREDECESSOR_ZIP_SHA256,
+                "pause_observed_at": state.get("initial_pause_observation", {}).get(
+                    "observed_at"
+                ),
+                "observed_paused_schedule_count": state.get(
+                    "initial_pause_observation", {}
+                ).get("observed_scheduler_object_count"),
+                "unexpected_active_paths": state.get(
+                    "initial_pause_observation", {}
+                ).get("unexpected_active_paths", []),
+                "selection_policy_hash": state.get("selection_policy_sha256"),
+                "exclusion_registry_hash": state.get("exclusion_registry_sha256"),
+                "exclusion_registry_count": state.get("exclusion_registry_count"),
+                "source_generation_id": None,
+                "source_lock": None,
+                "ordered_issuers": [],
+                "issuer_market_mix": {"us": 0, "kr": 0},
+                "frozen_evaluation_cutoff": (
+                    args.as_of.isoformat() if args.as_of is not None else None
+                ),
+                "source_configuration": configuration,
+                "source_provider_totals": source_requests,
+                "planned_contexts": EXPECTED_TOTAL_CONTEXTS,
+                "attempted_contexts": 0,
+                "terminal_contexts": 0,
+                "successful_contexts": 0,
+                "failed_contexts": 0,
+                "not_run_contexts": EXPECTED_TOTAL_CONTEXTS,
+                "raw_output_document_count": 0,
+                "raw_stage_rows": 0,
+                "accepted_stage_rows": 0,
+                "checked_stage_rows": 0,
+                "unique_issuer_output_count": 0,
+                "composed_rows": 0,
+                "rendered_rows": 0,
+                "wrapper_retry_count": 0,
+                "observed_cli_retry_signal_count": 0,
+                "observed_disconnect_count": 0,
+                "upstream_request_attempt_count": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+                "request_accepted_observability": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+                "orphan_count": 0,
+                "exposure_state": "UNEXPOSED",
+                "semantic_revelation_state": "NOT_MEASURED",
+                "retirement_state": "NOT_APPLICABLE_NO_LOCKED_COHORT",
+                "future_unseen_reuse_allowed": "SEPARATE_EXPLICIT_DECISION_REQUIRED",
+                "same_cohort_tuning_rerun_allowed": 0,
+                "core_stability": "NOT_MEASURED",
+                "timing_stability": "NOT_MEASURED",
+                "formal_generalization": "NOT_MEASURED",
+                "quality_gate_role": QUALITY_GATE_ROLE,
+                "open_message_quality_findings": "NOT_MEASURED",
+                "carried_runtime_risk": CARRIED_RUNTIME_RISK,
+                "runtime_reliability_status": "NOT_ESTABLISHED",
+                "proof_status": (
+                    "STOPPED_PRE_MODEL_PREPARATION_CONFIGURATION_FAILURE"
+                    if configuration_blocked
+                    else "STOPPED_PRE_MODEL_SOURCE_FAILURE"
+                ),
+                "readiness": readiness,
+                "stop_reason": stop_reason,
+                "next_scope": next_scope,
+                "status": "STOPPED",
+            }
+        )
     completion.update(
         {
             "focused_tests": args.focused_tests,
@@ -1540,6 +1881,9 @@ def close_reports(args: argparse.Namespace) -> None:
         "retain the detailed machine evidence.\n",
     )
     state["state"] = "READY_TO_PACKAGE"
+    state["readiness"] = completion.get("readiness")
+    state["stop_reason"] = completion.get("stop_reason")
+    state["next_scope"] = completion.get("next_scope")
     state["validation"] = {
         "focused_tests": args.focused_tests,
         "full_tests": args.full_tests,

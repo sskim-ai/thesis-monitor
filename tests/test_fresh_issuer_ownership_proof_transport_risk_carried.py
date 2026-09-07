@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -123,3 +124,47 @@ def test_runtime_artifact_manifest_records_all_required_files(
 def test_work_instruction_is_the_frozen_attachment() -> None:
     path = Path(proof.WORK_INSTRUCTION_PATH)
     assert proof.file_sha256(path) == proof.WORK_INSTRUCTION_SHA256
+
+
+def test_source_configuration_audit_records_presence_not_values(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        proof,
+        "get_settings",
+        lambda: SimpleNamespace(
+            sec_user_agent="private-user-agent",
+            opendart_api_key="private-api-key",
+        ),
+    )
+    monkeypatch.setenv("THESIS_MONITOR_ENV_FILE", "/private/existing.env")
+
+    result = proof._source_configuration_audit()
+
+    assert result["status"] == "PASS"
+    assert result["required_setting_presence"] == {
+        "SEC_USER_AGENT": True,
+        "OPENDART_API_KEY": True,
+    }
+    assert "private-user-agent" not in str(result)
+    assert "private-api-key" not in str(result)
+
+
+def test_source_configuration_audit_fails_closed_when_settings_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        proof,
+        "get_settings",
+        lambda: SimpleNamespace(sec_user_agent=None, opendart_api_key=None),
+    )
+    monkeypatch.delenv("THESIS_MONITOR_ENV_FILE", raising=False)
+
+    result = proof._source_configuration_audit()
+
+    assert result["status"] == "FAIL"
+    assert result["missing_required_settings"] == [
+        "OPENDART_API_KEY",
+        "SEC_USER_AGENT",
+    ]
+    assert result["secret_values_recorded"] == 0
