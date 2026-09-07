@@ -275,3 +275,41 @@ def test_real_input_fixture_uses_only_owned_evidence_refs() -> None:
     timing_refs = set(review.runner.frozen._refs(timing.model_dump(mode="json")))
     assert core_refs <= owned.core_refs
     assert timing_refs <= owned.timing_refs
+
+
+def test_real_input_fixture_preserves_unavailable_safe_price_path() -> None:
+    owned = review.identity_repair.synthetic.fictional_owned(
+        "SYNTHETIC_KR_UNAVAILABLE", market="kr"
+    )
+    retained = tuple(
+        row
+        for row in owned.evidence
+        if row.domain not in review.runner.frozen.TIMING_DOMAINS
+        or row.domain == review.EvidenceDomain.TECHNICAL_STATE
+    )
+    owned = owned.model_copy(
+        update={
+            "source_packet": owned.source_packet.model_copy(
+                update={
+                    "evidence": tuple(row.ref for row in retained),
+                    "technical_context_status": "UNAVAILABLE",
+                }
+            ),
+            "evidence": retained,
+        }
+    )
+
+    core = review.real_input_fixture_core(owned)
+    timing = review.real_input_fixture_timing(owned, core)
+
+    timing_refs = set(review.runner.frozen._refs(timing.model_dump(mode="json")))
+    assert timing.technical_state == "UNKNOWN"
+    assert timing.timing_new_buyer_modifier == "WAIT"
+    assert timing.entry_mode == "NONE"
+    assert timing.currency is None
+    assert timing.pullback_entry_zone_low is None
+    assert timing.breakout_confirmation_level is None
+    assert timing.upside_trim_zone_low is None
+    assert timing.downside_review_level is None
+    assert timing_refs <= owned.timing_refs
+    assert review.runner.validate_ownership(owned, core, timing).valid is True

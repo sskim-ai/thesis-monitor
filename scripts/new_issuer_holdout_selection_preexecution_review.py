@@ -802,9 +802,46 @@ def real_input_fixture_timing(
         ),
     )
     supply = _first_owned_ref(owned, (EvidenceDomain.SUPPLY_POSITIONING,))
-    if support is None or technical is None:
+    if technical is None:
         raise ValueError(f"model_free_timing_fixture_domain_missing:{ticker}")
     template = identity_repair._localized_timing(owned, core).model_dump(mode="json")
+    if support is None:
+        if owned.source_packet.technical_context_status not in {
+            "UNAVAILABLE",
+            "UNAVAILABLE_SAFE",
+        }:
+            raise ValueError(f"model_free_timing_fixture_domain_missing:{ticker}")
+        unavailable_claim = {
+            "text": "검증용 가격 자료가 없어 가격 판단을 유보합니다.",
+            "evidence_refs": [technical],
+        }
+        template.update(
+            {
+                "technical_state": "UNKNOWN",
+                "timing_new_buyer_modifier": "WAIT",
+                "entry_mode": "NONE",
+                "entry_reason": "검증용 가격 자료가 없어 진입 판단을 유보합니다.",
+                "pullback_entry_zone_low": None,
+                "pullback_entry_zone_high": None,
+                "pullback_entry_basis": [],
+                "breakout_confirmation_level": None,
+                "breakout_confirmation_basis": [],
+                "confirmation_semantics": "NONE",
+                "holder_price_review": "NONE",
+                "upside_trim_zone_low": None,
+                "upside_trim_zone_high": None,
+                "upside_trim_basis": [],
+                "downside_review_level": None,
+                "downside_review_basis": [],
+                "currency": None,
+                "price_review_context": unavailable_claim,
+                "price_confirmation_context": unavailable_claim,
+                "price_support_context": unavailable_claim,
+                "technical_rationale": unavailable_claim,
+                "supply_positioning_rationale": None,
+            }
+        )
+        return PriceTimingCandidate.model_validate(template)
     replacements = {
         f"fictional:{ticker}:support": support,
         f"fictional:{ticker}:rsi": technical,
