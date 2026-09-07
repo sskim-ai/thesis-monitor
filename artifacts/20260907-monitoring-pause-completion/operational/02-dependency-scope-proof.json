@@ -1,0 +1,48 @@
+{
+  "contract": "scheduled-monitoring-dependency-scope-proof-v1",
+  "decision": "EXCLUSIVE_TO_AUTHORIZED_US_KR_DAILY_MONITORING",
+  "jobs": [
+    {
+      "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "command": "python -m app.jobs.ai_review fallback --market all",
+      "configured_triggers_kst": ["08:40", "17:10"],
+      "definition_sha256": "079d4a7ca01707bee818a3598a445e10155ddc9025e463197e44e52c0ec4207a",
+      "backup": "artifacts/20260907-monitoring-pause-completion/scheduler-backup/com.seungsoo.thesis-monitor.ai-review-fallback.plist"
+    },
+    {
+      "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+      "command": "python -m app.jobs.ai_review retry-delivery --market all",
+      "configured_triggers_kst": ["08:22", "08:25", "08:30", "16:22", "16:25", "16:30"],
+      "definition_sha256": "2ee920d697da1732efc79916d50a84e9f8b674284f741e909f3ca322e6319f6c",
+      "backup": "artifacts/20260907-monitoring-pause-completion/scheduler-backup/com.seungsoo.thesis-monitor.ai-review-delivery-retry.plist"
+    }
+  ],
+  "code_trace": {
+    "entrypoint": {
+      "path": "app/jobs/ai_review.py",
+      "sha256": "aff0f379d3c825a185172e6d54b4999bbcc994a19491a4cb109b5104ed169840",
+      "market_expansion": "--market all expands only to ('us', 'kr')",
+      "handlers": [
+        "dispatch_due_deterministic_fallbacks",
+        "retry_pending_ai_assisted_deliveries"
+      ]
+    },
+    "delivery_service": {
+      "path": "app/services/ai_assisted_delivery_service.py",
+      "sha256": "38e209d440ed8be4f339d4d266f30afe36de9115090e641b8bc31cf51d5d75ae",
+      "market_type": "Literal['us', 'kr']"
+    },
+    "production_callers": ["app/jobs/ai_review.py"],
+    "unrelated_macro_or_night_futures_caller_count": 0,
+    "other_application_caller_count": 0,
+    "terminal_shadow_canaries": "post-delivery observational launchers tied to these same US/KR results"
+  },
+  "scope_basis": [
+    "scheduler definitions invoke only the ai_review fallback/retry-delivery entrypoints",
+    "the all-market branch is closed over US and KR only",
+    "the delivery service market contract is limited to US and KR",
+    "repository call-site inspection found no unrelated production caller"
+  ],
+  "unrelated_jobs_changed": 0,
+  "status": "PASS"
+}
