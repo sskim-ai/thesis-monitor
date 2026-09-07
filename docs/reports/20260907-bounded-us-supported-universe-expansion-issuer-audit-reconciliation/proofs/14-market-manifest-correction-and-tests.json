@@ -1,0 +1,14 @@
+{
+  "contradictory_market_default": 0,
+  "market_manifest_conflicts_after": 0,
+  "market_manifest_conflicts_before": 48,
+  "missing_market_default": 0,
+  "model_free_totals": {
+    "KR4": 48,
+    "US4": 16
+  },
+  "nonnumeric_kr_supported": 1,
+  "producer": "scripts/new_issuer_holdout_selection_ownership_proof.py::preserve_context",
+  "source": "source-lock.market_by_ticker from DecisionEvidencePacket.market",
+  "status": "PASS"
+}

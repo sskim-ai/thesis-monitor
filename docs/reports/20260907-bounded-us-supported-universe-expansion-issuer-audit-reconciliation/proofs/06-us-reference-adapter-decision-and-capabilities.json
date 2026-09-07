@@ -1,0 +1,20 @@
+{
+  "credential_added": 0,
+  "decision": "OFFICIAL_SEC_PLUS_NASDAQ_TRADER_REFERENCE_ADAPTER",
+  "listing_is_support": 0,
+  "paid_provider_added": 0,
+  "route_audit_attempt_count": 26,
+  "route_audit_success_count": 24,
+  "security_type_policy": "common/ordinary/ADR only; ETF/test/NextShares/warrant/right/unit/preferred/debt/fund/trust/SPAC/REIT/unknown quarantined",
+  "status": "PASS",
+  "supported_provider_exchanges": [
+    "ND",
+    "NY",
+    "NA"
+  ],
+  "unsupported_exchange_routes_quarantined": [
+    "P",
+    "Z",
+    "V"
+  ]
+}

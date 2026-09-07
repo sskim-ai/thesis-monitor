@@ -1,0 +1,32 @@
+{
+  "reference_request_counts": {
+    "nasdaq_trader_nasdaqlisted": 1,
+    "nasdaq_trader_otherlisted": 1,
+    "opendart_corpcode": 1,
+    "sec_company_tickers": 1
+  },
+  "retrieved_at": "2026-09-07T03:04:36.018549+00:00",
+  "retry_count": 0,
+  "snapshots": [
+    {
+      "byte_size": 347010,
+      "file": "nasdaqlisted.txt",
+      "sha256": "491337a821469a830093aca740849358982960c46f0192537f5de898f59e9200"
+    },
+    {
+      "byte_size": 3601634,
+      "file": "opendart-corp-code.zip",
+      "sha256": "43903ff88932f2a1a2dc606b4169b1d3e6f6831019d2defa16e81e67c7ba0bdb"
+    },
+    {
+      "byte_size": 538961,
+      "file": "otherlisted.txt",
+      "sha256": "0e7be707f683443160a78e85139d8af18f786270c9ed82de8402d1d72538a319"
+    },
+    {
+      "byte_size": 796994,
+      "file": "sec-company-tickers.json",
+      "sha256": "f987a9fba01e1c1858ddcf0c032d77be301843860d7a0571efaa92ec3f938926"
+    }
+  ]
+}
