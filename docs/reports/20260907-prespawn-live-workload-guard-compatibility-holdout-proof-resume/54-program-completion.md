@@ -3,10 +3,10 @@
 | Field | Value |
 | --- | --- |
 | architecture_semantic_drift | 0 |
-| artifact_count | PENDING_FINALIZE |
-| artifact_hash_mismatch_count | PENDING_FINALIZE |
-| artifact_secret_scan_failure_count | PENDING_FINALIZE |
-| artifact_size_mismatch_count | PENDING_FINALIZE |
+| artifact_count | 182 |
+| artifact_hash_mismatch_count | 0 |
+| artifact_secret_scan_failure_count | 0 |
+| artifact_size_mismatch_count | 0 |
 | authorized_guard_compatibility_hash_drift | 1 |
 | base_sha | eced7b9149e7d9ab7cbc5e3e3e6fab3fef1500d6 |
 | batch_semantics | MODEL_CONTEXT_COUPLED |
@@ -16,16 +16,16 @@
 | continuation_adapter_semantic_mutation | 0 |
 | contract | prespawn-live-workload-guard-compatibility-holdout-resume-v1 |
 | current_holdout_reuse_allowed | 1 |
-| diff_check | PENDING_FINAL_VALIDATION |
+| diff_check | PASS |
 | directional_core_price_technical_refs | 0 |
 | directional_core_supply_refs | 0 |
 | directional_model_calls_on_source_insufficient | 0 |
-| final_head_sha | 737bd21cf98d06bbaa00d77c53e928dae894b18e |
+| failure_class | RUNTIME_GENERATION_SCHEMA_CONST_MISMATCH |
+| final_head_sha | 0f3b8dbdead385b1a3706560096f4805ca9d2d2f |
 | first_hard_safety_gate_status | NOT_MEASURED |
 | first_ownership_gate_status | NOT_MEASURED |
 | first_renderer_gate_status | NOT_MEASURED |
-| full_tests | PENDING_FINAL_VALIDATION |
-| failure_class | RUNTIME_GENERATION_SCHEMA_CONST_MISMATCH |
+| full_tests | PASS |
 | future_unseen_holdout_reuse_allowed | 0 |
 | historical_stall_pattern_recurred | 0 |
 | holdout_output_exposure_state | PARTIALLY_EXPOSED |
@@ -69,7 +69,7 @@
 | reasoning_effort | xhigh |
 | root_exception_masked_after_repair | 0 |
 | root_exception_masked_before_repair | 1 |
-| ruff | PENDING_FINAL_VALIDATION |
+| ruff | PASS |
 | run_a_hard_safety_gate_status | NOT_RUN |
 | run_a_ownership_gate_status | NOT_RUN |
 | run_a_renderer_gate_status | NOT_RUN |
@@ -80,6 +80,9 @@
 | run_c_ownership_gate_status | NOT_RUN |
 | run_c_renderer_gate_status | NOT_RUN |
 | run_results | {"a": "NOT_RUN", "b": "NOT_RUN", "c": "NOT_RUN", "first": "FAILED_IDENTITY_GATE_0/16"} |
+| runtime_identity_expected | 20260907-prespawn-guard-resume-20260907T012700Z-1f19aa40aef6 |
+| runtime_identity_received | 20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a |
+| runtime_identity_schema_const_updated | 0 |
 | safe_to_spawn | 1 |
 | schema_semantic_drift | 0 |
 | sell_without_nonprice_material_anchor | 0 |
@@ -88,9 +91,6 @@
 | source_generation_id | 20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a |
 | source_lock | d4bd0b51d9cc543ebe03088047cce375db41d3d9a9f21c07d4fd5646bdf9b1ef |
 | spawn_started_on_guard_failure | 0 |
-| runtime_identity_expected | 20260907-prespawn-guard-resume-20260907T012700Z-1f19aa40aef6 |
-| runtime_identity_received | 20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a |
-| runtime_identity_schema_const_updated | 0 |
 | stop_reason | RUNTIME_GENERATION_SCHEMA_CONST_MISMATCH:first:DIRECTIONAL_CORE:01 |
 | supply_directional_core_usage | 0 |
 | timeout_owner_mutation | 0 |
