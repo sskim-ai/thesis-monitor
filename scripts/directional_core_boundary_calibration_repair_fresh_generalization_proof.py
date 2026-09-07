@@ -905,7 +905,8 @@ def execute_fictional(args: argparse.Namespace) -> None:
         "planned_model_call_count": FICTIONAL_MODEL_CALLS,
         "attempted_model_call_count": attempted,
         "successful_model_call_count": sum(
-            str(row.get("status")) == "SUCCESS" for row in receipts
+            str(row.get("status")) == "PASS" and int(row.get("exit_code") or 0) == 0
+            for row in receipts
         ),
         "distinct_invocation_count": len(
             {str(row.get("invocation_id")) for row in receipts}
@@ -977,6 +978,56 @@ def execute_fictional(args: argparse.Namespace) -> None:
     write_json(args.output_root / "program-state.json", state)
     if stability["status"] != "PASS":
         raise ValueError("FICTIONAL_CALIBRATION_ACCEPTANCE_FAILED")
+    print(json.dumps(state, ensure_ascii=False, sort_keys=True), flush=True)
+
+
+def reconcile_fictional(args: argparse.Namespace) -> None:
+    state = json.loads((args.output_root / "program-state.json").read_text(encoding="utf-8"))
+    if state.get("state") != "FICTIONAL_PASS_ARCHITECTURE_FROZEN":
+        raise ValueError("FICTIONAL_PASS_STATE_REQUIRED_FOR_RECONCILIATION")
+    _verify_fictional_freeze(
+        args,
+        {**state, "state": "FICTIONAL_PREPARED_FROZEN"},
+    )
+    fictional_root = args.output_root / "fictional-calibration"
+    receipts = [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((fictional_root / "transport-receipts").glob("*.json"))
+    ]
+    summary_path = args.report_dir / "proofs" / (
+        "15-fictional-calibration-stability-summary.json"
+    )
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    successful = sum(
+        str(row.get("status")) == "PASS" and int(row.get("exit_code") or 0) == 0
+        for row in receipts
+    )
+    summary.update(
+        {
+            "successful_model_call_count": successful,
+            "receipt_status_vocabulary": "PASS",
+            "receipt_exit_code_requirement": 0,
+            "reporting_reconciliation_model_calls": 0,
+        }
+    )
+    summary["status"] = (
+        "PASS"
+        if successful == FICTIONAL_MODEL_CALLS
+        and summary.get("fictional_directional_unstable_count") == 0
+        else "FAIL"
+    )
+    write_report(args.report_dir, 15, summary)
+    state.update(
+        {
+            "fictional_successful_model_call_count": successful,
+            "fictional_receipt_reconciliation": "PASS"
+            if successful == FICTIONAL_MODEL_CALLS
+            else "FAIL",
+        }
+    )
+    write_json(args.output_root / "program-state.json", state)
+    if successful != FICTIONAL_MODEL_CALLS:
+        raise ValueError("FICTIONAL_RECEIPT_RECONCILIATION_FAILED")
     print(json.dumps(state, ensure_ascii=False, sort_keys=True), flush=True)
 
 
@@ -1178,6 +1229,7 @@ def parse_args() -> argparse.Namespace:
     mode.add_argument("--audit", action="store_true")
     mode.add_argument("--fictional-prepare", action="store_true")
     mode.add_argument("--fictional-execute", action="store_true")
+    mode.add_argument("--fictional-reconcile", action="store_true")
     parser.add_argument("--latest-result-zip", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--report-dir", type=Path, required=True)
@@ -1196,6 +1248,8 @@ def main() -> None:
         run_offline_audit(args)
     elif args.fictional_prepare:
         prepare_fictional(args)
+    elif args.fictional_reconcile:
+        reconcile_fictional(args)
     else:
         execute_fictional(args)
 

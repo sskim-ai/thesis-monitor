@@ -1,0 +1,15 @@
+{
+  "base_namespace_hash": "89333726b99a23b60b7a0199",
+  "contract": "codex-model-context-runtime-isolation-v1",
+  "execution_isolation_valid": true,
+  "invocation_id": "20260908-directional-calibration-fictional-20260908T043000Z-3d5220a4528a:fictional:RUN_3:DIRECTIONAL_CORE:02",
+  "invocation_identity_unique": true,
+  "model_call_counted": 0,
+  "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+  "runtime_state_namespace_hash": "8dfa154b3befda6b43e8472c",
+  "runtime_state_namespace_unique": true,
+  "spawn_started": 0,
+  "status": "PASS_PRESPAWN",
+  "working_directory_identity": "7f81cbb8b9c50d2c4290f0a5a3fcd6cd9853e8518d32d3cf94f705ed6c8e1f05",
+  "working_directory_unique": true
+}
