@@ -32,6 +32,7 @@ from app.services.direction_timing_ownership_service import (
     technical_feature_inventory,
     validate_ownership,
 )
+from app.services.reference_universe_audit_service import canonical_market_mix
 from app.services.structured_autonomy_shadow_service import (
     explicit_actionable_trade_directives,
     render_structured_autonomy_message,
@@ -1765,6 +1766,11 @@ def preserve_context(
     error: Exception | None = None,
     transport_lifecycle: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
+    source_lock = read_json(args.output_root / "source-lock.json")
+    market_by_ticker = source_lock.get("market_by_ticker")
+    if not isinstance(market_by_ticker, Mapping):
+        raise ValueError("canonical_market_metadata_missing_from_source_lock")
+    market_mix = canonical_market_mix(subjects, market_by_ticker)
     source_receipt = receipt_source_path(receipt_root, invocation_id)
     if not source_receipt.is_file():
         lifecycle = dict(transport_lifecycle or {})
@@ -1812,6 +1818,7 @@ def preserve_context(
             "batch_id": f"{batch_number:02d}",
             "subjects": list(subjects),
             "subject_count": len(subjects),
+            "market_mix": market_mix,
             "sequence_position": sequence_position,
             "prompt_sha256": file_sha256(context_dir / "prompt.txt"),
             "schema_sha256": file_sha256(context_dir / "schema.json"),
@@ -1898,14 +1905,10 @@ def preserve_context(
         "batch_id": f"{batch_number:02d}",
         "subjects": list(subjects),
         "subject_count": len(subjects),
-        "market_mix": {
-            "us": sum(not ticker.isdigit() for ticker in subjects),
-            "kr": sum(ticker.isdigit() for ticker in subjects),
-        },
+        "market_mix": market_mix,
         "source_lock": state["source_lock_sha256"],
         "per_subject_packet_hashes": {
-            ticker: read_json(args.output_root / "source-lock.json")["packet_sha256"][ticker]
-            for ticker in subjects
+            ticker: source_lock["packet_sha256"][ticker] for ticker in subjects
         },
         "model": receipt.get("model"),
         "reasoning_effort": receipt.get("reasoning_effort"),

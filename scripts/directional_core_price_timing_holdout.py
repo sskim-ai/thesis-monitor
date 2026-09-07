@@ -376,10 +376,16 @@ def source_lock_document(
     timing_aliases: Mapping[str, EvidenceAliasCatalog],
     price_maps: Mapping[str, Mapping[str, object]],
 ) -> dict[str, object]:
+    market_by_ticker = {ticker: evidence[ticker].market for ticker in cohort}
+    if set(market_by_ticker) != set(cohort) or any(
+        market not in {"kr", "us"} for market in market_by_ticker.values()
+    ):
+        raise ValueError("canonical_market_identity_required_for_source_lock")
     return {
         "contract": "new-ownership-holdout-source-lock-v1",
         "program_generation_id": generation_id,
         "ordered_cohort": list(cohort),
+        "market_by_ticker": market_by_ticker,
         "packet_sha256": {ticker: canonical_sha256(packets[ticker]) for ticker in cohort},
         "base_context_sha256": {
             ticker: hashlib.sha256(base_contexts[ticker].encode()).hexdigest()

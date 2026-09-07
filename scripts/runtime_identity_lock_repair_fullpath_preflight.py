@@ -503,6 +503,9 @@ def _prepare_simulation(
         "contract": "model-free-source-lock-v1",
         "source_generation_id": source_generation_id,
         "ordered_cohort": list(cohort),
+        "market_by_ticker": {
+            ticker: evidence[ticker].market for ticker in cohort
+        },
         "packet_sha256": packet_hashes,
     }
     source_lock_hash = canonical_sha256(source_lock)

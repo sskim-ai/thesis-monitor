@@ -356,6 +356,7 @@ def test_model_context_is_invoked_once_and_preserved_before_return(
         {
             "source_lock_sha256": "lock",
             "packet_sha256": {"TEST": "packet"},
+            "market_by_ticker": {"TEST": "us"},
         },
     )
 
@@ -453,6 +454,7 @@ def _context_args(tmp_path: Path):
         {
             "source_lock_sha256": "lock",
             "packet_sha256": {"TEST": "packet"},
+            "market_by_ticker": {"TEST": "us"},
         },
     )
     prompt = tmp_path / "prompt.txt"
