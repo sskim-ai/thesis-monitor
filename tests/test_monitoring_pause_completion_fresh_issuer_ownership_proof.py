@@ -69,11 +69,16 @@ def test_parse_disabled_labels_only_accepts_true_entries() -> None:
     output = '''
     disabled services = {
         "com.example.paused" => true
+        "com.example.also-paused" => disabled
         "com.example.active" => false
+        "com.example.also-active" => enabled
     }
     '''
 
-    assert proof.parse_disabled_labels(output) == {"com.example.paused"}
+    assert proof.parse_disabled_labels(output) == {
+        "com.example.paused",
+        "com.example.also-paused",
+    }
 
 
 def test_model_topology_remains_exact() -> None:

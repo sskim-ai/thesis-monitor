@@ -321,7 +321,9 @@ def filter_candidate_rows(
 def parse_disabled_labels(value: str) -> set[str]:
     return {
         match.group(1)
-        for match in re.finditer(r'"([^"\n]+)"\s*=>\s*true', value)
+        for match in re.finditer(
+            r'"([^"\n]+)"\s*=>\s*(?:true|disabled)\b', value
+        )
     }
 
 
