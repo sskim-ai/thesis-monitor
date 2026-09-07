@@ -40,6 +40,7 @@ from app.services.structured_autonomy_shadow_service import (
     validate_structured_autonomy_candidate,
 )
 from scripts import directional_core_price_timing_holdout as frozen
+from scripts import experiment_report_closeout_contract as report_closeout
 from scripts import model_transport_revalidation_ownership_continuation as transport
 from scripts import official_fundamental_enrichment_holdout as fundamental
 from scripts import runtime_identity_binding as runtime_identity
@@ -2911,6 +2912,13 @@ def final_proofs(
     exclusion = read_json(proof_path(args.report_dir, 4))
     us_audit = read_json(proof_path(args.report_dir, 7))
     kr_audit = read_json(proof_path(args.report_dir, 10))
+    normalized_report_inputs = report_closeout.normalize_completion_inputs(
+        registry=registry,
+        exclusion=exclusion,
+        us_audit=us_audit,
+        kr_audit=kr_audit,
+    )
+    normalized_fields = normalized_report_inputs["canonical_fields"]
     dual_summary = read_json(proof_path(args.report_dir, 12))
     selection = read_json(proof_path(args.report_dir, 15))
     source_generation = read_json(proof_path(args.report_dir, 16))
@@ -2923,26 +2931,43 @@ def final_proofs(
         "branch": state["branch"],
         "latest_forensic_zip_sha256": FORENSIC_ZIP_SHA256,
         "latest_forensic_bundle_integrity": "PASS",
-        "prior_real_issuer_exposure_registry_count": registry["registry_count"],
-        "new_holdout_exclusion_count": exclusion["new_holdout_exclusion_count"],
+        "prior_real_issuer_exposure_registry_count": normalized_fields[
+            "prior_real_issuer_exposure_registry_count"
+        ],
+        "new_holdout_exclusion_count": normalized_fields[
+            "new_holdout_exclusion_count"
+        ],
+        "report_input_normalization": normalized_report_inputs["provenance"],
         "dual_market_source_policy_hash": state["selection_policy_sha256"],
         "new_holdout_selection_seed_or_rule": SELECTION_SALT,
-        "us_target_count": us_audit["target_count"],
-        "us_candidate_attempt_count": us_audit["attempted_count"],
-        "us_source_sufficient_count": us_audit["source_sufficient_count"],
-        "us_source_insufficient_count": us_audit["source_insufficient_count"],
-        "us_pipeline_coverage_gap_count": us_audit["pipeline_coverage_gap_count"],
-        "us_source_absence_count": us_audit["source_absence_count"],
-        "us_unknown_failure_count": us_audit["unknown_failure_count"],
-        "us_source_target_status": us_audit["source_target_status"],
-        "kr_target_count": kr_audit["target_count"],
-        "kr_candidate_attempt_count": kr_audit["attempted_count"],
-        "kr_source_sufficient_count": kr_audit["source_sufficient_count"],
-        "kr_source_insufficient_count": kr_audit["source_insufficient_count"],
-        "kr_pipeline_coverage_gap_count": kr_audit["pipeline_coverage_gap_count"],
-        "kr_source_absence_count": kr_audit["source_absence_count"],
-        "kr_unknown_failure_count": kr_audit["unknown_failure_count"],
-        "kr_source_target_status": kr_audit["source_target_status"],
+        "us_target_count": normalized_fields["us_target_count"],
+        "us_candidate_attempt_count": normalized_fields["us_attempted_count"],
+        "us_source_sufficient_count": normalized_fields[
+            "us_source_sufficient_count"
+        ],
+        "us_source_insufficient_count": normalized_fields[
+            "us_source_insufficient_count"
+        ],
+        "us_pipeline_coverage_gap_count": normalized_fields[
+            "us_pipeline_coverage_gap_count"
+        ],
+        "us_source_absence_count": normalized_fields["us_source_absence_count"],
+        "us_unknown_failure_count": normalized_fields["us_unknown_failure_count"],
+        "us_source_target_status": normalized_fields["us_source_target_status"],
+        "kr_target_count": normalized_fields["kr_target_count"],
+        "kr_candidate_attempt_count": normalized_fields["kr_attempted_count"],
+        "kr_source_sufficient_count": normalized_fields[
+            "kr_source_sufficient_count"
+        ],
+        "kr_source_insufficient_count": normalized_fields[
+            "kr_source_insufficient_count"
+        ],
+        "kr_pipeline_coverage_gap_count": normalized_fields[
+            "kr_pipeline_coverage_gap_count"
+        ],
+        "kr_source_absence_count": normalized_fields["kr_source_absence_count"],
+        "kr_unknown_failure_count": normalized_fields["kr_unknown_failure_count"],
+        "kr_source_target_status": normalized_fields["kr_source_target_status"],
         "dual_market_source_status": dual_summary["dual_market_source_status"],
         "real_holdout_model_calls_while_source_target_failed": 0,
         "new_holdout_cohort": state["ordered_cohort"],
