@@ -88,6 +88,32 @@ def test_global_and_budget_scoped_untested_counts_remain_distinct() -> None:
     assert summary["known_source_fail_count"] == 1
 
 
+def test_set_reconciliation_is_recomputed_from_membership_sets() -> None:
+    document = {
+        "supported_security_count": 3,
+        "supported_security_ids": ["security-a", "security-b", "security-c"],
+        "supported_issuer_count": 2,
+        "supported_issuer_keys": ["issuer-a", "issuer-b"],
+        "global_exclusion_issuer_keys": ["issuer-b", "issuer-outside"],
+        "within_universe_exclusion_issuer_count": 1,
+        "within_universe_exclusion_issuer_keys": ["issuer-b"],
+        "unseen_supported_issuer_count": 1,
+        "unseen_supported_issuer_keys": ["issuer-a"],
+        "invariants": {
+            "issuer_lte_security": True,
+            "unseen_lte_supported_issuer": True,
+            "unseen_intersection_exclusions_empty": True,
+            "unseen_equals_supported_minus_exclusions": True,
+        },
+    }
+
+    result = review.validate_set_reconciliation(document)
+
+    assert result["status"] == "PASS"
+    document["unseen_supported_issuer_keys"] = ["issuer-b"]
+    assert review.validate_set_reconciliation(document)["status"] == "FAIL"
+
+
 def test_raw_file_and_canonical_json_hashes_are_distinct() -> None:
     document = {"b": 2, "a": 1}
     raw = json.dumps(document, indent=2).encode()

@@ -437,6 +437,48 @@ def summarize_us_ledger(
     }
 
 
+def validate_set_reconciliation(document: Mapping[str, object]) -> dict[str, object]:
+    security_ids = {str(value) for value in document.get("supported_security_ids") or []}
+    issuer_keys = {str(value) for value in document.get("supported_issuer_keys") or []}
+    exclusion_keys = {
+        str(value) for value in document.get("global_exclusion_issuer_keys") or []
+    }
+    within_keys = {
+        str(value)
+        for value in document.get("within_universe_exclusion_issuer_keys") or []
+    }
+    unseen_keys = {
+        str(value) for value in document.get("unseen_supported_issuer_keys") or []
+    }
+    recorded_invariants = document.get("invariants")
+    recorded_invariants = (
+        recorded_invariants if isinstance(recorded_invariants, Mapping) else {}
+    )
+    checks = {
+        "supported_security_count": len(security_ids)
+        == document.get("supported_security_count"),
+        "supported_issuer_count": len(issuer_keys)
+        == document.get("supported_issuer_count"),
+        "within_universe_exclusion_count": len(within_keys)
+        == document.get("within_universe_exclusion_issuer_count"),
+        "unseen_supported_issuer_count": len(unseen_keys)
+        == document.get("unseen_supported_issuer_count"),
+        "within_is_supported_intersection_exclusions": within_keys
+        == issuer_keys & exclusion_keys,
+        "unseen_is_supported_minus_exclusions": unseen_keys
+        == issuer_keys - exclusion_keys,
+        "issuer_lte_security": len(issuer_keys) <= len(security_ids),
+        "unseen_lte_supported_issuer": len(unseen_keys) <= len(issuer_keys),
+        "unseen_intersection_exclusions_empty": not unseen_keys & exclusion_keys,
+        "recorded_invariants_true": bool(recorded_invariants)
+        and all(value is True for value in recorded_invariants.values()),
+    }
+    return {
+        "checks": checks,
+        "status": "PASS" if all(checks.values()) else "FAIL",
+    }
+
+
 def _source_fact_rows(packet: Mapping[str, object]) -> list[dict[str, object]]:
     stocks = packet.get("stocks")
     if not isinstance(stocks, list) or len(stocks) != 1:
@@ -1458,6 +1500,10 @@ def generate(args: argparse.Namespace) -> None:
         )
         us_sets = zip_json(archive, "evidence/membership/us-set-reconciliation.json")
         kr_sets = zip_json(archive, "evidence/membership/kr-set-reconciliation.json")
+        us_set_audit = validate_set_reconciliation(us_sets)
+        kr_set_audit = validate_set_reconciliation(kr_sets)
+        if us_set_audit["status"] != "PASS" or kr_set_audit["status"] != "PASS":
+            raise ValueError("supported_universe_set_reconciliation_failed")
         us_diagnostics = zip_json(
             archive, "evidence/diagnostics/us-source-readiness.json"
         )
@@ -1706,9 +1752,13 @@ def generate(args: argparse.Namespace) -> None:
         "kr_supported_security_count": kr_sets["supported_security_count"],
         "kr_supported_issuer_count": kr_sets["supported_issuer_count"],
         "kr_unseen_supported_issuer_count": len(kr_ledger),
-        "us_set_invariants": us_sets["status"],
-        "kr_set_invariants": kr_sets["status"],
-        "status": "PASS",
+        "us_set_invariants": us_set_audit,
+        "kr_set_invariants": kr_set_audit,
+        "status": (
+            "PASS"
+            if us_set_audit["status"] == kr_set_audit["status"] == "PASS"
+            else "FAIL"
+        ),
     }
     us_proof = {
         **us_summary,
