@@ -1,0 +1,245 @@
+{
+  "bounded_candidate_count": 21,
+  "candidate_rows": [
+    {
+      "candidate_rank": 1,
+      "canonical_issuer_key": "sec:cik:0001566044",
+      "canonical_security_id": "us:nd:YARW",
+      "company_name": "Yarrow Bioscience, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "YARW"
+    },
+    {
+      "candidate_rank": 2,
+      "canonical_issuer_key": "sec:cik:0002040475",
+      "canonical_security_id": "us:nd:DMII",
+      "company_name": "Drugs Made In America Acquisition II Corp.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "DMII"
+    },
+    {
+      "candidate_rank": 3,
+      "canonical_issuer_key": "sec:cik:0001691493",
+      "canonical_security_id": "us:ny:NU",
+      "company_name": "Nu Holdings Ltd.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "NU"
+    },
+    {
+      "candidate_rank": 4,
+      "canonical_issuer_key": "sec:cik:0000003570",
+      "canonical_security_id": "us:ny:LNG",
+      "company_name": "Cheniere Energy, Inc.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "LNG"
+    },
+    {
+      "candidate_rank": 5,
+      "canonical_issuer_key": "sec:cik:0000733590",
+      "canonical_security_id": "us:ny:TCI",
+      "company_name": "TRANSCONTINENTAL REALTY INVESTORS INC",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "TCI"
+    },
+    {
+      "candidate_rank": 6,
+      "canonical_issuer_key": "sec:cik:0001319161",
+      "canonical_security_id": "us:nd:WMG",
+      "company_name": "Warner Music Group Corp.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "WMG"
+    },
+    {
+      "candidate_rank": 7,
+      "canonical_issuer_key": "sec:cik:0001824502",
+      "canonical_security_id": "us:ny:ACHR",
+      "company_name": "Archer Aviation Inc.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "ACHR"
+    },
+    {
+      "candidate_rank": 8,
+      "canonical_issuer_key": "sec:cik:0001997377",
+      "canonical_security_id": "us:na:ISOU",
+      "company_name": "IsoEnergy Ltd.",
+      "exchange": "NA",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "ISOU"
+    },
+    {
+      "candidate_rank": 9,
+      "canonical_issuer_key": "sec:cik:0002104879",
+      "canonical_security_id": "us:nd:SHOT",
+      "company_name": "RMG ML Sports Holdings",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "SHOT"
+    },
+    {
+      "candidate_rank": 10,
+      "canonical_issuer_key": "sec:cik:0001657677",
+      "canonical_security_id": "us:nd:PBLS",
+      "company_name": "Parabilis Medicines, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "PBLS"
+    },
+    {
+      "candidate_rank": 11,
+      "canonical_issuer_key": "sec:cik:0001634117",
+      "canonical_security_id": "us:ny:BNED",
+      "company_name": "Barnes & Noble Education, Inc.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "BNED"
+    },
+    {
+      "candidate_rank": 12,
+      "canonical_issuer_key": "sec:cik:0001334036",
+      "canonical_security_id": "us:nd:CROX",
+      "company_name": "Crocs, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "CROX"
+    },
+    {
+      "candidate_rank": 13,
+      "canonical_issuer_key": "sec:cik:0001061069",
+      "canonical_security_id": "us:na:AWX",
+      "company_name": "AVALON HOLDINGS CORP",
+      "exchange": "NA",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "AWX"
+    },
+    {
+      "candidate_rank": 14,
+      "canonical_issuer_key": "sec:cik:0001174922",
+      "canonical_security_id": "us:nd:WYNN",
+      "company_name": "WYNN RESORTS LTD",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "WYNN"
+    },
+    {
+      "candidate_rank": 15,
+      "canonical_issuer_key": "sec:cik:0001062579",
+      "canonical_security_id": "us:nd:DOX",
+      "company_name": "AMDOCS LTD",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "DOX"
+    },
+    {
+      "candidate_rank": 16,
+      "canonical_issuer_key": "sec:cik:0001843974",
+      "canonical_security_id": "us:ny:DXYZ",
+      "company_name": "Destiny Tech100 Inc.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "DXYZ"
+    },
+    {
+      "candidate_rank": 17,
+      "canonical_issuer_key": "sec:cik:0001564708",
+      "canonical_security_id": "us:nd:NWS",
+      "company_name": "NEWS CORP",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "NWS"
+    },
+    {
+      "candidate_rank": 18,
+      "canonical_issuer_key": "sec:cik:0001350102",
+      "canonical_security_id": "us:nd:ASTI",
+      "company_name": "Ascent Solar Technologies, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "ASTI"
+    },
+    {
+      "candidate_rank": 19,
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "canonical_security_id": "us:ny:RMD",
+      "company_name": "RESMED INC",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "RMD"
+    },
+    {
+      "candidate_rank": 20,
+      "canonical_issuer_key": "sec:cik:0001885827",
+      "canonical_security_id": "us:nd:VRAX",
+      "company_name": "Virax Biolabs Group Ltd",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "VRAX"
+    },
+    {
+      "candidate_rank": 21,
+      "canonical_issuer_key": "sec:cik:0000789019",
+      "canonical_security_id": "us:nd:MSFT",
+      "company_name": "MICROSOFT CORP",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "MSFT"
+    }
+  ],
+  "contract": "fresh-us-candidate-manifest-v1",
+  "initial_candidates": [
+    "YARW",
+    "DMII",
+    "NU",
+    "LNG"
+  ],
+  "market": "us",
+  "model_calls": 0,
+  "ordered_reserve": [
+    "TCI",
+    "WMG",
+    "ACHR",
+    "ISOU",
+    "SHOT",
+    "PBLS",
+    "BNED",
+    "CROX",
+    "AWX",
+    "WYNN",
+    "DOX",
+    "DXYZ",
+    "NWS",
+    "ASTI",
+    "RMD",
+    "VRAX",
+    "MSFT"
+  ],
+  "status": "FROZEN",
+  "target_count": 4
+}
