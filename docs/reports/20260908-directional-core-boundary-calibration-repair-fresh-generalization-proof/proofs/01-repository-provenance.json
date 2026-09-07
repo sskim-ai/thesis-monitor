@@ -1,0 +1,14 @@
+{
+  "architecture_mutation": 0,
+  "base_is_ancestor": true,
+  "base_sha": "05c93cf7d768ddb09b670ca74dc69c2b698e5f6b",
+  "branch": "codex/20260908-directional-core-boundary-calibration-repair-fresh-generalization-proof",
+  "contract": "repository-provenance-v1",
+  "current_head": "45bd95416ee09c494cca0af9cd73f7c1a6fe9f8c",
+  "current_tree": "d48b9fea62a1dacc11f4cf617eff3f7f14cd3873",
+  "model_calls": 0,
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "work_instruction_commit": "45bd95416ee09c494cca0af9cd73f7c1a6fe9f8c",
+  "worktree_status": "?? scripts/directional_core_boundary_calibration_repair_fresh_generalization_proof.py"
+}

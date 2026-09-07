@@ -1,0 +1,663 @@
+{
+  "contract": "directional-anchor-set-comparison-v1",
+  "rows": [
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:020180:business_current:1987530d68035148f2a3",
+        "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 1.0,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ],
+        "B": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ],
+        "C": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ],
+        "B": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ],
+        "C": [
+          "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "020180"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 0.5,
+      "common_dominant_refs": [
+        "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da",
+        "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+        "decision-evidence:6bfd1afb14d8b3ab1bca"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+          "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+        ],
+        "B": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73"
+        ],
+        "C": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+          "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73"
+        ],
+        "B": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73"
+        ],
+        "C": [
+          "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+          "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "023910"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+        "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+        "decision-evidence:6f8fada5b500cb6b668b"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.75,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+          "canonical:fundamental:053270:business_current:c0c9f753c695f974af73"
+        ],
+        "B": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+          "canonical:fundamental:053270:business_current:c0c9f753c695f974af73"
+        ],
+        "C": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+          "canonical:fundamental:053270:business_current:c0c9f753c695f974af73"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5"
+        ],
+        "B": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+          "canonical:fundamental:053270:business_current:c0c9f753c695f974af73"
+        ],
+        "C": [
+          "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "053270"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+        "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+        "decision-evidence:286ff4d618d8f6d40711"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.75,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+          "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2"
+        ],
+        "B": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+          "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2"
+        ],
+        "C": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+          "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889"
+        ],
+        "B": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+          "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2"
+        ],
+        "C": [
+          "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "064850"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+        "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+        "decision-evidence:e11ccaf0bf8967aa507f"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.75,
+      "historical_stability_classification": "STABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ],
+        "B": [
+          "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ],
+        "C": [
+          "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ],
+        "B": [
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ],
+        "C": [
+          "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+          "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+        ]
+      },
+      "root_cause_classification": "STABLE",
+      "ticker": "065510"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f",
+        "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 1.0,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ],
+        "B": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ],
+        "C": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ],
+        "B": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ],
+        "C": [
+          "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "078860"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 0.5,
+      "common_dominant_refs": [
+        "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+        "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.6666666666666666,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ],
+        "B": [
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ],
+        "C": [
+          "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ],
+        "B": [
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ],
+        "C": [
+          "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+          "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "122310"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+        "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+        "decision-evidence:9cc6a932c71df1ac0351"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.75,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+          "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8"
+        ],
+        "B": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+          "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8"
+        ],
+        "C": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+          "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733"
+        ],
+        "B": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+          "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8"
+        ],
+        "C": [
+          "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "145720"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+        "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.6666666666666666,
+      "historical_stability_classification": "STABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ],
+        "B": [
+          "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ],
+        "C": [
+          "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ],
+        "B": [
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ],
+        "C": [
+          "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+          "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+        ]
+      },
+      "root_cause_classification": "STABLE",
+      "ticker": "199730"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+        "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 1.0,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "STABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ],
+        "B": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ],
+        "C": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ],
+        "B": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ],
+        "C": [
+          "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+        ]
+      },
+      "root_cause_classification": "CONFIDENCE_ONLY_VARIANCE",
+      "ticker": "299900"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+        "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+        "decision-evidence:495df2a7ee99289190e5"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 0.75,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+          "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+        ],
+        "B": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+          "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+        ],
+        "C": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+          "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+          "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+        ],
+        "B": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4"
+        ],
+        "C": [
+          "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+          "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "396470"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 0.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:417200:business_current:632c2b3bcd82414f7857",
+        "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.5,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+        ],
+        "B": [
+          "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+        ],
+        "C": []
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+        ],
+        "B": [
+          "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+        ],
+        "C": [
+          "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+          "canonical:fundamental:417200:business_current:632c2b3bcd82414f7857"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "417200"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e",
+        "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e",
+        "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 1.0,
+      "driver_ref_min_pairwise_jaccard": 0.6666666666666666,
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ],
+        "B": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ],
+        "C": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ],
+        "B": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ],
+        "C": [
+          "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+          "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "ASTI"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 0.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+        "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+        "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+        "decision-evidence:578a14b613856f6899b6"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.6666666666666666,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+          "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+        ],
+        "B": [
+          "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+          "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+        ],
+        "C": []
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "decision-evidence:578a14b613856f6899b6",
+          "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+          "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+        ],
+        "B": [
+          "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+          "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+          "decision-evidence:578a14b613856f6899b6"
+        ],
+        "C": [
+          "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+          "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "DOX"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 1.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe",
+        "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe",
+        "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+        "decision-evidence:44dd2cb6b10168cc3620"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 1.0,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "UNSTABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ],
+        "B": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ],
+        "C": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ]
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ],
+        "B": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ],
+        "C": [
+          "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+          "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+        ]
+      },
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "ticker": "NWS"
+    },
+    {
+      "anchor_ref_min_pairwise_jaccard": 0.0,
+      "common_dominant_refs": [
+        "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+        "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+      ],
+      "common_driver_refs": [
+        "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+        "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+        "decision-evidence:c48597e5ad4f0228df4d"
+      ],
+      "dominant_ref_min_pairwise_jaccard": 0.6666666666666666,
+      "driver_ref_min_pairwise_jaccard": 1.0,
+      "historical_stability_classification": "STABLE",
+      "per_run_anchor_basis": {
+        "A": [
+          "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+          "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+        ],
+        "B": [
+          "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+          "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+        ],
+        "C": []
+      },
+      "per_run_dominant_refs": {
+        "A": [
+          "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+          "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+        ],
+        "B": [
+          "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+          "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+          "decision-evidence:c48597e5ad4f0228df4d"
+        ],
+        "C": [
+          "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+          "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+        ]
+      },
+      "root_cause_classification": "STABLE",
+      "ticker": "WYNN"
+    }
+  ],
+  "status": "PASS",
+  "subject_count": 16
+}

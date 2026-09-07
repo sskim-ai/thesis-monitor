@@ -1,0 +1,11 @@
+{
+  "base_sha": "05c93cf7d768ddb09b670ca74dc69c2b698e5f6b",
+  "calibration_root_cause": "GENERIC_DIRECTIONAL_CALIBRATION_ROOT_CAUSE_CONFIRMED",
+  "contract": "directional-core-boundary-calibration-repair-fresh-generalization-proof-v1",
+  "fresh_real_cohort_consumed": 0,
+  "model_invocation_count": 0,
+  "offline_audit_sha256": "2dd5689d3e6bf33c71509d55a2249ebed54c6d6af50b4109ce10ac86caf4b4ed",
+  "root_cause_classification_sha256": "28df66a2dcc507d162e09a308321a4fdc598f3fcbefee851ec386ded14ebd5f2",
+  "state": "OFFLINE_ROOT_CAUSE_CONFIRMED",
+  "work_instruction_commit": "45bd95416ee09c494cca0af9cd73f7c1a6fe9f8c"
+}

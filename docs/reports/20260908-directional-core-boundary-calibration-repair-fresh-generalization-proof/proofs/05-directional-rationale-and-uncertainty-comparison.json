@@ -1,0 +1,1931 @@
+{
+  "contract": "directional-rationale-uncertainty-comparison-v1",
+  "rows": [
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "decision-evidence:c1941c8b9cbdff11e28b",
+              "decision-evidence:af1dabef12168f84cfd6"
+            ],
+            "text": "현재 손실을 하방 근거로 반영하되, 세부 KPI와 밸류에이션 부재로 판단 확신은 낮다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "대신정보통신의 영업이익과 순이익이 함께 흑자로 전환되고 세부 KPI 실행이 확인되면 축소 관점이 무효화된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "decision-evidence:c1941c8b9cbdff11e28b"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 영업·순손실은 보유 관점의 축소 근거다. [E10]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "대신정보통신의 영업·순이익 흑자 전환과 세부 사업 KPI 실행이 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "decision-evidence:c1941c8b9cbdff11e28b"
+            ],
+            "stance": "WAIT",
+            "summary": "손실 회복과 사업 실행의 확인 전에는 신규 매수 근거가 부족하다. [E10, E05]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:c1941c8b9cbdff11e28b",
+              "decision-evidence:af1dabef12168f84cfd6",
+              "decision-evidence:87fbdc8ceee062fa2f01"
+            ],
+            "text": "세부 KPI, 향후 실행, 밸류에이션 및 선행 논리가 확인되지 않았다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:020180:business_current:1987530d68035148f2a3",
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "decision-evidence:af1dabef12168f84cfd6",
+              "decision-evidence:c1941c8b9cbdff11e28b"
+            ],
+            "text": "매출은 확인됐지만 영업손실과 순손실이 함께 보고됐고 밸류에이션과 사업 KPI도 미확인이라 보유 관점의 매도 기울기다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서도 영업손실과 순손실이 이어지거나 매출 기반이 약해지는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "canonical:fundamental:020180:business_current:1987530d68035148f2a3"
+            ],
+            "stance": "REVIEW",
+            "summary": "현재 손실이 확인돼 보유 논리의 재점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 영업이익과 순이익의 흑자 전환 및 세부 사업 KPI 개선이 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5",
+              "decision-evidence:c1941c8b9cbdff11e28b"
+            ],
+            "stance": "WAIT",
+            "summary": "수익성 회복과 사업 실행 확인이 먼저 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:af1dabef12168f84cfd6",
+              "decision-evidence:c1941c8b9cbdff11e28b",
+              "decision-evidence:87fbdc8ceee062fa2f01"
+            ],
+            "text": "밸류에이션, 세부 사업 KPI, 기존 모니터링 논리가 없어 방향 확신이 제한된다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:020180:business_current:1987530d68035148f2a3",
+              "decision-evidence:c1941c8b9cbdff11e28b",
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+            ],
+            "text": "확인된 매출보다 최근 영업·순손실을 더 중요한 방향성 근거로 보며, 세부 사업 정보 부족으로 확신은 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 대신정보통신의 영업·순손익 흑자 전환이 확인되면 현재의 부정적 검토 근거가 약해진다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+            ],
+            "stance": "REVIEW",
+            "summary": "현재 손실 구조는 점검이 필요하지만 제한된 사업 정보 때문에 감축 판단까지 확정하기는 어렵다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "대신정보통신의 영업·순손익 흑자 전환과 매출 기반 유지가 후속 공식 공시에서 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:020180:business_current:1987530d68035148f2a3",
+              "canonical:fundamental:020180:earnings_financial_current:261fde16ca8035cdeca5"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 사업 근거만으로는 신규 관점의 긍정적 논리가 부족하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:af1dabef12168f84cfd6",
+              "decision-evidence:c1941c8b9cbdff11e28b",
+              "decision-evidence:87fbdc8ceee062fa2f01"
+            ],
+            "text": "밸류에이션, 세부 사업 지표, 기존 모니터링 논리의 부재가 판단 범위를 제한한다."
+          }
+        }
+      },
+      "ticker": "020180"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da",
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:849e6bd9c1f7e90e9b93",
+              "decision-evidence:6bfd1afb14d8b3ab1bca"
+            ],
+            "text": "현재 수익성은 매수 방향을 지지하지만, 밸류에이션과 사업 실행의 지속성은 미확인이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "대한약품의 영업 또는 순이익이 적자로 전환되거나 사업 KPI 실행 차질이 확인되면 보유 가능성이 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:6bfd1afb14d8b3ab1bca"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 영업·순이익 흑자는 보유 가능성을 지지한다. [E05]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "대한약품의 영업·순이익 흑자 지속, 세부 사업 KPI 실행 및 안전한 밸류에이션 근거가 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:6bfd1afb14d8b3ab1bca",
+              "decision-evidence:849e6bd9c1f7e90e9b93"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 수익성은 긍정적이지만 지속성과 가치 매력 확인이 남아 있다. [E05, E07, E01]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:849e6bd9c1f7e90e9b93",
+              "decision-evidence:6bfd1afb14d8b3ab1bca",
+              "decision-evidence:a224313ead5a231834fc"
+            ],
+            "text": "밸류에이션, 세부 사업 실행 및 선행 논리가 확인되지 않았다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da",
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:849e6bd9c1f7e90e9b93",
+              "decision-evidence:6bfd1afb14d8b3ab1bca"
+            ],
+            "text": "현재 매출과 흑자 실적은 긍정적이지만 밸류에이션과 지속성 KPI가 없어 보유 관점의 매수 기울기다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순이익이 손실로 전환되거나 매출 기반이 약해지는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자 실적은 보유 논리를 지지하지만 지속성 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "현재 수익성이 후속 공식 실적에서도 유지되고 세부 사업 KPI와 안전한 밸류에이션 근거가 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:6bfd1afb14d8b3ab1bca",
+              "decision-evidence:849e6bd9c1f7e90e9b93"
+            ],
+            "stance": "WAIT",
+            "summary": "수익성 지속성과 가격 매력도 확인 전에는 신규 판단을 유보한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:849e6bd9c1f7e90e9b93",
+              "decision-evidence:a224313ead5a231834fc",
+              "decision-evidence:6bfd1afb14d8b3ab1bca"
+            ],
+            "text": "밸류에이션, 세부 사업 KPI, 기존 모니터링 논리가 없어 긍정 실적의 방향 확신이 제한된다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "decision-evidence:6bfd1afb14d8b3ab1bca",
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+            ],
+            "text": "공식 매출과 영업·순이익 흑자가 긍정 방향을 지지하며, 세부 사업 정보 부족은 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 대한약품의 영업·순손익 적자 전환 또는 매출 기반 약화가 확인되면 보유 가능성의 근거가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 매출과 흑자 이익 구조는 보유 가능한 사업 상태를 뒷받침한다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "대한약품의 매출 기반과 영업·순이익 흑자의 지속성이 후속 공식 공시에서 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:023910:earnings_financial_current:663c4b2c9edc2fc7eb73",
+              "canonical:fundamental:023910:business_current:8b14c79c8bbd227005da"
+            ],
+            "stance": "ATTRACTIVE",
+            "summary": "현재 확인된 사업 매출과 이익 창출 구조는 신규 관점에서도 긍정적이다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:849e6bd9c1f7e90e9b93",
+              "decision-evidence:a224313ead5a231834fc",
+              "decision-evidence:6bfd1afb14d8b3ab1bca"
+            ],
+            "text": "밸류에이션, 기존 모니터링 논리, 세부 사업 정보의 부재가 판단 확신을 제한한다."
+          }
+        }
+      },
+      "ticker": "023910"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "decision-evidence:953f5972cb9033dff730"
+            ],
+            "text": "최근 공식 분기의 매출과 영업·순이익 흑자는 긍정적이지만, 추세와 세부 사업 지표·가치 근거가 부족해 약한 긍정의 보유 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 매출 기반이 약화되고 영업·순손실 전환이 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 분기 흑자와 매출 기반은 보유 논리를 지지하지만 지속성 검증이 남아 있다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출 기반과 이익의 지속, 세부 사업 지표의 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "decision-evidence:6f8fada5b500cb6b668b"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 실적은 긍정적이지만 추세와 세부 사업 지표·가치 근거가 부족해 신규 판단은 대기다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:16764b7439c86c66735b",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "decision-evidence:953f5972cb9033dff730",
+              "decision-evidence:107e234af2aef1deb02e"
+            ],
+            "text": "기존 논지와 세부 사업 지표, 밸류에이션 및 시장 기대가 미확인이라 방향 확신은 낮다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "decision-evidence:953f5972cb9033dff730"
+            ],
+            "text": "현재 흑자와 매출은 긍정적이지만 사업 KPI와 밸류에이션 확인이 부족해 보유 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순손익이 적자로 전환되고 매출 기반이 약화되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자와 매출 기반은 보유를 지지하지만 세부 사업 검증은 더 필요하다(E01, E06, E03)."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 흑자 지속과 매출 기반의 안정성이 확인되고 사업 KPI와 실행 진척이 구체화되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "decision-evidence:6f8fada5b500cb6b668b"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 수익성은 긍정적이나 사업 KPI와 밸류에이션 근거가 부족해 신규 관점은 확인 대기다(E01, E03, E04)."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:16764b7439c86c66735b",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "decision-evidence:953f5972cb9033dff730"
+            ],
+            "text": "이전 논지, 사업 KPI, 밸류에이션 근거가 없어 긍정 판단의 확장에는 한계가 있다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "canonical:fundamental:053270:business_current:c0c9f753c695f974af73",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "decision-evidence:953f5972cb9033dff730"
+            ],
+            "text": "현재 흑자 실적은 긍정적 방향을 지지하지만 사업 KPI와 밸류에이션 공백이 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "구영테크의 후속 공식 실적에서 영업·순손익 흑자 기반이 훼손되고 자동차 부품 사업 KPI도 개선되지 않는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "canonical:industry:classification"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자 실적은 보유 논거를 지지하지만 사업 지속성 확인이 남아 있다. [E01, E03]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "구영테크의 후속 공식 실적에서 흑자 지속과 자동차 부품 사업 KPI 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "decision-evidence:6f8fada5b500cb6b668b",
+              "canonical:industry:classification"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 사업 실적은 긍정적이나 세부 실행 성과 확인 전에는 신규 판단 근거가 충분하지 않다. [E01, E03]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "canonical:fundamental:053270:earnings_financial_current:b5b16df8ac272aa592b5",
+              "decision-evidence:16764b7439c86c66735b",
+              "decision-evidence:6f8fada5b500cb6b668b"
+            ],
+            "text": "최근 공식 실적은 확인됐지만 선행 논거와 세부 KPI가 없어 변화 판단은 제한된다."
+          }
+        }
+      },
+      "ticker": "053270"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "decision-evidence:286ff4d618d8f6d40711",
+              "decision-evidence:4fe59a8c32a7eaa4d89b"
+            ],
+            "text": "최근 공식 분기의 매출과 영업·순이익 흑자는 긍정적이지만, 추세와 세부 사업 지표·가치 근거가 부족해 약한 긍정의 보유 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 매출 기반이 약화되고 영업·순손실 전환이 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 분기 흑자와 매출 기반은 보유 논리를 지지하지만 지속성 검증이 남아 있다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출 기반과 이익의 지속, 세부 사업 지표의 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 실적은 긍정적이지만 추세와 세부 사업 지표·가치 근거가 부족해 신규 판단은 대기다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:1abe7d326e9fef9705d3",
+              "decision-evidence:286ff4d618d8f6d40711",
+              "decision-evidence:4fe59a8c32a7eaa4d89b",
+              "decision-evidence:c38781efa822cce48cbc"
+            ],
+            "text": "기존 논지와 세부 사업 지표, 밸류에이션 및 시장 기대가 미확인이라 방향 확신은 낮다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "decision-evidence:4fe59a8c32a7eaa4d89b",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "text": "현재 수익 창출은 긍정적이지만 사업 KPI와 밸류에이션 확인이 부족해 보유 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순손익이 적자로 전환되고 매출 기반이 약화되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자와 매출 기반은 보유를 지지하지만 세부 사업 검증은 더 필요하다(E01, E05, E08)."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 흑자 지속과 매출 기반의 안정성이 확인되고 사업 KPI와 실행 진척이 구체화되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 수익성은 긍정적이나 사업 KPI와 밸류에이션 근거가 부족해 신규 관점은 확인 대기다(E01, E04, E08)."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:4fe59a8c32a7eaa4d89b",
+              "decision-evidence:286ff4d618d8f6d40711",
+              "decision-evidence:1abe7d326e9fef9705d3"
+            ],
+            "text": "밸류에이션, 사업 KPI, 이전 모니터링 논지가 없어 긍정 판단의 확장에는 한계가 있다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "canonical:fundamental:064850:business_current:9207d8673f99ba5855d2",
+              "decision-evidence:4fe59a8c32a7eaa4d89b",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "text": "현재 흑자 실적은 긍정적 방향을 지지하지만 밸류에이션과 세부 KPI 공백이 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "에프앤가이드의 후속 공식 실적에서 영업·순손익 흑자 기반이 훼손되고 KPI 실행도 확인되지 않는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자 실적은 보유 논거를 지지하지만 지속성 확인이 남아 있다. [E01, E08]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "에프앤가이드의 후속 공식 실적에서 흑자 지속과 핵심 사업 KPI 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "decision-evidence:286ff4d618d8f6d40711"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 상태는 긍정적이나 세부 실행 성과 확인 전에는 신규 판단 근거가 충분하지 않다. [E01, E08]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "canonical:fundamental:064850:earnings_financial_current:f5f3da2f1c1c7106f889",
+              "decision-evidence:286ff4d618d8f6d40711",
+              "decision-evidence:1abe7d326e9fef9705d3"
+            ],
+            "text": "최근 공식 실적은 확인됐지만 선행 논거와 세부 KPI가 없어 변화 판단은 제한된다."
+          }
+        }
+      },
+      "ticker": "064850"
+    },
+    {
+      "historical_stability_classification": "STABLE",
+      "root_cause_classification": "STABLE",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "text": "현재 연결 수익성은 긍정적이지만 지속성, 세부 KPI와 밸류에이션 미확인으로 완만한 긍정의 보유 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "휴비츠의 후속 공식 공시에서 연결 영업손실 전환이나 순손실 발생이 확인될 때다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 연결 영업흑자와 순이익은 보유 가능한 사업 기초를 제공한다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "휴비츠의 후속 공식 공시에서 현재 수익성의 반복성과 핵심 사업 KPI가 함께 확인될 것이다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 수익성은 양호하지만 지속성과 사업 실행을 확인할 근거가 더 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "decision-evidence:f1e0ef249d0bb2e0fe89",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "text": "선행 논리와 세부 KPI, 밸류에이션 근거의 부재가 판단 신뢰도를 제한한다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "text": "현재 수익성은 긍정적이지만 지속성을 입증할 사업 KPI와 가치 근거가 없어 완만한 긍정에 그친다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 영업손실 전환, 순손실 전환 또는 매출 기반 약화가 확인될 때 보유 논리가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "E04와 E08의 매출 및 이익 흑자는 보유 가능성을 지지하지만 지속성 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 이익 지속성과 핵심 사업 KPI가 확인되고 검증 가능한 가치 근거가 확보될 때다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "stance": "WAIT",
+            "summary": "E08의 흑자 실적은 긍정적이나 E01과 E09의 실행 및 가치 공백이 남아 있다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "decision-evidence:f1e0ef249d0bb2e0fe89",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "text": "기존 논리, 세부 사업 KPI와 안전한 가치 근거가 없어 방향 확신이 낮다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+              "decision-evidence:e11ccaf0bf8967aa507f"
+            ],
+            "text": "현재 수익성은 긍정적이어서 매수 쪽으로 기울지만 추세와 사업 KPI 검증이 부족하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공시에서 영업손실 전환이나 매출 기반 수익성 약화가 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 영업·순이익 흑자는 보유 논리를 지지하지만 후속 검증이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출과 영업흑자의 지속 및 사업 KPI 공개가 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:065510:business_current:8454fa9fe35b4d430ac4",
+              "canonical:fundamental:065510:earnings_financial_current:0b3fc34df50ff4f229da",
+              "decision-evidence:e11ccaf0bf8967aa507f"
+            ],
+            "stance": "WAIT",
+            "summary": "수익성은 긍정적이지만 사업 지속성과 가치평가 근거 확인이 선행돼야 한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:e11ccaf0bf8967aa507f",
+              "decision-evidence:f1e0ef249d0bb2e0fe89",
+              "decision-evidence:824ec354bbb238739e79"
+            ],
+            "text": "기존 투자 논리, 사업 KPI와 가치평가 근거의 공백이 확신을 제한한다."
+          }
+        }
+      },
+      "ticker": "065510"
+    },
+    {
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f",
+              "decision-evidence:8d912a98f965a44ece3c"
+            ],
+            "text": "최근 공식 분기의 영업·순손실이 핵심 부정 근거이며, 매출은 확인되지만 수익성 회복 근거가 없어 축소 관점이 우세하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서도 영업·순손실이 이어지거나 매출 기반이 약화되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 손실은 보유 논리를 약화시키며 수익성 회복이 확인되기 전에는 축소 관점이 우세하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 영업·순이익 흑자 전환과 매출 기반 개선이 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 손실과 회복 경로 미확인으로 신규 사업 관점은 부정적이다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f",
+              "decision-evidence:8d912a98f965a44ece3c",
+              "decision-evidence:64172051d5640abb8e06",
+              "decision-evidence:e10806941c0bed6897d3"
+            ],
+            "text": "근거가 현재 분기에 한정되고 세부 사업 지표·가치·기대 정보가 비어 있어 회복 경로의 확신은 제한된다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f",
+              "decision-evidence:8d912a98f965a44ece3c"
+            ],
+            "text": "현재 영업·순손실이 매출 존재보다 중대한 방향 근거이며, 사업 KPI도 미확인이라 매도 방향이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순손익이 흑자로 전환되고 매출 기반이 강화되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 영업·순손실이 확인돼 보유 관점은 축소 쪽이며 흑자 전환 검증이 필요하다(E10, E06)."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 영업·순손익의 흑자 전환이 확인되고 세부 사업 KPI와 실행이 검증되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "decision-evidence:8d912a98f965a44ece3c"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 손실이 신규 관점의 핵심 제약이며 사업 KPI도 확인되지 않았다(E10, E06)."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:8d912a98f965a44ece3c",
+              "decision-evidence:64172051d5640abb8e06",
+              "decision-evidence:53a9ad950636e97128f6"
+            ],
+            "text": "사업 KPI, 밸류에이션, 이전 논지가 없어 손실의 지속 기간과 회복 경로는 확정할 수 없다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "canonical:fundamental:078860:business_current:2ba3d7b0e29b21aba83f",
+              "decision-evidence:8d912a98f965a44ece3c",
+              "decision-evidence:64172051d5640abb8e06"
+            ],
+            "text": "현재 영업손실과 순손실이 부정적 방향의 핵심이며 KPI와 밸류에이션 공백이 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "아이오케이이엔엠의 영업·순손실이 지속되고 콘텐츠 사업 KPI 개선도 확인되지 않는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "decision-evidence:8d912a98f965a44ece3c",
+              "canonical:industry:classification"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 손실 실적으로 보유 논거가 약하며 사업 회복 확인이 필요하다. [E10, E06]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "아이오케이이엔엠의 후속 공식 실적에서 영업·순손익 흑자 전환과 콘텐츠 사업 KPI 개선이 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2",
+              "decision-evidence:8d912a98f965a44ece3c",
+              "canonical:industry:classification"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 손실 구조가 확인돼 사업 회복 전에는 신규 판단 근거가 약하다. [E10, E06]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:8d912a98f965a44ece3c",
+              "decision-evidence:53a9ad950636e97128f6",
+              "canonical:fundamental:078860:earnings_financial_current:0c3a440ac70b230a52b2"
+            ],
+            "text": "최근 손실 실적은 확인됐지만 선행 논거와 사업 KPI가 없어 회복 가능성 판단은 제한된다."
+          }
+        }
+      },
+      "ticker": "078860"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:649c9b19513c962cf636"
+            ],
+            "text": "현재 흑자는 매수 방향의 사업 근거지만, 지속성과 밸류에이션 미확인으로 우위는 제한적이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "제노레이의 영업 또는 순이익이 적자로 전환되거나 사업 KPI 실행 차질이 확인되면 보유 가능성이 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:b1b8865336af6055814f"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 영업·순이익 흑자는 보유 가능성을 지지한다. [E09]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "제노레이의 흑자 지속, 세부 사업 KPI 실행 및 안전한 밸류에이션 근거가 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:649c9b19513c962cf636"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 흑자는 긍정적이지만 지속성과 가치 매력 확인이 남아 있다. [E09, E04, E10]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:649c9b19513c962cf636",
+              "decision-evidence:10c1d47ba7455438f0af"
+            ],
+            "text": "사업 KPI, 향후 실행, 밸류에이션 및 선행 논리가 확인되지 않았다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:649c9b19513c962cf636",
+              "decision-evidence:b1b8865336af6055814f"
+            ],
+            "text": "현재 매출과 흑자 실적은 긍정적이지만 밸류에이션과 지속성 KPI가 없어 보유 관점의 매수 기울기다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순이익이 손실로 전환되거나 매출 기반이 약해지는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자 실적은 보유 논리를 지지하지만 지속성 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "현재 수익성이 후속 공식 실적에서도 유지되고 세부 사업 KPI와 안전한 밸류에이션 근거가 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:649c9b19513c962cf636"
+            ],
+            "stance": "WAIT",
+            "summary": "수익성 지속성과 가격 매력도 확인 전에는 신규 판단을 유보한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:649c9b19513c962cf636",
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:10c1d47ba7455438f0af"
+            ],
+            "text": "밸류에이션, 사업 KPI, 기존 모니터링 논리가 없어 긍정 실적의 방향 확신이 제한된다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+              "decision-evidence:b1b8865336af6055814f",
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f",
+              "decision-evidence:649c9b19513c962cf636"
+            ],
+            "text": "공식 매출과 영업·순이익 흑자가 긍정 방향을 지지하며, 밸류에이션과 세부 사업 정보 부족은 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 제노레이의 영업·순손익 적자 전환 또는 매출 기반 약화가 확인되면 보유 가능성의 근거가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 매출과 흑자 이익 구조는 보유 가능한 사업 상태를 뒷받침한다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "제노레이의 매출 기반과 영업·순이익 흑자의 지속성이 후속 공식 공시에서 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:122310:business_current:4c487c5406df2ca55f91",
+              "canonical:fundamental:122310:earnings_financial_current:202a7babb278693ade6f"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 수익성은 긍정적이지만 지속성과 세부 사업 실행의 확인이 더 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:b1b8865336af6055814f",
+              "decision-evidence:10c1d47ba7455438f0af",
+              "decision-evidence:649c9b19513c962cf636"
+            ],
+            "text": "세부 사업 지표, 기존 모니터링 논리, 밸류에이션 근거의 부재가 판단 확신을 제한한다."
+          }
+        }
+      },
+      "ticker": "122310"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "decision-evidence:9cc6a932c71df1ac0351",
+              "decision-evidence:17b09cced3a8769b6f00"
+            ],
+            "text": "최근 공식 분기의 매출과 영업·순이익 흑자는 긍정적이지만, 추세와 세부 사업 지표·가치 근거가 부족해 약한 긍정의 보유 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 매출 기반이 약화되고 영업·순손실 전환이 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 분기 흑자와 매출 기반은 보유 논리를 지지하지만 지속성 검증이 남아 있다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출 기반과 이익의 지속, 세부 사업 지표의 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "decision-evidence:9cc6a932c71df1ac0351"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 실적은 긍정적이지만 추세와 세부 사업 지표·가치 근거가 부족해 신규 판단은 대기다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:18323c3ec46cbc175b75",
+              "decision-evidence:9cc6a932c71df1ac0351",
+              "decision-evidence:17b09cced3a8769b6f00",
+              "decision-evidence:dc55d8982ea5bf340ce7"
+            ],
+            "text": "기존 논지와 세부 사업 지표, 밸류에이션 및 시장 기대가 미확인이라 방향 확신은 낮다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "decision-evidence:17b09cced3a8769b6f00",
+              "decision-evidence:9cc6a932c71df1ac0351"
+            ],
+            "text": "현재 흑자와 매출은 긍정적이지만 사업 KPI와 밸류에이션 확인이 부족해 보유 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업·순손익이 적자로 전환되고 매출 기반이 약화되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자와 매출 기반은 보유를 지지하지만 세부 사업 검증은 더 필요하다(E10, E04, E07)."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 흑자 지속과 매출 기반의 안정성이 확인되고 사업 KPI와 실행 진척이 구체화되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "decision-evidence:9cc6a932c71df1ac0351"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 수익성은 긍정적이나 사업 KPI와 밸류에이션 근거가 부족해 신규 관점은 확인 대기다(E10, E06, E07)."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:18323c3ec46cbc175b75",
+              "decision-evidence:17b09cced3a8769b6f00",
+              "decision-evidence:9cc6a932c71df1ac0351"
+            ],
+            "text": "이전 논지, 밸류에이션, 사업 KPI가 없어 긍정 판단의 확장에는 한계가 있다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "canonical:fundamental:145720:business_current:004705f9a73c73fa6aa8",
+              "decision-evidence:17b09cced3a8769b6f00",
+              "decision-evidence:9cc6a932c71df1ac0351"
+            ],
+            "text": "현재 흑자 실적은 긍정적 방향을 지지하지만 밸류에이션과 세부 KPI 공백이 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "덴티움의 후속 공식 실적에서 영업·순손익 흑자 기반이 훼손되고 의료기기 사업 KPI도 개선되지 않는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "decision-evidence:9cc6a932c71df1ac0351",
+              "canonical:industry:classification"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 흑자 실적은 보유 논거를 지지하지만 사업 지속성 확인이 남아 있다. [E10, E07]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "덴티움의 후속 공식 실적에서 흑자 지속과 의료기기 사업 KPI 실행 성과가 함께 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733",
+              "decision-evidence:9cc6a932c71df1ac0351",
+              "canonical:industry:classification"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 사업 실적은 긍정적이나 세부 실행 성과 확인 전에는 신규 판단 근거가 충분하지 않다. [E10, E07]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:18323c3ec46cbc175b75",
+              "decision-evidence:9cc6a932c71df1ac0351",
+              "canonical:fundamental:145720:earnings_financial_current:7021bf04ada0fc09f733"
+            ],
+            "text": "최근 공식 실적은 확인됐지만 선행 논거와 세부 KPI가 없어 변화 판단은 제한된다."
+          }
+        }
+      },
+      "ticker": "145720"
+    },
+    {
+      "historical_stability_classification": "STABLE",
+      "root_cause_classification": "STABLE",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "영업흑자는 긍정적이지만 순이익 완충력과 실적 지속성, 밸류에이션이 불명확해 중립 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "바이오인프라의 후속 공식 공시에서 영업손실이나 순손실이 발생하고 지속성이 확인될 때다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "stance": "REVIEW",
+            "summary": "현재 영업흑자는 보유 근거지만 순이익과 실행 지속성을 재확인할 필요가 있다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "바이오인프라의 후속 공식 공시에서 영업이익과 순이익의 지속성, 사업 KPI가 함께 확인될 것이다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "stance": "WAIT",
+            "summary": "수익성의 반복성과 사업 실행 근거가 부족해 신규 진입 전 사업 확인이 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:267fc4e95f2c7a1f0162",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "선행 논리와 밸류에이션, 세부 KPI가 없어 판단 범위와 신뢰도가 제한된다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "매출과 영업흑자는 긍정적이나 순이익이 미미하고 지속성 및 가치 근거가 부족해 중립 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 영업손실 전환이나 매출 기반 약화가 확인될 때 보유 논리가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+            ],
+            "stance": "REVIEW",
+            "summary": "E03과 E06의 매출 및 영업흑자는 보유 검토를 지지하지만 순이익의 취약성은 점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 영업이익 지속, 순이익 개선, 핵심 사업 KPI와 검증 가능한 가치 근거가 함께 확인될 때다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "stance": "WAIT",
+            "summary": "E06의 영업흑자만으로는 E07과 E09의 가치 및 실행 공백을 해소하지 못해 확인이 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:267fc4e95f2c7a1f0162",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "기존 논리, 안전한 가치 근거와 세부 사업 KPI가 없어 방향 확신이 낮다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "현재 수익성은 긍정적이지만 지속성과 세부 사업 동력이 확인되지 않아 중립 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공시에서 영업손실 전환이나 매출 기반 수익성 약화가 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8"
+            ],
+            "stance": "REVIEW",
+            "summary": "현재 흑자는 방어 근거지만 지속성을 판단할 정보가 부족해 점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출과 영업흑자의 지속 및 사업 KPI 공개가 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:199730:business_current:a59f4b2ad50213d5b5f0",
+              "canonical:fundamental:199730:earnings_financial_current:7a2a0f6f1116521ab7a8",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 흑자만으로 신규 판단을 확정하기에는 사업 검증과 가치평가 근거가 부족하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:267fc4e95f2c7a1f0162",
+              "decision-evidence:4a7610b3c63a66ed7d61",
+              "decision-evidence:828a52a8b448a743fa19"
+            ],
+            "text": "기존 투자 논리, 가치평가 근거와 사업 KPI가 없어 확신이 제한된다."
+          }
+        }
+      },
+      "ticker": "199730"
+    },
+    {
+      "historical_stability_classification": "STABLE",
+      "root_cause_classification": "CONFIDENCE_ONLY_VARIANCE",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:34036dba9783711b9a88",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+            ],
+            "text": "당기순이익보다 연결 영업손실을 핵심 사업 앵커로 우선하며 본업 수익성 확인 전까지 방향은 부정적이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "위지윅스튜디오의 후속 공식 공시에서 연결 영업흑자 전환과 본업 이익의 지속성이 확인될 때다.",
+            "business_invalidation_condition_refs": [
+              "decision-evidence:34036dba9783711b9a88",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 연결 영업손실은 보유 논리의 훼손 요인이며 당기순이익만으로 상쇄하기 어렵다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "위지윅스튜디오의 공식 공시에서 연결 영업흑자 전환과 핵심 사업 KPI의 건전성이 함께 확인될 것이다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:34036dba9783711b9a88",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+            ],
+            "stance": "AVOID",
+            "summary": "본업 손익이 회복됐다는 근거가 없어 신규 진입의 사업 전제가 약하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:572f78aae0af9fa71fa6",
+              "decision-evidence:34036dba9783711b9a88",
+              "decision-evidence:76c1b4b1863709f89fea"
+            ],
+            "text": "선행 논리와 손익 괴리 설명, 세부 KPI 및 밸류에이션 근거의 부재가 판단 범위를 제한한다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea",
+              "decision-evidence:34036dba9783711b9a88"
+            ],
+            "text": "매출과 순이익 흑자에도 영업손실이 발생해 영업 기반 이익의 질을 경계해야 한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서도 영업손실이 지속되거나 확대되고 매출 기반이 약화할 때 보유 논리가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+            ],
+            "stance": "REDUCE",
+            "summary": "E08의 영업손실은 보유 논리를 약화하며 E05의 매출만으로 이를 상쇄하기 어렵다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 영업손실 해소, 영업 기반 이익과 핵심 사업 KPI의 지속성이 확인될 때다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:34036dba9783711b9a88",
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea"
+            ],
+            "stance": "AVOID",
+            "summary": "E08의 영업손실이 해소되기 전에는 E05의 매출과 순이익 흑자만으로 사업 수익성을 확신하기 어렵다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:572f78aae0af9fa71fa6",
+              "decision-evidence:34036dba9783711b9a88",
+              "decision-evidence:76c1b4b1863709f89fea"
+            ],
+            "text": "기존 논리, 세부 사업 KPI와 안전한 가치 근거가 없어 부정 방향의 확신도 제한된다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea",
+              "decision-evidence:34036dba9783711b9a88"
+            ],
+            "text": "순이익 흑자에도 핵심 영업활동이 적자여서 방향은 부정적이며 손익 구성과 사업 개선 확인이 필요하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공시에서 영업흑자 전환과 사업 KPI 개선이 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea",
+              "decision-evidence:34036dba9783711b9a88"
+            ],
+            "stance": "REDUCE",
+            "summary": "순이익 흑자보다 영업적자를 우선해 보면 보유 논리가 약하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출을 기반으로 영업흑자 전환과 사업 KPI 개선이 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:299900:business_current:bf110fd79d8a4ab44cec",
+              "canonical:fundamental:299900:earnings_financial_current:aed74d097e550bfd08ea",
+              "decision-evidence:34036dba9783711b9a88"
+            ],
+            "stance": "AVOID",
+            "summary": "핵심 영업 수익성이 적자인 상태에서는 신규 사업 논리를 세우기 어렵다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:572f78aae0af9fa71fa6",
+              "decision-evidence:34036dba9783711b9a88",
+              "decision-evidence:76c1b4b1863709f89fea"
+            ],
+            "text": "기존 투자 논리, 사업 KPI와 가치평가 근거가 없어 부정 방향의 확신도 제한된다."
+          }
+        }
+      },
+      "ticker": "299900"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "text": "현재 연결 이익 창출은 긍정적이지만 지속성, 세부 KPI와 밸류에이션이 미확인돼 완만한 긍정의 보유 판단이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "워트의 후속 공식 공시에서 연결 영업손실 전환이나 순손실 발생이 확인될 때다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 연결 영업흑자와 순이익은 보유 가능한 사업 기초를 제공한다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "워트의 후속 공식 공시에서 현재 이익 창출의 반복성과 핵심 사업 KPI가 함께 확인될 것이다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+              "decision-evidence:495df2a7ee99289190e5"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 이익은 긍정적이지만 지속성과 사업 실행을 확인할 근거가 더 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:4bcd9662537b09ee6680",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "text": "선행 논리와 세부 KPI, 밸류에이션 근거의 부재가 판단 신뢰도를 제한한다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "text": "현재 수익성은 긍정적이지만 사업 지속성과 가치평가 근거가 부족해 완만한 긍정에 그친다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 영업손실 전환, 순손실 전환 또는 매출 기반 약화가 확인될 때 보유 논리가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "E01과 E03의 매출 및 이익 흑자는 보유 가능성을 지지하지만 지속성 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 이익 지속성과 핵심 사업 KPI가 확인되고 검증 가능한 가치 근거가 확보될 때다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "stance": "WAIT",
+            "summary": "E01의 흑자 실적은 긍정적이나 E09와 E10의 실행 및 가치 공백이 남아 있다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:4bcd9662537b09ee6680",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "text": "기존 논리, 세부 사업 KPI와 안전한 가치 근거가 없어 방향 확신이 낮다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+              "decision-evidence:495df2a7ee99289190e5"
+            ],
+            "text": "매출을 기반으로 영업·순이익 흑자가 확인돼 방향은 긍정적이지만 후속 사업 검증이 필요하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공시에서 영업손실 전환이나 매출 기반 수익성 약화가 확인되는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "현재 영업·순이익 흑자는 보유 논리를 지지하지만 지속성 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출과 영업흑자의 지속 및 사업 KPI 공개가 확인되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:396470:earnings_financial_current:7e41f0b517a7240de7f4",
+              "canonical:fundamental:396470:business_current:75c9a5592fb7e06c1acf",
+              "decision-evidence:495df2a7ee99289190e5"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 수익성은 긍정적이지만 지속성과 가치평가 근거를 추가로 확인해야 한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:4bcd9662537b09ee6680",
+              "decision-evidence:495df2a7ee99289190e5",
+              "decision-evidence:e1be80cfc6aa3b353dfe"
+            ],
+            "text": "기존 투자 논리, 사업 KPI와 가치평가 근거가 없어 긍정 방향의 확신은 낮다."
+          }
+        }
+      },
+      "ticker": "396470"
+    },
+    {
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "decision-evidence:014b9ef9d2ac8600df64",
+              "decision-evidence:ced4eec9eae9e2d464e2"
+            ],
+            "text": "영업이익과 순손실이 공존해 방향성이 상쇄되며, KPI와 밸류에이션 부재도 판단을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "LS머트리얼즈가 영업손실로 전환되고 순손실도 이어지면 보유 가능성이 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+            ],
+            "stance": "REVIEW",
+            "summary": "영업이익과 순손실이 엇갈려 보유 논리의 재검토가 필요하다. [E09]"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "LS머트리얼즈의 영업이익 유지, 순이익 흑자 전환 및 세부 사업 KPI 실행이 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "decision-evidence:014b9ef9d2ac8600df64"
+            ],
+            "stance": "WAIT",
+            "summary": "순이익 정상화와 사업 실행 확인 전에는 신규 매수 근거가 충분하지 않다. [E09, E01]"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:014b9ef9d2ac8600df64",
+              "decision-evidence:ced4eec9eae9e2d464e2",
+              "decision-evidence:0065ffe38a04afd8373a"
+            ],
+            "text": "세부 KPI, 향후 실행, 밸류에이션 및 선행 논리가 확인되지 않았다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:417200:business_current:632c2b3bcd82414f7857",
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "decision-evidence:ced4eec9eae9e2d464e2",
+              "decision-evidence:014b9ef9d2ac8600df64"
+            ],
+            "text": "매출과 영업이익은 긍정적이지만 순손실이 함께 보고됐고 밸류에이션과 사업 KPI도 미확인이라 보유 관점의 매도 기울기다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 영업이익이 손실로 전환되거나 순손실이 이어지는 경우다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+            ],
+            "stance": "REVIEW",
+            "summary": "영업 흑자에도 최종 손실이 확인돼 보유 논리의 점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 영업이익 유지와 순이익 흑자 전환이 확인되고 세부 사업 KPI가 뒷받침되는 경우다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "decision-evidence:014b9ef9d2ac8600df64"
+            ],
+            "stance": "WAIT",
+            "summary": "최종 수익성 회복과 사업 실행 확인이 먼저 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:ced4eec9eae9e2d464e2",
+              "decision-evidence:014b9ef9d2ac8600df64",
+              "decision-evidence:0065ffe38a04afd8373a"
+            ],
+            "text": "밸류에이션, 세부 사업 KPI, 기존 모니터링 논리가 없어 혼재된 수익성의 해석이 제한된다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "canonical:fundamental:417200:business_current:632c2b3bcd82414f7857"
+            ],
+            "text": "매출과 영업이익은 긍정적이지만 순손실이 이를 상쇄해 방향성은 중립이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 LS머트리얼즈의 영업손익 적자 전환과 순손실 지속이 확인되면 현재의 중립적 검토 근거가 훼손된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577"
+            ],
+            "stance": "REVIEW",
+            "summary": "영업이익은 확인되지만 순손실이 함께 나타나 사업 수익성의 점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "LS머트리얼즈의 영업이익과 매출 기반이 유지되면서 순이익 전환이 후속 공식 공시에서 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:417200:earnings_financial_current:2d7c91879a376e59f577",
+              "canonical:fundamental:417200:business_current:632c2b3bcd82414f7857"
+            ],
+            "stance": "WAIT",
+            "summary": "영업 단계의 이익이 최종 이익으로 이어지는지 확인이 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:014b9ef9d2ac8600df64",
+              "decision-evidence:0065ffe38a04afd8373a",
+              "decision-evidence:ced4eec9eae9e2d464e2"
+            ],
+            "text": "세부 사업 지표, 기존 모니터링 논리, 밸류에이션 근거의 부재가 판단 확신을 제한한다."
+          }
+        }
+      },
+      "ticker": "417200"
+    },
+    {
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "text": "최근 공식 실적의 제한적인 매출 기반과 순손실은 사업 자립력에 부정적이며 개선 확인 전까지 약한 논제로 본다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 매출 기반 확대와 손실의 지속적 축소가 확인되면 부정적 보유 판단이 무효화된다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 매출 기반과 손실 구조는 보유 논거를 약화시킨다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출 확대와 손실 축소가 지속적으로 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 사업 규모와 손실 구조로는 신규 관점의 기초 체력이 확인되지 않는다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "decision-evidence:474ee8090be4385dea7f"
+            ],
+            "text": "세부 사업 KPI와 밸류에이션 근거가 없어 회복 가능성과 평가 수준에 대한 확신은 제한된다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "text": "매출 기반이 제한적인 가운데 순손실이 확인돼 현재 사업 수익성에 부정적인 방향이 우세하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 매출 기반 확대와 손익 정상화가 함께 확인되면 현재 축소 관점은 무효화될 수 있다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e",
+              "decision-evidence:79c0525cbd4d3c91c64c"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 공식 실적의 순손실과 제한적인 매출 기반이 축소 관점을 뒷받침한다. (근거: E01, E08)"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 매출 기반 확대와 손익 정상화가 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e",
+              "decision-evidence:79c0525cbd4d3c91c64c"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 사업 수익성이 입증되지 않아 신규 관점의 확인 조건이 충족되지 않았다. (근거: E01, E08, E06)"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e",
+              "decision-evidence:79c0525cbd4d3c91c64c"
+            ],
+            "text": "제한된 보고기간과 세부 KPI 공백 때문에 손실의 지속성과 정상화 가능성은 확정할 수 없다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "text": "최근 공식 실적의 순손실과 제한된 매출 기반이 발행사 수준의 명확한 하방 앵커다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서도 손실 지속과 매출 기반 정체가 함께 확인되는 경우",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "stance": "REDUCE",
+            "summary": "현재 손실과 제한된 매출 기반 때문에 보유 논리는 약하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 매출 기반 확대와 손익 정상화가 함께 확인되는 경우",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:ASTI:earnings_financial_current:533638ad2cdcd9c5215f",
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "canonical:fundamental:ASTI:business_current:620a6ae743d49413cd6e"
+            ],
+            "stance": "AVOID",
+            "summary": "현재 수익구조가 사업 자립성을 입증하지 못해 신규 관점의 매력은 낮다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:79c0525cbd4d3c91c64c",
+              "decision-evidence:474ee8090be4385dea7f"
+            ],
+            "text": "세부 사업 KPI와 향후 실행, 가치평가가 미확인이라 하방 위험의 강도를 더 세밀히 판단하기 어렵다."
+          }
+        }
+      },
+      "ticker": "ASTI"
+    },
+    {
+      "historical_stability_classification": "BOUNDARY_UNCERTAINTY",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5b4b2a28101fc7288eee",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "text": "공식 매출과 흑자 사업 기반은 소폭 긍정적이지만 최신 실행 KPI와 밸류에이션 부재가 판단을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 매출 기반 축소와 수익성 훼손이 확인되면 보유 논거가 약해진다.",
+            "business_invalidation_condition_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "확인된 흑자 사업 기반은 보유 논거를 지지하지만 최신 실행 점검이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출과 이익의 지속성 및 핵심 사업 KPI가 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5b4b2a28101fc7288eee",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 기반은 긍정적이지만 최신 실행과 평가 근거 확인이 선행되어야 한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5382445002e64a14d7d3",
+              "decision-evidence:5b4b2a28101fc7288eee"
+            ],
+            "text": "최신 사업 KPI, 기존 논제, 밸류에이션이 부족해 소폭 긍정 이상의 판단은 어렵다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5b4b2a28101fc7288eee"
+            ],
+            "text": "수익 사업 기반은 확인되지만 자료의 현재성, 세부 KPI와 밸류에이션 공백 때문에 중립 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 수익 창출의 지속성과 세부 사업 KPI 실행이 확인되면 검토 관점이 해소될 수 있다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+              "decision-evidence:578a14b613856f6899b6"
+            ],
+            "stance": "REVIEW",
+            "summary": "흑자 사업 기반은 있으나 현재 실행을 다시 확인할 필요가 있다. (근거: E07, E08, E01)"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 매출과 이익의 지속성 및 세부 사업 KPI 실행이 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a",
+              "decision-evidence:578a14b613856f6899b6"
+            ],
+            "stance": "WAIT",
+            "summary": "사업의 현재성과 실행 지속성을 확인할 추가 공식 근거가 필요하다. (근거: E07, E08, E01)"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5382445002e64a14d7d3",
+              "decision-evidence:5b4b2a28101fc7288eee",
+              "decision-evidence:a52aef5e8b208d139e03"
+            ],
+            "text": "세부 KPI, 이전 논지, 밸류에이션과 시장 기대의 공백이 방향 확신을 제한한다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "text": "공식 실적의 흑자 기반은 긍정적이나 최신 KPI와 실행 확인이 부족해 제한적인 매수 우위의 보유 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 IT 서비스 매출과 귀속이익이 함께 약화되고 핵심 사업 KPI 실행도 부진한 경우",
+            "business_invalidation_condition_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "canonical:fundamental:DOX:identity_security:2555495e49fff31d3f09",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "stance": "REVIEW",
+            "summary": "흑자 사업 기반은 유지되지만 최신 실행 성과 확인이 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "최신 공식 실적에서 IT 서비스 매출·귀속이익의 지속성과 세부 사업 KPI 실행이 확인되는 경우",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "canonical:fundamental:DOX:identity_security:2555495e49fff31d3f09",
+              "canonical:fundamental:DOX:earnings_financial_current:be5be7f0fb39e7fe23fa",
+              "canonical:fundamental:DOX:business_current:06b3a3849b47b70fb12a"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 기반은 긍정적이나 최신성과와 가치평가 확인 전에는 신규 판단을 유보한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:578a14b613856f6899b6",
+              "decision-evidence:5b4b2a28101fc7288eee",
+              "decision-evidence:a52aef5e8b208d139e03"
+            ],
+            "text": "최신 사업 KPI와 실행 전망, 가치평가 및 시장 기대의 공백이 방향 확신을 제한한다."
+          }
+        }
+      },
+      "ticker": "DOX"
+    },
+    {
+      "historical_stability_classification": "UNSTABLE",
+      "root_cause_classification": "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:878ee8d265c1881f710e",
+              "decision-evidence:062b3e2eeb3cac32d97c",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "text": "최근 공식 연간 매출과 순이익은 긍정적 사업 방향을 지지하지만 밸류에이션과 기대 근거 부재가 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 현재 매출 기반이 축소되고 순이익이 훼손되면 보유 논거가 약해진다.",
+            "business_invalidation_condition_refs": [
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "최근 확인된 매출과 수익성 기준선은 보유 논거를 지지한다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 공시에서 매출과 이익의 지속성 및 세부 사업 KPI 실행이 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:878ee8d265c1881f710e",
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "decision-evidence:062b3e2eeb3cac32d97c",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "stance": "WAIT",
+            "summary": "사업 방향은 긍정적이지만 평가 근거와 기대 대비 정보가 없어 추가 확인이 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:878ee8d265c1881f710e",
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "decision-evidence:062b3e2eeb3cac32d97c"
+            ],
+            "text": "사업 세부 지표와 평가 및 기대 근거의 부재 때문에 긍정 방향의 확신은 중간 수준으로 제한된다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe",
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "decision-evidence:878ee8d265c1881f710e"
+            ],
+            "text": "최근 수익 사업 기반은 긍정적이지만 KPI와 밸류에이션 공백 때문에 보유 범위에서 소폭 긍정적이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 매출 기반이나 이익 창출력이 약화되면 보유 가능 관점을 재검토해야 한다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe",
+              "decision-evidence:44dd2cb6b10168cc3620"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "최근 매출과 흑자가 보유 가능성을 뒷받침하지만 세부 실행 확인은 남아 있다. (근거: E08, E10, E05)"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 매출과 이익의 지속성 및 세부 사업 KPI 실행이 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe",
+              "decision-evidence:44dd2cb6b10168cc3620"
+            ],
+            "stance": "WAIT",
+            "summary": "최근 실적은 긍정적이나 사업 지속성과 세부 실행의 추가 확인이 필요하다. (근거: E08, E10, E05)"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:878ee8d265c1881f710e",
+              "decision-evidence:9432446e58dc57efcb2a",
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "decision-evidence:062b3e2eeb3cac32d97c"
+            ],
+            "text": "밸류에이션, 이전 논지, 세부 KPI와 시장 기대의 공백 때문에 강한 방향 판단은 어렵다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "text": "최근 공식 실적의 매출과 흑자 기반이 발행사 수준의 긍정 앵커이며 세부 KPI 공백은 확신을 제한한다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 발행사 매출과 귀속이익이 함께 약화되고 핵심 사업 KPI 부진도 확인되는 경우",
+            "business_invalidation_condition_refs": [
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "stance": "HOLDABLE",
+            "summary": "최근 공식 실적이 흑자 사업 기반을 뒷받침해 펀더멘털 보유 논리는 유효하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "후속 공식 실적에서 매출·귀속이익의 지속성과 세부 사업 KPI 실행이 확인되는 경우",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "canonical:fundamental:NWS:earnings_financial_current:144f775027ea0394301f",
+              "canonical:fundamental:NWS:business_current:1a9c3b708c538d438efe"
+            ],
+            "stance": "ATTRACTIVE",
+            "summary": "최근 공식 매출과 흑자 기반이 신규 관점에서도 긍정적이다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:878ee8d265c1881f710e",
+              "decision-evidence:44dd2cb6b10168cc3620",
+              "decision-evidence:062b3e2eeb3cac32d97c"
+            ],
+            "text": "가치평가와 시장 기대, 세부 사업 KPI가 미확인이라 긍정 판단의 확신은 제한적이다."
+          }
+        }
+      },
+      "ticker": "NWS"
+    },
+    {
+      "historical_stability_classification": "STABLE",
+      "root_cause_classification": "STABLE",
+      "runs": {
+        "A": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "decision-evidence:73389d91ba9db7296b92",
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+            ],
+            "text": "과거 공식 실적은 수익 사업 기반을 보여주지만 최신 사업 실행과 밸류에이션 근거가 부족해 방향은 중립이다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 공시에서 과거 확인된 리조트 매출과 이익 기반이 유지되지 않으면 보유 논거가 약해진다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+            ],
+            "stance": "REVIEW",
+            "summary": "과거 수익성만 확인돼 현재 보유 논거는 추가 검토가 필요하다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "최신 공식 공시에서 리조트 사업 KPI와 이익 지속성이 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "decision-evidence:73389d91ba9db7296b92",
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 사업 실행과 평가 근거가 부족해 신규 관점에서는 확인이 필요하다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:73389d91ba9db7296b92",
+              "decision-evidence:68877fffa641de219726",
+              "decision-evidence:c48597e5ad4f0228df4d"
+            ],
+            "text": "밸류에이션, 기존 논제, 최신 사업 KPI가 모두 부족해 확신도를 낮게 제한한다."
+          }
+        },
+        "B": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "decision-evidence:73389d91ba9db7296b92"
+            ],
+            "text": "과거 수익 창출은 확인되지만 자료의 현재성과 사업 KPI, 밸류에이션 근거가 부족해 중립 판단이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "최신 공식 실적에서 매출 기반과 이익 창출력의 유지 및 세부 KPI 실행이 확인되면 검토 관점이 해소될 수 있다.",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+              "decision-evidence:c48597e5ad4f0228df4d"
+            ],
+            "stance": "REVIEW",
+            "summary": "과거 흑자보다 현재성 공백이 더 중요한 검토 사안이다. (근거: E03, E05, E04)"
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "최신 공식 실적에서 이익 창출의 지속성과 세부 사업 KPI 실행이 함께 확인되어야 한다.",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+              "decision-evidence:c48597e5ad4f0228df4d"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 사업 상태를 확인할 최신 공식 실적과 KPI가 부족하다. (근거: E03, E05, E04)"
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:73389d91ba9db7296b92",
+              "decision-evidence:68877fffa641de219726",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "decision-evidence:1b630588ca65681d0fab"
+            ],
+            "text": "밸류에이션, 이전 논지, 세부 KPI와 시장 기대의 공백이 방향 확신을 제한한다."
+          }
+        },
+        "C": {
+          "core_investment_judgment": {
+            "evidence_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92"
+            ],
+            "text": "과거 공식 실적은 흑자 사업 기반을 보여주지만 현 사업 상태를 판단하기에는 오래돼 중립이 적절하다."
+          },
+          "fundamental_holder": {
+            "business_invalidation_condition": "후속 공식 실적에서 리조트 사업의 매출·귀속이익 기반 훼손과 핵심 운영 KPI 부진이 함께 확인되는 경우",
+            "business_invalidation_condition_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+              "canonical:fundamental:WYNN:identity_security:e6c786128d449e932d16"
+            ],
+            "stance": "REVIEW",
+            "summary": "과거 흑자 기반은 있으나 최신 사업 검증이 부족해 보유 논제를 재점검할 필요가 있다."
+          },
+          "fundamental_new_buyer": {
+            "confirmation_business_condition": "최신 공식 실적에서 리조트 매출과 귀속이익의 지속 및 핵심 운영 KPI 실행이 확인되는 경우",
+            "confirmation_business_condition_refs": [
+              "canonical:fundamental:WYNN:business_current:98768a7c400346faf884",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "canonical:fundamental:WYNN:earnings_financial_current:7076a32d18665ab8ec92",
+              "canonical:fundamental:WYNN:identity_security:e6c786128d449e932d16"
+            ],
+            "stance": "WAIT",
+            "summary": "현재 사업성과를 확인할 최신 근거가 부족해 신규 판단을 유보한다."
+          },
+          "uncertainty_limit": {
+            "evidence_refs": [
+              "decision-evidence:73389d91ba9db7296b92",
+              "decision-evidence:c48597e5ad4f0228df4d",
+              "decision-evidence:1b630588ca65681d0fab"
+            ],
+            "text": "최신 사업 KPI와 실행 전망, 가치평가 및 시장 기대가 미확인이라 확신이 낮다."
+          }
+        }
+      },
+      "ticker": "WYNN"
+    }
+  ],
+  "status": "PASS",
+  "subject_count": 16
+}
