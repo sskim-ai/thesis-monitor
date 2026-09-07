@@ -1,0 +1,18 @@
+{
+  "contract": "pre-spawn-transport-runtime-forensic-v1",
+  "observed_stop_reason": "ValueError:transport_receipt_missing:20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a:first:DIRECTIONAL_CORE:01",
+  "root_cause": "LIVE_WORKLOAD_GUARD_PS_PERMISSION_DENIED",
+  "root_exception": "PermissionError: [Errno 1] Operation not permitted: 'ps'",
+  "prompt_identity_parse": "PASS",
+  "failed_operation": "LiveWorkloadGuard._active_natural_job_count / _running_model_process_count",
+  "failure_stage": "PRE_SPAWN",
+  "model_invocation_count": 0,
+  "real_holdout_subject_output_count": 0,
+  "transport_receipt_created": 0,
+  "exception_masked_by_context_preservation": true,
+  "retry_count": 0,
+  "mid_run_hotfix_count": 0,
+  "holdout_output_exposure_state": "UNEXPOSED",
+  "required_follow_up": "Preserve the original pre-spawn exception and make workload observation compatible with the execution sandbox before a new frozen generation.",
+  "status": "CONFIRMED_READ_ONLY_REPRODUCTION"
+}

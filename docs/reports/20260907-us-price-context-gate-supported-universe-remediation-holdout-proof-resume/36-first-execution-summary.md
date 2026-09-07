@@ -1,0 +1,13 @@
+# 36 First Execution Summary
+
+| Field | Value |
+| --- | --- |
+| completed_context_count | 0 |
+| completed_semantic_audit_count | 0 |
+| contract | new-issuer-holdout-two-stage-run-v1 |
+| reason | ValueError:transport_receipt_missing:20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a:first:DIRECTIONAL_CORE:01 |
+| run | first |
+| status | FAILED |
+| validation_pass_count | 0 |
+
+Machine proof: `proofs/36-first-execution-summary.json`.

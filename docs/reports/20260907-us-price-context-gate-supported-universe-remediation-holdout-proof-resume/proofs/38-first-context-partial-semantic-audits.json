@@ -1,0 +1,7 @@
+{
+  "contract": "run-context-partial-semantic-audits-v1",
+  "per_context_semantic_failure_count": 0,
+  "rows": [],
+  "run": "first",
+  "status": "NOT_MEASURED"
+}
