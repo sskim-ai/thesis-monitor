@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import zipfile
 from collections import Counter
@@ -66,6 +67,10 @@ COMPACT_REPORT_NAMES = (
     "09-production-and-policy-no-change",
     "10-program-completion",
 )
+ARTIFACT_SECRET_PATTERNS = {
+    **runner.SECRET_PATTERNS,
+    "openai_key": re.compile(rb"(?<![A-Za-z0-9_-])sk-[A-Za-z0-9_-]{20,}"),
+}
 
 _BASE_ARCHITECTURE_HASHES = prior.architecture_hashes
 _BASE_TRANSPORT_HASHES = prior.transport_topology_hashes
@@ -90,6 +95,24 @@ def file_sha256(path: Path) -> str:
 
 def canonical_sha256(value: object) -> str:
     return runner.canonical_sha256(value)
+
+
+def scan_artifact_secrets(paths: Sequence[Path]) -> dict[str, object]:
+    counts: Counter[str] = Counter()
+    for path in paths:
+        if not path.is_file():
+            continue
+        payload = path.read_bytes()
+        for name, pattern in ARTIFACT_SECRET_PATTERNS.items():
+            counts[name] += len(pattern.findall(payload))
+    total = sum(counts.values())
+    return {
+        "category_counts": {
+            name: counts[name] for name in ARTIFACT_SECRET_PATTERNS
+        },
+        "secret_exposure_count": total,
+        "secret_scan_status": "PASS" if total == 0 else "FAIL",
+    }
 
 
 def git_value(*args: str) -> str:
@@ -1985,7 +2008,7 @@ def finalize(args: argparse.Namespace) -> None:
     )
     rows = []
     for path in payloads:
-        scan = runner.scan_secrets([path])
+        scan = scan_artifact_secrets([path])
         if scan["secret_scan_status"] != "PASS":
             raise ValueError(f"artifact_secret_scan_failed:{path}")
         rows.append(

@@ -168,3 +168,25 @@ def test_source_configuration_audit_fails_closed_when_settings_missing(
         "SEC_USER_AGENT",
     ]
     assert result["secret_values_recorded"] == 0
+
+
+def test_artifact_secret_scan_does_not_treat_risk_carried_as_api_key(
+    tmp_path: Path,
+) -> None:
+    artifact = tmp_path / "report.txt"
+    artifact.write_text("fresh-issuer-ownership-proof-transport-risk-carried")
+
+    result = proof.scan_artifact_secrets([artifact])
+
+    assert result["secret_scan_status"] == "PASS"
+    assert result["secret_exposure_count"] == 0
+
+
+def test_artifact_secret_scan_still_rejects_openai_key_shape(tmp_path: Path) -> None:
+    artifact = tmp_path / "secret.txt"
+    artifact.write_bytes(b"token=" + b"sk-" + (b"a" * 24))
+
+    result = proof.scan_artifact_secrets([artifact])
+
+    assert result["secret_scan_status"] == "FAIL"
+    assert result["category_counts"]["openai_key"] == 1
