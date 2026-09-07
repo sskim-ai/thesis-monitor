@@ -1996,16 +1996,44 @@ def finalize(args: argparse.Namespace) -> None:
             "packaged_at": datetime.now(UTC).isoformat(),
         }
     )
-    write_json(args.bundle_root / "completion.json", completion)
     write_text(
         args.bundle_root / "README.md",
         (args.report_dir / "README.md").read_text(encoding="utf-8"),
     )
+    payloads_before_completion = sorted(
+        path
+        for path in args.bundle_root.rglob("*")
+        if path.is_file()
+        and path
+        not in {
+            args.bundle_root / "artifact-index.json",
+            args.bundle_root / "completion.json",
+        }
+    )
+    expected_indexed_payload_count = len(payloads_before_completion) + 1
+    expected_zip_member_count = expected_indexed_payload_count + 1
+    completion.update(
+        {
+            "indexed_payload_count": expected_indexed_payload_count,
+            "zip_member_count": expected_zip_member_count,
+            "integrity_mismatch_counts": {
+                "duplicate_members": 0,
+                "unsafe_members": 0,
+                "crc_failure": None,
+                "index_membership_mismatch": 0,
+                "hash_mismatches": 0,
+                "size_mismatches": 0,
+            },
+        }
+    )
+    write_json(args.bundle_root / "completion.json", completion)
     payloads = sorted(
         path
         for path in args.bundle_root.rglob("*")
         if path.is_file() and path != args.bundle_root / "artifact-index.json"
     )
+    if len(payloads) != expected_indexed_payload_count:
+        raise ValueError("predicted_indexed_payload_count_mismatch")
     rows = []
     for path in payloads:
         scan = scan_artifact_secrets([path])
@@ -2056,6 +2084,8 @@ def finalize(args: argparse.Namespace) -> None:
         }
     if any(bool(value) for value in failures.values()):
         raise ValueError(f"final_zip_integrity_failure:{failures}")
+    if len(names) != expected_zip_member_count:
+        raise ValueError("predicted_zip_member_count_mismatch")
     zip_sha = file_sha256(args.zip_output)
     write_text(args.zip_output.with_suffix(args.zip_output.suffix + ".sha256"), zip_sha)
     state.update(
