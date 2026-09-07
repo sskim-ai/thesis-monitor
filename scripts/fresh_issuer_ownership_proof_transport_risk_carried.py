@@ -630,6 +630,27 @@ def _write_pre_model_terminal_proofs(
     }
     write_json(args.output_root / "execution-reconciliation.json", execution)
     write_json(args.output_root / "source-configuration-audit.json", configuration)
+    for number in range(16, 26):
+        runner.write_proof(
+            args.report_dir,
+            number,
+            {
+                "contract": f"{runner.PROOF_NAMES[number - 1]}-v1",
+                "reason": reason,
+                "model_subprocess_count": 0,
+                "status": "NOT_RUN_PRE_MODEL",
+            },
+        )
+    coexistence = (
+        read_json(args.output_root / "live-workload-coexistence-audit.json")
+        if (args.output_root / "live-workload-coexistence-audit.json").is_file()
+        else {
+            "contract": "risk-carried-live-workload-coexistence-audit-v1",
+            "reason": "OBSERVATION_ARTIFACT_UNAVAILABLE",
+            "status": "NOT_MEASURED",
+        }
+    )
+    runner.write_proof(args.report_dir, 26, coexistence)
     runner.write_proof(
         args.report_dir,
         14,
@@ -1733,7 +1754,10 @@ def _write_compact_reports(args: argparse.Namespace) -> None:
 
 def close_reports(args: argparse.Namespace) -> None:
     state = read_json(args.output_root / "program-state.json")
-    if state.get("state") != "EVIDENCE_COMPLETE":
+    closeable_state = state.get("state") == "EVIDENCE_COMPLETE" or (
+        state.get("source_gate_only") and state.get("state") == "READY_TO_PACKAGE"
+    )
+    if not closeable_state:
         raise ValueError("evidence_complete_state_required")
     if state.get("source_gate_only"):
         configuration = _source_configuration_audit()
