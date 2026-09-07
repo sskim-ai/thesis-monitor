@@ -1,0 +1,292 @@
+{
+  "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+  "contract": "risk-carried-input-provenance-pause-v1",
+  "inputs": {
+    "contract": "latest-result-selection-state-integrity-v1",
+    "latest_result": {
+      "checks": {
+        "crc": true,
+        "duplicate_members": true,
+        "index_membership": true,
+        "indexed_hashes": true,
+        "indexed_payload_count": true,
+        "indexed_sizes": true,
+        "member_count": true,
+        "safe_paths": true,
+        "sha256": true
+      },
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "hash_mismatch_count": 0,
+      "indexed_payload_count": 230,
+      "member_count": 231,
+      "missing_from_index_count": 0,
+      "missing_from_payload_count": 0,
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-fresh-issuer-ownership-proof-transport-risk-carried-report.zip",
+      "selection_state": {
+        "auto_resume_executed": 0,
+        "base_sha": "446b5ce077d7a5ec0d2a8429fa95f0e23bf8f9d4",
+        "branch": "codex/20260907-fresh-issuer-ownership-proof-transport-risk-carried",
+        "candidate_identities_sha256": "81246812c3b537ab37199bd3a0a361d38522db4db2a3223a33785d2520d9d4ba",
+        "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+        "contract": "fresh-issuer-ownership-proof-transport-risk-carried-v1",
+        "exclusion_registry_count": 117,
+        "exclusion_registry_sha256": "7ffd6fed1125e88073efb867d3d5adc4024a0f22485e0c376151fbe5e3b6b437",
+        "final_head_sha": "93309a3ecb5630d40f5d9dc8b75043a58d379c78",
+        "indexed_payload_count": 230,
+        "initial_pause_observation": {
+          "auto_resume_executed": 0,
+          "codex_automations": [
+            {
+              "active": false,
+              "name": "Thesis Monitor AI Review US Primary",
+              "state": "PAUSED"
+            },
+            {
+              "active": false,
+              "name": "Thesis Monitor AI Review US Backup",
+              "state": "PAUSED"
+            },
+            {
+              "active": false,
+              "name": "Thesis Monitor AI Review KR Primary",
+              "state": "PAUSED"
+            },
+            {
+              "active": false,
+              "name": "Thesis Monitor AI Review KR Backup",
+              "state": "PAUSED"
+            }
+          ],
+          "contract": "current-monitoring-pause-observation-v1",
+          "launch_agents": [
+            {
+              "active": false,
+              "name": "com.seungsoo.thesis-monitor.daily",
+              "state": "PAUSED_DISABLED_UNLOADED"
+            },
+            {
+              "active": false,
+              "name": "com.seungsoo.thesis-monitor.kr-close",
+              "state": "PAUSED_DISABLED_UNLOADED"
+            },
+            {
+              "active": false,
+              "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+              "state": "PAUSED_DISABLED_UNLOADED"
+            },
+            {
+              "active": false,
+              "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+              "state": "PAUSED_DISABLED_UNLOADED"
+            }
+          ],
+          "observation_only": true,
+          "observed_at": "2026-09-07T15:26:55.144078+00:00",
+          "observed_scheduler_object_count": 8,
+          "scheduler_mutation_count": 0,
+          "status": "VERIFIED_PAUSED_COMPLETE",
+          "unexpected_active_paths": []
+        },
+        "initial_process_observation": {
+          "active_natural_job_count": 0,
+          "model_execution_pids": [],
+          "natural_job_rows": [],
+          "observation_capabilities": {
+            "model_execution_observable": true,
+            "natural_process_observable": true,
+            "paused_schedule_registry_observable": true,
+            "protected_window_observable": true,
+            "scheduler_mutation": false
+          },
+          "pause_observed_at": "2026-09-07T15:26:55.167619+00:00",
+          "paused_schedule_count": 8,
+          "running_model_process_count": 0,
+          "unexpected_active_monitoring_paths": [],
+          "workload_observation_backend": "PAUSE_REGISTRY_PLUS_PS_NATURAL_MARKERS_PLUS_LSOF_CODEX_RUNTIME_STATE"
+        },
+        "model_invocation_count": 0,
+        "next_scope": "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR",
+        "ordered_cohort": [],
+        "production_scheduler_mutation": 0,
+        "production_send": 0,
+        "readiness": "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED",
+        "report_zip": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-fresh-issuer-ownership-proof-transport-risk-carried-report.zip",
+        "report_zip_sha256": "225fc0918daa9f9edb9a10f11632b2cd2ea9ca2ec45f185e3ae611c48edb65b7",
+        "run_results": {
+          "a": "NOT_RUN",
+          "b": "NOT_RUN",
+          "c": "NOT_RUN",
+          "first": "NOT_RUN"
+        },
+        "selection_freeze_commit": "bab1c19e9bf72bf9ba02966d5165fa97554fd0e2",
+        "selection_policy_sha256": "07defbbe29042495ebaa08cb24ca5fcc57cd42c859bfbf80ccc5d984068b2f8f",
+        "source_gate_only": true,
+        "state": "READY_TO_PACKAGE",
+        "stop_reason": "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE",
+        "validation": {
+          "diff_check": "PASS",
+          "focused_tests": "PASS",
+          "full_tests": "PASS",
+          "ruff": "PASS"
+        },
+        "work_instruction_commit": "badcf61634adc4cb343f6e8de499ce619831220f",
+        "zip_integrity_mismatches": {
+          "crc_failure": null,
+          "duplicate_members": 0,
+          "hash_mismatches": 0,
+          "index_membership_mismatch": 0,
+          "size_mismatches": 0,
+          "unsafe_members": 0
+        },
+        "zip_member_count": 231
+      },
+      "sha256": "25a9ca43fa0c2e77d272c0e77fe982876f2f53bbcdfa49f1510f071f95fb5c01",
+      "size_mismatch_count": 0,
+      "state_checks": {
+        "candidate_identities_sha256": true,
+        "exclusion_registry_count": true,
+        "exclusion_registry_sha256": true,
+        "final_head": true,
+        "model_invocation_count": true,
+        "ordered_cohort_unlocked": true,
+        "selection_policy_sha256": true,
+        "stop_reason": true
+      },
+      "status": "PASS",
+      "unsafe_path_count": 0
+    },
+    "status": "PASS"
+  },
+  "latest_pause": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T17:08:30.287149+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "pause": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T16:50:19.600550+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "repository": {
+    "architecture_semantic_drift": 0,
+    "base_sha": "be78b8e0a40b2e63d3522487a1482b47b6efe271",
+    "branch": "codex/20260908-existing-source-env-binding-fresh-holdout-proof-resume",
+    "changed_paths_since_latest_result": [
+      "docs/work-instructions/20260908-existing-source-env-binding-and-fresh-holdout-proof-resume.md",
+      "scripts/existing_source_env_binding_fresh_holdout_resume.py",
+      "tests/test_existing_source_env_binding_fresh_holdout_resume.py"
+    ],
+    "contract": "repository-provenance-v1",
+    "implementation_commit": "895b8891bbd628ba804c1d639c926fbcc220dc7b",
+    "implementation_tree": "8ffc4d8b420f3aeb83c820e4cacb5c6611bef3ce",
+    "latest_result_final_head_is_ancestor": true,
+    "model_semantic_input_drift": 0,
+    "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+    "prompt_semantic_drift": 0,
+    "schema_semantic_drift": 0,
+    "status": "PASS",
+    "transport_topology_mutation": 0,
+    "unexpected_semantic_paths": [],
+    "work_instruction_commit": "12c482b7971dac2532d93912b6c51ed323df88ea"
+  },
+  "status": "PASS"
+}
