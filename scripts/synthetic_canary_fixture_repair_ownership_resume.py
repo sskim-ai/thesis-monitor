@@ -5,10 +5,13 @@ import hashlib
 import inspect
 import json
 import math
+import os
+import plistlib
+import re
 import subprocess
 import time
 import zipfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -632,41 +635,157 @@ def preflight_document(output_root: Path | None = None) -> dict[str, object]:
     }
 
 
+class LiveWorkloadObservationUnavailable(RuntimeError):
+    """Raised when coexistence safety cannot be observed without guessing."""
+
+
+class SandboxCompatibleWorkloadObserver:
+    NATURAL_JOB_MARKERS = (
+        "app.jobs.monitor_daily",
+        "app.jobs.ai_review",
+        "app.jobs.run_night_futures",
+    )
+    RUNTIME_STATE_PATH_TOKEN = "/codex_runtime_state/"
+
+    def __init__(
+        self,
+        *,
+        launch_agents_dir: Path | None = None,
+        launchctl_bin: str = "/bin/launchctl",
+        lsof_bin: str = "/usr/sbin/lsof",
+        uid: int | None = None,
+    ) -> None:
+        self.launch_agents_dir = (
+            launch_agents_dir or Path.home() / "Library" / "LaunchAgents"
+        )
+        self.launchctl_bin = launchctl_bin
+        self.lsof_bin = lsof_bin
+        self.uid = os.getuid() if uid is None else uid
+
+    @property
+    def backend(self) -> str:
+        return "LAUNCHCTL_JOB_STATE_PLUS_LSOF_CODEX_RUNTIME_STATE"
+
+    @property
+    def capabilities(self) -> dict[str, object]:
+        return {
+            "protected_window_observable": True,
+            "natural_job_observable": True,
+            "model_execution_observable": True,
+            "natural_job_signal": "loaded LaunchAgent state",
+            "model_execution_signal": "open /codex_runtime_state/ files",
+            "ps_dependency": False,
+        }
+
+    def _natural_job_labels(self) -> list[str]:
+        labels: list[str] = []
+        try:
+            plists = sorted(self.launch_agents_dir.glob("*.plist"))
+        except OSError as exc:
+            raise LiveWorkloadObservationUnavailable(
+                "launch_agent_registry_unreadable"
+            ) from exc
+        for path in plists:
+            try:
+                with path.open("rb") as handle:
+                    document = plistlib.load(handle)
+            except (OSError, plistlib.InvalidFileException):
+                continue
+            arguments = document.get("ProgramArguments")
+            command = " ".join(str(value) for value in arguments or ())
+            if not any(marker in command for marker in self.NATURAL_JOB_MARKERS):
+                continue
+            label = str(document.get("Label") or "").strip()
+            if label:
+                labels.append(label)
+        if not labels:
+            raise LiveWorkloadObservationUnavailable(
+                "natural_job_launch_agent_registry_empty"
+            )
+        return labels
+
+    def _natural_jobs(self) -> tuple[int, list[dict[str, object]]]:
+        rows: list[dict[str, object]] = []
+        for label in self._natural_job_labels():
+            result = subprocess.run(
+                [self.launchctl_bin, "print", f"gui/{self.uid}/{label}"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode != 0:
+                raise LiveWorkloadObservationUnavailable(
+                    f"launch_agent_state_unavailable:{label}"
+                )
+            match = re.search(r"^\s*state = ([^\r\n]+)", result.stdout, re.MULTILINE)
+            if match is None:
+                raise LiveWorkloadObservationUnavailable(
+                    f"launch_agent_state_unparseable:{label}"
+                )
+            state = match.group(1).strip()
+            rows.append(
+                {
+                    "label": label,
+                    "state": state,
+                    "active": state == "running",
+                }
+            )
+        return sum(bool(row["active"]) for row in rows), rows
+
+    def _model_executions(self) -> tuple[int, list[int]]:
+        result = subprocess.run(
+            [self.lsof_bin, "-c", "codex", "-Fn"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode not in {0, 1}:
+            raise LiveWorkloadObservationUnavailable(
+                f"codex_runtime_state_lsof_failed:{result.returncode}"
+            )
+        active: set[int] = set()
+        current_pid: int | None = None
+        for line in result.stdout.splitlines():
+            if line.startswith("p") and line[1:].isdigit():
+                current_pid = int(line[1:])
+            elif (
+                current_pid is not None
+                and line.startswith("n")
+                and self.RUNTIME_STATE_PATH_TOKEN in line[1:]
+            ):
+                active.add(current_pid)
+        return len(active), sorted(active)
+
+    def observe(self) -> dict[str, object]:
+        natural_count, natural_rows = self._natural_jobs()
+        model_count, model_pids = self._model_executions()
+        return {
+            "workload_observation_backend": self.backend,
+            "observation_capabilities": self.capabilities,
+            "active_natural_job_count": natural_count,
+            "running_model_process_count": model_count,
+            "natural_job_rows": natural_rows,
+            "model_execution_pids": model_pids,
+        }
+
+
 class LiveWorkloadGuard:
-    def __init__(self, audit_path: Path) -> None:
+    def __init__(
+        self,
+        audit_path: Path,
+        *,
+        observer: SandboxCompatibleWorkloadObserver | None = None,
+        clock: Callable[[], datetime] | None = None,
+        sleeper: Callable[[float], None] | None = None,
+    ) -> None:
         self.audit_path = audit_path
+        self.observer = observer or SandboxCompatibleWorkloadObserver()
+        self.clock = clock or (lambda: datetime.now(UTC))
+        self.sleeper = sleeper or time.sleep
         self.events: list[dict[str, object]] = []
         if audit_path.is_file():
             prior_audit = read_json(audit_path)
             self.events = list(prior_audit.get("events") or [])
-
-    @staticmethod
-    def _running_model_process_count() -> int:
-        result = subprocess.run(
-            ["ps", "-axo", "command="],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        return sum(
-            "codex exec" in line and "synthetic_canary_fixture_repair" not in line
-            for line in result.stdout.splitlines()
-        )
-
-    @staticmethod
-    def _active_natural_job_count() -> int:
-        result = subprocess.run(
-            ["ps", "-axo", "command="],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        markers = (
-            "app.jobs.monitor_daily",
-            "app.jobs.ai_review",
-            "app.jobs.run_night_futures",
-        )
-        return sum(any(marker in line for marker in markers) for line in result.stdout.splitlines())
 
     @staticmethod
     def _scheduled_window(now: datetime) -> tuple[str | None, datetime | None]:
@@ -685,48 +804,102 @@ class LiveWorkloadGuard:
         return None, None
 
     def _write(self) -> None:
-        pauses = sum(event["action"] == "PAUSE" for event in self.events)
+        pauses = sum(event.get("action") == "PAUSE" for event in self.events)
+        blocked = sum(event.get("action") == "BLOCK" for event in self.events)
         write_json(
             self.audit_path,
             {
                 "contract": "natural-live-workload-coexistence-guard-v1",
+                "workload_observation_backend": self.observer.backend,
+                "observation_capabilities": self.observer.capabilities,
                 "events": self.events,
                 "live_workload_contention_risk": 0,
                 "shadow_pause_for_natural_live": pauses,
+                "observation_unavailable_fail_open_count": 0,
+                "observation_unavailable_fail_closed_count": blocked,
                 "natural_live_cancel_count": 0,
                 "scheduler_mutation": 0,
                 "status": "PASS",
             },
         )
 
+    def observe_once(
+        self, *, stage: str, batch_id: str, subject_count: int
+    ) -> dict[str, object]:
+        now = self.clock()
+        window, window_end = self._scheduled_window(now)
+        try:
+            observation = self.observer.observe()
+        except LiveWorkloadObservationUnavailable as exc:
+            event = {
+                "observed_at": now.isoformat(),
+                "stage": stage,
+                "batch_id": batch_id,
+                "subject_count": subject_count,
+                "scheduled_window": window,
+                "action": "BLOCK",
+                "safe_to_spawn": False,
+                "failure": "LIVE_WORKLOAD_OBSERVATION_UNAVAILABLE",
+                "root_exception": f"{type(exc).__name__}:{exc}",
+            }
+            self.events.append(event)
+            self._write()
+            raise
+        natural_jobs = int(observation["active_natural_job_count"])
+        model_processes = int(observation["running_model_process_count"])
+        contention = bool(window or natural_jobs or model_processes)
+        event = {
+            "observed_at": now.isoformat(),
+            "stage": stage,
+            "batch_id": batch_id,
+            "subject_count": subject_count,
+            "scheduled_window": window,
+            "scheduled_window_end": window_end.isoformat() if window_end else None,
+            **observation,
+            "action": "PAUSE" if contention else "CONTINUE",
+            "safe_to_spawn": not contention,
+        }
+        self.events.append(event)
+        self._write()
+        return event
+
+    def preflight(
+        self, *, stage: str, batch_id: str, subject_count: int
+    ) -> dict[str, object]:
+        event = self.observe_once(
+            stage=stage,
+            batch_id=batch_id,
+            subject_count=subject_count,
+        )
+        return {
+            "contract": "prespawn-live-workload-guard-preflight-v1",
+            "workload_observation_backend": self.observer.backend,
+            "observation_capabilities": self.observer.capabilities,
+            "protected_window": event["scheduled_window"],
+            "active_natural_job_count": event["active_natural_job_count"],
+            "running_model_process_count": event["running_model_process_count"],
+            "safe_to_spawn": int(bool(event["safe_to_spawn"])),
+            "real_model_calls": 0,
+            "spawn_started": 0,
+            "transport_receipt_expected": 0,
+            "status": "PASS" if event["safe_to_spawn"] else "DEFER",
+        }
+
     def wait_until_clear(
         self, *, stage: str, batch_id: str, subject_count: int
     ) -> None:
         paused = False
         while True:
-            now = datetime.now(UTC)
-            window, window_end = self._scheduled_window(now)
-            natural_jobs = self._active_natural_job_count()
-            model_processes = self._running_model_process_count()
-            contention = bool(window or natural_jobs or model_processes)
-            self.events.append(
-                {
-                    "observed_at": now.isoformat(),
-                    "stage": stage,
-                    "batch_id": batch_id,
-                    "subject_count": subject_count,
-                    "scheduled_window": window,
-                    "active_natural_job_count": natural_jobs,
-                    "other_codex_exec_count": model_processes,
-                    "action": "PAUSE" if contention else "CONTINUE",
-                }
+            event = self.observe_once(
+                stage=stage,
+                batch_id=batch_id,
+                subject_count=subject_count,
             )
-            self._write()
-            if not contention:
+            if event["safe_to_spawn"]:
                 if paused:
                     self.events.append(
                         {
-                            "observed_at": datetime.now(UTC).isoformat(),
+                            "observed_at": self.clock().isoformat(),
                             "stage": stage,
                             "batch_id": batch_id,
                             "subject_count": subject_count,
@@ -736,20 +909,38 @@ class LiveWorkloadGuard:
                     self._write()
                 return
             paused = True
+            window_end = (
+                datetime.fromisoformat(str(event["scheduled_window_end"]))
+                if event["scheduled_window_end"]
+                else None
+            )
             if window_end is not None:
                 remaining = max(
                     30.0,
-                    (window_end - datetime.now(KST)).total_seconds() + 5.0,
+                    (window_end - self.clock().astimezone(KST)).total_seconds() + 5.0,
                 )
-                time.sleep(min(60.0, remaining))
+                self.sleeper(min(60.0, remaining))
             else:
-                time.sleep(30.0)
+                self.sleeper(30.0)
 
 
 class GuardedTransportAdapter(prior.ContinuationTransportAdapter):
     def __init__(self, *, guard: LiveWorkloadGuard, **kwargs: object) -> None:
         self.guard = guard
+        self.invocation_lifecycle: dict[str, dict[str, object]] = {}
         super().__init__(**kwargs)
+
+    def lifecycle_for(self, invocation_id: str) -> dict[str, object]:
+        return dict(self.invocation_lifecycle.get(invocation_id) or {})
+
+    def preflight(
+        self, *, stage: str, batch_id: str, subject_count: int
+    ) -> dict[str, object]:
+        return self.guard.preflight(
+            stage=stage,
+            batch_id=batch_id,
+            subject_count=subject_count,
+        )
 
     def invoke(self, **kwargs: object) -> dict[str, object]:
         identity = prior._identity_from_prompt(Path(str(kwargs["prompt"])))
@@ -765,12 +956,65 @@ class GuardedTransportAdapter(prior.ContinuationTransportAdapter):
             if identity.get("contract") == TIMING_OUTPUT_CONTRACT
             else "TRANSPORT_SMOKE"
         )
-        self.guard.wait_until_clear(
-            stage=str(kwargs.get("stage") or inferred_stage),
-            batch_id=str(kwargs.get("batch_id") or Path(str(kwargs["output"])).stem),
-            subject_count=int(kwargs.get("subject_count") or len(tickers) or 1),
+        stage = str(kwargs.get("stage") or inferred_stage)
+        batch_id = str(kwargs.get("batch_id") or Path(str(kwargs["output"])).stem)
+        subject_count = int(kwargs.get("subject_count") or len(tickers) or 1)
+        invocation_id = str(kwargs.get("invocation_id") or "")
+        lifecycle = {
+            "failure_stage": "PRE_SPAWN",
+            "spawn_started": 0,
+            "transport_receipt_expected": 0,
+            "transport_receipt_created": 0,
+            "root_exception_masked": 0,
+        }
+        self.invocation_lifecycle[invocation_id] = lifecycle
+        try:
+            self.guard.wait_until_clear(
+                stage=stage,
+                batch_id=batch_id,
+                subject_count=subject_count,
+            )
+        except Exception as exc:
+            lifecycle["root_exception"] = f"{type(exc).__name__}:{exc}"
+            setattr(exc, "transport_lifecycle", dict(lifecycle))
+            raise
+        try:
+            result = super().invoke(**kwargs)
+        except Exception as exc:
+            receipt = self.receipt_root / (
+                f"{hashlib.sha256(invocation_id.encode()).hexdigest()[:16]}.json"
+            )
+            lifecycle.update(
+                {
+                    "failure_stage": (
+                        "POST_SPAWN_TRANSPORT_FAILURE"
+                        if receipt.is_file()
+                        else "PRE_SPAWN_TRANSPORT_PRECONDITION_FAILURE"
+                    ),
+                    "spawn_started": int(receipt.is_file()),
+                    "transport_receipt_expected": int(receipt.is_file()),
+                    "transport_receipt_created": int(receipt.is_file()),
+                    "root_exception": f"{type(exc).__name__}:{exc}",
+                }
+            )
+            setattr(exc, "transport_lifecycle", dict(lifecycle))
+            raise
+        receipt = self.receipt_root / (
+            f"{hashlib.sha256(invocation_id.encode()).hexdigest()[:16]}.json"
         )
-        return super().invoke(**kwargs)
+        lifecycle.update(
+            {
+                "failure_stage": None,
+                "spawn_started": 1,
+                "transport_receipt_expected": 1,
+                "transport_receipt_created": int(receipt.is_file()),
+            }
+        )
+        if not receipt.is_file():
+            error = RuntimeError(f"POST_SPAWN_RECEIPT_MISSING:{invocation_id}")
+            setattr(error, "transport_lifecycle", dict(lifecycle))
+            raise error
+        return result
 
 
 def verify_program_freeze(state: Mapping[str, object]) -> None:

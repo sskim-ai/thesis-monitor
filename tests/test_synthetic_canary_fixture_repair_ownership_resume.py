@@ -1,4 +1,7 @@
+from datetime import UTC, datetime
 from pathlib import Path
+
+import pytest
 
 from app.services.cross_market_decision_engine_service import DecisionEvidencePacket
 from scripts import synthetic_canary_fixture_repair_ownership_resume as resume
@@ -49,3 +52,97 @@ def test_timeout_batch_and_consumed_cohort_gates_are_frozen() -> None:
     assert resume.MODEL_CONTEXT_BATCH_SIZE == 4
     assert resume.MAX_CANARY_MODEL_CALLS == 7
     assert not (set(resume.CONSUMED_LATEST_HOLDOUT16) & set(resume.CURRENT_HOLDOUT))
+
+
+class _Observer:
+    backend = "TEST_OBSERVER"
+    capabilities = {
+        "protected_window_observable": True,
+        "natural_job_observable": True,
+        "model_execution_observable": True,
+        "ps_dependency": False,
+    }
+
+    def __init__(self, *, natural: int = 0, model: int = 0) -> None:
+        self.natural = natural
+        self.model = model
+
+    def observe(self) -> dict[str, object]:
+        return {
+            "workload_observation_backend": self.backend,
+            "observation_capabilities": self.capabilities,
+            "active_natural_job_count": self.natural,
+            "running_model_process_count": self.model,
+            "natural_job_rows": [],
+            "model_execution_pids": [],
+        }
+
+
+def _guard(tmp_path: Path, observer: _Observer, hour_utc: int = 2):
+    return resume.LiveWorkloadGuard(
+        tmp_path / "guard.json",
+        observer=observer,
+        clock=lambda: datetime(2026, 9, 7, hour_utc, 0, tzinfo=UTC),
+    )
+
+
+def test_sandbox_guard_allows_observable_zero_contention(tmp_path: Path) -> None:
+    result = _guard(tmp_path, _Observer()).preflight(
+        stage="DIRECTIONAL_CORE", batch_id="01", subject_count=4
+    )
+
+    assert result["status"] == "PASS"
+    assert result["safe_to_spawn"] == 1
+    assert result["real_model_calls"] == 0
+    assert result["transport_receipt_expected"] == 0
+
+
+@pytest.mark.parametrize(("natural", "model"), ((1, 0), (0, 1)))
+def test_sandbox_guard_detects_observable_contention(
+    tmp_path: Path, natural: int, model: int
+) -> None:
+    result = _guard(tmp_path, _Observer(natural=natural, model=model)).preflight(
+        stage="DIRECTIONAL_CORE", batch_id="01", subject_count=4
+    )
+
+    assert result["status"] == "DEFER"
+    assert result["safe_to_spawn"] == 0
+
+
+def test_protected_kst_window_blocks_even_with_zero_contention(tmp_path: Path) -> None:
+    guard = _guard(tmp_path, _Observer(), hour_utc=7)
+
+    result = guard.preflight(
+        stage="DIRECTIONAL_CORE", batch_id="01", subject_count=4
+    )
+
+    assert result["protected_window"] == "KR_NATURAL"
+    assert result["safe_to_spawn"] == 0
+
+
+def test_observation_unavailable_fails_closed_without_ps_fallback(
+    tmp_path: Path,
+) -> None:
+    class Unavailable(_Observer):
+        def observe(self) -> dict[str, object]:
+            try:
+                raise PermissionError("ps denied")
+            except PermissionError as exc:
+                raise resume.LiveWorkloadObservationUnavailable(
+                    "process_observation_unavailable"
+                ) from exc
+
+    guard = _guard(tmp_path, Unavailable())
+
+    with pytest.raises(
+        resume.LiveWorkloadObservationUnavailable,
+        match="process_observation_unavailable",
+    ):
+        guard.preflight(
+            stage="DIRECTIONAL_CORE", batch_id="01", subject_count=4
+        )
+
+    audit = resume.read_json(tmp_path / "guard.json")
+    assert audit["observation_unavailable_fail_open_count"] == 0
+    assert audit["observation_unavailable_fail_closed_count"] == 1
+    assert audit["events"][0]["action"] == "BLOCK"

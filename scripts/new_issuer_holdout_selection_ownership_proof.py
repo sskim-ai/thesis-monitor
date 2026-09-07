@@ -1761,10 +1761,71 @@ def preserve_context(
     sequence_position: int,
     context_dir: Path,
     receipt_root: Path,
+    error: Exception | None = None,
+    transport_lifecycle: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     source_receipt = receipt_source_path(receipt_root, invocation_id)
     if not source_receipt.is_file():
-        raise ValueError(f"transport_receipt_missing:{invocation_id}")
+        lifecycle = dict(transport_lifecycle or {})
+        receipt_expected = bool(lifecycle.get("transport_receipt_expected"))
+        if error is None or receipt_expected:
+            raise ValueError(f"POST_SPAWN_RECEIPT_MISSING:{invocation_id}")
+        required = [context_dir / "prompt.txt", context_dir / "schema.json"]
+        transport_log = context_dir / "transport_log.raw.log"
+        if transport_log.is_file():
+            required.append(transport_log)
+        failure = {
+            "contract": "prespawn-failure-provenance-v1",
+            "invocation_id": invocation_id,
+            "failure_stage": lifecycle.get("failure_stage") or "PRE_SPAWN",
+            "spawn_started": 0,
+            "transport_receipt_expected": 0,
+            "transport_receipt_created": 0,
+            "root_exception_type": type(error).__name__,
+            "root_exception": str(error),
+            "root_exception_masked": 0,
+        }
+        write_json(context_dir / "pre-spawn-failure.json", failure)
+        required.append(context_dir / "pre-spawn-failure.json")
+        scan = scan_secrets(required)
+        reopened = True
+        for path in required:
+            try:
+                path.read_bytes()
+            except OSError:
+                reopened = False
+        preservation = scan["secret_scan_status"] == "PASS" and reopened
+        manifest = {
+            "generation_id": state["program_generation_id"],
+            "run_id": run,
+            "invocation_id": invocation_id,
+            "stage": stage,
+            "batch_id": f"{batch_number:02d}",
+            "subjects": list(subjects),
+            "subject_count": len(subjects),
+            "sequence_position": sequence_position,
+            "prompt_sha256": file_sha256(context_dir / "prompt.txt"),
+            "schema_sha256": file_sha256(context_dir / "schema.json"),
+            **failure,
+            **scan,
+            "contract": "model-context-artifact-manifest-v1",
+            "artifact_reopen_status": "PASS" if reopened else "FAIL",
+            "context_evidence_preservation_status": (
+                "PASS" if preservation else "FAIL"
+            ),
+            "per_context_partial_semantic_audit_status": "NOT_MEASURED",
+        }
+        write_json(context_dir / "context_manifest.json", manifest)
+        if not preservation:
+            state["context_evidence_preservation_failure_count"] = int(
+                state.get("context_evidence_preservation_failure_count") or 0
+            ) + 1
+            state["context_preservation_secondary_failure_count"] = int(
+                state.get("context_preservation_secondary_failure_count") or 0
+            ) + 1
+            write_json(args.output_root / "program-state.json", state)
+            raise ValueError(f"context_evidence_preservation_failed:{invocation_id}")
+        return manifest
     receipt = read_json(source_receipt)
     stdout_source = source_receipt.with_suffix(".stdout.log")
     stderr_source = source_receipt.with_suffix(".stderr.log")
@@ -2041,18 +2102,36 @@ def invoke_model_context(
         error = exc
     state["model_invocation_count"] = adapter.model_call_count
     write_json(args.output_root / "program-state.json", state)
-    manifest = preserve_context(
-        args=args,
-        state=state,
-        run=run,
-        stage=stage,
-        batch_number=batch_number,
-        subjects=subjects,
-        invocation_id=invocation_id,
-        sequence_position=sequence_position,
-        context_dir=context_dir,
-        receipt_root=adapter.receipt_root,
-    )
+    try:
+        manifest = preserve_context(
+            args=args,
+            state=state,
+            run=run,
+            stage=stage,
+            batch_number=batch_number,
+            subjects=subjects,
+            invocation_id=invocation_id,
+            sequence_position=sequence_position,
+            context_dir=context_dir,
+            receipt_root=adapter.receipt_root,
+            error=error,
+            transport_lifecycle=(
+                adapter.lifecycle_for(invocation_id)
+                if hasattr(adapter, "lifecycle_for")
+                else getattr(error, "transport_lifecycle", None)
+            ),
+        )
+    except Exception as preservation_error:
+        if error is None:
+            raise
+        state["context_preservation_secondary_failure_count"] = int(
+            state.get("context_preservation_secondary_failure_count") or 0
+        ) + 1
+        state["context_preservation_secondary_failure"] = (
+            f"{type(preservation_error).__name__}:{preservation_error}"
+        )
+        write_json(args.output_root / "program-state.json", state)
+        raise error from preservation_error
     if error is not None:
         if isinstance(error, InstrumentedTransportError) and error.status == "TIMEOUT":
             state["transport_timeout_count"] = int(state["transport_timeout_count"]) + 1

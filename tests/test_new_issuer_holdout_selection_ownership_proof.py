@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
+
 from scripts import new_issuer_holdout_selection_ownership_proof as proof
 from scripts import synthetic_canary_fixture_repair_ownership_resume as synthetic
 
@@ -401,3 +403,107 @@ def test_model_context_is_invoked_once_and_preserved_before_return(
     assert output.is_file()
     assert manifest["context_evidence_preservation_status"] == "PASS"
     assert (output.parent / "transport_receipt.json").is_file()
+
+
+def _context_args(tmp_path: Path):
+    output_root = tmp_path / "output"
+    proof.write_json(
+        output_root / "source-lock.json",
+        {"packet_sha256": {"TEST": "packet"}},
+    )
+    prompt = tmp_path / "prompt.txt"
+    schema = tmp_path / "schema.json"
+    prompt.write_text("IDENTITY:\n{}\n", encoding="utf-8")
+    schema.write_text("{}\n", encoding="utf-8")
+    args = type(
+        "Args",
+        (),
+        {"output_root": output_root, "timeout": proof.TIMEOUT_SECONDS},
+    )()
+    state = {
+        "program_generation_id": "generation",
+        "source_lock_sha256": "lock",
+        "model_invocation_count": 0,
+        "context_evidence_preservation_failure_count": 0,
+        "context_preservation_secondary_failure_count": 0,
+        "transport_timeout_count": 0,
+        "historical_stall_pattern_recurred": 0,
+    }
+    return args, state, prompt, schema
+
+
+def test_prespawn_failure_preserves_root_without_requiring_receipt(
+    tmp_path: Path,
+) -> None:
+    args, state, prompt, schema = _context_args(tmp_path)
+    root_error = synthetic.LiveWorkloadObservationUnavailable("observer denied")
+
+    class FakeAdapter:
+        model_call_count = 0
+        receipt_root = args.output_root / "receipts"
+
+        def invoke(self, **kwargs: object) -> dict[str, object]:
+            lifecycle = {
+                "failure_stage": "PRE_SPAWN",
+                "spawn_started": 0,
+                "transport_receipt_expected": 0,
+                "transport_receipt_created": 0,
+                "root_exception_masked": 0,
+            }
+            setattr(root_error, "transport_lifecycle", lifecycle)
+            raise root_error
+
+        def lifecycle_for(self, invocation_id: str) -> dict[str, object]:
+            return dict(root_error.transport_lifecycle)
+
+    with pytest.raises(
+        synthetic.LiveWorkloadObservationUnavailable, match="observer denied"
+    ):
+        proof.invoke_model_context(
+            args=args,
+            state=state,
+            adapter=FakeAdapter(),
+            run="first",
+            stage="DIRECTIONAL_CORE",
+            batch_number=1,
+            subjects=("TEST",),
+            sequence_position=1,
+            prompt_source=prompt,
+            schema_source=schema,
+        )
+
+    context = args.output_root / "model-contexts/FIRST/DIRECTIONAL_CORE/batch-01"
+    failure = proof.read_json(context / "pre-spawn-failure.json")
+    manifest = proof.read_json(context / "context_manifest.json")
+    assert failure["spawn_started"] == 0
+    assert failure["transport_receipt_expected"] == 0
+    assert failure["transport_receipt_created"] == 0
+    assert failure["root_exception_masked"] == 0
+    assert manifest["context_evidence_preservation_status"] == "PASS"
+    assert state["context_preservation_secondary_failure_count"] == 0
+
+
+def test_postspawn_missing_receipt_remains_detectable(tmp_path: Path) -> None:
+    args, state, prompt, schema = _context_args(tmp_path)
+
+    class FakeAdapter:
+        model_call_count = 1
+        receipt_root = args.output_root / "receipts"
+
+        def invoke(self, **kwargs: object) -> dict[str, object]:
+            Path(str(kwargs["output"])).write_text("{}\n", encoding="utf-8")
+            return {}
+
+    with pytest.raises(ValueError, match="POST_SPAWN_RECEIPT_MISSING"):
+        proof.invoke_model_context(
+            args=args,
+            state=state,
+            adapter=FakeAdapter(),
+            run="first",
+            stage="DIRECTIONAL_CORE",
+            batch_number=1,
+            subjects=("TEST",),
+            sequence_position=1,
+            prompt_source=prompt,
+            schema_source=schema,
+        )
