@@ -1,0 +1,142 @@
+{
+  "auto_resume_executed": 0,
+  "base_sha": "428cb9523e2f56460b537e556ce3b91ac5e10a2e",
+  "branch": "codex/20260907-bounded-fictional-websocket-reconnect-observability-diagnostic",
+  "completion_pause_observation": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T14:18:37.368569+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "contract": "diagnostic-repository-input-pause-proof-v1",
+  "implementation_commit": "09e6df237209aa1ce6afdbaa1bca124c6dcdcf22",
+  "initial_pause_observation": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T14:05:20.944633+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "input_integrity": {
+    "checks": {
+      "crc": true,
+      "duplicate_members": true,
+      "hashes": true,
+      "index_membership": true,
+      "indexed_payload_count": true,
+      "member_count": true,
+      "safe_paths": true,
+      "sizes": true,
+      "zip_sha256": true
+    },
+    "contract": "indexed-baseline-integrity-v1",
+    "crc_failure": null,
+    "duplicate_member_count": 0,
+    "hash_mismatch_count": 0,
+    "input_indexed_payload_count": 328,
+    "input_member_count": 329,
+    "input_zip_sha256": "1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3",
+    "membership_mismatch_count": 0,
+    "size_mismatch_count": 0,
+    "status": "PASS",
+    "unsafe_path_count": 0
+  },
+  "scheduler_mutation_count": 0,
+  "status": "PASS",
+  "work_instruction_commit": "0dfd97f9b53d11857806c7216ccdd7c071192b4f"
+}
