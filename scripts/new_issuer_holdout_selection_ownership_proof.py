@@ -41,6 +41,7 @@ from app.services.structured_autonomy_shadow_service import (
 from scripts import directional_core_price_timing_holdout as frozen
 from scripts import model_transport_revalidation_ownership_continuation as transport
 from scripts import official_fundamental_enrichment_holdout as fundamental
+from scripts import runtime_identity_binding as runtime_identity
 from scripts import structured_actionability_unseen_coldstart as actionability
 from scripts import synthetic_canary_fixture_repair_ownership_resume as guarded
 from scripts import unseen_source_assembly_coldstart as source_assembly
@@ -1771,6 +1772,12 @@ def preserve_context(
         if error is None or receipt_expected:
             raise ValueError(f"POST_SPAWN_RECEIPT_MISSING:{invocation_id}")
         required = [context_dir / "prompt.txt", context_dir / "schema.json"]
+        for identity_artifact in (
+            context_dir / "identity-binding-lock.json",
+            context_dir / "actual-request-identity-preflight.json",
+        ):
+            if identity_artifact.is_file():
+                required.append(identity_artifact)
         transport_log = context_dir / "transport_log.raw.log"
         if transport_log.is_file():
             required.append(transport_log)
@@ -1797,6 +1804,8 @@ def preserve_context(
         preservation = scan["secret_scan_status"] == "PASS" and reopened
         manifest = {
             "generation_id": state["program_generation_id"],
+            "source_generation_id": state.get("source_generation_id")
+            or state["program_generation_id"],
             "run_id": run,
             "invocation_id": invocation_id,
             "stage": stage,
@@ -1806,6 +1815,20 @@ def preserve_context(
             "sequence_position": sequence_position,
             "prompt_sha256": file_sha256(context_dir / "prompt.txt"),
             "schema_sha256": file_sha256(context_dir / "schema.json"),
+            "identity_binding_lock_hash": (
+                read_json(context_dir / "identity-binding-lock.json").get(
+                    "identity_binding_lock_hash"
+                )
+                if (context_dir / "identity-binding-lock.json").is_file()
+                else None
+            ),
+            "actual_request_identity_preflight_status": (
+                read_json(context_dir / "actual-request-identity-preflight.json").get(
+                    "status"
+                )
+                if (context_dir / "actual-request-identity-preflight.json").is_file()
+                else "NOT_MEASURED"
+            ),
             **failure,
             **scan,
             "contract": "model-context-artifact-manifest-v1",
@@ -1847,6 +1870,12 @@ def preserve_context(
         context_dir / "prompt.txt",
         context_dir / "schema.json",
     ]
+    for identity_artifact in (
+        context_dir / "identity-binding-lock.json",
+        context_dir / "actual-request-identity-preflight.json",
+    ):
+        if identity_artifact.is_file():
+            required.append(identity_artifact)
     output = context_dir / "output.raw.json"
     if output.is_file():
         required.append(output)
@@ -1861,6 +1890,8 @@ def preserve_context(
     manifest = {
         "contract": "model-context-artifact-manifest-v1",
         "generation_id": state["program_generation_id"],
+        "source_generation_id": state.get("source_generation_id")
+        or state["program_generation_id"],
         "run_id": run,
         "invocation_id": invocation_id,
         "stage": stage,
@@ -1886,6 +1917,20 @@ def preserve_context(
         "sequence_position": sequence_position,
         "prompt_sha256": file_sha256(context_dir / "prompt.txt"),
         "schema_sha256": file_sha256(context_dir / "schema.json"),
+        "identity_binding_lock_hash": (
+            read_json(context_dir / "identity-binding-lock.json").get(
+                "identity_binding_lock_hash"
+            )
+            if (context_dir / "identity-binding-lock.json").is_file()
+            else None
+        ),
+        "actual_request_identity_preflight_status": (
+            read_json(context_dir / "actual-request-identity-preflight.json").get(
+                "status"
+            )
+            if (context_dir / "actual-request-identity-preflight.json").is_file()
+            else "NOT_MEASURED"
+        ),
         "input_bytes": receipt.get("input_bytes"),
         "status": receipt.get("status"),
         "elapsed_to_exit_seconds": receipt.get("elapsed_to_exit_seconds"),
@@ -2070,16 +2115,45 @@ def invoke_model_context(
     if context_dir.exists():
         raise ValueError(f"existing_model_context_requires_new_generation:{context_dir}")
     context_dir.mkdir(parents=True)
-    copy_exact(prompt_source, context_dir / "prompt.txt")
-    copy_exact(schema_source, context_dir / "schema.json")
+    binding_state = dict(state)
+    if not isinstance(binding_state.get("packet_hashes"), Mapping):
+        source_lock = read_json(args.output_root / "source-lock.json")
+        binding_state["packet_hashes"] = source_lock.get("packet_sha256") or {}
+    output_contract = (
+        CORE_OUTPUT_CONTRACT if stage == "DIRECTIONAL_CORE" else TIMING_OUTPUT_CONTRACT
+    )
+    binding = runtime_identity.binding_from_state(
+        state=binding_state,
+        run=run,
+        stage=stage,
+        batch_number=batch_number,
+        subjects=subjects,
+        output_contract=output_contract,
+    )
+    binding_lock_path = context_dir / "identity-binding-lock.json"
     output = context_dir / "output.raw.json"
     transport_log = context_dir / "transport_log.raw.log"
-    invocation_id = (
-        f"{state['program_generation_id']}:{run}:{stage}:{batch_number:02d}"
-    )
+    invocation_id = binding.invocation_id
     receipt: dict[str, object] | None = None
     error: Exception | None = None
     try:
+        runtime_identity.bind_runtime_request(
+            prompt_template=prompt_source,
+            schema_template=schema_source,
+            runtime_prompt=context_dir / "prompt.txt",
+            runtime_schema=context_dir / "schema.json",
+            binding=binding,
+            lock_path=binding_lock_path,
+        )
+        runtime_identity.preflight_actual_request(
+            prompt_path=context_dir / "prompt.txt",
+            schema_path=context_dir / "schema.json",
+            lock_path=binding_lock_path,
+            source_lock_path=args.output_root / "source-lock.json",
+            validator_expected_packet_id=str(state["program_generation_id"]),
+            adapter_generation_id=str(adapter.continuation_generation),
+            result_path=context_dir / "actual-request-identity-preflight.json",
+        )
         with engine.isolated_model_working_directory(
             run=f"{run}-{stage.lower()}", batch=batch_number
         ) as cwd:
@@ -2100,9 +2174,32 @@ def invoke_model_context(
             )
     except Exception as exc:  # Preserve the failed invocation before stopping.
         error = exc
+        for source, destination in (
+            (prompt_source, context_dir / "prompt.txt"),
+            (schema_source, context_dir / "schema.json"),
+        ):
+            if not destination.is_file() and source.is_file():
+                copy_exact(source, destination)
+        if not hasattr(exc, "transport_lifecycle"):
+            setattr(
+                exc,
+                "transport_lifecycle",
+                {
+                    "failure_stage": "PRE_SPAWN_IDENTITY_BINDING",
+                    "spawn_started": 0,
+                    "transport_receipt_expected": 0,
+                    "transport_receipt_created": 0,
+                    "root_exception_masked": 0,
+                },
+            )
     state["model_invocation_count"] = adapter.model_call_count
     write_json(args.output_root / "program-state.json", state)
     try:
+        adapter_lifecycle = (
+            adapter.lifecycle_for(invocation_id)
+            if hasattr(adapter, "lifecycle_for")
+            else None
+        )
         manifest = preserve_context(
             args=args,
             state=state,
@@ -2116,9 +2213,7 @@ def invoke_model_context(
             receipt_root=adapter.receipt_root,
             error=error,
             transport_lifecycle=(
-                adapter.lifecycle_for(invocation_id)
-                if hasattr(adapter, "lifecycle_for")
-                else getattr(error, "transport_lifecycle", None)
+                adapter_lifecycle or getattr(error, "transport_lifecycle", None)
             ),
         )
     except Exception as preservation_error:
@@ -2140,6 +2235,10 @@ def invoke_model_context(
         write_json(args.output_root / "program-state.json", state)
         raise error
     assert receipt is not None
+    receipt_validation = runtime_identity.validate_receipt_identity(receipt, binding)
+    write_json(context_dir / "receipt-identity-validation.json", receipt_validation)
+    if receipt_validation["status"] != "PASS":
+        raise ValueError(f"receipt_identity_mismatch:{invocation_id}")
     return manifest, output
 
 
@@ -2266,10 +2365,12 @@ def execute_run(
         )
         try:
             parsed = read_json(output)
-            if (
-                parsed.get("contract") != CORE_OUTPUT_CONTRACT
-                or parsed.get("packet_id") != state["program_generation_id"]
-            ):
+            output_identity = runtime_identity.validate_output_identity(
+                parsed,
+                runtime_identity.load_binding(output.parent / "identity-binding-lock.json"),
+            )
+            write_json(output.parent / "output-identity-validation.json", output_identity)
+            if output_identity["status"] != "PASS":
                 raise ValueError("core_output_identity_mismatch")
             rows, alias_audit = frozen._resolve_batch_candidates(
                 parsed.get("candidates"),
@@ -2366,10 +2467,12 @@ def execute_run(
         )
         try:
             parsed = read_json(output)
-            if (
-                parsed.get("contract") != TIMING_OUTPUT_CONTRACT
-                or parsed.get("packet_id") != state["program_generation_id"]
-            ):
+            output_identity = runtime_identity.validate_output_identity(
+                parsed,
+                runtime_identity.load_binding(output.parent / "identity-binding-lock.json"),
+            )
+            write_json(output.parent / "output-identity-validation.json", output_identity)
+            if output_identity["status"] != "PASS":
                 raise ValueError("timing_output_identity_mismatch")
             rows, alias_audit = frozen._resolve_batch_candidates(
                 parsed.get("candidates"),

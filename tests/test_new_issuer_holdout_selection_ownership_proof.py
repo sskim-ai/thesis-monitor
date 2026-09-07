@@ -16,6 +16,39 @@ def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value), encoding="utf-8")
 
 
+def _write_identity_templates(prompt: Path, schema: Path) -> None:
+    identity = {
+        "contract": proof.CORE_OUTPUT_CONTRACT,
+        "packet_id": "generation",
+        "tickers": ["TEST"],
+    }
+    prompt.write_text(
+        "IDENTITY:\n" + json.dumps(identity, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    _write_json(
+        schema,
+        {
+            "type": "object",
+            "properties": {
+                "contract": {"const": proof.CORE_OUTPUT_CONTRACT},
+                "packet_id": {"const": "generation"},
+                "candidates": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "properties": {"ticker": {"const": "TEST"}},
+                            }
+                        ]
+                    },
+                },
+            },
+        },
+    )
+
+
 def test_exposure_registry_uses_real_outputs_and_deduplicates_share_classes(
     tmp_path: Path,
 ) -> None:
@@ -317,15 +350,18 @@ def test_model_context_is_invoked_once_and_preserved_before_return(
     receipt_root = output_root / "transport-receipts"
     prompt = tmp_path / "prompt.txt"
     schema = tmp_path / "schema.json"
-    prompt.write_text("IDENTITY:\n{}\n", encoding="utf-8")
-    schema.write_text("{}\n", encoding="utf-8")
+    _write_identity_templates(prompt, schema)
     proof.write_json(
         output_root / "source-lock.json",
-        {"packet_sha256": {"TEST": "packet"}},
+        {
+            "source_lock_sha256": "lock",
+            "packet_sha256": {"TEST": "packet"},
+        },
     )
 
     class FakeAdapter:
         model_call_count = 0
+        continuation_generation = "generation"
 
         def __init__(self) -> None:
             self.receipt_root = receipt_root
@@ -344,6 +380,11 @@ def test_model_context_is_invoked_once_and_preserved_before_return(
             receipt.write_text(
                 json.dumps(
                     {
+                        "generation_id": "generation",
+                        "invocation_id": invocation_id,
+                        "stage": str(kwargs["stage"]),
+                        "batch_id": str(kwargs["batch_id"]),
+                        "subject_count": int(kwargs["subject_count"]),
                         "model": proof.MODEL,
                         "reasoning_effort": proof.EFFORT,
                         "configured_timeout_seconds": proof.TIMEOUT_SECONDS,
@@ -409,12 +450,14 @@ def _context_args(tmp_path: Path):
     output_root = tmp_path / "output"
     proof.write_json(
         output_root / "source-lock.json",
-        {"packet_sha256": {"TEST": "packet"}},
+        {
+            "source_lock_sha256": "lock",
+            "packet_sha256": {"TEST": "packet"},
+        },
     )
     prompt = tmp_path / "prompt.txt"
     schema = tmp_path / "schema.json"
-    prompt.write_text("IDENTITY:\n{}\n", encoding="utf-8")
-    schema.write_text("{}\n", encoding="utf-8")
+    _write_identity_templates(prompt, schema)
     args = type(
         "Args",
         (),
@@ -440,6 +483,7 @@ def test_prespawn_failure_preserves_root_without_requiring_receipt(
 
     class FakeAdapter:
         model_call_count = 0
+        continuation_generation = "generation"
         receipt_root = args.output_root / "receipts"
 
         def invoke(self, **kwargs: object) -> dict[str, object]:
@@ -488,6 +532,7 @@ def test_postspawn_missing_receipt_remains_detectable(tmp_path: Path) -> None:
 
     class FakeAdapter:
         model_call_count = 1
+        continuation_generation = "generation"
         receipt_root = args.output_root / "receipts"
 
         def invoke(self, **kwargs: object) -> dict[str, object]:
@@ -507,3 +552,48 @@ def test_postspawn_missing_receipt_remains_detectable(tmp_path: Path) -> None:
             prompt_source=prompt,
             schema_source=schema,
         )
+
+
+def test_runtime_identity_mismatch_blocks_adapter_before_spawn(tmp_path: Path) -> None:
+    args, state, prompt, schema = _context_args(tmp_path)
+
+    class NeverCalledAdapter:
+        model_call_count = 0
+        continuation_generation = "wrong-generation"
+        receipt_root = args.output_root / "receipts"
+        called = False
+
+        def invoke(self, **kwargs: object) -> dict[str, object]:
+            self.called = True
+            raise AssertionError("adapter must not be called")
+
+        def lifecycle_for(self, invocation_id: str) -> dict[str, object]:
+            return {}
+
+    adapter = NeverCalledAdapter()
+    with pytest.raises(
+        proof.runtime_identity.PreSpawnRuntimeIdentityBindingMismatch,
+        match="adapter_generation_id",
+    ):
+        proof.invoke_model_context(
+            args=args,
+            state=state,
+            adapter=adapter,
+            run="first",
+            stage="DIRECTIONAL_CORE",
+            batch_number=1,
+            subjects=("TEST",),
+            sequence_position=1,
+            prompt_source=prompt,
+            schema_source=schema,
+        )
+
+    context = args.output_root / "model-contexts/FIRST/DIRECTIONAL_CORE/batch-01"
+    preflight = proof.read_json(context / "actual-request-identity-preflight.json")
+    failure = proof.read_json(context / "pre-spawn-failure.json")
+    assert adapter.called is False
+    assert adapter.model_call_count == 0
+    assert preflight["status"] == "FAIL"
+    assert preflight["spawn_started"] == 0
+    assert failure["failure_stage"] == "PRE_SPAWN_IDENTITY_GATE"
+    assert failure["root_exception_masked"] == 0
