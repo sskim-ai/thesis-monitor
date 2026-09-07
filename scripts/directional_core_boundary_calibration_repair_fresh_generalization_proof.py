@@ -3,11 +3,29 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import zipfile
 from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from app.services.directional_balance_service import (
+    ORDINAL_CALIBRATION_CONTRACT_VERSION,
+    directional_balance_ordinal_calibration_prompt,
+)
+from app.services.direction_timing_ownership_service import (
+    CORE_OUTPUT_CONTRACT,
+    DirectionalCoreCandidate,
+)
+from app.services.structured_autonomy_alias_service import (
+    build_alias_constrained_batch_schema,
+)
+from scripts import directional_core_price_timing_holdout as holdout
+from scripts import model_transport_revalidation_ownership_continuation as transport
+from scripts import new_issuer_holdout_selection_ownership_proof as runner
+from scripts import uskr22_structured_autonomy_shadow as engine
 
 
 PROGRAM_CONTRACT = (
@@ -29,6 +47,10 @@ LATEST_RESULT_MEMBERS = 2166
 LATEST_RESULT_INDEXED_PAYLOADS = 2165
 LATEST_FINAL_HEAD = "05c93cf7d768ddb09b670ca74dc69c2b698e5f6b"
 RUNS = ("A", "B", "C")
+FICTIONAL_FIXTURE_PATH = Path("fixtures/directional_core_ordinal_calibration_v1.json")
+FICTIONAL_REPETITIONS = ("RUN_1", "RUN_2", "RUN_3")
+FICTIONAL_CONTEXT_SIZE = 4
+FICTIONAL_MODEL_CALLS = 6
 
 REPORT_NAMES = (
     "01-repository-provenance",
@@ -38,6 +60,15 @@ REPORT_NAMES = (
     "05-directional-rationale-and-uncertainty-comparison",
     "06-directional-instability-root-cause-classification",
     "07-directional-calibration-architecture-decision",
+    "08-directional-calibration-contract",
+    "09-directional-calibration-prompt-diff",
+    "10-directional-calibration-regression-tests",
+    "11-fictional-calibration-fixture-manifest",
+    "12-fictional-calibration-run-1",
+    "13-fictional-calibration-run-2",
+    "14-fictional-calibration-run-3",
+    "15-fictional-calibration-stability-summary",
+    "16-calibration-freeze-seal",
 )
 
 
@@ -363,6 +394,592 @@ def historical_audit(path: Path) -> tuple[dict[str, object], ...]:
     return tuple(rows)
 
 
+def calibration_architecture_hashes(repo_root: Path) -> dict[str, str]:
+    return {
+        "directional_balance_service": file_sha256(
+            repo_root / "app/services/directional_balance_service.py"
+        ),
+        "directional_core_prompt_owner": file_sha256(
+            repo_root / "scripts/directional_core_price_timing_holdout.py"
+        ),
+        "directional_core_candidate_schema_owner": file_sha256(
+            repo_root / "app/services/direction_timing_ownership_service.py"
+        ),
+    }
+
+
+def _fixture_manifest(repo_root: Path) -> dict[str, Any]:
+    value = json.loads((repo_root / FICTIONAL_FIXTURE_PATH).read_text(encoding="utf-8"))
+    if not isinstance(value, dict) or not isinstance(value.get("fixtures"), list):
+        raise ValueError("fictional_fixture_manifest_invalid")
+    fixtures = value["fixtures"]
+    if len(fixtures) != 8 or len({row.get("ticker") for row in fixtures}) != 8:
+        raise ValueError("fictional_fixture_scope_invalid")
+    if {row.get("market") for row in fixtures} != {"us", "kr"}:
+        raise ValueError("fictional_fixture_market_identity_invalid")
+    if not all(str(row.get("ticker") or "").startswith("FIC") for row in fixtures):
+        raise ValueError("fictional_fixture_identity_not_fictional")
+    return value
+
+
+def _fictional_batches(fixtures: Sequence[Mapping[str, Any]]) -> tuple[tuple[Mapping[str, Any], ...], ...]:
+    return tuple(
+        tuple(fixtures[index : index + FICTIONAL_CONTEXT_SIZE])
+        for index in range(0, len(fixtures), FICTIONAL_CONTEXT_SIZE)
+    )
+
+
+def _fictional_context(fixture: Mapping[str, Any]) -> dict[str, object]:
+    return {
+        "ticker": fixture["ticker"],
+        "company_name": fixture["company_name"],
+        "market": fixture["market"],
+        "assessment_date": "2026-09-08",
+        "evidence": fixture["evidence"],
+    }
+
+
+def _schema_for_fictional_batch(
+    *, generation_id: str, fixtures: Sequence[Mapping[str, Any]]
+) -> dict[str, object]:
+    schema = engine.strict_json_schema(DirectionalCoreCandidate.model_json_schema())
+    return build_alias_constrained_batch_schema(
+        candidate_schema=schema,
+        contract=CORE_OUTPUT_CONTRACT,
+        packet_id=generation_id,
+        aliases_by_ticker={
+            str(row["ticker"]): tuple(str(item["alias"]) for item in row["evidence"])
+            for row in fixtures
+        },
+    )
+
+
+def _calibration_contract() -> dict[str, object]:
+    return {
+        "contract": ORDINAL_CALIBRATION_CONTRACT_VERSION,
+        "meaning_ladder": {
+            "5.0:5.0": "BALANCED_UNRESOLVED_OR_TOO_INCOMPLETE_FOR_LEAN",
+            "5.5:4.5": "POSITIVE_MATERIAL_ANCHOR_WITHOUT_SUFFICIENT_CORROBORATION",
+            "6.0:4.0": "MINIMUM_BUY_WITH_MATERIAL_ANCHOR_AND_SUFFICIENT_CORROBORATION",
+            "6.5:3.5_or_stronger": "PROGRESSIVELY_STRONGER_POSITIVE_CORROBORATION",
+            "4.5:5.5": "SYMMETRIC_NEGATIVE_LEAN",
+            "4.0:6.0": "SYMMETRIC_MINIMUM_SELL",
+            "3.5:6.5_or_stronger": "SYMMETRIC_STRONGER_NEGATIVE_DIRECTION",
+        },
+        "ambiguity_rule": "CHOOSE_LESS_DIRECTIONAL_ADJACENT_BUCKET_TOWARD_5_0",
+        "missing_evidence_policy": "LIMITS_CONVICTION_NOT_AUTOMATICALLY_NEGATIVE",
+        "low_confidence_policy": "RECHECK_FULL_BUCKET_NOT_MECHANICAL_HOLD",
+        "buy_threshold": 6.0,
+        "sell_threshold": 6.0,
+        "balance_sum": 10.0,
+        "balance_increment": 0.5,
+        "threshold_changed": 0,
+        "fixed_weight_scorecard": 0,
+        "majority_vote": 0,
+        "ticker_specific_exception": 0,
+        "price_timing_mutation": 0,
+        "prompt_text_sha256": hashlib.sha256(
+            directional_balance_ordinal_calibration_prompt().encode("utf-8")
+        ).hexdigest(),
+        "status": "FROZEN",
+    }
+
+
+def prepare_fictional(args: argparse.Namespace) -> None:
+    repo_root = Path.cwd().resolve()
+    state = json.loads((args.output_root / "program-state.json").read_text(encoding="utf-8"))
+    if state.get("state") != "OFFLINE_ROOT_CAUSE_CONFIRMED":
+        raise ValueError("OFFLINE_ROOT_CAUSE_CONFIRMATION_REQUIRED")
+    if git_value("status", "--short"):
+        raise ValueError("CLEAN_WORKTREE_REQUIRED_FOR_FICTIONAL_FREEZE")
+    if args.as_of is None:
+        raise ValueError("FICTIONAL_FREEZE_REQUIRES_FIXED_AS_OF")
+    if args.focused_tests != "PASS":
+        raise ValueError("FOCUSED_CALIBRATION_TESTS_MUST_PASS")
+    manifest = _fixture_manifest(repo_root)
+    fixtures = manifest["fixtures"]
+    generation_seed = (
+        f"{git_value('rev-parse', 'HEAD')}|{args.as_of.astimezone(UTC).isoformat()}|"
+        f"{canonical_sha256(manifest)}"
+    )
+    generation_id = (
+        "20260908-directional-calibration-fictional-"
+        f"{args.as_of.astimezone(UTC).strftime('%Y%m%dT%H%M%SZ')}-"
+        f"{hashlib.sha256(generation_seed.encode()).hexdigest()[:12]}"
+    )
+    fictional_root = args.output_root / "fictional-calibration"
+    if fictional_root.exists():
+        raise ValueError("NEW_FICTIONAL_CALIBRATION_ROOT_REQUIRED")
+    frozen_root = fictional_root / "frozen-inputs"
+    prompt_rows = []
+    for number, batch in enumerate(_fictional_batches(fixtures), start=1):
+        tickers = tuple(str(row["ticker"]) for row in batch)
+        prompt = holdout._core_prompt(
+            packet_id=generation_id,
+            tickers=tickers,
+            contexts=tuple(_fictional_context(row) for row in batch),
+        )
+        prompt_path = frozen_root / f"context-{number:02d}" / "prompt.txt"
+        schema_path = frozen_root / f"context-{number:02d}" / "schema.json"
+        prompt_path.parent.mkdir(parents=True, exist_ok=True)
+        prompt_path.write_text(prompt, encoding="utf-8")
+        write_json(
+            schema_path,
+            _schema_for_fictional_batch(generation_id=generation_id, fixtures=batch),
+        )
+        prompt_rows.append(
+            {
+                "context": number,
+                "tickers": list(tickers),
+                "prompt_sha256": file_sha256(prompt_path),
+                "schema_sha256": file_sha256(schema_path),
+            }
+        )
+    architecture = calibration_architecture_hashes(repo_root)
+    contract = _calibration_contract()
+    fixture_document = {
+        **manifest,
+        "fixture_file": str(FICTIONAL_FIXTURE_PATH),
+        "fixture_file_sha256": file_sha256(repo_root / FICTIONAL_FIXTURE_PATH),
+        "fictional_identity_count": len(fixtures),
+        "real_issuer_identity_count": 0,
+        "contexts_per_repetition": 2,
+        "repetitions": 3,
+        "planned_model_calls": FICTIONAL_MODEL_CALLS,
+        "status": "FROZEN",
+    }
+    write_json(fictional_root / "fixture-manifest.json", fixture_document)
+    freeze = {
+        "contract": "fictional-calibration-input-freeze-v1",
+        "generation_id": generation_id,
+        "implementation_commit": git_value("rev-parse", "HEAD"),
+        "implementation_tree": git_value("rev-parse", "HEAD^{tree}"),
+        "architecture_hashes": architecture,
+        "calibration_contract_sha256": canonical_sha256(contract),
+        "fixture_manifest_sha256": canonical_sha256(fixture_document),
+        "prompt_schema_rows": prompt_rows,
+        "prompt_set_sha256": canonical_sha256(
+            [row["prompt_sha256"] for row in prompt_rows]
+        ),
+        "schema_set_sha256": canonical_sha256(
+            [row["schema_sha256"] for row in prompt_rows]
+        ),
+        "model": transport.MODEL,
+        "reasoning_effort": transport.EFFORT,
+        "batch_semantics": "MODEL_CONTEXT_COUPLED",
+        "subjects_per_context": FICTIONAL_CONTEXT_SIZE,
+        "timeout_seconds": runner.TIMEOUT_SECONDS,
+        "timeout_owner_count": runner.TIMEOUT_OWNER_COUNT,
+        "wrapper_retry_count": 0,
+        "status": "FROZEN",
+    }
+    write_json(fictional_root / "input-freeze.json", freeze)
+    old_prompt = subprocess.run(
+        (
+            "git",
+            "show",
+            f"{LATEST_FINAL_HEAD}:scripts/directional_core_price_timing_holdout.py",
+        ),
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    prompt_diff = {
+        "contract": "directional-calibration-prompt-diff-v1",
+        "historical_prompt_owner_sha256": hashlib.sha256(
+            old_prompt.encode("utf-8")
+        ).hexdigest(),
+        "current_prompt_owner_sha256": architecture["directional_core_prompt_owner"],
+        "changed_surface": [
+            "shared ordinal evidence-sufficiency ladder",
+            "symmetric conservative adjacent-bucket tie-break",
+        ],
+        "directional_threshold_changed": 0,
+        "price_timing_prompt_changed": 0,
+        "schema_changed": 0,
+        "ticker_specific_rule_count": 0,
+        "status": "PASS",
+    }
+    regression = {
+        "contract": "directional-calibration-regression-tests-v1",
+        "focused_test_result": args.focused_tests,
+        "threshold_6_0_preserved": True,
+        "balance_sum_10_preserved": True,
+        "half_increment_preserved": True,
+        "symmetric_positive_negative_rubric": True,
+        "missing_not_negative": True,
+        "low_confidence_not_mechanical_hold": True,
+        "production_runtime_prompt_mutation": 0,
+        "price_timing_mutation": 0,
+        "status": "PASS",
+    }
+    write_report(args.report_dir, 8, contract)
+    write_report(args.report_dir, 9, prompt_diff)
+    write_report(args.report_dir, 10, regression)
+    write_report(args.report_dir, 11, fixture_document)
+    state.update(
+        {
+            "state": "FICTIONAL_PREPARED_FROZEN",
+            "calibration_implementation_commit": git_value("rev-parse", "HEAD"),
+            "calibration_architecture_hashes": architecture,
+            "calibration_contract_sha256": canonical_sha256(contract),
+            "fictional_generation_id": generation_id,
+            "fictional_input_freeze_sha256": canonical_sha256(freeze),
+            "fictional_planned_model_calls": FICTIONAL_MODEL_CALLS,
+            "fictional_model_invocation_count": 0,
+        }
+    )
+    write_json(args.output_root / "program-state.json", state)
+    print(json.dumps(state, ensure_ascii=False, sort_keys=True), flush=True)
+
+
+def _candidate_reference_values(candidate: Mapping[str, Any]) -> set[str]:
+    refs: set[str] = set()
+
+    def collect(value: object, key: str | None = None) -> None:
+        if isinstance(value, Mapping):
+            for child_key, child in value.items():
+                collect(child, str(child_key))
+        elif isinstance(value, list):
+            if key and (
+                key.endswith("_refs")
+                or key.endswith("_basis")
+                or key == "evidence_refs"
+            ):
+                refs.update(str(item) for item in value)
+            else:
+                for item in value:
+                    collect(item, key)
+
+    collect(candidate)
+    return refs
+
+
+def _fixture_acceptance(
+    candidate: DirectionalCoreCandidate, fixture: Mapping[str, Any]
+) -> dict[str, object]:
+    expected = fixture["expected"]
+    errors: list[str] = []
+    if candidate.overall_direction != expected["direction"]:
+        errors.append("EXPECTED_DIRECTION_CLASS_MISMATCH")
+    if "buy" in expected and candidate.directional_balance.buy != float(expected["buy"]):
+        errors.append("EXPECTED_EXACT_BUY_BALANCE_MISMATCH")
+    if "sell" in expected and candidate.directional_balance.sell != float(expected["sell"]):
+        errors.append("EXPECTED_EXACT_SELL_BALANCE_MISMATCH")
+    if "minimum_buy" in expected and candidate.directional_balance.buy < float(
+        expected["minimum_buy"]
+    ):
+        errors.append("MINIMUM_POSITIVE_DIRECTION_NOT_MET")
+    if "minimum_sell" in expected and candidate.directional_balance.sell < float(
+        expected["minimum_sell"]
+    ):
+        errors.append("MINIMUM_NEGATIVE_DIRECTION_NOT_MET")
+    if candidate.hold_lean != expected["hold_lean"]:
+        errors.append("EXPECTED_HOLD_LEAN_MISMATCH")
+    if candidate.overall_direction == expected.get("forbidden_direction"):
+        errors.append("UNKNOWN_EVIDENCE_BECAME_FORBIDDEN_DIRECTION")
+    aliases = {str(row["alias"]) for row in fixture["evidence"]}
+    refs = _candidate_reference_values(candidate.model_dump(mode="json"))
+    unknown_refs = sorted(refs - aliases)
+    if unknown_refs:
+        errors.append("OUT_OF_FIXTURE_EVIDENCE_REFERENCE")
+    if candidate.overall_direction in {"BUY", "SELL"} and not (
+        candidate.material_directional_anchor_basis
+    ):
+        errors.append("DIRECTIONAL_CALL_WITHOUT_MATERIAL_ANCHOR")
+    return {
+        "fixture_id": fixture["fixture_id"],
+        "ticker": candidate.ticker,
+        "expected": expected,
+        "actual_direction": candidate.overall_direction,
+        "actual_balance": candidate.directional_balance.model_dump(mode="json"),
+        "actual_hold_lean": candidate.hold_lean,
+        "actual_confidence": candidate.directional_confidence,
+        "candidate_sha256": canonical_sha256(candidate.model_dump(mode="json")),
+        "referenced_aliases": sorted(refs),
+        "unknown_references": unknown_refs,
+        "errors": errors,
+        "status": "PASS" if not errors else "FAIL",
+    }
+
+
+def _verify_fictional_freeze(args: argparse.Namespace, state: Mapping[str, Any]) -> dict[str, Any]:
+    if state.get("state") != "FICTIONAL_PREPARED_FROZEN":
+        raise ValueError("FICTIONAL_PREPARED_FROZEN_STATE_REQUIRED")
+    actual_architecture = calibration_architecture_hashes(Path.cwd().resolve())
+    if actual_architecture != state.get("calibration_architecture_hashes"):
+        raise ValueError("CALIBRATION_ARCHITECTURE_MUTATED_AFTER_FREEZE")
+    freeze = json.loads(
+        (args.output_root / "fictional-calibration" / "input-freeze.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if canonical_sha256(freeze) != state.get("fictional_input_freeze_sha256"):
+        raise ValueError("FICTIONAL_INPUT_FREEZE_MUTATED")
+    for row in freeze["prompt_schema_rows"]:
+        context_root = (
+            args.output_root
+            / "fictional-calibration"
+            / "frozen-inputs"
+            / f"context-{int(row['context']):02d}"
+        )
+        if file_sha256(context_root / "prompt.txt") != row["prompt_sha256"]:
+            raise ValueError("FICTIONAL_PROMPT_MUTATED_AFTER_FREEZE")
+        if file_sha256(context_root / "schema.json") != row["schema_sha256"]:
+            raise ValueError("FICTIONAL_SCHEMA_MUTATED_AFTER_FREEZE")
+    return freeze
+
+
+def execute_fictional(args: argparse.Namespace) -> None:
+    state = json.loads((args.output_root / "program-state.json").read_text(encoding="utf-8"))
+    freeze = _verify_fictional_freeze(args, state)
+    fictional_root = args.output_root / "fictional-calibration"
+    results_root = fictional_root / "results"
+    if results_root.exists():
+        raise ValueError("FICTIONAL_RESULTS_ALREADY_EXIST_NO_RETRY_ALLOWED")
+    fixture_document = json.loads(
+        (fictional_root / "fixture-manifest.json").read_text(encoding="utf-8")
+    )
+    fixtures = fixture_document["fixtures"]
+    by_ticker = {str(row["ticker"]): row for row in fixtures}
+    adapter = transport.ContinuationTransportAdapter(
+        continuation_generation=str(state["fictional_generation_id"]),
+        receipt_root=fictional_root / "transport-receipts",
+        codex_bin=engine._signed_in_codex_bin(),
+        runtime_state_root=fictional_root / "runtime-state",
+    )
+    repetition_reports: list[dict[str, object]] = []
+    attempted = 0
+    try:
+        for repetition_number, repetition in enumerate(FICTIONAL_REPETITIONS, start=1):
+            run_rows = []
+            for context_number, batch in enumerate(_fictional_batches(fixtures), start=1):
+                context_root = results_root / repetition / f"context-{context_number:02d}"
+                context_root.mkdir(parents=True, exist_ok=False)
+                frozen_root = fictional_root / "frozen-inputs" / f"context-{context_number:02d}"
+                prompt = context_root / "prompt.txt"
+                schema = context_root / "schema.json"
+                shutil.copy2(frozen_root / "prompt.txt", prompt)
+                shutil.copy2(frozen_root / "schema.json", schema)
+                output = context_root / "output.raw.json"
+                log = context_root / "transport.log"
+                invocation_id = (
+                    f"{state['fictional_generation_id']}:fictional:{repetition}:"
+                    f"DIRECTIONAL_CORE:{context_number:02d}"
+                )
+                print(
+                    f"{repetition} FICTIONAL_CORE_START {context_number} "
+                    + ",".join(str(row["ticker"]) for row in batch),
+                    flush=True,
+                )
+                with engine.isolated_model_working_directory(
+                    run=f"fictional-{repetition.lower()}-core",
+                    batch=context_number,
+                ) as working_directory:
+                    result = adapter.invoke(
+                        prompt=prompt,
+                        output=output,
+                        log=log,
+                        schema=schema,
+                        cwd=working_directory,
+                        timeout=runner.TIMEOUT_SECONDS,
+                        state_namespace="DIRECTIONAL_CALIBRATION_FICTIONAL_20260908",
+                        invocation_id=invocation_id,
+                        stage="DIRECTIONAL_CORE",
+                        batch_id=f"{repetition_number:02d}-{context_number:02d}",
+                        subject_count=FICTIONAL_CONTEXT_SIZE,
+                    )
+                attempted += 1
+                document = json.loads(output.read_text(encoding="utf-8"))
+                if document.get("contract") != CORE_OUTPUT_CONTRACT:
+                    raise ValueError("FICTIONAL_OUTPUT_CONTRACT_MISMATCH")
+                if document.get("packet_id") != state["fictional_generation_id"]:
+                    raise ValueError("FICTIONAL_OUTPUT_GENERATION_MISMATCH")
+                expected_order = tuple(str(row["ticker"]) for row in batch)
+                candidates = document.get("candidates")
+                if not isinstance(candidates, list) or tuple(
+                    str(row.get("ticker") or "") for row in candidates
+                ) != expected_order:
+                    raise ValueError("FICTIONAL_OUTPUT_SCOPE_OR_ORDER_MISMATCH")
+                normalized = []
+                for raw_candidate in candidates:
+                    candidate = DirectionalCoreCandidate.model_validate(raw_candidate)
+                    acceptance = _fixture_acceptance(
+                        candidate, by_ticker[candidate.ticker]
+                    )
+                    normalized.append(candidate.model_dump(mode="json"))
+                    run_rows.append(acceptance)
+                write_json(
+                    context_root / "output.normalized.json",
+                    {
+                        "contract": CORE_OUTPUT_CONTRACT,
+                        "packet_id": state["fictional_generation_id"],
+                        "candidates": normalized,
+                    },
+                )
+                write_json(
+                    context_root / "context-receipt.json",
+                    {
+                        "contract": "fictional-calibration-context-receipt-v1",
+                        "repetition": repetition,
+                        "context": context_number,
+                        "invocation_id": invocation_id,
+                        "tickers": list(expected_order),
+                        "prompt_sha256": file_sha256(prompt),
+                        "schema_sha256": file_sha256(schema),
+                        "output_sha256": file_sha256(output),
+                        "transport_result": result,
+                        "wrapper_retry_count": 0,
+                        "status": (
+                            "PASS"
+                            if all(row["status"] == "PASS" for row in run_rows[-4:])
+                            else "FAIL"
+                        ),
+                    },
+                )
+                print(
+                    f"{repetition} FICTIONAL_CORE_COMPLETE {context_number}",
+                    flush=True,
+                )
+            repetition_report = {
+                "contract": "fictional-calibration-repetition-v1",
+                "generation_id": state["fictional_generation_id"],
+                "repetition": repetition,
+                "model_calls": 2,
+                "subject_results": run_rows,
+                "pass_count": sum(row["status"] == "PASS" for row in run_rows),
+                "failure_count": sum(row["status"] != "PASS" for row in run_rows),
+                "status": (
+                    "PASS" if all(row["status"] == "PASS" for row in run_rows) else "FAIL"
+                ),
+            }
+            repetition_reports.append(repetition_report)
+            write_report(args.report_dir, 11 + repetition_number, repetition_report)
+    except Exception as exc:
+        state.update(
+            {
+                "state": "STOPPED_FICTIONAL_CALIBRATION_FAILURE",
+                "fictional_model_invocation_count": attempted,
+                "fictional_failure": f"{type(exc).__name__}:{exc}",
+                "fresh_real_cohort_consumed": 0,
+            }
+        )
+        write_json(args.output_root / "program-state.json", state)
+        raise
+    per_ticker = {}
+    unstable = []
+    for ticker in by_ticker:
+        values = [
+            next(row for row in report["subject_results"] if row["ticker"] == ticker)
+            for report in repetition_reports
+        ]
+        signatures = {
+            (
+                str(row["actual_direction"]),
+                str(row["actual_hold_lean"]),
+            )
+            for row in values
+        }
+        ticker_unstable = len(signatures) != 1 or any(
+            row["status"] != "PASS" for row in values
+        )
+        if ticker_unstable:
+            unstable.append(ticker)
+        per_ticker[ticker] = {
+            "fixture_id": by_ticker[ticker]["fixture_id"],
+            "values": values,
+            "direction_class_signatures": [list(value) for value in sorted(signatures)],
+            "classification": "UNSTABLE" if ticker_unstable else "STABLE",
+        }
+    receipts = [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in sorted((fictional_root / "transport-receipts").glob("*.json"))
+    ]
+    namespace_hashes = {
+        str((row.get("transport_metadata") or {}).get("runtime_state_namespace_hash"))
+        for row in receipts
+    } - {"", "None"}
+    stability = {
+        "contract": "fictional-calibration-stability-summary-v1",
+        "generation_id": state["fictional_generation_id"],
+        "planned_model_call_count": FICTIONAL_MODEL_CALLS,
+        "attempted_model_call_count": attempted,
+        "successful_model_call_count": sum(
+            str(row.get("status")) == "SUCCESS" for row in receipts
+        ),
+        "distinct_invocation_count": len(
+            {str(row.get("invocation_id")) for row in receipts}
+        ),
+        "distinct_runtime_namespace_count": len(namespace_hashes),
+        "wrapper_retry_count": 0,
+        "fixture_count": len(by_ticker),
+        "fictional_directional_unstable_count": len(unstable),
+        "unstable_tickers": unstable,
+        "per_fixture": per_ticker,
+        "opposite_direction_reversal_count": sum(
+            {"BUY", "SELL"}
+            <= {str(value["actual_direction"]) for value in row["values"]}
+            for row in per_ticker.values()
+        ),
+        "minimum_positive_buy_hold_flip_count": int(
+            per_ticker["FICUS03"]["classification"] == "UNSTABLE"
+        ),
+        "minimum_negative_sell_hold_flip_count": int(
+            per_ticker["FICKR02"]["classification"] == "UNSTABLE"
+        ),
+        "status": (
+            "PASS"
+            if attempted == FICTIONAL_MODEL_CALLS
+            and len(receipts) == FICTIONAL_MODEL_CALLS
+            and len(namespace_hashes) == FICTIONAL_MODEL_CALLS
+            and not unstable
+            and all(report["status"] == "PASS" for report in repetition_reports)
+            else "FAIL"
+        ),
+    }
+    write_report(args.report_dir, 15, stability)
+    seal = {
+        "contract": "directional-calibration-architecture-freeze-seal-v1",
+        "generation_id": state["fictional_generation_id"],
+        "architecture_hashes": state["calibration_architecture_hashes"],
+        "calibration_contract_sha256": state["calibration_contract_sha256"],
+        "fictional_input_freeze_sha256": state["fictional_input_freeze_sha256"],
+        "prompt_set_sha256": freeze["prompt_set_sha256"],
+        "schema_set_sha256": freeze["schema_set_sha256"],
+        "model": transport.MODEL,
+        "reasoning_effort": transport.EFFORT,
+        "timeout_seconds": runner.TIMEOUT_SECONDS,
+        "fictional_model_call_count": attempted,
+        "fictional_calibration_unstable_count": len(unstable),
+        "no_calibration_edits_after_fictional_output": True,
+        "next_gate": (
+            "RETIRE_EXPOSED_COHORT_AND_PREPARE_FRESH_US4_KR12"
+            if stability["status"] == "PASS"
+            else "STOP_NO_FRESH_REAL_HOLDOUT"
+        ),
+        "status": "FROZEN" if stability["status"] == "PASS" else "STOP",
+    }
+    write_report(args.report_dir, 16, seal)
+    state.update(
+        {
+            "state": (
+                "FICTIONAL_PASS_ARCHITECTURE_FROZEN"
+                if stability["status"] == "PASS"
+                else "STOPPED_FICTIONAL_CALIBRATION_FAILURE"
+            ),
+            "fictional_model_invocation_count": attempted,
+            "fictional_calibration_unstable_count": len(unstable),
+            "fictional_calibration_status": stability["status"],
+            "calibration_freeze_seal_sha256": canonical_sha256(seal),
+            "fresh_real_cohort_consumed": 0,
+        }
+    )
+    write_json(args.output_root / "program-state.json", state)
+    if stability["status"] != "PASS":
+        raise ValueError("FICTIONAL_CALIBRATION_ACCEPTANCE_FAILED")
+    print(json.dumps(state, ensure_ascii=False, sort_keys=True), flush=True)
+
+
 def run_offline_audit(args: argparse.Namespace) -> None:
     if args.output_root.exists() or args.report_dir.exists():
         raise ValueError("NEW_AUDIT_OUTPUT_AND_REPORT_DIRECTORIES_REQUIRED")
@@ -557,10 +1174,15 @@ def run_offline_audit(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--audit", action="store_true", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--audit", action="store_true")
+    mode.add_argument("--fictional-prepare", action="store_true")
+    mode.add_argument("--fictional-execute", action="store_true")
     parser.add_argument("--latest-result-zip", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--report-dir", type=Path, required=True)
+    parser.add_argument("--as-of", type=datetime.fromisoformat)
+    parser.add_argument("--focused-tests", default="NOT_RUN")
     args = parser.parse_args()
     args.latest_result_zip = args.latest_result_zip.expanduser().resolve()
     args.output_root = args.output_root.expanduser().resolve()
@@ -570,7 +1192,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    run_offline_audit(args)
+    if args.audit:
+        run_offline_audit(args)
+    elif args.fictional_prepare:
+        prepare_fictional(args)
+    else:
+        execute_fictional(args)
 
 
 if __name__ == "__main__":

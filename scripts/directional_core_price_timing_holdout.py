@@ -20,7 +20,10 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidenceRef,
     EvidenceCategory,
 )
-from app.services.directional_balance_service import DirectionalBalance
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_ordinal_calibration_prompt,
+)
 from app.services.direction_timing_ownership_service import (
     CORE_DOMAINS,
     CORE_OUTPUT_CONTRACT,
@@ -300,6 +303,10 @@ def _core_prompt(
         """You are Stage 1, the Directional Core of a blind non-production investment shadow. Use only the supplied non-price evidence aliases. Do not browse, fetch, inspect files, infer prior outputs, or use price, OHLCV, chart, support/resistance, RSI, MACD, Bollinger, volume, risk/reward, or supply/flow evidence.
 
 Return one candidate per ticker in input order. directional_balance buy and sell sum to 10 in 0.5 increments. overall_direction is BUY when buy >= 6, SELL when sell >= 6, otherwise HOLD. hold_lean is BUY_LEAN only for HOLD 5.5:4.5, SELL_LEAN only for HOLD 4.5:5.5, NEUTRAL for other HOLD balances, and NOT_HOLD otherwise. Do not use fixed weights, probability, expected-return language, or imperative trading commands.
+
+"""
+        + directional_balance_ordinal_calibration_prompt()
+        + """
 
 Every claim and condition must cite only aliases supplied for that ticker. BUY or SELL requires material_directional_anchor_basis with at least one same-direction issuer-level business, earnings, cash-flow, capital, valuation, expectations, or structural-risk anchor. Macro alone is insufficient. Unknown evidence may limit confidence but is not automatically negative. The fundamental new-buyer and holder stances are pre-timing views. Business invalidation and reevaluation conditions must be issuer-specific and non-price. Keep all prose concise and natural Korean. Do not put exact numbers in prose. Never state unsupported FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, or runway months.
 
