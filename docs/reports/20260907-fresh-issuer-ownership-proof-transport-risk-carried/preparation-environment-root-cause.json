@@ -1,0 +1,22 @@
+{
+  "canonical_env_override_configured": false,
+  "contract": "risk-carried-source-configuration-audit-v1",
+  "diagnosis": "EXECUTOR_ENV_BINDING_MISSING_REQUIRED_SOURCE_SETTINGS",
+  "frozen_candidate_budget_reopened": 0,
+  "missing_required_settings": [
+    "OPENDART_API_KEY",
+    "SEC_USER_AGENT"
+  ],
+  "model_subprocess_count": 0,
+  "next_scope": "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR",
+  "readiness": "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED",
+  "required_setting_presence": {
+    "OPENDART_API_KEY": false,
+    "SEC_USER_AGENT": false
+  },
+  "secret_values_recorded": 0,
+  "selection_policy_sha256": "07defbbe29042495ebaa08cb24ca5fcc57cd42c859bfbf80ccc5d984068b2f8f",
+  "source_retry_executed": 0,
+  "status": "CONFIRMED_PRE_MODEL_BLOCKER",
+  "working_directory_env_file_present": false
+}

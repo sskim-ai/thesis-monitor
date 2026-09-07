@@ -1,0 +1,17 @@
+{
+  "contract": "risk-carried-source-lock-precommit-summary-v1",
+  "execution_seal": null,
+  "precommit": {
+    "contract": "20-new-holdout-precommit-v1",
+    "model_subprocess_count": 0,
+    "reason": "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE",
+    "status": "NOT_RUN_PRE_MODEL"
+  },
+  "source_lock": {
+    "contract": "19-new-source-lock-v1",
+    "model_subprocess_count": 0,
+    "reason": "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE",
+    "status": "NOT_RUN_PRE_MODEL"
+  },
+  "status": "NOT_RUN"
+}

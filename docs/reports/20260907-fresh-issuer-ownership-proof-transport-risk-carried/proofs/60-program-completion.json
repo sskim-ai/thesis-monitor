@@ -1,0 +1,100 @@
+{
+  "accepted_stage_rows": 0,
+  "attempted_contexts": 0,
+  "base_sha": "446b5ce077d7a5ec0d2a8429fa95f0e23bf8f9d4",
+  "branch": "codex/20260907-fresh-issuer-ownership-proof-transport-risk-carried",
+  "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+  "checked_stage_rows": 0,
+  "composed_rows": 0,
+  "contract": "fresh-issuer-ownership-proof-transport-risk-carried-v1",
+  "core_stability": "NOT_MEASURED",
+  "diff_check": "PASS",
+  "exclusion_registry_count": 117,
+  "exclusion_registry_hash": "7ffd6fed1125e88073efb867d3d5adc4024a0f22485e0c376151fbe5e3b6b437",
+  "exposure_state": "UNEXPOSED",
+  "failed_contexts": 0,
+  "focused_tests": "PASS",
+  "formal_generalization": "NOT_MEASURED",
+  "frozen_evaluation_cutoff": "2026-09-07T15:27:51+00:00",
+  "full_tests": "PASS",
+  "future_unseen_reuse_allowed": "SEPARATE_EXPLICIT_DECISION_REQUIRED",
+  "historical_predecessor_zip_sha256": "1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3",
+  "implementation_commit": "5ba88676537faf71f16b19208bee17ab68d95616",
+  "input_integrity_status": "PASS",
+  "input_zip_sha256": "1546b6830ab350f7d7cee68f8b2732806aa5e53b3a5cde8ed4648ee1223d49ec",
+  "issuer_market_mix": {
+    "kr": 0,
+    "us": 0
+  },
+  "kr_source_target_status": "FAIL",
+  "next_scope": "BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR",
+  "not_run_contexts": 32,
+  "observed_cli_retry_signal_count": 0,
+  "observed_disconnect_count": 0,
+  "observed_paused_schedule_count": 8,
+  "open_message_quality_findings": "NOT_MEASURED",
+  "ordered_issuers": [],
+  "orphan_count": 0,
+  "pause_observed_at": "2026-09-07T15:26:55.144078+00:00",
+  "planned_contexts": 32,
+  "proof_status": "STOPPED_PRE_MODEL_PREPARATION_CONFIGURATION_FAILURE",
+  "quality_gate_role": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+  "raw_output_document_count": 0,
+  "raw_stage_rows": 0,
+  "readiness": "NOT_READY_PREPARATION_CONFIGURATION_BLOCKED",
+  "real_model_invocation_count": 0,
+  "rendered_rows": 0,
+  "request_accepted_observability": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+  "retirement_state": "NOT_APPLICABLE_NO_LOCKED_COHORT",
+  "ruff": "PASS",
+  "run_results": {
+    "a": "NOT_RUN",
+    "b": "NOT_RUN",
+    "c": "NOT_RUN",
+    "first": "NOT_RUN"
+  },
+  "runtime_reliability_status": "NOT_ESTABLISHED",
+  "same_cohort_tuning_rerun_allowed": 0,
+  "selection_policy_hash": "07defbbe29042495ebaa08cb24ca5fcc57cd42c859bfbf80ccc5d984068b2f8f",
+  "semantic_revelation_state": "NOT_MEASURED",
+  "source_configuration": {
+    "canonical_env_override_configured": false,
+    "contract": "risk-carried-source-configuration-audit-v1",
+    "diagnosis": "EXECUTOR_ENV_BINDING_MISSING_REQUIRED_SOURCE_SETTINGS",
+    "missing_required_settings": [
+      "OPENDART_API_KEY",
+      "SEC_USER_AGENT"
+    ],
+    "required_setting_presence": {
+      "OPENDART_API_KEY": false,
+      "SEC_USER_AGENT": false
+    },
+    "secret_values_recorded": 0,
+    "status": "FAIL",
+    "working_directory_env_file_present": false
+  },
+  "source_generation_id": null,
+  "source_lock": null,
+  "source_provider_totals": {
+    "kr": {
+      "profile_requests": 48,
+      "profile_successes": 0
+    },
+    "us": {
+      "profile_requests": 17,
+      "profile_successes": 0
+    }
+  },
+  "status": "STOPPED",
+  "stop_reason": "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE",
+  "successful_contexts": 0,
+  "terminal_contexts": 0,
+  "timing_stability": "NOT_MEASURED",
+  "unexpected_active_paths": [],
+  "unique_issuer_output_count": 0,
+  "upstream_request_attempt_count": "NOT_APPLICABLE_NO_MODEL_SPAWN",
+  "us_source_target_status": "FAIL",
+  "validation_recorded_at": "2026-09-07T16:00:31.650611+00:00",
+  "work_instruction_commit": "badcf61634adc4cb343f6e8de499ce619831220f",
+  "wrapper_retry_count": 0
+}
