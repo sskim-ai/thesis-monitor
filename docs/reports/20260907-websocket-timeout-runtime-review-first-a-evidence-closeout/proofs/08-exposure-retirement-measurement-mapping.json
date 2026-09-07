@@ -1,0 +1,39 @@
+{
+  "cohort": [
+    "NU",
+    "LNG",
+    "TCI",
+    "WMG",
+    "043100",
+    "025000",
+    "131030",
+    "372910",
+    "130740",
+    "045340",
+    "006910",
+    "288980",
+    "023440",
+    "064820",
+    "001440",
+    "073490"
+  ],
+  "contract": "original-derived-exposure-measurement-mapping-v1",
+  "derived_measured_scope_state": {
+    "cohort_unique_issuer_exposure": "FULLY_EXPOSED",
+    "completed_run_hard_gate_scope": "FIRST_AND_A",
+    "completed_run_semantic_observation": "NO_REPORTED_HARD_DEFECT_IN_MEASURED_SCOPE",
+    "formal_generalization": "NOT_ESTABLISHED",
+    "future_unseen_holdout_reuse_allowed": 0,
+    "proof_completion": "INCOMPLETE_TRANSPORT_FAILURE",
+    "retirement_reason": "INCOMPLETE_A_B_C_AFTER_FULL_COHORT_EXPOSURE"
+  },
+  "original_enum_values_preserved": true,
+  "original_report_state": {
+    "holdout_output_exposure_state": "FULLY_EXPOSED",
+    "holdout_retirement_state": "RETIRED_PARTIAL_EXPOSURE",
+    "holdout_semantic_revelation_state": "NOT_MEASURED",
+    "status": "STOPPED"
+  },
+  "retired_cohort_replayed": 0,
+  "status": "PASS"
+}

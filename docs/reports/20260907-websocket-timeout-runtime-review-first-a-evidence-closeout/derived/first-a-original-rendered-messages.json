@@ -1,0 +1,328 @@
+{
+  "contract": "derived-original-rendered-message-export-v1",
+  "derivative_not_model_output": true,
+  "row_count": 32,
+  "rows": [
+    {
+      "composed_sha256": "3344d36c79eec5911c9e2498f8996e36dcc33b01baf64f3476a3bfea08ba2c4f",
+      "core_input_sha256": "88ff6d6c470b16beda0ee21c0cea62276b8f7b9076539efb088685282f04d5d7",
+      "rendered_message": "🏢 Nu Holdings Ltd.(NU)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 공식 매출과 순이익은 긍정적이지만 세부 사업 KPI와 밸류에이션 근거가 부족해 방향은 보유로 제한된다.\n\n🆕 신규 관찰자 근거\n• 수익은 확인됐으나 사업 지속성과 세부 실행 근거가 부족해 추가 확인이 필요하다.\n• 사업 확인 조건: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되는 경우다.\n• 이유: 승인된 눌림 구간과 확인 수준이 모두 없어 가격 구조 관찰로 제한한다.\n\n💼 보유자 근거\n• 공식 수익 기반은 보유 논리를 지지하지만 후속 사업 지표 확인이 필요하다.\n• 가격 재점검 · 하방: $14.28\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반이 약화되고 순이익이 적자로 전환되거나 핵심 사업 실행이 실패하는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되면 상향 재평가한다.\n• SELL 쪽: 향후 공식 공시에서 매출 기반 약화나 순손실 전환이 확인되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 0,
+      "ticker": "NU",
+      "timing_input_sha256": "96823dfc03e7fd3a1fb0e5b6539166d7b1ab521666fb019337d487950e95b01f"
+    },
+    {
+      "composed_sha256": "69ae18fbd86b74af81cc27bb7ac91af6d9271c3e0e8d9b00fb3bd3f8a648dd0c",
+      "core_input_sha256": "dbe083c687d52e78d2a2e2c6ce6588e6394d3d97b621dbb9220e541d03fd6185",
+      "rendered_message": "🏢 Cheniere Energy, Inc.(LNG)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 최근 매출과 순이익은 사업 기반을 지지하지만 운영 KPI와 밸류에이션 검증이 없어 보유가 적절하다.\n\n🆕 신규 관찰자 근거\n• 공식 수익은 긍정적이지만 세부 운영과 지속성 근거가 부족해 확인이 필요하다.\n• 사업 확인 조건: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 운영 KPI 실행이 확인되는 경우다.\n• 이유: 상승 추세에도 현 위치의 손익비와 과열 부담이 크고 승인된 진입 선택지가 없다.\n\n💼 보유자 근거\n• 최근 수익 기반은 보유 논리를 지지하지만 운영 지속성 확인이 필요하다.\n• 가격 재점검 · 하방: $269.65\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반이 약화되거나 순이익이 손실로 전환되고 핵심 운영 실행이 부진한 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 운영 KPI 실행이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약해지거나 순이익이 손실로 전환되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 1,
+      "ticker": "LNG",
+      "timing_input_sha256": "bd14a6dc1775fd238285d683af9566003d1478faef8ced0248fcb68457185c06"
+    },
+    {
+      "composed_sha256": "4e3004487d3473824636da585c5581ee9cd0b735d3cdf8dc1019f39694dc8c38",
+      "core_input_sha256": "415ad2c82d62b338c890ab9f8f6a5e15a5c752feedf3a6c860253b3ca6a6d0a1",
+      "rendered_message": "🏢 TRANSCONTINENTAL REALTY INVESTORS INC(TCI)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 매출은 확인되지만 순손실이 수익성 취약성을 보여주며, 세부 운영과 밸류에이션도 미확인이라 보유 내 매도 우위다.\n\n🆕 신규 관찰자 근거\n• 매출 기반은 있으나 수익성 회복과 운영 개선이 확인될 때까지 판단을 유보한다.\n• 사업 확인 조건: 후속 공식 공시에서 흑자 전환과 매출 기반의 지속성 및 핵심 부동산 운영 KPI 개선이 확인되는 경우다.\n• 이유: 광범위한 약세와 불리한 현 위치 손익비가 이어지고 승인된 진입 선택지도 없다.\n\n💼 보유자 근거\n• 현재 순손실 때문에 보유 논리를 재검토해야 하지만 단정할 운영 근거는 부족하다.\n• 가격 재점검 · 하방: $32.46\n• 기업가치 무효화: 후속 공식 공시에서도 순손실이 지속되거나 확대되고 매출 기반까지 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 흑자 전환과 매출 기반의 지속성 및 핵심 운영 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 순손실이 지속되거나 확대되고 매출 기반까지 약화되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 2,
+      "ticker": "TCI",
+      "timing_input_sha256": "ff9725bf3db4062dbad5b26c94f03ef1abf26de9cd189b8afb5b53d6348fe698"
+    },
+    {
+      "composed_sha256": "84c890a60562b3966648df7d11bda75391c1609ddc3fdddd880fa0ee07dbba72",
+      "core_input_sha256": "485f33ca4285de269c06a58449b6e955763833c1250163e2cefc73801c9083fc",
+      "rendered_message": "🏢 Warner Music Group Corp.(WMG)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 최근 매출과 순이익은 사업 기반을 지지하지만 세부 KPI와 밸류에이션 근거가 부족해 보유가 적절하다.\n\n🆕 신규 관찰자 근거\n• 공식 수익은 긍정적이지만 세부 사업 실행과 지속성 근거가 부족해 확인이 필요하다.\n• 사업 확인 조건: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되는 경우다.\n• 이유: 장기 약세가 지속되고 승인된 눌림 또는 확인 선택지가 없어 신규 접근을 피한다.\n\n💼 보유자 근거\n• 최근 수익 기반은 보유 논리를 지지하지만 사업 지속성 확인이 필요하다.\n• 가격 재점검 · 하방: $28.21\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반이 약화되거나 순이익이 손실로 전환되고 핵심 사업 실행이 부진한 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약해지거나 순이익이 손실로 전환되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 3,
+      "ticker": "WMG",
+      "timing_input_sha256": "ad1363da45628eede79029bc76b8d776efaeff692d45877ca57454224065e5ad"
+    },
+    {
+      "composed_sha256": "d6f5eb6eca0ddc2f1a292ed2583d3595bc760890447170360bdb469139d9a8f9",
+      "core_input_sha256": "b6cc529d53f5d69123730ade7b44fa4fab8069c9a7be65bff003faff7546d7e6",
+      "rendered_message": "🏢 알파AI(043100)\n\n🧠 판단: SELL · BUY:SELL 4:6\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REDUCE\n\n🎯 핵심 판단\n• 매출은 확인됐지만 영업손실과 순손실이 함께 나타났고 지속성 및 밸류에이션 근거도 부족해 매도 우위다.\n\n🆕 신규 관찰자 근거\n• 현재 손실과 미확인된 실행 성과로 신규 접근의 사업 근거가 부족하다. [E09, E04]\n• 사업 확인 조건: 영업 및 순손익의 흑자 전환과 검증 가능한 사업 KPI 개선이 함께 확인되는 경우다.\n• 이유: 장기 약세와 거래활동 공백이 뚜렷하고 검증된 진입 또는 확인 선택지도 없어 가격 접근 여건이 형성되지 않았다.\n\n💼 보유자 근거\n• 현재 분기 손실이 핵심 사업 판단을 약화시킨다. [E09]\n• 기업가치 무효화: 후속 공식 공시에서 영업손익과 순손익이 흑자로 전환되고 사업 KPI 개선이 동반되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 영업손익과 순손익이 흑자로 전환되고 사업 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서도 영업손실과 순손실이 이어지거나 매출 기반이 약화되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 4,
+      "ticker": "043100",
+      "timing_input_sha256": "e5417f536565b709de3417835a4680e411cb90aad4023ce4f530cc33bfec8e1b"
+    },
+    {
+      "composed_sha256": "bc6655a4cd3898c47ec16e6fcc92fa1d77545f0ee515194f508b6034b7b788a9",
+      "core_input_sha256": "06b6447b589562ab7cb2753159050995928b6333879467bd1e52cc7cc26a5822",
+      "rendered_message": "🏢 KPX케미칼(025000)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 현재 수익성은 긍정적이지만 지속성 KPI와 밸류에이션 근거가 없어 보유 가능하되 신규 판단은 대기할 사안이다.\n\n🆕 신규 관찰자 근거\n• 수익성은 긍정적이나 지속성과 가격 매력도 확인 전에는 판단을 유보한다. [E08, E07, E09]\n• 사업 확인 조건: 현재 흑자의 지속, 세부 사업 KPI, 안전한 밸류에이션 근거가 함께 확인되는 경우다.\n• 이유: 중장기 추세 기반은 유지되지만 인접 저항과 불리한 현재 손익비가 겹치고 검증된 진입 선택지가 없다.\n\n💼 보유자 근거\n• 현재 흑자가 사업 보유 근거를 지지하지만 지속성 확인은 남아 있다. [E08, E07]\n• 가격 재점검 · 하방: KRW 51,979.09\n• 기업가치 무효화: 후속 공식 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 흑자 지속과 이를 뒷받침하는 사업 KPI가 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약화되거나 영업손익과 순손익이 적자로 전환되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 5,
+      "ticker": "025000",
+      "timing_input_sha256": "7a8f6f7a67e4867a1b43a91f0cf7bb686d09248769410dfed9254e3b29b3b03f"
+    },
+    {
+      "composed_sha256": "67c916095d378da92e23a54bb5c544a864ecf015ea9036bc9c2ef927380eead7",
+      "core_input_sha256": "cc1672cd3495d7fcbb5177bea816962e3b78f428297df479d703b53f58b70246",
+      "rendered_message": "🏢 옵투스제약(131030)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 현재 수익성은 긍정적이지만 별도재무 범위와 미확인 KPI 및 밸류에이션이 확신을 제한한다.\n\n🆕 신규 관찰자 근거\n• 수익성은 긍정적이나 실적 범위와 지속성 및 가격 매력도 확인이 남아 있다. [E10, E05, E07]\n• 사업 확인 조건: 현재 흑자의 지속, 세부 사업 KPI, 안전한 밸류에이션 근거가 함께 확인되는 경우다.\n• 이유: 다중 시간대 약세와 낮은 거래 강도가 이어지고 검증된 진입 또는 돌파 선택지도 없어 가격 여건이 보수적이다.\n\n💼 보유자 근거\n• 현재 별도재무 흑자는 보유 근거를 지지하지만 범위와 지속성 확인이 필요하다. [E10, E05]\n• 가격 재점검 · 하방: KRW 5,008.23\n• 기업가치 무효화: 후속 공식 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 흑자 지속과 이를 뒷받침하는 사업 KPI가 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약화되거나 영업손익과 순손익이 적자로 전환되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 6,
+      "ticker": "131030",
+      "timing_input_sha256": "9ca3539dea29aea3a385f02aad09d6b1d1950539560ccdf78532e273707d0876"
+    },
+    {
+      "composed_sha256": "64b70943769331a039988360b7138dac98d98dd3c6ff0fe7b0e7e1750bbac6aa",
+      "core_input_sha256": "869084ae7e52785d2bf5e4e760b7e11b3552c681e1395f63afa24c35e103a994",
+      "rendered_message": "🏢 한컴라이프케어(372910)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 현재 연결 수익성은 긍정적이지만 지속성 KPI와 밸류에이션 근거가 없어 보유 가능하되 신규 판단은 대기할 사안이다.\n\n🆕 신규 관찰자 근거\n• 연결 수익성은 긍정적이나 지속성과 가격 매력도 확인 전에는 판단을 유보한다. [E10, E05, E06]\n• 사업 확인 조건: 현재 흑자의 지속, 세부 사업 KPI, 안전한 밸류에이션 근거가 함께 확인되는 경우다.\n• 이유: 장기 추세 훼손과 부정적인 자금흐름이 이어지고 검증된 진입 또는 확인 선택지도 없어 가격 여건이 불리하다.\n\n💼 보유자 근거\n• 현재 연결 흑자가 사업 보유 근거를 지지하지만 지속성 확인은 남아 있다. [E10, E05]\n• 기업가치 무효화: 후속 공식 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 흑자 지속과 이를 뒷받침하는 사업 KPI가 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약화되거나 영업손익과 순손익이 적자로 전환되면 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 7,
+      "ticker": "372910",
+      "timing_input_sha256": "2ea45e27533625cc4452818505139ff7bba116800278f37ca3b6f114e773ebad"
+    },
+    {
+      "composed_sha256": "d199a923bd7bbfdf63d43025b6e9bd09b4a7eb703760b288a50248ab898d96f1",
+      "core_input_sha256": "c3e3a8af8cccd50c2ecc0f71eaeb797e1803daa8f2aca449e64ea92f428944df",
+      "rendered_message": "🏢 티피씨글로벌(130740)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업흑자와 순손실이 엇갈려 뚜렷한 방향보다 관찰이 적절하다.\n\n🆕 신규 관찰자 근거\n• 수익성 혼조와 사업 지표·밸류에이션 공백이 해소되기 전에는 판단을 유보한다.\n• 사업 확인 조건: 순이익 흑자와 세부 사업 지표의 지속성이 확인되고 검증 가능한 밸류에이션 근거가 확보되는 경우다.\n• 이유: 검증된 되돌림·확인 선택지가 없고 현재 손익비도 불리해 가격상 신규 진입 설정이 없다.\n\n💼 보유자 근거\n• 영업흑자가 완충하지만 최종 수익성의 적자로 보유 논리 점검이 필요하다.\n• 가격 재점검 · 하방: KRW 1,664.2\n• 기업가치 무효화: 영업이익까지 적자로 전환하거나 순손실이 지속되면서 매출 기반도 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자가 순이익 흑자로 이어지고 세부 사업 지표로 지속성이 확인될 경우 상향 재평가한다.\n• SELL 쪽: 영업이익까지 적자로 전환하거나 순손실이 지속되고 매출 기반이 약해질 경우 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 8,
+      "ticker": "130740",
+      "timing_input_sha256": "d14305ab032cb5bd9bc9e89874bdbbcdf3359e6359573aaf63ba0a8c236c1239"
+    },
+    {
+      "composed_sha256": "b46a930b9f57af3a8cf1a6be3a00b402934bfdc9d7f59346ffe9f245ccd6277f",
+      "core_input_sha256": "ec911053cfbadc522586aa3ec310cc621bff56e83de914286f295cd51d6ed8cd",
+      "rendered_message": "🏢 토탈소프트(045340)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 매출을 바탕으로 영업·순이익 흑자가 확인돼 사업 방향은 긍정적이다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 긍정적이지만 지속성과 밸류에이션 확인이 필요하다.\n• 사업 확인 조건: 영업·순이익 흑자의 반복성과 세부 사업 지표가 확인되고 검증 가능한 밸류에이션 근거가 확보되는 경우다.\n• 이유: 현재와 지지 기준 손익비가 모두 불리하고 검증된 되돌림·확인 선택지가 없어 가격상 신규 진입 설정이 없다.\n\n💼 보유자 근거\n• 현재 수익성은 보유 논리를 지지하지만 지속성 확인은 필요하다.\n• 가격 재점검 · 하방: KRW 6,572.84\n• 기업가치 무효화: 영업·순이익이 적자로 전환하거나 매출과 핵심 사업 지표가 함께 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업·순이익 흑자가 반복되고 세부 사업 지표가 지속성을 뒷받침할 경우 추가 상향 재평가한다.\n• SELL 쪽: 영업 또는 순이익이 적자로 전환하거나 매출과 핵심 사업 지표가 약화될 경우 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 9,
+      "ticker": "045340",
+      "timing_input_sha256": "41cb0561b9a84ed5758b9a47d5db5ad7015a3280154b3c043bb010c5a5428f54"
+    },
+    {
+      "composed_sha256": "49493c8f44ea00e99e8a87a1b69e29acd5907660e06fd5c3150abc70395e6a30",
+      "core_input_sha256": "86a6aa78198a15e38639a953b0bb98f118d631cc2601f2e9fe2f7e2417e072db",
+      "rendered_message": "🏢 보성파워텍(006910)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 매출을 바탕으로 영업·순이익 흑자가 확인돼 사업 방향은 긍정적이다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 긍정적이지만 지속성과 밸류에이션 확인이 필요하다.\n• 사업 확인 조건: 영업·순이익 흑자의 반복성과 세부 사업 지표가 확인되고 검증 가능한 밸류에이션 근거가 확보되는 경우다.\n• 이유: 현재 가격 손익비는 불리하고 검증된 되돌림·확인 선택지가 없어 가격상 신규 진입 설정이 없다.\n\n💼 보유자 근거\n• 현재 수익성은 보유 논리를 지지하지만 지속성 확인은 필요하다.\n• 가격 재점검 · 하방: KRW 5,984.36\n• 기업가치 무효화: 영업·순이익이 적자로 전환하거나 매출과 핵심 사업 지표가 함께 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업·순이익 흑자가 반복되고 세부 사업 지표가 지속성을 뒷받침할 경우 추가 상향 재평가한다.\n• SELL 쪽: 영업 또는 순이익이 적자로 전환하거나 매출과 핵심 사업 지표가 약화될 경우 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 10,
+      "ticker": "006910",
+      "timing_input_sha256": "ea2537facd288eeb6fe3c7632b042d43638aac7f0b7fd3fec1fb832f1eb4f73a"
+    },
+    {
+      "composed_sha256": "de5377ff71e4fee8ccbab927dcf56a703e3d7aa4fcc170214c6d19ae3ecdca03",
+      "core_input_sha256": "be6938d17a01df6af15c989c48ccc566d16ae7f961ffd90935ac4deb5d9ca3af",
+      "rendered_message": "🏢 모아데이타(288980)\n\n🧠 판단: SELL · BUY:SELL 3.5:6.5\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REDUCE\n\n🎯 핵심 판단\n• 매출은 발생했지만 영업손실과 순손실이 함께 나타나 사업 방향은 부정적이다.\n\n🆕 신규 관찰자 근거\n• 수익성 회복과 사업 지표 확인 전에는 신규 접근의 근거가 부족하다.\n• 사업 확인 조건: 영업·순이익 흑자 전환과 세부 사업 지표의 개선이 확인되고 검증 가능한 밸류에이션 근거가 확보되는 경우다.\n• 이유: 지지·돌파 설정과 검증된 가격 선택지가 모두 없고 하락 구조가 지배적이어서 가격상 신규 진입 설정이 없다.\n\n💼 보유자 근거\n• 현재의 이중 손실은 보유 논리를 약화하며 수익성 회복 확인이 필요하다.\n• 기업가치 무효화: 영업손실과 순손실이 해소되고 이후에도 수익성이 유지되며 세부 사업 지표가 이를 뒷받침하는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업손실과 순손실이 해소되고 매출이 수익성으로 연결되며 사업 지표가 개선될 경우 상향 재평가한다.\n• SELL 쪽: 영업·순손실이 지속되거나 확대되고 매출 기반도 약화될 경우 추가 하향 재평가한다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 11,
+      "ticker": "288980",
+      "timing_input_sha256": "bf2d38f9d88f64c76827611a8c2c92646b2ed86518e168b6d09f1b6cd6b5e24a"
+    },
+    {
+      "composed_sha256": "dd36451162defb0e31857aedac61c054ff6e789b7d7e7cefabef913527e0ce04",
+      "core_input_sha256": "f762a3f862801076a4c47362d5d457edac21abc9bd1a44d42a73c821c6609e31",
+      "rendered_message": "🏢 제이스코홀딩스(023440)\n\n🧠 판단: SELL · BUY:SELL 4:6\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REDUCE\n\n🎯 핵심 판단\n• 매출은 발생했지만 본업 영업손실이 순이익 흑자보다 방향 판단에 더 중요하다.\n\n🆕 신규 관찰자 근거\n• 순이익 흑자만으로 본업 수익성 약점을 상쇄했다고 보기 어렵다.\n• 사업 확인 조건: 영업흑자 전환 후 핵심 사업 KPI로 수익 지속성이 확인되는 경우다.\n• 이유: 검증된 눌림목과 확인 기준이 모두 없어 가격 기반 진입 방식은 비어 있다.\n\n💼 보유자 근거\n• 본업 영업손실로 보유 논거가 약하다.\n• 기업가치 무효화: 영업손실이 이어지는 가운데 순손익도 적자로 전환되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자 전환과 핵심 사업 KPI의 지속성 확인은 상방 재평가 근거다.\n• SELL 쪽: 영업손실이 이어지고 순손익까지 적자로 전환되면 하방 재평가가 강화된다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 12,
+      "ticker": "023440",
+      "timing_input_sha256": "7e3c9fa726c6069c59f850225090d8331a6b27d89a64d6a97df73f80ce1fc575"
+    },
+    {
+      "composed_sha256": "3e5706281fa2f34a17dd0a38dabc018d39c52675f1f0eac9586ef2723269f817",
+      "core_input_sha256": "675d036b4b87fb52a70353550872c84fa8b276d0f4e9313ae0ab8c62b50d63c6",
+      "rendered_message": "🏢 케이프(064820)\n\n🧠 판단: HOLD · BUY:SELL 5:5\nHOLD 성향: 중립 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업흑자와 순손실이 공존해 어느 한 방향의 사업 판단도 충분히 강하지 않다.\n\n🆕 신규 관찰자 근거\n• 본업 흑자가 최종손익 개선으로 연결되는지 확인이 필요하다.\n• 사업 확인 조건: 영업흑자가 유지되고 순이익도 흑자로 전환되며 세부 KPI가 확인되는 경우다.\n• 이유: 허용된 눌림목과 확인 기준이 모두 없어 가격 기반 진입 방식은 비어 있다.\n\n💼 보유자 근거\n• 영업흑자는 긍정적이지만 순손실 때문에 보유 논거의 점검이 필요하다.\n• 가격 재점검 · 하방: KRW 6,874.55\n• 기업가치 무효화: 영업손익이 적자로 전환되고 순손실이 이어지는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자 유지와 순이익 흑자 전환이 확인되면 상방 재평가 근거가 된다.\n• SELL 쪽: 영업손익이 적자로 전환되고 순손실이 이어지면 하방 재평가가 필요하다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 13,
+      "ticker": "064820",
+      "timing_input_sha256": "3d24939b05b03d82847336df295bc2da85b90774aa187524566267823b89a7aa"
+    },
+    {
+      "composed_sha256": "97050ee5827afcf9a921bdb3f35a19bc087b3098721e35a9002ae59d490684d9",
+      "core_input_sha256": "2b8539a2a65eb040e5d788e4d50b83a7f9edeb000ce78c1266312e566281f8ae",
+      "rendered_message": "🏢 대한전선(001440)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 본업 영업흑자에도 순손실 부담이 더 크게 나타나 중립보다 하방 쪽으로 기운다.\n\n🆕 신규 관찰자 근거\n• 본업 흑자가 최종손익 개선으로 연결되는지 확인이 필요하다.\n• 사업 확인 조건: 영업흑자가 유지되고 순이익이 흑자로 전환되며 세부 KPI가 확인되는 경우다.\n• 이유: 허용된 눌림목과 확인 기준이 모두 없어 가격 기반 진입 방식은 비어 있다.\n\n💼 보유자 근거\n• 영업흑자에도 큰 순손실이 있어 보유 논거의 점검이 필요하다.\n• 가격 재점검 · 하방: KRW 23,650.38\n• 기업가치 무효화: 영업손익이 적자로 전환되거나 순손실 부담이 이어지는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자 유지와 순이익 흑자 전환이 세부 KPI로 확인되면 상방 재평가 근거가 된다.\n• SELL 쪽: 영업손익이 적자로 전환되거나 순손실 부담이 이어지면 하방 재평가가 강화된다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 14,
+      "ticker": "001440",
+      "timing_input_sha256": "7b993d8d8658663089c053b23ee8cc898c9017393928b6f6abc00f599f8efc38"
+    },
+    {
+      "composed_sha256": "d6ac03609dbbf4de1ff81fd48757dea702ed616761d41c28a6341f4fe71c82d9",
+      "core_input_sha256": "35be73415ddf76af5466081570157dd574537c5598c6ef723b304843bbfd6c96",
+      "rendered_message": "🏢 LIG아큐버(073490)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업이익과 순이익의 동반 흑자가 긍정적 방향을 지지하지만 지속성 확인은 남아 있다.\n\n🆕 신규 관찰자 근거\n• 사업 수익성 기준으로는 긍정적이지만 가격 매력도는 별도 확인이 필요하다.\n• 사업 확인 조건: 영업이익과 순이익의 흑자가 이어지고 핵심 사업 KPI가 확인되는 경우다.\n• 이유: 허용된 눌림목과 확인 기준이 모두 없어 가격 기반 진입 방식은 비어 있다.\n\n💼 보유자 근거\n• 영업이익과 순이익의 동반 흑자가 보유 논거를 지지한다.\n• 가격 재점검 · 하방: KRW 22,483.91\n• 기업가치 무효화: 영업이익이나 순이익이 적자로 전환되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업이익과 순이익의 흑자가 이어지고 핵심 사업 KPI가 확인되면 상방 재평가가 강화된다.\n• SELL 쪽: 영업이익이나 순이익이 적자로 전환되면 하방 재평가가 필요하다.\n",
+      "run": "FIRST",
+      "summary_member": "reports/proofs/27-first-execution-summary.json",
+      "summary_row_index": 15,
+      "ticker": "073490",
+      "timing_input_sha256": "9ea5305ad022b5af25da2c2815678f2548ffcb5e9d138eab04522869f9fb5eab"
+    },
+    {
+      "composed_sha256": "01f33a702edfada3d2e617d63d6e542e6188c42204da0801fe2016a335a48cbc",
+      "core_input_sha256": "4eaa019c4c63269cb57bcffe14996a456970abb7d960cee5d7c224645bf44706",
+      "rendered_message": "🏢 Nu Holdings Ltd.(NU)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 이익을 내는 사업 기반은 긍정적이지만 실적 최신성과 세부 KPI, 가치평가 확인이 부족해 보유 판단이 적절하다.\n\n🆕 신규 관찰자 근거\n• 사업 기반은 긍정적이나 최신 KPI와 가치평가 근거가 부족해 신규 관점에서는 확인이 우선이다.\n• 사업 확인 조건: 더 최근의 공식 공시에서 매출 기반과 이익 창출의 지속성이 확인되는 경우다.\n• 이유: 등록된 되돌림·확인 가격이 없고 지지와 저항이 겹쳐 진입 방식은 설정되지 않는다.\n\n💼 보유자 근거\n• 확인된 수익성과 매출 기반은 보유 논거를 지지하지만 최신 사업 검증이 필요하다.\n• 가격 재점검 · 하방: $14.28\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반 약화와 이익 훼손이 함께 확인되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출 기반과 이익 창출의 지속성이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반이 약화되고 귀속이익이 훼손되면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 0,
+      "ticker": "NU",
+      "timing_input_sha256": "5fc67b8865fc22cdacd15d6fea9869a843f7a820b11d506abef1bab25cd30f4c"
+    },
+    {
+      "composed_sha256": "fd5618d1ff0b21c947200fc8c346dd91fdd1ed7b113826f611c736a3c2a4adb7",
+      "core_input_sha256": "6223abe7ff68f30f57756691a4a397064331d5a68513f0effd41f882e3cd191a",
+      "rendered_message": "🏢 Cheniere Energy, Inc.(LNG)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 최근 이익과 매출은 긍정적이지만 세부 KPI와 가치평가 근거가 없어 보유 판단이 적절하다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 긍정적이나 가치평가와 실행 근거가 부족해 신규 관점에서는 확인이 우선이다.\n• 사업 확인 조건: 후속 공식 공시에서 매출과 이익의 지속성 및 핵심 사업 KPI가 확인되는 경우다.\n• 이유: 등록된 되돌림·확인 가격이 없으며 상단 근접과 불리한 현재 손익비로 진입 방식은 설정되지 않는다.\n\n💼 보유자 근거\n• 최근 공식 실적은 보유 논거를 지지하지만 세부 사업 검증은 남아 있다.\n• 가격 재점검 · 하방: $269.65\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반과 귀속이익이 함께 뚜렷하게 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출과 이익의 지속성 및 핵심 사업 KPI가 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반과 귀속이익이 함께 약화되면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 1,
+      "ticker": "LNG",
+      "timing_input_sha256": "c096be444bfff7bbf5433d45b3990d72e96f7b16f85d933f9f33ef5697575fb4"
+    },
+    {
+      "composed_sha256": "b60bd6fda8d2de7063aa2ef095ddcfcf76b59ee21507813d39a7c8ea9f850d9d",
+      "core_input_sha256": "5212266056a21bf9c4db0f9f91e787fe16ac062ef1a26c443f296d03f4d5df32",
+      "rendered_message": "🏢 TRANSCONTINENTAL REALTY INVESTORS INC(TCI)\n\n🧠 판단: SELL · BUY:SELL 4:6\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 매출은 존재하지만 최근 순손실이 핵심 약점이며 세부 KPI와 가치평가도 미확인이어서 방향은 부정적이다.\n\n🆕 신규 관찰자 근거\n• 현재 순손실이 확인되고 세부 사업 근거도 부족해 신규 관점의 사업 확인 조건이 충족되지 않았다.\n• 사업 확인 조건: 후속 공식 공시에서 흑자 전환과 매출 기반 안정이 함께 확인되는 경우다.\n• 이유: 등록된 되돌림·확인 가격이 없고 약세 흐름과 불리한 현재 손익비가 겹쳐 진입 방식은 설정되지 않는다.\n\n💼 보유자 근거\n• 최근 순손실로 보유 논거의 재검토가 필요하지만 지속성과 자산별 원인은 확인되지 않았다.\n• 가격 재점검 · 하방: $32.46\n• 기업가치 무효화: 후속 공식 공시에서도 순손실이 지속되고 매출 기반까지 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 흑자 전환과 매출 기반 안정이 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서도 순손실이 지속되고 매출 기반이 약화되면 추가 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 2,
+      "ticker": "TCI",
+      "timing_input_sha256": "cea647e0b83368b38b0b6311f66ef00923324a7397bbdbd2583d9e7cb5f654ad"
+    },
+    {
+      "composed_sha256": "e387750873d9fe61808f5d3104500e88009e11780c74fa04e4cecba875b8644f",
+      "core_input_sha256": "ae9bfe89eba03892ed579e7e5f8400008eb16b7aac3c7b5c4ad7dc5b8d7b4820",
+      "rendered_message": "🏢 Warner Music Group Corp.(WMG)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 최근 매출과 이익은 긍정적이지만 세부 KPI와 가치평가 근거가 없어 보유 판단이 적절하다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 긍정적이나 가치평가와 실행 근거가 부족해 신규 관점에서는 확인이 우선이다.\n• 사업 확인 조건: 후속 공식 공시에서 매출과 귀속이익의 지속성 및 핵심 사업 KPI가 확인되는 경우다.\n• 이유: 등록된 되돌림·확인 가격이 없고 지지와 저항이 겹친 혼재 구조여서 진입 방식은 설정되지 않는다.\n\n💼 보유자 근거\n• 최근 공식 실적은 보유 논거를 지지하지만 핵심 사업 KPI의 검증이 필요하다.\n• 가격 재점검 · 하방: $28.21\n• 기업가치 무효화: 후속 공식 공시에서 매출 기반과 귀속이익이 함께 뚜렷하게 약화되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공식 공시에서 매출과 귀속이익의 지속성 및 핵심 사업 KPI가 확인되면 상향 재평가한다.\n• SELL 쪽: 후속 공식 공시에서 매출 기반과 귀속이익이 함께 약화되면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 3,
+      "ticker": "WMG",
+      "timing_input_sha256": "f090dd4912a21a56b225bad863f626e98784e5edf633d8d71847d041d71c0cb8"
+    },
+    {
+      "composed_sha256": "e73476f55a19b5755b0600839e462850cc514786295f16e693a62ff79ebe4c54",
+      "core_input_sha256": "a977d99933b546da59fb707169f7cc67f1fb8956960714643bbc5f34b46e81f7",
+      "rendered_message": "🏢 알파AI(043100)\n\n🧠 판단: SELL · BUY:SELL 3.5:6.5\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REDUCE\n\n🎯 핵심 판단\n• 공식 매출은 확인되지만 영업손실과 순손실이 함께 나타나 현재 방향은 부정적이다.\n\n🆕 신규 관찰자 근거\n• 수익성 회복이 확인되기 전에는 신규 관점이 취약하다.\n• 사업 확인 조건: 알파AI의 영업·순손실 해소와 이를 뒷받침하는 세부 사업 KPI가 함께 확인되는 경우다.\n• 이유: 지지 또는 돌파 설정이 부재해 검증된 진입 형식을 구성할 수 없다.\n\n💼 보유자 근거\n• 현재 손실 구조는 보유 논거를 약화한다.\n• 기업가치 무효화: 알파AI의 후속 공식 실적에서 영업이익과 순이익이 흑자로 전환되고 세부 KPI가 지속성을 뒷받침하는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 알파AI의 영업손실과 순손실이 해소되고 세부 사업 KPI가 수익성 지속을 뒷받침하면 긍정 재평가가 가능하다.\n• SELL 쪽: 알파AI의 후속 공시에서 매출 활동이 둔화되고 영업·순손실이 이어지면 부정 재평가가 강화된다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 4,
+      "ticker": "043100",
+      "timing_input_sha256": "13ca4edeca678bbeeb86d0b4a552820aa2213bd182c6fe9b73d92722d0728d1b"
+    },
+    {
+      "composed_sha256": "253fa07efad21875f7dfa15dc012985fe5a679fb7b439d59cf3f17058332e994",
+      "core_input_sha256": "9dfcda33852614735401aba666248269f201cb9f4031c3c4d98b1f1a84c1de06",
+      "rendered_message": "🏢 KPX케미칼(025000)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 공식 매출과 영업·순이익 흑자가 방향을 지지하지만 지속성 확인은 더 필요하다.\n\n🆕 신규 관찰자 근거\n• 현재 흑자는 긍정적이나 신규 관점에는 지속성 확인이 필요하다.\n• 사업 확인 조건: KPX케미칼의 후속 공식 실적에서도 영업·순이익 흑자가 이어지고 세부 사업 KPI가 이를 뒷받침하는 경우다.\n• 이유: 중장기 흐름은 견조하지만 인접 저항과 취약한 손익비가 겹치며 검증된 진입 수준은 없다.\n\n💼 보유자 근거\n• 현재 공식 이익은 보유 가능성을 지지한다.\n• 가격 재점검 · 하방: KRW 51,979.09\n• 기업가치 무효화: KPX케미칼의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: KPX케미칼의 영업·순이익 흑자가 이어지고 세부 사업 KPI가 지속성을 뒷받침하면 긍정 재평가가 강화된다.\n• SELL 쪽: KPX케미칼의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되면 부정 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 5,
+      "ticker": "025000",
+      "timing_input_sha256": "ef739e089da4caee72788a12d643d254f938b8f75d5627893882268aca9ed77d"
+    },
+    {
+      "composed_sha256": "3b6b02ff94e339d5105f909611ef6402584800cc203d68da32602343cfd7c611",
+      "core_input_sha256": "aa5abdee7858d8ffb5c870369f83308543e79c51e3f03b1b290c50620302a536",
+      "rendered_message": "🏢 옵투스제약(131030)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 공식 매출과 영업·순이익 흑자가 방향을 지지하지만 지속성 확인은 더 필요하다.\n\n🆕 신규 관찰자 근거\n• 현재 흑자는 긍정적이나 신규 관점에는 지속성 확인이 필요하다.\n• 사업 확인 조건: 옵투스제약의 후속 공식 실적에서도 영업·순이익 흑자가 이어지고 세부 사업 KPI가 이를 뒷받침하는 경우다.\n• 이유: 저점 하향 추세와 지지·저항 중첩 속에 검증된 진입 수준이 없다.\n\n💼 보유자 근거\n• 현재 공식 이익은 보유 가능성을 지지한다.\n• 가격 재점검 · 하방: KRW 5,008.23\n• 기업가치 무효화: 옵투스제약의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 옵투스제약의 영업·순이익 흑자가 이어지고 세부 사업 KPI가 지속성을 뒷받침하면 긍정 재평가가 강화된다.\n• SELL 쪽: 옵투스제약의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되면 부정 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 6,
+      "ticker": "131030",
+      "timing_input_sha256": "ecbf78980b816bafd23b5a038cd43d54f358b07566c5721734434acc9fff3b9b"
+    },
+    {
+      "composed_sha256": "08cd4c9e71f55c2911abfd5c78cc96714af3702a953ee470c2c5f42b33d70ce6",
+      "core_input_sha256": "a514846b3b3fecc6d9b64bbe2ba4ec4c6b1618fc394a493fc95e10e44d56d76b",
+      "rendered_message": "🏢 한컴라이프케어(372910)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 공식 매출과 영업·순이익 흑자가 방향을 지지하지만 지속성 확인은 더 필요하다.\n\n🆕 신규 관찰자 근거\n• 현재 흑자는 긍정적이나 신규 관점에는 지속성 확인이 필요하다.\n• 사업 확인 조건: 한컴라이프케어의 후속 공식 실적에서도 영업·순이익 흑자가 이어지고 세부 사업 KPI가 이를 뒷받침하는 경우다.\n• 이유: 분배 신호와 장기 약세가 남아 있고 검증된 진입 수준은 없다.\n\n💼 보유자 근거\n• 현재 공식 이익은 보유 가능성을 지지한다.\n• 기업가치 무효화: 한컴라이프케어의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되는 경우다.\n\n🔄 재평가 조건\n• BUY 쪽: 한컴라이프케어의 영업·순이익 흑자가 이어지고 세부 사업 KPI가 지속성을 뒷받침하면 긍정 재평가가 강화된다.\n• SELL 쪽: 한컴라이프케어의 후속 공식 실적에서 영업이익이나 순이익이 적자로 전환되면 부정 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 7,
+      "ticker": "372910",
+      "timing_input_sha256": "9cd9f8890b45c00a16649d9576b77b904c4d75dce41f4e27a5793a26c5100575"
+    },
+    {
+      "composed_sha256": "d610d19c628a368228a84c22c238e9d2aac99bee0e55bacbb73183bbd791be22",
+      "core_input_sha256": "879aaac069b8b809f05b1df1bbdade258cf87912544e55047d05de94d9a919a3",
+      "rendered_message": "🏢 티피씨글로벌(130740)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업흑자와 순손실이 엇갈리고 가치 및 사업 KPI 근거도 부족해 방향 판단은 신중한 보유 관점이다.\n\n🆕 신규 관찰자 근거\n• 혼재된 손익과 사업 세부 정보 부족으로 신규 관점의 매력도는 아직 확인되지 않았다.\n• 사업 확인 조건: 후속 공시에서 순이익의 흑자 전환과 영업흑자 유지, 세부 사업 KPI 확인이 함께 필요하다.\n• 이유: 현재 가격의 손익비가 불리하고 검증된 되돌림·확인 가격이 없어 진입 조건이 성립하지 않는다.\n\n💼 보유자 근거\n• 본업은 흑자지만 최종 손익이 적자여서 보유 논거를 재검토할 필요가 있다.\n• 가격 재점검 · 하방: KRW 1,664.2\n• 기업가치 무효화: 후속 공시에서 영업흑자가 소멸하고 순손실이 이어지면 현재의 보유 가능성 근거가 훼손된다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공시에서 영업흑자가 유지되고 순이익이 흑자로 전환되며 사업 KPI가 확인되면 상향 재평가할 수 있다.\n• SELL 쪽: 후속 공시에서 영업흑자가 사라지고 순손실이 지속되거나 매출 기반이 약화되면 하향 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 8,
+      "ticker": "130740",
+      "timing_input_sha256": "634cf5400752a7b32656ce7c60aee2ad2f675d4385bbd7a86f1f9ef36ee56f3f"
+    },
+    {
+      "composed_sha256": "7603b8dac6f2f9930c282f4a17417c8a75662e5496623f285529c66b037cb929",
+      "core_input_sha256": "40e6d8729469e7793e34352bb94687e9f07227c325f3b7e82e213dc2683bcb31",
+      "rendered_message": "🏢 토탈소프트(045340)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 현재 흑자 손익은 긍정적이지만 지속성과 가치 근거가 부족해 소폭 긍정적인 보유 관점이다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 우호적이지만 사업 지속성 확인 전 신규 매력도 판단은 이르다.\n• 사업 확인 조건: 후속 공시에서 영업 및 순이익 흑자와 매출 기반이 유지되고 세부 사업 KPI가 확인돼야 한다.\n• 이유: 현재 가격과 지지 시나리오의 손익비가 모두 제한적이고 검증된 진입 가격도 없어 가격 조건이 성립하지 않는다.\n\n💼 보유자 근거\n• 현재 수익성은 보유 가능한 수준이지만 지속성 검증이 남아 있다.\n• 가격 재점검 · 하방: KRW 6,572.84\n• 기업가치 무효화: 후속 공시에서 영업 또는 순손익이 적자로 전환되거나 매출 기반이 약화되면 현재 보유 논거가 훼손된다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공시에서도 영업 및 순이익 흑자가 유지되고 세부 사업 KPI가 확인되면 상향 재평가할 수 있다.\n• SELL 쪽: 후속 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되면 하향 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 9,
+      "ticker": "045340",
+      "timing_input_sha256": "87e8e93c34873e06158afc8c664e9ebaa7168291793b94a87e509216b2d36f65"
+    },
+    {
+      "composed_sha256": "30a6415b34003a9dff2d5b202cde132fb530f4d90ed7dc9888794c8583eea764",
+      "core_input_sha256": "8b0ebf7410dbff696ba9c3721fc120d67a33e4c348b355c3df7dc73fb43172f5",
+      "rendered_message": "🏢 보성파워텍(006910)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: HOLDABLE\n\n🎯 핵심 판단\n• 현재 흑자 손익은 긍정적이지만 사업 지속성과 가치 근거가 부족해 소폭 긍정적인 보유 관점이다.\n\n🆕 신규 관찰자 근거\n• 현재 실적은 우호적이지만 사업 지속성 확인 전 신규 매력도는 확정하기 어렵다.\n• 사업 확인 조건: 후속 공시에서 영업 및 순이익 흑자와 매출 기반이 유지되고 세부 사업 KPI가 확인돼야 한다.\n• 이유: 현재 가격의 손익비는 불리하고 하위 지지 시나리오만 개선되지만, 허용된 진입 조건이 비어 있다.\n\n💼 보유자 근거\n• 현재 손익은 보유 가능한 수준이지만 지속성 검증이 남아 있다.\n• 가격 재점검 · 하방: KRW 5,984.36\n• 기업가치 무효화: 후속 공시에서 영업 또는 순손익이 적자로 전환되거나 매출 기반이 약화되면 현재 보유 논거가 훼손된다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공시에서도 영업 및 순이익 흑자가 유지되고 세부 사업 KPI가 확인되면 상향 재평가할 수 있다.\n• SELL 쪽: 후속 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되면 하향 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 10,
+      "ticker": "006910",
+      "timing_input_sha256": "851906e52567dca074785fdb8bff6aaccd1a4bfc013ca42a404e0b42e08942c6"
+    },
+    {
+      "composed_sha256": "10d0b9b4fd19d79a0680cf9aa40329a9b110be369e977202db25dbc5d8cba05a",
+      "core_input_sha256": "ae9fd4f7e13f6608e2cf99b12749f2d746827eb1f8218427718d15588ff6bf83",
+      "rendered_message": "🏢 모아데이타(288980)\n\n🧠 판단: SELL · BUY:SELL 3.5:6.5\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REDUCE\n\n🎯 핵심 판단\n• 매출 활동에도 영업손실과 순손실이 함께 확인돼 현재 사업 손익에 대한 부정적 판단이 우세하다.\n\n🆕 신규 관찰자 근거\n• 현재 손익 구조는 신규 관점에서 사업 매력도를 뒷받침하지 못한다.\n• 사업 확인 조건: 후속 공시에서 영업 및 순이익의 흑자 전환과 세부 사업 KPI 개선이 함께 확인돼야 한다.\n• 이유: 지지·돌파 설정과 검증된 진입 가격이 없고 변동성이 커 신규 가격 조건이 성립하지 않는다.\n\n💼 보유자 근거\n• 현재 영업과 최종 손익이 모두 적자여서 보유 근거가 약하다.\n• 기업가치 무효화: 후속 공시에서 영업 및 순이익의 흑자 전환이 확인되면 현재의 부정적 보유 판단이 무효화된다.\n\n🔄 재평가 조건\n• BUY 쪽: 후속 공시에서 영업 및 순이익이 흑자로 전환되고 세부 사업 KPI 개선이 확인되면 상향 재평가할 수 있다.\n• SELL 쪽: 후속 공시에서도 영업손실과 순손실이 이어지거나 매출 기반이 약화되면 추가 하향 재평가가 필요하다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 11,
+      "ticker": "288980",
+      "timing_input_sha256": "b227eddfb7e31a6451345f537838ea462bb89b5b3c544985a3b63839a4f17546"
+    },
+    {
+      "composed_sha256": "ea4796e284cb694a01a9570b393fd6f5a9a79c4bea97d6e481d5291fca54146d",
+      "core_input_sha256": "932005ca39a32313f40baa9f8d0c9386e7034a9ae2a0562ce8d50c9ce5a37a0d",
+      "rendered_message": "🏢 제이스코홀딩스(023440)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: AVOID · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업손실이 핵심 부담이지만 순이익과 매출이 확인돼 부정 방향의 우위는 제한적이다.\n\n🆕 신규 관찰자 근거\n• 본업 수익성 회복이 확인되기 전에는 신규 관점의 확신이 부족하다(E08, E04).\n• 사업 확인 조건: 영업흑자 전환과 세부 사업 KPI의 개선 가시성이 확인돼야 한다.\n• 이유: 검증된 진입 구간과 확인선이 모두 없어 진입 모드는 설정되지 않는다.\n\n💼 보유자 근거\n• 영업손실로 점검이 필요하지만 매출과 순이익은 일부 완충한다(E08, E09).\n• 기업가치 무효화: 향후 공식 공시에서 영업손실이 지속되고 매출 기반까지 약화되면 보유 논리를 재검토한다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자 전환과 세부 사업 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 향후 공식 공시에서 영업손실이 이어지고 매출 기반까지 약화되면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 12,
+      "ticker": "023440",
+      "timing_input_sha256": "8e1b3061937d8868ef425b1f7f37c39ff9de318f19137d62e7f8f5111848021a"
+    },
+    {
+      "composed_sha256": "14246ea67b123df64361d77c556229ce33f6fb965810a12779d3b6cc472ff389",
+      "core_input_sha256": "ca986fea8f301eae644f9cc5dd1f029dbc23ae7b2049471cc2de4b59e7ad4473",
+      "rendered_message": "🏢 케이프(064820)\n\n🧠 판단: HOLD · BUY:SELL 5.5:4.5\nHOLD 성향: BUY 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업흑자는 긍정적이지만 순손실이 함께 확인돼 매수 우위는 제한적이다.\n\n🆕 신규 관찰자 근거\n• 본업은 흑자지만 최종 수익성과 실행 가시성의 확인이 필요하다(E03, E06).\n• 사업 확인 조건: 영업흑자 유지와 순이익 전환, 세부 사업 KPI 개선이 확인돼야 한다.\n• 이유: 검증된 진입 구간과 확인선이 모두 없어 진입 모드는 설정되지 않는다.\n\n💼 보유자 근거\n• 영업흑자는 지지 요인이지만 순손실 때문에 지속적인 점검이 필요하다(E03).\n• 가격 재점검 · 하방: KRW 6,874.55\n• 기업가치 무효화: 향후 공식 공시에서 영업흑자가 훼손되고 순손실이 지속되면 보유 논리를 재검토한다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자를 유지하면서 순이익 전환과 사업 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 향후 공식 공시에서 영업흑자가 훼손되고 순손실이 이어지면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 13,
+      "ticker": "064820",
+      "timing_input_sha256": "f30c4eea3dbc28cfa10c1915f229682ed7af87dfaef08781bf0a331cf0d603c4"
+    },
+    {
+      "composed_sha256": "6f6a1ae67fdaf2cbbc2b21f25b95ac7e5cbaaf7971c25931c267719237cb8c02",
+      "core_input_sha256": "9c23f5be2feaa10dd294614bcde23b208dbf29a5c5ce5ed75ef506aeb456c9fe",
+      "rendered_message": "🏢 대한전선(001440)\n\n🧠 판단: HOLD · BUY:SELL 4.5:5.5\nHOLD 성향: SELL 쪽 HOLD\n판단 확신도: 낮음\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 영업흑자는 긍정적이지만 순손실이 함께 확인돼 부정 방향이 소폭 우세하다.\n\n🆕 신규 관찰자 근거\n• 본업은 흑자지만 최종 수익성과 실행 가시성의 확인이 필요하다(E08, E02).\n• 사업 확인 조건: 영업흑자 유지와 순이익 전환, 세부 사업 KPI 개선이 확인돼야 한다.\n• 이유: 검증된 진입 구간과 확인선이 모두 없어 진입 모드는 설정되지 않는다.\n\n💼 보유자 근거\n• 영업흑자는 지지 요인이지만 순손실 때문에 점검이 필요하다(E08).\n• 가격 재점검 · 하방: KRW 23,650.38\n• 기업가치 무효화: 향후 공식 공시에서 영업흑자가 훼손되고 순손실이 지속되면 보유 논리를 재검토한다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업흑자를 유지하면서 순이익 전환과 사업 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 향후 공식 공시에서 영업흑자가 훼손되고 순손실이 이어지면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 14,
+      "ticker": "001440",
+      "timing_input_sha256": "c445d02307622a488d37739e6b04bcdfb9bd413a254c6c47fc9b2b5cefc6b7fd"
+    },
+    {
+      "composed_sha256": "895cfecdb676fcab36b8b1f0f4dac4b798701bee76c9e68112baeab05e0bdc60",
+      "core_input_sha256": "053153074e1c24a8a07f238ff0d149e46852c49de2c44b8293ed66fa1a8b898c",
+      "rendered_message": "🏢 LIG아큐버(073490)\n\n🧠 판단: BUY · BUY:SELL 6:4\n판단 확신도: 중간\n사업 논리 상태: 미확정\n신규 관찰자: WAIT · 진입 방식: 현재 없음\n보유자: REVIEW\n\n🎯 핵심 판단\n• 매출 기반과 영업이익·순이익 흑자가 동반돼 긍정 방향이 우세하다.\n\n🆕 신규 관찰자 근거\n• 현재 수익성은 긍정적이지만 지속성과 실행 가시성의 확인이 필요하다(E06, E03).\n• 사업 확인 조건: 후속 공식 공시에서 영업이익과 순이익 흑자의 지속성 및 세부 사업 KPI 개선이 확인돼야 한다.\n• 이유: 검증된 진입 구간과 확인선이 모두 없어 진입 모드는 설정되지 않는다.\n\n💼 보유자 근거\n• 매출과 영업·순이익 흑자가 현재 보유 논리를 지지한다(E05, E06).\n• 가격 재점검 · 하방: KRW 22,483.91\n• 기업가치 무효화: 향후 공식 공시에서 영업이익과 순이익이 적자로 전환되고 매출 기반까지 약화되면 보유 논리를 재검토한다.\n\n🔄 재평가 조건\n• BUY 쪽: 영업이익과 순이익 흑자가 이어지고 세부 사업 KPI 개선이 확인되면 상향 재평가한다.\n• SELL 쪽: 향후 공식 공시에서 영업이익과 순이익이 적자로 전환되고 매출 기반도 약화되면 하향 재평가한다.\n",
+      "run": "A",
+      "summary_member": "reports/proofs/33-run-a-execution-summary.json",
+      "summary_row_index": 15,
+      "ticker": "073490",
+      "timing_input_sha256": "368b06256b95c69eea778967f459c4d8df8652e218abc3e028fd73966c4fb9c7"
+    }
+  ],
+  "status": "PASS"
+}

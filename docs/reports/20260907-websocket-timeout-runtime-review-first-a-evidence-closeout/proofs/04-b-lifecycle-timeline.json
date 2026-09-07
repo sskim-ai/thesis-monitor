@@ -1,0 +1,32 @@
+{
+  "child_cleanup_status": "PROCESS_GROUP_TERMINATED",
+  "completed_at": "2026-09-07T10:57:24.502005+00:00",
+  "configured_timeout_seconds": 1800,
+  "contract": "b-transport-lifecycle-reconstruction-v1",
+  "duplicate_timeout_receipt_count": 0,
+  "elapsed_to_exit_seconds": 1800.056758,
+  "exact_remote_local_cause": "UNRESOLVED",
+  "exit_code": -15,
+  "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+  "last_stderr_after_start_seconds": 74.974474,
+  "orphan_model_process_count": 0,
+  "output_bytes": 0,
+  "output_file_missing_interpretation": "DOWNSTREAM_OBSERVATION_NOT_ROOT_CAUSE",
+  "output_parsed": false,
+  "parse_error": "OUTPUT_FILE_MISSING",
+  "request_accepted_observability": "UNAVAILABLE",
+  "safe_error_excerpt": {
+    "level": "WARN",
+    "message": "stream disconnected - retrying sampling request (1/5 in 202ms)... turn_id=01a07b68-919f-7963-9d7c-ad6ded20f688 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake",
+    "target": "codex_core::responses_retry",
+    "timestamp": "2026-09-07T10:28:39.403008Z"
+  },
+  "silence_until_exit_seconds": 1725.082284,
+  "started_at": "2026-09-07T10:27:24.428058+00:00",
+  "status": "PASS",
+  "stdout_bytes": 0,
+  "termination_initiator": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+  "termination_signal": 15,
+  "timeout_owner_count": 1,
+  "transport_root_cause_confirmed": false
+}

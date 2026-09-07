@@ -1,0 +1,307 @@
+{
+  "contract": "derived-reporting-closeout-repair-v1",
+  "expected_count_mismatches": {},
+  "normalization": {
+    "canonical_fields": {
+      "kr_attempted_count": 12,
+      "kr_pipeline_coverage_gap_count": 0,
+      "kr_source_absence_count": 0,
+      "kr_source_insufficient_count": 0,
+      "kr_source_sufficient_count": 12,
+      "kr_source_target_status": "PASS",
+      "kr_target_count": 12,
+      "kr_unknown_failure_count": 0,
+      "new_holdout_exclusion_count": 101,
+      "prior_real_issuer_exposure_registry_count": 85,
+      "us_attempted_count": 6,
+      "us_pipeline_coverage_gap_count": 0,
+      "us_source_absence_count": 2,
+      "us_source_insufficient_count": 2,
+      "us_source_sufficient_count": 4,
+      "us_source_target_status": "PASS",
+      "us_target_count": 4,
+      "us_unknown_failure_count": 0
+    },
+    "contract": "experiment-report-input-normalization-v1",
+    "provenance": {
+      "exclusion": {
+        "prior": {
+          "semantic": "prior_exclusion_count",
+          "sources": [
+            {
+              "source": "prior_count",
+              "value": 85
+            },
+            {
+              "source": "reconciled_exclusion_count-appended_count",
+              "value": 85
+            }
+          ],
+          "status": "RESOLVED",
+          "value": 85
+        },
+        "reconciled": {
+          "semantic": "new_holdout_exclusion_count",
+          "sources": [
+            {
+              "source": "reconciled_count",
+              "value": 101
+            },
+            {
+              "source": "len(excluded_issuer_keys)",
+              "value": 101
+            }
+          ],
+          "status": "RESOLVED",
+          "value": 101
+        }
+      },
+      "markets": {
+        "kr": {
+          "fields": {
+            "attempted_count": {
+              "semantic": "kr_attempted_count",
+              "sources": [
+                {
+                  "source": "attempted_count",
+                  "value": 12
+                },
+                {
+                  "source": "len(rows)",
+                  "value": 12
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 12
+            },
+            "pipeline_coverage_gap_count": {
+              "semantic": "kr_pipeline_coverage_gap_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            },
+            "source_absence_count": {
+              "semantic": "kr_source_absence_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            },
+            "source_insufficient_count": {
+              "semantic": "kr_source_insufficient_count",
+              "sources": [
+                {
+                  "source": "source_insufficient_count",
+                  "value": 0
+                },
+                {
+                  "source": "rows.source_sufficiency",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            },
+            "source_sufficient_count": {
+              "semantic": "kr_source_sufficient_count",
+              "sources": [
+                {
+                  "source": "source_sufficient_count",
+                  "value": 12
+                },
+                {
+                  "source": "rows.source_sufficiency",
+                  "value": 12
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 12
+            },
+            "target_count": {
+              "semantic": "kr_target_count",
+              "sources": [
+                {
+                  "source": "target_count",
+                  "value": 12
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 12
+            },
+            "unknown_failure_count": {
+              "semantic": "kr_unknown_failure_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            }
+          },
+          "market": "kr",
+          "source_target_status": "PASS"
+        },
+        "us": {
+          "fields": {
+            "attempted_count": {
+              "semantic": "us_attempted_count",
+              "sources": [
+                {
+                  "source": "attempted_count",
+                  "value": 6
+                },
+                {
+                  "source": "len(rows)",
+                  "value": 6
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 6
+            },
+            "pipeline_coverage_gap_count": {
+              "semantic": "us_pipeline_coverage_gap_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            },
+            "source_absence_count": {
+              "semantic": "us_source_absence_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 2
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 2
+            },
+            "source_insufficient_count": {
+              "semantic": "us_source_insufficient_count",
+              "sources": [
+                {
+                  "source": "source_insufficient_count",
+                  "value": 2
+                },
+                {
+                  "source": "rows.source_sufficiency",
+                  "value": 2
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 2
+            },
+            "source_sufficient_count": {
+              "semantic": "us_source_sufficient_count",
+              "sources": [
+                {
+                  "source": "source_sufficient_count",
+                  "value": 4
+                },
+                {
+                  "source": "rows.source_sufficiency",
+                  "value": 4
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 4
+            },
+            "target_count": {
+              "semantic": "us_target_count",
+              "sources": [
+                {
+                  "source": "target_count",
+                  "value": 4
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 4
+            },
+            "unknown_failure_count": {
+              "semantic": "us_unknown_failure_count",
+              "sources": [
+                {
+                  "source": "rows.failure_class",
+                  "value": 0
+                }
+              ],
+              "status": "RESOLVED",
+              "value": 0
+            }
+          },
+          "market": "us",
+          "source_target_status": "PASS"
+        }
+      },
+      "registry": {
+        "prior": {
+          "semantic": "prior_real_issuer_exposure_registry_count",
+          "sources": [
+            {
+              "source": "prior_registry_count",
+              "value": 85
+            },
+            {
+              "source": "reconciled_registry_count-appended_exposed_issuer_count",
+              "value": 85
+            }
+          ],
+          "status": "RESOLVED",
+          "value": 85
+        },
+        "reconciled": {
+          "semantic": "reconciled_registry_count",
+          "sources": [
+            {
+              "source": "reconciled_registry_count",
+              "value": 101
+            },
+            {
+              "source": "len(rows)",
+              "value": 101
+            },
+            {
+              "source": "len(all_excluded_issuer_keys)",
+              "value": 101
+            }
+          ],
+          "status": "RESOLVED",
+          "value": 101
+        }
+      }
+    },
+    "status": "PASS"
+  },
+  "original_error": "KeyError: registry_count after terminal B timeout while deriving final completion",
+  "original_source_proof_hashes": {
+    "03-prior-real-issuer-exposure-registry.json": "a388d268603b3fd94bcc9252eb6f42458152502cfb2def54640dccaeac65c795",
+    "04-new-holdout-exclusion-set.json": "20649047d690a6f80dc1da2fbc6008e000248aebd057eaa4f01f2c5a3cea2529",
+    "07-us-source-coverage-audit.json": "3777f79a30970ea3af0aeb9f8001f34385752e0d70a3b96da84da0f1297b29c7",
+    "10-kr-source-coverage-audit.json": "c95c825a02aa32e94867d01a51c80810c2d45a6e27fa8d9d3393370fc11abdea"
+  },
+  "original_source_proofs_modified": false,
+  "recorded_recovery_source_proof_hashes": {
+    "03-prior-real-issuer-exposure-registry.json": "a388d268603b3fd94bcc9252eb6f42458152502cfb2def54640dccaeac65c795",
+    "04-new-holdout-exclusion-set.json": "20649047d690a6f80dc1da2fbc6008e000248aebd057eaa4f01f2c5a3cea2529",
+    "07-us-source-coverage-audit.json": "3777f79a30970ea3af0aeb9f8001f34385752e0d70a3b96da84da0f1297b29c7",
+    "10-kr-source-coverage-audit.json": "c95c825a02aa32e94867d01a51c80810c2d45a6e27fa8d9d3393370fc11abdea"
+  },
+  "reporting_patch_status": "IMPLEMENTED_BOUNDED_NORMALIZER",
+  "status": "PASS",
+  "transport_error_preserved_separately": true
+}

@@ -1,0 +1,33 @@
+{
+  "capacity_diagnostic_status": "NOT_PROVEN_NO_EXPLICIT_DIAGNOSTIC_OBSERVED",
+  "classification": "WATCHDOG_TRANSPORT_TIMEOUT_AFTER_WEBSOCKET_DISCONNECT",
+  "contract": "wrapper-cli-retry-observability-v1",
+  "explicit_capacity_diagnostic_count": 0,
+  "explicit_context_length_diagnostic_count": 0,
+  "historical_stall_pattern": {
+    "exact_startup_only_silent_trace_recurred": false,
+    "this_incident_has_explicit_websocket_disconnect_warning": true,
+    "watchdog_1800_second_timeout_recurred": true
+  },
+  "observed_cli_retry_signal_count": 1,
+  "observed_websocket_disconnect_signal_count": 1,
+  "request_accepted_observability": "UNAVAILABLE",
+  "runtime_event_count": 1,
+  "safe_runtime_events": [
+    {
+      "level": "WARN",
+      "message": "stream disconnected - retrying sampling request (1/5 in 202ms)... turn_id=01a07b68-919f-7963-9d7c-ad6ded20f688 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake",
+      "target": "codex_core::responses_retry",
+      "timestamp": "2026-09-07T10:28:39.403008Z"
+    }
+  ],
+  "status": "PASS",
+  "unresolved_hypotheses": [
+    "remote backend response stalled after CLI reconnect attempt",
+    "WebSocket reconnect path failed to produce a terminal response",
+    "other unobserved upstream or local transport condition"
+  ],
+  "upstream_accepted_request_count": "UNKNOWN",
+  "upstream_request_attempt_count": "UNKNOWN",
+  "wrapper_explicit_retry_count": 0
+}
