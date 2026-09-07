@@ -1,11 +1,22 @@
 {
   "base_sha": "05c93cf7d768ddb09b670ca74dc69c2b698e5f6b",
+  "calibration_architecture_hashes": {
+    "directional_balance_service": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "directional_core_candidate_schema_owner": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+    "directional_core_prompt_owner": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061"
+  },
+  "calibration_contract_sha256": "3443dc0f7505d01bc5ba965fa0f20128f12f2678d5e16d5f883ce41f47067d33",
+  "calibration_implementation_commit": "00c65bb233eedad45bf6ecf1805d391ab6be9426",
   "calibration_root_cause": "GENERIC_DIRECTIONAL_CALIBRATION_ROOT_CAUSE_CONFIRMED",
   "contract": "directional-core-boundary-calibration-repair-fresh-generalization-proof-v1",
+  "fictional_generation_id": "20260908-directional-calibration-fictional-20260908T043000Z-3d5220a4528a",
+  "fictional_input_freeze_sha256": "68e2c51020a99e611ac9b57e87777366acb6e826784924387b59d94956852f64",
+  "fictional_model_invocation_count": 0,
+  "fictional_planned_model_calls": 6,
   "fresh_real_cohort_consumed": 0,
   "model_invocation_count": 0,
   "offline_audit_sha256": "2dd5689d3e6bf33c71509d55a2249ebed54c6d6af50b4109ce10ac86caf4b4ed",
   "root_cause_classification_sha256": "28df66a2dcc507d162e09a308321a4fdc598f3fcbefee851ec386ded14ebd5f2",
-  "state": "OFFLINE_ROOT_CAUSE_CONFIRMED",
+  "state": "FICTIONAL_PREPARED_FROZEN",
   "work_instruction_commit": "45bd95416ee09c494cca0af9cd73f7c1a6fe9f8c"
 }
