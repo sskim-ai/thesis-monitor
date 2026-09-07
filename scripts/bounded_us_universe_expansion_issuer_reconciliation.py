@@ -16,6 +16,7 @@ from typing import Any
 import httpx
 
 from app.config import get_settings
+from app.providers import opendart_corp_codes
 from app.services.coldstart_fundamental_enrichment_service import (
     FundamentalEvidenceQuality,
     OfficialFundamentalEnricher,
@@ -508,6 +509,14 @@ async def run_source_diagnostics(
 ) -> dict[str, object]:
     selected_candidates = list(candidates[:limit])
     enricher = OfficialFundamentalEnricher(cache_dir)
+    if market == "us":
+        enricher._sec_profile._ticker_ciks = {
+            normalize_us_symbol(row.provider_symbol or row.display_symbol): str(
+                row.canonical_issuer_key
+            ).removeprefix("sec:cik:")
+            for row in selected_candidates
+            if row.canonical_issuer_key is not None
+        }
     rows: list[dict[str, object]] = []
     sufficient_count = 0
     for rank, reference in enumerate(selected_candidates, start=1):
@@ -784,6 +793,9 @@ def generate(args: argparse.Namespace) -> None:
         sector_map=args.provider_root / "config/sector_map.csv",
         opendart_corp_code=args.reference_root / "opendart-corp-code.zip",
         retrieved_at=retrieved_at,
+    )
+    opendart_corp_codes._cached_companies = opendart_corp_codes._parse_corp_code_zip(
+        (args.reference_root / "opendart-corp-code.zip").read_bytes()
     )
     exclusion = build_exclusion_registry(
         report_history=repo_root / "docs/reports",
