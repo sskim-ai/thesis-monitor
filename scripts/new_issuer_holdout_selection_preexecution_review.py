@@ -34,7 +34,6 @@ from scripts import directional_core_price_timing_holdout as frozen
 from scripts import new_issuer_holdout_selection_ownership_proof as runner
 from scripts import runtime_identity_binding as runtime_identity
 from scripts import runtime_identity_lock_repair_fullpath_preflight as identity_repair
-from scripts import synthetic_canary_fixture_repair_ownership_resume as synthetic
 
 
 PROGRAM_CONTRACT = "new-issuer-holdout-selection-preexecution-readiness-review-v1"
@@ -731,7 +730,7 @@ def real_input_fixture_core(owned: OwnedEvidencePacket) -> DirectionalCoreCandid
     )
     if any(ref is None for ref in (business, earnings, risk, unknown)):
         raise ValueError(f"model_free_core_fixture_domain_missing:{ticker}")
-    template = synthetic.fixture_core(owned).model_dump(mode="json")
+    template = identity_repair._localized_core(owned).model_dump(mode="json")
     replacements = {
         f"fictional:{ticker}:business": str(business),
         f"fictional:{ticker}:earnings": str(earnings),
@@ -763,7 +762,7 @@ def real_input_fixture_timing(
     supply = _first_owned_ref(owned, (EvidenceDomain.SUPPLY_POSITIONING,))
     if support is None or technical is None:
         raise ValueError(f"model_free_timing_fixture_domain_missing:{ticker}")
-    template = synthetic.fixture_timing(owned, core).model_dump(mode="json")
+    template = identity_repair._localized_timing(owned, core).model_dump(mode="json")
     replacements = {
         f"fictional:{ticker}:support": support,
         f"fictional:{ticker}:rsi": technical,

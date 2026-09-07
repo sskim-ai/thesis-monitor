@@ -238,7 +238,9 @@ def test_model_free_adapter_starts_with_zero_real_exposure(tmp_path: Path) -> No
 
 
 def test_real_input_fixture_uses_only_owned_evidence_refs() -> None:
-    owned = review.synthetic.fictional_owned("SYNTHETIC_US_REVIEW", market="us")
+    owned = review.identity_repair.synthetic.fictional_owned(
+        "SYNTHETIC_US_REVIEW", market="us"
+    )
 
     core = review.real_input_fixture_core(owned)
     timing = review.real_input_fixture_timing(owned, core)
