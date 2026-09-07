@@ -1,0 +1,12 @@
+# 12 Wmt Price Fallback Decision
+
+| Field | Value |
+| --- | --- |
+| contract | wmt-price-fallback-decision-v1 |
+| decision | USE_EXPLICIT_UNAVAILABLE_SAFE_TIMING_PATH |
+| repair_applied | 0 |
+| second_canonical_provider_exists | 0 |
+| stale_bar_used | 0 |
+| status | PASS |
+
+Machine proof: `proofs/12-wmt-price-fallback-decision.json`.

@@ -1,0 +1,25 @@
+{
+  "base_sha": "58f7505ea417dd7d7b7a8378655af850e0c13f9f",
+  "branch": "codex/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume",
+  "contract": "repository-provenance-v1",
+  "implementation_commit": "5514d366441a734c562aa0b5e9cf5b47fabda11d",
+  "implementation_tree": "506df149b8afad377bea781a552d8c98c8123c6d",
+  "semantic_drift_audit": {
+    "architecture_semantic_drift": 0,
+    "changed_protected_paths": [],
+    "protected_paths": [
+      "app/services/direction_timing_ownership_service.py",
+      "app/services/directional_balance_service.py",
+      "app/services/structured_autonomy_alias_service.py",
+      "app/services/structured_autonomy_shadow_service.py",
+      "app/services/structured_autonomy_stability_service.py",
+      "app/services/codex_transport_lifecycle_service.py",
+      "scripts/directional_core_price_timing_holdout.py",
+      "scripts/model_transport_revalidation_ownership_continuation.py"
+    ],
+    "status": "PASS"
+  },
+  "status": "PASS",
+  "work_instruction_commit": "56445bb8d3212320eb4d34defdfaae65dcea986f",
+  "worktree_status_before_generated_evidence": ""
+}

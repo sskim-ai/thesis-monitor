@@ -1,0 +1,88 @@
+{
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "cohort_mutation_after_precommit": 0,
+  "context_evidence_preservation_policy": "exact-byte-output-stdout-stderr-receipt-prompt-schema-v1",
+  "context_grouping": [
+    [
+      "NVDA",
+      "JPM",
+      "WMT",
+      "BRK-B"
+    ],
+    [
+      "142210",
+      "060900",
+      "002680",
+      "035420"
+    ],
+    [
+      "216050",
+      "100700",
+      "001530",
+      "487580"
+    ],
+    [
+      "038870",
+      "342870",
+      "060230",
+      "415380"
+    ]
+  ],
+  "context_grouping_mutation_after_precommit": 0,
+  "context_size": 4,
+  "contract": "new-holdout-precommit-v1",
+  "expanded_us_reserve_policy_hash": "693c6fd2c4c73300844883ad3f2b5959af1e16c43bab04f5ec1333fb9b4847a9",
+  "market_mix": {
+    "kr": 12,
+    "us": 4
+  },
+  "model": "gpt-5.6-sol",
+  "ordered_cohort": [
+    "NVDA",
+    "JPM",
+    "WMT",
+    "BRK-B",
+    "142210",
+    "060900",
+    "002680",
+    "035420",
+    "216050",
+    "100700",
+    "001530",
+    "487580",
+    "038870",
+    "342870",
+    "060230",
+    "415380"
+  ],
+  "per_context_partial_semantic_audit_policy": "direction-timing-ownership-early-stop-v1",
+  "per_issuer_packet_hashes": {
+    "001530": "0a49ccfef66a971494004d0edf206f33e4aa90b92c6ed549b72fe99ef8ed9e2f",
+    "002680": "eec69b3298e6d9099dcbcab301b5660f24b55a6a915b9528938c181f64703409",
+    "035420": "6c6cc68543afcea8128157fc993fecfd4320630be79ae0ec2798c6f163fcee0a",
+    "038870": "1deba6b218a10616e598b8a2399829f87906b478d33198fc7bcc77e5eb32ff08",
+    "060230": "94eac46ab81e774d83b2eab4909ba67449fb7e5644e82085fc05c41057ac1e9c",
+    "060900": "581087cb3a82f8fe1f7f5daedec33d2bcf43fbd5e5dbe3571a646b2653403954",
+    "100700": "9a94787c7d17c738eedf0843ff2ee80c1f61bc13eefbb69871d71824b26d07cb",
+    "142210": "698ffe0f63861e58be490433228e94c165fafe8ed1cd65c13842320a2f16bf50",
+    "216050": "5febdd3e73b4c46b45cd36166e9becabf09d03b54250d53f6953c6ffc34a6d2a",
+    "342870": "ff5519ed07d0bc4edcc54e3f7fd5bd8826d1a9856009df18211990e57d062b7a",
+    "415380": "ff3ff9c86372fa76834276be0d53caeba27b31bd9b73922a45037f50d0390118",
+    "487580": "1819f50c748fb6b3f7d01104fce9b671f8b7394f19a6c1aaa2665ca60f15a938",
+    "BRK-B": "2d8b43f112a7adcce696d092433bc20d5320f8ec0c4cdd8bcea2b3dc9aa63b8d",
+    "JPM": "1830d1835eb3c8dc41642d37375aecf49ca6f14cd8c1857a6942c8ac11182b5b",
+    "NVDA": "d49f4a37bd60642dc310ccbb43b763f7c5d53f33a3dfcff8c4ec182fd4640638",
+    "WMT": "5b98f3af7a71b81c0e3e7f348725b6241741abd36814abf1a3bb652055a2b438"
+  },
+  "prior_exposure_registry_hash": "fcffb2ae8b00eba24c4890888871bcf7ec7c3e6a50bdbd0ec5a39ec9713dbdef",
+  "prompt_schema_lock_sha256": "88461737d30111f9aff33f8c12b8060dfa0eb9c228913ebfb02b235a3c6a8b42",
+  "reasoning_effort": "xhigh",
+  "source_generation_id": "20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a",
+  "source_lock_sha256": "d4bd0b51d9cc543ebe03088047cce375db41d3d9a9f21c07d4fd5646bdf9b1ef",
+  "source_mutation_after_precommit": 0,
+  "status": "FROZEN",
+  "stop_rules": "FIRST then gated A/B/C; no retry, split, or hotfix",
+  "timeout": 1800,
+  "timeout_owner_count": 1,
+  "transport_topology_identity": "edcdaab1f4b8671e5db658809c83dbdce655f8508567e66ae10394479bbd7837"
+}

@@ -1,0 +1,14 @@
+{
+  "allowed_common_equity_count": 32,
+  "contract": "us-supported-universe-funnel-v1",
+  "deduplicated_count": 5,
+  "excluded_non_common_security_count": 1,
+  "exposure_registry_issuer_count": 61,
+  "exposure_ticker_count": 62,
+  "identity_provider_filter_count": 32,
+  "market_filter_count": 32,
+  "post_exposure_count": 5,
+  "price_provider_supported_filter_count": 32,
+  "raw_registry_count": 33,
+  "status": "PASS"
+}
