@@ -16,7 +16,7 @@
 | context_evidence_preservation_failure_count | 0 |
 | contract | dual-market-source-coverage-new-issuer-holdout-ownership-proof-v1 |
 | core_stability_counts | {"BOUNDARY_UNCERTAINTY": 0, "STABLE": 0, "UNSTABLE": 0} |
-| diff_check | PENDING_FINAL_VALIDATION |
+| diff_check | PASS |
 | directional_core_price_technical_refs | 0 |
 | directional_core_supply_refs | 0 |
 | directional_model_calls_on_source_insufficient | 0 |
@@ -31,8 +31,9 @@
 | first_ownership_gate_status | NOT_MEASURED |
 | first_renderer_gate_status | NOT_MEASURED |
 | first_spawn_time | 2026-09-07T16:59:26.535506+00:00 |
+| focused_tests | PASS |
 | frozen_evaluation_cutoff | 2026-09-07T15:27:51+00:00 |
-| full_tests | PENDING_FINAL_VALIDATION |
+| full_tests | PASS |
 | future_unseen_holdout_reuse_allowed | 0 |
 | historical_predecessor_zip_sha256 | 1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3 |
 | historical_stall_pattern_recurred | 0 |
@@ -100,7 +101,7 @@
 | reconnect_path_exercised | NOT_OBSERVED |
 | renderer_ownership_violations | 0 |
 | report_input_normalization | dict(3) |
-| ruff | PENDING_FINAL_VALIDATION |
+| ruff | PASS |
 | run_a_hard_safety_gate_status | NOT_RUN |
 | run_a_ownership_gate_status | NOT_RUN |
 | run_a_renderer_gate_status | NOT_RUN |
@@ -137,6 +138,7 @@
 | us_source_target_status | PASS |
 | us_target_count | 4 |
 | us_unknown_failure_count | 0 |
+| validation_recorded_at | 2026-09-07T17:12:57.017528+00:00 |
 | work_instruction_commit | 12c482b7971dac2532d93912b6c51ed323df88ea |
 
 Machine proof: `proofs/60-program-completion.json`.
