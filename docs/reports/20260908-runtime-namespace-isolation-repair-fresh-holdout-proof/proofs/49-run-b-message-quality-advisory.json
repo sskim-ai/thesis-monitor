@@ -1,0 +1,138 @@
+{
+  "completed_message_count": 16,
+  "contract": "risk-carried-advisory-message-quality-v1",
+  "gate_role": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+  "result": {
+    "average_character_count": 664.06,
+    "contract": "structured-autonomy-message-quality-v2-shadow",
+    "errors": [
+      "cross_ticker_substantive_repetition"
+    ],
+    "max_character_count": 697,
+    "message_count": 16,
+    "repeated_substantive_span_count": 13,
+    "repeated_substantive_spans": [
+      "BUY 쪽: 후속 공식 공시에서 현재의 흑자 구조가 유지되고 핵심 사업 KPI의 실행력이 확인되면 상향 재평가한다.",
+      "BUY 쪽: 후속 공식 실적에서 영업·순이익 흑자가 이어지고 매출 기반과 사업 KPI가 함께 개선되는 경우다.",
+      "BUY 쪽: 후속 공식 실적에서도 영업·순이익이 유지되고 세부 사업 KPI가 뒷받침되면 상향 재평가한다.",
+      "SELL 쪽: 후속 공식 공시에서 매출 기반이 약해지거나 영업이익과 순이익이 훼손되고 사업 KPI가 둔화하면 하향 재평가한다.",
+      "SELL 쪽: 후속 공식 실적에서 영업·순손익이 적자로 전환되고 매출 기반이나 사업 KPI가 약화되는 경우다.",
+      "SELL 쪽: 후속 공식 실적에서 영업·순이익이 손실로 전환되거나 매출 기반이 약해지면 하향 재평가한다.",
+      "수익성 지속성과 가격 매력도 확인 전에는 신규 판단을 유보한다.",
+      "현재 매출과 흑자 실적은 긍정적이지만 밸류에이션과 지속성 KPI가 없어 보유 관점의 매수 기울기다.",
+      "현재 수익성이 후속 공식 실적에서도 유지되고 세부 사업 KPI와 안전한 밸류에이션 근거가 확인되는 경우다.",
+      "현재 흑자 실적은 보유 논리를 지지하지만 지속성 확인이 필요하다.",
+      "현재 흑자와 매출은 긍정적이지만 사업 KPI와 밸류에이션 확인이 부족해 보유 판단이 적절하다.",
+      "후속 공식 공시에서 이익 지속성과 핵심 사업 KPI가 확인되고 검증 가능한 가치 근거가 확보될 때다.",
+      "후속 공식 실적에서 흑자 지속과 매출 기반의 안정성이 확인되고 사업 KPI와 실행 진척이 구체화되는 경우다."
+    ],
+    "repetition_taxonomy": {
+      "ACTION_CONTEXT_WRAPPER_REPEAT": 20,
+      "MATERIAL_SPAM_REPEAT": 13,
+      "MODEL_OWNED_SUBSTANTIVE_REPEAT": 172,
+      "RENDERER_OWNED_REPEAT": 200,
+      "REQUIRED_SAFETY_REPEAT": 0
+    },
+    "rows": [
+      {
+        "character_count": 658,
+        "duplicate_substantive_lines": [],
+        "ticker": "WYNN",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 675,
+        "duplicate_substantive_lines": [],
+        "ticker": "DOX",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 693,
+        "duplicate_substantive_lines": [],
+        "ticker": "NWS",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 684,
+        "duplicate_substantive_lines": [],
+        "ticker": "ASTI",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 688,
+        "duplicate_substantive_lines": [],
+        "ticker": "064850",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 687,
+        "duplicate_substantive_lines": [],
+        "ticker": "053270",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 622,
+        "duplicate_substantive_lines": [],
+        "ticker": "078860",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 687,
+        "duplicate_substantive_lines": [],
+        "ticker": "145720",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 666,
+        "duplicate_substantive_lines": [],
+        "ticker": "199730",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 697,
+        "duplicate_substantive_lines": [],
+        "ticker": "065510",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 689,
+        "duplicate_substantive_lines": [],
+        "ticker": "396470",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 614,
+        "duplicate_substantive_lines": [],
+        "ticker": "299900",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 646,
+        "duplicate_substantive_lines": [],
+        "ticker": "020180",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 621,
+        "duplicate_substantive_lines": [],
+        "ticker": "122310",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 654,
+        "duplicate_substantive_lines": [],
+        "ticker": "417200",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 644,
+        "duplicate_substantive_lines": [],
+        "ticker": "023910",
+        "validation": "PASS"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "run": "b",
+  "status": "RECORDED"
+}

@@ -1,0 +1,396 @@
+{
+  "contract": "price-timing-stability-audit-v1",
+  "counts": {
+    "BOUNDARY_UNCERTAINTY": 8,
+    "STABLE": 8,
+    "UNSTABLE": 0
+  },
+  "directional_fields_counted": 0,
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "WYNN",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "DOX",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "NWS",
+      "values": {
+        "a": [
+          "FAVORABLE",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "FAVORABLE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "FAVORABLE",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "ASTI",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "064850",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "053270",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "NEUTRAL",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "078860",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "145720",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "199730",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "065510",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "396470",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "299900",
+      "values": {
+        "a": [
+          "UNKNOWN",
+          "AVOID",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "UNKNOWN",
+          "AVOID",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "UNKNOWN",
+          "AVOID",
+          "NONE",
+          "NONE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "020180",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "122310",
+      "values": {
+        "a": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "417200",
+      "values": {
+        "a": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "b": [
+          "ADVERSE",
+          "AVOID",
+          "NONE",
+          "REVIEW"
+        ],
+        "c": [
+          "ADVERSE",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "ticker": "023910",
+      "values": {
+        "a": [
+          "NEUTRAL",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "b": [
+          "NEUTRAL",
+          "WAIT",
+          "NONE",
+          "NONE"
+        ],
+        "c": [
+          "CAUTION",
+          "WAIT",
+          "NONE",
+          "REVIEW"
+        ]
+      }
+    }
+  ],
+  "status": "PASS"
+}

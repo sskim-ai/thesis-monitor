@@ -1,0 +1,9 @@
+# 61-renderer-ownership
+
+| Field | Value |
+| --- | --- |
+| ai_imperative_primary_action | 0 |
+| contract | "renderer-ownership-proof-v1" |
+| primary_user_action_wording_owner | "RENDERER" |
+| renderer_ownership_violations | 0 |
+| status | "PASS" |

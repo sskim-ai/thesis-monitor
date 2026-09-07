@@ -1,0 +1,31 @@
+# 34-run-a-execution-summary
+
+| Field | Value |
+| --- | --- |
+| candidate_count | 16 |
+| contract | "new-issuer-holdout-two-stage-run-v1" |
+| deterministic_result_preservation | {"composed_state_count": 16, "rendered_message_count": 16, "renderer_lineage_count": 16, "run": "a", "status": "PASS"} |
+| directional_context_count | 4 |
+| execution_status | "PASS" |
+| expected_model_invocation_count | 8 |
+| hard_safety_gate_status | "PASS" |
+| identity_gate_status | "PASS" |
+| message_quality | {"average_character_count": 624.44, "contract": "structured-autonomy-message-quality-v2-shadow", "errors": ["cross_ticker_substantive_repetition"], "max_character_count": 657, "message_count": 16, "repeated_substantive_span_count": 7, "repeated_substantive_spans": ["BUY 쪽: 후속 공식 공시에서 매출 기반 확대와 영업·순이익의 지속이 확인되는 경우다.", "SELL 쪽: 후속 공식 공시에서 매출 기반 약화나 영업·순손실 전환이 확인되는 경우다.", "최근 공식 분기의 매출과 영업·순이익 흑자는 긍정적이지만, 추세와 세부 사업 지표·가치 근거가 부족해 약한 긍정의 보유 판단이다.", "현재 분기 흑자와 매출 기반은 보유 논리를 지지하지만 지속성 검증이 남아 있다.", "현재 실적은 긍정적이지만 추세와 세부 사업 지표·가치 근거가 부족해 신규 판단은 대기다.", "현재 연결 영업흑자와 순이익은 보유 가능한 사업 기초를 제공한다.", "후속 공식 공시에서 매출 기반과 이익의 지속, 세부 사업 지표의 실행 성과가 함께 확인되는 경우다."], "repetition_taxonomy": {"ACTION_CONTEXT_WRAPPER_REPEAT": 24, "MATERIAL_SPAM_REPEAT": 7, "MODEL_OWNED_SUBSTANTIVE_REPEAT": 168, "RENDERER_OWNED_REPEAT": 196, "REQUIRED_SAFETY_REPEAT": 0}, "rows": [{"character_count": 615, "duplicate_substantive_lines": [], "ticker": "WYNN", "validation": "PASS"}, {"character_count": 633, "duplicate_substantive_lines": [], "ticker": "DOX", "validation": "PASS"}, {"character_count": 615, "duplicate_substantive_lines": [], "ticker": "NWS", "validation": "PASS"}, {"character_count": 618, "duplicate_substantive_lines": [], "ticker": "ASTI", "validation": "PASS"}, {"character_count": 651, "duplicate_substantive_lines": [], "ticker": "064850", "validation": "PASS"}, {"character_count": 649, "duplicate_substantive_lines": [], "ticker": "053270", "validation": "PASS"}, {"character_count": 589, "duplicate_substantive_lines": [], "ticker": "078860", "validation": "PASS"}, {"character_count": 657, "duplicate_substantive_lines": [], "ticker": "145720", "validation": "PASS"}, {"character_count": 607, "duplicate_substantive_lines": [], "ticker": "199730", "validation": "PASS"}, {"character_count": 652, "duplicate_substantive_lines": [], "ticker": "065510", "validation": "PASS"}, {"character_count": 646, "duplicate_substantive_lines": [], "ticker": "396470", "validation": "PASS"}, {"character_count": 616, "duplicate_substantive_lines": [], "ticker": "299900", "validation": "PASS"}, {"character_count": 606, "duplicate_substantive_lines": [], "ticker": "020180", "validation": "PASS"}, {"character_count": 594, "duplicate_substantive_lines": [], "ticker": "122310", "validation": "PASS"}, {"character_count": 613, "duplicate_substantive_lines": [], "ticker": "417200", "validation": "PASS"}, {"character_count": 630, "duplicate_substantive_lines": [], "ticker": "023910", "validation": "PASS"}], "status": "FAIL"} |
+| message_quality_gate_role | "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE" |
+| model | "gpt-5.6-sol" |
+| ownership_gate_status | "PASS" |
+| preservation_status | "PASS" |
+| price_timing_context_count | 4 |
+| program_generation_id | "20260907-fresh-issuer-proof-20260907T181651Z-695d9f8eaacc" |
+| reasoning_effort | "xhigh" |
+| renderer_context_count | 4 |
+| renderer_gate_status | "PASS" |
+| retry_count | 0 |
+| rows | 16 rows; sha256=d870db679d0b2b24b4d087c8d1d5d5a0af0e82e6d81a82ec810e2c15a48b9b80 |
+| run | "a" |
+| same_generation_repair | 0 |
+| selective_rerun | 0 |
+| source_drift | 0 |
+| source_lock_sha256 | "d66f7425646512e1eb6916b61912e52660ce3fc2449fd9d6af59e5e3dd15210b" |
+| status | "PASS" |
+| validation_pass_count | 16 |
