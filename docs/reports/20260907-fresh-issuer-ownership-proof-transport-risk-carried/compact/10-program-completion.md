@@ -22,7 +22,7 @@
 | full_tests | PASS |
 | future_unseen_reuse_allowed | SEPARATE_EXPLICIT_DECISION_REQUIRED |
 | historical_predecessor_zip_sha256 | 1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3 |
-| implementation_commit | 5ba88676537faf71f16b19208bee17ab68d95616 |
+| implementation_commit | 54c98b17b85e0473b1370d84f924b42e10798017 |
 | input_integrity_status | PASS |
 | input_zip_sha256 | 1546b6830ab350f7d7cee68f8b2732806aa5e53b3a5cde8ed4648ee1223d49ec |
 | issuer_market_mix | {"kr": 0, "us": 0} |
@@ -50,6 +50,7 @@
 | run_results | {"a": "NOT_RUN", "b": "NOT_RUN", "c": "NOT_RUN", "first": "NOT_RUN"} |
 | runtime_reliability_status | NOT_ESTABLISHED |
 | same_cohort_tuning_rerun_allowed | 0 |
+| selection_freeze_commit | bab1c19e9bf72bf9ba02966d5165fa97554fd0e2 |
 | selection_policy_hash | 07defbbe29042495ebaa08cb24ca5fcc57cd42c859bfbf80ccc5d984068b2f8f |
 | semantic_revelation_state | NOT_MEASURED |
 | source_configuration | {"canonical_env_override_configured": false, "contract": "risk-carried-source-configuration-audit-v1", "diagnosis": "EXECUTOR_ENV_BINDING_MISSING_REQUIRED_SOURCE_SETTINGS", "missing_required_settings": ["OPENDART_API_KEY", "SEC_USER_AGENT"], "required_setting_presence": {"OPENDART_API_KEY": false, "SEC_USER_AGENT": false}, "secret_values_recorded": 0, "status": "FAIL", "working_directory_env_file_present": false} |
@@ -65,7 +66,7 @@
 | unique_issuer_output_count | 0 |
 | upstream_request_attempt_count | NOT_APPLICABLE_NO_MODEL_SPAWN |
 | us_source_target_status | FAIL |
-| validation_recorded_at | 2026-09-07T16:00:31.650611+00:00 |
+| validation_recorded_at | 2026-09-07T16:03:59.731020+00:00 |
 | work_instruction_commit | badcf61634adc4cb343f6e8de499ce619831220f |
 | wrapper_retry_count | 0 |
 
