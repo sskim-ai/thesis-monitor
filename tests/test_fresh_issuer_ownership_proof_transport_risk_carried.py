@@ -52,6 +52,8 @@ def test_budget_and_model_contract_remain_frozen() -> None:
     assert proof.runner.TIMEOUT_OWNER_COUNT == 1
     assert proof.EXPECTED_CONTEXTS_PER_RUN == 8
     assert proof.EXPECTED_TOTAL_CONTEXTS == 32
+    assert proof.PREDECESSOR_MEMBER_COUNT == 329
+    assert proof.PREDECESSOR_INDEXED_PAYLOAD_COUNT == 328
 
 
 def test_merge_exposure_registry_appends_full_latest_cohort() -> None:

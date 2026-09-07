@@ -37,6 +37,8 @@ PREDECESSOR_ZIP_NAME = (
     "thesis-monitor-20260907-websocket-timeout-runtime-review-first-a-evidence-closeout-report.zip"
 )
 PREDECESSOR_ZIP_SHA256 = "1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3"
+PREDECESSOR_MEMBER_COUNT = 329
+PREDECESSOR_INDEXED_PAYLOAD_COUNT = 328
 PRIOR_EXCLUSION_COUNT = 101
 CURRENT_EXPOSED_COUNT = 16
 EXCLUSION_COUNT = PRIOR_EXCLUSION_COUNT + CURRENT_EXPOSED_COUNT
@@ -300,8 +302,8 @@ def freeze_selection(args: argparse.Namespace) -> None:
         args.predecessor_zip,
         expected_name=PREDECESSOR_ZIP_NAME,
         expected_sha256=PREDECESSOR_ZIP_SHA256,
-        expected_members=closeout.INPUT_MEMBER_COUNT,
-        expected_indexed=closeout.INPUT_INDEXED_PAYLOAD_COUNT,
+        expected_members=PREDECESSOR_MEMBER_COUNT,
+        expected_indexed=PREDECESSOR_INDEXED_PAYLOAD_COUNT,
     )
     historical_integrity = _verify_zip(
         args.historical_zip,
