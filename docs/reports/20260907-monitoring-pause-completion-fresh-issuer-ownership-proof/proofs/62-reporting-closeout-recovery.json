@@ -1,0 +1,76 @@
+{
+  "a_completion": {
+    "core_context_receipts_pass": 4,
+    "last_receipt_completed_at": "2026-09-07T10:27:24.110484+00:00",
+    "output_identity_pass": 8,
+    "parsed_transport_receipts_pass": 8,
+    "run_result": "16/16",
+    "semantic_audit_issue_count": 0,
+    "semantic_audit_pass": 8,
+    "timing_context_receipts_pass": 4
+  },
+  "a_to_b_sequence": {
+    "b_started_after_a_seconds": 0.317574,
+    "b_started_at": "2026-09-07T10:27:24.428058+00:00",
+    "status": "PASS_SEQUENTIAL_AFTER_A_COMPLETE"
+  },
+  "b_terminal_receipt": {
+    "capacity_failure_proven": false,
+    "child_cleanup_status": "PROCESS_GROUP_TERMINATED",
+    "completed_at": "2026-09-07T10:57:24.502005+00:00",
+    "configured_timeout_seconds": 1800,
+    "duplicate_timeout_receipt_count": 0,
+    "elapsed_to_exit_seconds": 1800.056758,
+    "exit_code": -15,
+    "explicit_orchestration_retry_count": 0,
+    "internal_cli_retry_observed_count": 1,
+    "internal_cli_retry_signal": "WebSocket stream disconnected before completion; connection reset without closing handshake",
+    "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+    "orphan_model_process_count": 0,
+    "output_bytes": 0,
+    "output_parsed": false,
+    "parse_error": "OUTPUT_FILE_MISSING",
+    "primary_classification": "WATCHDOG_TRANSPORT_TIMEOUT_AFTER_WEBSOCKET_DISCONNECT",
+    "status": "TIMEOUT",
+    "termination_initiator": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+    "termination_signal": 15
+  },
+  "closeout_recovery": {
+    "architecture_change": 0,
+    "candidate_change": 0,
+    "model_call_count": 0,
+    "model_output_change": 0,
+    "original_failure": "KeyError: registry_count after terminal B timeout while deriving final completion",
+    "original_source_proof_hashes": {
+      "03-prior-real-issuer-exposure-registry.json": "a388d268603b3fd94bcc9252eb6f42458152502cfb2def54640dccaeac65c795",
+      "04-new-holdout-exclusion-set.json": "20649047d690a6f80dc1da2fbc6008e000248aebd057eaa4f01f2c5a3cea2529",
+      "07-us-source-coverage-audit.json": "3777f79a30970ea3af0aeb9f8001f34385752e0d70a3b96da84da0f1297b29c7",
+      "10-kr-source-coverage-audit.json": "c95c825a02aa32e94867d01a51c80810c2d45a6e27fa8d9d3393370fc11abdea"
+    },
+    "original_source_proofs_modified": false,
+    "prompt_change": 0,
+    "recovery_method": "Run existing final_proofs against a temporary report clone with factual legacy-key aliases, then copy only derived completion and state",
+    "schema_change": 0,
+    "status": "PASS_REPORT_ONLY",
+    "validator_change": 0
+  },
+  "contract": "post-execution-reporting-closeout-recovery-v1",
+  "final_run_results": {
+    "a": "16/16",
+    "b": "FAILED_0/16",
+    "c": "NOT_RUN",
+    "first": "16/16"
+  },
+  "frozen_identity": {
+    "a_and_b_core_batch_01_input_payload_sha256": "20decffc0c506d66e2ed3c5746c6ce840e9c9f41625738af1e36d4edff4e84dd",
+    "a_and_b_core_batch_01_schema_sha256": "10d702a4c76c45fa2eed40627f78603071bc2ae7ffcd8faf33059b2332304dfb",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe",
+    "source_generation_id": "20260907-fresh-issuer-source-20260907T090500Z-2b1e0d043243"
+  },
+  "next_scope": "BOUNDED_TRANSPORT_RUNTIME_REVIEW",
+  "readiness": "NOT_READY_TRANSPORT_TIMEOUT",
+  "retirement_reason": "INCOMPLETE_A_B_C_AFTER_FULL_COHORT_EXPOSURE",
+  "status": "PASS_REPORT_ONLY"
+}

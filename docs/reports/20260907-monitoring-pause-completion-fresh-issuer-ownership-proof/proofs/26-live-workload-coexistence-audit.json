@@ -57,6 +57,788 @@
       "stage": "SOURCE_PREPARATION",
       "subject_count": 16,
       "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "01",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:28:50.454912+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "02",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:32:46.034520+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "03",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:37:15.508378+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "04",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:40:45.725716+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "01",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:44:45.399480+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "02",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:47:24.245733+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "03",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:50:04.460638+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "04",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:53:37.245984+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "01",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:57:18.052315+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "02",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:00:52.409809+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "03",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:05:43.772090+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "04",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:10:09.864632+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "01",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:13:58.568086+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "02",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:17:41.525072+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "03",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:20:34.997923+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "04",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:24:27.466443+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "PRICE_TIMING",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "01",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T10:27:24.350628+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
     }
   ],
   "live_workload_contention_risk": 0,
