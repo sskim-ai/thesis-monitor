@@ -1,0 +1,80 @@
+{
+  "contract": "natural-live-workload-coexistence-guard-v1",
+  "events": [
+    {
+      "action": "BLOCK",
+      "batch_id": "all-16",
+      "failure": "LIVE_WORKLOAD_OBSERVATION_UNAVAILABLE",
+      "observed_at": "2026-09-07T09:24:38.922263+00:00",
+      "root_exception": "LiveWorkloadObservationUnavailable:launch_agent_state_unavailable:com.seungsoo.thesis-monitor.ai-review-delivery-retry:113",
+      "safe_to_spawn": false,
+      "scheduled_window": null,
+      "stage": "SOURCE_PREPARATION",
+      "subject_count": 16
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "all-16",
+      "model_execution_pids": [],
+      "natural_job_rows": [
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.daily",
+          "state": "disabled_unloaded"
+        },
+        {
+          "active": false,
+          "label": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "disabled_unloaded"
+        }
+      ],
+      "observation_capabilities": {
+        "disabled_unloaded_natural_job_observable": true,
+        "disabled_unloaded_treated_as_active": false,
+        "model_execution_observable": true,
+        "model_execution_signal": "open /codex_runtime_state/ files",
+        "natural_job_observable": true,
+        "natural_job_signal": "loaded LaunchAgent state",
+        "protected_window_observable": true,
+        "ps_dependency": false
+      },
+      "observed_at": "2026-09-07T09:26:04.988180+00:00",
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "SOURCE_PREPARATION",
+      "subject_count": 16,
+      "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    }
+  ],
+  "live_workload_contention_risk": 0,
+  "natural_live_cancel_count": 0,
+  "observation_capabilities": {
+    "disabled_unloaded_natural_job_observable": true,
+    "disabled_unloaded_treated_as_active": false,
+    "model_execution_observable": true,
+    "model_execution_signal": "open /codex_runtime_state/ files",
+    "natural_job_observable": true,
+    "natural_job_signal": "loaded LaunchAgent state",
+    "protected_window_observable": true,
+    "ps_dependency": false
+  },
+  "observation_unavailable_fail_closed_count": 1,
+  "observation_unavailable_fail_open_count": 0,
+  "scheduler_mutation": 0,
+  "shadow_pause_for_natural_live": 0,
+  "status": "PASS",
+  "workload_observation_backend": "LAUNCHCTL_ACTIVE_OR_DISABLED_UNLOADED_PLUS_LSOF_CODEX_RUNTIME_STATE"
+}

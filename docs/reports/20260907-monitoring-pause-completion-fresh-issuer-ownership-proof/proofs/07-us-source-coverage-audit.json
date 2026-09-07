@@ -1,0 +1,351 @@
+{
+  "attempted_count": 6,
+  "bounded_candidate_count": 21,
+  "contract": "fresh-us-source-coverage-audit-v1",
+  "market": "us",
+  "model_calls": 0,
+  "provider_totals": {
+    "cache_hits": 0,
+    "companyfacts_requests": 6,
+    "companyfacts_successes": 5,
+    "profile_requests": 6,
+    "profile_successes": 6
+  },
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 1,
+      "canonical_issuer_key": "sec:cik:0001566044",
+      "canonical_security_id": "us:nd:YARW",
+      "diagnostic_packet_sha256": "33f1a56cda7973fd505c3649849d56157c415b19eb93752db5a577d1bb302b66",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "CLINICAL_REGULATORY_CURRENT",
+        "LIQUIDITY_CASHFLOW_CURRENT"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "pre_profit_biotech",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "58acb5d1e59521360b87b061d9405f50a079a327701b3bb44342c79309b89c04",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0001566044",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "YARW"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 2,
+      "canonical_issuer_key": "sec:cik:0002040475",
+      "canonical_security_id": "us:nd:DMII",
+      "diagnostic_packet_sha256": "43dacc96b0386d3152267543fa11e765153e15e8c6a0a62171fd7e80680f5a53",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY"
+      ],
+      "failure_reasons": [
+        "BUSINESS_CURRENTORSECTOR_OPERATING_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENTORLIQUIDITY_CASHFLOW_CURRENTORSECTOR_OPERATING_CURRENT",
+        "validated_current_sec_financial_occurrence_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 0,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 2,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "65808f04aaf2a636de024eae516811853b4965ba0b9649403fa21f40f85b1836",
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0002040475",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "DMII"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 4,
+        "price_success_count": 4,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 3,
+      "canonical_issuer_key": "sec:cik:0001691493",
+      "canonical_security_id": "us:ny:NU",
+      "diagnostic_packet_sha256": "91e0e9e746bf6798ff50c150a3546ff3d1d31cb0154cbee6d7c4698e6993cb56",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "914dbae2e8ad1b3aba3f3002f4cba039b99d18b6ac24275fa6965a3974cc9085",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/us/segment-01/us/03-NU-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 3,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "34ff78d0287b628207dc0708e33f6af7eb0e71688a3a6c80f50844f1b03cef45",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0001691493",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "NU"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 4,
+      "canonical_issuer_key": "sec:cik:0000003570",
+      "canonical_security_id": "us:ny:LNG",
+      "diagnostic_packet_sha256": "e7143620c4950997b6b3585cc6a4a8c67992537c59094937ea60623ca767fde3",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "31d86a51115d3bfe444e9a53e465a6eb0965c7a8ea79d6e9c4a14eec1fc814b7",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/us/segment-01/us/04-LNG-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "684f04fe4f6954f73f43187b2ffc28ce84963e21731c2acd83d59c86282f0fb3",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0000003570",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "LNG"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 5,
+      "canonical_issuer_key": "sec:cik:0000733590",
+      "canonical_security_id": "us:ny:TCI",
+      "diagnostic_packet_sha256": "faa364d01ce3cc7a9ec4a04c66c55aba853f1211a6088ffdc369dfb2eaf6c1d0",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "10dec932fddd7121943e168da54080217d14616223d33f2ac6085163c2e1c569",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/us/segment-01/us/05-TCI-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 5,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "5b192bbd4e56cd5b82684d7da4ee67de5e34fbd843909f59a120c48cc5ca94c8",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0000733590",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "TCI"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 6,
+      "canonical_issuer_key": "sec:cik:0001319161",
+      "canonical_security_id": "us:nd:WMG",
+      "diagnostic_packet_sha256": "2a34a77539ba916a954b9a1e7057aba2b633c90ec2af5f2450edafb5fd65b0ec",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "85ec6b05c12a183a7df021ad7f8782ed56227e38fd30d20f92d08c12156042e4",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/us/segment-01/us/06-WMG-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 6,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "1f08b2322e1e53179d7cdf18364eb55279875ddb603060dd6c60c6473ffe3241",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0001319161",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "WMG"
+    }
+  ],
+  "source_insufficient_count": 2,
+  "source_sufficient_count": 4,
+  "source_target_status": "PASS",
+  "status": "PASS",
+  "target_count": 4,
+  "untested_candidate_count": 15
+}

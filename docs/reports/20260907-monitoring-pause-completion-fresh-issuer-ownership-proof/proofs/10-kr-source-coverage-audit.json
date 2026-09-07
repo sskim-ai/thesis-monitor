@@ -1,0 +1,706 @@
+{
+  "attempted_count": 12,
+  "bounded_candidate_count": 48,
+  "contract": "fresh-kr-source-coverage-audit-v1",
+  "market": "kr",
+  "model_calls": 0,
+  "provider_totals": {
+    "cache_hits": 0,
+    "profile_requests": 12,
+    "profile_successes": 12,
+    "statement_requests": 36,
+    "statement_successes": 12
+  },
+  "rows": [
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 1,
+      "canonical_issuer_key": "opendart:corp:00220109",
+      "canonical_security_id": "kr:kosdaq:043100",
+      "diagnostic_packet_sha256": "304185f041b6359d178c899b7940ebcd175e9bb1f3081cc1d88cfa326c6e66f6",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "a0395ca29540b654a406486ddc8efdb9224dd83438c145b2f5ac366a8ea2ffaf",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/01-043100-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "f41ef1058a50cd8a6f83a0f1533bf9bcdaddd6727798ac80ce3cc0da3a257fb1",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00220109",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002086",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "043100"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 2,
+      "canonical_issuer_key": "opendart:corp:00191472",
+      "canonical_security_id": "kr:kospi:025000",
+      "diagnostic_packet_sha256": "274435228430f1f373a31ad962970f368d763527eedd9f52c92cc1de87d22aa0",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "5be50ca3924261907e9e27bbbe774c29bf2e846ceaff86d22a1230cd74855db2",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/02-025000-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 2,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "5aae6cdcd9fad3a098494cf6c19030509bed2ffc27dd105f5a52659bddf97771",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00191472",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003139",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "025000"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 3,
+      "canonical_issuer_key": "opendart:corp:00831428",
+      "canonical_security_id": "kr:kosdaq:131030",
+      "diagnostic_packet_sha256": "86af8b07651a8f21242434b622ffc03eb3cea2f452007d7b65b16184f001e771",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "01737a6faaa639b6d8f8e6e1c2aad577ae89cbf39ae355662ea12bec66c0583b",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/03-131030-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 3,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "5c24a84291d8f6e116cd2c26423ac802a4c5151285b5604f10c7d6a9efeb5eb1",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00831428",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814000735",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "131030"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 4,
+      "canonical_issuer_key": "opendart:corp:00534598",
+      "canonical_security_id": "kr:kospi:372910",
+      "diagnostic_packet_sha256": "0299f7a267d89d9c8bcc6d448cd054e825f68fbf87c6333913d13c5d4f68d75e",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "ecebf8ab0ce817896e717ceabc717af2480245b41547ba8c7fc6ee78215bb58b",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/04-372910-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "259ed1a18317adf232773e01a20aa20b9f28ff82d0510cab7a1155c41d789fa2",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00534598",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260826000772",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "372910"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 5,
+      "canonical_issuer_key": "opendart:corp:00578538",
+      "canonical_security_id": "kr:kosdaq:130740",
+      "diagnostic_packet_sha256": "c34786ce6abf24e14867cc8b74a3c548a89ba41dc51bf470911b843cf9e26164",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": "ef75c374c60fc03ffcdebdd75763be2522ad21c30d53304374359919ad917e19",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/05-130740-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 5,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "1710e24afb9939d3df8dd5333bb373bf5ce58d9cf62bab86f4aed580d347145d",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00578538",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001408",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "130740"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 6,
+      "canonical_issuer_key": "opendart:corp:00355089",
+      "canonical_security_id": "kr:kosdaq:045340",
+      "diagnostic_packet_sha256": "0a2b3a27509eee06c0a332904659578e9af4ac3b5bf45cdc4d4ff0f4fbdb02cd",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "510bd831cfc27b0dce0302f1b01c51233a40bfce547e9e483e9b46b5dba97443",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/06-045340-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 6,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "740c85635f747ac49841dcbb0b2805e18505b587289f210cd230e4af40132ea6",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00355089",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001058",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "045340"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 7,
+      "canonical_issuer_key": "opendart:corp:00267881",
+      "canonical_security_id": "kr:kosdaq:006910",
+      "diagnostic_packet_sha256": "7e374e8fc7c6833a3155c599a51e7284340e7e86ff5d4d86c8e5073c8ed142d9",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "61e02527da2198e8845cbfdfc072aa5f95045952cdb6c55a295f3760154f89b7",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/07-006910-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 7,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "cd603c0d3132215c1552beaba1b4bc69392c9dc37bc97ba461b975352a910dd1",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00267881",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003524",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "006910"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 8,
+      "canonical_issuer_key": "opendart:corp:01423837",
+      "canonical_security_id": "kr:kosdaq:288980",
+      "diagnostic_packet_sha256": "a6141fc027cd94d3a78bad0e743c25774fe6912425dc4973a58d9602316d8f6b",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "3cb0eb2444c051d54f9e891fc7d1539c0a73f397e86f520427ca5f32cb5cd4d3",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/08-288980-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 8,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "882aa8c5aba5c5722277d9761b8b49c986be5277ea9b3af30f173a983d6b7564",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "01423837",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002441",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "288980"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 9,
+      "canonical_issuer_key": "opendart:corp:00148531",
+      "canonical_security_id": "kr:kosdaq:023440",
+      "diagnostic_packet_sha256": "e21e47300ce287a317ff4666af6bdc0d6301584365086c14db79bf6fa450cd24",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": "3f9a28aa45e299d3059dfe092ba9fff267e1fbcd8bf47987650ad1b79fb2d732",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/09-023440-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "718e6d6e9df3f27dcfb098d9d1426ccbbe41c5521e3bd7d465fd0f407df47806",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00148531",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814004189",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "023440"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 10,
+      "canonical_issuer_key": "opendart:corp:00152437",
+      "canonical_security_id": "kr:kosdaq:064820",
+      "diagnostic_packet_sha256": "19f9f9f6dabdaccfb44738e87c9c9ec73d53730ff3a896aa2176cc5af09dabad",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "a9d31bb60ad33e62f296d2aff14b0ccc610a8b95ef61b8ccbc736a2da7cddcfa",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/10-064820-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 10,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "e558c66642f7a1a3604b3d81ee9ff129053b8ad57eb95308915ea3b5111b9635",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00152437",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814001483",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "064820"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 11,
+      "canonical_issuer_key": "opendart:corp:00113207",
+      "canonical_security_id": "kr:kospi:001440",
+      "diagnostic_packet_sha256": "f357bebb2ea33263d84e022c354b40511b58c48bbb291dc6c96b9fc23d6bf3f7",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "d5df49526c6f7270dbada81d5fbc64e7887d3a9bb055ac3e7d0d4e219f87617c",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/11-001440-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 11,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "f5f2b837148afe0aa3fcf6aec63a284415e37bfab44aaf51b286fef3a2e8785b",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00113207",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003722",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "001440"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "FULL"
+      },
+      "candidate_rank": 12,
+      "canonical_issuer_key": "opendart:corp:00462121",
+      "canonical_security_id": "kr:kosdaq:073490",
+      "diagnostic_packet_sha256": "ab4848353e51c9046871fea962bf1426c23547a66813da738134d2ef54186234",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "a0354f72516f537910dd3837623b1f18dabf51a1b426b432c9568f8ffb8fb089",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260907-monitoring-pause-completion-fresh-issuer-ownership-proof/experiment/source-diagnostics/kr/segment-01/kr/12-073490-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 12,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "602d466df543298b3a2915d8e235deb0107b20455a4fbb87da6410658fd86ada",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00462121",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002341",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "073490"
+    }
+  ],
+  "source_insufficient_count": 0,
+  "source_sufficient_count": 12,
+  "source_target_status": "PASS",
+  "status": "PASS",
+  "target_count": 12,
+  "untested_candidate_count": 36
+}
