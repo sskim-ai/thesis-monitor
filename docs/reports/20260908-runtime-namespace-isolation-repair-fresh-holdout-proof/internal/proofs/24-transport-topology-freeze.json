@@ -1,0 +1,42 @@
+{
+  "canonical_transport_mutation": 0,
+  "carried_runtime_risk": "RUNTIME_NAMESPACE_ISOLATION_REPAIRED_AND_PREFLIGHT_PROVEN",
+  "contract": "transport-topology-freeze-v1",
+  "hashes": {
+    "ContinuationTransportAdapter": "9db3ca4a5def388938b8ee0752b7adc53284abef655b94518779f98c2d49758c",
+    "GuardedTransportAdapter": "6ec23b4f66348535ef47d31691cb9b9d55d1942dc076d391ad6e9f213374094c",
+    "PauseAwareWorkloadObserver": "037ea7cf00c7a0dcd6d26c1570cc4d4b9064c9736fa53690f716952a9003b522",
+    "PausedScheduleProcessObserver": "037ea7cf00c7a0dcd6d26c1570cc4d4b9064c9736fa53690f716952a9003b522",
+    "SingleObservationWorkloadGuard": "0b1e329d6e9f46ae0f092873d5729341eaaca497b1040a1679716e15304e84a6",
+    "context_runtime_namespace": "5c24b1343c26fa5ba05bfa372169e0e91100a3d230a14bb319d4c217fd00bc13",
+    "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd",
+    "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13",
+    "risk_carried_adapter": "29a7caf663e41c48e06f8370ae7400d7700c21297a2540be753f429687dbcd10",
+    "runtime_context_augmenter": "52f2c215b0a78c424ce646edaff22fc46cfeeb88a7482c2b2432684e8963b7fb",
+    "runtime_event_classifier": "7a29e37f6e706d41217a2f6c47b4b04fc46f404d5b23aae86c878f7cb0832e7a",
+    "runtime_isolation_registry": "7d0681e3e6d5dc80c9a830f57e0db255af69c27da20e614a8cd94428c4c123cb",
+    "transport_prepare_execution_isolation": "55fa05e5c00d11f8bf73e42cfe101ef1133f2936e947868155aa64914aa0021d"
+  },
+  "model": "gpt-5.6-sol",
+  "namespace_isolation_preflight_sha256": "24fba8c8fbbe00ea55caa5d6752df5b11a45817f4c71ad53b41fd4fb79954b0a",
+  "namespace_policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+  "reasoning_effort": "xhigh",
+  "runtime_isolation_contract": "codex-model-context-runtime-isolation-v1",
+  "runtime_namespace_repair_applied": 1,
+  "signed_in_cli_identity": {
+    "checks": {
+      "sha256": true,
+      "version": true
+    },
+    "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "sha256": "7645c3caf5607e4528eb3a15b12496c284c2a918939aed34e863c760c1b421e7",
+    "status": "PASS",
+    "version": "codex-cli 0.148.0-alpha.15"
+  },
+  "status": "FROZEN",
+  "ticker_specific_runtime_exception_count": 0,
+  "timeout_owner_count": 1,
+  "timeout_seconds": 1800,
+  "transport_topology_mutation": 0,
+  "wrapper_explicit_retry_count": 0
+}

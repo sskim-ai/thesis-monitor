@@ -1,0 +1,12 @@
+# 14 Source Coverage Remediation Decision
+
+| Field | Value |
+| --- | --- |
+| contract | fresh-source-coverage-decision-v1 |
+| new_paid_dependency | 0 |
+| new_source_route | 0 |
+| readiness | READY_FOR_NEW_HOLDOUT_FREEZE |
+| real_model_execution_allowed | 1 |
+| status | PASS |
+
+Machine proof: `proofs/14-source-coverage-remediation-decision.json`.
