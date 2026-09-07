@@ -1,0 +1,115 @@
+{
+  "cache_isolation": {
+    "artifact_root": "/private/tmp/thesis-monitor-selection-review-20260907",
+    "production_cache_write": 0,
+    "production_store_write": 0
+  },
+  "candidate_order": {
+    "handoff_canonical_json_sha256": "95423d80f2dd8e760097035abab9831e7dd989ccffa6ad2ee2e9bdcd0377e9ce",
+    "handoff_member": "reports/proofs/23-next-holdout-selection-handoff.json",
+    "handoff_raw_file_sha256": "38d8ed302f5c8501ae152b2efa2863d472e3f81b36a89d93c29ed92362cce633",
+    "rank_material": "sha256(selection_salt|market|canonical_issuer_key|canonical_security_id)",
+    "selection_salt": "20260907-bounded-us-universe-expansion-issuer-reconciliation-v1"
+  },
+  "contract": "new-issuer-holdout-selection-preexecution-review-policy-v1",
+  "exclusion_registry": {
+    "canonical_issuer_count": 85,
+    "canonical_json_sha256": "f91ec0a8ea6a224a5da3375da28d83f01b46c518e8b94a8da0df23398a3f2415",
+    "member": "evidence/membership/exclusion-registry.json",
+    "raw_file_sha256": "46aedb73eea4ca2040a3370214a7bd8b019d2d2b1b3d4980134df1c9b34a4a47",
+    "removal_without_provenance_allowed": false,
+    "share_class_aliases_remain_issuer_fenced": true
+  },
+  "frozen_at": "2026-09-07T04:29:03Z",
+  "input": {
+    "artifact_index_sha256": "f9d462cff60a42c4c5ee7b203450c6c3d34c9f2e6a3ffff33cfa98ed3c402787",
+    "result_zip": "thesis-monitor-20260907-bounded-us-supported-universe-expansion-issuer-audit-reconciliation-report.zip",
+    "result_zip_sha256": "12ed21a8fcd378036fb86e08193fcffb5b3e0f9f0710f92602a2f3c595c18cf4",
+    "work_instruction_content_sha256": "d77ef5b3d30089520f3123536a432cf796471c54c014156e3e0bf5c33e23f328",
+    "work_instruction_zip_sha256": "f4dae80ec795b3fcbefb0ec9944e5a50d95e00de94fd8ae85b8d25147c23ce7c"
+  },
+  "model_boundary": {
+    "executable_proof_source_lock_created": 0,
+    "final_real_holdout_activation": 0,
+    "model_backed_fictional_canary_count": 0,
+    "new_real_investment_model_invocation_count": 0,
+    "real_first_a_b_c_execution_count": 0
+  },
+  "natural_live_coexistence": {
+    "active_natural_or_model_workload_action": "BLOCK_OR_DEFER",
+    "future_execution_requires_immediate_recheck": true,
+    "observation_unavailable_action": "FAIL_CLOSED",
+    "schedule_source": "current repository and LaunchAgent configuration at review time"
+  },
+  "primary_selection_rule": {
+    "kr": "first 12 FUNDAMENTAL_SOURCE_SUFFICIENT issuers in preserved deterministic order",
+    "outcome_dependent_reordering": 0,
+    "replacement_reasons": [
+      "newly_proven_prior_exposure_or_retirement",
+      "identity_or_alias_conflict",
+      "actual_support_loss",
+      "hard_source_validation_failure",
+      "source_insufficiency_under_unchanged_rules",
+      "mandatory_evidence_unavailable_under_current_contract"
+    ],
+    "us": "first 4 FUNDAMENTAL_SOURCE_SUFFICIENT issuers in preserved deterministic order"
+  },
+  "proposed_primary_order": {
+    "kr": [
+      "373160",
+      "452200",
+      "389470",
+      "380550",
+      "008970",
+      "047080",
+      "068270",
+      "475830",
+      "033160",
+      "079940",
+      "103140",
+      "278280"
+    ],
+    "us": [
+      "NVMI",
+      "SKYH",
+      "WKSP",
+      "EROC"
+    ]
+  },
+  "reference_snapshot": {
+    "reference_snapshot_id": "5b5a5225fe105b6d57a3d9eea8c4ab8858e45cca6837fc5b387b3f31d4c291c9",
+    "retrieved_at": "2026-09-07T03:04:36.018549+00:00",
+    "reuse_mode": "FROZEN_INPUT_ONLY"
+  },
+  "representative_security_rule": {
+    "ambiguous_identity_action": "QUARANTINE",
+    "preference": [
+      "supported common or ordinary share",
+      "non-ADR before ADR for the same issuer when both are supported",
+      "lexicographically smallest canonical security ID"
+    ]
+  },
+  "request_budgets": {
+    "kr_full_fundamental_evaluations": 0,
+    "per_resource_attempts": 1,
+    "reference_refresh_by_feed": 0,
+    "retry_count": 0,
+    "us_additional_route_checks": 0,
+    "us_full_fundamental_evaluations": 0
+  },
+  "reserve_scope": {
+    "fundamental_source_failed": 2,
+    "fundamental_source_sufficient_not_primary": 0,
+    "identity_supported_fundamental_untested": 19,
+    "identity_supported_nonprimary_total": 21,
+    "untested_within_first_24_budget": 18
+  },
+  "source_snapshot_policy": {
+    "canonical_and_raw_hashes_are_distinct": true,
+    "frozen_diagnostic_packets_only": true,
+    "freshness_or_period_relabeling": 0,
+    "future_execution_source_recheck_required": true,
+    "original_raw_provider_bytes_claimed_only_when_archived": true
+  },
+  "status": "FROZEN_PRE_REVIEW_DIAGNOSTICS"
+}
