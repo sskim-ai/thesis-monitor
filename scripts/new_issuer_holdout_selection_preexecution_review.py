@@ -1924,12 +1924,26 @@ def generate(args: argparse.Namespace) -> None:
     }
     validation = {
         "tested_commit": implementation_commit,
+        "commands": {
+            "focused_tests": (
+                "python -m pytest -q "
+                "tests/test_new_issuer_holdout_selection_preexecution_review.py "
+                "tests/test_reference_universe_audit_service.py "
+                "tests/test_runtime_identity_binding.py "
+                "tests/test_runtime_identity_lock_repair_fullpath_preflight.py "
+                "tests/test_new_issuer_holdout_selection_ownership_proof.py"
+            ),
+            "full_tests": "python -m pytest -q",
+            "ruff": "ruff check .",
+            "diff_check": "git diff --check HEAD",
+        },
         "focused_tests": args.focused_tests,
         "full_tests": args.full_tests,
         "ruff": args.ruff,
         "diff_check": args.diff_check,
         "validation_logs": [path.name for path in args.test_logs],
         "model_backed_tests_run": 0,
+        "real_investment_model_invocations_during_validation": 0,
         "status": (
             "PASS"
             if all(
