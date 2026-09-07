@@ -1,0 +1,13 @@
+# 03 Current Unexposed Holdout State
+
+| Field | Value |
+| --- | --- |
+| contract | current-unexposed-holdout-state-v1 |
+| future_unseen_holdout_reuse_allowed | 1 |
+| holdout_output_exposure_state | UNEXPOSED |
+| holdout_retirement_state | ACTIVE_UNEXPOSED |
+| prior_real_model_invocation_count | 0 |
+| prior_subject_output_count | 0 |
+| status | PASS |
+
+Machine proof: `proofs/03-current-unexposed-holdout-state.json`.

@@ -1,0 +1,15 @@
+{
+  "allowed_files": [
+    "scripts/synthetic_canary_fixture_repair_ownership_resume.py",
+    "scripts/new_issuer_holdout_selection_ownership_proof.py",
+    "scripts/prespawn_live_workload_guard_compatibility_holdout_resume.py",
+    "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
+    "tests/test_new_issuer_holdout_selection_ownership_proof.py"
+  ],
+  "automatic_retry_added": 0,
+  "batch_split_added": 0,
+  "contract": "guard-compatibility-remediation-diff-v1",
+  "fail_open_added": 0,
+  "ps_removed_from_guard": 1,
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+{
+  "contract": "prespawn-root-cause-proof-v1",
+  "failure_stage": "PRE_SPAWN",
+  "model_process_spawned": 0,
+  "original_root_exception": "PermissionError:[Errno 1] Operation not permitted:ps",
+  "prespawn_guard_root_cause": "LIVE_WORKLOAD_GUARD_PS_PERMISSION_DENIED",
+  "receipt_created": 0,
+  "root_exception_masked_before_repair": 1,
+  "status": "PRESPAWN_GUARD_ROOT_CAUSE_CONFIRMED"
+}
