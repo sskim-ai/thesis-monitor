@@ -1,0 +1,14 @@
+{
+  "collision_action": "STOP_BEFORE_SPAWN",
+  "contract": "codex-model-context-runtime-isolation-v1",
+  "generation_identity_does_not_authorize_namespace_reuse": true,
+  "isolation_unit": "MODEL_CONTEXT",
+  "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+  "required_unique_components": [
+    "invocation_id",
+    "runtime_state_namespace_hash",
+    "temporary_working_directory_identity"
+  ],
+  "session_identity_separate": true,
+  "status": "FROZEN"
+}

@@ -1,0 +1,884 @@
+{
+  "actual_subject_order": [
+    "095720",
+    "000250",
+    "389030",
+    "009310"
+  ],
+  "alias_audit": {
+    "000250": {
+      "alias_candidate_sha256": "ed26ea4d3c5d9b925f5a5dd17b5a094ca9fc58b9352739abaa2c3fa9ffa7aa94",
+      "resolved_candidate_sha256": "2356069f792320d041844b5b617e816587b9d37d77b79d8741197ffd61012b42",
+      "selections": [
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "business_reevaluation_down[0].evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "business_reevaluation_down[0].evidence_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "business_reevaluation_up[0].evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "business_reevaluation_up[0].evidence_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "business_reevaluation_up[0].evidence_refs[2]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:bd532cb96eb036fab7f1",
+          "content_sha256": "32c7527605cb41754f1e0219f003d45867275cfa9cad77f4663cea082e789a30",
+          "path": "business_thesis_context.evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "buy_drivers[0].evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "buy_drivers[0].evidence_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "core_investment_judgment.evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "core_investment_judgment.evidence_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "core_investment_judgment.evidence_refs[2]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:9365e106014f6bdce20f",
+          "content_sha256": "b20a7a3ca15cda7c8ad6542c0f4cbec3ab1b4dab26fad9592ae8834c6dd8e8de",
+          "path": "core_investment_judgment.evidence_refs[3]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "dominant_evidence.evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "dominant_evidence.evidence_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:c7b1926da2a96882ddd3",
+          "content_sha256": "fb93fe69e737bb33baaab6114f943465eea61b7c8e1effeb7477c14d8affe7f8",
+          "path": "earnings_estimate_context.evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[2]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:c7b1926da2a96882ddd3",
+          "content_sha256": "fb93fe69e737bb33baaab6114f943465eea61b7c8e1effeb7477c14d8affe7f8",
+          "path": "market_expectation_context.evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "material_directional_anchor_basis[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:business_current:b9e5277323663449e4a5",
+          "content_sha256": "b6b2161ec36e371e100b5a936b2a4202acbc1d6b40bb56f37c7c4c147ef43e56",
+          "path": "material_directional_anchor_basis[1]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "risk_context.evidence_refs[0]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:9365e106014f6bdce20f",
+          "content_sha256": "b20a7a3ca15cda7c8ad6542c0f4cbec3ab1b4dab26fad9592ae8834c6dd8e8de",
+          "path": "risk_context.evidence_refs[1]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:identity_security:7ba4d5ee6e07d87e3efb",
+          "content_sha256": "2e861ea471bfaad7e355a1724b87035c39c863777aefd669f263708838440629",
+          "path": "sector_interpretation.evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:industry:classification",
+          "content_sha256": "fddc647663c470c7b9d502a0f8b2fa98194573a6e95f061b1cd6ebe0a798b757",
+          "path": "sector_interpretation.evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:000250:earnings_financial_current:11ac733aeb4e0d3a1fc3",
+          "content_sha256": "81baec760a4ba6e3f3d1f76e3da932248d148bfc70994585aed361a09896a60b",
+          "path": "sell_drivers[0].evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "sell_drivers[0].evidence_refs[1]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "uncertainty_limit.evidence_refs[0]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:9365e106014f6bdce20f",
+          "content_sha256": "b20a7a3ca15cda7c8ad6542c0f4cbec3ab1b4dab26fad9592ae8834c6dd8e8de",
+          "path": "uncertainty_limit.evidence_refs[1]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "decision-evidence:c7b1926da2a96882ddd3",
+          "content_sha256": "fb93fe69e737bb33baaab6114f943465eea61b7c8e1effeb7477c14d8affe7f8",
+          "path": "uncertainty_limit.evidence_refs[2]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:e5afab239a6465306f1d",
+          "content_sha256": "6a07dd12c1762441de6d121cc762943c44932812cef1eb08788d0999158f4393",
+          "path": "unknown_treatments[0].evidence_refs[0]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:9365e106014f6bdce20f",
+          "content_sha256": "b20a7a3ca15cda7c8ad6542c0f4cbec3ab1b4dab26fad9592ae8834c6dd8e8de",
+          "path": "unknown_treatments[1].evidence_refs[0]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "decision-evidence:bd532cb96eb036fab7f1",
+          "content_sha256": "32c7527605cb41754f1e0219f003d45867275cfa9cad77f4663cea082e789a30",
+          "path": "unknown_treatments[2].evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "decision-evidence:9365e106014f6bdce20f",
+          "content_sha256": "b20a7a3ca15cda7c8ad6542c0f4cbec3ab1b4dab26fad9592ae8834c6dd8e8de",
+          "path": "valuation_context.evidence_refs[0]",
+          "selected_alias": "E06"
+        }
+      ]
+    },
+    "009310": {
+      "alias_candidate_sha256": "b73d3bd7097a764c5612627276b38f37af83f03f67947d823f47c61729842c8d",
+      "resolved_candidate_sha256": "4756e5f7527d492359b9338c6b99a5116f7e3ccadcf9f24af8b01b14de95df08",
+      "selections": [
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "business_reevaluation_down[0].evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:business_current:33e12c110f0248cf1826",
+          "content_sha256": "e74c037f0319dcb396fdc0013987416f5a3b123a68d5636899ada419bc66898b",
+          "path": "business_reevaluation_down[0].evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "business_reevaluation_up[0].evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:business_current:33e12c110f0248cf1826",
+          "content_sha256": "e74c037f0319dcb396fdc0013987416f5a3b123a68d5636899ada419bc66898b",
+          "path": "business_reevaluation_up[0].evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:f658cc7fb7ad2a887671",
+          "content_sha256": "a477ae10e46a408e0f7ea0afa10e7bb46e396de7dac29443e04ad06eed4910b5",
+          "path": "business_reevaluation_up[0].evidence_refs[2]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:440277cc67adf5c1a605",
+          "content_sha256": "012400c0118c12d58650e28f294c69aa9210065c38a8e738f8e5834eaab6bb17",
+          "path": "business_thesis_context.evidence_refs[0]",
+          "selected_alias": "E01"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:business_current:33e12c110f0248cf1826",
+          "content_sha256": "e74c037f0319dcb396fdc0013987416f5a3b123a68d5636899ada419bc66898b",
+          "path": "buy_drivers[0].evidence_refs[0]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "core_investment_judgment.evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:business_current:33e12c110f0248cf1826",
+          "content_sha256": "e74c037f0319dcb396fdc0013987416f5a3b123a68d5636899ada419bc66898b",
+          "path": "core_investment_judgment.evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "dominant_evidence.evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "decision-evidence:8fa0f41561d49da13ba0",
+          "content_sha256": "151fbe5456278d9bd59b203fb357833de572dbd6097bcb39b506da628d84f0bb",
+          "path": "earnings_estimate_context.evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:business_current:33e12c110f0248cf1826",
+          "content_sha256": "e74c037f0319dcb396fdc0013987416f5a3b123a68d5636899ada419bc66898b",
+          "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "decision-evidence:f658cc7fb7ad2a887671",
+          "content_sha256": "a477ae10e46a408e0f7ea0afa10e7bb46e396de7dac29443e04ad06eed4910b5",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:8fa0f41561d49da13ba0",
+          "content_sha256": "151fbe5456278d9bd59b203fb357833de572dbd6097bcb39b506da628d84f0bb",
+          "path": "market_expectation_context.evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "material_directional_anchor_basis[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "risk_context.evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "decision-evidence:f658cc7fb7ad2a887671",
+          "content_sha256": "a477ae10e46a408e0f7ea0afa10e7bb46e396de7dac29443e04ad06eed4910b5",
+          "path": "risk_context.evidence_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "canonical:industry:classification",
+          "content_sha256": "38ed1857016ce23c85e12b58a254a9aa64c882997971306bed587a9b5c5dc4d9",
+          "path": "sector_interpretation.evidence_refs[0]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "sell_drivers[0].evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:009310:earnings_financial_current:5904a9e3e9f427b937c0",
+          "content_sha256": "1fcbb4c02101c3a1fdbbe05eeb2c2fa4fd11965e02e0bfeea882268e9d0e6a56",
+          "path": "uncertainty_limit.evidence_refs[0]",
+          "selected_alias": "E03"
+        },
+        {
+          "canonical_ref": "decision-evidence:f658cc7fb7ad2a887671",
+          "content_sha256": "a477ae10e46a408e0f7ea0afa10e7bb46e396de7dac29443e04ad06eed4910b5",
+          "path": "uncertainty_limit.evidence_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:4e9845b2094443d9a733",
+          "content_sha256": "3da50e06e704e49f96e06491a73c9f25627ffeb93b7a303c7063feedb236be54",
+          "path": "uncertainty_limit.evidence_refs[2]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "decision-evidence:f658cc7fb7ad2a887671",
+          "content_sha256": "a477ae10e46a408e0f7ea0afa10e7bb46e396de7dac29443e04ad06eed4910b5",
+          "path": "unknown_treatments[0].evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:4e9845b2094443d9a733",
+          "content_sha256": "3da50e06e704e49f96e06491a73c9f25627ffeb93b7a303c7063feedb236be54",
+          "path": "unknown_treatments[1].evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "decision-evidence:440277cc67adf5c1a605",
+          "content_sha256": "012400c0118c12d58650e28f294c69aa9210065c38a8e738f8e5834eaab6bb17",
+          "path": "unknown_treatments[2].evidence_refs[0]",
+          "selected_alias": "E01"
+        },
+        {
+          "canonical_ref": "decision-evidence:4e9845b2094443d9a733",
+          "content_sha256": "3da50e06e704e49f96e06491a73c9f25627ffeb93b7a303c7063feedb236be54",
+          "path": "valuation_context.evidence_refs[0]",
+          "selected_alias": "E05"
+        }
+      ]
+    },
+    "095720": {
+      "alias_candidate_sha256": "8c09b862d7877a98a78e0138a8b05fa10d1605a65eb3b4e21f41da3dd32c51a0",
+      "resolved_candidate_sha256": "23cb96c560d132750996601393c9b9eb81c33bf500c34eb787fe2c638866ab2c",
+      "selections": [
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "business_reevaluation_down[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "business_reevaluation_down[0].evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "business_reevaluation_up[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "business_reevaluation_up[0].evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "business_reevaluation_up[0].evidence_refs[2]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:a6fd58937aa48d8edda1",
+          "content_sha256": "f6f091999460cf46a50864ea3fde208438011f427eeac3b2c2b3702988ac47e3",
+          "path": "business_thesis_context.evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "buy_drivers[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "buy_drivers[0].evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "core_investment_judgment.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "core_investment_judgment.evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "core_investment_judgment.evidence_refs[2]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:6ae93e31ffe273459396",
+          "content_sha256": "6a9ce4496539a067dd857064aa0d617fbc6ab7ba1bf556d5809f5a537a766ce2",
+          "path": "core_investment_judgment.evidence_refs[3]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "dominant_evidence.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "dominant_evidence.evidence_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:685c4d13cd3a9a9d19e9",
+          "content_sha256": "e5e5bebd9c6f9bbeb135b9a30fb8cf5ab1f1602d1999c474d799e76b6e76abf0",
+          "path": "earnings_estimate_context.evidence_refs[0]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[2]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:685c4d13cd3a9a9d19e9",
+          "content_sha256": "e5e5bebd9c6f9bbeb135b9a30fb8cf5ab1f1602d1999c474d799e76b6e76abf0",
+          "path": "market_expectation_context.evidence_refs[0]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "material_directional_anchor_basis[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:business_current:78628f8c36ca2edcc2bd",
+          "content_sha256": "fd8975062c75a89c9a91c28f6cdf0d108a6526a291ee95364f4f0f1bfcca47b3",
+          "path": "material_directional_anchor_basis[1]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "risk_context.evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:6ae93e31ffe273459396",
+          "content_sha256": "6a9ce4496539a067dd857064aa0d617fbc6ab7ba1bf556d5809f5a537a766ce2",
+          "path": "risk_context.evidence_refs[1]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "canonical:industry:classification",
+          "content_sha256": "8cf42da184c4b343ed9b58eaaa5f0aabe780ce7acc4d791721c9877724072557",
+          "path": "sector_interpretation.evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:095720:earnings_financial_current:0d14b06907b7ad4ceac8",
+          "content_sha256": "f3471dd858e6c2bca3d7b3ccde3f77d68c8dad58744919819bfbff6e17972501",
+          "path": "sell_drivers[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "sell_drivers[0].evidence_refs[1]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "uncertainty_limit.evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:6ae93e31ffe273459396",
+          "content_sha256": "6a9ce4496539a067dd857064aa0d617fbc6ab7ba1bf556d5809f5a537a766ce2",
+          "path": "uncertainty_limit.evidence_refs[1]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:685c4d13cd3a9a9d19e9",
+          "content_sha256": "e5e5bebd9c6f9bbeb135b9a30fb8cf5ab1f1602d1999c474d799e76b6e76abf0",
+          "path": "uncertainty_limit.evidence_refs[2]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "decision-evidence:92020f5d2b0385cfdc8c",
+          "content_sha256": "2e728f74f62da07f2962e005111fb5f95538bd22b9644d79685f9a7f1a49f246",
+          "path": "unknown_treatments[0].evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:6ae93e31ffe273459396",
+          "content_sha256": "6a9ce4496539a067dd857064aa0d617fbc6ab7ba1bf556d5809f5a537a766ce2",
+          "path": "unknown_treatments[1].evidence_refs[0]",
+          "selected_alias": "E04"
+        },
+        {
+          "canonical_ref": "decision-evidence:a6fd58937aa48d8edda1",
+          "content_sha256": "f6f091999460cf46a50864ea3fde208438011f427eeac3b2c2b3702988ac47e3",
+          "path": "unknown_treatments[2].evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:6ae93e31ffe273459396",
+          "content_sha256": "6a9ce4496539a067dd857064aa0d617fbc6ab7ba1bf556d5809f5a537a766ce2",
+          "path": "valuation_context.evidence_refs[0]",
+          "selected_alias": "E04"
+        }
+      ]
+    },
+    "389030": {
+      "alias_candidate_sha256": "957d937f8439dbe3e83ca04e572cb1d8d0a8ff3bbb74b74909345b6c8f05e0a4",
+      "resolved_candidate_sha256": "b37b2061f228b6819cd91c166b93977b8a90528b41f52495f8a0048be7444227",
+      "selections": [
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "business_reevaluation_down[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:business_current:921a711d50142fe754c5",
+          "content_sha256": "549d891c27898bfe8dd3801584a9b2988a3707776b1e93c634c2adcf3be1b0e1",
+          "path": "business_reevaluation_down[0].evidence_refs[1]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "business_reevaluation_up[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:business_current:921a711d50142fe754c5",
+          "content_sha256": "549d891c27898bfe8dd3801584a9b2988a3707776b1e93c634c2adcf3be1b0e1",
+          "path": "business_reevaluation_up[0].evidence_refs[1]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "decision-evidence:bbf72792f559c76954f6",
+          "content_sha256": "ae14be455040bbc2a84c98b890b8e6eaf4a77f175248d24711f8b94099fb002a",
+          "path": "business_reevaluation_up[0].evidence_refs[2]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:ef48a1ba0792c8820ec1",
+          "content_sha256": "8a1517bb21b935b2e2f570aa9df1a03d5e23ab848df1b5d1edef5ddb0478321f",
+          "path": "business_thesis_context.evidence_refs[0]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:business_current:921a711d50142fe754c5",
+          "content_sha256": "549d891c27898bfe8dd3801584a9b2988a3707776b1e93c634c2adcf3be1b0e1",
+          "path": "buy_drivers[0].evidence_refs[0]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "core_investment_judgment.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:business_current:921a711d50142fe754c5",
+          "content_sha256": "549d891c27898bfe8dd3801584a9b2988a3707776b1e93c634c2adcf3be1b0e1",
+          "path": "core_investment_judgment.evidence_refs[1]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "dominant_evidence.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "decision-evidence:0c276b3a2ce0a9997366",
+          "content_sha256": "81fd63f02a99492a8897ef08fae061d074c2da083a5bd016055e00f5bdd363ff",
+          "path": "earnings_estimate_context.evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:business_current:921a711d50142fe754c5",
+          "content_sha256": "549d891c27898bfe8dd3801584a9b2988a3707776b1e93c634c2adcf3be1b0e1",
+          "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+          "selected_alias": "E02"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "decision-evidence:bbf72792f559c76954f6",
+          "content_sha256": "ae14be455040bbc2a84c98b890b8e6eaf4a77f175248d24711f8b94099fb002a",
+          "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:0c276b3a2ce0a9997366",
+          "content_sha256": "81fd63f02a99492a8897ef08fae061d074c2da083a5bd016055e00f5bdd363ff",
+          "path": "market_expectation_context.evidence_refs[0]",
+          "selected_alias": "E05"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "material_directional_anchor_basis[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "risk_context.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "decision-evidence:bbf72792f559c76954f6",
+          "content_sha256": "ae14be455040bbc2a84c98b890b8e6eaf4a77f175248d24711f8b94099fb002a",
+          "path": "risk_context.evidence_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "canonical:industry:classification",
+          "content_sha256": "8dd791f6c1c3baed62bfa14decb77683d4863de90ccc236acc22e6f6af0e56b9",
+          "path": "sector_interpretation.evidence_refs[0]",
+          "selected_alias": "E07"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "sell_drivers[0].evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "canonical:fundamental:389030:earnings_financial_current:b036f1e9f4c782285337",
+          "content_sha256": "94cfc295afc98843c27d0ae2c8195bb7e6e7d16d7637848cfbf6ecf9af4f7bb5",
+          "path": "uncertainty_limit.evidence_refs[0]",
+          "selected_alias": "E08"
+        },
+        {
+          "canonical_ref": "decision-evidence:bbf72792f559c76954f6",
+          "content_sha256": "ae14be455040bbc2a84c98b890b8e6eaf4a77f175248d24711f8b94099fb002a",
+          "path": "uncertainty_limit.evidence_refs[1]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:03bcbee4e7bd4110d1e8",
+          "content_sha256": "f95cafcbec03731f6594b4c4cb4f525bd25e61090df1327e410e54622f8a6a2d",
+          "path": "uncertainty_limit.evidence_refs[2]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:bbf72792f559c76954f6",
+          "content_sha256": "ae14be455040bbc2a84c98b890b8e6eaf4a77f175248d24711f8b94099fb002a",
+          "path": "unknown_treatments[0].evidence_refs[0]",
+          "selected_alias": "E09"
+        },
+        {
+          "canonical_ref": "decision-evidence:03bcbee4e7bd4110d1e8",
+          "content_sha256": "f95cafcbec03731f6594b4c4cb4f525bd25e61090df1327e410e54622f8a6a2d",
+          "path": "unknown_treatments[1].evidence_refs[0]",
+          "selected_alias": "E10"
+        },
+        {
+          "canonical_ref": "decision-evidence:ef48a1ba0792c8820ec1",
+          "content_sha256": "8a1517bb21b935b2e2f570aa9df1a03d5e23ab848df1b5d1edef5ddb0478321f",
+          "path": "unknown_treatments[2].evidence_refs[0]",
+          "selected_alias": "E06"
+        },
+        {
+          "canonical_ref": "decision-evidence:03bcbee4e7bd4110d1e8",
+          "content_sha256": "f95cafcbec03731f6594b4c4cb4f525bd25e61090df1327e410e54622f8a6a2d",
+          "path": "valuation_context.evidence_refs[0]",
+          "selected_alias": "E10"
+        }
+      ]
+    }
+  },
+  "candidate_count": 4,
+  "contract": "historical-batch02-offline-audit-v1",
+  "counted_as_valid_unseen_proof": 0,
+  "exact_bundled_schema_sha256": "c597a60a08a8770125769bba12f7da4450c2b141a678777915b0aae587a372c1",
+  "exclusion_reason": "RUNTIME_NAMESPACE_ISOLATION_CONTRACT_VIOLATION",
+  "expected_subject_order": [
+    "095720",
+    "000250",
+    "389030",
+    "009310"
+  ],
+  "historical_artifacts_mutated": 0,
+  "historical_batch02_directional_semantic_audit_status": "PASS",
+  "historical_batch02_identity_status": "PASS",
+  "historical_batch02_output_schema_status": "PASS",
+  "identity_checks": {
+    "binding_prompt_sha256": true,
+    "binding_schema_sha256": true,
+    "prompt_sha256": true,
+    "receipt_identity_validation": true,
+    "runtime_generation_id": true,
+    "schema_sha256": true,
+    "subject_order": true
+  },
+  "new_model_calls": 0,
+  "parse_error": null,
+  "schema_validation_method": "EXACT_TOP_LEVEL_CONSTRAINTS_PLUS_CANONICAL_PYDANTIC_AND_ALIAS_RESOLUTION",
+  "semantic_audit": {
+    "contract": "per-context-partial-semantic-audit-v1",
+    "rows": [
+      {
+        "buy_without_nonprice_material_anchor": 0,
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_model_calls_on_source_insufficient": 0,
+        "errors": [],
+        "final_direction_owner": "DIRECTIONAL_CORE",
+        "price_only_directional_model_calls": 0,
+        "sell_without_nonprice_material_anchor": 0,
+        "status": "PASS",
+        "supply_directional_core_usage": 0,
+        "ticker": "095720"
+      },
+      {
+        "buy_without_nonprice_material_anchor": 0,
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_model_calls_on_source_insufficient": 0,
+        "errors": [],
+        "final_direction_owner": "DIRECTIONAL_CORE",
+        "price_only_directional_model_calls": 0,
+        "sell_without_nonprice_material_anchor": 0,
+        "status": "PASS",
+        "supply_directional_core_usage": 0,
+        "ticker": "000250"
+      },
+      {
+        "buy_without_nonprice_material_anchor": 0,
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_model_calls_on_source_insufficient": 0,
+        "errors": [],
+        "final_direction_owner": "DIRECTIONAL_CORE",
+        "price_only_directional_model_calls": 0,
+        "sell_without_nonprice_material_anchor": 0,
+        "status": "PASS",
+        "supply_directional_core_usage": 0,
+        "ticker": "389030"
+      },
+      {
+        "buy_without_nonprice_material_anchor": 0,
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_model_calls_on_source_insufficient": 0,
+        "errors": [],
+        "final_direction_owner": "DIRECTIONAL_CORE",
+        "price_only_directional_model_calls": 0,
+        "sell_without_nonprice_material_anchor": 0,
+        "status": "PASS",
+        "supply_directional_core_usage": 0,
+        "ticker": "009310"
+      }
+    ],
+    "stage": "DIRECTIONAL_CORE",
+    "status": "PASS",
+    "timing_renderer_gates": "NOT_MEASURED"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,18 @@
+{
+  "contract": "latest-result-artifact-integrity-v1",
+  "failures": {
+    "crc_failure": null,
+    "hash_mismatches": 0,
+    "index_membership_mismatch": 0,
+    "indexed_count_mismatch": 0,
+    "member_count_mismatch": 0,
+    "size_mismatches": 0
+  },
+  "indexed_payload_count": 1071,
+  "name": "thesis-monitor-20260908-existing-source-env-binding-fresh-holdout-proof-resume-report.zip",
+  "reported_final_head": "3d5cbddd20df8120423cc9786a3b0ac3382d0f49",
+  "reported_final_tree": "ed3c0fff42da0b3a55998c7c5362010e8a15ef5b",
+  "sha256": "1863c83cc54b3c07a4a74f89ba0d46634836334df7bed3d46cc819132f025474",
+  "status": "PASS",
+  "zip_member_count": 1072
+}

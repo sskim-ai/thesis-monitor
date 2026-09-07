@@ -1,0 +1,29 @@
+{
+  "changed_paths": [
+    "app/services/codex_runtime_state_service.py",
+    "docs/work-instructions/20260908-runtime-namespace-isolation-repair-and-fresh-holdout-proof.md",
+    "scripts/fresh_issuer_ownership_proof_transport_risk_carried.py",
+    "scripts/model_transport_revalidation_ownership_continuation.py",
+    "scripts/runtime_namespace_isolation_repair_fresh_holdout_proof.py",
+    "tests/test_codex_runtime_state_service.py",
+    "tests/test_real_holdout_runner_adapter_repair_ownership_resume.py",
+    "tests/test_runtime_namespace_isolation_repair_fresh_holdout_proof.py",
+    "tests/test_synthetic_canary_fixture_repair_ownership_resume.py"
+  ],
+  "context_grouping_mutation": 0,
+  "contract": "runtime-namespace-repair-diff-v1",
+  "effort_mutation": 0,
+  "model_mutation": 0,
+  "prompt_semantic_mutation": 0,
+  "repair_scope": [
+    "per-context runtime namespace derivation",
+    "pre-spawn collision registry",
+    "working-directory identity gate",
+    "runtime isolation reporting",
+    "tests and proof orchestration"
+  ],
+  "schema_semantic_mutation": 0,
+  "status": "PASS",
+  "ticker_specific_runtime_exception_count": 0,
+  "timeout_mutation": 0
+}
