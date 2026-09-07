@@ -97,6 +97,37 @@ def _price_context(ticker: str, *, price_as_of: date = date(2026, 9, 4)) -> Pric
     return context
 
 
+def _unavailable_price_context(ticker: str) -> PriceContext:
+    technical = build_packet_owned_technical_context(
+        ticker=ticker,
+        market="kr" if ticker.isdigit() else "us",
+        session="closed",
+        as_of=AS_OF.isoformat(),
+        periods={},
+        cutoff=date(2026, 9, 4),
+        expected_daily_completed="2026-09-04",
+        acquisition={
+            "request_count": 4,
+            "success_count": 0,
+            "server_error_count": 4,
+            "failure_classes": ("HTTP_502",),
+        },
+    )
+    context = PriceContext(
+        available=False,
+        decision=PriceDecisionContext(
+            currency="KRW" if ticker.isdigit() else "USD",
+            price_basis="unavailable",
+            market_session="closed",
+            assessment_state="final",
+        ),
+        chart=ChartContext(available=False, quality="unavailable"),
+        warnings=["daily: HTTPStatusError", "weekly: HTTPStatusError"],
+    )
+    context.set_technical_context_payload(technical.model_dump(mode="json"))
+    return context
+
+
 class _PriceClient:
     def __init__(self, context: PriceContext | Exception) -> None:
         self.context = context
@@ -192,6 +223,56 @@ def test_future_price_fact_is_blocked() -> None:
 
     assert result.status == SourceAssemblyStatus.VALIDATION_BLOCK
     assert "future_price_fact" in result.validation_errors
+
+
+def test_safe_price_unavailable_preserves_directional_packet_boundary() -> None:
+    result = asyncio.run(
+        assemble_research_packet(
+            "AAPL",
+            AS_OF,
+            identity=_identity(),
+            price_client=_PriceClient(_unavailable_price_context("AAPL")),
+        )
+    )
+
+    assert result.status == SourceAssemblyStatus.ASSEMBLED
+    assert result.validation_errors == ()
+    assert result.packet is not None
+    stock = result.packet["stocks"][0]
+    assert stock["current_price_context"]["availability"] == "unavailable"
+    assert {fact["fact_id"] for fact in stock["fact_catalog"]} == {
+        "security_identity:current",
+        "industry:classification",
+    }
+    source = result.packet["source_assembly"]
+    assert source["price_context_readiness"] == "UNAVAILABLE"
+    assert source["price_timing_readiness"] == "UNAVAILABLE_SAFE"
+    assert source["directional_fundamental_readiness"] == (
+        "PENDING_FUNDAMENTAL_ENRICHMENT"
+    )
+
+    evidence = result.decision_evidence_packet()
+    assert evidence.technical_context_status == "UNAVAILABLE"
+    assert all(
+        ref.category not in {"PRICE_STRUCTURE", "TECHNICAL_FEATURE"} for ref in evidence.evidence
+    )
+
+
+def test_incomplete_price_context_remains_fail_closed() -> None:
+    context = _unavailable_price_context("AAPL")
+    context.decision.price_as_of = "2026-09-04"
+
+    result = asyncio.run(
+        assemble_research_packet(
+            "AAPL",
+            AS_OF,
+            identity=_identity(),
+            price_client=_PriceClient(context),
+        )
+    )
+
+    assert result.status == SourceAssemblyStatus.VALIDATION_BLOCK
+    assert "price_context_incomplete" in result.validation_errors
 
 
 def test_unsupported_security_type_is_fail_closed() -> None:

@@ -362,7 +362,7 @@ def test_enriched_packet_exposes_current_fundamentals_and_gate() -> None:
                     "data_cautions": [],
                 }
             ],
-            "source_assembly": {},
+            "source_assembly": {"price_timing_readiness": "READY"},
         },
         deterministic_base_context="base context",
     )
@@ -392,6 +392,73 @@ def test_enriched_packet_exposes_current_fundamentals_and_gate() -> None:
     assert all(
         "기업별 실적 또는 사업 이벤트" not in value for value in stock["unknowns"]
     )
+    assert result.packet["source_assembly"]["full_e2e_readiness"] == "READY"
+
+
+def test_directional_sufficiency_does_not_require_price_timing() -> None:
+    base = SourceAssemblyResult(
+        status=SourceAssemblyStatus.ASSEMBLED,
+        ticker="GENERIC",
+        market="us",
+        packet={
+            "contract": "coldstart-source-assembly-v1",
+            "packet_id": "base-no-price",
+            "market": "us",
+            "assessment_date": "2026-09-06",
+            "stocks": [
+                {
+                    "ticker": "GENERIC",
+                    "company_name": "Generic Inc.",
+                    "industry": "Software",
+                    "sector": "Technology",
+                    "business_model": None,
+                    "unknowns": [],
+                    "fact_catalog": [
+                        {
+                            "fact_id": "security_identity:current",
+                            "fact_type": "security_identity",
+                            "fields": {},
+                        }
+                    ],
+                    "data_cautions": ["current_price_unavailable"],
+                }
+            ],
+            "source_assembly": {
+                "price_context_readiness": "UNAVAILABLE",
+                "price_timing_readiness": "UNAVAILABLE_SAFE",
+            },
+        },
+        deterministic_base_context="base context",
+    )
+    enrichment = OfficialFundamentalEnrichment(
+        ticker="GENERIC",
+        market="us",
+        issuer_id="0000000001",
+        official_profile={
+            "source": "sec_submissions",
+            "official_industry_code": "7372",
+            "taxonomy_key": None,
+            "quality": "partial",
+        },
+        analysis_framework=AnalysisFramework.STANDARD_OPERATING,
+        facts=(BUSINESS, EARNINGS),
+        source_quality=FundamentalEvidenceQuality.CURRENT,
+    )
+
+    result = enrich_assembled_packet(base, enrichment)
+
+    assert result.status == SourceSufficiencyStatus.SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT
+    assert result.source_sufficiency.directional_model_eligible is True
+    assert result.packet is not None
+    source = result.packet["source_assembly"]
+    assert source["directional_fundamental_readiness"] == "READY"
+    assert source["price_timing_readiness"] == "UNAVAILABLE_SAFE"
+    assert source["full_e2e_readiness"] == "READY"
+    families = {
+        fact.get("evidence_family")
+        for fact in result.packet["stocks"][0]["fact_catalog"]
+    }
+    assert FundamentalEvidenceFamily.PRICE_CONTEXT.value not in families
 
 
 def test_enriched_packet_does_not_create_decision_for_insufficient_source() -> None:

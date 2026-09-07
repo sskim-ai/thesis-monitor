@@ -427,12 +427,25 @@ def build_decision_evidence_packet(
         source_ref="stock.market_transmission",
         as_of=assessment_date,
     )
+    current_price_context = stock.get("current_price_context")
+    current_price_context = (
+        current_price_context if isinstance(current_price_context, Mapping) else {}
+    )
+    price_availability = str(current_price_context.get("availability") or "").lower()
     _add_text_refs(
         refs,
         ticker=ticker,
-        category=EvidenceCategory.PRICE_STRUCTURE,
-        label="가격 구조",
-        values=stock.get("current_price_context") or {},
+        category=(
+            EvidenceCategory.QUALITY
+            if price_availability in {"unavailable", "price_only"}
+            else EvidenceCategory.PRICE_STRUCTURE
+        ),
+        label=(
+            "가격 컨텍스트 품질"
+            if price_availability in {"unavailable", "price_only"}
+            else "가격 구조"
+        ),
+        values=current_price_context,
         source_ref="stock.current_price_context",
         as_of=assessment_date,
     )

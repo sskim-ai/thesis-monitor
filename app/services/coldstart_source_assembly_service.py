@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections.abc import Mapping
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from enum import StrEnum
 from typing import Literal
 
@@ -266,21 +267,59 @@ def _validation_errors(
     price: Mapping[str, object],
     technical_status: str,
     facts: list[dict[str, object]],
-) -> list[str]:
+) -> tuple[list[str], list[str], str, str]:
     errors: list[str] = []
+    cautions: list[str] = []
     current_price = price.get("current_price")
-    if not isinstance(current_price, (int, float)) or current_price <= 0:
-        errors.append("current_price_unavailable")
+    price_present = current_price is not None
+    price_valid = (
+        isinstance(current_price, (int, float))
+        and not isinstance(current_price, bool)
+        and math.isfinite(float(current_price))
+        and current_price > 0
+    )
     price_as_of = str(price.get("price_as_of") or "")[:10]
-    if not price_as_of:
-        errors.append("price_as_of_unavailable")
-    elif price_as_of > as_of.date().isoformat():
-        errors.append("future_price_fact")
-    if technical_status not in {
+    price_date: date | None = None
+    if price_as_of:
+        try:
+            price_date = date.fromisoformat(price_as_of)
+        except ValueError:
+            errors.append("price_as_of_invalid")
+
+    technical_safe = technical_status in {
         TechnicalContextStatus.FULL,
         TechnicalContextStatus.PARTIAL_SAFE,
-    }:
-        errors.append(f"technical_context_not_safe:{technical_status}")
+    }
+    technical_unavailable = technical_status == TechnicalContextStatus.UNAVAILABLE
+    if not technical_safe and not technical_unavailable:
+        errors.append(f"technical_context_invalid:{technical_status}")
+
+    price_context_readiness = "UNAVAILABLE"
+    price_timing_readiness = (
+        "UNAVAILABLE_SAFE" if technical_unavailable else "UNAVAILABLE"
+    )
+    if not price_present and not price_as_of:
+        cautions.extend(("current_price_unavailable", "price_as_of_unavailable"))
+        if technical_safe:
+            errors.append("price_technical_context_inconsistent")
+    elif not price_present or not price_as_of:
+        errors.append("price_context_incomplete")
+    elif not price_valid:
+        errors.append("current_price_invalid")
+    elif price_date is not None:
+        if price_date > as_of.date():
+            errors.append("future_price_fact")
+        currency = str(price.get("currency") or "").strip()
+        if not currency or currency.lower() == "unknown":
+            errors.append("price_currency_unavailable")
+        if str(price.get("price_basis") or "unavailable").lower() == "unavailable":
+            errors.append("price_basis_inconsistent")
+        price_context_readiness = "READY"
+        if technical_safe:
+            price_timing_readiness = "READY"
+        elif technical_unavailable:
+            cautions.append("technical_context_unavailable")
+
     if identity.security_type.lower() not in {
         "common_stock",
         "common stock",
@@ -294,7 +333,7 @@ def _validation_errors(
     fact_ids = [str(fact.get("fact_id") or "") for fact in facts]
     if any(not fact_id for fact_id in fact_ids) or len(fact_ids) != len(set(fact_ids)):
         errors.append("fact_identity_invalid")
-    return errors
+    return errors, cautions, price_context_readiness, price_timing_readiness
 
 
 async def assemble_research_packet(
@@ -364,18 +403,23 @@ async def assemble_research_packet(
             provider_audit={"identity": "success", "ohlcv": "success"},
         )
 
-    facts = [
-        *_identity_facts(resolved, current.date().isoformat()),
-        _price_fact(price),
-        *_chart_facts(chart, str(price.get("currency") or "unknown")),
-    ]
-    errors = _validation_errors(
+    price_fact_available = (
+        isinstance(price.get("current_price"), (int, float))
+        and not isinstance(price.get("current_price"), bool)
+        and bool(str(price.get("price_as_of") or "")[:10])
+    )
+    facts = [*_identity_facts(resolved, current.date().isoformat())]
+    if price_fact_available:
+        facts.append(_price_fact(price))
+    facts.extend(_chart_facts(chart, str(price.get("currency") or "unknown")))
+    errors, price_cautions, price_context_readiness, price_timing_readiness = _validation_errors(
         identity=resolved,
         as_of=current,
         price=price,
         technical_status=technical_context.status,
         facts=facts,
     )
+    cautions = tuple(dict.fromkeys((*price_context.warnings, *price_cautions)))
     if errors:
         status = (
             SourceAssemblyStatus.UNSUPPORTED_SECURITY
@@ -387,11 +431,13 @@ async def assemble_research_packet(
             ticker=normalized,
             market=market,
             validation_errors=tuple(errors),
-            cautions=tuple(price_context.warnings),
+            cautions=cautions,
             provider_audit={
                 "identity": "success",
                 "ohlcv": "success",
                 "technical_context": technical_context.status,
+                "price_context_readiness": price_context_readiness,
+                "price_timing_readiness": price_timing_readiness,
             },
         )
 
@@ -411,7 +457,13 @@ async def assemble_research_packet(
         "market_transmission": {},
         "current_price_context": {
             "contract": "current-price-context-v1",
-            "availability": "ready",
+            "availability": (
+                "ready"
+                if price_timing_readiness == "READY"
+                else "price_only"
+                if price_context_readiness == "READY"
+                else "unavailable"
+            ),
             "current_price": price.get("current_price"),
             "currency": price.get("currency"),
             "as_of_date": price.get("price_as_of"),
@@ -442,6 +494,10 @@ async def assemble_research_packet(
             "price_as_of": price.get("price_as_of"),
             "technical_context_id": technical_context.technical_context_id,
             "technical_context_status": technical_context.status,
+            "price_context_readiness": price_context_readiness,
+            "price_timing_readiness": price_timing_readiness,
+            "directional_fundamental_readiness": "PENDING_FUNDAMENTAL_ENRICHMENT",
+            "full_e2e_readiness": "PENDING_FUNDAMENTAL_ENRICHMENT",
             "monitoring_baseline_required": 0,
             "stored_monitoring_state_required": 0,
             "production_db_mutation": 0,
@@ -461,11 +517,13 @@ async def assemble_research_packet(
         deterministic_base_context_sha256=hashlib.sha256(
             base_context.encode("utf-8")
         ).hexdigest(),
-        cautions=tuple(price_context.warnings),
+        cautions=cautions,
         provider_audit={
             "identity": "success",
             "ohlcv": "success",
             "technical_context": technical_context.status,
+            "price_context_readiness": price_context_readiness,
+            "price_timing_readiness": price_timing_readiness,
             "price_request_count": technical_context.acquisition.request_count,
             "price_success_count": technical_context.acquisition.success_count,
             "price_cache_use_count": technical_context.acquisition.cache_use_count,

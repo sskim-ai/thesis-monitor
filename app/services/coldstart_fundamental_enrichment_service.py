@@ -1206,6 +1206,20 @@ def enrich_assembled_packet(
         source_assembly["directional_model_eligible"] = int(
             sufficiency.directional_model_eligible
         )
+        source_assembly["directional_fundamental_readiness"] = (
+            "READY" if sufficiency.directional_model_eligible else "NOT_READY"
+        )
+        price_timing_ready = source_assembly.get("price_timing_readiness") in {
+            "READY",
+            "UNAVAILABLE_SAFE",
+        }
+        source_assembly["full_e2e_readiness"] = (
+            "READY"
+            if sufficiency.directional_model_eligible and price_timing_ready
+            else "DIRECTIONAL_ONLY"
+            if sufficiency.directional_model_eligible
+            else "NOT_READY"
+        )
     packet_without_id = {key: value for key, value in packet.items() if key != "packet_id"}
     packet["packet_id"] = (
         f"coldstart-fundamental-{base.ticker}-{canonical_sha256(packet_without_id)[:20]}"
