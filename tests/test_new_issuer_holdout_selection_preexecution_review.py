@@ -235,3 +235,15 @@ def test_model_free_adapter_starts_with_zero_real_exposure(tmp_path: Path) -> No
     assert review.MODEL_FREE_ARTIFACT_MODE == "MODEL_FREE_REAL_INPUT_REHEARSAL"
     assert adapter.model_call_count == 0
     assert adapter.simulated_invocation_count == 0
+
+
+def test_real_input_fixture_uses_only_owned_evidence_refs() -> None:
+    owned = review.synthetic.fictional_owned("SYNTHETIC_US_REVIEW", market="us")
+
+    core = review.real_input_fixture_core(owned)
+    timing = review.real_input_fixture_timing(owned, core)
+
+    core_refs = set(review.runner.frozen._refs(core.model_dump(mode="json")))
+    timing_refs = set(review.runner.frozen._refs(timing.model_dump(mode="json")))
+    assert core_refs <= owned.core_refs
+    assert timing_refs <= owned.timing_refs

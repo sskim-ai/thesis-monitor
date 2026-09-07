@@ -18,6 +18,8 @@ from app.services.direction_timing_ownership_service import (
     CORE_OUTPUT_CONTRACT,
     TIMING_OUTPUT_CONTRACT,
     DirectionalCoreCandidate,
+    EvidenceDomain,
+    OwnedEvidencePacket,
     PriceTimingCandidate,
     canonical_sha256,
     core_fingerprint,
@@ -32,6 +34,7 @@ from scripts import directional_core_price_timing_holdout as frozen
 from scripts import new_issuer_holdout_selection_ownership_proof as runner
 from scripts import runtime_identity_binding as runtime_identity
 from scripts import runtime_identity_lock_repair_fullpath_preflight as identity_repair
+from scripts import synthetic_canary_fixture_repair_ownership_resume as synthetic
 
 
 PROGRAM_CONTRACT = "new-issuer-holdout-selection-preexecution-readiness-review-v1"
@@ -674,21 +677,198 @@ def validate_review_manifest(document: Mapping[str, object]) -> None:
         raise ValueError(f"review_manifest_invalid:{','.join(errors)}")
 
 
+def _first_owned_ref(
+    owned: OwnedEvidencePacket,
+    domains: Sequence[EvidenceDomain],
+) -> str | None:
+    for domain in domains:
+        match = next(
+            (row.ref.ref_id for row in owned.evidence if row.domain == domain),
+            None,
+        )
+        if match is not None:
+            return match
+    return None
+
+
+def _replace_exact_strings(value: object, replacements: Mapping[str, str]) -> object:
+    if isinstance(value, Mapping):
+        return {
+            str(key): _replace_exact_strings(child, replacements)
+            for key, child in value.items()
+        }
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return [_replace_exact_strings(child, replacements) for child in value]
+    if isinstance(value, str):
+        return replacements.get(value, value)
+    return value
+
+
+def real_input_fixture_core(owned: OwnedEvidencePacket) -> DirectionalCoreCandidate:
+    ticker = owned.source_packet.ticker
+    business = _first_owned_ref(
+        owned,
+        (EvidenceDomain.BUSINESS_CURRENT, EvidenceDomain.SECTOR_OPERATING_CURRENT),
+    )
+    earnings = _first_owned_ref(
+        owned,
+        (
+            EvidenceDomain.EARNINGS_FINANCIAL_CURRENT,
+            EvidenceDomain.LIQUIDITY_CASHFLOW_CURRENT,
+        ),
+    )
+    risk = _first_owned_ref(
+        owned,
+        (
+            EvidenceDomain.STRUCTURAL_RISK,
+            EvidenceDomain.DATA_QUALITY_LIMIT,
+            EvidenceDomain.MARKET_EXPECTATIONS,
+        ),
+    )
+    unknown = _first_owned_ref(
+        owned,
+        (EvidenceDomain.DATA_QUALITY_LIMIT, EvidenceDomain.MARKET_EXPECTATIONS),
+    )
+    if any(ref is None for ref in (business, earnings, risk, unknown)):
+        raise ValueError(f"model_free_core_fixture_domain_missing:{ticker}")
+    template = synthetic.fixture_core(owned).model_dump(mode="json")
+    replacements = {
+        f"fictional:{ticker}:business": str(business),
+        f"fictional:{ticker}:earnings": str(earnings),
+        f"fictional:{ticker}:risk": str(risk),
+        f"fictional:{ticker}:unknown": str(unknown),
+    }
+    return DirectionalCoreCandidate.model_validate(
+        _replace_exact_strings(template, replacements)
+    )
+
+
+def real_input_fixture_timing(
+    owned: OwnedEvidencePacket,
+    core: DirectionalCoreCandidate,
+) -> PriceTimingCandidate:
+    ticker = owned.source_packet.ticker
+    support = _first_owned_ref(
+        owned,
+        (EvidenceDomain.SUPPORT_RESISTANCE, EvidenceDomain.PRICE_CONTEXT),
+    )
+    technical = _first_owned_ref(
+        owned,
+        (
+            EvidenceDomain.TECHNICAL_STATE,
+            EvidenceDomain.OHLCV_TECHNICAL,
+            EvidenceDomain.PRICE_CONTEXT,
+        ),
+    )
+    supply = _first_owned_ref(owned, (EvidenceDomain.SUPPLY_POSITIONING,))
+    if support is None or technical is None:
+        raise ValueError(f"model_free_timing_fixture_domain_missing:{ticker}")
+    template = synthetic.fixture_timing(owned, core).model_dump(mode="json")
+    replacements = {
+        f"fictional:{ticker}:support": support,
+        f"fictional:{ticker}:rsi": technical,
+    }
+    if supply is None:
+        template["supply_positioning_rationale"] = None
+    else:
+        replacements[f"fictional:{ticker}:supply"] = supply
+    return PriceTimingCandidate.model_validate(
+        _replace_exact_strings(template, replacements)
+    )
+
+
 class RealInputModelFreeAdapter(identity_repair.ModelFreeTerminalAdapter):
     def invoke(self, **kwargs: object) -> dict[str, object]:
-        receipt = super().invoke(**kwargs)
+        prompt = Path(str(kwargs["prompt"]))
+        schema = Path(str(kwargs["schema"]))
+        output = Path(str(kwargs["output"]))
+        log = Path(str(kwargs["log"]))
         invocation_id = str(kwargs["invocation_id"])
+        stage = str(kwargs["stage"])
+        batch_id = str(kwargs["batch_id"])
+        prompt_identity = runtime_identity.prompt_identity(
+            prompt.read_text(encoding="utf-8")
+        )
+        tickers = tuple(str(value) for value in prompt_identity["tickers"])
+        schema_value = read_json(schema)
+        if runtime_identity.schema_packet_id(schema_value) != self.continuation_generation:
+            raise ValueError("simulated_terminal_received_stale_schema")
+        if runtime_identity.schema_subjects(schema_value) != tickers:
+            raise ValueError("simulated_terminal_subject_constraint_mismatch")
+        if stage == "DIRECTIONAL_CORE":
+            candidates = [
+                identity_repair._reference_to_alias(
+                    real_input_fixture_core(self.owned[ticker]).model_dump(mode="json"),
+                    self.core_aliases[ticker].by_ref,
+                )
+                for ticker in tickers
+            ]
+        elif stage == "PRICE_TIMING":
+            candidates = []
+            for ticker in tickers:
+                core = real_input_fixture_core(self.owned[ticker])
+                candidate = real_input_fixture_timing(
+                    self.owned[ticker], core
+                ).model_dump(mode="json")
+                candidates.append(
+                    identity_repair._reference_to_alias(
+                        candidate,
+                        self.timing_aliases[ticker].by_ref,
+                    )
+                )
+        else:
+            raise ValueError(f"unsupported_simulated_stage:{stage}")
+        document = {
+            "contract": prompt_identity["contract"],
+            "packet_id": self.continuation_generation,
+            "candidates": candidates,
+        }
+        write_json(output, document)
+        write_text(log, f"{MODEL_FREE_ARTIFACT_MODE}\n")
+        self.receipt_root.mkdir(parents=True, exist_ok=True)
         receipt_path = runner.receipt_source_path(self.receipt_root, invocation_id)
-        receipt = dict(receipt)
-        receipt["artifact_mode"] = MODEL_FREE_ARTIFACT_MODE
-        receipt["synthetic_adapter_output"] = True
-        receipt["real_investment_output"] = False
-        receipt["real_model_invocations"] = 0
-        receipt["transport_metadata"] = {
-            "runtime_state_namespace_hash": MODEL_FREE_ARTIFACT_MODE
+        receipt = {
+            "contract": "codex-transport-lifecycle-v1",
+            "artifact_mode": MODEL_FREE_ARTIFACT_MODE,
+            "synthetic_adapter_output": True,
+            "real_investment_output": False,
+            "real_model_invocations": 0,
+            "generation_id": self.continuation_generation,
+            "invocation_id": invocation_id,
+            "stage": stage,
+            "batch_id": batch_id,
+            "subject_count": len(tickers),
+            "model": runner.MODEL,
+            "reasoning_effort": runner.EFFORT,
+            "configured_timeout_seconds": runner.TIMEOUT_SECONDS,
+            "timeout_owner_count": runner.TIMEOUT_OWNER_COUNT,
+            "input_bytes": prompt.stat().st_size,
+            "prompt_sha256": file_sha256(prompt),
+            "schema_sha256": file_sha256(schema),
+            "status": "PASS",
+            "output_parsed": True,
+            "output_bytes": output.stat().st_size,
+            "stdout_bytes": output.stat().st_size,
+            "stderr_bytes": 0,
+            "exit_code": 0,
+            "termination_initiator": "NONE",
+            "child_cleanup_status": "NOT_NEEDED",
+            "orphan_model_process_count": 0,
+            "transport_metadata": {
+                "runtime_state_namespace_hash": MODEL_FREE_ARTIFACT_MODE
+            },
         }
         write_json(receipt_path, receipt)
-        write_text(Path(str(kwargs["log"])), f"{MODEL_FREE_ARTIFACT_MODE}\n")
+        receipt_path.with_suffix(".stdout.log").write_bytes(output.read_bytes())
+        receipt_path.with_suffix(".stderr.log").write_bytes(b"")
+        self.simulated_invocation_count += 1
+        self.invocation_lifecycle[invocation_id] = {
+            "failure_stage": None,
+            "spawn_started": 1,
+            "transport_receipt_expected": 1,
+            "transport_receipt_created": 1,
+            "root_exception_masked": 0,
+        }
         return receipt
 
 
