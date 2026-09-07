@@ -74,6 +74,20 @@ def test_model_input_manifest_keeps_prompt_and_schema_namespaces(tmp_path: Path)
     assert manifest["prompts/batch-01.txt"] != manifest["schemas/batch-01.txt"]
 
 
-def test_existing_transport_topology_remains_frozen() -> None:
-    assert previous.transport_hashes(Path.cwd()) == previous.EXPECTED_TRANSPORT_HASHES
+def test_transport_change_is_bounded_to_context_namespace_allocation() -> None:
+    current = previous.transport_hashes(Path.cwd())
+    unchanged = set(current) - {
+        "continuation_harness_file",
+        "continuation_transport_adapter",
+    }
+
+    assert all(
+        current[key] == previous.EXPECTED_TRANSPORT_HASHES[key] for key in unchanged
+    )
+    assert current["continuation_harness_file"] != previous.EXPECTED_TRANSPORT_HASHES[
+        "continuation_harness_file"
+    ]
+    assert current["continuation_transport_adapter"] != previous.EXPECTED_TRANSPORT_HASHES[
+        "continuation_transport_adapter"
+    ]
     assert resume.root_cause_document()["status"] == "PASS"

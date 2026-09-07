@@ -1088,9 +1088,12 @@ def _runtime_artifact_manifest(context_dir: Path) -> dict[str, object]:
     }
 
 
-def _prior_session_values(output_root: Path, current: Path) -> tuple[set[str], set[str]]:
+def _prior_isolation_values(
+    output_root: Path, current: Path
+) -> tuple[set[str], set[str], set[str]]:
     sessions: set[str] = set()
     namespaces: set[str] = set()
+    working_directories: set[str] = set()
     for path in sorted((output_root / "model-contexts").rglob("lifecycle-summary.json")):
         if path.parent == current:
             continue
@@ -1099,7 +1102,9 @@ def _prior_session_values(output_root: Path, current: Path) -> tuple[set[str], s
             sessions.add(str(value["session_id"]))
         if value.get("runtime_state_namespace_hash"):
             namespaces.add(str(value["runtime_state_namespace_hash"]))
-    return sessions, namespaces
+        if value.get("working_directory_identity"):
+            working_directories.add(str(value["working_directory_identity"]))
+    return sessions, namespaces, working_directories
 
 
 def augment_runtime_context(
@@ -1127,9 +1132,19 @@ def augment_runtime_context(
         if isinstance(receipt.get("transport_metadata"), Mapping)
         else None
     )
-    prior_sessions, prior_namespaces = _prior_session_values(args.output_root, context_dir)
+    working_directory_identity = receipt.get("working_directory_identity")
+    prior_sessions, prior_namespaces, prior_working_directories = (
+        _prior_isolation_values(args.output_root, context_dir)
+    )
     session_unique = bool(session_id) and session_id not in prior_sessions
     namespace_unique = bool(namespace) and str(namespace) not in prior_namespaces
+    working_directory_unique = (
+        bool(working_directory_identity)
+        and str(working_directory_identity) not in prior_working_directories
+    )
+    execution_isolation_valid = bool(
+        session_unique and namespace_unique and working_directory_unique
+    )
     output_path = context_dir / "output.raw.json"
     output_json_valid = False
     if output_path.is_file():
@@ -1145,7 +1160,7 @@ def augment_runtime_context(
         schema_valid=output_json_valid,
         identity_valid=bool(receipt_path.is_file()),
         preservation_valid=preservation["status"] == "PASS",
-        session_identity_valid=session_unique and namespace_unique,
+        session_identity_valid=execution_isolation_valid,
     )
     runtime_document = {
         "contract": "runtime-only-event-extraction-v1",
@@ -1174,6 +1189,9 @@ def augment_runtime_context(
         "session_identity_unique": session_unique,
         "runtime_state_namespace_hash": namespace,
         "runtime_state_namespace_unique": namespace_unique,
+        "working_directory_identity": working_directory_identity,
+        "working_directory_unique": working_directory_unique,
+        "execution_isolation_valid": execution_isolation_valid,
         "receipt_status": receipt.get("status", "NOT_CREATED"),
         "exit_code": receipt.get("exit_code"),
         "elapsed_to_exit_seconds": receipt.get("elapsed_to_exit_seconds"),
@@ -1251,8 +1269,7 @@ def _instrument_model_contexts() -> Iterator[None]:
             if primary_error is None and (
                 lifecycle["artifact_preservation"]["status"] != "PASS"
                 or not lifecycle["classification"]["usable"]
-                or not lifecycle["session_identity_unique"]
-                or not lifecycle["runtime_state_namespace_unique"]
+                or not lifecycle["execution_isolation_valid"]
             ):
                 lifecycle_error = runner.SemanticStop(
                     f"runtime_context_gate_failed:{run}:{stage}:{batch_number}"
@@ -1416,6 +1433,9 @@ def _scan_execution(args: argparse.Namespace) -> dict[str, object]:
             for outcome in outcomes.elements()
         ),
         "orphan_count": sum(int(row.get("orphan_model_process_count") or 0) for row in lifecycle),
+        "distinct_invocation_count": len(
+            {str(row["invocation_id"]) for row in lifecycle if row.get("invocation_id")}
+        ),
         "distinct_session_count": len(
             {str(row["session_id"]) for row in lifecycle if row.get("session_id")}
         ),
@@ -1425,6 +1445,19 @@ def _scan_execution(args: argparse.Namespace) -> dict[str, object]:
                 for row in lifecycle
                 if row.get("runtime_state_namespace_hash")
             }
+        ),
+        "distinct_working_directory_count": len(
+            {
+                str(row["working_directory_identity"])
+                for row in lifecycle
+                if row.get("working_directory_identity")
+            }
+        ),
+        "namespace_collision_count": sum(
+            not bool(row.get("runtime_state_namespace_unique")) for row in lifecycle
+        ),
+        "working_directory_collision_count": sum(
+            not bool(row.get("working_directory_unique")) for row in lifecycle
         ),
         "status": "PASS" if preservation_failures == 0 else "FAIL",
     }

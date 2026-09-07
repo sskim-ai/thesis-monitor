@@ -20,6 +20,13 @@ from app.services.codex_network_transport_service import (
     codex_tls_environment,
     probe_codex_network_readiness,
 )
+from app.services.codex_runtime_state_service import (
+    CodexRuntimeIsolationCollision,
+    CodexRuntimeIsolationIdentity,
+    CodexRuntimeIsolationRegistry,
+    CodexRuntimeState,
+    prepare_codex_runtime_state,
+)
 from app.services.codex_transport_lifecycle_service import (
     AUTHORITATIVE_TIMEOUT_OWNER,
     InstrumentedCodexInvocation,
@@ -218,12 +225,68 @@ class ContinuationTransportAdapter:
         continuation_generation: str,
         receipt_root: Path,
         codex_bin: str,
+        runtime_state_root: Path | None = None,
+        isolation_registry: CodexRuntimeIsolationRegistry | None = None,
     ) -> None:
         self.continuation_generation = continuation_generation
         self.receipt_root = receipt_root
         self.codex_bin = codex_bin
         self.version = cli_version(codex_bin)
         self.model_call_count = 0
+        self.runtime_state_root = (
+            runtime_state_root.resolve()
+            if runtime_state_root is not None
+            else accepted_runtime._runtime_state_root()
+        )
+        self.isolation_registry = isolation_registry or CodexRuntimeIsolationRegistry()
+        self._seed_existing_isolation_claims()
+
+    def _seed_existing_isolation_claims(self) -> None:
+        if not self.receipt_root.is_dir():
+            return
+        for path in sorted(self.receipt_root.glob("*.json")):
+            receipt = read_json(path)
+            metadata = receipt.get("transport_metadata")
+            metadata = metadata if isinstance(metadata, Mapping) else {}
+            invocation_id = receipt.get("invocation_id")
+            namespace_hash = metadata.get("runtime_state_namespace_hash")
+            working_directory_identity = receipt.get("working_directory_identity")
+            if not all(
+                isinstance(value, str) and value
+                for value in (
+                    invocation_id,
+                    namespace_hash,
+                    working_directory_identity,
+                )
+            ):
+                continue
+            self.isolation_registry.seed(
+                invocation_id=str(invocation_id),
+                runtime_state_namespace_hash=str(namespace_hash),
+                working_directory_identity=str(working_directory_identity),
+            )
+
+    def prepare_execution_isolation(
+        self,
+        *,
+        state_namespace: str,
+        invocation_id: str,
+        working_directory: Path,
+        auth_source: Path | None = None,
+    ) -> tuple[CodexRuntimeState, CodexRuntimeIsolationIdentity]:
+        identity = self.isolation_registry.claim(
+            base_namespace=state_namespace,
+            invocation_id=invocation_id,
+            working_directory=working_directory,
+        )
+        runtime_state = prepare_codex_runtime_state(
+            self.runtime_state_root,
+            namespace=identity.runtime_state_namespace,
+            auth_source=auth_source,
+        )
+        if runtime_state.namespace_hash != identity.runtime_state_namespace_hash:
+            raise ValueError("runtime_namespace_allocation_identity_mismatch")
+        return runtime_state, identity
 
     def invoke(
         self,
@@ -264,10 +327,42 @@ class ContinuationTransportAdapter:
         receipt = self.receipt_root / f"{hashlib.sha256(invocation_id.encode()).hexdigest()[:16]}.json"
         stdout = receipt.with_suffix(".stdout.log")
         stderr = receipt.with_suffix(".stderr.log")
+        isolation_preflight = output.parent / "runtime-isolation-preflight.json"
 
-        runtime_state = accepted_runtime.prepare_codex_runtime_state(
-            accepted_runtime._runtime_state_root(),
-            namespace=state_namespace,
+        try:
+            runtime_state, isolation_identity = self.prepare_execution_isolation(
+                state_namespace=state_namespace,
+                invocation_id=invocation_id,
+                working_directory=cwd,
+            )
+        except CodexRuntimeIsolationCollision as exc:
+            write_json(
+                isolation_preflight,
+                {
+                    "contract": "codex-model-context-runtime-isolation-preflight-v1",
+                    "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+                    "invocation_id": invocation_id,
+                    "base_namespace_hash": hashlib.sha256(
+                        state_namespace.encode("utf-8")
+                    ).hexdigest()[:24],
+                    "working_directory_identity": hashlib.sha256(
+                        str(cwd).encode("utf-8")
+                    ).hexdigest(),
+                    "spawn_started": 0,
+                    "model_call_counted": 0,
+                    "failure": str(exc),
+                    "status": "RUNTIME_NAMESPACE_COLLISION",
+                },
+            )
+            raise
+        write_json(
+            isolation_preflight,
+            {
+                **isolation_identity.audit_dict(),
+                "spawn_started": 0,
+                "model_call_counted": 0,
+                "status": "PASS_PRESPAWN",
+            },
         )
         tls = codex_tls_environment(runtime_state.environment())
         readiness = probe_codex_network_readiness()
@@ -321,7 +416,7 @@ class ContinuationTransportAdapter:
                 "network_probe_contract": readiness.contract,
                 "network_probe_attempts": readiness.attempts,
                 "network_resolved_address_count": readiness.resolved_address_count,
-                "runtime_state_namespace_hash": runtime_state.namespace_hash,
+                **isolation_identity.audit_dict(),
                 "tls_trust_source": tls.trust_source,
             },
         )
