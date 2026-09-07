@@ -1778,7 +1778,8 @@ def _write_compact_reports(args: argparse.Namespace) -> None:
 def close_reports(args: argparse.Namespace) -> None:
     state = read_json(args.output_root / "program-state.json")
     closeable_state = state.get("state") == "EVIDENCE_COMPLETE" or (
-        state.get("source_gate_only") and state.get("state") == "READY_TO_PACKAGE"
+        state.get("source_gate_only")
+        and state.get("state") in {"READY_TO_PACKAGE", "COMPLETE"}
     )
     if not closeable_state:
         raise ValueError("evidence_complete_state_required")
@@ -1796,6 +1797,14 @@ def close_reports(args: argparse.Namespace) -> None:
         us_audit = read_json(runner.proof_path(args.report_dir, 7))
         kr_audit = read_json(runner.proof_path(args.report_dir, 10))
         configuration = read_json(args.output_root / "source-configuration-audit.json")
+        selection_policy_path = runner.proof_path(args.report_dir, 5)
+        selection_freeze_commit = git_value(
+            "log",
+            "-1",
+            "--format=%H",
+            "--",
+            str(selection_policy_path.relative_to(Path.cwd())),
+        )
         source_requests = {
             "us": dict(us_audit.get("provider_totals") or {}),
             "kr": dict(kr_audit.get("provider_totals") or {}),
@@ -1835,6 +1844,7 @@ def close_reports(args: argparse.Namespace) -> None:
                     "initial_pause_observation", {}
                 ).get("unexpected_active_paths", []),
                 "selection_policy_hash": state.get("selection_policy_sha256"),
+                "selection_freeze_commit": selection_freeze_commit,
                 "exclusion_registry_hash": state.get("exclusion_registry_sha256"),
                 "exclusion_registry_count": state.get("exclusion_registry_count"),
                 "source_generation_id": None,
@@ -1928,6 +1938,10 @@ def close_reports(args: argparse.Namespace) -> None:
         "retain the detailed machine evidence.\n",
     )
     state["state"] = "READY_TO_PACKAGE"
+    if state.get("source_gate_only"):
+        state["selection_freeze_commit"] = completion.get(
+            "selection_freeze_commit"
+        )
     state["readiness"] = completion.get("readiness")
     state["stop_reason"] = completion.get("stop_reason")
     state["next_scope"] = completion.get("next_scope")
