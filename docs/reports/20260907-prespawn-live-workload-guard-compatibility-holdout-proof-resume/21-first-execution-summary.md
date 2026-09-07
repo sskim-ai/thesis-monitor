@@ -1,0 +1,20 @@
+# 21 First Execution Summary
+
+| Field | Value |
+| --- | --- |
+| completed_context_count | 1 |
+| completed_semantic_audit_count | 1 |
+| actual_output_packet_id | 20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a |
+| candidate_output_count | 4 |
+| candidate_tickers | ["NVDA", "JPM", "WMT", "BRK-B"] |
+| contract | new-issuer-holdout-two-stage-run-v1 |
+| expected_runtime_packet_id | 20260907-prespawn-guard-resume-20260907T012700Z-1f19aa40aef6 |
+| failure_class | RUNTIME_GENERATION_SCHEMA_CONST_MISMATCH |
+| model_semantic_candidate_audit | NOT_MEASURED_IDENTITY_GATE |
+| reason | core_output_identity_mismatch: schema const retained source generation ID |
+| run | first |
+| status | FAILED |
+| transport_status | PASS |
+| validation_pass_count | 0 |
+
+Machine proof: `proofs/21-first-execution-summary.json`.

@@ -1,0 +1,73 @@
+{
+  "context_evidence_preservation_failure_count": 0,
+  "contract": "run-context-artifact-manifest-v1",
+  "rows": [
+    {
+      "artifact_reopen_status": "PASS",
+      "batch_id": "01",
+      "category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "child_cleanup_status": "NOT_NEEDED",
+      "context_evidence_preservation_status": "PASS",
+      "contract": "model-context-artifact-manifest-v1",
+      "elapsed_to_exit_seconds": 127.288596,
+      "exit_code": 0,
+      "first_stderr_seconds": 0.776844,
+      "first_stdout_seconds": 127.247301,
+      "generation_id": "20260907-prespawn-guard-resume-20260907T012700Z-1f19aa40aef6",
+      "input_bytes": 20482,
+      "invocation_id": "20260907-prespawn-guard-resume-20260907T012700Z-1f19aa40aef6:first:DIRECTIONAL_CORE:01",
+      "last_stderr_seconds": 127.247098,
+      "market_mix": {
+        "kr": 0,
+        "us": 4
+      },
+      "model": "gpt-5.6-sol",
+      "orphan_model_process_count": 0,
+      "output_bytes": 15654,
+      "output_file_created": true,
+      "output_parsed": true,
+      "per_context_partial_semantic_audit_status": "FAIL",
+      "per_subject_packet_hashes": {
+        "BRK-B": "2d8b43f112a7adcce696d092433bc20d5320f8ec0c4cdd8bcea2b3dc9aa63b8d",
+        "JPM": "1830d1835eb3c8dc41642d37375aecf49ca6f14cd8c1857a6942c8ac11182b5b",
+        "NVDA": "d49f4a37bd60642dc310ccbb43b763f7c5d53f33a3dfcff8c4ec182fd4640638",
+        "WMT": "5b98f3af7a71b81c0e3e7f348725b6241741abd36814abf1a3bb652055a2b438"
+      },
+      "prompt_sha256": "757dcdf118083ef311853277cc86c62db2a38e63f00f8c4def8540db98b7f61b",
+      "raw_output_bytes": 15654,
+      "raw_output_path": "model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/output.raw.json",
+      "raw_output_sha256": "53f66341319d9e4577cc98b88135f80188ca0add2bca38b32b34fe0cd9859cfb",
+      "reasoning_effort": "xhigh",
+      "receipt_path": "model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/transport_receipt.json",
+      "receipt_sha256": "2cbae1e6f676065b42d34014b61072e71500da192fff3eb27d1a3f51e580bc6e",
+      "run_id": "first",
+      "runtime_state_namespace_hash": "8b84826c3fc02f4ee5d968ba",
+      "schema_sha256": "ee0a634b0b9633a87d2809340b7284e2ed47a60277b7f0651ba0f73f5110fbc0",
+      "secret_exposure_count": 0,
+      "secret_scan_status": "PASS",
+      "sequence_position": 1,
+      "source_lock": "d4bd0b51d9cc543ebe03088047cce375db41d3d9a9f21c07d4fd5646bdf9b1ef",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS",
+      "stderr_bytes": 36509,
+      "stdout_bytes": 15655,
+      "subject_count": 4,
+      "subjects": [
+        "NVDA",
+        "JPM",
+        "WMT",
+        "BRK-B"
+      ],
+      "termination_initiator": "NONE",
+      "timeout": 1800,
+      "timeout_owner_count": 1
+    }
+  ],
+  "run": "first",
+  "status": "PARTIAL"
+}

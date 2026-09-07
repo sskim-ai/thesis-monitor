@@ -1,0 +1,7 @@
+{
+  "contract": "monitoring-bootstrap-next-handoff-v1",
+  "monitoring_registration_calls": 0,
+  "next_scope": "BOUNDED_RUNTIME_IDENTITY_LOCK_REPAIR_NEW_HOLDOUT",
+  "readiness": "NOT_READY",
+  "status": "NOT_READY"
+}

@@ -1,0 +1,17 @@
+{
+  "contract": "run-context-partial-semantic-audits-v1",
+  "per_context_semantic_failure_count": 1,
+  "rows": [
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "error": "core_output_identity_mismatch",
+      "error_type": "ValueError",
+      "rows": [],
+      "stage": "DIRECTIONAL_CORE",
+      "status": "FAIL",
+      "timing_renderer_gates": "NOT_MEASURED"
+    }
+  ],
+  "run": "first",
+  "status": "FAIL"
+}
