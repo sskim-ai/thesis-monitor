@@ -46,6 +46,17 @@ def test_xbrl_parser_preserves_duration_instant_dimension_and_unit() -> None:
     assert revenue.unit_ref == "KRW"
 
 
+def test_statement_basis_uses_member_when_axis_names_both_scopes() -> None:
+    payload = XBRL.replace(
+        b"dart:StatementBasisAxis",
+        b"ifrs:ConsolidatedAndSeparateFinancialStatementsAxis",
+    )
+
+    contexts, _facts = parse_xbrl_document(payload)
+
+    assert {item.statement_basis for item in contexts} == {"consolidated"}
+
+
 def test_xbrl_reconciliation_requires_unique_exact_context() -> None:
     _contexts, facts = parse_xbrl_document(XBRL)
 

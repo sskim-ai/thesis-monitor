@@ -49,7 +49,12 @@ def _decimal(value: object) -> Decimal | None:
 
 
 def _basis_from_dimensions(dimensions: Iterable[tuple[str, str]]) -> str | None:
-    values = " ".join(f"{axis} {member}" for axis, member in dimensions).lower()
+    values = " ".join(
+        member
+        for axis, member in dimensions
+        if "statementbasis" in axis.casefold()
+        or "consolidatedandseparate" in axis.casefold()
+    ).lower()
     consolidated = any(term in values for term in ("consolidated", "consolidation", "연결"))
     separate = any(term in values for term in ("separate", "individual", "별도", "개별"))
     if consolidated == separate:

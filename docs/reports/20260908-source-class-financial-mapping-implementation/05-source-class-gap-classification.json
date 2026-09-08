@@ -1,0 +1,52 @@
+{
+  "contract": "m8-source-class-gap-classification-v1",
+  "classification_frozen_before_code_change": true,
+  "gaps": [
+    {
+      "historical_example": "HUT",
+      "metric_scope": "ppe_capex_cash_outflow",
+      "classification": "SOURCE_EVIDENCE_INSUFFICIENT",
+      "source_family": "SEC CompanyFacts",
+      "filing_document_class": "10-K/10-Q",
+      "taxonomy_account_concept_class": "US-GAAP PPE cash purchase concept not present in preserved extracted evidence",
+      "period_context_metadata": "OCF duration contexts preserved; no PPE occurrence preserved",
+      "issuer_security_identity_behavior": "issuer-level domestic SEC registrant",
+      "normalization_path": "existing SEC CompanyFacts canonicalizer",
+      "genericity_basis": "The original CompanyFacts payload and any unregistered extension concept are not preserved, so no reusable PPE alias can be proven.",
+      "generic_rule_id": null,
+      "resolved_by_generic_rule": false,
+      "decision": "HUT_GAP_DEFERRED_NO_TICKER_EXCEPTION"
+    },
+    {
+      "historical_example": "SKHY",
+      "metric_scope": "operating_cash_flow_and_ppe_capex_cash_outflow",
+      "classification": "ALREADY_SUPPORTED_AFTER_M7",
+      "source_family": "SEC foreign-private-issuer structured filing",
+      "filing_document_class": "20-F/6-K",
+      "taxonomy_account_concept_class": "IFRS OCF and PPE cash-purchase concepts",
+      "period_context_metadata": "generic exact duration support proven by existing TSM and WRD canonical facts; SKHY preserved extraction contains zero cash-flow occurrences",
+      "issuer_security_identity_behavior": "issuer-level financial facts remain independent of ADR/share basis",
+      "normalization_path": "existing IFRS registry and official filing canonicalizer",
+      "genericity_basis": "TSM and WRD provide additional repository examples for the same issuer-level IFRS source-standard rule.",
+      "generic_rule_id": "existing-ifrs-foreign-issuer-cash-flow-v1",
+      "resolved_by_generic_rule": false,
+      "decision": "SKHY_GAP_DEFERRED_NO_TICKER_EXCEPTION"
+    },
+    {
+      "historical_example": "KR_OPENDART_REAL_COHORT",
+      "metric_scope": "operating_cash_flow_and_ppe_capex_cash_outflow",
+      "classification": "GENERIC_SOURCE_CLASS_WITH_BOUNDED_VARIANT",
+      "source_family": "OpenDART full-statement rows plus official XBRL archive",
+      "filing_document_class": "OpenDART formal periodic filing",
+      "taxonomy_account_concept_class": "IFRS OCF and PPE cash-purchase concepts",
+      "period_context_metadata": "seven preserved real filings contain unique concept, amount, KRW unit, entity, duration and consolidated/separate-member contexts",
+      "issuer_security_identity_behavior": "OpenDART corporation entity identifier; no security denominator",
+      "normalization_path": "M7 exact-duration reconciler then canonical direct-fact promotion",
+      "genericity_basis": "All seven preserved issuers reproduce the same axis-name/member-value basis parsing defect; the member, not the mixed axis label, identifies consolidated versus separate scope.",
+      "generic_rule_id": "opendart-statement-basis-member-v1",
+      "resolved_by_generic_rule": null,
+      "decision": "IMPLEMENT_BOUNDED_GENERIC_MEMBER_BASIS_AND_EXACT_CONTEXT_PROMOTION"
+    }
+  ],
+  "ticker_specific_mapping_count": 0
+}
