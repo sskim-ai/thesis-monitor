@@ -1,0 +1,28 @@
+{
+  "contract": "m10-real-archive-coverage-v1",
+  "financial_sector_candidates_routed_out": 1,
+  "kr": {
+    "kr_broad_payables_context_count": 1,
+    "kr_broad_receivables_context_count": 1,
+    "kr_comparable_balance_pair_count": 38,
+    "kr_contract_assets_context_count": 3,
+    "kr_contract_liabilities_context_count": 3,
+    "kr_current_assets_direct_count": 6,
+    "kr_current_liabilities_direct_count": 6,
+    "kr_inventory_direct_count": 6,
+    "kr_nonfinancial_candidate_count": 6,
+    "kr_payables_context_count": 6,
+    "kr_receivables_context_count": 6,
+    "kr_trade_payables_direct_count": 5,
+    "kr_trade_receivables_direct_count": 5
+  },
+  "provider_source_fetches": 0,
+  "us": {
+    "claim": "NO_REAL_US_ARCHIVE_COVERAGE_CLAIM",
+    "comparable_pairs": 0,
+    "direct_inventory": 0,
+    "direct_trade_payables": 0,
+    "direct_trade_receivables": 0,
+    "nonfinancial_candidates": 13
+  }
+}

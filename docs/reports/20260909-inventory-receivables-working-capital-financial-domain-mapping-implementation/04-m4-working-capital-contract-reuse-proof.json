@@ -1,0 +1,126 @@
+{
+  "contract": "m10-m4-working-capital-contract-reuse-proof-v1",
+  "frozen_design": {
+    "contract": "m4-domain-design-v1",
+    "design": {
+      "applicable_sector_families": [
+        "manufacturing",
+        "hardware",
+        "consumer/retail",
+        "EPC/construction",
+        "selected distributor"
+      ],
+      "comparability_requirements": [
+        "trade vs broad AR/AP semantics remain distinct",
+        "same balance scope, currency, entity, and basis",
+        "revenue/COGS relation requires compatible flow period"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/cash_flow_capital_efficiency_service.py",
+        "app/services/opendart_financial_recovery_service.py",
+        "docs/reports/20260820-phase9-0b-canonical-facts.json"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "compare inventory/receivable movement with compatible revenue evidence",
+        "state observed divergence without asserting its cause",
+        "CCC remains deferred"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED_POINT_IN_TIME",
+        "DERIVED_SAFE"
+      ],
+      "domain": "inventory_receivables_working_capital",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "other receivables as trade AR",
+        "other payables as trade AP",
+        "year-end to interim balance called YoY",
+        "DSO without average trade AR and compatible revenue",
+        "inventory days without average inventory and compatible COGS",
+        "DPO without explicit denominator policy",
+        "CCC with any missing component",
+        "missing working-capital data treated as negative"
+      ],
+      "implementation_risk": "MEDIUM",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "working-capital quality",
+        "cash-conversion warning"
+      ],
+      "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "message_usage": [
+        "identify point-in-time comparison basis",
+        "avoid generic working-capital deterioration when only one balance is known"
+      ],
+      "missing_data_behavior": "Unavailable and confidence-limiting only when the claim depends on it",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance",
+        "asset manager",
+        "many SaaS issuers"
+      ],
+      "period_basis": [
+        "balance date vs prior-year comparable date",
+        "balance date vs prior year-end with explicit label"
+      ],
+      "required_validation_tests": [
+        "trade/broad semantic separation",
+        "point-in-time period labels",
+        "balance vs flow compatibility",
+        "CCC dependency failure controls"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "balance scope mismatch"
+          ],
+          "formula": "current point-in-time balance - compatible prior balance",
+          "inputs": 2,
+          "name": "balance_absolute_delta",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "year-end comparator mislabeled YoY"
+          ],
+          "formula": "directional relation to prior-year comparable balance",
+          "inputs": 2,
+          "name": "balance_yoy_relation",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "period or semantic mismatch"
+          ],
+          "formula": "compare compatible balance and revenue directions",
+          "inputs": "3+",
+          "name": "balance_vs_revenue_relation",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    "status": "FROZEN_DESIGN"
+  },
+  "reused": [
+    "trade_vs_broad_separation",
+    "point_in_time_identity",
+    "prior_year_comparable_vs_prior_year_end",
+    "no_efficiency_ratios_without_denominators"
+  ],
+  "source_artifact": "14-working-capital-design.json",
+  "source_sha256": "b01797577b18aac47b6abb472b777613d74b4d1499c6d141d3431df6a6ffb3cc"
+}

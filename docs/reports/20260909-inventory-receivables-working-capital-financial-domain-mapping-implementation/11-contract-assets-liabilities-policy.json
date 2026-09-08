@@ -1,0 +1,41 @@
+{
+  "contract": "m10-contract-assets-liabilities-policy-v1",
+  "contract_asset_policy": "SEPARATE_WORKING_CAPITAL_CONTEXT",
+  "contract_liability_policy": "SEPARATE_WORKING_CAPITAL_CONTEXT",
+  "merged_into_trade_receivables_count": 0,
+  "rows": [
+    {
+      "balance_scope": "contract_assets_current",
+      "canonical_metric": "contract_assets_context",
+      "net_gross_scope": "net",
+      "priority": 100,
+      "role": "CONTRACT_CONTEXT",
+      "source_semantic": "us-gaap:ContractWithCustomerAssetNetCurrent"
+    },
+    {
+      "balance_scope": "contract_assets_current",
+      "canonical_metric": "contract_assets_context",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "CONTRACT_CONTEXT",
+      "source_semantic": "ifrs-full:CurrentContractAssets"
+    },
+    {
+      "balance_scope": "contract_liabilities_current",
+      "canonical_metric": "contract_liabilities_context",
+      "net_gross_scope": "gross",
+      "priority": 100,
+      "role": "CONTRACT_CONTEXT",
+      "source_semantic": "us-gaap:ContractWithCustomerLiabilityCurrent"
+    },
+    {
+      "balance_scope": "contract_liabilities_current",
+      "canonical_metric": "contract_liabilities_context",
+      "net_gross_scope": "gross",
+      "priority": 100,
+      "role": "CONTRACT_CONTEXT",
+      "source_semantic": "ifrs-full:CurrentContractLiabilities"
+    }
+  ],
+  "universal_nwc_subtraction_count": 0
+}

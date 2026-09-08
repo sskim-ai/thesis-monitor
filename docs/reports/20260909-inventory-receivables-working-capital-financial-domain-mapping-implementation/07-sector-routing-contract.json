@@ -1,0 +1,16 @@
+{
+  "contract": "m10-sector-routing-contract-v1",
+  "financial_frameworks": [
+    "bank",
+    "insurance",
+    "reinsurance",
+    "financial_institution"
+  ],
+  "missing_inventory_is_not_negative": true,
+  "routes": [
+    "GENERIC_OPERATING_COMPANY",
+    "CONTEXT_ONLY",
+    "SECTOR_FRAMEWORK_REQUIRED"
+  ],
+  "saas_platform_policy": "CONTEXT_ONLY_WHEN_FRAMEWORK_PROVES_LOW_MATERIALITY"
+}

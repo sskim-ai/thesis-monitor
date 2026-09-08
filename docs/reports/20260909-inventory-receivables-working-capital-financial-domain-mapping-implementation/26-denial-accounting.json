@@ -1,0 +1,27 @@
+{
+  "contract": "m10-denial-accounting-v1",
+  "real_archive_counts": {
+    "broad_receivable_not_trade": 18,
+    "nontrade_payable_not_trade": 10,
+    "sector_not_applicable": 4,
+    "total_assets_not_inventory": 12,
+    "total_liabilities_not_trade_payables": 12
+  },
+  "rules_weakened_to_reduce_denials": 0,
+  "taxonomy": [
+    "sector_not_applicable",
+    "unsupported_semantic",
+    "broad_receivable_not_trade",
+    "aggregate_child_overlap",
+    "gross_net_basis_mismatch",
+    "point_in_time_mismatch",
+    "currency_mismatch",
+    "entity_scope_mismatch",
+    "statement_basis_mismatch",
+    "comparison_kind_ambiguous",
+    "prior_comparable_missing",
+    "prior_year_end_missing",
+    "source_conflict",
+    "exact_context_unresolved"
+  ]
+}

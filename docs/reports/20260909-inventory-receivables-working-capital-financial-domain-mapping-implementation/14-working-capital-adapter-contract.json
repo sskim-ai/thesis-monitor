@@ -1,0 +1,14 @@
+{
+  "contract": "m10-working-capital-adapter-contract-v1",
+  "derived_evidence_status": "DERIVED_SAFE",
+  "derived_formula": "balance_absolute_delta",
+  "direct_evidence_status": "DIRECT_REPORTED",
+  "internal_financial_context_only": true,
+  "lineage_fields": [
+    "ordered_input_fact_ids",
+    "ordered_input_source_refs",
+    "comparison_kind",
+    "lineage_sha256"
+  ],
+  "source_contract": "inventory-receivables-working-capital-v1"
+}

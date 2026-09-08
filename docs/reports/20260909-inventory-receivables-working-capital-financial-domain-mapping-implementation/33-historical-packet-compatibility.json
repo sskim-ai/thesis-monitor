@@ -1,0 +1,32 @@
+{
+  "contract": "m10-historical-packet-compatibility-v1",
+  "financial_context_remains_optional": true,
+  "historical_archives_rewritten": 0,
+  "legacy_fixture_count": 14,
+  "legacy_hash_unchanged_count": 14,
+  "legacy_parse_pass_count": 14,
+  "m9_authoritative_evidence": {
+    "contract": "m9-historical-packet-compatibility-v1",
+    "historical_archives_rewritten": 0,
+    "legacy_fixture_count": 14,
+    "legacy_hash_unchanged_count": 14,
+    "legacy_parse_pass_count": 14,
+    "m8_authoritative_evidence": {
+      "contract": "m8-historical-packet-compatibility-v1",
+      "historical_archives_rewritten": 0,
+      "legacy_fixture_count": 14,
+      "legacy_hash_unchanged_count": 14,
+      "legacy_parse_pass_count": 14,
+      "m7_authoritative_evidence": {
+        "contract": "m7-historical-packet-compatibility-v1",
+        "financial_context_remains_optional": true,
+        "historical_archives_rewritten": 0,
+        "legacy_fixture_count": 14,
+        "legacy_hash_unchanged_count": 14,
+        "legacy_parse_pass_count": 14,
+        "m6_authoritative_artifact_sha256": "00174259c3a7a5c93809028431b5eae4de068d3a8130b2bea7b7b99fb2359b8c"
+      }
+    },
+    "point_in_time_external_period_start": null
+  }
+}

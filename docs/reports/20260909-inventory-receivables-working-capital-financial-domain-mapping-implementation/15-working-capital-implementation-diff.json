@@ -1,0 +1,14 @@
+{
+  "changed_paths": [
+    "M\tapp/services/cash_flow_capital_efficiency_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "M\tapp/services/financial_lineage_projection_service.py",
+    "A\tapp/services/working_capital_financial_mapping_service.py",
+    "A\ttests/test_working_capital_financial_mapping_service.py"
+  ],
+  "contract": "m10-working-capital-implementation-diff-v1",
+  "implementation_commit": "c898343db3d416243183c2c62746b08dc461b6a2",
+  "model_prompt_path_count": 0,
+  "production_renderer_path_count": 0,
+  "scheduler_path_count": 0
+}

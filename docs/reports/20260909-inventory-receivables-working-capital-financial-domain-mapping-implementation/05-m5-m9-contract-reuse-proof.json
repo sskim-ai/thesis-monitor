@@ -1,0 +1,23 @@
+{
+  "canonical_fact_reused": true,
+  "contract": "m10-m5-m9-contract-reuse-proof-v1",
+  "financial_context_reused": true,
+  "lineage_projection_reused": true,
+  "m8_exact_xbrl_instant_reconciliation_reused": true,
+  "m9_debt_liquidity_semantic_change_count": 0,
+  "m9_semantic_modules": [
+    {
+      "after_sha256": "2c1a20a1a4dbc29a00a3dd9340b3a2d5d72790cbcf5ae31d4113fff6f31a43ce",
+      "before_sha256": "2c1a20a1a4dbc29a00a3dd9340b3a2d5d72790cbcf5ae31d4113fff6f31a43ce",
+      "changed": false,
+      "path": "app/services/debt_liquidity_financial_mapping_service.py"
+    },
+    {
+      "after_sha256": "4b3f1e8446e3da6eadbee15e38a7539c9dce1ba820d124d6db01b6e8ffc66c27",
+      "before_sha256": "4b3f1e8446e3da6eadbee15e38a7539c9dce1ba820d124d6db01b6e8ffc66c27",
+      "changed": false,
+      "path": "app/services/opendart_xbrl_service.py"
+    }
+  ],
+  "parallel_truth_store_created": false
+}

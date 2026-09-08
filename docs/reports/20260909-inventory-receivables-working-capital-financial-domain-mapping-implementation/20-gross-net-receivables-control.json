@@ -1,0 +1,10 @@
+{
+  "contract": "m10-gross-net-receivables-control-v1",
+  "gross_net_basis_conflict_count": 1,
+  "gross_net_precedence_count": 1,
+  "mismatch_reasons": [
+    "net_gross_scope_mismatch"
+  ],
+  "status": "PASS",
+  "synthetic_net_fact_count": 1
+}

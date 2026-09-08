@@ -385,6 +385,16 @@ OpenDART CFS/OFS의 exact taxonomy·amount·KRW unit·entity·duration·statemen
 
 새 debt/liquidity context는 internal packet metadata까지만 도달하고 compact AI context에는 노출되지 않는다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, warning, working capital, non-operating effects, model/provider, production DB·queue·send·deploy·scheduler는 변하지 않았다. M9 focused 295개와 전체 2950개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
 
+### M10 — 완료: inventory, receivables, working-capital component mapping
+
+`inventory-receivables-working-capital-v1`은 exact official taxonomy와 POINT_IN_TIME context가 일치할 때만 inventory aggregate/component, trade/broad receivables, trade/broad payables, current assets/liabilities, contract assets/liabilities를 canonical fact와 internal `financial_context`로 승격한다. aggregate inventory가 있으면 child component를 함께 합산하거나 중복 노출하지 않고 aggregate가 우선한다. trade와 broad, gross와 net, contract와 trade balance는 서로 다른 semantic scope로 유지한다.
+
+안전한 파생은 같은 metric·semantic·currency·unit·entity·statement·gross/net basis의 두 잔액에 대한 `balance_absolute_delta`뿐이다. `prior_year_comparable`과 `prior_year_end`를 별도 kind로 보존하며, 반기말 대 전기말은 YoY가 아니다. current assets minus current liabilities를 operating working capital로 부르는 공식과 DSO/DIO/DPO/CCC는 생성하지 않는다. 은행·보험·재보험은 `SECTOR_FRAMEWORK_REQUIRED`, SaaS/platform 등은 필요 시 `CONTEXT_ONLY`로 분리한다.
+
+보존된 실제 KR archive에서 비금융 6곳 모두 inventory/current asset/current liability를 exact OpenDART/XBRL instant context로 재현했다. trade AR/AP는 각각 5곳, 나머지 1곳은 broad receivable/payable context만 안전했다. contract assets와 contract liabilities는 각각 3곳이다. 38개 balance delta는 모두 `prior_year_end` 비교이며 실제 prior-year comparable은 보존 자료에 없다. Receivable delta는 8개로, 6개 issuer scope에 더해 POSCO와 LS ELECTRIC의 current/noncurrent trade receivable을 각각 분리한 결과이며 합산 Fact가 아니다. Payable delta는 6개다. 보험 `003690`의 generic working-capital emission은 0이다. 보존된 US balance-sheet payload는 계속 0이므로 실제 US coverage는 주장하지 않고 exact SEC source-class capability만 synthetic fixture로 검증했다.
+
+새 working-capital context는 internal packet metadata에만 존재하며 compact AI context, Directional/Price-Timing prompt, renderer, source sufficiency, Daily Delta, warning, debt/liquidity semantics를 바꾸지 않는다. M10 focused 339개와 전체 2970개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`, monitoring은 `PAUSED`를 유지한다.
+
 ### 후속 — 명시적 재개와 일일 운영
 
 사용자가 재개를 요청할 때만 승인된 US/KR 예약을 다시 활성화한다.
@@ -532,9 +542,9 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. M9 결론과 다음 한 작업
+## 11. M10 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현, M10 inventory/receivables/payables와 명시적 balance-comparison mapping 구현.
 
 M8 source-class 판정:
 
@@ -548,11 +558,11 @@ HUT은 보존된 추출 결과에 OCF만 있고 원본 CompanyFacts concept set�
 
 KR은 실제 7개 보존 OpenDART full-statement/XBRL cache에서 동일 원인을 확인했다. `ConsolidatedAndSeparateFinancialStatementsAxis`라는 축 이름 자체에 두 basis 단어가 함께 있어 이전 parser가 모호하다고 판단했지만, 실제 member는 각 context에서 `ConsolidatedMember` 또는 `SeparateMember`로 단일하다. M8은 basis member를 우선하고 exact taxonomy·amount·KRW unit·entity·duration·filing identity가 모두 일치할 때만 direct reported canonical fact로 승격한다. 7개 issuer의 OCF/PPE source fact는 exact YTD context로 재현됐고 ticker 분기는 0이다. 보험 1개는 source evidence 보존과 generic enterprise FCF applicability를 분리해 기존 N/A를 유지한다.
 
-**권장 다음 한 작업, 아직 미승인:** `INVENTORY_RECEIVABLES_WORKING_CAPITAL_MAPPING_IMPLEMENTATION`.
-- debt/liquidity 완료와 working capital, non-operating effects를 한 번에 묶지 않는다.
-- inventory 및 receivables scope·gross/net·trade/broad 의미와 compatible point-in-time comparison을 별도 bounded package로 닫는다.
-- 금융업 capital adequacy와 `010120`의 ambiguous convertible preferred liability는 industrial net-debt coverage를 늘리기 위해 억지로 흡수하지 않는다.
-- Directional specificity, source-sufficiency gate, 모델 holdout, production 활성화는 여전히 포함하지 않는다.
+**권장 다음 한 작업, 아직 미승인:** `NON_OPERATING_FINANCIAL_INCOME_EFFECTS_MAPPING_IMPLEMENTATION`.
+- M4의 남은 higher-risk financial domain인 non-operating/financial-income effects만 별도 bounded package로 다룬다.
+- M10의 balance fact를 Directional Core가 소비하거나 working-capital warning으로 활성화하지 않는다.
+- financial-sector capital framework와 `010120`의 ambiguous convertible preferred liability는 별도 문제로 유지한다.
+- source-sufficiency gate, 모델 holdout, production 활성화와 schedule resume는 계속 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
 
@@ -596,9 +606,12 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | 알려진 debt component 합계를 total debt로 표시 | current/non-current completeness와 overlap·basis 검사를 모두 통과할 때만 total 및 net debt 생성 |
 | cash 또는 cash+restricted cash를 같은 liquidity basis로 차감 | net debt cash basis는 cash and cash equivalents only; restricted/combined cash는 별도 context 또는 차단 |
 | 금융업에도 industrial net debt 적용 | bank/insurance/reinsurance는 sector framework required로 분리 |
+| inventory·trade AR/AP와 broad/current/contract balance를 같은 working-capital 값으로 취급 | exact semantic class를 분리하고 aggregate·net precedence 및 overlap 차단 적용 |
+| 반기말과 전기말 차이를 YoY로 표현 가능 | `prior_year_end`로 명시하고 `prior_year_comparable`과 별도 lineage 유지 |
+| current assets minus current liabilities를 operating working capital로 사용 | M10에서 universal NWC/OWC 공식과 DSO/DIO/DPO/CCC 파생을 모두 금지 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M9 비운영 debt/liquidity canonical mapping과 lineage-validated derived total/net debt 구현을 반영한다. 완료 의미는 `M9_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
+이번 갱신은 M10 비운영 inventory/receivables/payables/current/contract balance mapping과 명시적 comparison-kind lineage를 반영한다. 완료 의미는 `M10_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
 
 ---
 

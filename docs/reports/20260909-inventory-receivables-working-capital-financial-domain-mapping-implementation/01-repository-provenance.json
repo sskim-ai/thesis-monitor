@@ -1,0 +1,22 @@
+{
+  "base_matches_m9_final": true,
+  "base_sha": "2e93eb9dcfab7594007af0139d6e2bd7c15a5009",
+  "branch": "codex/20260909-inventory-receivables-working-capital-financial-domain-mapping-implementation",
+  "contract": "m10-repository-provenance-v1",
+  "implementation_changed_paths": [
+    "M\tapp/services/cash_flow_capital_efficiency_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "M\tapp/services/financial_lineage_projection_service.py",
+    "A\tapp/services/working_capital_financial_mapping_service.py",
+    "A\ttests/test_working_capital_financial_mapping_service.py"
+  ],
+  "implementation_commit": "c898343db3d416243183c2c62746b08dc461b6a2",
+  "implementation_parent": "2e93eb9dcfab7594007af0139d6e2bd7c15a5009",
+  "status_before_report_commit": [
+    "M docs/MASTER_WORKFLOW.md",
+    "?? docs/reports/20260909-inventory-receivables-working-capital-financial-domain-mapping-implementation/",
+    "?? scripts/working_capital_financial_mapping_evidence.py"
+  ],
+  "work_instruction_commit": "584876a091fbf3ad10b833fe3706c7c2daf5a3c2",
+  "work_instruction_sha256": "0224ce4756beb3dd264bebc1d2ae6bfdf5ba910a3783c9938d748407f68b9e92"
+}

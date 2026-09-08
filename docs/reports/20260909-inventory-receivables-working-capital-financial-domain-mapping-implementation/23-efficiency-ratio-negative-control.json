@@ -1,0 +1,14 @@
+{
+  "CCC_count": 0,
+  "DIO_count": 0,
+  "DPO_count": 0,
+  "DSO_count": 0,
+  "attempts": [
+    "ending_ar_plus_quarter_revenue",
+    "ending_inventory_plus_incomplete_cogs",
+    "missing_average_balances_or_dpo"
+  ],
+  "contract": "m10-efficiency-ratio-negative-control-v1",
+  "derived_efficiency_ratio_count": 0,
+  "status": "PASS"
+}

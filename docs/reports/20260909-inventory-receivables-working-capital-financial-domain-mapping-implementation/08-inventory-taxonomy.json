@@ -1,0 +1,81 @@
+{
+  "aggregate_policy": "EXACT_AGGREGATE_PRECEDES_CHILD_COMPONENTS",
+  "child_only_policy": "PRESERVE_SEPARATELY_NO_RECONSTRUCTED_TOTAL",
+  "contract": "m10-inventory-taxonomy-v1",
+  "fuzzy_mapping_count": 0,
+  "inventory_component_class_count": 4,
+  "rows": [
+    {
+      "balance_scope": "inventory_total",
+      "canonical_metric": "inventory",
+      "net_gross_scope": "net",
+      "priority": 100,
+      "role": "INVENTORY_AGGREGATE",
+      "source_semantic": "us-gaap:InventoryNet"
+    },
+    {
+      "balance_scope": "inventory_total",
+      "canonical_metric": "inventory",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_AGGREGATE",
+      "source_semantic": "ifrs-full:Inventories"
+    },
+    {
+      "balance_scope": "inventory_total",
+      "canonical_metric": "inventory",
+      "net_gross_scope": "issuer_reported",
+      "priority": 95,
+      "role": "INVENTORY_AGGREGATE",
+      "source_semantic": "ifrs-full:InventoriesTotal"
+    },
+    {
+      "balance_scope": "inventory_raw_materials",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "us-gaap:InventoryRawMaterials"
+    },
+    {
+      "balance_scope": "inventory_work_in_process",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "us-gaap:InventoryWorkInProcess"
+    },
+    {
+      "balance_scope": "inventory_finished_goods",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "us-gaap:InventoryFinishedGoods"
+    },
+    {
+      "balance_scope": "inventory_raw_materials",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "ifrs-full:RawMaterialsAndConsumables"
+    },
+    {
+      "balance_scope": "inventory_work_in_process",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "ifrs-full:WorkInProgress"
+    },
+    {
+      "balance_scope": "inventory_finished_goods",
+      "canonical_metric": "inventory_component",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "INVENTORY_COMPONENT",
+      "source_semantic": "ifrs-full:FinishedGoods"
+    }
+  ]
+}

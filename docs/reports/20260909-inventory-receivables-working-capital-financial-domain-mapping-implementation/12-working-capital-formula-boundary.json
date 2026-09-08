@@ -1,0 +1,16 @@
+{
+  "allowed_derivation": "balance_absolute_delta",
+  "contract": "m10-working-capital-formula-boundary-v1",
+  "derived_efficiency_ratio_count": 0,
+  "forbidden": [
+    "operating_working_capital",
+    "net_working_capital",
+    "working_capital_score",
+    "DSO",
+    "DIO",
+    "DPO",
+    "CCC"
+  ],
+  "new_operating_working_capital_formula_count": 0,
+  "policy": "NO_UNIVERSAL_OPERATING_WORKING_CAPITAL"
+}

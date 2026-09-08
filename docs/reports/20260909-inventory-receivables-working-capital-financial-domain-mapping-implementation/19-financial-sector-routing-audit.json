@@ -1,0 +1,68 @@
+{
+  "contract": "m10-financial-sector-routing-audit-v1",
+  "financial_sector_candidate_count": 1,
+  "financial_sector_generic_working_capital_emission_count": 0,
+  "required_route": "SECTOR_FRAMEWORK_REQUIRED",
+  "rows": [
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 0,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "insurance",
+      "compact_ai_context_after_sha256": "4578bda2f3409a8bc8eaccced9954b073d999fd5ad364a34ac404aeac2c84df1",
+      "compact_ai_context_before_sha256": "4578bda2f3409a8bc8eaccced9954b073d999fd5ad364a34ac404aeac2c84df1",
+      "compact_ai_context_unchanged": true,
+      "comparison_kind_counts": {},
+      "current_direct_fact_count": 0,
+      "denials": [
+        {
+          "metric": "working_capital",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Assets"
+        },
+        {
+          "metric": "working_capital",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Assets"
+        },
+        {
+          "metric": "working_capital",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "working_capital",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Liabilities"
+        }
+      ],
+      "derived_balance_delta_count": 0,
+      "direct_fact_count": 0,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 4,
+      "facts": [],
+      "financial_type": "financial",
+      "gross_net_precedence_count": 0,
+      "idempotent": true,
+      "industry": "insurance_reinsurance",
+      "overlap_blocked_count": 0,
+      "overlap_conflict_count": 0,
+      "prior_year_end_direct_fact_count": 0,
+      "sector_route": "SECTOR_FRAMEWORK_REQUIRED",
+      "source_candidates": 2,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "068b876e7cb65e4714ccb8c0d8471d02078012c6c37bc46b81e2ff8514b0e8d1",
+        "OFS.json": "a652c0f4addd40a532da21339c8559cfb9136ee3415c1a0ee5570b07f691da22",
+        "xbrl.zip": "a4d27fd7fc1602bc491977206f4871f9e60b934361eef9047b8fd9bf5e18021d"
+      },
+      "ticker": "003690",
+      "xbrl_context_count": 3716,
+      "xbrl_fact_count": 11779
+    }
+  ]
+}
