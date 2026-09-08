@@ -1,0 +1,34 @@
+{
+  "actual_sha256": "2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e",
+  "checks": {
+    "crc": true,
+    "duplicates": true,
+    "independent_secret_scan": true,
+    "index_membership": true,
+    "indexed_hashes": true,
+    "indexed_payload_count": true,
+    "indexed_sizes": true,
+    "member_count": true,
+    "safe_paths": true,
+    "zip_sha256": true
+  },
+  "contract": "source-archive-integrity-v1",
+  "duplicate_member_count": 0,
+  "expected_sha256": "2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e",
+  "hash_mismatch_count": 0,
+  "indexed_payload_count": 2007,
+  "repository": {
+    "branch": "codex/20260908-unknown-field-consistency-early-core-validation-offline-review",
+    "head": "df8ffb7858a9a1b5f30b77d72ca440121f142c15",
+    "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+    "tree": "36323bb0d27b12c59247af03a8913fb552d7137c"
+  },
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0,
+  "source_path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume-report.zip",
+  "status": "PASS",
+  "unexpected_index_row_count": 0,
+  "unindexed_payload_count": 0,
+  "unsafe_member_count": 0,
+  "zip_member_count": 2008
+}

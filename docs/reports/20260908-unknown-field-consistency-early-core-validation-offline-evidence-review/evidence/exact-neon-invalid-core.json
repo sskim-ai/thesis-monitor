@@ -1,0 +1,183 @@
+{
+  "candidate": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+          "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+          "decision-evidence:ec1a60dc3bc3d6204e99"
+        ],
+        "text": "후속 공식 공시에서도 손실이 지속되고 매출 기반 개선과 핵심 사업 실행 성과가 확인되지 않을 때 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+          "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+          "decision-evidence:ec1a60dc3bc3d6204e99"
+        ],
+        "text": "후속 공식 공시에서 흑자 전환, 매출 기반 강화, 핵심 사업 KPI 개선이 함께 확인될 때 상향 재평가한다."
+      }
+    ],
+    "business_thesis_change": "UNRESOLVED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "decision-evidence:4dc334a1c43739c5031e"
+      ],
+      "text": "저장된 선행 논지가 없어 사업 논지의 변화 방향을 판정할 수 없다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35"
+        ],
+        "text": "공식 공시에서 영업 매출의 존재는 확인됐다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+        "decision-evidence:ec1a60dc3bc3d6204e99"
+      ],
+      "text": "과거 공식 실적의 손실은 부정적 앵커지만 현재성이 낮고 후속 KPI가 없어 부정 방향까지 확장하기 어렵다."
+    },
+    "directional_balance": {
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    "directional_confidence": "LOW",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35"
+      ],
+      "text": "평가일보다 오래된 공식 실적에서 손실이 확인된 점이 우세하지만 현재 상태는 미확인이다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "decision-evidence:ec1a60dc3bc3d6204e99",
+        "decision-evidence:33fb67c84d9a54497b59"
+      ],
+      "text": "제공된 공식 손익은 현재성이 낮고 향후 실적 경로와 실행 성과도 확인되지 않았다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "후속 공식 공시에서도 손실이 지속되고 매출 기반 강화와 핵심 사업 실행 성과가 확인되지 않을 때 사업 판단이 훼손된다.",
+      "business_invalidation_condition_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+        "decision-evidence:ec1a60dc3bc3d6204e99"
+      ],
+      "stance": "REVIEW",
+      "summary": "과거 손실은 점검이 필요하지만 현재 공식 실적이 없어 사업 상태를 확정하기 어렵다."
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "후속 공식 공시에서 흑자 전환, 매출 기반 강화, 핵심 사업 KPI 개선이 함께 확인될 때 사업 확인도가 높아진다.",
+      "confirmation_business_condition_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+        "decision-evidence:ec1a60dc3bc3d6204e99"
+      ],
+      "stance": "WAIT",
+      "summary": "손익 회복과 매출 기반 강화에 대한 현재 근거가 필요하다."
+    },
+    "hold_lean": "SELL_LEAN",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "decision-evidence:33fb67c84d9a54497b59"
+      ],
+      "text": "시장 기대 근거가 비어 있어 기대 대비 판단은 유보한다."
+    },
+    "material_directional_anchor_basis": [
+      "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d"
+    ],
+    "overall_direction": "HOLD",
+    "risk_context": {
+      "evidence_refs": [
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+        "decision-evidence:ec1a60dc3bc3d6204e99"
+      ],
+      "text": "공식 실적의 손실이 핵심 부정 근거이며 낮은 현재성과 미확인 사업 KPI가 해석을 제한한다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "canonical:industry:classification",
+        "canonical:fundamental:NEON:identity_security:51951d58f0a4ee661c08"
+      ],
+      "text": "공식 산업 분류는 확인되지만 현재 업황 근거가 없어 방향 판단에는 중립적으로 반영한다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "OTHER_EVIDENCE",
+        "evidence_refs": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d"
+        ],
+        "text": "제공된 공식 실적에서 순손실이 확인됐다."
+      }
+    ],
+    "ticker": "NEON",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "decision-evidence:4dc334a1c43739c5031e",
+        "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+        "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35",
+        "decision-evidence:15f344dcdd991f59fd06",
+        "decision-evidence:ec1a60dc3bc3d6204e99"
+      ],
+      "text": "공식 실적의 현재성, 선행 논지, 밸류에이션, 핵심 사업 KPI가 부족해 부정 근거의 지속성을 확정할 수 없다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d"
+        ],
+        "evidence_refs": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d",
+          "canonical:fundamental:NEON:business_current:5f10fc7beb5623c3db35"
+        ],
+        "summary": "과거 손실은 부정 근거지만 공식 실적의 현재성이 낮아 후속 공시 확인이 필요하다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "decision-evidence:15f344dcdd991f59fd06"
+        ],
+        "summary": "밸류에이션 근거 부재로 매력도 판단을 유보한다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "decision-evidence:4dc334a1c43739c5031e"
+        ],
+        "summary": "저장된 선행 논지가 없어 논지 변화 판정에는 추가 확인이 필요하다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "decision-evidence:ec1a60dc3bc3d6204e99"
+        ],
+        "summary": "핵심 사업 KPI와 향후 실행은 후속 공식 공시로 확인해야 한다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "decision-evidence:15f344dcdd991f59fd06"
+      ],
+      "text": "안전한 밸류에이션 근거가 없어 매력도를 판단하지 않는다."
+    }
+  },
+  "candidate_sha256": "f463be3c732120ce171f05bba569799e2fa8fbc4a83c715db7eaaaed6096b273",
+  "capture_kind": "EXACT_HISTORICAL_MODEL_OUTPUT",
+  "contract": "exact-historical-neon-invalid-core-capture-v1",
+  "mutation_count": 0,
+  "source_member": "experiment/fresh-real-proof/model-contexts/C/DIRECTIONAL_CORE/batch-01/output.normalized.json",
+  "source_member_sha256": "d48ded29b55da5a06ac5c4cbc90603c7e9e8c400ce34c1564dcf53a5eac08df5",
+  "source_zip_sha256": "2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e"
+}

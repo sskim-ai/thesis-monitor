@@ -1,0 +1,69 @@
+{
+  "context_semantic_failures": 1,
+  "contract": "historical-core-timing-offline-audit-v1",
+  "core": {
+    "alias_resolution_parity_rows": 64,
+    "checked_rows": 64,
+    "failed_rows": 1,
+    "identity_valid_rows": 64,
+    "not_applicable_rows": 0,
+    "not_measured_rows": 0,
+    "raw_rows": 64
+  },
+  "expected_early_core_failure": {
+    "alias_candidate_sha256": "cfce3dc38600986d4d655e7e1248c10a53627f1d7e93d58a5e0e5db49027b168",
+    "alias_resolution_parity": true,
+    "applicability": "CHECKED",
+    "batch": "batch-01",
+    "candidate_sha256": "f463be3c732120ce171f05bba569799e2fa8fbc4a83c715db7eaaaed6096b273",
+    "context_path": "model-contexts/C/DIRECTIONAL_CORE/batch-01",
+    "current_errors": [
+      "unknown_nonnegative_has_directional_basis"
+    ],
+    "current_issue_details": [
+      {
+        "code": "unknown_nonnegative_has_directional_basis",
+        "evidence_refs": [
+          "canonical:fundamental:NEON:earnings_financial_current:237f08f084da47d4dc6d"
+        ],
+        "field_path": "unknown_treatments[0].directional_negative_basis",
+        "treatment": "CONFIRMATION_REQUIRED",
+        "unknown_index": 0
+      }
+    ],
+    "current_verdict": "FAIL",
+    "identity_status": "PASS",
+    "manifest_original_partial_status": "PASS",
+    "normalized_output_sha256": "d48ded29b55da5a06ac5c4cbc90603c7e9e8c400ce34c1564dcf53a5eac08df5",
+    "original_errors": [],
+    "original_verdict": "PASS",
+    "prompt_sha256": "cb4e2e164ccc68bbfbe776842d9b501f7c36dd454ececcf109566d55d0dae279",
+    "raw_output_sha256": "cdaf8043e3cb6f93a12b72d8b7f2bca147d8ac10874b561939d05aad6fb9f527",
+    "receipt_sha256": "49fe49e32a594b4baf3bf381f7d31d95545974b56b1c6540f3b4ed6d1b86442d",
+    "run": "C",
+    "schema_sha256": "04805163b7b1429cbcdeb0d327090167b0951d525f84eecb03628045c2c0c229",
+    "source_packet_sha256": "541a96a6b2408451e9399a3b40980143b482d01bd151ee8814c0c66e8432f32c",
+    "stage": "DIRECTIONAL_CORE",
+    "ticker": "NEON",
+    "validator_hashes": {
+      "core_acceptance_file_sha256": "b6a541615bea0f29554a3cd5edfae203d08414908167f73e8c29bc5922ff3a27",
+      "shared_unknown_helper_source_sha256": "44fdc602a73275f1940269a840e95e10506e3dd7d83342dbf23a8d7ccaf788de",
+      "validator_file_sha256": "897efb78e0ed727ec814537b0bc1c0448b22122151e1ed5b7e01954b69127cad"
+    }
+  },
+  "historical_c_attempted_contexts": 5,
+  "historical_c_completed_full_runs": 0,
+  "historical_invalid_output_still_rejected": true,
+  "new_unexpected_failure_count": 0,
+  "status": "PASS",
+  "timing": {
+    "alias_resolution_parity_rows": 52,
+    "checked_rows": 52,
+    "failed_rows": 1,
+    "identity_valid_rows": 52,
+    "not_applicable_rows": 0,
+    "not_measured_rows": 0,
+    "raw_rows": 52
+  },
+  "transport_failures": 0
+}

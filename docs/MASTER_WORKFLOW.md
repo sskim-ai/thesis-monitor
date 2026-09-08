@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / common-decision-closeout-v1
+**버전:** 2026-09-08 / m1-offline-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M1 — 공통 판단 필드 일관성 수리 + 보존 증거 분석`
+**현재 위치:** `M1 완료 — M2 비운영 통합·판단/메시지 품질 결정 대기`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**이번 문서와 다음 작업지시서의 작성은 저장소 수정·배포·모델 실행 완료를 뜻하지 않는다.**
+**M1은 코드와 오프라인 증거 검토까지만 완료했다. 모델 출력 개선·실종목 일반화·production readiness는 확인하지 않았다.**
 
 ---
 
@@ -88,10 +88,10 @@ thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-e
 | 무료 자료 기반 신규 기업 준비 | 최신 US 11개 검사 중 4개, KR 16개 중 12개 통과; 새 cohort/source lock 생성 | 모든 미국·한국 종목의 정상 등록·갱신 보장 |
 | 환경설정·runner/adapter·ID·namespace | 이전 결함 수리 후 최신 실제 29회 출력 생성, namespace 충돌 0 | 향후 모든 실행의 무장애 보장 |
 | Directional Core / Timing 역할 분리 | 최신 FIRST/A/B 전체 run의 hard gate PASS로 보고 | C 전체, 실종목 일반화 전체 PASS |
-| Unknown 교차필드 일관성 | NEON C의 Core에 충돌 존재; 조합 검사에서 검출 | Core 직후 검사 범위가 충분하다는 주장 |
+| Unknown 교차필드 일관성 | 공통 invariant와 Core 조기 검사를 구현; NEON 원본은 Core에서 즉시 거절 | 수정 prompt의 실제 모델 출력 개선 |
 | Directional calibration | 수정된 계약과 과거 가상 반복 PASS 존재 | 실종목 경계 변동 해결 |
-| 메시지 품질 | FIRST/A/B 모두 실질 문구 반복 advisory FAIL | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
-| 기존 코드와 새 판단 경로 연결 | 부분 구현과 과거 실험 증거 존재 | production 전체 연결이나 신규 등록 E2E 완성 |
+| 메시지 품질 | FIRST/A/B 48개 전체 trace 완료; 기존 반복 advisory 유지 | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
+| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 read-only inventory 완료 | production 전체 연결이나 신규 등록 E2E 완성 |
 | Monitoring Bootstrap / Daily Delta 연결 | lifecycle 요구사항 확정 | 이번 proof로 등록·기준선·일일 변화 평가까지 검증됐다는 주장 |
 | 예약 운영 | S1의 2026-09-08 10:37:27 KST 관측에서 승인된 8개 중단 | 현재 서버를 방금 조회했다는 주장 |
 | 운영 반영 | 최신 작업의 live V2·등록·발송·production DB 변경 0 | 새 판단 구조의 live activation |
@@ -182,10 +182,10 @@ M0  자료·실행 기반과 실험 무결성 확보
 M1  Unknown 필드 일관성 / Core 조기 검사 수리
     + 기존 64 Core·52 Timing·48 메시지 오프라인 분석
     + 기존 코드 연결 경계 조사
-    [현재 승인된 다음 작업]
+    [CODE + OFFLINE EVIDENCE REVIEW COMPLETE]
         ↓
 M2  기존 코드와 발송 없는 통합 / 판단·메시지 품질 개선
-    [M1 근거로 범위 결정 후 별도 작업]
+    [다음 별도 작업지시와 승인 필요]
         ↓
 M3  명시적 신규 등록 → baseline → bootstrap → Daily Delta
     격리된 환경에서 lifecycle 연결 검증
@@ -220,7 +220,7 @@ M1이 끝날 때마다 새 16종목·32호출을 자동 시작하지 않는다. 
 
 Source PASS는 분석을 시작할 근거이지, 투자 매력이 충분하거나 모든 지표가 완전하다는 보장이 아니다. 가격자료의 `UNAVAILABLE_SAFE` 허용은 필수 재무근거 기준 완화가 아니다.
 
-### M1 — 현재 작업: 좁은 수리 + 증거 분석
+### M1 — 완료: 좁은 수리 + 증거 분석
 
 실행 문서: `20260908-unknown-field-consistency-early-core-validation-offline-evidence-review.md`.
 
@@ -234,6 +234,16 @@ Source PASS는 분석을 시작할 근거이지, 투자 매력이 충분하거�
 
 호출 예산: **실제 모델 0 / 가상 모델 0 / AI judge 0 / provider 수집 0**.
 
+완료 근거:
+- 구현 커밋 `df8ffb7`: Unknown treatment/basis invariant를 공통 helper로 만들고 Core partial audit와 최종 validator가 공유한다.
+- exact NEON C Core는 `unknown_treatments[0].directional_negative_basis`에서 `unknown_nonnegative_has_directional_basis`로 조기 거절된다.
+- offline fixture 10/10 PASS. 유효한 `DIRECTIONAL_NEGATIVE`와 별도 확인 필요 Unknown은 보존한다.
+- 보존 자료 감사: Core 64/64, Timing 52/52, 완성 메시지 48/48. 예상된 NEON 계보 외 신규 의미 실패 0.
+- B→C 절대 방향 경계 이동 7개, 직접 BUY↔SELL 반전 0. C는 완성 run이 아니므로 공식 안정성은 `NOT_MEASURED`.
+- source registry 149개에 현재 16개 canonical issuer를 보고서 artifact에서 idempotent하게 합쳐 165개로 조정했고, 2차 적용 추가 0을 확인했다.
+- prompt 문구와 hash가 바뀌었으므로 model emission effectiveness는 `NOT_MEASURED`; 기존 calibration 결과를 새 prompt에 이전하지 않는다.
+- 모델/provider/DB/send/registration/main/deploy 변경은 모두 0이며 승인된 8개 예약 중단을 유지했다.
+
 종료 조건:
 - 원래 잘못된 raw는 조기 검사에서도 거절된다.
 - 유효한 사실과 Unknown을 바르게 나눈 fixture는 통과한다.
@@ -243,7 +253,7 @@ Source PASS는 분석을 시작할 근거이지, 투자 매력이 충분하거�
 
 Prompt가 바뀌면 신규 hash·revision을 기록한다. Calibration ladder가 그대로라고 whole prompt hash까지 그대로라고 보고하지 않는다.
 
-### M2 — 공통 판단 경로와 메시지의 비운영 통합
+### M2 — 다음 결정: 공통 판단 경로와 메시지의 비운영 통합
 
 M1의 module inventory를 바탕으로 기존 기능을 재사용한다. 새 판단 엔진을 legacy DB 상태 변경이나 발송 경로에 즉시 연결하지 않는다.
 
@@ -416,7 +426,7 @@ MODEL_CONTEXT_COUPLED / 4 subjects
 per-context unique namespace / workdir / invocation
 ```
 
-현재 M1은 모델 호출 0이다. Transport의 capacity·disconnect·내부 retry·watchdog를 서로 구분하고, 과거 회복 사례를 무장애 보증으로 표현하지 않는다. Wrapper 자동 retry·모델 변경·batch split·timeout 증가는 별도 근거와 승인 없이 하지 않는다.
+완료된 M1의 모델 호출은 0이다. Transport의 capacity·disconnect·내부 retry·watchdog를 서로 구분하고, 과거 회복 사례를 무장애 보증으로 표현하지 않는다. Wrapper 자동 retry·모델 변경·batch split·timeout 증가는 별도 근거와 승인 없이 하지 않는다.
 
 ---
 
@@ -454,13 +464,13 @@ Master 갱신 때마다 기록:
 
 ## 11. 다음 한 작업과 그다음 결정
 
-**지금 실행할 작업:** M1 문서의 좁은 수리 + offline evidence review.
+**완료한 작업:** M1의 Unknown 계약 수리 + 조기 Core validation + 보존 증거 offline review.
 
-**M1 다음:**
-- 필드 수리·offline 회귀가 통과하고 큰 입력/추론 변경이 불필요하면 M2의 최소 비운영 통합·메시지 품질 개선.
-- 입력 범위·판단 규칙 변경이 필요하다는 근거가 확인되면 그 변경 범위를 먼저 논의·동결하고 M2에 반영.
-- 수리 실패 시 실패한 정확한 계약 경계만 다음 작업으로 넘김. source/transport 전체를 다시 진단하지 않음.
-- 어떤 경우도 자동으로 새 16종목 proof나 예약 재개로 전환하지 않음.
+**다음 한 작업:** `NONPRODUCTION_INTEGRATION_AND_DECISION_MESSAGE_QUALITY_REVIEW`.
+- 기존 10개 경계 inventory를 기준으로 lifecycle-qualified evidence → 공통 decision packet의 최소 adapter를 설계·검증한다.
+- initial absolute judgment와 Daily Delta를 분리하고, 등록·baseline·assessment·delivery idempotency를 비운영 fixture에서 검증한다.
+- 48개 메시지에서 확인된 반복과 source-to-Core 누락을 입력 부족·모델 reasoning·renderer ownership으로 나눠 변경 결정을 먼저 동결한다.
+- 실제 모델 실행, 신규 cohort, production DB/등록/발송, main 배포, 예약 재개는 별도 승인 전 0이다.
 
 **새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
 
@@ -480,7 +490,7 @@ Master 갱신 때마다 기록:
 | 자동 live 재개 가능성 | 명시적 사용자 재개 승인 전까지 0 |
 | 새 기능 부족이면 universe부터 확대 | 새로운 직접 blocker가 확인되지 않으면 기존 기반 수리 반복 금지 |
 
-문서 작성 시점의 결과는 **워크플로우와 다음 지시서의 갱신**이다. M1 코드는 아직 실행하지 않았으며, 실제 repository master 반영 여부는 다음 작업의 commit과 결과로 확인한다.
+이번 갱신은 M1 구현과 offline evidence review의 실제 결과를 반영한다. 완료 의미는 `CODE_AND_OFFLINE_EVIDENCE_REVIEW_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
 
 ---
 
@@ -512,4 +522,4 @@ experiment/fresh-real-proof/schedule-pause-observation.json
 
 ## 부록 B. 읽는 순서
 
-새 세션에서는 이 master → 현재 M1 작업지시서 → S1 completion/detail/raw → 필요한 S2/S3 순으로 프로젝트 상태를 확인한다. 최신 결과가 도착하면 이 master의 상태를 갱신한 뒤 다음 작업을 선택한다. 옛 handoff의 현재 단계나 cohort를 복원해서 덮어쓰지 않는다.
+새 세션에서는 이 master → M1 완료 보고서 → M1 작업지시서 → S1 completion/detail/raw → 필요한 S2/S3 순으로 프로젝트 상태를 확인한다. M2는 별도 지시와 승인 후 시작하며, 옛 handoff의 현재 단계나 cohort를 복원해서 덮어쓰지 않는다.
