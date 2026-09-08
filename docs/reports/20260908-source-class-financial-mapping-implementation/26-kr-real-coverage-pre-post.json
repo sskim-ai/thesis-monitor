@@ -1,0 +1,15 @@
+{
+  "contract": "m8-kr-real-coverage-pre-post-v1",
+  "insurance_source_facts_promoted_but_generic_fcf_not_applicable": 1,
+  "post_M8_KR_OCF_real_blocked": 0,
+  "post_M8_KR_OCF_real_resolved": 7,
+  "post_M8_KR_PPE_real_blocked": 0,
+  "post_M8_KR_PPE_real_resolved": 6,
+  "pre_M8_KR_OCF_real_blocked": 7,
+  "pre_M8_KR_OCF_real_resolved": 0,
+  "pre_M8_KR_PPE_real_blocked": 6,
+  "pre_M8_KR_PPE_real_resolved": 0,
+  "raw_direct_source_fact_count": 14,
+  "remaining_block_reason_counts": {},
+  "synthetic_rows_counted_as_real": 0
+}

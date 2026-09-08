@@ -1,0 +1,19 @@
+{
+  "actual_sha256": "b9be904a744a2c226c93bcc4a4ffce4abe0b87f76bfb8470e1070207d286a2da",
+  "checksum_match": true,
+  "contract": "m8-latest-result-integrity-v1",
+  "expected_sha256": "b9be904a744a2c226c93bcc4a4ffce4abe0b87f76bfb8470e1070207d286a2da",
+  "internal_integrity": {
+    "actual_final_head_sha": "3ac2359a16c8b6e03a146ecc32676005e1589db4",
+    "hash_mismatch_count": 0,
+    "indexed_payload_count": 35,
+    "missing_payload_count": 0,
+    "precommit_reporting_convention_semantic_drift": false,
+    "reported_final_head_sha": "NOT_MEASURED",
+    "reported_status": "M7_COMPLETE",
+    "secret_scan_failure_count": 0,
+    "size_mismatch_count": 0
+  },
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260908-financial-lineage-kr-period-projection-source-mapping-report.zip",
+  "result": "PASS"
+}

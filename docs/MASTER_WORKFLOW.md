@@ -518,15 +518,26 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. M7 결론과 다음 한 작업
+## 11. M8 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현.
 
-**권장 다음 한 작업, 아직 미승인:** `SOURCE_CLASS_FINANCIAL_MAPPING_IMPLEMENTATION`.
-- HUT PPE와 SKHY foreign-issuer OCF/PPE가 공통 source-class normalization으로 해결 가능한지 먼저 분류한다.
-- truly issuer-specific한 경우 ticker 예외를 만들지 않고 `DEFER / DO_NOT_IMPLEMENT_TICKER_EXCEPTION`으로 남긴다.
-- 실제 KR canonical promotion에 필요한 generic OpenDART source mapping도 동일한 원칙으로 다루되 period를 추정하지 않는다.
-- 그 뒤 debt/liquidity·working capital·non-operating mapping을 각각 독립 higher-risk subpackage로 나눈다.
+M8 source-class 판정:
+
+```text
+HUT PPE = SOURCE_EVIDENCE_INSUFFICIENT / DEFER_NO_TICKER_EXCEPTION
+SKHY OCF/PPE = GENERIC IFRS CLASS ALREADY SUPPORTED / ISSUER OCCURRENCE ABSENT
+KR OpenDART = GENERIC_SOURCE_CLASS_WITH_BOUNDED_VARIANT / IMPLEMENTED
+```
+
+HUT은 보존된 추출 결과에 OCF만 있고 원본 CompanyFacts concept set이나 미등록 PPE extension이 남아 있지 않아 안전한 alias를 만들 수 없다. SKHY는 TSM·WRD가 증명하는 issuer-level IFRS 20-F/6-K class를 이미 지원하지만, 보존 SKHY source에는 정식 현금흐름 occurrence가 0개이므로 역사적 gap은 그대로 fail-closed다.
+
+KR은 실제 7개 보존 OpenDART full-statement/XBRL cache에서 동일 원인을 확인했다. `ConsolidatedAndSeparateFinancialStatementsAxis`라는 축 이름 자체에 두 basis 단어가 함께 있어 이전 parser가 모호하다고 판단했지만, 실제 member는 각 context에서 `ConsolidatedMember` 또는 `SeparateMember`로 단일하다. M8은 basis member를 우선하고 exact taxonomy·amount·KRW unit·entity·duration·filing identity가 모두 일치할 때만 direct reported canonical fact로 승격한다. 7개 issuer의 OCF/PPE source fact는 exact YTD context로 재현됐고 ticker 분기는 0이다. 보험 1개는 source evidence 보존과 generic enterprise FCF applicability를 분리해 기존 N/A를 유지한다.
+
+**권장 다음 한 작업, 아직 미승인:** `HIGHER_RISK_FINANCIAL_DOMAIN_MAPPING_IMPLEMENTATION_INTEREST_BEARING_DEBT_LIQUIDITY`.
+- debt/liquidity, working capital, non-operating effects를 한 번에 구현하지 않는다.
+- 우선 interest-bearing debt와 liquidity의 source/account scope 및 금융업 적용 경계를 별도 bounded package로 닫는다.
+- HUT/SKHY 역사적 gap은 새 source evidence가 생기기 전 ticker 예외로 복원하지 않는다.
 - Directional specificity, source-sufficiency gate, 모델 holdout, production 활성화는 여전히 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
@@ -564,9 +575,12 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | derived-period OCF/PPE도 input ID만 있으면 adapter가 신뢰 가능 | formula/version을 포함한 완전한 lineage projection이 없으므로 M6에서 fail-closed하고 다음 mapping backlog로 이동 |
 | M6의 derived-period 차단은 source fact 부재 | M7에서 보존된 189개 derived-period lineage와 87개 FCF input chain을 projection해 해소; 새 derivation은 0 |
 | KR period mapper 구현은 곧 KR 시장 지원 | exact-context mapper capability와 실제 issuer coverage를 분리; real cached canonical KR fact 부재로 실제 KR block 유지 |
+| OpenDART axis 이름에 consolidated/separate가 모두 있으므로 basis 불명 | axis label이 아니라 exact dimension member로 basis를 판별; real cache 7개에서 고유 duration context 승격 |
+| HUT/SKHY 역사적 gap이면 issuer 예외를 추가 가능 | HUT은 source evidence 부족으로 defer, SKHY는 generic IFRS class 지원과 issuer occurrence 부재를 분리; ticker branch 0 |
+| M8에서 새 금융 source가 생기면 모델 입력과 Daily Delta도 확장 | canonical/financial_context까지만 확장하고 compact AI context·source sufficiency·Daily Delta는 그대로 유지 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M7 비운영 lineage/period projection 구현을 반영한다. 완료 의미는 `M7_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
+이번 갱신은 M8 비운영 source-class mapping과 exact-context canonical promotion 구현을 반영한다. 완료 의미는 `M8_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
 
 ---
 

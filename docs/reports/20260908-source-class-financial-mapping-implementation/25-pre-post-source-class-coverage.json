@@ -1,0 +1,25 @@
+{
+  "contract": "m8-pre-post-source-class-coverage-v1",
+  "generic_source_class_mapping_count": 1,
+  "rows": [
+    {
+      "drift": "UNCHANGED_SAFE_DEFER",
+      "historical_example": "HUT",
+      "post": "PPE_BLOCKED",
+      "pre": "PPE_BLOCKED"
+    },
+    {
+      "drift": "UNCHANGED_SOURCE_OCCURRENCE_ABSENT",
+      "historical_example": "SKHY",
+      "post": "OCF_PPE_BLOCKED",
+      "pre": "OCF_PPE_BLOCKED"
+    },
+    {
+      "drift": "RECOVERED_EXACT_CONTEXT",
+      "historical_example": "KR_REAL_COHORT",
+      "post": "OCF_7_PPE_6_APPLICABLE_PLUS_1_INSURANCE_NA",
+      "pre": "OCF_0_PPE_0"
+    }
+  ],
+  "ticker_specific_mapping_count": 0
+}

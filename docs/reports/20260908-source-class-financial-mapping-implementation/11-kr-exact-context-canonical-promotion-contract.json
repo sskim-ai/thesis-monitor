@@ -1,0 +1,27 @@
+{
+  "basis_rule": "recognized_statement_basis_axis_member_only",
+  "contract": "source-class-financial-mapping-v1",
+  "fact_type": "DIRECT_REPORTED",
+  "first_match_wins": false,
+  "new_derivation_formula_count": 0,
+  "real_promoted_ocf_count": 7,
+  "real_promoted_ppe_count": 7,
+  "report_label_date_guessing": false,
+  "required_exact_fields": [
+    "taxonomy_account_concept",
+    "reported_amount",
+    "currency_and_unit",
+    "period_start",
+    "period_end",
+    "duration_days",
+    "context_ref",
+    "entity_identifier",
+    "statement_basis_member",
+    "report_and_filing_identity"
+  ],
+  "source_precedence": [
+    "CFS",
+    "OFS_IF_CFS_MISSING"
+  ],
+  "status": "SOURCE_CLASS_IMPLEMENTED"
+}

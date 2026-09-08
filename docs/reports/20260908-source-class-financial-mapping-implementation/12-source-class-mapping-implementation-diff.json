@@ -1,0 +1,16 @@
+{
+  "contract": "m8-source-class-mapping-implementation-diff-v1",
+  "implementation_commit": "00a8663c1adbd32b487f4672fea4011d159ee945",
+  "name_status": [
+    "M\tapp/services/official_cash_flow_service.py",
+    "M\tapp/services/opendart_xbrl_service.py",
+    "A\tapp/services/source_class_financial_mapping_service.py",
+    "A\tdocs/reports/20260908-source-class-financial-mapping-implementation/05-source-class-gap-classification.json",
+    "M\ttests/test_opendart_xbrl_service.py",
+    "A\ttests/test_source_class_financial_mapping_service.py"
+  ],
+  "new_derivation_formula_count": 0,
+  "new_opendart_fuzzy_mapping_count": 0,
+  "new_sec_taxonomy_mapping_count": 0,
+  "work_instruction_commit": "86f361fb92431c8725087e082bf06b83a399480d"
+}

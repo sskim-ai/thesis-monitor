@@ -1,0 +1,465 @@
+{
+  "contract": "m8-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "payload_count": 38,
+  "rows": [
+    {
+      "path": "01-repository-provenance.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d83d154696ba4ae4b842465d59a49002e19dfdf95f1dde358e871f350db1bc1c",
+      "size_bytes": 1019
+    },
+    {
+      "path": "02-latest-result-integrity.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "352f596f1e7c3958e8872efb56b2a55e2424a67b6cd5e3c92b2a462e03acca47",
+      "size_bytes": 812
+    },
+    {
+      "path": "03-m8-scope-freeze.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8ede79d19eb8cc4e68a47ceff356e545124627f28c74bfe4e189736f91ed2e1a",
+      "size_bytes": 510
+    },
+    {
+      "path": "04-m7-contract-reuse-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "bc68c1aa4dd0d71b96679a2e601bfe9b19d9c636a2a2132561b2740d5e0946a4",
+      "size_bytes": 1285
+    },
+    {
+      "path": "05-source-class-gap-classification.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "947cf84f090822a3c82a9a627ce492789cd37f5efc9c43940a6c94f0daa29a89",
+      "size_bytes": 3131
+    },
+    {
+      "path": "06-hut-historical-gap-diagnostic.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "46b093050a5db3a6eeeffd9241ba5c913cc01ed7708f7b1f70b6242d440c6c20",
+      "size_bytes": 1696
+    },
+    {
+      "path": "07-skhy-historical-gap-diagnostic.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "35e9fa9af618358bbe0e6537079fca416665dca67feac1ab6e54ba9d5cfd663a",
+      "size_bytes": 2904
+    },
+    {
+      "path": "08-kr-canonical-promotion-gap-diagnostic.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "59569505ff2f1c19f04adcb4d97b075b8d2fbf2e0494271601f36cc6a8bcf903",
+      "size_bytes": 28106
+    },
+    {
+      "path": "09-generic-ppe-source-class-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "b59fb747d08860ecaa00ccf2c2ddd769e443063941ed5fd7376fc043e23459cb",
+      "size_bytes": 708
+    },
+    {
+      "path": "10-foreign-issuer-cash-flow-source-class-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "de582970f3098c3ec99d4264d0ca29be78a1a58a81a64b2696179146a6ef4e5a",
+      "size_bytes": 614
+    },
+    {
+      "path": "11-kr-exact-context-canonical-promotion-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "e06278496bc40ae65a66791cf123ebdd1895117b94777f2a9beaeb728b95184e",
+      "size_bytes": 706
+    },
+    {
+      "path": "12-source-class-mapping-implementation-diff.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "75f583ee28da960f9deffd88e6c374ee7c0ddcab0f4a70e1d3c6ff85cb9ee998",
+      "size_bytes": 744
+    },
+    {
+      "path": "13-source-class-activation-surface.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "16799b872e530c9efe61a671a63ea29204fb5c7b9ce74dec34adba418be0cb17",
+      "size_bytes": 546
+    },
+    {
+      "path": "14-source-precedence-and-dedup-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "38ccf85b536a1c4134a2bfc34df76b6aa76da7775b76120d35c3044c10bcc87e",
+      "size_bytes": 415
+    },
+    {
+      "path": "15-market-source-class-support-audit.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "991e51b330dc7b2ac975b9b453d72ce7c6ef0b5ede496ceb12fbf16a4cd24b83",
+      "size_bytes": 866
+    },
+    {
+      "path": "16-compact-ai-context-non-leak-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "c570a03ee8fbaaec6f867b3c439c75dc764913c2541a3f8789cdd5532b1152ec",
+      "size_bytes": 2223
+    },
+    {
+      "path": "17-directional-prompt-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f4c9dcb73b578a1f4eb76a0ee3c5758935fe91dde85e4a6c5646ded71469ddfb",
+      "size_bytes": 367
+    },
+    {
+      "path": "18-price-timing-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "feb1f9bc27f72c8dfda24b161aab9023a256af8700feb047d786ffc01eda27e2",
+      "size_bytes": 363
+    },
+    {
+      "path": "19-source-sufficiency-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "e5c50a9ec6404ecdd7c1adb4720e956df1a4888dac967fd9bb40a814160d11f2",
+      "size_bytes": 1796
+    },
+    {
+      "path": "20-daily-delta-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "51a701b8e7af745b14292b3cdad8eacd0c277fcdce3ab0677388a29ed07cb890",
+      "size_bytes": 765
+    },
+    {
+      "path": "21-historical-packet-compatibility.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "26c25225cb1d6468fd34c5b68199fcb4af9c4d97dd7ce94648b3253354219d56",
+      "size_bytes": 592
+    },
+    {
+      "path": "22-source-mapping-idempotency-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "ab80be927cf88a88e84e812abd5f1719a8bb6111cde1f2f447f2c48afbde056b",
+      "size_bytes": 275
+    },
+    {
+      "path": "23-positive-fixture-manifest.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "b9d4c05077535b7c5780a439897357935f021e969f26ea1dd03acb7fee2b8f07",
+      "size_bytes": 727
+    },
+    {
+      "path": "24-negative-fixture-manifest.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "847d520723341ff3ddc7d3140aab9d49facdde3e3424868c7128bcc7c765b6b6",
+      "size_bytes": 751
+    },
+    {
+      "path": "25-pre-post-source-class-coverage.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "07ddf2f77f0b8c23990f3f533761b6e2ee710733901601965364d4383aa9a382",
+      "size_bytes": 651
+    },
+    {
+      "path": "26-kr-real-coverage-pre-post.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d5e757d2319637004febed231166808b7e6a00c3e066c2d35b07f25f195a14b2",
+      "size_bytes": 527
+    },
+    {
+      "path": "27-focused-test-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "ee0644e41d81f32aa454bd82ebf2ffce37fc09fc633cfd91f0983f96e86a624d",
+      "size_bytes": 896
+    },
+    {
+      "path": "28-full-test-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "7dc5c6512957afcb9a3ac703847208d8f5172665ac2657711e166d85a3cb76a5",
+      "size_bytes": 185
+    },
+    {
+      "path": "29-ruff-and-diff-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "761c58dc671ffed18cd328896561af59ddd0c20ce4e682087ff3a47162a89d72",
+      "size_bytes": 206
+    },
+    {
+      "path": "30-remaining-source-mapping-backlog.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "daa737d92aac7d8446cb253e0762fc8f745e5e7e5a662110537bef270aca6313",
+      "size_bytes": 909
+    },
+    {
+      "path": "31-higher-risk-domain-priority-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "e011397ed7cf04e2baff65e8d01454595075551010ffb46b1d94c28aba7fa55f",
+      "size_bytes": 585
+    },
+    {
+      "path": "32-directional-specificity-activation-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "200993b8f5c51a5c70fb261f175401d6e60e44480f0c8c95bbd1d4d707d4e1b0",
+      "size_bytes": 157
+    },
+    {
+      "path": "33-source-sufficiency-no-change-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "bb9d55bde7639efa13cc7dfd1d584c2336c88ab700f359fc24db42c1e274dad2",
+      "size_bytes": 156
+    },
+    {
+      "path": "34-production-no-change.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "ce1ae67eb9415573b2c473dda03a24e8c85953f769546b46f99acc89e181adc0",
+      "size_bytes": 521
+    },
+    {
+      "path": "35-schedule-pause-observation.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8abb91d65ff0b5232f68231f0fab63564ff8da2358327c6da30eee5756bd045e",
+      "size_bytes": 1084
+    },
+    {
+      "path": "36-master-workflow-update.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a21285fc44172395184e320f74c3a1fa66d05ad01e1de45e8ae180d160f5a502",
+      "size_bytes": 394
+    },
+    {
+      "path": "37-program-completion.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "3c8678848e37e0d5cc98cee8f987e39c43f21c060e0244cf40022e924fd133c1",
+      "size_bytes": 3620
+    },
+    {
+      "path": "20260908-source-class-financial-mapping-implementation.md",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "0ec01fa57bb674135b8194ca04d47a8557b17a7aa2fbab835fefeed61adb0b00",
+      "size_bytes": 2254
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0
+}

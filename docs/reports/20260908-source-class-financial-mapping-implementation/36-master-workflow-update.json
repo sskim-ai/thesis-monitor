@@ -1,0 +1,10 @@
+{
+  "contract": "m8-master-workflow-update-v1",
+  "m7_status": "COMPLETE",
+  "m8_status": "COMPLETE",
+  "monitoring_state": "PAUSED",
+  "next_scope": "HIGHER_RISK_FINANCIAL_DOMAIN_MAPPING_IMPLEMENTATION_INTEREST_BEARING_DEBT_LIQUIDITY",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "production_readiness": "NOT_READY",
+  "sha256": "e69d219d6847894fbd3ceba25a3b0cd756f0a97a778405a84b816f4318d94b54"
+}

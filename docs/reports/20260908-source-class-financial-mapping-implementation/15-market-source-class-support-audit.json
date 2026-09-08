@@ -1,0 +1,28 @@
+{
+  "contract": "m8-market-source-class-support-audit-v1",
+  "rows": [
+    {
+      "adapter_capability": "SOURCE_CLASS_IMPLEMENTED",
+      "historical_coverage": "SOURCE_CLASS_BLOCKED",
+      "historical_example": "HUT",
+      "market_or_class": "US_DOMESTIC_STANDARD_PPE"
+    },
+    {
+      "adapter_capability": "SOURCE_CLASS_IMPLEMENTED",
+      "historical_coverage": "SOURCE_CLASS_PARTIAL",
+      "historical_example": "SKHY",
+      "market_or_class": "FOREIGN_ISSUER_IFRS_OCF_PPE",
+      "repository_examples": [
+        "TSM",
+        "WRD"
+      ]
+    },
+    {
+      "adapter_capability": "SOURCE_CLASS_IMPLEMENTED",
+      "historical_archive_coverage": "7_REAL_ISSUERS",
+      "market_or_class": "KR_OPENDART_EXACT_DURATION",
+      "real_issuer_coverage": "7_OCF_6_PPE_APPLICABLE_PLUS_1_INSURANCE_NA"
+    }
+  ],
+  "universal_market_support_claimed": false
+}

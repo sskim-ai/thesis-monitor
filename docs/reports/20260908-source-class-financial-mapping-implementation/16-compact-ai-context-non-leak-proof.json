@@ -1,0 +1,58 @@
+{
+  "changed_count": 0,
+  "contract": "m8-compact-ai-context-non-leak-proof-v1",
+  "fixture_count": 7,
+  "fixtures": [
+    {
+      "after_sha256": "c244f122ded8f4dfa42c303615f019ff6ec82118ba22fcd39af0b5595514276e",
+      "before_sha256": "c244f122ded8f4dfa42c303615f019ff6ec82118ba22fcd39af0b5595514276e",
+      "ticker": "000660",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "cc4114fbc802ad39dc135beea69f9bf64e1c80ac6f7db5a0c2e49e628a2e32e0",
+      "before_sha256": "cc4114fbc802ad39dc135beea69f9bf64e1c80ac6f7db5a0c2e49e628a2e32e0",
+      "ticker": "003690",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "209305e96ab390bc4dea6cf39c9135411821f1332e66ca83d3bed644d1f31b7a",
+      "before_sha256": "209305e96ab390bc4dea6cf39c9135411821f1332e66ca83d3bed644d1f31b7a",
+      "ticker": "005490",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "a2f71eda7794abf39f7565c5c72dfa597274f908b24e802e260294269341176e",
+      "before_sha256": "a2f71eda7794abf39f7565c5c72dfa597274f908b24e802e260294269341176e",
+      "ticker": "005930",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "b01fae4342acba27f36259f453baa2d6961f409fdb641eca2132132d867e2591",
+      "before_sha256": "b01fae4342acba27f36259f453baa2d6961f409fdb641eca2132132d867e2591",
+      "ticker": "010120",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "1f8d1946132ccca0f99b59b6310dc21d6352866d2b150626f1dc6478f585bc13",
+      "before_sha256": "1f8d1946132ccca0f99b59b6310dc21d6352866d2b150626f1dc6478f585bc13",
+      "ticker": "012450",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "56b306ea2837c81dcd1c28297ec33f2672baff5c21a0467c74cd085e2e36ee3b",
+      "before_sha256": "56b306ea2837c81dcd1c28297ec33f2672baff5c21a0467c74cd085e2e36ee3b",
+      "ticker": "086280",
+      "unchanged": true
+    }
+  ],
+  "function": {
+    "after_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "before_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "changed": false,
+    "function": "compact_ai_context",
+    "path": "app/services/cross_market_decision_engine_service.py"
+  },
+  "model_semantic_input_unchanged": true,
+  "unchanged_count": 7
+}

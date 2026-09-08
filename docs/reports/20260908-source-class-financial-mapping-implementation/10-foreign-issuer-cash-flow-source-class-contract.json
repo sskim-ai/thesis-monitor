@@ -1,0 +1,23 @@
+{
+  "adr_ratio_or_per_share_derivation": false,
+  "contract": "m8-foreign-issuer-cash-flow-source-class-contract-v1",
+  "financial_fact_basis": "issuer_level",
+  "forms": [
+    "20-F",
+    "20-F/A",
+    "6-K",
+    "6-K/A"
+  ],
+  "ocf_semantic": "CashFlowsFromUsedInOperatingActivities",
+  "ppe_semantics": [
+    "PurchaseOfPropertyPlantAndEquipment",
+    "PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities"
+  ],
+  "repository_examples": [
+    "TSM",
+    "WRD"
+  ],
+  "skhy_financial_occurrence_count": 0,
+  "status": "SOURCE_CLASS_IMPLEMENTED_ISSUER_COVERAGE_PARTIAL",
+  "taxonomy": "ifrs-full"
+}

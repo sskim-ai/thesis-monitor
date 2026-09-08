@@ -1,0 +1,44 @@
+{
+  "automatic_monitoring_resume": 0,
+  "codex_automations": [
+    {
+      "id": "thesis-monitor-ai-review-us-primary",
+      "status": "PAUSED"
+    },
+    {
+      "id": "thesis-monitor-ai-review-us-backup",
+      "status": "PAUSED"
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-primary",
+      "status": "PAUSED"
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-backup",
+      "status": "PAUSED"
+    }
+  ],
+  "contract": "m8-schedule-pause-observation-v1",
+  "end_observed_at_utc": "2026-09-08T14:31:43.510653+00:00",
+  "launch_agents": [
+    {
+      "label": "com.seungsoo.thesis-monitor.daily",
+      "status": "DISABLED"
+    },
+    {
+      "label": "com.seungsoo.thesis-monitor.kr-close",
+      "status": "DISABLED"
+    },
+    {
+      "label": "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "status": "DISABLED"
+    },
+    {
+      "label": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+      "status": "DISABLED"
+    }
+  ],
+  "observed_paused_schedule_count": 8,
+  "scheduler_mutation_count": 0,
+  "start_observed_at_utc": "2026-09-08T13:43:28Z"
+}
