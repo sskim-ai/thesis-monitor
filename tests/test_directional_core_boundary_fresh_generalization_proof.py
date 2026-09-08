@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 
 from scripts import directional_core_boundary_fresh_generalization_proof as proof
 
@@ -100,3 +101,29 @@ def test_source_and_runtime_generation_ids_are_new_and_separate() -> None:
     assert source.startswith("20260908-directional-calibration-source-20260908T063000Z-")
     assert runtime.startswith("20260908-directional-calibration-proof-20260908T063000Z-")
     assert source != runtime
+
+
+def test_calibration_freeze_accepts_stopped_post_freeze_state(
+    monkeypatch,
+) -> None:
+    state = {
+        "state": "FRESH_REAL_PROOF_STOPPED",
+        "fictional_model_invocation_count": 6,
+        "fictional_calibration_unstable_count": 0,
+        "calibration_freeze_seal_sha256": proof.CALIBRATION_FREEZE_SHA256,
+        "calibration_contract_sha256": proof.CALIBRATION_CONTRACT_SHA256,
+        "calibration_architecture_hashes": {"owner": "frozen"},
+    }
+    seal = {"seal": "frozen"}
+    monkeypatch.setattr(proof, "read_json", lambda path: state if "artifacts" in str(path) else seal)
+    monkeypatch.setattr(proof, "canonical_sha256", lambda value: proof.CALIBRATION_FREEZE_SHA256)
+    monkeypatch.setattr(
+        proof.calibration,
+        "calibration_architecture_hashes",
+        lambda repo_root: {"owner": "frozen"},
+    )
+
+    result = proof.assert_calibration_frozen(Path("/repo"))
+
+    assert result["status"] == "PASS"
+    assert result["observed_program_state"] == "FRESH_REAL_PROOF_STOPPED"

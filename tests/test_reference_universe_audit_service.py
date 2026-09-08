@@ -11,6 +11,7 @@ from app.services.reference_universe_audit_service import (
     RoutingSupportStatus,
     canonical_market_mix,
     classify_us_security,
+    fundamental_source_attemptable_securities,
     load_kr_reference_universe,
     load_us_reference_universe,
     reconcile_membership_sets,
@@ -97,6 +98,36 @@ def test_representative_prefers_non_adr_and_retires_all_share_classes(tmp_path: 
     )
     assert "sec:cik:0000000001" not in reconciled["unseen_supported_issuer_keys"]
     assert reconciled["within_universe_exclusion_issuer_count"] == 1
+
+
+def test_fundamental_source_attemptable_does_not_require_optional_price_route(
+    tmp_path: Path,
+) -> None:
+    sec, nasdaq, other = _write_us_references(tmp_path)
+    rows = load_us_reference_universe(
+        sec_company_tickers=sec,
+        nasdaq_listed=nasdaq,
+        other_listed=other,
+        retrieved_at="2026-09-08T00:00:00+00:00",
+    )
+
+    candidates = fundamental_source_attemptable_securities(
+        rows,
+        selection_salt="fixed",
+    )
+
+    assert {row.canonical_issuer_key for row in candidates} == {
+        "sec:cik:0000000001",
+        "sec:cik:0000000002",
+    }
+    assert all(
+        row.routing_support_status == RoutingSupportStatus.CANDIDATE
+        for row in candidates
+    )
+    assert len(
+        [row for row in candidates if row.canonical_issuer_key == "sec:cik:0000000001"]
+    ) == 1
+    assert not any(row.display_symbol in {"ETF", "UNSUPPORTED"} for row in candidates)
 
 
 def test_ambiguous_sec_identity_is_quarantined(tmp_path: Path) -> None:

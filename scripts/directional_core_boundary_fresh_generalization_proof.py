@@ -58,6 +58,11 @@ CALIBRATION_FREEZE_SHA256 = (
 CALIBRATION_CONTRACT_SHA256 = (
     "3443dc0f7505d01bc5ba965fa0f20128f12f2678d5e16d5f883ce41f47067d33"
 )
+CALIBRATION_FROZEN_STATES = {
+    "FICTIONAL_PASS_ARCHITECTURE_FROZEN",
+    "FRESH_REAL_PROOF_STOPPED",
+    "FRESH_REAL_PROOF_COMPLETE",
+}
 REPAIRED_RUNTIME_RISK = "RUNTIME_NAMESPACE_ISOLATION_REPAIRED_AND_PREFLIGHT_PROVEN"
 REPORT_DIRECTORY = (
     "20260908-directional-core-boundary-calibration-repair-fresh-"
@@ -269,7 +274,7 @@ def assert_calibration_frozen(repo_root: Path) -> dict[str, Any]:
         "fresh-generalization-proof/proofs/16-calibration-freeze-seal.json"
     )
     failures = []
-    if state.get("state") != "FICTIONAL_PASS_ARCHITECTURE_FROZEN":
+    if state.get("state") not in CALIBRATION_FROZEN_STATES:
         failures.append("fictional_architecture_not_frozen")
     if state.get("fictional_calibration_unstable_count") != 0:
         failures.append("fictional_calibration_unstable")
@@ -293,6 +298,7 @@ def assert_calibration_frozen(repo_root: Path) -> dict[str, Any]:
         "fictional_calibration_unstable_count": state.get(
             "fictional_calibration_unstable_count"
         ),
+        "observed_program_state": state.get("state"),
         "failures": failures,
         "status": "PASS" if not failures else "FAIL",
     }

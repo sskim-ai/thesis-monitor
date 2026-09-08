@@ -568,6 +568,22 @@ def representative_securities(
     )
 
 
+def fundamental_source_attemptable_securities(
+    rows: Sequence[CanonicalSecurityReference],
+    *,
+    selection_salt: str,
+    excluded_issuer_keys: set[str] | None = None,
+) -> list[CanonicalSecurityReference]:
+    """Select identity-safe issuers before optional price-route evaluation."""
+
+    return representative_securities(
+        rows,
+        selection_salt=selection_salt,
+        excluded_issuer_keys=excluded_issuer_keys,
+        require_routing_supported=False,
+    )
+
+
 def reconcile_membership_sets(
     rows: Sequence[CanonicalSecurityReference],
     exclusion_reasons_by_issuer: Mapping[str, Sequence[str]],
