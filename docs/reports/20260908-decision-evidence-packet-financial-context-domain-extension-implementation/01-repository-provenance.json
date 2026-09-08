@@ -1,0 +1,20 @@
+{
+  "actual_m4_final_sha": "1f39271b6d7e161dc86bc11d71dd111b2b48937d",
+  "base_sha": "1f39271b6d7e161dc86bc11d71dd111b2b48937d",
+  "branch": "codex/20260908-decision-evidence-packet-financial-context-domain-extension-implementation",
+  "contract": "m5-repository-provenance-v1",
+  "implementation_changed_files": [
+    "app/services/cross_market_decision_engine_service.py",
+    "tests/test_decision_evidence_financial_context.py",
+    "tests/test_source_domain_enrichment_design_review.py",
+    "tests/test_synthetic_canary_fixture_repair_ownership_resume.py"
+  ],
+  "implementation_commit": "e493474199323ce0f08066d41c327de3c23b8b05",
+  "m4_program_reported_final_head_sha": "NOT_MEASURED",
+  "m4_program_reported_report_commit": "NOT_MEASURED",
+  "m4_reporting_discrepancy_classification": "HISTORICAL_REPORTING_OMISSION_NOT_SEMANTIC_DRIFT",
+  "origin_main_at_start": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "unexplained_baseline_drift": 0,
+  "work_instruction_commit": "fbb4700a7f884e166f75b154433b5e0f2ae4126f"
+}

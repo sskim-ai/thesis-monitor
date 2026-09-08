@@ -1,0 +1,15 @@
+{
+  "contract": "m5-serialization-and-hash-compatibility-v1",
+  "legacy_canonical_sha256_after_m5": "6c9d6488e13115a49d2c5aa51563b0a2028ec1ab92d8081821cb32cd1b1cfd8e",
+  "legacy_canonical_sha256_before_m5": "6c9d6488e13115a49d2c5aa51563b0a2028ec1ab92d8081821cb32cd1b1cfd8e",
+  "legacy_context_absent_count": 2576,
+  "legacy_evidence_ref_count": 2576,
+  "legacy_hash_unchanged_count": 14,
+  "legacy_packet_fixture_count": 14,
+  "legacy_schema_sha256": "8c9b8e13fb6f6c6449dd7acfbad14d7c1c55c64b8e4906b5cbb79a4cf39be8ae",
+  "m5_full_internal_schema_sha256": "a2b03be7380caebb1f7d772c05866b4aebc3991e0411f6b5f2a3d2c78600991b",
+  "m5_legacy_projection_schema_sha256": "8c9b8e13fb6f6c6449dd7acfbad14d7c1c55c64b8e4906b5cbb79a4cf39be8ae",
+  "status": "PASS",
+  "typed_context_example_content_sha256": "baff224ecb007b306042900982249c2d749b6ea4e75ff0a7fde13c905928569e",
+  "typed_context_serialization_deterministic": true
+}

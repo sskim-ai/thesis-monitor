@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / m4-source-domain-enrichment-design-review-v1
+**버전:** 2026-09-08 / m5-decision-evidence-financial-context-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M4 설계 검토 완료 — DecisionEvidencePacket의 bounded financial-context 확장이 다음 범위`
+**현재 위치:** `M5 완료 — optional typed financial_context 구현, 기존 canonical 금융 Fact adapter가 다음 범위`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M4는 무료·공식 source stack의 6개 재무 도메인을 offline으로 분류하고 안전 계약·업종 적용성·구현 순서를 동결했다. source enrichment, prompt 변경, 모델 검증, 실종목 일반화, production readiness는 수행하지 않았다.**
+**M5는 `DecisionEvidenceRef.financial_context`를 additive·optional하게 구현하고 기간·통화·basis·direct/derived·비교·파생 lineage를 hard validation으로 동결했다. source producer, prompt, source sufficiency, 모델, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -45,16 +45,16 @@
 
 ## 2. 문서의 근거와 우선순위
 
-### S0 — 현재 권위 M3 결과
+### S0 — 현재 권위 M4 결과
 
 ```text
-thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-report.zip
+thesis-monitor-20260908-source-domain-enrichment-directional-specificity-design-review-report.zip
 
 실제 SHA-256:
-e1ebc077c56c2412280f58d8244498848b9a1f96ae3c4d233aa2535786ef3228
+4e575e3b2b6881025285865be4c996d335f587c880dabe27b4166c2322802dc7
 ```
 
-M4 시작 시 index payload 44개의 hash·size를 전부 재검산했고 mismatch 0, secret scan failure 0을 확인했다. M3의 최종 SHA는 `5990caa239f8778ae46670abddf30f68db1bb332`이며 다음 범위는 M4 작업명과 정확히 일치했다.
+M5 시작 시 M4 ZIP checksum과 unzip integrity를 재검산해 PASS를 확인했다. 실제 M4 final SHA는 `1f39271b6d7e161dc86bc11d71dd111b2b48937d`다. M4 `program-completion`의 `final_head_sha`/`report_commit=NOT_MEASURED`는 역사적 보고 누락으로 보존하며 의미 drift로 간주하지 않는다.
 
 ### S1 — 상위 실모델 실행 결과
 
@@ -203,15 +203,17 @@ M3  명시적 신규 등록 → baseline → bootstrap → Daily Delta
     격리된 환경에서 lifecycle 연결 검증
     [COMPLETE: 운영 DB·실등록·발송 없음]
         ↓
-M3.5 source-domain enrichment / Directional specificity 설계 검토
-    [별도 승인 전 모델 호출 없음]
+M4  source-domain enrichment / Directional specificity 설계 검토
+    [COMPLETE: 6개 금융 도메인 계약과 구현 순서 동결]
         ↓
-M4  변경 사항·판정 기준 동결
-    필요한 변경 경로 검증 + 별도 승인된 새 실종목 최종 proof
-    [실험 결과 보고 운영 승격 여부 결정]
+M5  DecisionEvidencePacket financial_context 확장
+    [COMPLETE: additive optional schema + hard validation]
         ↓
-M5  Production Integration Review
-    배포·fallback·발송 소유권·rollback 검토
+NEXT  Existing Canonical Financial Domain Adapter
+    기존 전년동기·OCF·PPE canonical Fact만 packet으로 연결
+        ↓
+LATER  추가 source mapping → Directional specificity → model/holdout
+    [각각 별도 승인과 검증]
         ↓
 M6  사용자의 명시적 예약 재개 승인
     통제된 US/KR 자연 실행 확인 → 일상 모니터링
@@ -324,26 +326,34 @@ M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판
 
 M3 완료는 lifecycle semantics의 비운영 증명이다. production readiness는 `NOT_READY`이며 예약 작업은 자동 재개하지 않는다.
 
-### M4 — 변경 동결과 최종 실모델 검증
+### M4 — 완료: source-domain enrichment / Directional specificity 설계
 
-앞선 의미 변경과 실제 출력 계약이 정리된 뒤에만 실행한다. 모델 호출은 해당 별도 지시서가 명시적으로 승인해야 한다.
+무료·공식 source stack에서 전년동기 비교, OCF, PPE-only cash conversion, debt/liquidity, working capital, non-operating effects의 6개 도메인을 분류했다. `DecisionEvidenceRef`에 optional typed financial context가 먼저 필요하다는 결론과 `schema → existing canonical adapters → additional mappings → Directional specificity → sector gate review` 순서를 동결했다.
 
-기본 정책:
-- 변경된 경로만큼의 모델 없는 검증과 필요한 제한적 fictional canary.
-- 이전 prompt/model/source에 대한 PASS를 새 prompt의 검증으로 자동 승격하지 않음.
-- 전체 일반화가 필요하면 기존 기준의 새 issuer-distinct US4/KR12, 새 source lock, FIRST→A→B→C.
-- 단계·run별 gate, context별 즉시 보존, namespace 독립성 유지.
-- 지금까지의 경계 안정성 기준을 사후 변경하거나 평균/다수결로 통과시키지 않음.
-- 메시지 품질을 future hard gate로 사용할지는 실행 전 결정. 과거 advisory 결과는 그대로 유지.
-- 완주와 합격을 구분하고, 반복 안정성과 입력 충분성·판단 유용성을 별개 보고.
+M4는 설계 단계였다. 실제 packet schema, source producer, prompt, 모델, 실종목 holdout, production을 바꾸지 않았다.
 
-현재 M4는 승인되지 않았다. 먼저 M3에서 남긴 source-domain backlog와 Directional specificity의 bounded 설계 결정을 동결해야 하며, M3 완료가 자동 32회 실행을 시작하지 않는다.
+### M5 — 완료: DecisionEvidencePacket 금융 컨텍스트 확장
 
-### M5 — 운영 통합 검토
+`DecisionEvidenceRef.financial_context`에 다음을 typed metadata로 추가했다.
 
-점검 대상: 실제 production caller, 권한·설정, persistence, renderer version, exactly-once/lease, fallback·delivery retry, rollback, 기존 데이터 보존, 관측 가능성.
+```text
+canonical metric / verified financial currency / explicit unit scale
+QTD | YTD | FY | TTM | POINT_IN_TIME
+entity scope / statement basis / total-parent-common attribution
+DIRECT_REPORTED | DERIVED_SAFE
+verified | partial quality
+comparison lineage / derivation lineage / bounded limitations
+```
 
-원래 roadmap의 production integration review를 유지한다. 실제 merge/deploy나 자연 실행은 별도 승인과 범위에 따른다. Offline 메시지가 좋아 보인다는 이유만으로 운영 통합을 건너뛰지 않는다.
+기간 구조, inclusive duration, 통화 필요성, direct/derived 일관성, ordered input refs와 중복, 빈 식별자를 fail-closed한다. 회계 의미의 비교 가능성, debt component completeness, sector applicability, trade AR 범위와 attribution completeness는 다음 domain adapter validator 책임으로 남겼다.
+
+기존 14개 archived `DecisionEvidencePacket`은 모두 parse됐고 `financial_context`가 없는 canonical serialization SHA가 M5 전 기준과 같았다. 새 내부 JSON schema는 optional field를 포함하지만, M5 항목을 제거한 legacy projection SHA는 과거 frozen schema SHA와 일치한다. Public Action 0.4.5와 20개 operationId에는 이 내부 타입이 노출되지 않는다.
+
+생산 builder emission, compact AI context 소비, source sufficiency, Directional/Price-Timing prompt, provider, 모델, DB, queue, 발송, main/deploy, 예약 재개는 모두 0이다. production readiness는 `NOT_READY`다.
+
+### 후속 — 기존 canonical 금융 도메인 adapter
+
+다음 한 작업은 `EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION`이다. 기존 canonical 전년동기 비교와 공식 OCF/PPE Fact를 M5 envelope로 연결하고 domain compatibility를 검증한다. debt/liquidity·working capital·non-operating mapping, Directional prompt, source-sufficiency gate, 모델 holdout, production integration은 이 작업에 묶지 않는다.
 
 ### M6 — 명시적 재개와 일일 운영
 
@@ -492,15 +502,14 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. M4 결론과 다음 한 작업
+## 11. M5 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장.
 
-**권장 다음 한 작업, 아직 미승인:** `DECISION_EVIDENCE_PACKET_DOMAIN_EXTENSION_IMPLEMENTATION`.
-- 현재 `DecisionEvidenceRef`는 값·단위·source ref는 담지만 재무 통화, QTD/YTD/FY/TTM, entity/statement/attribution basis, direct/derived 상태, 비교·파생 input lineage를 하나의 typed contract로 보존하지 못한다.
-- optional `financial_context`를 additive하게 추가하고 기존 packet backward compatibility와 hard-fail validator를 먼저 검증한다. 이 단계에서는 source producer와 Directional prompt를 활성화하지 않는다.
-- 다음에 기존 canonical OCF/PPE 및 전년동기 비교 adapter를 붙여 input contract를 freeze한다. debt/liquidity, working capital, non-operating mapping은 서로 분리된 bounded package로 진행한다.
-- enriched input이 고정된 뒤에만 1~3개 독립 economic anchor를 고르는 Directional specificity 계약을 구현하고 새 모델 검증·fresh real holdout으로 간다.
+**권장 다음 한 작업, 아직 미승인:** `EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION`.
+- M5의 typed envelope에 기존 canonical same-period comparison과 공식 OCF/PPE Fact를 연결한다.
+- adapter가 period/currency/entity/statement/attribution 호환성 및 PPE scope를 검증한다.
+- 실제 source mapping 확대, debt/liquidity·working capital·non-operating 신규 생산, Directional prompt 변경, source-sufficiency 변경, 모델 검증과 production 활성화는 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
 
@@ -532,8 +541,10 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | 총부채를 debt로 사용 가능 | interest-bearing debt scope가 아니므로 debt/liquidity 계약에서 명시적으로 차단 |
 | OCF-PPE 지출을 일반 FCF로 표시 | `OCF less PPE acquisition cash outflow` 또는 PPE-only 범위로 제한하고 management-defined FCF와 구분 |
 | 새 재무정보를 universal source gate로 추가 | universal gate 0; claim/sector 조건부 의미만 동결 |
+| M4가 제안한 optional financial context는 미구현 | M5에서 additive typed schema와 hard validator 구현; producer와 AI 소비는 계속 0 |
+| 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M4 비운영 설계 검토를 반영한다. 완료 의미는 `M4_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
+이번 갱신은 M5 비운영 schema 구현을 반영한다. 완료 의미는 `M5_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
 
 ---
 

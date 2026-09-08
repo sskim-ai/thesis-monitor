@@ -1,0 +1,58 @@
+{
+  "contract": "m5-schema-responsibility-matrix-v1",
+  "directional_future_rule_count": 3,
+  "directional_validator_future": [
+    "claim_evidence_consistency",
+    "missing_data_nonnegative_behavior",
+    "anchor_independence_and_specificity"
+  ],
+  "domain_adapter_rule_count": 10,
+  "domain_adapter_validator": [
+    "same_semantic_field_compatibility",
+    "period_and_duration_comparability",
+    "currency_and_unit_normalization_compatibility",
+    "entity_scope_compatibility",
+    "statement_basis_compatibility",
+    "attribution_basis_compatibility",
+    "debt_component_completeness_and_nonoverlap",
+    "trade_receivable_payable_scope",
+    "non_operating_attribution_completeness",
+    "financial_sector_applicability"
+  ],
+  "generic_schema_rule_count": 26,
+  "generic_schema_validator": [
+    "canonical_metric_identifier",
+    "financial_currency_format",
+    "currency_required_for_monetary_metric",
+    "positive_explicit_unit_scale",
+    "allowed_period_type",
+    "duration_period_start_required",
+    "period_end_not_before_start",
+    "positive_duration_when_supplied",
+    "inclusive_duration_matches_dates",
+    "point_in_time_start_null",
+    "point_in_time_duration_null",
+    "closed_attribution_basis",
+    "allowed_evidence_status",
+    "direct_reported_has_no_derivation",
+    "derived_safe_has_derivation",
+    "allowed_comparison_kind",
+    "comparison_lineage_required_when_comparing",
+    "comparison_lineage_empty_for_none",
+    "comparison_lineage_unique",
+    "canonical_derivation_formula",
+    "derivation_lineage_nonempty",
+    "derivation_lineage_unique",
+    "canonical_derivation_version",
+    "bounded_canonical_limitations",
+    "limitations_unique",
+    "unknown_nested_fields_forbidden"
+  ],
+  "responsibility_overlap_blocker_count": 0,
+  "source_parser": [
+    "official occurrence extraction",
+    "source taxonomy semantic mapping",
+    "source unit, currency, period, and basis evidence"
+  ],
+  "status": "PASS"
+}

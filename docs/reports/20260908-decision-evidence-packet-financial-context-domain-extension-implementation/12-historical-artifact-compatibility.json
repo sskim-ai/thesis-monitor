@@ -1,0 +1,48 @@
+{
+  "actual_archived_packet_source": "docs/reports/20260902-run51-v2-accepted-artifact.json",
+  "archive_rewrite_count": 0,
+  "contract": "m5-historical-artifact-compatibility-v1",
+  "historical_fixture_count": 14,
+  "historical_hash_unchanged_count": 14,
+  "historical_parse_pass_count": 14,
+  "historical_roundtrip_pass_count": 14,
+  "m1_m4_full_decision_evidence_packet_payload_count": 0,
+  "m1_m4_json_artifact_count": 117,
+  "m1_m4_json_parse_pass_count": 117,
+  "phase_bundle_packet_denominator_note": "M1-M4 result bundles contain contract/report JSON but no full decision-evidence-packet-v1 payload; they are not misclassified as packets.",
+  "phase_bundle_rows": [
+    {
+      "bundle": "thesis-monitor-20260908-unknown-field-consistency-early-core-validation-offline-evidence-review-report.zip",
+      "decision_evidence_packet_payload_count": 0,
+      "json_artifact_count": 18,
+      "json_parse_pass_count": 18,
+      "phase": "M1",
+      "status": "PASS"
+    },
+    {
+      "bundle": "thesis-monitor-20260908-nonproduction-integration-decision-message-quality-review-report.zip",
+      "decision_evidence_packet_payload_count": 0,
+      "json_artifact_count": 28,
+      "json_parse_pass_count": 28,
+      "phase": "M2",
+      "status": "PASS"
+    },
+    {
+      "bundle": "thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-report.zip",
+      "decision_evidence_packet_payload_count": 0,
+      "json_artifact_count": 32,
+      "json_parse_pass_count": 32,
+      "phase": "M3",
+      "status": "PASS"
+    },
+    {
+      "bundle": "thesis-monitor-20260908-source-domain-enrichment-directional-specificity-design-review-report.zip",
+      "decision_evidence_packet_payload_count": 0,
+      "json_artifact_count": 39,
+      "json_parse_pass_count": 39,
+      "phase": "M4",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

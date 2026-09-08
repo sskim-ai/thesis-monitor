@@ -1,0 +1,10 @@
+{
+  "command": ".venv/bin/pytest -q tests/test_decision_evidence_financial_context.py tests/test_cross_market_decision_engine.py tests/test_structured_autonomy_alias_service.py tests/test_fact_consumer_scope_service.py tests/test_synthetic_canary_fixture_repair_ownership_resume.py tests/test_source_domain_enrichment_design_review.py",
+  "contract": "m5-focused-test-results-v1",
+  "duration_seconds": 1.15,
+  "failed": 0,
+  "model_calls": 0,
+  "passed": 88,
+  "provider_fetches": 0,
+  "result": "PASS"
+}

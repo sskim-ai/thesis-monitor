@@ -1,0 +1,10 @@
+{
+  "command": ".venv/bin/pytest -q",
+  "contract": "m5-full-test-results-v1",
+  "duration_seconds": 61.7,
+  "failed": 0,
+  "passed": 2847,
+  "result": "PASS",
+  "warning": "StarletteDeprecationWarning for httpx/starlette TestClient compatibility",
+  "warnings": 1
+}

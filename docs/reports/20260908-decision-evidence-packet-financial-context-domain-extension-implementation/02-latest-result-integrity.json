@@ -1,0 +1,13 @@
+{
+  "actual_sha256": "4e575e3b2b6881025285865be4c996d335f587c880dabe27b4166c2322802dc7",
+  "artifact_hash_mismatch_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "bundle": "thesis-monitor-20260908-source-domain-enrichment-directional-specificity-design-review-report.zip",
+  "checksum_match": true,
+  "contract": "m5-latest-result-integrity-v1",
+  "expected_sha256": "4e575e3b2b6881025285865be4c996d335f587c880dabe27b4166c2322802dc7",
+  "indexed_payload_count": 39,
+  "member_count": 40,
+  "status": "PASS",
+  "zip_crc_status": "PASS"
+}

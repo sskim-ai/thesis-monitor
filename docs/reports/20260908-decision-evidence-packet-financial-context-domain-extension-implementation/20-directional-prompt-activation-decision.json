@@ -1,0 +1,12 @@
+{
+  "compact_ai_context_financial_context_emission_count": 0,
+  "contract": "m5-directional-prompt-activation-decision-v1",
+  "decision": "NOT_IN_M5",
+  "directional_prompt_change_count": 0,
+  "model_calls_fictional": 0,
+  "model_calls_judge": 0,
+  "model_calls_real": 0,
+  "price_timing_prompt_change_count": 0,
+  "renderer_change_count": 0,
+  "status": "PASS"
+}

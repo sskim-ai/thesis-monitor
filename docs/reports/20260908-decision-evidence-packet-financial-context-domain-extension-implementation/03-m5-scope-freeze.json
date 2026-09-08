@@ -1,0 +1,20 @@
+{
+  "allowed": [
+    "optional typed DecisionEvidenceRef.financial_context",
+    "generic structural validation",
+    "legacy serialization and hash compatibility",
+    "offline fixtures and reports"
+  ],
+  "contract": "m5-scope-freeze-v1",
+  "implemented_package": "B_PACKET_FINANCIAL_CONTEXT_EXTENSION",
+  "prohibited": [
+    "source producer activation",
+    "SEC or OpenDART mapping expansion",
+    "Directional or Price-Timing prompt change",
+    "source sufficiency semantic change",
+    "model or provider calls",
+    "production persistence, send, deployment, or schedule resume"
+  ],
+  "scope_exceeded": false,
+  "status": "PASS"
+}

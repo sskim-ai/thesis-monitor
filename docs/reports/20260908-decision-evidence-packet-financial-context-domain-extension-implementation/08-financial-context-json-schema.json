@@ -1,0 +1,277 @@
+{
+  "contract": "m5-financial-context-json-schema-v1",
+  "decision_evidence_packet_schema_sha256": "a2b03be7380caebb1f7d772c05866b4aebc3991e0411f6b5f2a3d2c78600991b",
+  "financial_context_optional": true,
+  "financial_context_schema": {
+    "$defs": {
+      "FinancialAttributionBasis": {
+        "enum": [
+          "total",
+          "parent",
+          "common"
+        ],
+        "title": "FinancialAttributionBasis",
+        "type": "string"
+      },
+      "FinancialComparison": {
+        "additionalProperties": false,
+        "properties": {
+          "compatibility_status": {
+            "const": "PASS",
+            "default": "PASS",
+            "title": "Compatibility Status",
+            "type": "string"
+          },
+          "input_source_refs": {
+            "default": [],
+            "items": {
+              "maxLength": 240,
+              "minLength": 1,
+              "pattern": "^\\S+$",
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Input Source Refs",
+            "type": "array"
+          },
+          "kind": {
+            "$ref": "#/$defs/FinancialComparisonKind"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "FinancialComparison",
+        "type": "object"
+      },
+      "FinancialComparisonKind": {
+        "enum": [
+          "prior_year_comparable",
+          "prior_year_end",
+          "none"
+        ],
+        "title": "FinancialComparisonKind",
+        "type": "string"
+      },
+      "FinancialDerivation": {
+        "additionalProperties": false,
+        "properties": {
+          "formula": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "title": "Formula",
+            "type": "string"
+          },
+          "input_source_refs": {
+            "items": {
+              "maxLength": 240,
+              "minLength": 1,
+              "pattern": "^\\S+$",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "minItems": 1,
+            "title": "Input Source Refs",
+            "type": "array"
+          },
+          "version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "formula",
+          "input_source_refs",
+          "version"
+        ],
+        "title": "FinancialDerivation",
+        "type": "object"
+      },
+      "FinancialEvidenceQuality": {
+        "enum": [
+          "verified",
+          "partial"
+        ],
+        "title": "FinancialEvidenceQuality",
+        "type": "string"
+      },
+      "FinancialEvidenceStatus": {
+        "enum": [
+          "DIRECT_REPORTED",
+          "DERIVED_SAFE"
+        ],
+        "title": "FinancialEvidenceStatus",
+        "type": "string"
+      },
+      "FinancialPeriod": {
+        "additionalProperties": false,
+        "properties": {
+          "duration_days": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration Days"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start"
+          },
+          "type": {
+            "$ref": "#/$defs/FinancialPeriodType"
+          }
+        },
+        "required": [
+          "type",
+          "end"
+        ],
+        "title": "FinancialPeriod",
+        "type": "object"
+      },
+      "FinancialPeriodType": {
+        "enum": [
+          "QTD",
+          "YTD",
+          "FY",
+          "TTM",
+          "POINT_IN_TIME"
+        ],
+        "title": "FinancialPeriodType",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "attribution_basis": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/FinancialAttributionBasis"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "comparison": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/FinancialComparison"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "currency": {
+        "anyOf": [
+          {
+            "pattern": "^[A-Z]{3}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Currency"
+      },
+      "derivation": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/FinancialDerivation"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "entity_scope": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$",
+        "title": "Entity Scope",
+        "type": "string"
+      },
+      "evidence_status": {
+        "$ref": "#/$defs/FinancialEvidenceStatus"
+      },
+      "limitations": {
+        "default": [],
+        "items": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "type": "string"
+        },
+        "maxItems": 16,
+        "title": "Limitations",
+        "type": "array"
+      },
+      "metric": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "title": "Metric",
+        "type": "string"
+      },
+      "period": {
+        "$ref": "#/$defs/FinancialPeriod"
+      },
+      "quality": {
+        "$ref": "#/$defs/FinancialEvidenceQuality"
+      },
+      "statement_basis": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$",
+        "title": "Statement Basis",
+        "type": "string"
+      },
+      "unit_scale": {
+        "exclusiveMinimum": 0,
+        "title": "Unit Scale",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "metric",
+      "currency",
+      "unit_scale",
+      "period",
+      "entity_scope",
+      "statement_basis",
+      "evidence_status",
+      "quality"
+    ],
+    "title": "FinancialContext",
+    "type": "object"
+  },
+  "legacy_projection_schema_sha256": "8c9b8e13fb6f6c6449dd7acfbad14d7c1c55c64b8e4906b5cbb79a4cf39be8ae",
+  "status": "PASS"
+}

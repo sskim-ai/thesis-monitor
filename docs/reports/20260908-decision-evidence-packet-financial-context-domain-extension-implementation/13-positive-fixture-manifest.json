@@ -1,0 +1,173 @@
+{
+  "all_period_types_covered": [
+    "QTD",
+    "YTD",
+    "FY",
+    "TTM",
+    "POINT_IN_TIME"
+  ],
+  "contract": "m5-positive-fixture-manifest-v1",
+  "derived_safe_fixture_count": 8,
+  "direct_reported_fixture_count": 6,
+  "model_calls": 0,
+  "positive_fixture_count": 14,
+  "positive_fixture_pass_count": 14,
+  "provider_calls": 0,
+  "rows": [
+    {
+      "case": "direct_same_period_prior_year_comparison",
+      "domain": "same_period_prior_year_comparison",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "revenue",
+      "period_type": "YTD",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_operating_cash_flow",
+      "domain": "operating_cash_flow",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "operating_cash_flow",
+      "period_type": "YTD",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_ppe_capex_simple_cash_conversion",
+      "domain": "ppe_capex_simple_cash_conversion",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "ppe_capex_cash_outflow",
+      "period_type": "YTD",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_debt_liquidity",
+      "domain": "debt_liquidity",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "cash_and_cash_equivalents",
+      "period_type": "POINT_IN_TIME",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_inventory_receivables_working_capital",
+      "domain": "inventory_receivables_working_capital",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "inventory",
+      "period_type": "POINT_IN_TIME",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_non_operating_financial_income_effects",
+      "domain": "non_operating_financial_income_effects",
+      "evidence_status": "DIRECT_REPORTED",
+      "metric": "interest_income",
+      "period_type": "FY",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_same_period_absolute_delta",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "same_period_absolute_delta",
+      "input_source_refs": [
+        "revenue.current",
+        "revenue.prior"
+      ],
+      "metric": "revenue_absolute_delta",
+      "period_type": "YTD",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_qtd_from_compatible_ytd",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "qtd_from_compatible_ytd",
+      "input_source_refs": [
+        "revenue.current_ytd",
+        "revenue.prior_quarter_ytd"
+      ],
+      "metric": "revenue",
+      "period_type": "QTD",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_ocf_ttm",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "ocf_ttm",
+      "input_source_refs": [
+        "ocf.prior_fy",
+        "ocf.current_ytd",
+        "ocf.prior_ytd"
+      ],
+      "metric": "operating_cash_flow",
+      "period_type": "TTM",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_ocf_less_ppe_capex",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "ocf_less_ppe_capex",
+      "input_source_refs": [
+        "ocf.current",
+        "ppe.current"
+      ],
+      "metric": "free_cash_flow_ppe",
+      "period_type": "YTD",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_interest_bearing_debt_total",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "interest_bearing_debt_total",
+      "input_source_refs": [
+        "debt.current",
+        "debt.long_term"
+      ],
+      "metric": "interest_bearing_debt",
+      "period_type": "POINT_IN_TIME",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_net_debt",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "net_debt",
+      "input_source_refs": [
+        "debt.total",
+        "cash.compatible"
+      ],
+      "metric": "net_debt",
+      "period_type": "POINT_IN_TIME",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_balance_absolute_delta",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "balance_absolute_delta",
+      "input_source_refs": [
+        "inventory.current",
+        "inventory.prior"
+      ],
+      "metric": "inventory_absolute_delta",
+      "period_type": "POINT_IN_TIME",
+      "status": "PASS"
+    },
+    {
+      "case": "derived_verified_non_operating_component_sum",
+      "domain": "cross_domain_safe_derivation",
+      "evidence_status": "DERIVED_SAFE",
+      "formula": "verified_non_operating_component_sum",
+      "input_source_refs": [
+        "interest.income",
+        "interest.expense",
+        "other.financial"
+      ],
+      "metric": "non_operating_financial_income",
+      "period_type": "FY",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
