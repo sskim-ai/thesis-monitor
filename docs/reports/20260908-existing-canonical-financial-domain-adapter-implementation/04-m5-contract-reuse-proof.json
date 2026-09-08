@@ -1,0 +1,9 @@
+{
+  "contract": "m6-m5-contract-reuse-proof-v1",
+  "financial_context_optional": true,
+  "legacy_serializer_preserved": true,
+  "m5_financial_context_schema_sha256": "144252265a64d99a017a3d3cfddfc0d221089b8232a4efe73bca892f0893df92",
+  "m6_financial_context_schema_sha256": "144252265a64d99a017a3d3cfddfc0d221089b8232a4efe73bca892f0893df92",
+  "schema_field_added_in_m6": false,
+  "schema_identical": true
+}

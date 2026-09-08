@@ -1,0 +1,10 @@
+{
+  "contract": "m6-operating-cash-flow-adapter-v1",
+  "derived_period_without_complete_projection_metadata": "BLOCKED",
+  "direct_status": "DIRECT_REPORTED",
+  "existing_archive_direct_emission_count": 122,
+  "metric": "operating_cash_flow",
+  "period_policy": "preserve_reported_QTD_YTD_FY_TTM_without_relabeling",
+  "source": "canonical_cash_flow_fact",
+  "source_fact_type": "cash_flow_ocf"
+}

@@ -1,0 +1,15 @@
+{
+  "changed_paths": [
+    "M\tapp/services/cross_market_decision_engine_service.py",
+    "A\tapp/services/financial_context_adapter_service.py",
+    "A\ttests/test_financial_context_adapter_service.py"
+  ],
+  "contract": "m6-adapter-implementation-diff-v1",
+  "packet_builder_plumbing_changed": true,
+  "prompt_changes": 0,
+  "range": "35da4e7f1dd57194c3f5f6532ff91a13994f2448..bcad2ae16836a12ff208a110856575931bfbeb08",
+  "renderer_changes": 0,
+  "shared_adapter_module_added": true,
+  "source_parser_changes": 0,
+  "test_module_added": true
+}

@@ -1,0 +1,17 @@
+{
+  "allowed_domains": [
+    "same_period_prior_year_comparison",
+    "operating_cash_flow",
+    "ppe_capex_simple_cash_conversion"
+  ],
+  "contract": "m6-scope-freeze-v1",
+  "excluded_domains": [
+    "debt_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "model_semantic_input_unchanged_required": true,
+  "package": "A_EXISTING_CANONICAL_DOMAIN_ADAPTERS",
+  "production_changes_allowed": false,
+  "source_mapping_changes_allowed": false
+}

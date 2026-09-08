@@ -1,0 +1,74 @@
+{
+  "active_market_counts": {
+    "KR": 7,
+    "US_FOREIGN": 13
+  },
+  "active_subject_count": 20,
+  "adapter_comparison_count": 130,
+  "adapter_denial_count": 276,
+  "adapter_emission_by_metric": {
+    "ocf_less_ppe_capex": 104,
+    "operating_cash_flow": 122,
+    "ppe_capex_cash_outflow": 104
+  },
+  "adapter_emission_count": 330,
+  "adapter_primary_denial_counts": {
+    "derived_period_lineage_metadata_incomplete": 189,
+    "simple_cash_conversion_input_derivation_unproven": 87
+  },
+  "canonical_currency_counts": {
+    "CNY": 15,
+    "TWD": 9,
+    "USD": 582
+  },
+  "canonical_fact_count": 606,
+  "canonical_fact_ticker_count": 12,
+  "canonical_fact_type_counts": {
+    "free_cash_flow_ppe:DERIVED_METRIC": 191,
+    "operating_cash_flow:DERIVED_PERIOD": 102,
+    "operating_cash_flow:REPORTED": 122,
+    "ppe_capex_cash_outflow:DERIVED_PERIOD": 87,
+    "ppe_capex_cash_outflow:REPORTED": 104
+  },
+  "context_digest_first": "e43818f1220e2a99a766d84ff71026a4320b20e9999960ae3aca259adebd933d",
+  "context_digest_second": "e43818f1220e2a99a766d84ff71026a4320b20e9999960ae3aca259adebd933d",
+  "contract": "m6-current-canonical-financial-source-inventory-v1",
+  "coverage_interpretation": "preserved archive capability, not universal issuer coverage",
+  "phase9_metric_coverage": {
+    "capex_ppe": {
+      "BLOCKED": 2,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 6
+    },
+    "fcf": {
+      "BLOCKED": 8,
+      "ELIGIBLE": 11,
+      "NOT_APPLICABLE": 1,
+      "PARTIAL": 0
+    },
+    "ocf": {
+      "BLOCKED": 1,
+      "ELIGIBLE": 12,
+      "NOT_APPLICABLE": 0,
+      "PARTIAL": 7
+    }
+  },
+  "provider_telemetry_preserved": {
+    "new_api_keys": 0,
+    "new_paid_sources": 0,
+    "opendart": {
+      "canonical_promotions": 0,
+      "network_requests": 0,
+      "reason": "period_context_unresolved"
+    },
+    "sec_companyfacts": {
+      "cache_hits": 13,
+      "cache_misses": 0,
+      "network_requests": 0,
+      "network_successes": 0
+    }
+  },
+  "source_report": "docs/reports/20260820-phase9-0b-canonical-facts.json",
+  "source_report_sha256": "f6f7af27b349c2b660d8ef9bbd4a601e8677190aae52981fff348bbced0d01d7"
+}

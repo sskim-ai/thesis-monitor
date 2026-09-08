@@ -1,0 +1,10 @@
+{
+  "contract": "m6-historical-packet-compatibility-v1",
+  "historical_archives_rewritten": 0,
+  "legacy_fixture_count": 14,
+  "legacy_hash_unchanged_count": 14,
+  "legacy_parse_pass_count": 14,
+  "m5_artifact_sha256": "c02d8c4d6c2d898fb1abd878a603d1ab540b21c9848c34fc840b540fcc5caa0f",
+  "m5_authoritative_artifact": "12-historical-artifact-compatibility.json",
+  "m6_financial_context_remains_optional": true
+}

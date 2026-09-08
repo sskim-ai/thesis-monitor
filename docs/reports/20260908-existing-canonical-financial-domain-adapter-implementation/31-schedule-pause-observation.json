@@ -1,0 +1,29 @@
+{
+  "automatic_monitoring_resume": 0,
+  "codex_automation_state": "PAUSED",
+  "codex_automations": [
+    "Thesis Monitor AI Review US Primary",
+    "Thesis Monitor AI Review US Backup",
+    "Thesis Monitor AI Review KR Primary",
+    "Thesis Monitor AI Review KR Backup"
+  ],
+  "contract": "m6-schedule-pause-observation-v1",
+  "end_observed_at_utc": "2026-09-08T11:50:58Z",
+  "launch_agent_print_exit_codes": [
+    113,
+    113,
+    113,
+    113
+  ],
+  "launch_agent_print_observation": "service_not_found_in_gui_501_domain",
+  "launch_agent_state": "DISABLED_AND_UNLOADED",
+  "launch_agents": [
+    "com.seungsoo.thesis-monitor.daily",
+    "com.seungsoo.thesis-monitor.kr-close",
+    "com.seungsoo.thesis-monitor.ai-review-fallback",
+    "com.seungsoo.thesis-monitor.ai-review-delivery-retry"
+  ],
+  "observed_paused_schedule_count": 8,
+  "scheduler_mutation_count": 0,
+  "start_observed_at_utc": "2026-09-08T10:55:10Z"
+}

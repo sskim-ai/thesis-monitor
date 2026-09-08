@@ -1,0 +1,321 @@
+{
+  "classification": "OFFLINE_NONPRODUCTION_FIXTURE",
+  "contract": "m6-offline-example-packets-v1",
+  "kr_ambiguous_period_packet": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:kr.ocf.ambiguous",
+      "source_ref": "stock.fact_catalog.kr.ocf.ambiguous",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": null, \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"100\"}",
+      "unit": null,
+      "value": null
+    },
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "label": "cash_flow_ppe_capex",
+      "logical_condition": null,
+      "metric_refs": [
+        "PPE_CAPEX"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:kr.ppe.ambiguous",
+      "source_ref": "stock.fact_catalog.kr.ppe.ambiguous",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": \"ppe_only\", \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": null, \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"40\"}",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "legacy_packet_without_financial_context": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ocf.current",
+      "source_ref": "stock.fact_catalog.ocf.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"100\"}",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "ocf_direct_packet": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_cash_flow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ocf.current",
+      "source_ref": "stock.fact_catalog.ocf.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"100\"}",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "ocf_less_ppe_packet": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": {
+          "formula": "ocf_less_ppe_capex",
+          "input_source_refs": [
+            "stock.fact_catalog.ocf.current",
+            "stock.fact_catalog.ppe.current"
+          ],
+          "version": "existing-canonical-financial-domain-adapter-v1"
+        },
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DERIVED_SAFE",
+        "limitations": [
+          "growth_vs_maintenance_capex_unknown",
+          "ppe_only_not_management_defined_fcf"
+        ],
+        "metric": "ocf_less_ppe_capex",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_fcf_ppe",
+      "logical_condition": null,
+      "metric_refs": [
+        "FCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:conversion.current",
+      "source_ref": "stock.fact_catalog.conversion.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": \"ppe_only\", \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [\"ocf.current\", \"ppe.current\"], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"60\"}",
+      "unit": null,
+      "value": null
+    },
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_cash_flow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ocf.current",
+      "source_ref": "stock.fact_catalog.ocf.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"100\"}",
+      "unit": null,
+      "value": null
+    },
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [
+          "growth_vs_maintenance_capex_unknown"
+        ],
+        "metric": "ppe_capex_cash_outflow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ppe_capex",
+      "logical_condition": null,
+      "metric_refs": [
+        "PPE_CAPEX"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ppe.current",
+      "source_ref": "stock.fact_catalog.ppe.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": \"ppe_only\", \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"40\"}",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "ppe_direct_packet": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [
+          "growth_vs_maintenance_capex_unknown"
+        ],
+        "metric": "ppe_capex_cash_outflow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ppe_capex",
+      "logical_condition": null,
+      "metric_refs": [
+        "PPE_CAPEX"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ppe.current",
+      "source_ref": "stock.fact_catalog.ppe.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": \"ppe_only\", \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"40\"}",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "production_db_used": false,
+  "same_period_comparison_packet": [
+    {
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": {
+          "compatibility_status": "PASS",
+          "input_source_refs": [
+            "stock.fact_catalog.ocf.current",
+            "stock.fact_catalog.ocf.prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_cash_flow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ocf.current",
+      "source_ref": "stock.fact_catalog.ocf.current",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2026\", \"input_fact_ids\": [], \"period_end\": \"2026-06-30\", \"period_start\": \"2026-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"100\"}",
+      "unit": null,
+      "value": null
+    },
+    {
+      "as_of": "2025-06-30",
+      "category": "earnings",
+      "financial_context": {
+        "attribution_basis": null,
+        "comparison": null,
+        "currency": "USD",
+        "derivation": null,
+        "entity_scope": "issuer_consolidated",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_cash_flow",
+        "period": {
+          "duration_days": 181,
+          "end": "2025-06-30",
+          "start": "2025-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "statement_basis": "official_filing_cash_flow_statement",
+        "unit_scale": 1
+      },
+      "label": "cash_flow_ocf",
+      "logical_condition": null,
+      "metric_refs": [
+        "OCF"
+      ],
+      "numeric_prose_eligible": false,
+      "ref_id": "canonical:ocf.prior",
+      "source_ref": "stock.fact_catalog.ocf.prior",
+      "statement": "{\"attribution_basis\": null, \"capex_scope\": null, \"cash_flow_user_visible_context_id\": \"m6-offline-fixture\", \"currency\": \"USD\", \"entity_scope\": \"issuer_consolidated\", \"fiscal_quarter\": \"2\", \"fiscal_year\": \"2025\", \"input_fact_ids\": [], \"period_end\": \"2025-06-30\", \"period_start\": \"2025-01-01\", \"period_type\": \"YTD\", \"statement_basis\": \"official_filing_cash_flow_statement\", \"value\": \"80\"}",
+      "unit": null,
+      "value": null
+    }
+  ]
+}

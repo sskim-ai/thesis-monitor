@@ -351,11 +351,17 @@ comparison lineage / derivation lineage / bounded limitations
 
 생산 builder emission, compact AI context 소비, source sufficiency, Directional/Price-Timing prompt, provider, 모델, DB, queue, 발송, main/deploy, 예약 재개는 모두 0이다. production readiness는 `NOT_READY`다.
 
-### 후속 — 기존 canonical 금융 도메인 adapter
+### M6 — 완료: 기존 canonical 금융 도메인 adapter
 
-다음 한 작업은 `EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION`이다. 기존 canonical 전년동기 비교와 공식 OCF/PPE Fact를 M5 envelope로 연결하고 domain compatibility를 검증한다. debt/liquidity·working capital·non-operating mapping, Directional prompt, source-sufficiency gate, 모델 holdout, production integration은 이 작업에 묶지 않는다.
+공유 `existing-canonical-financial-domain-adapter-v1`을 추가해 기존 `canonical_cash_flow_fact`만 M5의 optional `financial_context` envelope로 연결했다. 허용 범위는 전년동기 동일기간 비교 lineage, direct reported OCF, direct reported PPE-only 취득 현금유출, 그리고 동일 period/currency/unit/entity/statement/attribution의 기존 OCF·PPE Fact를 입력으로 갖는 `ocf_less_ppe_capex`다.
 
-### M6 — 명시적 재개와 일일 운영
+보존된 Phase 9 canonical 606개 행에서 330개 context를 안전하게 구성했다. 구성은 OCF 122, PPE 104, OCF-PPE 104이며 130개에는 compatible prior-year comparison lineage가 붙었다. 나머지 276개는 projection에 완전한 derived-period metadata가 없어서 OCF 102, PPE 87, OCF-PPE 87을 그대로 fail-closed했다. 이는 source fact 손실이나 0 대체가 아니라 다음 mapping/projection subpackage의 명시적 backlog다.
+
+KR OpenDART OCF/PPE는 정확한 duration period가 없는 경우 계속 차단된다. 단위 scale 변환과 FX, maintenance capex 추론, management-defined FCF 명칭, debt/liquidity·working capital·non-operating 도메인은 추가하지 않았다. 새 SEC/OpenDART/provider mapping은 0개다.
+
+내부 packet instance에는 eligible `financial_context`가 생기지만 compact AI context는 before/after byte-equivalent다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, 모델 호출, provider fetch, DB·queue·발송·deploy·예약 상태는 변하지 않았다. focused 482개와 전체 2887개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
+
+### 후속 — 명시적 재개와 일일 운영
 
 사용자가 재개를 요청할 때만 승인된 US/KR 예약을 다시 활성화한다.
 
@@ -502,14 +508,15 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. M5 결론과 다음 한 작업
+## 11. M6 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현.
 
-**권장 다음 한 작업, 아직 미승인:** `EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION`.
-- M5의 typed envelope에 기존 canonical same-period comparison과 공식 OCF/PPE Fact를 연결한다.
-- adapter가 period/currency/entity/statement/attribution 호환성 및 PPE scope를 검증한다.
-- 실제 source mapping 확대, debt/liquidity·working capital·non-operating 신규 생산, Directional prompt 변경, source-sufficiency 변경, 모델 검증과 production 활성화는 포함하지 않는다.
+**권장 다음 한 작업, 아직 미승인:** `ADDITIONAL_FINANCIAL_SOURCE_MAPPING_SUBPACKAGES`.
+- derived-period OCF/PPE의 완전한 derivation metadata와 compatible prior-year Fact projection을 먼저 검토한다.
+- KR OpenDART duration period, HUT PPE, SKHY 공식 OCF/PPE의 부분 coverage를 별도 bounded mapping으로 다룬다.
+- 그 뒤 debt/liquidity·working capital·non-operating mapping을 독립 subpackage로 나눈다.
+- Directional specificity, source-sufficiency gate, 모델 holdout, production 활성화는 여전히 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
 
@@ -542,9 +549,11 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | OCF-PPE 지출을 일반 FCF로 표시 | `OCF less PPE acquisition cash outflow` 또는 PPE-only 범위로 제한하고 management-defined FCF와 구분 |
 | 새 재무정보를 universal source gate로 추가 | universal gate 0; claim/sector 조건부 의미만 동결 |
 | M4가 제안한 optional financial context는 미구현 | M5에서 additive typed schema와 hard validator 구현; producer와 AI 소비는 계속 0 |
+| M5 envelope는 비어 있는 optional field | M6에서 기존 canonical OCF/PPE/OCF-PPE에만 shared adapter를 연결; compact AI context 소비는 계속 0 |
+| derived-period OCF/PPE도 input ID만 있으면 adapter가 신뢰 가능 | formula/version을 포함한 완전한 lineage projection이 없으므로 M6에서 fail-closed하고 다음 mapping backlog로 이동 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M5 비운영 schema 구현을 반영한다. 완료 의미는 `M5_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
+이번 갱신은 M6 비운영 adapter 구현을 반영한다. 완료 의미는 `M6_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
 
 ---
 

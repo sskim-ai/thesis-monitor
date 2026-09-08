@@ -1,0 +1,22 @@
+{
+  "contract": "m6-adapter-responsibility-matrix-v1",
+  "generic_schema_validator": [
+    "period_structure",
+    "enum_validity",
+    "derivation_metadata_shape",
+    "basic_internal_consistency"
+  ],
+  "m6_domain_adapter": [
+    "canonical_source_identity",
+    "semantic_metric_identity",
+    "same_period_comparability",
+    "currency_and_unit_compatibility",
+    "entity_scope_compatibility",
+    "statement_basis_compatibility",
+    "attribution_basis_compatibility",
+    "ppe_only_scope",
+    "ordered_input_lineage",
+    "exact_ocf_less_ppe_arithmetic"
+  ],
+  "source_parser_taxonomy_logic_added": false
+}

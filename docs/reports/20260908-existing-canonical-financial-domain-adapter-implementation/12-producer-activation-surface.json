@@ -1,0 +1,11 @@
+{
+  "accepted_source": "canonical_cash_flow_fact",
+  "activated_builder": "build_decision_evidence_packet",
+  "adapter": "adapt_fact_catalog_financial_context",
+  "compact_ai_context_consumption": false,
+  "contract": "m6-producer-activation-surface-v1",
+  "new_opendart_mappings": 0,
+  "new_paid_provider_mappings": 0,
+  "new_sec_taxonomy_mappings": 0,
+  "public_action_changed": false
+}

@@ -1,0 +1,27 @@
+{
+  "ad_hoc_unit_conversion": false,
+  "canonical_free_cash_flow_label": false,
+  "contract": "m6-simple-cash-conversion-derivation-v1",
+  "existing_archive_derived_emission_count": 104,
+  "formula": "ocf_less_ppe_capex",
+  "fx_conversion": false,
+  "metric": "ocf_less_ppe_capex",
+  "ordered_inputs": [
+    "operating_cash_flow",
+    "ppe_capex_cash_outflow"
+  ],
+  "required_compatibility": [
+    "currency",
+    "unit_scale",
+    "period_type",
+    "period_start",
+    "period_end",
+    "duration_days",
+    "fiscal_year",
+    "fiscal_quarter",
+    "entity_scope",
+    "statement_basis",
+    "attribution_basis"
+  ],
+  "version": "existing-canonical-financial-domain-adapter-v1"
+}

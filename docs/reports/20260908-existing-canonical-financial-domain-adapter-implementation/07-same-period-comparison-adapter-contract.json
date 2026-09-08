@@ -1,0 +1,22 @@
+{
+  "contract": "m6-same-period-comparison-adapter-v1",
+  "existing_archive_comparison_emission_count": 130,
+  "growth_rate_generated": false,
+  "missing_or_incompatible_behavior": "omit_comparison_keep_current_context",
+  "required_equal_fields": [
+    "metric",
+    "currency",
+    "unit_scale",
+    "period_type",
+    "entity_scope",
+    "statement_basis",
+    "attribution_basis"
+  ],
+  "required_relation": "consecutive_fiscal_year",
+  "supported_pairs": [
+    "QTD_QTD",
+    "YTD_YTD",
+    "FY_FY",
+    "POINT_IN_TIME_POINT_IN_TIME"
+  ]
+}
