@@ -15,6 +15,11 @@ from app.services.financial_lineage_projection_service import (
 
 CONTRACT_VERSION = "existing-canonical-financial-domain-adapter-v1"
 CANONICAL_CASH_FLOW_SOURCE = "canonical_cash_flow_fact"
+CANONICAL_FINANCIAL_SOURCE = "canonical_financial_fact"
+CANONICAL_FINANCIAL_SOURCES = {
+    CANONICAL_CASH_FLOW_SOURCE,
+    CANONICAL_FINANCIAL_SOURCE,
+}
 SIMPLE_CASH_CONVERSION_METRIC = "ocf_less_ppe_capex"
 SIMPLE_CASH_CONVERSION_FORMULA = "ocf_less_ppe_capex"
 
@@ -22,13 +27,106 @@ _FACT_TYPE_METRICS = {
     "cash_flow_ocf": "operating_cash_flow",
     "cash_flow_ppe_capex": "ppe_capex_cash_outflow",
     "cash_flow_fcf_ppe": SIMPLE_CASH_CONVERSION_METRIC,
+    "balance_sheet_cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "balance_sheet_cash_and_restricted_cash": "cash_and_restricted_cash",
+    "balance_sheet_restricted_cash_current": "restricted_cash_current",
+    "balance_sheet_restricted_cash_noncurrent": "restricted_cash_noncurrent",
+    "balance_sheet_short_term_borrowings": "short_term_borrowings",
+    "balance_sheet_current_portion_long_term_debt": (
+        "current_portion_of_long_term_debt"
+    ),
+    "balance_sheet_current_interest_bearing_debt": (
+        "current_interest_bearing_debt"
+    ),
+    "balance_sheet_long_term_borrowings": "long_term_borrowings",
+    "balance_sheet_bonds_payable_current": "bonds_payable_current",
+    "balance_sheet_bonds_payable_noncurrent": "bonds_payable_noncurrent",
+    "balance_sheet_notes_payable_current": "notes_payable_current",
+    "balance_sheet_notes_payable_noncurrent": "notes_payable_noncurrent",
+    "balance_sheet_convertible_debt_current": "convertible_debt_current",
+    "balance_sheet_convertible_debt_noncurrent": "convertible_debt_noncurrent",
+    "balance_sheet_lease_liabilities_current": "lease_liabilities_current",
+    "balance_sheet_lease_liabilities_noncurrent": "lease_liabilities_noncurrent",
+    "balance_sheet_interest_bearing_debt_total": "interest_bearing_debt_total",
+    "balance_sheet_net_debt": "net_debt",
 }
 _CANONICAL_METRIC_BY_FACT_TYPE = {
     "cash_flow_ocf": "operating_cash_flow",
     "cash_flow_ppe_capex": "ppe_capex_cash_outflow",
     "cash_flow_fcf_ppe": "free_cash_flow_ppe",
+    "balance_sheet_cash_and_cash_equivalents": "cash_and_cash_equivalents",
+    "balance_sheet_cash_and_restricted_cash": "cash_and_restricted_cash",
+    "balance_sheet_restricted_cash_current": "restricted_cash_current",
+    "balance_sheet_restricted_cash_noncurrent": "restricted_cash_noncurrent",
+    "balance_sheet_short_term_borrowings": "short_term_borrowings",
+    "balance_sheet_current_portion_long_term_debt": (
+        "current_portion_of_long_term_debt"
+    ),
+    "balance_sheet_current_interest_bearing_debt": (
+        "current_interest_bearing_debt"
+    ),
+    "balance_sheet_long_term_borrowings": "long_term_borrowings",
+    "balance_sheet_bonds_payable_current": "bonds_payable_current",
+    "balance_sheet_bonds_payable_noncurrent": "bonds_payable_noncurrent",
+    "balance_sheet_notes_payable_current": "notes_payable_current",
+    "balance_sheet_notes_payable_noncurrent": "notes_payable_noncurrent",
+    "balance_sheet_convertible_debt_current": "convertible_debt_current",
+    "balance_sheet_convertible_debt_noncurrent": "convertible_debt_noncurrent",
+    "balance_sheet_lease_liabilities_current": "lease_liabilities_current",
+    "balance_sheet_lease_liabilities_noncurrent": "lease_liabilities_noncurrent",
+    "balance_sheet_interest_bearing_debt_total": "interest_bearing_debt_total",
+    "balance_sheet_net_debt": "net_debt",
 }
-_DIRECT_FACT_TYPES = {"cash_flow_ocf", "cash_flow_ppe_capex"}
+_CASH_FLOW_DIRECT_FACT_TYPES = {"cash_flow_ocf", "cash_flow_ppe_capex"}
+_BALANCE_SHEET_DIRECT_FACT_TYPES = {
+    "balance_sheet_cash_and_cash_equivalents",
+    "balance_sheet_cash_and_restricted_cash",
+    "balance_sheet_restricted_cash_current",
+    "balance_sheet_restricted_cash_noncurrent",
+    "balance_sheet_short_term_borrowings",
+    "balance_sheet_current_portion_long_term_debt",
+    "balance_sheet_current_interest_bearing_debt",
+    "balance_sheet_long_term_borrowings",
+    "balance_sheet_bonds_payable_current",
+    "balance_sheet_bonds_payable_noncurrent",
+    "balance_sheet_notes_payable_current",
+    "balance_sheet_notes_payable_noncurrent",
+    "balance_sheet_convertible_debt_current",
+    "balance_sheet_convertible_debt_noncurrent",
+    "balance_sheet_lease_liabilities_current",
+    "balance_sheet_lease_liabilities_noncurrent",
+}
+_DEBT_COMPONENT_FACT_TYPES = {
+    "balance_sheet_short_term_borrowings",
+    "balance_sheet_current_portion_long_term_debt",
+    "balance_sheet_current_interest_bearing_debt",
+    "balance_sheet_long_term_borrowings",
+    "balance_sheet_bonds_payable_current",
+    "balance_sheet_bonds_payable_noncurrent",
+    "balance_sheet_notes_payable_current",
+    "balance_sheet_notes_payable_noncurrent",
+    "balance_sheet_convertible_debt_current",
+    "balance_sheet_convertible_debt_noncurrent",
+}
+_CURRENT_DEBT_FACT_TYPES = {
+    "balance_sheet_short_term_borrowings",
+    "balance_sheet_current_portion_long_term_debt",
+    "balance_sheet_current_interest_bearing_debt",
+    "balance_sheet_bonds_payable_current",
+    "balance_sheet_notes_payable_current",
+    "balance_sheet_convertible_debt_current",
+}
+_NONCURRENT_DEBT_FACT_TYPES = {
+    "balance_sheet_long_term_borrowings",
+    "balance_sheet_bonds_payable_noncurrent",
+    "balance_sheet_notes_payable_noncurrent",
+    "balance_sheet_convertible_debt_noncurrent",
+}
+_DEBT_LIQUIDITY_DERIVED_FACT_TYPES = {
+    "balance_sheet_interest_bearing_debt_total",
+    "balance_sheet_net_debt",
+}
+_DIRECT_FACT_TYPES = _CASH_FLOW_DIRECT_FACT_TYPES | _BALANCE_SHEET_DIRECT_FACT_TYPES
 _COMPARABLE_PERIOD_TYPES = {"QTD", "YTD", "FY", "POINT_IN_TIME"}
 _PERIOD_TYPES = {*_COMPARABLE_PERIOD_TYPES, "TTM"}
 _ATTRIBUTION_BASES = {"total", "parent", "common"}
@@ -45,6 +143,11 @@ _DERIVED_PERIOD_FORMULAS = {
 }
 _CANONICAL_FCF_FORMULA = "OCF_MINUS_PPE_CAPEX_CASH_OUTFLOW"
 _CANONICAL_DERIVATION_VERSION = "cash-flow-capital-efficiency-v1"
+_DEBT_LIQUIDITY_DERIVATION_VERSION = "interest-bearing-debt-liquidity-v1"
+_DEBT_TOTAL_FORMULA = "interest_bearing_debt_total"
+_NET_DEBT_FORMULA = "net_debt"
+_DEBT_SCOPE = "complete_borrowings_bonds_convertibles_excluding_lease_liabilities"
+_NET_DEBT_SCOPE = "complete_debt_less_cash_and_cash_equivalents"
 _CANONICAL_FACT_TYPES = {"REPORTED", "DERIVED_PERIOD", "DERIVED_METRIC"}
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
@@ -69,6 +172,9 @@ class CanonicalFinancialIdentity:
     issuer_id: str | None = None
     unit: str | None = None
     semantic_mapping: str | None = None
+    balance_scope: str | None = None
+    net_gross_scope: str | None = None
+    source_document_id: str | None = None
 
     def period_payload(self) -> dict[str, object]:
         return {
@@ -164,12 +270,20 @@ def _lineage_projection(
     canonical_fact_type = str(lineage.get("canonical_fact_type") or "")
     if canonical_fact_type not in _CANONICAL_FACT_TYPES:
         reasons.append("canonical_lineage_fact_type_invalid")
-    elif fact_type in _DIRECT_FACT_TYPES and canonical_fact_type not in {
+    elif fact_type in _CASH_FLOW_DIRECT_FACT_TYPES and canonical_fact_type not in {
         "REPORTED",
         "DERIVED_PERIOD",
     }:
         reasons.append("canonical_lineage_metric_fact_type_mismatch")
-    elif fact_type == "cash_flow_fcf_ppe" and canonical_fact_type != "DERIVED_METRIC":
+    elif (
+        fact_type in _BALANCE_SHEET_DIRECT_FACT_TYPES
+        and canonical_fact_type != "REPORTED"
+    ):
+        reasons.append("canonical_lineage_metric_fact_type_mismatch")
+    elif (
+        fact_type in {"cash_flow_fcf_ppe", *_DEBT_LIQUIDITY_DERIVED_FACT_TYPES}
+        and canonical_fact_type != "DERIVED_METRIC"
+    ):
         reasons.append("canonical_lineage_metric_fact_type_mismatch")
     fields = _mapping(row.get("fields")) or {}
     expected_metric = _CANONICAL_METRIC_BY_FACT_TYPE.get(fact_type)
@@ -186,6 +300,8 @@ def _lineage_projection(
         ("entity_scope", str(fields.get("entity_scope") or ""), str),
         ("statement_basis", str(fields.get("statement_basis") or ""), str),
         ("capex_scope", fields.get("capex_scope"), _text),
+        ("balance_scope", fields.get("balance_scope"), _text),
+        ("net_gross_scope", fields.get("net_gross_scope"), _text),
     )
     for name, expected, normalizer in identity_pairs:
         if normalizer(lineage.get(name)) != expected:
@@ -220,7 +336,12 @@ def _lineage_projection(
             reasons.append("canonical_derivation_formula_missing")
         if version is None or not _IDENTIFIER.fullmatch(version):
             reasons.append("canonical_derivation_version_missing")
-        elif version != _CANONICAL_DERIVATION_VERSION:
+        expected_version = (
+            _DEBT_LIQUIDITY_DERIVATION_VERSION
+            if fact_type in _DEBT_LIQUIDITY_DERIVED_FACT_TYPES
+            else _CANONICAL_DERIVATION_VERSION
+        )
+        if version is not None and version != expected_version:
             reasons.append("canonical_derivation_version_unsupported")
         if not input_ids:
             reasons.append("canonical_derivation_input_refs_missing")
@@ -253,9 +374,20 @@ def canonical_identity_from_fact_catalog(
     row: Mapping[str, object],
 ) -> tuple[CanonicalFinancialIdentity | None, tuple[str, ...]]:
     reasons: list[str] = []
-    if row.get("source") != CANONICAL_CASH_FLOW_SOURCE:
+    source = row.get("source")
+    if source not in CANONICAL_FINANCIAL_SOURCES:
         reasons.append("source_is_not_existing_canonical_cash_flow")
     fact_type = str(row.get("fact_type") or "")
+    if source == CANONICAL_CASH_FLOW_SOURCE and fact_type not in {
+        *_CASH_FLOW_DIRECT_FACT_TYPES,
+        "cash_flow_fcf_ppe",
+    }:
+        reasons.append("canonical_source_metric_scope_mismatch")
+    if source == CANONICAL_FINANCIAL_SOURCE and fact_type not in {
+        *_BALANCE_SHEET_DIRECT_FACT_TYPES,
+        *_DEBT_LIQUIDITY_DERIVED_FACT_TYPES,
+    }:
+        reasons.append("canonical_source_metric_scope_mismatch")
     metric = _FACT_TYPE_METRICS.get(fact_type)
     if metric is None:
         reasons.append("metric_not_in_m6_adapter_scope")
@@ -268,6 +400,8 @@ def canonical_identity_from_fact_catalog(
         return None, tuple(dict.fromkeys([*reasons, "financial_fields_missing"]))
     lineage, lineage_reasons = _lineage_projection(row)
     reasons.extend(lineage_reasons)
+    if source == CANONICAL_FINANCIAL_SOURCE and lineage is None:
+        reasons.append("canonical_financial_lineage_required")
 
     value = _decimal(fields.get("value"))
     if value is None:
@@ -355,6 +489,13 @@ def canonical_identity_from_fact_catalog(
                 if lineage is not None
                 else None
             ),
+            balance_scope=_text(fields.get("balance_scope")),
+            net_gross_scope=_text(fields.get("net_gross_scope")),
+            source_document_id=(
+                _text(lineage.get("source_document_id"))
+                if lineage is not None
+                else None
+            ),
         ),
         (),
     )
@@ -378,6 +519,8 @@ def prior_year_comparison(
         "issuer_id",
         "unit",
         "semantic_mapping",
+        "balance_scope",
+        "net_gross_scope",
     ):
         if getattr(current, field_name) != getattr(prior, field_name):
             reasons.append(f"comparison_{field_name}_mismatch")
@@ -436,18 +579,32 @@ def _prior_comparison(
         input_ids = _input_fact_ids(fields)
         if input_ids:
             fact_type = str(row.get("fact_type") or "")
-            if fact_type in _DIRECT_FACT_TYPES:
+            if fact_type in _CASH_FLOW_DIRECT_FACT_TYPES:
                 derivation, _ = _derived_period_lineage(
                     candidate,
                     row,
                     rows_by_id,
                 )
-            else:
+            elif fact_type == "cash_flow_fcf_ppe":
                 derivation, _ = _derived_cash_conversion(
                     candidate,
                     row,
                     rows_by_id,
                 )
+            elif fact_type == "balance_sheet_interest_bearing_debt_total":
+                derivation, _ = _derived_debt_total(
+                    candidate,
+                    row,
+                    rows_by_id,
+                )
+            elif fact_type == "balance_sheet_net_debt":
+                derivation, _ = _derived_net_debt(
+                    candidate,
+                    row,
+                    rows_by_id,
+                )
+            else:
+                derivation = None
             if derivation is None:
                 continue
         candidates[candidate.fact_id] = candidate
@@ -721,6 +878,200 @@ def _derived_cash_conversion(
     )
 
 
+def _reported_balance_identity(
+    row: Mapping[str, object],
+    *,
+    allowed_fact_types: set[str],
+) -> tuple[CanonicalFinancialIdentity | None, tuple[str, ...]]:
+    fact_type = str(row.get("fact_type") or "")
+    if fact_type not in allowed_fact_types:
+        return None, ("debt_liquidity_input_metric_invalid",)
+    identity, identity_reasons = canonical_identity_from_fact_catalog(row)
+    if identity is None:
+        return None, tuple(
+            dict.fromkeys(["debt_liquidity_input_invalid", *identity_reasons])
+        )
+    lineage, lineage_reasons = _lineage_projection(row)
+    if lineage is None or lineage.get("canonical_fact_type") != "REPORTED":
+        return None, tuple(
+            dict.fromkeys(
+                ["debt_liquidity_input_not_reported", *lineage_reasons]
+            )
+        )
+    fields = _mapping(row.get("fields")) or {}
+    input_ids = _input_fact_ids(fields)
+    if input_ids is None or input_ids:
+        return None, ("reported_debt_liquidity_input_has_derivation",)
+    if identity.period_type != "POINT_IN_TIME":
+        return None, ("debt_liquidity_point_in_time_required",)
+    return identity, ()
+
+
+def _derived_debt_total(
+    current: CanonicalFinancialIdentity,
+    row: Mapping[str, object],
+    rows_by_id: Mapping[str, Mapping[str, object]],
+) -> tuple[dict[str, object] | None, tuple[str, ...]]:
+    fields = _mapping(row.get("fields")) or {}
+    input_ids = _input_fact_ids(fields)
+    if input_ids is None or len(input_ids) < 2:
+        return None, ("interest_bearing_debt_inputs_required",)
+    output_lineage, lineage_reasons = _lineage_projection(row)
+    if output_lineage is None:
+        return None, tuple(
+            dict.fromkeys(["debt_total_lineage_invalid", *lineage_reasons])
+        )
+    if (
+        output_lineage.get("canonical_fact_type") != "DERIVED_METRIC"
+        or output_lineage.get("derivation_formula") != _DEBT_TOTAL_FORMULA
+        or output_lineage.get("derivation_version")
+        != _DEBT_LIQUIDITY_DERIVATION_VERSION
+        or tuple(output_lineage.get("ordered_input_fact_ids") or ()) != input_ids
+    ):
+        return None, ("debt_total_lineage_invalid",)
+    if (
+        current.balance_scope != _DEBT_SCOPE
+        or current.net_gross_scope != "gross"
+    ):
+        return None, ("debt_scope_incomplete",)
+
+    input_rows = [rows_by_id.get(fact_id) for fact_id in input_ids]
+    if any(item is None for item in input_rows):
+        return None, ("debt_total_input_ref_missing",)
+    identities: list[CanonicalFinancialIdentity] = []
+    input_fact_types: list[str] = []
+    for input_row in input_rows:
+        assert input_row is not None
+        identity, reasons = _reported_balance_identity(
+            input_row,
+            allowed_fact_types=_DEBT_COMPONENT_FACT_TYPES,
+        )
+        if identity is None:
+            return None, tuple(
+                dict.fromkeys(["debt_total_input_invalid", *reasons])
+            )
+        identities.append(identity)
+        input_fact_types.append(str(input_row.get("fact_type") or ""))
+
+    compatibility = _same_basis(current, identities)
+    if compatibility:
+        return None, compatibility
+    if len({item.source_document_id for item in (current, *identities)}) != 1:
+        return None, ("derivation_source_document_id_mismatch",)
+    if not set(input_fact_types).intersection(_CURRENT_DEBT_FACT_TYPES) or not set(
+        input_fact_types
+    ).intersection(_NONCURRENT_DEBT_FACT_TYPES):
+        return None, ("debt_scope_incomplete",)
+    scopes = [identity.balance_scope for identity in identities]
+    if any(scope is None for scope in scopes) or len(scopes) != len(set(scopes)):
+        return None, ("component_overlap",)
+    scope_set = set(scopes)
+    if "current_debt_aggregate" in scope_set and scope_set.intersection(
+        {
+            "short_term_borrowings",
+            "current_portion_long_term_debt",
+            "bonds_payable_current",
+            "notes_payable_current",
+            "convertible_debt_current",
+        }
+    ):
+        return None, ("component_overlap",)
+    if "current_borrowings_aggregate" in scope_set and scope_set.intersection(
+        {"short_term_borrowings", "current_portion_long_term_debt"}
+    ):
+        return None, ("component_overlap",)
+    if current.value != sum((item.value for item in identities), Decimal(0)):
+        return None, ("debt_total_arithmetic_mismatch",)
+    if any(fact_type not in _DEBT_COMPONENT_FACT_TYPES for fact_type in input_fact_types):
+        return None, ("debt_total_input_metric_invalid",)
+    return (
+        {
+            "formula": _DEBT_TOTAL_FORMULA,
+            "input_source_refs": [item.source_ref for item in identities],
+            "version": _DEBT_LIQUIDITY_DERIVATION_VERSION,
+        },
+        (),
+    )
+
+
+def _derived_net_debt(
+    current: CanonicalFinancialIdentity,
+    row: Mapping[str, object],
+    rows_by_id: Mapping[str, Mapping[str, object]],
+) -> tuple[dict[str, object] | None, tuple[str, ...]]:
+    fields = _mapping(row.get("fields")) or {}
+    input_ids = _input_fact_ids(fields)
+    if input_ids is None or len(input_ids) != 2:
+        return None, ("net_debt_requires_debt_and_cash_inputs",)
+    output_lineage, lineage_reasons = _lineage_projection(row)
+    if output_lineage is None:
+        return None, tuple(
+            dict.fromkeys(["net_debt_lineage_invalid", *lineage_reasons])
+        )
+    if (
+        output_lineage.get("canonical_fact_type") != "DERIVED_METRIC"
+        or output_lineage.get("derivation_formula") != _NET_DEBT_FORMULA
+        or output_lineage.get("derivation_version")
+        != _DEBT_LIQUIDITY_DERIVATION_VERSION
+        or tuple(output_lineage.get("ordered_input_fact_ids") or ()) != input_ids
+    ):
+        return None, ("net_debt_lineage_invalid",)
+    if (
+        current.balance_scope != _NET_DEBT_SCOPE
+        or current.net_gross_scope != "net"
+    ):
+        return None, ("net_debt_scope_invalid",)
+
+    debt_row = rows_by_id.get(input_ids[0])
+    cash_row = rows_by_id.get(input_ids[1])
+    if debt_row is None or cash_row is None:
+        return None, ("net_debt_input_ref_missing",)
+    debt, debt_reasons = canonical_identity_from_fact_catalog(debt_row)
+    if debt is None or str(debt_row.get("fact_type") or "") != (
+        "balance_sheet_interest_bearing_debt_total"
+    ):
+        return None, tuple(
+            dict.fromkeys(["complete_interest_bearing_debt_total_required", *debt_reasons])
+        )
+    debt_derivation, debt_derivation_reasons = _derived_debt_total(
+        debt,
+        debt_row,
+        rows_by_id,
+    )
+    if debt_derivation is None:
+        return None, tuple(
+            dict.fromkeys(
+                [
+                    "complete_interest_bearing_debt_total_required",
+                    *debt_derivation_reasons,
+                ]
+            )
+        )
+    cash, cash_reasons = _reported_balance_identity(
+        cash_row,
+        allowed_fact_types={"balance_sheet_cash_and_cash_equivalents"},
+    )
+    if cash is None:
+        return None, tuple(dict.fromkeys(["missing_cash", *cash_reasons]))
+    if cash.balance_scope != "cash_and_cash_equivalents_only":
+        return None, ("restricted_cash_ambiguity",)
+    compatibility = _same_basis(current, (debt, cash))
+    if compatibility:
+        return None, compatibility
+    if len({item.source_document_id for item in (current, debt, cash)}) != 1:
+        return None, ("derivation_source_document_id_mismatch",)
+    if current.value != debt.value - cash.value:
+        return None, ("net_debt_arithmetic_mismatch",)
+    return (
+        {
+            "formula": _NET_DEBT_FORMULA,
+            "input_source_refs": [debt.source_ref, cash.source_ref],
+            "version": _DEBT_LIQUIDITY_DERIVATION_VERSION,
+        },
+        (),
+    )
+
+
 def adapt_fact_catalog_financial_context(
     row: Mapping[str, object],
     all_rows: Sequence[Mapping[str, object]],
@@ -743,7 +1094,7 @@ def adapt_fact_catalog_financial_context(
     evidence_status = "DIRECT_REPORTED"
     derivation: dict[str, object] | None = None
     limitations: list[str] = []
-    if fact_type in _DIRECT_FACT_TYPES:
+    if fact_type in _CASH_FLOW_DIRECT_FACT_TYPES:
         if input_ids:
             derivation, derivation_reasons = _derived_period_lineage(
                 current,
@@ -757,7 +1108,35 @@ def adapt_fact_catalog_financial_context(
             if fields.get("capex_scope") != "ppe_only":
                 return FinancialContextAdapterResult(None, ("ppe_capex_scope_not_ppe_only",))
             limitations.append("growth_vs_maintenance_capex_unknown")
-    else:
+    elif fact_type in _BALANCE_SHEET_DIRECT_FACT_TYPES:
+        if input_ids:
+            return FinancialContextAdapterResult(
+                None,
+                ("reported_debt_liquidity_input_has_derivation",),
+            )
+        if current.period_type != "POINT_IN_TIME":
+            return FinancialContextAdapterResult(
+                None,
+                ("debt_liquidity_point_in_time_required",),
+            )
+        if current.balance_scope is None or current.net_gross_scope != "gross":
+            return FinancialContextAdapterResult(
+                None,
+                ("debt_liquidity_scope_metadata_missing",),
+            )
+        if fact_type in _DEBT_COMPONENT_FACT_TYPES:
+            limitations.append("component_not_complete_interest_bearing_debt_total")
+        elif fact_type == "balance_sheet_cash_and_cash_equivalents":
+            limitations.append("cash_basis_cash_and_cash_equivalents_only")
+        elif fact_type == "balance_sheet_cash_and_restricted_cash":
+            limitations.append("combined_cash_and_restricted_cash_not_net_debt_eligible")
+        elif fact_type.startswith("balance_sheet_restricted_cash_"):
+            limitations.append("restricted_cash_excluded_from_net_debt_cash_basis")
+        elif fact_type.startswith("balance_sheet_lease_liabilities_"):
+            limitations.append("lease_liabilities_separate_context_only")
+        if fact_type.startswith("balance_sheet_convertible_debt_"):
+            limitations.append("convertible_dilution_terms_not_evaluated")
+    elif fact_type == "cash_flow_fcf_ppe":
         evidence_status = "DERIVED_SAFE"
         if fields.get("capex_scope") != "ppe_only":
             return FinancialContextAdapterResult(
@@ -776,6 +1155,36 @@ def adapt_fact_catalog_financial_context(
                 "growth_vs_maintenance_capex_unknown",
                 "ppe_only_not_management_defined_fcf",
             )
+        )
+    elif fact_type == "balance_sheet_interest_bearing_debt_total":
+        evidence_status = "DERIVED_SAFE"
+        derivation, derivation_reasons = _derived_debt_total(
+            current,
+            row,
+            rows_by_id,
+        )
+        if derivation is None:
+            return FinancialContextAdapterResult(None, derivation_reasons)
+        limitations.append("lease_liabilities_excluded_from_debt_scope")
+    elif fact_type == "balance_sheet_net_debt":
+        evidence_status = "DERIVED_SAFE"
+        derivation, derivation_reasons = _derived_net_debt(
+            current,
+            row,
+            rows_by_id,
+        )
+        if derivation is None:
+            return FinancialContextAdapterResult(None, derivation_reasons)
+        limitations.extend(
+            (
+                "lease_liabilities_excluded_from_debt_scope",
+                "restricted_cash_not_netted",
+            )
+        )
+    else:
+        return FinancialContextAdapterResult(
+            None,
+            ("metric_not_in_m6_adapter_scope",),
         )
 
     return FinancialContextAdapterResult(

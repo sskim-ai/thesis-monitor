@@ -236,3 +236,43 @@ def reconcile_xbrl_duration_fact(
         ):
             matches.append(fact)
     return matches[0] if len(matches) == 1 else None
+
+
+def reconcile_xbrl_instant_fact(
+    facts: Iterable[XbrlFact],
+    *,
+    taxonomy_element: str,
+    value: object,
+    instant_date: date | None = None,
+    unit_ref: str,
+    statement_basis: str,
+    entity_identifier: str,
+) -> XbrlFact | None:
+    """Resolve one statement-level instant occurrence without dimension guessing."""
+    expected_value = _decimal(value)
+    if expected_value is None:
+        return None
+    matches = []
+    for fact in facts:
+        non_basis_dimensions = [
+            axis
+            for axis, _member in fact.context.dimensions
+            if "statementbasis" not in axis.casefold()
+            and "consolidatedandseparate" not in axis.casefold()
+        ]
+        if (
+            _local_name(fact.taxonomy_element) == _local_name(taxonomy_element)
+            and fact.context.period_type == "instant"
+            and fact.context.period_start == fact.context.period_end
+            and (
+                instant_date is None
+                or fact.context.period_end == instant_date
+            )
+            and fact.unit_ref == unit_ref
+            and fact.context.statement_basis == statement_basis
+            and fact.context.entity_identifier == entity_identifier
+            and not non_basis_dimensions
+            and _decimal(fact.value) == expected_value
+        ):
+            matches.append(fact)
+    return matches[0] if len(matches) == 1 else None

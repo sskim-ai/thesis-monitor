@@ -24,7 +24,37 @@ _FACT_TYPE_BY_METRIC = {
     Metric.OCF: "cash_flow_ocf",
     Metric.CAPEX: "cash_flow_ppe_capex",
     Metric.FCF: "cash_flow_fcf_ppe",
+    Metric.CASH_AND_CASH_EQUIVALENTS: "balance_sheet_cash_and_cash_equivalents",
+    Metric.CASH_AND_RESTRICTED_CASH: "balance_sheet_cash_and_restricted_cash",
+    Metric.RESTRICTED_CASH_CURRENT: "balance_sheet_restricted_cash_current",
+    Metric.RESTRICTED_CASH_NONCURRENT: "balance_sheet_restricted_cash_noncurrent",
+    Metric.SHORT_TERM_BORROWINGS: "balance_sheet_short_term_borrowings",
+    Metric.CURRENT_PORTION_LONG_TERM_DEBT: (
+        "balance_sheet_current_portion_long_term_debt"
+    ),
+    Metric.CURRENT_INTEREST_BEARING_DEBT: (
+        "balance_sheet_current_interest_bearing_debt"
+    ),
+    Metric.LONG_TERM_BORROWINGS: "balance_sheet_long_term_borrowings",
+    Metric.BONDS_PAYABLE_CURRENT: "balance_sheet_bonds_payable_current",
+    Metric.BONDS_PAYABLE_NONCURRENT: "balance_sheet_bonds_payable_noncurrent",
+    Metric.NOTES_PAYABLE_CURRENT: "balance_sheet_notes_payable_current",
+    Metric.NOTES_PAYABLE_NONCURRENT: "balance_sheet_notes_payable_noncurrent",
+    Metric.CONVERTIBLE_DEBT_CURRENT: "balance_sheet_convertible_debt_current",
+    Metric.CONVERTIBLE_DEBT_NONCURRENT: (
+        "balance_sheet_convertible_debt_noncurrent"
+    ),
+    Metric.LEASE_LIABILITIES_CURRENT: "balance_sheet_lease_liabilities_current",
+    Metric.LEASE_LIABILITIES_NONCURRENT: (
+        "balance_sheet_lease_liabilities_noncurrent"
+    ),
+    Metric.INTEREST_BEARING_DEBT_TOTAL: (
+        "balance_sheet_interest_bearing_debt_total"
+    ),
+    Metric.NET_DEBT: "balance_sheet_net_debt",
 }
+
+_CASH_FLOW_METRICS = frozenset({Metric.OCF, Metric.CAPEX, Metric.FCF})
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -49,7 +79,11 @@ def canonical_lineage_projection(fact: FinancialFact) -> dict[str, object]:
         "metric": fact.metric.value,
         "value": str(fact.value),
         "currency": fact.currency,
-        "period_start": fact.period.start.isoformat(),
+        "period_start": (
+            None
+            if fact.period.period_type.value == "POINT_IN_TIME"
+            else fact.period.start.isoformat()
+        ),
         "period_end": fact.period.end.isoformat(),
         "period_type": fact.period.period_type.value,
         "fiscal_year": fact.period.fiscal_year,
@@ -77,6 +111,10 @@ def canonical_lineage_projection(fact: FinancialFact) -> dict[str, object]:
         "source_semantic": fact.source_semantic,
         "raw_payload_sha256": fact.raw_payload_sha256,
     }
+    if fact.balance_scope is not None:
+        payload["balance_scope"] = fact.balance_scope
+    if fact.net_gross_scope is not None:
+        payload["net_gross_scope"] = fact.net_gross_scope
     payload["lineage_sha256"] = lineage_projection_digest(payload)
     return payload
 
@@ -138,11 +176,19 @@ def _fact_catalog_entry(
         "fact_id": fact.fact_id,
         "fact_type": _FACT_TYPE_BY_METRIC[fact.metric],
         "as_of_date": fact.period.end.isoformat(),
-        "source": "canonical_cash_flow_fact",
+        "source": (
+            "canonical_cash_flow_fact"
+            if fact.metric in _CASH_FLOW_METRICS
+            else "canonical_financial_fact"
+        ),
         "fields": {
             "value": _numeric_value(fact.value),
             "currency": fact.currency,
-            "period_start": fact.period.start.isoformat(),
+            "period_start": (
+                None
+                if fact.period.period_type.value == "POINT_IN_TIME"
+                else fact.period.start.isoformat()
+            ),
             "period_end": fact.period.end.isoformat(),
             "period_type": fact.period.period_type.value,
             "fiscal_year": str(fact.period.fiscal_year),
@@ -163,6 +209,12 @@ def _fact_catalog_entry(
         "interpretation_eligible": not support_only,
         "numeric_registry_eligible": not support_only,
     }
+    fields = row["fields"]
+    assert isinstance(fields, dict)
+    if fact.balance_scope is not None:
+        fields["balance_scope"] = fact.balance_scope
+    if fact.net_gross_scope is not None:
+        fields["net_gross_scope"] = fact.net_gross_scope
     if support_only:
         return with_fact_consumer_scopes(
             row,
@@ -218,7 +270,8 @@ def adapter_projection_rows(
             and fact_id not in seen
             and row.get(SUPPORT_ONLY_FIELD) is True
             and row.get("consumer_scopes") == [FactConsumer.ARCHIVE_ONLY.value]
-            and row.get("source") == "canonical_cash_flow_fact"
+            and row.get("source")
+            in {"canonical_cash_flow_fact", "canonical_financial_fact"}
         ):
             output.append(dict(row))
             seen.add(fact_id)
