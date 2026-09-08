@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / m3-nonproduction-monitoring-lifecycle-integration-v1
+**버전:** 2026-09-08 / m4-source-domain-enrichment-design-review-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M3 완료 — source-domain enrichment / Directional specificity 설계 검토가 다음 범위`
+**현재 위치:** `M4 설계 검토 완료 — DecisionEvidencePacket의 bounded financial-context 확장이 다음 범위`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M3는 격리 DB와 fixture repository에서 등록·baseline·readiness·Daily Delta를 검증했다. 모델 출력 개선·실종목 일반화·production readiness는 여전히 확인하지 않았다.**
+**M4는 무료·공식 source stack의 6개 재무 도메인을 offline으로 분류하고 안전 계약·업종 적용성·구현 순서를 동결했다. source enrichment, prompt 변경, 모델 검증, 실종목 일반화, production readiness는 수행하지 않았다.**
 
 ---
 
@@ -45,16 +45,16 @@
 
 ## 2. 문서의 근거와 우선순위
 
-### S0 — 현재 권위 M2 결과
+### S0 — 현재 권위 M3 결과
 
 ```text
-thesis-monitor-20260908-nonproduction-integration-decision-message-quality-review-report.zip
+thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-report.zip
 
 실제 SHA-256:
-3ca97b17511605c3ead9da46292d1bf151782189ccddf25cd83d3fbcc0939422
+e1ebc077c56c2412280f58d8244498848b9a1f96ae3c4d233aa2535786ef3228
 ```
 
-M3 시작 시 index payload 39개의 hash·size를 전부 재검산했고 mismatch 0, secret scan failure 0을 확인했다. M2의 최종 SHA는 `2257a05f9a599aafd0f3120fb8ab62655bee875a`이며 다음 범위는 M3 작업명과 정확히 일치했다.
+M4 시작 시 index payload 44개의 hash·size를 전부 재검산했고 mismatch 0, secret scan failure 0을 확인했다. M3의 최종 SHA는 `5990caa239f8778ae46670abddf30f68db1bb332`이며 다음 범위는 M4 작업명과 정확히 일치했다.
 
 ### S1 — 상위 실모델 실행 결과
 
@@ -104,6 +104,7 @@ thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-e
 | 메시지 품질 | FIRST/A/B 48개 전체 trace 완료; 기존 반복 advisory 유지 | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
 | 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 재검증, lifecycle-qualified nonproduction adapter와 file-only renderer 검증 완료 | production 전체 연결이나 실등록 E2E 완성 |
 | Monitoring Bootstrap / Daily Delta 연결 | 격리 SQLite에서 canonical 등록·evidence·baseline·resume·daily monitor 실행, fixture lifecycle 12/12 PASS | production DB·실등록·실발송 검증 |
+| 재무 source-domain 설계 | 전년동기 비교, OCF, PPE-only cash conversion, debt/liquidity, working capital, non-operating effects 6/6 계약과 업종 적용성 동결 | source producer 활성화, packet extension 구현, prompt/모델 검증 |
 | 예약 운영 | M3 시작 관측에서 승인된 8개 중단, 변경 0 | 예약 재개나 현재 운영 activation |
 | 운영 반영 | 최신 작업의 live V2·등록·발송·production DB 변경 0 | 새 판단 구조의 live activation |
 
@@ -491,14 +492,19 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. 다음 한 작업과 그다음 결정
+## 11. M4 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토.
 
-**권장 다음 한 작업, 아직 미승인:** `SOURCE_DOMAIN_ENRICHMENT_AND_DIRECTIONAL_SPECIFICITY_DESIGN_REVIEW`.
-- 전년 비교, OCF/PPE-CAPEX, debt/liquidity, working capital, non-operating attribution backlog를 실제 판단 가치와 안전 계약 기준으로 좁힌다.
-- M3 lifecycle 코드는 넓히지 않고 source→Core 입력 및 Directional specificity의 변경 필요 여부를 먼저 결정한다.
-- 이 검토는 기본적으로 비운영·모델 호출 0이며, 변경할 semantic contract가 확정된 뒤에만 별도 승인된 새 model/real-holdout proof로 간다.
+**권장 다음 한 작업, 아직 미승인:** `DECISION_EVIDENCE_PACKET_DOMAIN_EXTENSION_IMPLEMENTATION`.
+- 현재 `DecisionEvidenceRef`는 값·단위·source ref는 담지만 재무 통화, QTD/YTD/FY/TTM, entity/statement/attribution basis, direct/derived 상태, 비교·파생 input lineage를 하나의 typed contract로 보존하지 못한다.
+- optional `financial_context`를 additive하게 추가하고 기존 packet backward compatibility와 hard-fail validator를 먼저 검증한다. 이 단계에서는 source producer와 Directional prompt를 활성화하지 않는다.
+- 다음에 기존 canonical OCF/PPE 및 전년동기 비교 adapter를 붙여 input contract를 freeze한다. debt/liquidity, working capital, non-operating mapping은 서로 분리된 bounded package로 진행한다.
+- enriched input이 고정된 뒤에만 1~3개 독립 economic anchor를 고르는 Directional specificity 계약을 구현하고 새 모델 검증·fresh real holdout으로 간다.
+
+M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
+
+6개 도메인 모두 missing을 negative로 바꾸지 않는다. 새 universal source gate는 0개다. debt/liquidity만 financing-dependent sector/framework의 조건부 gate 후보이며, 실제 gate 변경 전 별도 coverage 검토가 필요하다. CCC·ROIC, maintenance capex, generic net debt, partial capex를 company FCF로 부르는 경로는 허용하지 않는다.
 
 **새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
 
@@ -522,8 +528,12 @@ Master 갱신 때마다 기록:
 | Initial/Baseline/Daily를 같은 change 필드로 표현 가능 | lifecycle mode와 baseline/cutoff/refresh provenance를 명시하고 잘못된 delta 승격 차단 |
 | M3 lifecycle이 계획 상태 | 격리 SQLite canonical 경계 실행과 12/12 fixture로 완료; production readiness는 유지 |
 | M3 뒤 즉시 최종 holdout 가능 | source-domain / Directional specificity 설계 판단을 먼저 수행 |
+| 6개 재무 도메인을 한 번에 production packet과 prompt에 추가 | typed packet 확장 → 기존 canonical adapter → 추가 source mapping → Directional specificity → model/holdout 순으로 분리 |
+| 총부채를 debt로 사용 가능 | interest-bearing debt scope가 아니므로 debt/liquidity 계약에서 명시적으로 차단 |
+| OCF-PPE 지출을 일반 FCF로 표시 | `OCF less PPE acquisition cash outflow` 또는 PPE-only 범위로 제한하고 management-defined FCF와 구분 |
+| 새 재무정보를 universal source gate로 추가 | universal gate 0; claim/sector 조건부 의미만 동결 |
 
-이번 갱신은 M3 비운영 lifecycle 통합 결과를 반영한다. 완료 의미는 `M3_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
+이번 갱신은 M4 비운영 설계 검토를 반영한다. 완료 의미는 `M4_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
 
 ---
 
