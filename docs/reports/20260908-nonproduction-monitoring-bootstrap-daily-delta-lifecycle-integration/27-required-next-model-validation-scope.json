@@ -1,0 +1,8 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "model_validation_now": false,
+  "new_model_validation_required": true,
+  "new_real_holdout_proof_required": true,
+  "prerequisite": "freeze bounded source/reasoning semantic contract",
+  "status": "DEFERRED_UNTIL_SEMANTIC_CONTRACT_FREEZE"
+}

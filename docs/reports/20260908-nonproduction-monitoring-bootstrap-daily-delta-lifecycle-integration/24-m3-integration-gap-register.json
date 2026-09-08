@@ -1,0 +1,14 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "hard_lifecycle_gaps": [],
+  "message_copy_changes": [],
+  "semantic_input_gaps": [
+    "same_period_prior_year_comparison",
+    "operating_cash_flow",
+    "ppe_capex_simple_cash_conversion",
+    "debt_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "status": "NO_HARD_M3_GAP"
+}

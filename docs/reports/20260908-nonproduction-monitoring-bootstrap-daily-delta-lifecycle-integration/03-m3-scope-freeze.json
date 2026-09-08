@@ -1,0 +1,20 @@
+{
+  "allowed": [
+    "in_memory_lifecycle_repository",
+    "fixture_backed_lifecycle_adapter",
+    "file_only_message_renderer",
+    "offline_evidence_reports"
+  ],
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "forbidden_actions_executed": 0,
+  "model_call_policy": "ZERO_CALLS",
+  "provider_fetch_policy": "ZERO_FETCHES",
+  "status": "PASS",
+  "work_instruction": {
+    "member": "20260908-nonproduction-monitoring-bootstrap-and-daily-delta-lifecycle-integration.md",
+    "member_sha256": "729411d163f71b6c3d66c7db4322a5f7b988885363472c2a9f6497e052e8c5ae",
+    "status": "PASS",
+    "zip_path": "/private/tmp/codex-remote-attachments/019f2bd6-93cc-7f32-b054-03ae39471eae/A624DDBF-ECD9-49B3-A92B-3AF191AF44F9/1-thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-work-instruction.zip",
+    "zip_sha256": "0c63692def9d86fcba2ae7c2d266745f53992ba193537c5b7783b0e63e41bf6b"
+  }
+}

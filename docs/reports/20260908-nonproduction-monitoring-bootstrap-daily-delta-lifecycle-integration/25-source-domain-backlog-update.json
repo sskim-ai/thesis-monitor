@@ -1,0 +1,15 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "decision": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW",
+  "domains": [
+    "same_period_prior_year_comparison",
+    "operating_cash_flow",
+    "ppe_capex_simple_cash_conversion",
+    "debt_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "implemented_in_m3": [],
+  "source_domain_backlog_count": 6,
+  "status": "RECORDED"
+}

@@ -1,0 +1,43 @@
+OFFLINE_NONPRODUCTION_DERIVATIVE
+fixture_id=M3-03
+onboarding_state=READY
+monitoring_ready=true
+thesis_version=1
+baseline_ref=2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251
+baseline_cutoff=2026-09-08T00:00:00+00:00
+refresh_state=NOT_APPLICABLE
+
+1. 투자 논리 변화
+• 모니터링 기준선이 준비됐으며 다음 유효한 갱신부터 Daily Delta를 평가합니다.
+
+2. 현재 절대 판단
+🏢 Fictional US SYNTHETIC_M2_REVIEW(SYNTHETIC_M2_REVIEW)
+
+🧠 판단: HOLD · BUY:SELL 5:5
+HOLD 성향: 중립 HOLD
+판단 확신도: 중간
+사업 논리 상태: 유지
+신규 관찰자: WAIT · 진입 방식: 현재 없음
+보유자: HOLDABLE
+
+🎯 핵심 판단
+• 사업 근거와 위험이 균형을 이뤄 현재 절대 판단은 중립입니다.
+
+🆕 신규 관찰자 근거
+• 추가 확인 전에는 신규 관찰자가 기다리는 편이 적절합니다.
+• 사업 확인 조건: 후속 공식 자료에서 계약 이행과 영업 성과를 함께 확인해야 합니다.
+• 이유: 검증된 진입 가격이 없어 가격 조건을 제시하지 않습니다.
+
+💼 보유자 근거
+• 사업 근거가 유지되는 동안 보유 관점은 유지할 수 있습니다.
+• 기업가치 무효화: 계약 이행 훼손과 영업 성과 악화가 확인되면 재검토합니다.
+
+🔄 재평가 조건
+• BUY 쪽: 계약 이행과 영업 성과가 개선되면 상향 재평가합니다.
+• SELL 쪽: 계약 이행과 영업 성과가 악화되면 하향 재평가합니다.
+
+3. Price-Timing
+• 가격 판단은 현재 절대 판단과 분리하며 Daily Delta로 사용하지 않습니다.
+
+4. 다음 확인
+• 후속 공식 사업 근거와 기준선 이후 유효일을 확인합니다.

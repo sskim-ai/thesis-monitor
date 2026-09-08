@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / m2-nonproduction-integration-review-v1
+**버전:** 2026-09-08 / m3-nonproduction-monitoring-lifecycle-integration-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M2 완료 — M3 격리 lifecycle bootstrap 검증은 별도 승인 대기`
+**현재 위치:** `M3 완료 — source-domain enrichment / Directional specificity 설계 검토가 다음 범위`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M2는 비운영 adapter·file-only 비교·보존 증거 판단까지만 완료했다. 모델 출력 개선·실종목 일반화·production readiness는 확인하지 않았다.**
+**M3는 격리 DB와 fixture repository에서 등록·baseline·readiness·Daily Delta를 검증했다. 모델 출력 개선·실종목 일반화·production readiness는 여전히 확인하지 않았다.**
 
 ---
 
@@ -45,7 +45,18 @@
 
 ## 2. 문서의 근거와 우선순위
 
-### S1 — 최신 실행 결과
+### S0 — 현재 권위 M2 결과
+
+```text
+thesis-monitor-20260908-nonproduction-integration-decision-message-quality-review-report.zip
+
+실제 SHA-256:
+3ca97b17511605c3ead9da46292d1bf151782189ccddf25cd83d3fbcc0939422
+```
+
+M3 시작 시 index payload 39개의 hash·size를 전부 재검산했고 mismatch 0, secret scan failure 0을 확인했다. M2의 최종 SHA는 `2257a05f9a599aafd0f3120fb8ab62655bee875a`이며 다음 범위는 M3 작업명과 정확히 일치했다.
+
+### S1 — 상위 실모델 실행 결과
 
 ```text
 thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume-report.zip
@@ -75,7 +86,7 @@ thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-e
 
 무료 데이터 경로만 사용, 새로운 무료 API 관리 게이트 개발은 후순위, US 실패로 KR의 안전한 독립 진단을 생략하지 않음, 기존 예약 일시 중단, 자동 재개 금지, 일곱 종목의 재무정보 활용 범위 논의는 나중에 판단 구조 검토에서 다시 다룸.
 
-관심사별 권위를 분리한다. 역사적 실행은 S1, 현재 코드는 실제 HEAD/worktree, 다음 변경 권한은 현재 작업지시서, 투자 안전은 S3, 운영 중단·비용 정책은 S4를 따른다. 보고서와 raw 실행이 충돌하면 원본은 수정하지 않고 별도 정정 기록을 남긴다.
+관심사별 권위를 분리한다. 현재 단계 입력은 S0, 역사적 실모델 실행은 S1, 현재 코드는 실제 HEAD/worktree, 다음 변경 권한은 현재 작업지시서, 투자 안전은 S3, 운영 중단·비용 정책은 S4를 따른다. 보고서와 raw 실행이 충돌하면 원본은 수정하지 않고 별도 정정 기록을 남긴다.
 
 검토한 첨부 안에는 독립적인 기존 `MASTER_WORKFLOW` 파일이 없었다. 이 문서는 기존 handoff roadmap을 최신 결과로 통합한 갱신본이다. 실행자는 저장소에 실제 canonical master가 있는지 확인해 그 문서에 반영하고, 없다면 하나의 경로를 정한다. 여러 master를 병행해 서로 다른 현재 상태를 만들지 않는다.
 
@@ -91,9 +102,9 @@ thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-e
 | Unknown 교차필드 일관성 | 공통 invariant와 Core 조기 검사를 구현; NEON 원본은 Core에서 즉시 거절 | 수정 prompt의 실제 모델 출력 개선 |
 | Directional calibration | 수정된 계약과 과거 가상 반복 PASS 존재 | 실종목 경계 변동 해결 |
 | 메시지 품질 | FIRST/A/B 48개 전체 trace 완료; 기존 반복 advisory 유지 | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
-| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 재검증, lifecycle-qualified nonproduction adapter와 file-only renderer 검증 완료 | production 전체 연결이나 신규 등록 E2E 완성 |
-| Monitoring Bootstrap / Daily Delta 연결 | lifecycle 요구사항 확정 | 이번 proof로 등록·기준선·일일 변화 평가까지 검증됐다는 주장 |
-| 예약 운영 | S1의 2026-09-08 10:37:27 KST 관측에서 승인된 8개 중단 | 현재 서버를 방금 조회했다는 주장 |
+| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 재검증, lifecycle-qualified nonproduction adapter와 file-only renderer 검증 완료 | production 전체 연결이나 실등록 E2E 완성 |
+| Monitoring Bootstrap / Daily Delta 연결 | 격리 SQLite에서 canonical 등록·evidence·baseline·resume·daily monitor 실행, fixture lifecycle 12/12 PASS | production DB·실등록·실발송 검증 |
+| 예약 운영 | M3 시작 관측에서 승인된 8개 중단, 변경 0 | 예약 재개나 현재 운영 activation |
 | 운영 반영 | 최신 작업의 live V2·등록·발송·production DB 변경 0 | 새 판단 구조의 live activation |
 
 ### 최신 실모델 실행 장부
@@ -189,7 +200,10 @@ M2  기존 코드와 발송 없는 통합 / 판단·메시지 품질 개선
         ↓
 M3  명시적 신규 등록 → baseline → bootstrap → Daily Delta
     격리된 환경에서 lifecycle 연결 검증
-    [운영 DB·실등록·발송 없음]
+    [COMPLETE: 운영 DB·실등록·발송 없음]
+        ↓
+M3.5 source-domain enrichment / Directional specificity 설계 검토
+    [별도 승인 전 모델 호출 없음]
         ↓
 M4  변경 사항·판정 기준 동결
     필요한 변경 경로 검증 + 별도 승인된 새 실종목 최종 proof
@@ -284,11 +298,11 @@ M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판
 
 종료 조건은 충족했다. 단, lifecycle bootstrap의 실제 격리 연결과 새 model emission은 각각 `NOT_MEASURED`다. 새 지시서 없이 M3, 실모델 proof, production 작업을 자동 실행하지 않는다.
 
-### M3 — 신규 편입과 기존 보유 종목의 lifecycle 연결
+### M3 — 완료: 신규 편입과 기존 보유 종목의 lifecycle 연결
 
-저장소에 이미 구현된 부분이 있을 수 있으므로 “bootstrap 코드를 처음부터 모두 작성”으로 가정하지 않는다. 실제 코드와 증거를 보고 빈 연결만 채운다.
+실행 문서: `20260908-nonproduction-monitoring-bootstrap-and-daily-delta-lifecycle-integration.md`.
 
-격리된 test DB나 mock 저장소에서 확인할 상태 전이:
+격리된 SQLite와 fixture repository에서 다음 상태 전이를 검증했다.
 
 ```text
 명시적 등록 → 저장된 투자 논리 버전
@@ -298,16 +312,16 @@ M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판
 → Daily Delta
 ```
 
-핵심:
-- 조회·Initial Analysis만으로 자동 등록하지 않는다.
-- 일부 Unknown 때문에 저장 자체를 무조건 거절하지 않는다. 대신 저장과 준비 완료를 구분한다.
-- Bootstrap 자료 보강을 daily strengthened/weakening으로 기록하지 않는다.
-- 기존 버전·경고·history를 새 절대 판단으로 덮지 않는다.
-- 자료 수집 실패를 논리 유지나 약화로 단정하지 않는다.
-- 재실행 시 baseline/assessment/delivery 중복을 만들지 않는다.
-- source 날짜·시장 session·중단 기간 공백을 구분한다.
+완료 근거:
+- 실제 `register_monitoring_item_with_continuation`, `build_initial_evidence`, `ensure_initial_baseline`, `resume_onboarding_subject`, `run_daily_monitor`를 인메모리 SQLite에서 fixture dependency로 실행했다.
+- 같은 명시적 등록의 thesis version 1개, baseline 1개, 다음 날짜 Daily Delta 1개, notification row 0개를 확인했다.
+- 12개 필수 fixture가 모두 통과했다. bootstrap·늦게 도착한 pre-baseline 사실은 Daily Delta로 승격되지 않았다.
+- refresh 누락은 `needs_review`이며 `no_material_change`로 바뀌지 않는다. price·supply·valuation만으로 business thesis delta를 만들지 않는다.
+- positive, negative, invalidation-candidate의 post-cutoff business evidence와 warning open/resolve, assessment 멱등성을 검증했다.
+- 신규·기존 종목이 같은 Directional Core / Price-Timing / validator / renderer 계약을 사용한다. 12개 메시지는 모두 file-only `OFFLINE_NONPRODUCTION_DERIVATIVE`다.
+- 모델·provider·production DB·실등록·warning persistence·notification queue·send·main merge·deploy·V2·Night Futures·scheduler resume는 모두 0이다.
 
-종료 조건: 기존·신규 종목이 동일한 판단 언어를 쓰면서 lifecycle 경계를 보존하는 통합 테스트와 부작용 증거 확보. 운영 등록·실발송 완료를 뜻하지 않는다.
+M3 완료는 lifecycle semantics의 비운영 증명이다. production readiness는 `NOT_READY`이며 예약 작업은 자동 재개하지 않는다.
 
 ### M4 — 변경 동결과 최종 실모델 검증
 
@@ -322,7 +336,7 @@ M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판
 - 메시지 품질을 future hard gate로 사용할지는 실행 전 결정. 과거 advisory 결과는 그대로 유지.
 - 완주와 합격을 구분하고, 반복 안정성과 입력 충분성·판단 유용성을 별개 보고.
 
-현재 M4는 `NOT_AUTHORIZED_IN_M1`이다. M1을 끝내면 자동 32회 실행이 시작되는 구조가 아니다.
+현재 M4는 승인되지 않았다. 먼저 M3에서 남긴 source-domain backlog와 Directional specificity의 bounded 설계 결정을 동결해야 하며, M3 완료가 자동 32회 실행을 시작하지 않는다.
 
 ### M5 — 운영 통합 검토
 
@@ -479,13 +493,12 @@ Master 갱신 때마다 기록:
 
 ## 11. 다음 한 작업과 그다음 결정
 
-**완료한 작업:** M1 Unknown 계약 수리와 M2 nonproduction lifecycle/decision/message-quality review.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합.
 
-**권장 다음 한 작업, 아직 미승인:** `NONPRODUCTION_MONITORING_BOOTSTRAP_AND_DAILY_DELTA_LIFECYCLE_INTEGRATION`.
-- 격리된 test DB 또는 mock repository에서 명시적 등록 → pending onboarding → baseline → post-cutoff Daily Delta를 검증한다.
-- 이번 M2 adapter의 lifecycle provenance와 기존 production lifecycle의 idempotency key를 연결하되 production DB·등록·발송은 하지 않는다.
-- source archive에 없는 재무 domain 보강과 Directional reasoning specificity 변경은 M3에 몰래 묶지 않고 별도 사용자 결정을 받는다.
-- 새 model proof는 input/reasoning 계약이 별도로 동결된 뒤에만 승인 범위로 실행한다.
+**권장 다음 한 작업, 아직 미승인:** `SOURCE_DOMAIN_ENRICHMENT_AND_DIRECTIONAL_SPECIFICITY_DESIGN_REVIEW`.
+- 전년 비교, OCF/PPE-CAPEX, debt/liquidity, working capital, non-operating attribution backlog를 실제 판단 가치와 안전 계약 기준으로 좁힌다.
+- M3 lifecycle 코드는 넓히지 않고 source→Core 입력 및 Directional specificity의 변경 필요 여부를 먼저 결정한다.
+- 이 검토는 기본적으로 비운영·모델 호출 0이며, 변경할 semantic contract가 확정된 뒤에만 별도 승인된 새 model/real-holdout proof로 간다.
 
 **새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
 
@@ -507,8 +520,10 @@ Master 갱신 때마다 기록:
 | M2에서 source-to-Core 누락을 가정 | 보존 8-domain 감사에서 packet→Core drop 0; archive 부재와 Core drop을 분리 |
 | 반복 문장을 renderer synonym으로 완화 | model-owned reasoning, wrapper, input equivalence를 분리하고 renderer ownership 유지 |
 | Initial/Baseline/Daily를 같은 change 필드로 표현 가능 | lifecycle mode와 baseline/cutoff/refresh provenance를 명시하고 잘못된 delta 승격 차단 |
+| M3 lifecycle이 계획 상태 | 격리 SQLite canonical 경계 실행과 12/12 fixture로 완료; production readiness는 유지 |
+| M3 뒤 즉시 최종 holdout 가능 | source-domain / Directional specificity 설계 판단을 먼저 수행 |
 
-이번 갱신은 M2 비운영 통합과 보존 증거 판단 결과를 반영한다. 완료 의미는 `M2_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
+이번 갱신은 M3 비운영 lifecycle 통합 결과를 반영한다. 완료 의미는 `M3_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
 
 ---
 
@@ -540,4 +555,4 @@ experiment/fresh-real-proof/schedule-pause-observation.json
 
 ## 부록 B. 읽는 순서
 
-새 세션에서는 이 master → M1 완료 보고서 → M1 작업지시서 → S1 completion/detail/raw → 필요한 S2/S3 순으로 프로젝트 상태를 확인한다. M2는 별도 지시와 승인 후 시작하며, 옛 handoff의 현재 단계나 cohort를 복원해서 덮어쓰지 않는다.
+새 세션에서는 이 master → M3 완료 보고서 → M3 작업지시서 → M2 완료 보고서 → 필요한 S1/S2/S3 순으로 프로젝트 상태를 확인한다. 다음 설계 검토와 모델 proof는 각각 별도 지시와 승인 후 시작하며, 옛 handoff의 현재 단계나 cohort를 복원해서 덮어쓰지 않는다.

@@ -1,0 +1,7 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "evidence_intents": 11,
+  "evidence_is_registration": false,
+  "provider_fetches": 0,
+  "status": "PASS"
+}
