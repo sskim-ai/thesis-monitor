@@ -370,6 +370,36 @@ def _reference_snapshot_identity(handoff: Mapping[str, object]) -> str:
     return canonical_sha256(snapshot)
 
 
+def _reference_identity_view(
+    rows: Sequence[CanonicalSecurityReference],
+) -> list[dict[str, object]]:
+    fields = (
+        "contract",
+        "market",
+        "canonical_security_id",
+        "canonical_issuer_key",
+        "issuer_key_namespace",
+        "display_symbol",
+        "provider_symbol",
+        "provider_aliases",
+        "issuer_name",
+        "security_name",
+        "exchange",
+        "provider_exchange",
+        "security_type",
+        "is_adr",
+        "reference_source",
+        "reference_row_id",
+        "reference_as_of",
+        "reference_retrieved_at",
+        "reference_snapshot_sha256",
+        "identity_resolution_status",
+    )
+    return [
+        {field: row.model_dump(mode="json")[field] for field in fields} for row in rows
+    ]
+
+
 def _manifest(rows: Sequence[CanonicalSecurityReference]) -> dict[str, object]:
     return {
         "contract": "extended-us-candidate-manifest-v1",
@@ -487,9 +517,8 @@ def freeze(args: argparse.Namespace) -> None:
         retrieved_at=retrieved_at,
     )
     archived_models = [CanonicalSecurityReference.model_validate(row) for row in archived_us_rows]
-    reconstructed_rows = [row.model_dump(mode="json") for row in reconstructed]
-    reconstructed_hash = canonical_sha256(reconstructed_rows)
-    archived_hash = canonical_sha256(archived_us_rows)
+    reconstructed_hash = canonical_sha256(_reference_identity_view(reconstructed))
+    archived_hash = canonical_sha256(_reference_identity_view(archived_models))
     if reconstructed_hash != archived_hash:
         raise ValueError("reference_adapter_reconstruction_mismatch")
 
