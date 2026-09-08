@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / m5-decision-evidence-financial-context-v1
+**버전:** 2026-09-09 / m9-interest-bearing-debt-liquidity-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M5 완료 — optional typed financial_context 구현, 기존 canonical 금융 Fact adapter가 다음 범위`
+**현재 위치:** `M9 완료 — interest-bearing debt/liquidity canonical mapping, working-capital mapping이 다음 범위`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M5는 `DecisionEvidenceRef.financial_context`를 additive·optional하게 구현하고 기간·통화·basis·direct/derived·비교·파생 lineage를 hard validation으로 동결했다. source producer, prompt, source sufficiency, 모델, 발송, production readiness는 변경하지 않았다.**
+**M9는 정확한 official balance-sheet semantic에서 cash와 interest-bearing debt component를 만들고, complete·non-overlapping·same-date/basis인 경우에만 debt total과 net debt를 파생한다. compact AI input, prompt, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -371,6 +371,20 @@ OpenDART duration mapper는 XBRL의 exact entity, taxonomy, amount, KRW unit, st
 
 compact AI context, Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, model/provider, production DB·queue·send·deploy는 변하지 않았다. focused 252개와 전체 2920개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 승인된 8개 모니터링 경로는 중단 상태를 유지한다.
 
+### M8 — 완료: source-class financial mapping
+
+OpenDART CFS/OFS의 exact taxonomy·amount·KRW unit·entity·duration·statement-basis member·filing identity가 일치할 때만 canonical OCF/PPE fact를 승격한다. 실제 보존 KR 7종목에서 OCF 7개와 보험 제외 PPE 6개를 재현했다. HUT은 preserved PPE source occurrence 부족, SKHY는 issuer occurrence 부재로 ticker 예외 없이 defer했다.
+
+### M9 — 완료: interest-bearing debt와 liquidity mapping
+
+`interest-bearing-debt-liquidity-v1`은 direct `cash_and_cash_equivalents`, 명시적 current/non-current borrowings·bonds·notes·convertible debt, 별도 restricted cash와 lease-liability context를 POINT_IN_TIME fact로 만든다. `interest_bearing_debt_total`은 current와 non-current scope가 모두 있고 component가 non-overlapping이며 date/currency/unit/entity/statement/document가 호환되는 경우에만 생성한다. `net_debt`는 이 complete total에서 같은 기준의 cash and cash equivalents만 차감한다. restricted cash, marketable securities, price currency와 ADR ratio는 사용하지 않는다. 음수 net debt는 같은 공식의 유효한 결과다.
+
+기존 `FinancialSnapshot.debt`는 OpenDART `부채총계`를 담는 legacy ambiguous field로 확인됐다. M9 canonical bridge는 이를 사용하지 않으며 total/current/non-current liabilities semantic을 debt 입력으로 명시적으로 거부한다. lease liability는 `SEPARATE_CONTEXT_ONLY`, restricted cash는 `EXCLUDE_FROM_NET_DEBT_CASH_BASIS`로 동결했다. 은행·보험·재보험은 industrial net-debt 경로 대신 `SECTOR_FRAMEWORK_REQUIRED`로 분리한다.
+
+보존된 실제 KR archive에서는 비금융 6곳 중 5곳이 complete debt total과 net debt로 재현됐다. `010120`은 전환우선주부채 의미가 불명확해 PARTIAL로 차단됐고, `003690` 보험은 NOT_APPLICABLE이다. 보존된 US balance-sheet payload가 없어 US 실제 coverage는 0이며 synthetic SEC contract fixture만 별도로 통과했다. coverage를 늘리기 위한 fuzzy/ticker-specific mapping은 0이다.
+
+새 debt/liquidity context는 internal packet metadata까지만 도달하고 compact AI context에는 노출되지 않는다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, warning, working capital, non-operating effects, model/provider, production DB·queue·send·deploy·scheduler는 변하지 않았다. M9 focused 295개와 전체 2950개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
+
 ### 후속 — 명시적 재개와 일일 운영
 
 사용자가 재개를 요청할 때만 승인된 US/KR 예약을 다시 활성화한다.
@@ -518,9 +532,9 @@ Master 갱신 때마다 기록:
 
 ---
 
-## 11. M8 결론과 다음 한 작업
+## 11. M9 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현.
 
 M8 source-class 판정:
 
@@ -534,10 +548,10 @@ HUT은 보존된 추출 결과에 OCF만 있고 원본 CompanyFacts concept set�
 
 KR은 실제 7개 보존 OpenDART full-statement/XBRL cache에서 동일 원인을 확인했다. `ConsolidatedAndSeparateFinancialStatementsAxis`라는 축 이름 자체에 두 basis 단어가 함께 있어 이전 parser가 모호하다고 판단했지만, 실제 member는 각 context에서 `ConsolidatedMember` 또는 `SeparateMember`로 단일하다. M8은 basis member를 우선하고 exact taxonomy·amount·KRW unit·entity·duration·filing identity가 모두 일치할 때만 direct reported canonical fact로 승격한다. 7개 issuer의 OCF/PPE source fact는 exact YTD context로 재현됐고 ticker 분기는 0이다. 보험 1개는 source evidence 보존과 generic enterprise FCF applicability를 분리해 기존 N/A를 유지한다.
 
-**권장 다음 한 작업, 아직 미승인:** `HIGHER_RISK_FINANCIAL_DOMAIN_MAPPING_IMPLEMENTATION_INTEREST_BEARING_DEBT_LIQUIDITY`.
-- debt/liquidity, working capital, non-operating effects를 한 번에 구현하지 않는다.
-- 우선 interest-bearing debt와 liquidity의 source/account scope 및 금융업 적용 경계를 별도 bounded package로 닫는다.
-- HUT/SKHY 역사적 gap은 새 source evidence가 생기기 전 ticker 예외로 복원하지 않는다.
+**권장 다음 한 작업, 아직 미승인:** `INVENTORY_RECEIVABLES_WORKING_CAPITAL_MAPPING_IMPLEMENTATION`.
+- debt/liquidity 완료와 working capital, non-operating effects를 한 번에 묶지 않는다.
+- inventory 및 receivables scope·gross/net·trade/broad 의미와 compatible point-in-time comparison을 별도 bounded package로 닫는다.
+- 금융업 capital adequacy와 `010120`의 ambiguous convertible preferred liability는 industrial net-debt coverage를 늘리기 위해 억지로 흡수하지 않는다.
 - Directional specificity, source-sufficiency gate, 모델 holdout, production 활성화는 여전히 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
@@ -578,9 +592,13 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | OpenDART axis 이름에 consolidated/separate가 모두 있으므로 basis 불명 | axis label이 아니라 exact dimension member로 basis를 판별; real cache 7개에서 고유 duration context 승격 |
 | HUT/SKHY 역사적 gap이면 issuer 예외를 추가 가능 | HUT은 source evidence 부족으로 defer, SKHY는 generic IFRS class 지원과 issuer occurrence 부재를 분리; ticker branch 0 |
 | M8에서 새 금융 source가 생기면 모델 입력과 Daily Delta도 확장 | canonical/financial_context까지만 확장하고 compact AI context·source sufficiency·Daily Delta는 그대로 유지 |
+| legacy `FinancialSnapshot.debt`를 debt total로 재사용 가능 | 실제 source가 `부채총계`이므로 M9 canonical debt 입력에서 차단하고 legacy field를 재해석하지 않음 |
+| 알려진 debt component 합계를 total debt로 표시 | current/non-current completeness와 overlap·basis 검사를 모두 통과할 때만 total 및 net debt 생성 |
+| cash 또는 cash+restricted cash를 같은 liquidity basis로 차감 | net debt cash basis는 cash and cash equivalents only; restricted/combined cash는 별도 context 또는 차단 |
+| 금융업에도 industrial net debt 적용 | bank/insurance/reinsurance는 sector framework required로 분리 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M8 비운영 source-class mapping과 exact-context canonical promotion 구현을 반영한다. 완료 의미는 `M8_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
+이번 갱신은 M9 비운영 debt/liquidity canonical mapping과 lineage-validated derived total/net debt 구현을 반영한다. 완료 의미는 `M9_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
 
 ---
 

@@ -1,0 +1,14 @@
+{
+  "contract": "m9-sector-routing-contract-v1",
+  "financial_sector_generic_net_debt_emission_count": 0,
+  "generic_route": "GENERIC_OPERATING_COMPANY",
+  "missing_data_is_directional_evidence": false,
+  "sector_framework_route": "SECTOR_FRAMEWORK_REQUIRED",
+  "sector_frameworks": [
+    "bank",
+    "insurance",
+    "reinsurance",
+    "financial_institution",
+    "bank_or_insurer"
+  ]
+}

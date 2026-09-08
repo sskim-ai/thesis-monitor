@@ -1,0 +1,14 @@
+{
+  "base_sha": "5e46a5ff80fbff32145cef0ccf68d906dfcdf5b4",
+  "branch": "codex/20260908-interest-bearing-debt-liquidity-financial-domain-mapping-implementation",
+  "contract": "m9-repository-provenance-v1",
+  "final_head_sha": "NOT_MEASURED",
+  "head_at_report_generation": "357a1d577ffd24c96bb0f3ce2c0baf1f13458658",
+  "implementation_commit": "357a1d577ffd24c96bb0f3ce2c0baf1f13458658",
+  "report_commit": "NOT_MEASURED",
+  "work_instruction_commit": "af361e68ba843ee211bcd1e12750c1cf95a8461e",
+  "working_tree_status_at_report_generation": [
+    "M docs/MASTER_WORKFLOW.md",
+    "?? scripts/debt_liquidity_financial_mapping_evidence.py"
+  ]
+}

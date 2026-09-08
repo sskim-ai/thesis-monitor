@@ -1,0 +1,16 @@
+{
+  "contract": "m9-real-archive-coverage-v1",
+  "coverage_is_descriptive_not_universal": true,
+  "financial_sector_candidate_count": 1,
+  "financial_sector_generic_net_debt_emission_count": 0,
+  "kr_cash_direct_count": 6,
+  "kr_complete_debt_total_count": 5,
+  "kr_debt_component_direct_count": 17,
+  "kr_net_debt_count": 5,
+  "kr_nonfinancial_candidate_count": 6,
+  "us_cash_direct_count": 0,
+  "us_complete_debt_total_count": 0,
+  "us_debt_component_direct_count": 0,
+  "us_net_debt_count": 0,
+  "us_nonfinancial_candidate_count": 13
+}

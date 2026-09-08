@@ -1,0 +1,11 @@
+{
+  "command": "$HOME/Codex/thesis-monitor/.venv/bin/pytest -q",
+  "contract": "m9-full-test-results-v1",
+  "duration_seconds": 70.66,
+  "failed": 0,
+  "passed": 2950,
+  "result": "PASS",
+  "wall_seconds": 72.82,
+  "warning_class": "existing deprecation warnings",
+  "warnings": 2
+}

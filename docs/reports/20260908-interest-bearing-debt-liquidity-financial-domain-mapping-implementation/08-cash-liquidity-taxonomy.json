@@ -1,0 +1,52 @@
+{
+  "canonical_component_class_count": 4,
+  "contract": "m9-cash-liquidity-taxonomy-v1",
+  "excluded_from_cash_basis": [
+    "restricted_cash",
+    "cash_and_restricted_cash_combined",
+    "marketable_securities",
+    "short_term_financial_assets",
+    "term_deposits"
+  ],
+  "financial_currency_required": true,
+  "net_debt_cash_basis": "cash_and_cash_equivalents_only",
+  "price_currency_copy_allowed": false,
+  "registered_exact_semantic_count": 5,
+  "rows": [
+    {
+      "canonical_metric": "cash_and_cash_equivalents",
+      "component_group": "cash_and_cash_equivalents_only",
+      "priority": 100,
+      "role": "CASH_BASIS",
+      "source_semantic": "us-gaap:CashAndCashEquivalentsAtCarryingValue"
+    },
+    {
+      "canonical_metric": "cash_and_cash_equivalents",
+      "component_group": "cash_and_cash_equivalents_only",
+      "priority": 100,
+      "role": "CASH_BASIS",
+      "source_semantic": "ifrs-full:CashAndCashEquivalents"
+    },
+    {
+      "canonical_metric": "cash_and_restricted_cash",
+      "component_group": "cash_and_restricted_cash_combined",
+      "priority": 100,
+      "role": "COMBINED_CASH_CONTEXT",
+      "source_semantic": "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"
+    },
+    {
+      "canonical_metric": "restricted_cash_current",
+      "component_group": "restricted_cash_current",
+      "priority": 100,
+      "role": "RESTRICTED_CASH_CONTEXT",
+      "source_semantic": "us-gaap:RestrictedCashAndCashEquivalentsCurrent"
+    },
+    {
+      "canonical_metric": "restricted_cash_noncurrent",
+      "component_group": "restricted_cash_noncurrent",
+      "priority": 100,
+      "role": "RESTRICTED_CASH_CONTEXT",
+      "source_semantic": "us-gaap:RestrictedCashAndCashEquivalentsNoncurrent"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "contract": "m9-m4-debt-liquidity-contract-reuse-proof-v1",
+  "implementation_contract": "interest-bearing-debt-liquidity-v1",
+  "reused_forbidden_derivations": [
+    "total liabilities substituted for debt",
+    "net debt from incomplete debt components",
+    "price currency copied to financial facts",
+    "ordinary industrial net-debt logic for banks or insurers",
+    "missing debt detail treated as bearish evidence"
+  ],
+  "reused_safe_derivations": [
+    {
+      "failure_conditions": [
+        "component overlap or incomplete scope"
+      ],
+      "formula": "sum verified non-overlapping short/long/current debt components",
+      "inputs": "2+",
+      "name": "interest_bearing_debt_total",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "failure_conditions": [
+        "cash/debt scope or period mismatch"
+      ],
+      "formula": "complete interest-bearing debt - compatible cash basis",
+      "inputs": 2,
+      "name": "net_debt",
+      "status": "DERIVED_SAFE"
+    }
+  ],
+  "semantic_drift": false,
+  "source_path": "docs/reports/20260908-source-domain-enrichment-directional-specificity-design-review/13-debt-liquidity-design.json",
+  "source_sha256": "c79235e5c555ce193bfa8d218d4934f40adb67c6f8e5cc7a6ee3513c842b1e2c",
+  "source_status": "FROZEN_DESIGN"
+}

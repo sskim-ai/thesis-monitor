@@ -1,0 +1,16 @@
+{
+  "changed_paths": [
+    "M\tapp/services/cash_flow_capital_efficiency_service.py",
+    "A\tapp/services/debt_liquidity_financial_mapping_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "M\tapp/services/financial_lineage_projection_service.py",
+    "M\tapp/services/opendart_xbrl_service.py",
+    "A\ttests/test_debt_liquidity_financial_mapping_service.py",
+    "M\ttests/test_opendart_xbrl_service.py"
+  ],
+  "contract": "m9-debt-liquidity-implementation-diff-v1",
+  "implementation_commit": "357a1d577ffd24c96bb0f3ce2c0baf1f13458658",
+  "model_prompt_path_count": 0,
+  "production_renderer_path_count": 0,
+  "scheduler_path_count": 0
+}

@@ -1,0 +1,21 @@
+{
+  "actual_m8_final_report_commit": "5e46a5ff80fbff32145cef0ccf68d906dfcdf5b4",
+  "actual_sha256": "7c5f614dc146a1d56f9c10235a1a42858268e7efa3a330732801cd0ab06203d6",
+  "checksum_match": true,
+  "contract": "m9-latest-result-integrity-v1",
+  "expected_sha256": "7c5f614dc146a1d56f9c10235a1a42858268e7efa3a330732801cd0ab06203d6",
+  "internal_index_verification": {
+    "actual_m8_report_commit_and_base_sha": "5e46a5ff80fbff32145cef0ccf68d906dfcdf5b4",
+    "hash_mismatch_count": 0,
+    "indexed_payload_count": 38,
+    "missing_payload_count": 0,
+    "precommit_reporting_convention_preserved": true,
+    "reported_final_head_sha": "NOT_MEASURED",
+    "reported_status": "M8_COMPLETE",
+    "secret_scan_failure_count": 0,
+    "size_mismatch_count": 0
+  },
+  "m8_completion_status": "M8_COMPLETE",
+  "path": "thesis-monitor-20260908-source-class-financial-mapping-implementation-report.zip",
+  "result": "PASS"
+}

@@ -1,0 +1,8 @@
+{
+  "ambiguous_convertible_preferred_liability_deferred": true,
+  "contract": "m9-working-capital-next-scope-decision-v1",
+  "debt_liquidity_blocker_requiring_m9_repair": false,
+  "decision": "PROCEED_AS_SEPARATE_BOUNDED_PACKAGE",
+  "financial_sector_capital_framework_deferred": true,
+  "recommended_next_scope": "INVENTORY_RECEIVABLES_WORKING_CAPITAL_MAPPING_IMPLEMENTATION"
+}

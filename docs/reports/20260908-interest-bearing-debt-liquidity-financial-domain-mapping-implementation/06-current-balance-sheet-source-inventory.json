@@ -1,0 +1,40 @@
+{
+  "contract": "m9-current-balance-sheet-source-inventory-v1",
+  "legacy_database_counts": [
+    {
+      "legacy_cash_nonnull_count": 0,
+      "legacy_debt_nonnull_count": 611,
+      "provider": "opendart",
+      "snapshot_count": 629
+    },
+    {
+      "legacy_cash_nonnull_count": 0,
+      "legacy_debt_nonnull_count": 0,
+      "provider": "sec_companyfacts",
+      "snapshot_count": 379
+    },
+    {
+      "legacy_cash_nonnull_count": 0,
+      "legacy_debt_nonnull_count": 0,
+      "provider": "sec_foreign_filing",
+      "snapshot_count": 2
+    }
+  ],
+  "legacy_model": {
+    "cash": "LEGACY_AMBIGUOUS_UNPOPULATED",
+    "debt": "LEGACY_AMBIGUOUS",
+    "path": "app/models/financial.py::FinancialSnapshot"
+  },
+  "legacy_population": {
+    "classification": "UNSAFE_FOR_NEW_CONTRACT",
+    "debt_source": "OpenDART total liabilities",
+    "new_financial_context_bridge_usage_count": 0,
+    "path": "app/services/financial_snapshot_service.py"
+  },
+  "official_sources": [
+    "SEC CompanyFacts exact US-GAAP/IFRS concepts",
+    "OpenDART full-statement rows plus exact official XBRL instant context"
+  ],
+  "preserved_kr_full_statement_xbrl_fixture_count": 7,
+  "preserved_us_balance_sheet_payload_count": 0
+}

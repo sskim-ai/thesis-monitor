@@ -1,0 +1,30 @@
+{
+  "contract": "m9-completeness-denial-accounting-v1",
+  "debt_scope_incomplete_count": 1,
+  "missing_or_partial_is_directional_evidence": false,
+  "net_debt_blocked_cash_basis_count": 2,
+  "net_debt_blocked_incomplete_debt_count": 1,
+  "real_kr_denial_counts": {
+    "exact_xbrl_instant_context_unresolved": 1,
+    "financial_sector_not_applicable": 3,
+    "total_liabilities_not_interest_bearing_debt": 18,
+    "unsupported_component_semantic": 2
+  },
+  "real_partial_subjects": [
+    "010120"
+  ],
+  "required_reason_taxonomy": [
+    "missing_cash",
+    "missing_debt_components",
+    "debt_scope_incomplete",
+    "component_overlap",
+    "point_in_time_mismatch",
+    "currency_mismatch",
+    "entity_scope_mismatch",
+    "statement_basis_mismatch",
+    "restricted_cash_ambiguity",
+    "financial_sector_not_applicable",
+    "source_conflict",
+    "unsupported_component_semantic"
+  ]
+}
