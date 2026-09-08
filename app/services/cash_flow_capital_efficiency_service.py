@@ -42,6 +42,7 @@ class Metric(StrEnum):
     PRETAX_INCOME = "pretax_income"
     TAX_EXPENSE = "tax_expense"
     INVENTORY = "inventory"
+    INVENTORY_COMPONENT = "inventory_component"
     TRADE_AR = "trade_accounts_receivable"
     BROAD_AR = "accounts_receivable_broad"
     TOTAL_AR = "total_accounts_receivable"
@@ -70,6 +71,10 @@ class Metric(StrEnum):
     LEASE_LIABILITIES_NONCURRENT = "lease_liabilities_noncurrent"
     INTEREST_BEARING_DEBT_TOTAL = "interest_bearing_debt_total"
     NET_DEBT = "net_debt"
+    CURRENT_ASSETS = "current_assets"
+    CURRENT_LIABILITIES = "current_liabilities"
+    CONTRACT_ASSETS = "contract_assets_context"
+    CONTRACT_LIABILITIES = "contract_liabilities_context"
     EXCESS_CASH = "excess_cash"
     OCF_MARGIN = "operating_cash_flow_margin"
     FCF_MARGIN = "free_cash_flow_margin_ppe"
@@ -153,6 +158,7 @@ class FinancialFact:
     source_available_at: date | None = None
     balance_scope: str | None = None
     net_gross_scope: str | None = None
+    comparison_kind: str | None = None
 
 
 def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
@@ -257,6 +263,11 @@ def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
         net_gross_scope=(
             str(row["net_gross_scope"])
             if row.get("net_gross_scope") is not None
+            else None
+        ),
+        comparison_kind=(
+            str(row["comparison_kind"])
+            if row.get("comparison_kind") is not None
             else None
         ),
     )

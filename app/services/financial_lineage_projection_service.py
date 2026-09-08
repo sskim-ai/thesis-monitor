@@ -52,6 +52,17 @@ _FACT_TYPE_BY_METRIC = {
         "balance_sheet_interest_bearing_debt_total"
     ),
     Metric.NET_DEBT: "balance_sheet_net_debt",
+    Metric.INVENTORY: "balance_sheet_inventory",
+    Metric.INVENTORY_COMPONENT: "balance_sheet_inventory_component",
+    Metric.TRADE_AR: "balance_sheet_trade_receivables",
+    Metric.BROAD_AR: "balance_sheet_broad_receivables_context",
+    Metric.TRADE_AP: "balance_sheet_trade_payables",
+    Metric.BROAD_AP: "balance_sheet_broad_payables_context",
+    Metric.CURRENT_ASSETS: "balance_sheet_current_assets",
+    Metric.CURRENT_LIABILITIES: "balance_sheet_current_liabilities",
+    Metric.CONTRACT_ASSETS: "balance_sheet_contract_assets_context",
+    Metric.CONTRACT_LIABILITIES: "balance_sheet_contract_liabilities_context",
+    Metric.BALANCE_DELTA: "balance_sheet_working_capital_balance_delta",
 }
 
 _CASH_FLOW_METRICS = frozenset({Metric.OCF, Metric.CAPEX, Metric.FCF})
@@ -115,6 +126,8 @@ def canonical_lineage_projection(fact: FinancialFact) -> dict[str, object]:
         payload["balance_scope"] = fact.balance_scope
     if fact.net_gross_scope is not None:
         payload["net_gross_scope"] = fact.net_gross_scope
+    if fact.comparison_kind is not None:
+        payload["comparison_kind"] = fact.comparison_kind
     payload["lineage_sha256"] = lineage_projection_digest(payload)
     return payload
 
@@ -215,6 +228,8 @@ def _fact_catalog_entry(
         fields["balance_scope"] = fact.balance_scope
     if fact.net_gross_scope is not None:
         fields["net_gross_scope"] = fact.net_gross_scope
+    if fact.comparison_kind is not None:
+        fields["comparison_kind"] = fact.comparison_kind
     if support_only:
         return with_fact_consumer_scopes(
             row,
