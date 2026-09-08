@@ -20,7 +20,7 @@ from app.services.kr_financial_lineage_service import (
 from app.services.opendart_xbrl_service import (
     XbrlFact,
     parse_xbrl_archive,
-    reconcile_xbrl_fact,
+    reconcile_xbrl_duration_fact,
 )
 
 
@@ -343,12 +343,78 @@ def _growth(
     return (current_value / comparison_value - 1) * 100
 
 
-def _xbrl_period(filing: Filing, statement_type: str) -> tuple[date, date]:
-    month = {"11013": 3, "11012": 6, "11014": 9, "11011": 12}[filing.report_code]
-    end = date(filing.business_year, month, 31 if month in {3, 12} else 30)
-    if statement_type == "BS":
-        return end, end
-    return date(filing.business_year, 1, 1), end
+def _xbrl_duration_metadata(
+    filing: Filing,
+    fact: XbrlFact,
+) -> dict[str, object] | None:
+    start = fact.context.period_start
+    end = fact.context.period_end
+    quarter = {"11013": 1, "11012": 2, "11014": 3}.get(filing.report_code)
+    if start is None or end is None or start > end:
+        return None
+    if filing.report_code == "11011":
+        period_type = "full_year"
+    elif quarter is not None:
+        period_type = "year_to_date_cumulative"
+    else:
+        return None
+    return {
+        "amount_period_type": period_type,
+        "amount_period_start": start.isoformat(),
+        "amount_period_end": end.isoformat(),
+        "duration_days": (end - start).days + 1,
+        "fiscal_year": filing.business_year,
+        "fiscal_quarter": quarter,
+        "period_source": "exact_opendart_xbrl_duration_context",
+    }
+
+
+def _reconcile_row_with_xbrl(
+    row: Mapping[str, object],
+    spec: FieldSpec,
+    filing: Filing,
+    facts: Iterable[XbrlFact],
+    *,
+    basis: str,
+    selected: bool,
+) -> dict[str, object] | None:
+    account_id = str(row.get("account_id") or "")
+    statement_basis = "consolidated" if basis == "CFS" else "separate"
+    if not account_id or str(row.get("currency") or "").upper() != "KRW":
+        return None
+    match = reconcile_xbrl_duration_fact(
+        facts,
+        taxonomy_element=account_id.split("_", maxsplit=1)[-1],
+        value=row.get(spec.source_column),
+        unit_ref="KRW",
+        statement_basis=statement_basis,
+        entity_identifier=filing.corp_code,
+    )
+    if match is None:
+        return None
+    period = _xbrl_duration_metadata(filing, match)
+    if period is None:
+        return None
+    lineage = _lineage(
+        row,
+        spec,
+        filing,
+        spec.source_column,
+        selected=selected,
+    )
+    lineage.update(
+        {
+            **period,
+            "lineage_verified": True,
+            "quality_state": "verified_usable",
+            "denial_reason": None,
+            "xbrl_context_ref": match.context_ref,
+            "xbrl_taxonomy_element": match.taxonomy_element,
+            "xbrl_entity_identifier": match.context.entity_identifier,
+            "xbrl_reconciled": True,
+        }
+    )
+    return lineage
 
 
 def reconcile_selection_with_xbrl(
@@ -360,42 +426,14 @@ def reconcile_selection_with_xbrl(
     if len(selection.candidates) != 1:
         return None
     row = selection.candidates[0]
-    account_id = str(row.get("account_id") or "")
-    if not account_id:
-        return None
-    period_start, period_end = _xbrl_period(filing, str(row.get("sj_div") or ""))
-    basis = "consolidated" if selection.basis == "CFS" else "separate"
-    match = reconcile_xbrl_fact(
+    return _reconcile_row_with_xbrl(
+        row,
+        spec,
+        filing,
         facts,
-        taxonomy_element=account_id.split("_", maxsplit=1)[-1],
-        period_start=period_start,
-        period_end=period_end,
-        unit_ref="KRW",
-        statement_basis=basis,
+        basis=selection.basis,
+        selected=True,
     )
-    if match is None or _number(match.value) != _number(row.get(spec.source_column)):
-        return None
-    lineage = _lineage(row, spec, filing, spec.source_column)
-    lineage.update(
-        {
-            "amount_period_type": (
-                "point_in_time"
-                if period_start == period_end
-                else "full_year"
-                if filing.report_code == "11011"
-                else "year_to_date_cumulative"
-            ),
-            "amount_period_start": period_start.isoformat(),
-            "amount_period_end": period_end.isoformat(),
-            "lineage_verified": True,
-            "quality_state": "verified_usable",
-            "denial_reason": None,
-            "xbrl_context_ref": match.context_ref,
-            "xbrl_taxonomy_element": match.taxonomy_element,
-            "xbrl_reconciled": True,
-        }
-    )
-    return lineage
 
 
 def promote_recovered_fields(
@@ -406,6 +444,7 @@ def promote_recovered_fields(
     xbrl_facts: Iterable[XbrlFact] = (),
 ) -> dict[str, object]:
     blocked = set(blocked_fields)
+    xbrl_values = tuple(xbrl_facts)
     fields: dict[str, dict[str, object]] = {}
     xbrl_attempts = 0
     xbrl_resolved = 0
@@ -419,7 +458,7 @@ def promote_recovered_fields(
         if selection.status in {"ambiguous", "needs_xbrl"} and selection.candidates:
             xbrl_attempts += 1
             lineage = reconcile_selection_with_xbrl(
-                selection, spec, filing, xbrl_facts
+                selection, spec, filing, xbrl_values
             )
             xbrl_resolved += lineage is not None
         if lineage is not None and name in blocked:
@@ -503,6 +542,29 @@ def promote_recovered_fields(
                 "thstrm_amount",
                 selected=False,
             )
+            component_reason = "cash_flow_period_requires_unique_xbrl_context"
+            aggregation_eligible = False
+            if classification == "property_plant_and_equipment":
+                xbrl_attempts += 1
+                resolved_component = _reconcile_row_with_xbrl(
+                    row,
+                    FieldSpec(
+                        "capex_component",
+                        (account_id,),
+                        (),
+                        ("CF",),
+                        xbrl_period_required=True,
+                    ),
+                    filing,
+                    xbrl_values,
+                    basis=basis,
+                    selected=False,
+                )
+                if resolved_component is not None:
+                    component_lineage = resolved_component
+                    component_reason = None
+                    aggregation_eligible = True
+                    xbrl_resolved += 1
             capex_components.append(
                 {
                     "classification": classification,
@@ -513,8 +575,8 @@ def promote_recovered_fields(
                     "amount": _number(row.get("thstrm_amount")),
                     "currency": row.get("currency"),
                     "lineage": component_lineage,
-                    "aggregation_eligible": False,
-                    "reason": "cash_flow_period_requires_unique_xbrl_context",
+                    "aggregation_eligible": aggregation_eligible,
+                    "reason": component_reason,
                 }
             )
     return {

@@ -44,6 +44,7 @@ from app.services.logical_condition_service import (
 from app.services.financial_context_adapter_service import (
     adapt_fact_catalog_financial_context,
 )
+from app.services.financial_lineage_projection_service import adapter_projection_rows
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -653,16 +654,24 @@ def build_decision_evidence_packet(
 
     fact_catalog = stock.get("fact_catalog")
     if isinstance(fact_catalog, list):
+        catalog_rows = [row for row in fact_catalog if isinstance(row, Mapping)]
         scoped_facts = project_fact_catalog_for_consumer(
-            [row for row in fact_catalog if isinstance(row, Mapping)],
+            catalog_rows,
             FactConsumer.STOCK_V2,
             default_scopes=STOCK_CONTEXT_CONSUMER_SCOPES,
+        )
+        financial_adapter_facts = adapter_projection_rows(
+            catalog_rows,
+            scoped_facts,
         )
         for row in scoped_facts:
             fact_id = str(row.get("fact_id") or "")
             if not fact_id:
                 continue
-            adapted_financial = adapt_fact_catalog_financial_context(row, scoped_facts)
+            adapted_financial = adapt_fact_catalog_financial_context(
+                row,
+                financial_adapter_facts,
+            )
             refs.append(
                 DecisionEvidenceRef(
                     ref_id=f"canonical:{fact_id}",
