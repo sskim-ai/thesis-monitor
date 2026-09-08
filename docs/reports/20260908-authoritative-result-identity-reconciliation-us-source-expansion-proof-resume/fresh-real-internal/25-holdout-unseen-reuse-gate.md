@@ -1,0 +1,15 @@
+# 25 Holdout Unseen Reuse Gate
+
+| Field | Value |
+| --- | --- |
+| contract | fresh-holdout-unseen-reuse-gate-v1 |
+| exclusion_registry_count | 149 |
+| future_unseen_holdout_reuse_allowed | 1 |
+| holdout_output_exposure_state | UNEXPOSED |
+| holdout_retirement_state | ACTIVE_UNEXPOSED |
+| holdout_semantic_revelation_state | NOT_MEASURED |
+| ordered_cohort | ["RMD", "NEON", "AA", "TDW", "066900", "079370", "247540", "183300", "014820", "318060", "106240", "263750", "170900", "039980", "026960", "251970"] |
+| prior_registry_overlap | [] |
+| status | PASS |
+
+Machine proof: `proofs/25-holdout-unseen-reuse-gate.json`.

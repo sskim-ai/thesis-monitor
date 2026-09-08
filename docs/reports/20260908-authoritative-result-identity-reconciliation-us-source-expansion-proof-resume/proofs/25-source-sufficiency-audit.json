@@ -1,0 +1,920 @@
+{
+  "contract": "fresh-final-source-sufficiency-audit-v1",
+  "directional_model_calls_on_source_insufficient": 0,
+  "rows": [
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 4,
+        "price_success_count": 4,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 7,
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "canonical_security_id": "us:ny:RMD",
+      "diagnostic_packet_sha256": "7aa40094dc9c3db7dc51cacdce58462eeedc93b46e5433ac102df758fd7d0b74",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "ffdc8ec2ecc96215a270462f6d6ae3ecce7ff4483fa7c5bf780b4664e532c77f",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/us/segment-01/us/07-RMD-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 7,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "e34475f86d51c5a2a7c037bcf07aaa6b9a48ac8827a8fbde2be0b6c1cbc3ac74",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0000943819",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "RMD"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 9,
+      "canonical_issuer_key": "sec:cik:0000087050",
+      "canonical_security_id": "us:nd:NEON",
+      "diagnostic_packet_sha256": "a819261d56019bb2bfdc540ebef389cc8777db8bcf9ee50c16fc113fab8caf4a",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "541a96a6b2408451e9399a3b40980143b482d01bd151ee8814c0c66e8432f32c",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/us/segment-01/us/09-NEON-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "0850b3adad57535aa9744a42787837ed79e289d04604b9c7332f8c982e7f425f",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0000087050",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "NEON"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 4,
+        "price_success_count": 4,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 10,
+      "canonical_issuer_key": "sec:cik:0001675149",
+      "canonical_security_id": "us:ny:AA",
+      "diagnostic_packet_sha256": "a608261bea01c57f4f595ab4cd1dfad5a1dcd31866422f25c9d5d078eedf0e6c",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "6fb07ebb1b3d6922bbc2f3e155d5fc7d2afe353c37834d3a1a1fec20774df434",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/us/segment-01/us/10-AA-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 10,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "6842b2e1d56900212bccec7d985674349580f9145a65aa9bec96fbe1122093f4",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0001675149",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "AA"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 5,
+        "price_success_count": 5,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 11,
+      "canonical_issuer_key": "sec:cik:0000098222",
+      "canonical_security_id": "us:ny:TDW",
+      "diagnostic_packet_sha256": "cf20741aef3c3a596acd7adc0fec2e3c4b710901e7c9464856754b07031aacc8",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": "4091556a69708e2e1128682c9b0bff728da18fae851f520a28f696f02e3d0a2a",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/us/segment-01/us/11-TDW-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 11,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "49e0eb4ef28ae0d626ed62078e1f7e10e57e95fff17aed8c2ff6b2eece1c7ed5",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0000098222",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "TDW"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 4,
+      "canonical_issuer_key": "opendart:corp:00303192",
+      "canonical_security_id": "kr:kosdaq:066900",
+      "diagnostic_packet_sha256": "950de9f4db16aee2169af11141436d759f8444bea157e95af745f7e69b8d58db",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "fa536a8b165ad909d8ab3430fce58317bcebdfa3ef442502c3871c1812498e9b",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/04-066900-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "4ab6672c78d233a5e49955a791e20236f6e53b2a6148056e6a102c14509b2525",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00303192",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003897",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "066900"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 5,
+      "canonical_issuer_key": "opendart:corp:00442570",
+      "canonical_security_id": "kr:kosdaq:079370",
+      "diagnostic_packet_sha256": "e39b4e1c60707b142d8b5c558295cda60bc8c3983bcb6baf05331c447cb45e2c",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "f3912df6900555214a0828428badf1a1712459c50f898c1972f507c01b930652",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/05-079370-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 5,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "a8dbaa8a5430984e554ee7eb350fdcb2ccaf107a0c7358ac7ac3ba9f3fdb6aa8",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00442570",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003337",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "079370"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 6,
+      "canonical_issuer_key": "opendart:corp:01160363",
+      "canonical_security_id": "kr:kosdaq:247540",
+      "diagnostic_packet_sha256": "4a6fb08aa78d676497565bb141a8a413ade3d83413d79a87821a948ffbd1b81f",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "8dc860878de7e3f60df682fac92b3321e3c84c603493d14497580622760ed9a6",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/06-247540-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 6,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "62cf83edae8630f728ba542fdef7d83555f13092c9b332a76e8b777d31c0ea33",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "01160363",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002535",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "247540"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 7,
+      "canonical_issuer_key": "opendart:corp:00997812",
+      "canonical_security_id": "kr:kosdaq:183300",
+      "diagnostic_packet_sha256": "cfa492945099408c4f7dbef4aa99238984754d47d934b6faa67983226393aec4",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "490f81cfaa749358eb7005bbc3dd16dccc3f7a0b55e74f27a51920d0d12568ee",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/07-183300-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 7,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "b79cbfd90ed50a4c54a60f3f91d98c051da0d16c6aa55fd88555eee7e0c3d1aa",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00997812",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003614",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "183300"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 9,
+      "canonical_issuer_key": "opendart:corp:00132637",
+      "canonical_security_id": "kr:kospi:014820",
+      "diagnostic_packet_sha256": "a7ddf1fb80e8e78437148a890b8c0242cacd57b1260cd7474e8b99d0d2596219",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "866dca0755d15b761060c23ede226b7b3b2520b3bc4fa7ed9e9a195cd08798be",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/09-014820-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "4468a2ddeec39d47c109279b5b9fde298d5cc211106f3c695fc2d06ce98a3f16",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00132637",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001261",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "014820"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 10,
+      "canonical_issuer_key": "opendart:corp:01565054",
+      "canonical_security_id": "kr:kosdaq:318060",
+      "diagnostic_packet_sha256": "be1650cb3a7ea5e1bb4dd874ccca75c2f282090f67ca8108f8638bf45b2d93b6",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "41be0da91d032c0e1f4dc244dec709e7172964be9a03cdf03da19a63c71a3455",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/10-318060-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 10,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "c97a54086105c069bb430c272b0b5dce64d9f26f9ef1fb4ef701ac9700392368",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "01565054",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002396",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "318060"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 11,
+      "canonical_issuer_key": "opendart:corp:00755739",
+      "canonical_security_id": "kr:kosdaq:106240",
+      "diagnostic_packet_sha256": "e17085f3281d3381396a1ceec5cae8fbdf44eb50febcb043ac644cb5a2f1704c",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "041b37333c139672b1906401b4a812a1f5ec3e18d131223ad83f97d92b3820fc",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/11-106240-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 11,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "849ee6b512c18d6ebdc3273f4f945a3e8469b79a0f347c81ed24df426fe80215",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00755739",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814004074",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "106240"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 12,
+      "canonical_issuer_key": "opendart:corp:01152470",
+      "canonical_security_id": "kr:kosdaq:263750",
+      "diagnostic_packet_sha256": "52fb70af0ea5092d990448acede8b43edd45377b342352cb9d708658d97e62e2",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "f185f3aae2c1d13776748c8c49f1f8da07032a679475531623d895ac89aecaf2",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/12-263750-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 12,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "b545a6d517fded2f75781089283baa44ea1d1e2b9bde046a77a5c5ebc76c75a5",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "01152470",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003642",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "263750"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 13,
+      "canonical_issuer_key": "opendart:corp:00956930",
+      "canonical_security_id": "kr:kospi:170900",
+      "diagnostic_packet_sha256": "930a1606c1fff3aa5075cf31ef5dbbb20f40886a96e3b68da5bf6f013ee74f9f",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "a7504d1754c151243ba069887cfabc46627d93ec0d09abf4be66c36f6f72ecc2",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/13-170900-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 13,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "4841f222a8f8cc8c1081d2894a781b2352bbda6d42eeba1ae9de9a1d45d9a971",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00956930",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260820000424",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "170900"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 14,
+      "canonical_issuer_key": "opendart:corp:00369213",
+      "canonical_security_id": "kr:kosdaq:039980",
+      "diagnostic_packet_sha256": "1bd34b2dda6a5a11f2e4b372b02ae3206dac3732cbc72f5ce69f880de452b7c0",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "c312c1a1ae2c4ef232a42c52655b890a09e1277a938f8d0928b4ed208f77b700",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/14-039980-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 14,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "567d3255e556e4a45c9398a9face96a9ab9efa90f2088d884bf9d8179fe71a73",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00369213",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003885",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "039980"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 15,
+      "canonical_issuer_key": "opendart:corp:00144395",
+      "canonical_security_id": "kr:kospi:026960",
+      "diagnostic_packet_sha256": "48ee00b41bf84f763c0b61046d04568971dda9a1c6ede5ce11c5f79b91a6a1b2",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "7addbae6392e45c498fd7d0599cdbe698c9a4bc8117d0340128bf798ad702c0a",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/15-026960-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 15,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "dd9322a3a74d015ef62b761b97faf72682a9f3362a77ed3af16697a30e5f2c11",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00144395",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001175",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "026960"
+    },
+    {
+      "base_provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_context_readiness": "READY",
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "price_timing_readiness": "READY",
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "candidate_rank": 16,
+      "canonical_issuer_key": "opendart:corp:00761059",
+      "canonical_security_id": "kr:kosdaq:251970",
+      "diagnostic_packet_sha256": "bd9d3f6fafa8b13c624dc1d2a64c1d93eededa091228ab970e78be3719ed8f59",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_SUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": "465bea9de2faa0b42afdcad06e09d37b9b3361f55bcb48efd023f7d5a68d9f78",
+      "full_packet_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "fundamental_source_sufficient": true,
+      "model_calls": 0,
+      "packet_path": "/private/tmp/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume/source-diagnostics/kr/segment-01/kr/16-251970-full.json",
+      "price_timing_input_readiness": "READY",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 16,
+      "security_accounting_basis_status": "PASS",
+      "selected": true,
+      "source_payload_sha256": "b1a4241001ebb6f90c4f943973acdf071744be5f8ce96209918c02503f96fb9a",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00761059",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003163",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "251970"
+    }
+  ],
+  "selected_sufficient_count": 16,
+  "status": "PASS"
+}
