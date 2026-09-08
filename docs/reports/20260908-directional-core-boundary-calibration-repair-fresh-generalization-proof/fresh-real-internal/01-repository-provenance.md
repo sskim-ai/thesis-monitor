@@ -1,0 +1,15 @@
+# 01 Repository Provenance
+
+| Field | Value |
+| --- | --- |
+| base_sha | 05c93cf7d768ddb09b670ca74dc69c2b698e5f6b |
+| branch | codex/20260908-directional-core-boundary-calibration-repair-fresh-generalization-proof |
+| contract | repository-provenance-v1 |
+| implementation_commit | 07bb37fb2b4f3de654ff0cceccf8f81ca0a7ce0c |
+| implementation_tree | a02106362e7023478a4965562d31f9ef542f0856 |
+| origin_main | d18e68b1e944d7749d093b08797fcd9498412680 |
+| status | PASS |
+| work_instruction_commit | 45bd95416ee09c494cca0af9cd73f7c1a6fe9f8c |
+| work_instruction_sha256 | fecc2a58ffc3e8e70d3891651ab1823872d76f7530cc1c532de3afa8cc9792f7 |
+
+Machine proof: `proofs/01-repository-provenance.json`.
