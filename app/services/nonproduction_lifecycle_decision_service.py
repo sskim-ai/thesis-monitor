@@ -148,6 +148,7 @@ class NonproductionDerivative(FrozenModel):
     lifecycle_validation: LifecycleCandidateValidation
     intents: tuple[NonproductionIntent, ...]
     lineage: dict[str, str]
+    structured_text: str
     text: str
     production_db_mutations: int = 0
     monitoring_registrations: int = 0
@@ -325,5 +326,6 @@ def build_nonproduction_derivative(
         lifecycle_validation=lifecycle_validation,
         intents=intents,
         lineage=lineage,
+        structured_text=rendered.text,
         text=text,
     )
