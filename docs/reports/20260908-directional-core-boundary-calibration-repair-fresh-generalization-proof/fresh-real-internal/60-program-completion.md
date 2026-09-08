@@ -1,0 +1,18 @@
+# 60 Program Completion
+
+| Field | Value |
+| --- | --- |
+| contract | directional-core-boundary-calibration-repair-fresh-generalization-proof-v1 |
+| formal_generalization | NOT_MEASURED |
+| kr_source_target_status | PASS |
+| next_scope | BOUNDED_SOURCE_COVERAGE_REVIEW |
+| proof_status | STOPPED_PRE_MODEL_SOURCE_FAILURE |
+| readiness | NOT_READY_SOURCE_COVERAGE_BLOCKED |
+| real_model_invocation_count | 0 |
+| run_results | {"a": "NOT_RUN", "b": "NOT_RUN", "c": "NOT_RUN", "first": "NOT_RUN"} |
+| source_configuration | {"canonical_env_override_configured": true, "contract": "risk-carried-source-configuration-audit-v1", "diagnosis": "EFFECTIVE_SOURCE_CONFIGURATION_AVAILABLE", "missing_required_settings": [], "required_setting_presence": {"OPENDART_API_KEY": true, "SEC_USER_AGENT": true}, "secret_values_recorded": 0, "status": "PASS", "working_directory_env_file_present": false} |
+| status | STOPPED |
+| stop_reason | US=FAIL;KR=PASS |
+| us_source_target_status | FAIL |
+
+Machine proof: `proofs/60-program-completion.json`.

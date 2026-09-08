@@ -1,0 +1,8 @@
+# 53-run-c-context-artifact-manifest
+
+| Field | Value |
+| --- | --- |
+| contract | "new-issuer-holdout-not-run-v1" |
+| reason | "US=FAIL;KR=PASS" |
+| run | "c" |
+| status | "NOT_RUN" |

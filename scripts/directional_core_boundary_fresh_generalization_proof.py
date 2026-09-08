@@ -992,7 +992,12 @@ def completion_document(args: argparse.Namespace) -> dict[str, object]:
         )
     else:
         readiness = str(state.get("readiness") or "NOT_READY")
-        next_scope = str(state.get("next_scope") or "BOUNDED_FAILURE_REVIEW")
+        upstream_completion = _internal_proof(args, 60)
+        next_scope = str(
+            state.get("next_scope")
+            or upstream_completion.get("next_scope")
+            or "BOUNDED_FAILURE_REVIEW"
+        )
         stop_reason = state.get("stop_reason")
     exposure = _internal_proof(args, 51)
     pause = read_json(args.output_root / "schedule-pause-observation.json")
@@ -1092,7 +1097,13 @@ def completion_document(args: argparse.Namespace) -> dict[str, object]:
         "fresh_ownership_generalization": ownership.get(
             "ownership_generalization_verdict", "NOT_MEASURED"
         ),
-        "fresh_message_quality_status": "PASS" if quality_pass else quality.get("status"),
+        "fresh_message_quality_status": (
+            "PASS"
+            if quality_pass
+            else quality.get("status")
+            if runs_pass
+            else "NOT_MEASURED"
+        ),
         "exposure_state": exposure.get("holdout_output_exposure_state"),
         "semantic_revelation_state": exposure.get(
             "holdout_semantic_revelation_state"
