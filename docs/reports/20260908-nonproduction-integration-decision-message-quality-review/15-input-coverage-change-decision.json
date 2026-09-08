@@ -1,0 +1,18 @@
+{
+  "archive_absent_domains": [
+    "same_period_prior_year_comparison",
+    "operating_cash_flow",
+    "ppe_capex_simple_cash_conversion",
+    "debt_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "available_but_dropped_domain_count": 0,
+  "contract": "m2-input-coverage-change-decision-v1",
+  "decision": "NO_BROAD_SOURCE_TO_CORE_CHANGE_IN_M2",
+  "model_revalidation_required_for_future_input_change": true,
+  "separate_design_domains": [
+    "non_operating_financial_income_effects"
+  ],
+  "status": "FROZEN"
+}

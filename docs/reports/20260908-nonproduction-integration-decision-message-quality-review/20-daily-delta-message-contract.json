@@ -1,0 +1,14 @@
+{
+  "activation": "NOT_ENABLED",
+  "contract": "m2-future-daily-delta-message-contract-v1",
+  "missing_refresh_is_no_material_change": false,
+  "price_wait_is_business_weakened": false,
+  "sections": [
+    "investment_logic_change",
+    "current_absolute_decision",
+    "new_buyer_and_holder",
+    "price_timing_when_available",
+    "next_checkpoints"
+  ],
+  "status": "FROZEN"
+}

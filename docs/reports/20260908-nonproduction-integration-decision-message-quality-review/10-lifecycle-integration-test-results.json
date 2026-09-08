@@ -1,0 +1,18 @@
+{
+  "contract": "m2-lifecycle-integration-test-results-v1",
+  "focused_test_result": "PASS:383 passed",
+  "required_cases": {
+    "baseline_not_daily_delta": "PASS",
+    "bootstrap_not_strengthened": "PASS",
+    "existing_new_shared_contract": "PASS",
+    "explicit_registration_intent": "PASS",
+    "file_only_no_queue_send": "PASS",
+    "incomplete_onboarding_inactive": "PASS",
+    "initial_absolute_not_daily_delta": "PASS",
+    "intent_idempotency": "PASS",
+    "missing_refresh_not_no_material_change": "PASS",
+    "price_only_not_thesis_delta": "PASS",
+    "unknown_not_negative": "PASS"
+  },
+  "status": "PASS"
+}

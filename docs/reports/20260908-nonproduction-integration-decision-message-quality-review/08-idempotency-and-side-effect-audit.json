@@ -1,0 +1,18 @@
+{
+  "assessment_persistence_mutations": 0,
+  "contract": "m2-idempotency-side-effect-audit-v1",
+  "deterministic_intents": [
+    "REGISTRATION_CONTINUATION",
+    "BASELINE",
+    "ONBOARDING_RESUME",
+    "ASSESSMENT",
+    "FILE_ONLY_DELIVERY"
+  ],
+  "monitoring_registrations": 0,
+  "notification_queue_writes": 0,
+  "production_db_mutations": 0,
+  "production_sends": 0,
+  "same_fixture_duplicate_intents": 0,
+  "status": "PASS",
+  "warning_mutations": 0
+}

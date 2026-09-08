@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-08 / m1-offline-closeout-v1
+**버전:** 2026-09-08 / m2-nonproduction-integration-review-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M1 완료 — M2 비운영 통합·판단/메시지 품질 결정 대기`
+**현재 위치:** `M2 완료 — M3 격리 lifecycle bootstrap 검증은 별도 승인 대기`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M1은 코드와 오프라인 증거 검토까지만 완료했다. 모델 출력 개선·실종목 일반화·production readiness는 확인하지 않았다.**
+**M2는 비운영 adapter·file-only 비교·보존 증거 판단까지만 완료했다. 모델 출력 개선·실종목 일반화·production readiness는 확인하지 않았다.**
 
 ---
 
@@ -91,7 +91,7 @@ thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-e
 | Unknown 교차필드 일관성 | 공통 invariant와 Core 조기 검사를 구현; NEON 원본은 Core에서 즉시 거절 | 수정 prompt의 실제 모델 출력 개선 |
 | Directional calibration | 수정된 계약과 과거 가상 반복 PASS 존재 | 실종목 경계 변동 해결 |
 | 메시지 품질 | FIRST/A/B 48개 전체 trace 완료; 기존 반복 advisory 유지 | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
-| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 read-only inventory 완료 | production 전체 연결이나 신규 등록 E2E 완성 |
+| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 재검증, lifecycle-qualified nonproduction adapter와 file-only renderer 검증 완료 | production 전체 연결이나 신규 등록 E2E 완성 |
 | Monitoring Bootstrap / Daily Delta 연결 | lifecycle 요구사항 확정 | 이번 proof로 등록·기준선·일일 변화 평가까지 검증됐다는 주장 |
 | 예약 운영 | S1의 2026-09-08 10:37:27 KST 관측에서 승인된 8개 중단 | 현재 서버를 방금 조회했다는 주장 |
 | 운영 반영 | 최신 작업의 live V2·등록·발송·production DB 변경 0 | 새 판단 구조의 live activation |
@@ -185,7 +185,7 @@ M1  Unknown 필드 일관성 / Core 조기 검사 수리
     [CODE + OFFLINE EVIDENCE REVIEW COMPLETE]
         ↓
 M2  기존 코드와 발송 없는 통합 / 판단·메시지 품질 개선
-    [다음 별도 작업지시와 승인 필요]
+    [NONPRODUCTION INTEGRATION + OFFLINE DECISION COMPLETE]
         ↓
 M3  명시적 신규 등록 → baseline → bootstrap → Daily Delta
     격리된 환경에서 lifecycle 연결 검증
@@ -253,9 +253,11 @@ Source PASS는 분석을 시작할 근거이지, 투자 매력이 충분하거�
 
 Prompt가 바뀌면 신규 hash·revision을 기록한다. Calibration ladder가 그대로라고 whole prompt hash까지 그대로라고 보고하지 않는다.
 
-### M2 — 다음 결정: 공통 판단 경로와 메시지의 비운영 통합
+### M2 — 완료: 공통 판단 경로와 메시지의 비운영 통합
 
-M1의 module inventory를 바탕으로 기존 기능을 재사용한다. 새 판단 엔진을 legacy DB 상태 변경이나 발송 경로에 즉시 연결하지 않는다.
+실행 문서: `20260908-nonproduction-integration-and-decision-message-quality-review.md`.
+
+M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판단 엔진을 legacy DB 상태 변경이나 발송 경로에 연결하지 않았다.
 
 주요 확인:
 - 기존 분석·모니터링 코드와 실험 runner 사이 실제 공유/중복 부분.
@@ -265,9 +267,22 @@ M1의 module inventory를 바탕으로 기존 기능을 재사용한다. 새 판
 - 메시지 반복이 입력 부족인지, 추론 일반화인지, renderer 중복인지.
 - 일곱 종목에서 제기한 raw-to-Core 정보 활용 범위의 재논의 필요성.
 
+완료 근거:
+- 기존 production/shared 경계 10/10을 현재 HEAD에서 다시 확인했다.
+- `INITIAL_ABSOLUTE`, `MONITORING_BASELINE`, `DAILY_DELTA`를 분리하는 pure nonproduction adapter를 추가했다.
+- 명시적 monitoring intent가 없으면 registration intent를 만들지 않고, onboarding 미완료는 monitoring-ready가 아님을 fixture로 확인했다.
+- bootstrap enrichment, missing refresh, price-only movement, Unknown을 각각 daily strengthened, no-material-change, fundamental delta, negative evidence로 바꾸는 경로를 차단했다.
+- 기존 DecisionEvidencePacket, Directional Core, Price-Timing, composition, validator, renderer 계약을 그대로 재사용했다. 모든 새 메시지는 `OFFLINE_NONPRODUCTION_DERIVATIVE`다.
+- 보존 16종목의 8개 domain을 source → normalized → packet → owned Core → rendered reasoning 순서로 감사했다. 보존 packet에서 Core로 떨어진 대상 domain은 0이다.
+- 기간 구분과 valuation-unavailable 맥락은 이미 Core에 공급된다. 전년 비교, OCF/PPE-CAPEX, debt/liquidity, working capital은 이 보존 cold-start archive에 없으며 Core drop으로 분류하지 않는다.
+- 명시적 non-operating/financial-income attribution은 operating income과 net income의 단순 차이로 만들 수 없어 별도 design decision으로 남겼다.
+- 48/48 보존 메시지와 반복 cluster 50개를 다시 추적했다. 실질 반복은 주로 model-owned 문장과 stable renderer wrapper 안의 model content이며, 희소·동형 입력이 함께 제약한다.
+- renderer가 종목별 재무 분석을 새로 쓰거나 synonym으로 반복을 숨기는 변경은 하지 않았다.
+- 실제/가상/judge model, provider, production DB, 등록, assessment, warning, queue, send, main merge, deploy, live V2, Night Futures, scheduler resume는 모두 0이다.
+
 일반 문장만 바꾸지 않는다. 입력/추론 변경이 필요하면 별도 bounded change로 결정한다. Stable output과 충분한 투자 근거는 별개의 합격 조건이다.
 
-종료 조건: 최소 통합 경로, 판단·메시지 변경 명세, 데이터 lineage, file-only 출력 비교, 운영 부작용 차단과 필요한 테스트가 갖춰짐. 이 단계도 새 지시서 없이 실제 모델·운영 작업을 자동 실행하지 않는다.
+종료 조건은 충족했다. 단, lifecycle bootstrap의 실제 격리 연결과 새 model emission은 각각 `NOT_MEASURED`다. 새 지시서 없이 M3, 실모델 proof, production 작업을 자동 실행하지 않는다.
 
 ### M3 — 신규 편입과 기존 보유 종목의 lifecycle 연결
 
@@ -464,13 +479,13 @@ Master 갱신 때마다 기록:
 
 ## 11. 다음 한 작업과 그다음 결정
 
-**완료한 작업:** M1의 Unknown 계약 수리 + 조기 Core validation + 보존 증거 offline review.
+**완료한 작업:** M1 Unknown 계약 수리와 M2 nonproduction lifecycle/decision/message-quality review.
 
-**다음 한 작업:** `NONPRODUCTION_INTEGRATION_AND_DECISION_MESSAGE_QUALITY_REVIEW`.
-- 기존 10개 경계 inventory를 기준으로 lifecycle-qualified evidence → 공통 decision packet의 최소 adapter를 설계·검증한다.
-- initial absolute judgment와 Daily Delta를 분리하고, 등록·baseline·assessment·delivery idempotency를 비운영 fixture에서 검증한다.
-- 48개 메시지에서 확인된 반복과 source-to-Core 누락을 입력 부족·모델 reasoning·renderer ownership으로 나눠 변경 결정을 먼저 동결한다.
-- 실제 모델 실행, 신규 cohort, production DB/등록/발송, main 배포, 예약 재개는 별도 승인 전 0이다.
+**권장 다음 한 작업, 아직 미승인:** `NONPRODUCTION_MONITORING_BOOTSTRAP_AND_DAILY_DELTA_LIFECYCLE_INTEGRATION`.
+- 격리된 test DB 또는 mock repository에서 명시적 등록 → pending onboarding → baseline → post-cutoff Daily Delta를 검증한다.
+- 이번 M2 adapter의 lifecycle provenance와 기존 production lifecycle의 idempotency key를 연결하되 production DB·등록·발송은 하지 않는다.
+- source archive에 없는 재무 domain 보강과 Directional reasoning specificity 변경은 M3에 몰래 묶지 않고 별도 사용자 결정을 받는다.
+- 새 model proof는 input/reasoning 계약이 별도로 동결된 뒤에만 승인 범위로 실행한다.
 
 **새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
 
@@ -489,8 +504,11 @@ Master 갱신 때마다 기록:
 | Production scheduler 변경 무조건 0 | 사용자 승인 8개 중단 유지에 한정한 예외와 실제 건수 보고 |
 | 자동 live 재개 가능성 | 명시적 사용자 재개 승인 전까지 0 |
 | 새 기능 부족이면 universe부터 확대 | 새로운 직접 blocker가 확인되지 않으면 기존 기반 수리 반복 금지 |
+| M2에서 source-to-Core 누락을 가정 | 보존 8-domain 감사에서 packet→Core drop 0; archive 부재와 Core drop을 분리 |
+| 반복 문장을 renderer synonym으로 완화 | model-owned reasoning, wrapper, input equivalence를 분리하고 renderer ownership 유지 |
+| Initial/Baseline/Daily를 같은 change 필드로 표현 가능 | lifecycle mode와 baseline/cutoff/refresh provenance를 명시하고 잘못된 delta 승격 차단 |
 
-이번 갱신은 M1 구현과 offline evidence review의 실제 결과를 반영한다. 완료 의미는 `CODE_AND_OFFLINE_EVIDENCE_REVIEW_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
+이번 갱신은 M2 비운영 통합과 보존 증거 판단 결과를 반영한다. 완료 의미는 `M2_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다.
 
 ---
 
