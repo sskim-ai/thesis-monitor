@@ -48,6 +48,7 @@ def test_directional_core_prompt_uses_shared_ordinal_contract() -> None:
     assert "overall_direction is BUY when buy >= 6" in prompt
     assert "SELL when sell >= 6" in prompt
     assert "buy and sell sum to 10 in 0.5 increments" in prompt
+    assert "keep it empty for CONFIDENCE_LIMIT and CONFIRMATION_REQUIRED" in prompt
 
 
 def test_fictional_fixture_manifest_covers_required_calibration_classes() -> None:

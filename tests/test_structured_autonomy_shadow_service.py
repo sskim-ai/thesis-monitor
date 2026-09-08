@@ -52,6 +52,7 @@ from app.services.structured_autonomy_shadow_service import (
     structured_autonomy_message_quality,
     structured_actionability_contradictions,
     trade_language_semantic,
+    unknown_treatment_consistency_issues,
     validate_structured_autonomy_candidate,
 )
 from app.services.logical_condition_service import (
@@ -370,6 +371,67 @@ def test_directional_unknown_requires_economic_absence_basis() -> None:
     )
 
     assert "unknown_directional_negative_without_economic_basis" in result.errors
+
+
+def test_unknown_consistency_allows_context_refs_without_negative_basis() -> None:
+    unknown = UnknownTreatment(
+        summary="과거 사실은 맥락이지만 현재 확인이 필요합니다.",
+        evidence_refs=("ref:earnings",),
+        treatment="CONFIRMATION_REQUIRED",
+        directional_negative_basis=(),
+    )
+
+    issues = unknown_treatment_consistency_issues(
+        (unknown,), evidence_categories={"ref:earnings": "earnings"}
+    )
+
+    assert issues == ()
+
+
+def test_unknown_consistency_reports_cross_field_path() -> None:
+    unknown = UnknownTreatment(
+        summary="현재 확인이 필요합니다.",
+        evidence_refs=("ref:earnings",),
+        treatment="CONFIDENCE_LIMIT",
+        directional_negative_basis=("ref:earnings",),
+    )
+
+    issues = unknown_treatment_consistency_issues(
+        (unknown,), evidence_categories={"ref:earnings": "earnings"}
+    )
+
+    assert [issue.code for issue in issues] == [
+        "unknown_nonnegative_has_directional_basis"
+    ]
+    assert issues[0].field_path == (
+        "unknown_treatments[0].directional_negative_basis"
+    )
+
+
+def test_unknown_consistency_accepts_proven_negative_fact_but_not_missing_only() -> None:
+    negative = UnknownTreatment(
+        summary="확인된 손실은 방향성 부정 근거입니다.",
+        evidence_refs=("ref:earnings",),
+        treatment="DIRECTIONAL_NEGATIVE",
+        directional_negative_basis=("ref:earnings",),
+    )
+    missing = negative.model_copy(
+        update={
+            "summary": "자료 부재만 확인됩니다.",
+            "evidence_refs": ("ref:unknown",),
+            "directional_negative_basis": ("ref:unknown",),
+        }
+    )
+
+    assert unknown_treatment_consistency_issues(
+        (negative,), evidence_categories={"ref:earnings": "earnings"}
+    ) == ()
+    issues = unknown_treatment_consistency_issues(
+        (missing,), evidence_categories={"ref:unknown": "unknown"}
+    )
+    assert [issue.code for issue in issues] == [
+        "unknown_directional_negative_without_non_unknown_evidence"
+    ]
 
 
 def test_biotech_sell_needs_more_than_sector_normal_burn() -> None:

@@ -37,6 +37,7 @@ from app.services.structured_autonomy_shadow_service import (
     explicit_actionable_trade_directives,
     render_structured_autonomy_message,
     structured_autonomy_message_quality,
+    unknown_treatment_consistency_issues,
     validate_structured_autonomy_candidate,
 )
 from scripts import directional_core_price_timing_holdout as frozen
@@ -1976,7 +1977,15 @@ def core_partial_audit(
 ) -> dict[str, object]:
     details = []
     for core in rows:
-        domains = owned[core.ticker].domain_by_ref
+        owned_packet = owned[core.ticker]
+        domains = owned_packet.domain_by_ref
+        evidence_categories = {
+            row.ref.ref_id: row.ref.category.value for row in owned_packet.evidence
+        }
+        unknown_issues = unknown_treatment_consistency_issues(
+            core.unknown_treatments,
+            evidence_categories=evidence_categories,
+        )
         refs = frozen._refs(core.model_dump(mode="json"))
         price_refs = sorted(
             ref
@@ -2006,6 +2015,7 @@ def core_partial_audit(
             errors.append("buy_without_nonprice_material_anchor")
         if sell_missing:
             errors.append("sell_without_nonprice_material_anchor")
+        errors.extend(issue.code for issue in unknown_issues)
         details.append(
             {
                 "ticker": core.ticker,
@@ -2016,6 +2026,10 @@ def core_partial_audit(
                 "supply_directional_core_usage": len(supply_refs),
                 "buy_without_nonprice_material_anchor": int(buy_missing),
                 "sell_without_nonprice_material_anchor": int(sell_missing),
+                "unknown_treatment_consistency_failure_count": len(unknown_issues),
+                "unknown_treatment_consistency_issues": [
+                    issue.model_dump(mode="json") for issue in unknown_issues
+                ],
                 "directional_model_calls_on_source_insufficient": 0,
                 "price_only_directional_model_calls": 0,
                 "final_direction_owner": "DIRECTIONAL_CORE",

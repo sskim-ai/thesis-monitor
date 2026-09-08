@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from app.services.direction_timing_ownership_service import DirectionalUnknown
 from scripts import new_issuer_holdout_selection_ownership_proof as proof
 from scripts import synthetic_canary_fixture_repair_ownership_resume as synthetic
 
@@ -125,6 +126,181 @@ def test_core_partial_audit_accepts_frozen_synthetic_core() -> None:
     assert result["timing_renderer_gates"] == "NOT_MEASURED"
     assert result["rows"][0]["directional_core_price_technical_refs"] == 0
     assert result["rows"][0]["directional_core_supply_refs"] == 0
+
+
+def test_core_partial_audit_rejects_historical_neon_unknown_field_shape() -> None:
+    owned = synthetic.fictional_owned("SYNTHETIC_NEON_CAPTURE", market="us")
+    core = synthetic.fixture_core(owned)
+    earnings = f"fictional:{core.ticker}:earnings"
+    business = f"fictional:{core.ticker}:business"
+    historical_shape = DirectionalUnknown(
+        summary=(
+            "과거 손실은 부정 근거지만 공식 실적의 현재성이 낮아 "
+            "후속 공시 확인이 필요하다."
+        ),
+        evidence_refs=(earnings, business),
+        treatment="CONFIRMATION_REQUIRED",
+        directional_negative_basis=(earnings,),
+    )
+    captured_derivative = core.model_copy(
+        update={"unknown_treatments": (historical_shape,)}
+    )
+
+    result = proof.core_partial_audit(
+        (captured_derivative,), {captured_derivative.ticker: owned}
+    )
+
+    row = result["rows"][0]
+    assert result["status"] == "FAIL"
+    assert row["errors"] == ["unknown_nonnegative_has_directional_basis"]
+    assert row["unknown_treatment_consistency_issues"][0]["field_path"] == (
+        "unknown_treatments[0].directional_negative_basis"
+    )
+
+
+def test_core_partial_audit_preserves_negative_fact_and_separate_unknown() -> None:
+    owned = synthetic.fictional_owned("SYNTHETIC_NEGATIVE_FACT", market="us")
+    core = synthetic.fixture_core(owned)
+    earnings = f"fictional:{core.ticker}:earnings"
+    unknown = f"fictional:{core.ticker}:unknown"
+    candidate = core.model_copy(
+        update={
+            "unknown_treatments": (
+                DirectionalUnknown(
+                    summary="확인된 손실은 방향성 부정 근거입니다.",
+                    evidence_refs=(earnings,),
+                    treatment="DIRECTIONAL_NEGATIVE",
+                    directional_negative_basis=(earnings,),
+                ),
+                DirectionalUnknown(
+                    summary="향후 실행은 후속 확인이 필요합니다.",
+                    evidence_refs=(unknown,),
+                    treatment="CONFIRMATION_REQUIRED",
+                    directional_negative_basis=(),
+                ),
+            )
+        }
+    )
+
+    result = proof.core_partial_audit((candidate,), {candidate.ticker: owned})
+
+    assert result["status"] == "PASS"
+    assert result["rows"][0]["unknown_treatment_consistency_failure_count"] == 0
+
+
+def test_core_partial_audit_rejects_missing_only_as_directional_negative() -> None:
+    owned = synthetic.fictional_owned("SYNTHETIC_MISSING_NEGATIVE", market="us")
+    core = synthetic.fixture_core(owned)
+    unknown = f"fictional:{core.ticker}:unknown"
+    candidate = core.model_copy(
+        update={
+            "unknown_treatments": (
+                DirectionalUnknown(
+                    summary="자료 부재만 확인됩니다.",
+                    evidence_refs=(unknown,),
+                    treatment="DIRECTIONAL_NEGATIVE",
+                    directional_negative_basis=(unknown,),
+                ),
+            )
+        }
+    )
+
+    result = proof.core_partial_audit((candidate,), {candidate.ticker: owned})
+
+    assert result["status"] == "FAIL"
+    assert result["rows"][0]["errors"] == [
+        "unknown_directional_negative_without_non_unknown_evidence"
+    ]
+
+
+def test_execute_run_stops_before_timing_after_invalid_core(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    owned = synthetic.fictional_owned("SYNTHETIC_EARLY_STOP", market="us")
+    core = synthetic.fixture_core(owned)
+    earnings = f"fictional:{core.ticker}:earnings"
+    invalid = core.model_copy(
+        update={
+            "unknown_treatments": (
+                DirectionalUnknown(
+                    summary="현재 확인이 필요합니다.",
+                    evidence_refs=(earnings,),
+                    treatment="CONFIRMATION_REQUIRED",
+                    directional_negative_basis=(earnings,),
+                ),
+            )
+        }
+    )
+    output_root = tmp_path / "offline-injected-run"
+    calls: list[tuple[str, int]] = []
+
+    class NeverNetworkAdapter:
+        def invoke(self, **kwargs: object) -> dict[str, object]:
+            raise AssertionError("offline early-stop proof must not call transport")
+
+    def inject_captured_core(**kwargs: object) -> tuple[dict[str, object], Path]:
+        stage = str(kwargs["stage"])
+        batch_number = int(kwargs["batch_number"])
+        calls.append((stage, batch_number))
+        if len(calls) != 1 or stage != "DIRECTIONAL_CORE":
+            raise AssertionError("no context may follow the invalid Core")
+        context = proof.context_directory(output_root, "a", stage, batch_number)
+        context.mkdir(parents=True)
+        output = context / "output.raw.json"
+        _write_json(output, {"candidates": [invalid.model_dump(mode="json")]})
+        manifest = {
+            "contract": "offline-captured-context-v1",
+            "per_context_partial_semantic_audit_status": "NOT_MEASURED",
+        }
+        _write_json(context / "context_manifest.json", manifest)
+        return manifest, output
+
+    monkeypatch.setattr(proof, "invoke_model_context", inject_captured_core)
+    monkeypatch.setattr(proof.runtime_identity, "load_binding", lambda path: object())
+    monkeypatch.setattr(
+        proof.runtime_identity,
+        "validate_output_identity",
+        lambda value, binding: {"status": "PASS"},
+    )
+    monkeypatch.setattr(
+        proof.frozen,
+        "_resolve_batch_candidates",
+        lambda raw, **kwargs: ((invalid,), {}),
+    )
+    state = {
+        "program_generation_id": "offline-generation",
+        "directional_context_count": 0,
+        "price_timing_context_count": 0,
+        "renderer_context_count": 0,
+        "per_context_semantic_failure_count": 0,
+    }
+    args = type("Args", (), {"output_root": output_root})()
+
+    with pytest.raises(
+        proof.SemanticStop,
+        match="core_partial_semantic_audit_failed:a:1",
+    ):
+        proof.execute_run(
+            args=args,
+            state=state,
+            adapter=NeverNetworkAdapter(),
+            run="a",
+            cohort=(invalid.ticker,),
+            contexts={},
+            evidence={},
+            owned={invalid.ticker: owned},
+            core_aliases={},
+            timing_aliases={},
+            price_maps={},
+            stocks={},
+        )
+
+    assert calls == [("DIRECTIONAL_CORE", 1)]
+    assert state["directional_context_count"] == 1
+    assert state["price_timing_context_count"] == 0
+    assert state["renderer_context_count"] == 0
+    assert state["per_context_semantic_failure_count"] == 1
+    assert not (output_root / "model-contexts/A/PRICE_TIMING").exists()
 
 
 def test_secret_scan_blocks_token_shapes_without_echoing_values(tmp_path: Path) -> None:

@@ -5,7 +5,7 @@ import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from enum import StrEnum
-from typing import Literal
+from typing import Literal, Protocol
 
 from pydantic import Field, model_validator
 
@@ -265,6 +265,68 @@ class UnknownTreatment(FrozenModel):
     treatment: UnknownTreatmentKind
     directional_negative_basis: tuple[str, ...] = Field(max_length=6)
     semantic: ClaimSemanticMetadata = Field(default_factory=_unknown_metadata)
+
+
+class UnknownTreatmentLike(Protocol):
+    treatment: UnknownTreatmentKind
+    evidence_refs: Sequence[str]
+    directional_negative_basis: Sequence[str]
+
+
+class UnknownTreatmentConsistencyIssue(FrozenModel):
+    code: str
+    field_path: str
+    unknown_index: int
+    treatment: UnknownTreatmentKind
+    evidence_refs: tuple[str, ...]
+
+
+def unknown_treatment_consistency_issues(
+    unknowns: Sequence[UnknownTreatmentLike],
+    *,
+    evidence_categories: Mapping[str, str] | None = None,
+) -> tuple[UnknownTreatmentConsistencyIssue, ...]:
+    issues: list[UnknownTreatmentConsistencyIssue] = []
+    for index, unknown in enumerate(unknowns):
+        basis = tuple(unknown.directional_negative_basis)
+        field_path = f"unknown_treatments[{index}].directional_negative_basis"
+        if unknown.treatment == "DIRECTIONAL_NEGATIVE" and not basis:
+            issues.append(
+                UnknownTreatmentConsistencyIssue(
+                    code="unknown_directional_negative_without_economic_basis",
+                    field_path=field_path,
+                    unknown_index=index,
+                    treatment=unknown.treatment,
+                    evidence_refs=basis,
+                )
+            )
+        if unknown.treatment != "DIRECTIONAL_NEGATIVE" and basis:
+            issues.append(
+                UnknownTreatmentConsistencyIssue(
+                    code="unknown_nonnegative_has_directional_basis",
+                    field_path=field_path,
+                    unknown_index=index,
+                    treatment=unknown.treatment,
+                    evidence_refs=basis,
+                )
+            )
+        if unknown.treatment != "DIRECTIONAL_NEGATIVE" or evidence_categories is None:
+            continue
+        if not any(
+            evidence_categories.get(ref) is not None
+            and str(evidence_categories[ref]) != "unknown"
+            for ref in basis
+        ):
+            issues.append(
+                UnknownTreatmentConsistencyIssue(
+                    code="unknown_directional_negative_without_non_unknown_evidence",
+                    field_path=field_path,
+                    unknown_index=index,
+                    treatment=unknown.treatment,
+                    evidence_refs=basis,
+                )
+            )
+    return tuple(issues)
 
 
 class NewBuyerViewV2(FrozenModel):
@@ -1096,16 +1158,20 @@ def validate_structured_autonomy_candidate(
 
     evidence_refs = {row.ref_id for row in packet.evidence}
     valid_refs = evidence_refs | allowed_price_refs(price_map)
+    evidence_categories = {row.ref_id: row.category.value for row in packet.evidence}
     cited: list[str] = []
     for claim in _claim_sequence(candidate):
         cited.extend(claim.evidence_refs)
     for unknown in candidate.unknown_treatments:
         cited.extend(unknown.evidence_refs)
         cited.extend(unknown.directional_negative_basis)
-        if unknown.treatment == "DIRECTIONAL_NEGATIVE" and not unknown.directional_negative_basis:
-            errors.append("unknown_directional_negative_without_economic_basis")
-        if unknown.treatment != "DIRECTIONAL_NEGATIVE" and unknown.directional_negative_basis:
-            errors.append("unknown_nonnegative_has_directional_basis")
+    errors.extend(
+        issue.code
+        for issue in unknown_treatment_consistency_issues(
+            candidate.unknown_treatments,
+            evidence_categories=evidence_categories,
+        )
+    )
     buyer = candidate.new_buyer_view
     holder = candidate.holder_view
     cited.extend(buyer.pullback_entry_basis)
@@ -1116,16 +1182,6 @@ def validate_structured_autonomy_candidate(
     cited.extend(holder.business_invalidation_condition_refs)
     if any(ref not in valid_refs for ref in cited):
         errors.append("unsupported_evidence_ref")
-
-    evidence_categories = {row.ref_id: row.category.value for row in packet.evidence}
-    for unknown in candidate.unknown_treatments:
-        if unknown.treatment != "DIRECTIONAL_NEGATIVE":
-            continue
-        if not any(
-            evidence_categories.get(ref) not in {None, "unknown"}
-            for ref in unknown.directional_negative_basis
-        ):
-            errors.append("unknown_directional_negative_without_non_unknown_evidence")
 
     pullbacks = allowed_pullback_zones(price_map)
     confirmations = allowed_confirmation_levels(price_map)
