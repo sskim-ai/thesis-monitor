@@ -1,0 +1,7 @@
+{
+  "contract": "m7-source-sufficiency-no-change-decision-v1",
+  "decision": "UNCHANGED",
+  "new_universal_gate_count": 0,
+  "projection_presence_changes_directional_eligibility": false,
+  "semantic_change_count": 0
+}

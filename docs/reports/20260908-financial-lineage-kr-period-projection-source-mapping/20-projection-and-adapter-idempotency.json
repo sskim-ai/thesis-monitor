@@ -1,0 +1,12 @@
+{
+  "adapter_context_digest_first": "3967dcb2a50ec74e3babf2757ae64dc29f1faef78c5402362dbe727c0ced593c",
+  "adapter_context_digest_second": "3967dcb2a50ec74e3babf2757ae64dc29f1faef78c5402362dbe727c0ced593c",
+  "adapter_status": "PASS",
+  "contract": "m7-projection-and-adapter-idempotency-v1",
+  "duplicate_fact_id_count": 0,
+  "projection_digest_first": "5dfd1801fe526fab58f9b2eb47d79ef8a6b2fc410ddfb18912e86d19cf62f6aa",
+  "projection_digest_second": "5dfd1801fe526fab58f9b2eb47d79ef8a6b2fc410ddfb18912e86d19cf62f6aa",
+  "projection_input_fact_count": 606,
+  "projection_status": "PASS",
+  "runtime_timestamp_in_identity": false
+}

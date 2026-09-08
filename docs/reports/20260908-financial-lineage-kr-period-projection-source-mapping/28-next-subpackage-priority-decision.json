@@ -1,0 +1,8 @@
+{
+  "contract": "m7-next-subpackage-priority-decision-v1",
+  "decision": "SOURCE_CLASS_FINANCIAL_MAPPING_IMPLEMENTATION",
+  "higher_risk_domains_follow_as_separate_subpackages": true,
+  "if_truly_ticker_specific": "DEFER_DO_NOT_IMPLEMENT_TICKER_EXCEPTION",
+  "reason": "remaining low-risk HUT, foreign-issuer and KR canonical promotion gaps must first be classified as generic source classes",
+  "ticker_specific_exception_allowed": false
+}

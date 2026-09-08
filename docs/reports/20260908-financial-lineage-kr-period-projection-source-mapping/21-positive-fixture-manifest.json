@@ -1,0 +1,117 @@
+{
+  "cases": [
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "prior_projection_qtd_current_and_prior_qtd",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "prior_projection_ytd_current_and_prior_ytd",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "prior_projection_fy_current_and_prior_fy",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "point_in_time_prior_year_comparator",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "canonical_prior_fact_recursive_closure",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "canonical_prior_fact_deduplication",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ocf_q1_qtd_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ocf_qtd_difference_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ocf_ttm_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ppe_q1_qtd_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ppe_qtd_difference_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "derived_ppe_ttm_lineage",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "fcf_with_derived_period_inputs",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "phase9_606_fact_projection",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "phase9_164_compatible_comparisons",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "SYNTHETIC_CONTRACT_FIXTURE",
+      "fixture_id": "kr_ocf_ytd_exact_noncalendar_xbrl",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "SYNTHETIC_CONTRACT_FIXTURE",
+      "fixture_id": "kr_ocf_fy_exact_noncalendar_xbrl",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "SYNTHETIC_CONTRACT_FIXTURE",
+      "fixture_id": "kr_ppe_ytd_exact_noncalendar_xbrl",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "SYNTHETIC_CONTRACT_FIXTURE",
+      "fixture_id": "kr_ppe_fy_exact_noncalendar_xbrl",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "SYNTHETIC_CONTRACT_FIXTURE",
+      "fixture_id": "kr_ocf_ppe_simple_conversion_synthetic_contract",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "projection_digest_determinism",
+      "status": "PASS"
+    },
+    {
+      "evidence_class": "OFFLINE_REPOSITORY_FIXTURE",
+      "fixture_id": "compact_ai_context_non_leak",
+      "status": "PASS"
+    }
+  ],
+  "contract": "m7-positive-fixture-manifest-v1",
+  "fixture_count": 22,
+  "pass_count": 22
+}

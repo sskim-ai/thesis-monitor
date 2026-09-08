@@ -1,0 +1,14 @@
+{
+  "automatic_monitoring_resume": 0,
+  "codex_automation_count": 4,
+  "codex_automation_state": "PAUSED",
+  "contract": "m7-schedule-pause-observation-v1",
+  "end_observed_at_utc": "2026-09-08T13:03:09Z",
+  "launch_agent_count": 4,
+  "launch_agent_state": "DISABLED",
+  "observed_paused_schedule_count": 8,
+  "scheduler_mutation_count": 0,
+  "start_state": "8_OF_8_PAUSED_OR_DISABLED",
+  "start_time_basis": "observed_before_implementation_timestamp_not_preserved",
+  "work_instruction_commit_time_upper_bound": "2026-09-08T12:12:24Z"
+}

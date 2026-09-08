@@ -361,6 +361,16 @@ KR OpenDART OCF/PPE는 정확한 duration period가 없는 경우 계속 차단�
 
 내부 packet instance에는 eligible `financial_context`가 생기지만 compact AI context는 before/after byte-equivalent다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, 모델 호출, provider fetch, DB·queue·발송·deploy·예약 상태는 변하지 않았다. focused 482개와 전체 2887개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
 
+### M7 — 완료: 금융 lineage와 KR duration-period projection
+
+`canonical-financial-lineage-projection-v1`을 추가해 선택된 canonical cash-flow Fact와 compatible prior-year Fact, 그리고 기존 derived Fact의 ordered input closure를 packet builder의 내부 adapter 입력으로 projection한다. support-only 행은 `ARCHIVE_ONLY`이고 prose·interpretation·numeric registry 및 compact AI context에는 노출되지 않는다. formula, derivation version, ordered input Fact/source ref, fiscal period, currency/unit, issuer/entity/statement basis와 source occurrence identity를 digest로 고정하며 누락·충돌·순서 불일치는 계속 fail-closed한다.
+
+보존된 Phase 9 canonical 606개 행을 새 source 계산 없이 재검증한 결과 606개 모두 typed context로 재현됐다. OCF 224, PPE 191, OCF-PPE 191이며 compatible prior-year comparison은 164개다. M6에서 차단됐던 derived-period OCF/PPE 189개와 그 입력 lineage가 필요했던 OCF-PPE 87개가 기존 formula/version/input identity projection으로 해소됐다. 새 derivation, SEC/OpenDART taxonomy mapping, ticker-specific 예외는 0개다.
+
+OpenDART duration mapper는 XBRL의 exact entity, taxonomy, amount, KRW unit, statement basis, duration start/end가 한 occurrence로 일치할 때만 기간을 채운다. 보고서 코드만으로 1월 1일이나 분기 시작일을 추정하던 경로는 제거했다. 비달력 결산을 포함한 synthetic contract fixture는 통과했지만 저장소에는 실제 KR canonical cash-flow Fact가 없으므로 issuer coverage는 여전히 `SOURCE_PRESENT_BUT_PERIOD_BLOCKED`다. KR OCF 7개와 보험 제외 PPE 6개의 실제 period block은 유지하며, 이는 mapper 기능과 시장 coverage를 분리한 결과다.
+
+compact AI context, Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, model/provider, production DB·queue·send·deploy는 변하지 않았다. focused 252개와 전체 2920개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 승인된 8개 모니터링 경로는 중단 상태를 유지한다.
+
 ### 후속 — 명시적 재개와 일일 운영
 
 사용자가 재개를 요청할 때만 승인된 US/KR 예약을 다시 활성화한다.
@@ -504,18 +514,19 @@ Master 갱신 때마다 기록:
 5. 최신 운영 관측 시각과 운영 변경 유무.
 6. 후속 phase의 진입 조건.
 
-이 문서의 M0~M6 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
+이 문서의 M0~M7 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
 
 ---
 
-## 11. M6 결론과 다음 한 작업
+## 11. M7 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현.
 
-**권장 다음 한 작업, 아직 미승인:** `ADDITIONAL_FINANCIAL_SOURCE_MAPPING_SUBPACKAGES`.
-- derived-period OCF/PPE의 완전한 derivation metadata와 compatible prior-year Fact projection을 먼저 검토한다.
-- KR OpenDART duration period, HUT PPE, SKHY 공식 OCF/PPE의 부분 coverage를 별도 bounded mapping으로 다룬다.
-- 그 뒤 debt/liquidity·working capital·non-operating mapping을 독립 subpackage로 나눈다.
+**권장 다음 한 작업, 아직 미승인:** `SOURCE_CLASS_FINANCIAL_MAPPING_IMPLEMENTATION`.
+- HUT PPE와 SKHY foreign-issuer OCF/PPE가 공통 source-class normalization으로 해결 가능한지 먼저 분류한다.
+- truly issuer-specific한 경우 ticker 예외를 만들지 않고 `DEFER / DO_NOT_IMPLEMENT_TICKER_EXCEPTION`으로 남긴다.
+- 실제 KR canonical promotion에 필요한 generic OpenDART source mapping도 동일한 원칙으로 다루되 period를 추정하지 않는다.
+- 그 뒤 debt/liquidity·working capital·non-operating mapping을 각각 독립 higher-risk subpackage로 나눈다.
 - Directional specificity, source-sufficiency gate, 모델 holdout, production 활성화는 여전히 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
@@ -551,9 +562,11 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | M4가 제안한 optional financial context는 미구현 | M5에서 additive typed schema와 hard validator 구현; producer와 AI 소비는 계속 0 |
 | M5 envelope는 비어 있는 optional field | M6에서 기존 canonical OCF/PPE/OCF-PPE에만 shared adapter를 연결; compact AI context 소비는 계속 0 |
 | derived-period OCF/PPE도 input ID만 있으면 adapter가 신뢰 가능 | formula/version을 포함한 완전한 lineage projection이 없으므로 M6에서 fail-closed하고 다음 mapping backlog로 이동 |
+| M6의 derived-period 차단은 source fact 부재 | M7에서 보존된 189개 derived-period lineage와 87개 FCF input chain을 projection해 해소; 새 derivation은 0 |
+| KR period mapper 구현은 곧 KR 시장 지원 | exact-context mapper capability와 실제 issuer coverage를 분리; real cached canonical KR fact 부재로 실제 KR block 유지 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M6 비운영 adapter 구현을 반영한다. 완료 의미는 `M6_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
+이번 갱신은 M7 비운영 lineage/period projection 구현을 반영한다. 완료 의미는 `M7_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume는 모두 0이다.
 
 ---
 

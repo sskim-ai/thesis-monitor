@@ -1,0 +1,37 @@
+{
+  "adapter_capability_separate_from_issuer_coverage": true,
+  "contract": "m7-period-and-lineage-support-audit-v1",
+  "rows": [
+    {
+      "count": 164,
+      "domain": "compatible_prior_year_projection",
+      "market": "US_FOREIGN_ARCHIVE",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "count": 102,
+      "domain": "derived_ocf_period_lineage",
+      "market": "US_FOREIGN_ARCHIVE",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "count": 87,
+      "domain": "derived_ppe_period_lineage",
+      "market": "US_FOREIGN_ARCHIVE",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "count": 7,
+      "domain": "opendart_ocf_duration",
+      "market": "KR_REAL_ISSUER_COVERAGE",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    },
+    {
+      "count": 6,
+      "domain": "opendart_ppe_duration",
+      "market": "KR_REAL_ISSUER_COVERAGE",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    }
+  ],
+  "universal_kr_support_claimed": false
+}

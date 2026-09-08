@@ -1,0 +1,45 @@
+{
+  "contract": "m7-remaining-source-mapping-backlog-v1",
+  "count": 6,
+  "items": [
+    {
+      "classification": "GENERIC_SOURCE_CLASS_CANDIDATE",
+      "constraint": "no ticker-specific exception",
+      "item": "hut_ppe_source_class_mapping",
+      "priority": 1
+    },
+    {
+      "classification": "GENERIC_SOURCE_CLASS_CANDIDATE",
+      "constraint": "no ticker-specific exception",
+      "item": "skhy_foreign_issuer_ocf_ppe_source_class_mapping",
+      "priority": 2
+    },
+    {
+      "classification": "GENERIC_SOURCE_CLASS_GAP",
+      "constraint": "no report-label date guessing",
+      "item": "kr_opendart_canonical_source_promotion_with_exact_context",
+      "priority": 3
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "interest_bearing_debt_and_liquidity",
+      "priority": 4
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "inventory_receivables_working_capital",
+      "priority": 5
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "non_operating_financial_income_effects",
+      "priority": 6
+    }
+  ],
+  "kr_real_issuer_period_coverage_resolved": false,
+  "resolved_m7_items": [
+    "compatible_prior_year_fact_projection",
+    "derived_period_lineage_projection",
+    "kr_exact_duration_mapper_capability"
+  ]
+}

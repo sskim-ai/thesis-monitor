@@ -1,0 +1,23 @@
+{
+  "contract": "m7-pre-post-denial-accounting-v1",
+  "derived_period_lineage_denial_delta": -189,
+  "interpretation": "existing complete lineage projection only",
+  "new_fact_derivation_count": 0,
+  "population": "606_preserved_phase9_canonical_facts",
+  "post_m7": {
+    "comparison_count": 164,
+    "denial_count": 0,
+    "denial_counts": {},
+    "emission_count": 606
+  },
+  "pre_m7": {
+    "comparison_count": 130,
+    "denial_count": 276,
+    "denial_counts": {
+      "derived_period_lineage_metadata_incomplete": 189,
+      "simple_cash_conversion_input_derivation_unproven": 87
+    },
+    "emission_count": 330
+  },
+  "simple_cash_input_lineage_denial_delta": -87
+}

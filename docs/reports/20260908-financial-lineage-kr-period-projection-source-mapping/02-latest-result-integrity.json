@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "5098343001e265c2c27d28d90cad37575c040685d09c8fd22843bb54a3e3b08d",
+  "bundle": "thesis-monitor-20260908-existing-canonical-financial-domain-adapter-implementation-report.zip",
+  "contract": "m7-latest-result-integrity-v1",
+  "expected_sha256": "5098343001e265c2c27d28d90cad37575c040685d09c8fd22843bb54a3e3b08d",
+  "internal_artifact_index_verification": {
+    "hash_mismatch_count": 0,
+    "indexed_payload_count": 34,
+    "missing_payload_count": 0,
+    "size_mismatch_count": 0
+  },
+  "m6_next_scope": "ADDITIONAL_FINANCIAL_SOURCE_MAPPING_SUBPACKAGES",
+  "m6_production_readiness": "NOT_READY",
+  "m6_status": "M6_COMPLETE",
+  "status": "PASS"
+}

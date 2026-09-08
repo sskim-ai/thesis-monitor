@@ -1,0 +1,7 @@
+{
+  "contract": "m7-directional-specificity-activation-decision-v1",
+  "decision": "NOT_IN_M7",
+  "model_proof_performed": false,
+  "production_readiness": "NOT_READY",
+  "reason": "projection remains dormant in compact model context"
+}
