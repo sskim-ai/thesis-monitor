@@ -1,0 +1,14 @@
+# Decision Engine Freeze Verification
+
+| Gate | Value |
+| --- | --- |
+| actual_code_hashes | {"builder_prompt": "2a4e6b4775db5e3f4d1b56b3f804613994e2602e4aaefd7902a9c1640cacb672", "directional_balance": "2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab", "logical_condition": "255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234", "stability": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188", "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f"} |
+| actual_prompt_set_sha256 | "95a46a8d3ac708aa981203270236eec7b21bdf196be7577245cc1e52fea50c89" |
+| actual_schema_set_sha256 | "e86b747a0c6f459650275598a7c3c217bb0116ef6b6f8927debf3dfa938fd668" |
+| checks | {"builder_prompt": true, "directional_balance": true, "logical_condition": true, "prompt_set": true, "schema_set": true, "stability": true, "validator_renderer": true} |
+| contract | "decision-engine-freeze-verification-v1" |
+| decision_engine_hash_drift | 0 |
+| expected_code_hashes | {"builder_prompt": "2a4e6b4775db5e3f4d1b56b3f804613994e2602e4aaefd7902a9c1640cacb672", "directional_balance": "2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab", "logical_condition": "255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234", "stability": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188", "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f"} |
+| expected_prompt_set_sha256 | "95a46a8d3ac708aa981203270236eec7b21bdf196be7577245cc1e52fea50c89" |
+| expected_schema_set_sha256 | "e86b747a0c6f459650275598a7c3c217bb0116ef6b6f8927debf3dfa938fd668" |
+| status | "PASS" |

@@ -1,0 +1,35 @@
+# 05 Program Completion
+
+| Field | Value |
+| --- | --- |
+| base_sha | `90bf9cbf64dfc92b00fa473faed110e64164b34c` |
+| work_instruction_commit | `418a14e5ebb2f3a980948f933db8d99154d16b14` |
+| implementation_commit | `null` |
+| final_head_sha | `RESOLVED_IN_BUNDLE_COMPLETION` |
+| branch | `codex/20260908-us-source-universe-expansion-fresh-generalization-proof-resume` |
+| latest_result_zip_sha256_expected | `f0a41371e12127a891165860f3c44ce6af7d1b8dcd13d0c5b93570618a075e6a` |
+| latest_result_zip_sha256_observed | `ab330fa13a53775ecdd162f36f4f7afeda42415db03bd0c766c48bf3a2eaddac` |
+| latest_result_integrity | `FAIL_IDENTITY_MISMATCH` |
+| calibration_freeze_reused | `NOT_RUN_PRE_GATE_STOP` |
+| calibration_semantic_drift | `NOT_MEASURED` |
+| generic_us_reference_expansion_applied | `0` |
+| ticker_specific_us_exception_count | `0` |
+| fresh_cohort | `[]` |
+| fresh_source_generation | `null` |
+| fresh_source_lock | `null` |
+| planned_real_contexts | `0` |
+| attempted_real_contexts | `0` |
+| successful_real_contexts | `0` |
+| failed_real_contexts | `0` |
+| run_results.first | `NOT_RUN` |
+| run_results.a | `NOT_RUN` |
+| run_results.b | `NOT_RUN` |
+| run_results.c | `NOT_RUN` |
+| exposure_state | `UNEXPOSED` |
+| automatic_monitoring_resume | `0` |
+| production_db_mutation | `0` |
+| production_send | `0` |
+| status | `STOPPED` |
+| readiness | `NOT_READY_PROVENANCE_CHECKSUM_MISMATCH` |
+| stop_reason | `LATEST_RESULT_BUNDLE_CHECKSUM_MISMATCH` |
+| next_scope | `AUTHORITATIVE_RESULT_IDENTITY_RECONCILIATION` |

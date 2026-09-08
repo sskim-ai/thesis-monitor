@@ -1,0 +1,213 @@
+{
+  "contract": "fictional-calibration-repetition-v1",
+  "failure_count": 0,
+  "generation_id": "20260908-directional-calibration-fictional-20260908T043000Z-3d5220a4528a",
+  "model_calls": 2,
+  "pass_count": 8,
+  "repetition": "RUN_3",
+  "status": "PASS",
+  "subject_results": [
+    {
+      "actual_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "actual_confidence": "MEDIUM",
+      "actual_direction": "HOLD",
+      "actual_hold_lean": "NEUTRAL",
+      "candidate_sha256": "71f319575cdfc9173ba6a60acb2517f8c3b503663c39253f9687afd5033990d3",
+      "errors": [],
+      "expected": {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "sell": 5.0
+      },
+      "fixture_id": "F1_BALANCED_INCOMPLETE",
+      "referenced_aliases": [
+        "F1_E1",
+        "F1_E2",
+        "F1_E3"
+      ],
+      "status": "PASS",
+      "ticker": "FICUS01",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "actual_confidence": "MEDIUM",
+      "actual_direction": "HOLD",
+      "actual_hold_lean": "BUY_LEAN",
+      "candidate_sha256": "ea94ba7a7978872b99f6e43306853639a7bdaee26d41d3a9254d42c9b2783794",
+      "errors": [],
+      "expected": {
+        "buy": 5.5,
+        "direction": "HOLD",
+        "hold_lean": "BUY_LEAN",
+        "sell": 4.5
+      },
+      "fixture_id": "F2_POSITIVE_LEAN_INCOMPLETE",
+      "referenced_aliases": [
+        "F2_E1",
+        "F2_E2"
+      ],
+      "status": "PASS",
+      "ticker": "FICUS02",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "actual_confidence": "MEDIUM",
+      "actual_direction": "BUY",
+      "actual_hold_lean": "NOT_HOLD",
+      "candidate_sha256": "5cd890b25eab4bc6568e7290e26df623a58d235585845759eee6a41384bcb86a",
+      "errors": [],
+      "expected": {
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "minimum_buy": 6.0
+      },
+      "fixture_id": "F3_MINIMUM_POSITIVE_DIRECTION",
+      "referenced_aliases": [
+        "F3_E1",
+        "F3_E2",
+        "F3_E3"
+      ],
+      "status": "PASS",
+      "ticker": "FICUS03",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 7.0,
+        "sell": 3.0
+      },
+      "actual_confidence": "HIGH",
+      "actual_direction": "BUY",
+      "actual_hold_lean": "NOT_HOLD",
+      "candidate_sha256": "8bb25f4e6c1b08c2896ed90d6edfb162d8838c325fe81194533203fd987fe7be",
+      "errors": [],
+      "expected": {
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "minimum_buy": 6.5
+      },
+      "fixture_id": "F4_STRONG_POSITIVE",
+      "referenced_aliases": [
+        "F4_E1",
+        "F4_E2",
+        "F4_E3"
+      ],
+      "status": "PASS",
+      "ticker": "FICUS04",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "actual_confidence": "LOW",
+      "actual_direction": "HOLD",
+      "actual_hold_lean": "SELL_LEAN",
+      "candidate_sha256": "30c7bf07a6c14fd5b291940eb3c5f6d2519552d13efdef3b241e944c9ea369ec",
+      "errors": [],
+      "expected": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "hold_lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "fixture_id": "F5_NEGATIVE_LEAN_INCOMPLETE",
+      "referenced_aliases": [
+        "F5_E1",
+        "F5_E2"
+      ],
+      "status": "PASS",
+      "ticker": "FICKR01",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "actual_confidence": "MEDIUM",
+      "actual_direction": "SELL",
+      "actual_hold_lean": "NOT_HOLD",
+      "candidate_sha256": "0bb9b38bcabc25740c54362be9ab98a38a6869a9537ea4b6c23f74cce0e9c794",
+      "errors": [],
+      "expected": {
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "minimum_sell": 6.0
+      },
+      "fixture_id": "F6_MINIMUM_NEGATIVE_DIRECTION",
+      "referenced_aliases": [
+        "F6_E1",
+        "F6_E2",
+        "F6_E3"
+      ],
+      "status": "PASS",
+      "ticker": "FICKR02",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "actual_confidence": "HIGH",
+      "actual_direction": "SELL",
+      "actual_hold_lean": "NOT_HOLD",
+      "candidate_sha256": "7b5a654719cdbe6a54ed269036e2b9a83c74294a96e4fe59ca395b52407c627d",
+      "errors": [],
+      "expected": {
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "minimum_sell": 6.5
+      },
+      "fixture_id": "F7_STRONG_NEGATIVE",
+      "referenced_aliases": [
+        "F7_E1",
+        "F7_E2",
+        "F7_E3"
+      ],
+      "status": "PASS",
+      "ticker": "FICKR03",
+      "unknown_references": []
+    },
+    {
+      "actual_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "actual_confidence": "LOW",
+      "actual_direction": "HOLD",
+      "actual_hold_lean": "NEUTRAL",
+      "candidate_sha256": "79531d822b756d462d1b33c9cafcfa3187732a174c77f6dcc86fb1e3ffb17b85",
+      "errors": [],
+      "expected": {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "forbidden_direction": "SELL",
+        "hold_lean": "NEUTRAL",
+        "sell": 5.0
+      },
+      "fixture_id": "F8_UNKNOWN_NOT_NEGATIVE",
+      "referenced_aliases": [
+        "F8_E1",
+        "F8_E2"
+      ],
+      "status": "PASS",
+      "ticker": "FICKR04",
+      "unknown_references": []
+    }
+  ]
+}

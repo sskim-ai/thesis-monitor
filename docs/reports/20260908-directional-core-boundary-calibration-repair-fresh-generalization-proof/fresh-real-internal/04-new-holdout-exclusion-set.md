@@ -1,0 +1,15 @@
+# 04 New Holdout Exclusion Set
+
+| Field | Value |
+| --- | --- |
+| appended_count | 16 |
+| contract | directional-calibration-exclusion-continuity-v1 |
+| exclusion_shrink_count | 0 |
+| new_registry_sha256 | 8d9f121ff6fc4749ef5da5cecad4e8f731a991a051e771cdeb5512fe34b63f6b |
+| previous_count | 133 |
+| previous_registry_sha256 | 6e729964feaaea89e6e19c41db33797589c60932324907829aa38191421daf6b |
+| reconciled_count | 149 |
+| retired_tickers | ["WYNN", "DOX", "NWS", "ASTI", "064850", "053270", "078860", "145720", "199730", "065510", "396470", "299900", "020180", "122310", "417200", "023910"] |
+| status | PASS |
+
+Machine proof: `proofs/04-new-holdout-exclusion-set.json`.

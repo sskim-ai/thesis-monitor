@@ -1,0 +1,6 @@
+{
+  "contract": "per-run-message-quality-advisory-v1",
+  "reason": "RUN_NOT_COMPLETE",
+  "run": "a",
+  "status": "NOT_MEASURED"
+}

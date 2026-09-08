@@ -1,0 +1,70 @@
+{
+  "contract": "prompt-schema-freeze-v1",
+  "prompt_schema_lock": {
+    "batches": [
+      {
+        "batch": 1,
+        "core_prompt_sha256": "039c416832b11d4088e44700e601e1126d02d599d81343bebfc3f7ae79e3c1a8",
+        "core_schema_sha256": "ee0a634b0b9633a87d2809340b7284e2ed47a60277b7f0651ba0f73f5110fbc0",
+        "tickers": [
+          "NVDA",
+          "JPM",
+          "WMT",
+          "BRK-B"
+        ],
+        "timing_context_sha256": "3461d6dbf1ccb11201c8ef29819e3d3b3776857c671611930087c80252696f1e",
+        "timing_schema_sha256": "89d989c9e1bef78f9d0d3e269fc06540042cf036d000154537d6210bd8f58d79"
+      },
+      {
+        "batch": 2,
+        "core_prompt_sha256": "c716dac27b5f14d6e1b7e514f005c35c11218c7e2ceb129b71aee591876ac1e4",
+        "core_schema_sha256": "c504387b02fbeaf0c1f2bb99491456b9cebcdb2377c7e40b386d8c1b637a8ec8",
+        "tickers": [
+          "142210",
+          "060900",
+          "002680",
+          "035420"
+        ],
+        "timing_context_sha256": "15ec9ccc65038cd5dd5ab506bf192352361eca3243c2412a8d00599df74b53e9",
+        "timing_schema_sha256": "98164d0e41ed61356ed8f7f00494a375109f82361efc0983c4165ec396e90ecb"
+      },
+      {
+        "batch": 3,
+        "core_prompt_sha256": "7d8f4009f350e59966c9d02c4eb9e1cef159a58586c639fad03dba1670639a49",
+        "core_schema_sha256": "c953181bf026d048e53c3d1090d507b50e8c569f9e04482a2e8fc038cf027681",
+        "tickers": [
+          "216050",
+          "100700",
+          "001530",
+          "487580"
+        ],
+        "timing_context_sha256": "14f94428c3a22c915cda5183ffe379694ba55ecfcce9cb1630c76c31673022c9",
+        "timing_schema_sha256": "c66ca702fe1f4c79582f5e601f17272c177716bf3c3e4c09d5cefdcad596bcb8"
+      },
+      {
+        "batch": 4,
+        "core_prompt_sha256": "f6d7e80a22bbc575baa281894e1276f5e940f67f877e1362e1c57a11f6fa27f8",
+        "core_schema_sha256": "fb7651d3d84c014ce402e362f64d4cb2e83feeff1ef3ca822ef78be07c99f08f",
+        "tickers": [
+          "038870",
+          "342870",
+          "060230",
+          "415380"
+        ],
+        "timing_context_sha256": "151da28a4593c95af482e94cdf851adf7b496c0a1dd16c26b23a5209773297a1",
+        "timing_schema_sha256": "a15c4f18f85d5fca53a047a534e1891a7f233c6a339fc1f7ac5b6a29f485800b"
+      }
+    ],
+    "contract": "direction-timing-prompt-schema-lock-v1",
+    "model": "gpt-5.6-sol",
+    "ownership_execution_mode": "TWO_STAGE_FENCED",
+    "program_generation_id": "20260907-us-remediation-holdout-20260907T001800Z-57bcd871e06a",
+    "prompt_set_sha256": "6bfb07a388694b8ba5839c11a8e40fb6ef16285785da857322220f759eee9581",
+    "reasoning_effort": "xhigh",
+    "schema_set_sha256": "a817db2076f5fd311a8dd32baf40772e216ba06d132e4dd0697543f6565cf4c3"
+  },
+  "prompt_schema_lock_sha256": "88461737d30111f9aff33f8c12b8060dfa0eb9c228913ebfb02b235a3c6a8b42",
+  "prompt_semantic_drift": 0,
+  "schema_semantic_drift": 0,
+  "status": "FROZEN"
+}

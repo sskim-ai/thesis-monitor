@@ -1,0 +1,65 @@
+{
+  "contract": "unseen-source-assembly-coldstart-generalization-work-instruction-v1",
+  "source_report_bundle": "thesis-monitor-20260906-structured-actionability-unseen-coldstart-report.zip",
+  "source_report_bundle_sha256": "c4201d6b960ef68f49e51fd8caa2b6c59bbca2747743348ffa982d5da0b61a22",
+  "source_program_generation_id": "20260906-structured-actionability-20260906T031722Z-e7085b421624",
+  "source_architecture_commit": "f49ce6c3aa9b7241571fdd08e7094fd08bdf2251",
+  "decision_engine_hashes": {
+    "builder_prompt": "2a4e6b4775db5e3f4d1b56b3f804613994e2602e4aaefd7902a9c1640cacb672",
+    "directional_balance": "2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab",
+    "logical_condition": "255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234",
+    "stability": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188",
+    "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f",
+    "prompt_set": "95a46a8d3ac708aa981203270236eec7b21bdf196be7577245cc1e52fea50c89",
+    "schema_set": "e86b747a0c6f459650275598a7c3c217bb0116ef6b6f8927debf3dfa938fd668"
+  },
+  "retired_uskr22": [
+    "CORZ",
+    "CPNG",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF",
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "047810",
+    "086280"
+  ],
+  "source_assembly_fixture_only": [
+    "010140",
+    "011200",
+    "017800",
+    "021240",
+    "024110",
+    "035420",
+    "051160",
+    "055550",
+    "443060",
+    "MSFT",
+    "NVDA"
+  ],
+  "final_unseen_target": 16,
+  "final_unseen_allowed_range": [
+    12,
+    20
+  ],
+  "final_unseen_minimum_eligible": 12,
+  "preferred_market_balance": {
+    "KR": 8,
+    "US": 8
+  },
+  "production_mutation_allowed": false,
+  "night_futures_mutation_allowed": false
+}

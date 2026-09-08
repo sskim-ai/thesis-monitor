@@ -1,0 +1,20 @@
+# Transport Freeze Reverification
+
+| Gate | Value |
+| --- | --- |
+| actual_hashes | {"continuation_harness_file": "a30db21cc387e72559586356e90b24ec069cba4c1107a12543b5490502c79846", "continuation_transport_adapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1", "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd", "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13", "transport_service_file": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774"} |
+| batch_semantics | MODEL_CONTEXT_COUPLED |
+| batch_split_adopted | 0 |
+| batch_split_semantic_equivalence | FAIL |
+| contract | resume-transport-freeze-reverification-v1 |
+| expected_hashes | {"continuation_harness_file": "a30db21cc387e72559586356e90b24ec069cba4c1107a12543b5490502c79846", "continuation_transport_adapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1", "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd", "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13", "transport_service_file": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774"} |
+| model_context_shape_mutation | 0 |
+| model_timeout_owner_count | 1 |
+| model_timeout_seconds | 1800 |
+| real_run_batch_size | 4 |
+| status | PASS |
+| timeout_increase_this_task | 0 |
+| timeout_owner | PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG |
+| transport_topology_mutation | 0 |
+
+Machine proof: `20260906-synthetic-canary-resume-proofs/transport-freeze-reverification.json`.

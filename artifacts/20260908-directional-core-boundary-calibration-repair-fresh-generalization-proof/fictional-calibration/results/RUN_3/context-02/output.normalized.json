@@ -1,0 +1,600 @@
+{
+  "candidates": [
+    {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "F5_E1"
+          ],
+          "text": "최근 공식 실적의 영업이익 악화는 사업 논거를 낮춘다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "F5_E1"
+          ],
+          "text": "수익성 유지가 부정 판단의 강도를 제한한다."
+        }
+      ],
+      "business_thesis_change": "WEAKENED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "text": "영업이익 악화로 논거는 약해졌지만 지속성과 현금흐름 확인이 없어 부정 기울기에 머문다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "F5_E1"
+          ],
+          "text": "이익을 유지하고 있다는 점이 하방 판단을 제한한다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "text": "현재 이익 악화는 부정 앵커지만 독립적 확인이 부족해 완전한 부정 방향에는 미달한다."
+      },
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "directional_confidence": "LOW",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "F5_E1"
+        ],
+        "text": "최근 공식 기간의 중대한 영업이익 감소가 핵심 근거다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "text": "현재 실적 악화는 확인되지만 추정치 변화는 제공 근거로 판단할 수 없다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "영업이익 악화가 후속 기간에도 이어지고 현금창출 악화로 확인되면 제한적 보유 논거가 훼손된다.",
+        "business_invalidation_condition_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "stance": "REVIEW",
+        "summary": "수익성은 유지되지만 영업이익 악화와 확인 근거 부족으로 보유 논거를 점검할 상태다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "영업이익 회복의 지속성과 이를 뒷받침하는 현금창출을 공식 자료에서 확인해야 한다.",
+        "confirmation_business_condition_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "stance": "WAIT",
+        "summary": "현재 악화가 일시적인지 확인되지 않아 신규 관점에서는 기다릴 근거가 크다."
+      },
+      "hold_lean": "SELL_LEAN",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "F5_E2"
+        ],
+        "text": "시장 기대 근거가 없어 기대 변화는 방향 판단에 반영하지 않는다."
+      },
+      "material_directional_anchor_basis": [
+        "F5_E1"
+      ],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "F5_E1",
+          "F5_E2"
+        ],
+        "text": "이익 악화가 지속적 위험인지 판단할 현금흐름과 핵심 운영지표가 부족하다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "F5_E1"
+        ],
+        "text": "확인된 악화는 발행사 실적 근거이며 업종 전반으로 확장하지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "F5_E1"
+          ],
+          "text": "영업이익의 중대한 감소가 발행사 수준의 악화 신호다."
+        }
+      ],
+      "ticker": "FICKR01",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "F5_E2"
+        ],
+        "text": "지속성, 현금흐름, 가치평가, 기대와 핵심 운영지표 부재가 방향 확신을 제한한다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [
+            "F5_E1"
+          ],
+          "evidence_refs": [
+            "F5_E2"
+          ],
+          "summary": "누락된 확인 근거는 부정 증거가 아니라 현재 부정 앵커의 강도 제한으로 처리한다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "F5_E2"
+        ],
+        "text": "가치평가 근거가 없어 방향을 강화하거나 완화하는 판단을 더하지 않는다."
+      }
+    },
+    {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "F6_E1"
+          ],
+          "text": "핵심 사업의 영업손실이 사업 논거를 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "F6_E2"
+          ],
+          "text": "영업현금흐름 부진이 이익 악화를 독립적으로 확인한다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "F6_E3"
+          ],
+          "text": "현재 제공 근거에는 사업 논거를 높일 긍정적 상쇄 앵커가 없다."
+        }
+      ],
+      "business_thesis_change": "WEAKENED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2",
+          "F6_E3"
+        ],
+        "text": "핵심 사업 손실과 현금창출 부진이 함께 확인되고 현재 긍정적 상쇄 앵커가 없다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "F6_E3"
+          ],
+          "text": "제공 근거에서 확인되는 긍정적 사업 동인은 없다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "text": "현재 영업손실과 독립적인 현금흐름 확인이 완전한 부정 방향을 뒷받침한다."
+      },
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "text": "핵심 사업 손실과 음의 영업현금흐름이 결합된 악화가 지배적 근거다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "text": "공식 손실과 현금흐름 부진은 실적 악화를 확인하지만 별도 추정치 방향은 판단하지 않는다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "핵심 사업의 영업손실 해소와 영업현금흐름 정상화가 후속 공식 자료에서 함께 지속되면 부정 논거가 무효화된다.",
+        "business_invalidation_condition_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "stance": "REDUCE",
+        "summary": "이익과 현금흐름이 함께 악화되어 기존 보유 논거는 축소 검토가 필요하다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "핵심 사업의 이익 회복과 영업현금흐름 정상화가 함께 지속되어야 한다.",
+        "confirmation_business_condition_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "stance": "AVOID",
+        "summary": "손실과 현금창출 부진이 함께 확인되어 신규 사업 관점은 부정적이다."
+      },
+      "hold_lean": "NOT_HOLD",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "F6_E3"
+        ],
+        "text": "시장 기대를 직접 보여주는 근거는 없으며 현재 긍정적 상쇄 앵커도 없다."
+      },
+      "material_directional_anchor_basis": [
+        "F6_E1",
+        "F6_E2"
+      ],
+      "overall_direction": "SELL",
+      "risk_context": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "text": "핵심 사업 손실과 현금 유출의 결합이 사업 및 이익 품질 위험을 높인다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2"
+        ],
+        "text": "확인된 악화는 발행사 핵심 사업과 현금흐름에 관한 것으로 업종 일반 현상으로 보지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "F6_E1"
+          ],
+          "text": "핵심 사업의 중대한 영업손실이 직접적인 악화 신호다."
+        },
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "F6_E2"
+          ],
+          "text": "음의 영업현금흐름이 손실의 질적 악화를 확인한다."
+        }
+      ],
+      "ticker": "FICKR02",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "F6_E3"
+        ],
+        "text": "긍정적 상쇄 앵커 부재 자체로 부정 강도를 추가 확대하지 않는다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [
+            "F6_E1",
+            "F6_E2"
+          ],
+          "evidence_refs": [
+            "F6_E3"
+          ],
+          "summary": "긍정적 상쇄 근거의 부재는 확인된 악화를 방해하지 않지만 그 자체를 추가 부정 근거로 쓰지 않는다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "F6_E1",
+          "F6_E2",
+          "F6_E3"
+        ],
+        "text": "가치평가 판단은 더하지 않고 현재 방향을 사업 손실과 현금흐름 근거에 한정한다."
+      }
+    },
+    {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "F7_E1"
+          ],
+          "text": "핵심 사업의 지속적 축소가 사업 논거를 크게 낮춘다."
+        },
+        {
+          "evidence_refs": [
+            "F7_E2"
+          ],
+          "text": "영업 및 순손실이 사업 축소를 재무적으로 확인한다."
+        },
+        {
+          "evidence_refs": [
+            "F7_E3"
+          ],
+          "text": "중대한 고객 상실 위험이 구조적 훼손 가능성을 높인다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "F7_E3"
+          ],
+          "text": "제공 근거에는 구조 위험을 상쇄할 긍정적 근거가 없다."
+        }
+      ],
+      "business_thesis_change": "WEAKENED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "text": "지속적 사업 축소, 손실과 구조적 고객 상실 위험이 함께 사업 논거를 훼손한다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "F7_E3"
+          ],
+          "text": "제공 근거에서 구조적 악화를 상쇄할 긍정적 사업 동인은 없다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "text": "지속성, 손실 확인과 구조 위험이 결합되어 강한 부정 방향을 뒷받침한다."
+      },
+      "directional_balance": {
+        "buy": 3.0,
+        "sell": 7.0
+      },
+      "directional_confidence": "HIGH",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "text": "지속적 핵심 사업 축소가 손실과 고객 상실 위험으로 중첩 확인된다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2"
+        ],
+        "text": "지속적 사업 축소와 공식 손실은 실적 악화를 확인하지만 별도 추정치 판단은 더하지 않는다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "핵심 사업 축소가 후속 기간에 반전되고 손실이 해소되며 고객 상실 위험이 실질적으로 완화되면 부정 논거가 무효화된다.",
+        "business_invalidation_condition_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "stance": "REDUCE",
+        "summary": "지속적 사업 축소와 손실 및 구조 위험으로 보유 논거가 크게 약화됐다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "핵심 사업 회복의 지속성, 손실 해소와 고객 기반 안정이 공식 자료에서 함께 확인되어야 한다.",
+        "confirmation_business_condition_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "stance": "AVOID",
+        "summary": "사업과 재무 및 구조 위험이 같은 방향이어서 신규 사업 관점은 부정적이다."
+      },
+      "hold_lean": "NOT_HOLD",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "F7_E3"
+        ],
+        "text": "시장 기대는 별도 판단하지 않고 상쇄 근거 없는 구조적 고객 상실 위험만 반영한다."
+      },
+      "material_directional_anchor_basis": [
+        "F7_E1",
+        "F7_E2",
+        "F7_E3"
+      ],
+      "overall_direction": "SELL",
+      "risk_context": {
+        "evidence_refs": [
+          "F7_E3"
+        ],
+        "text": "중대한 고객 상실 위험이 핵심 사업 축소의 구조적 지속 가능성을 높인다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E3"
+        ],
+        "text": "지속적 축소와 고객 위험은 발행사 고유 근거이며 업종 전반으로 일반화하지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "F7_E1"
+          ],
+          "text": "핵심 사업의 지속적 축소가 반복 확인된 악화 신호다."
+        },
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "F7_E2"
+          ],
+          "text": "영업 및 순손실이 사업 악화를 재무적으로 확인한다."
+        },
+        {
+          "classification": "STRUCTURAL_RISK",
+          "evidence_refs": [
+            "F7_E3"
+          ],
+          "text": "중대한 고객 상실 위험이 구조적 하방 요인이다."
+        }
+      ],
+      "ticker": "FICKR03",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "text": "가치평가나 시장 기대를 덧붙이지 않고 확인된 사업 축소, 손실과 구조 위험 범위에서만 판단한다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [
+            "F7_E1",
+            "F7_E2",
+            "F7_E3"
+          ],
+          "evidence_refs": [
+            "F7_E1",
+            "F7_E2",
+            "F7_E3"
+          ],
+          "summary": "가치평가와 기대에 관한 미제공 정보는 추가 부정 근거로 사용하지 않는다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "F7_E1",
+          "F7_E2",
+          "F7_E3"
+        ],
+        "text": "가치평가 판단은 더하지 않고 현재 방향을 사업 축소, 손실과 구조 위험에 근거한다."
+      }
+    },
+    {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "F8_E2"
+          ],
+          "text": "현재 사업 악화를 뒷받침할 근거가 없어 하향 재평가를 하지 않는다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "F8_E2"
+          ],
+          "text": "현재 사업 개선을 뒷받침할 근거가 없어 상향 재평가를 하지 않는다."
+        }
+      ],
+      "business_thesis_change": "UNRESOLVED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "F8_E1",
+          "F8_E2"
+        ],
+        "text": "발행사 정체성만 확인되고 방향성 있는 사업 및 재무 근거가 없어 논거가 미해결 상태다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "F8_E2"
+          ],
+          "text": "긍정 방향을 뒷받침할 현재 사업 또는 재무 근거가 없다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "F8_E1",
+          "F8_E2"
+        ],
+        "text": "정체성 정보는 방향성이 없고 핵심 근거가 없어 어느 방향의 기울기도 정당화되지 않는다."
+      },
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "LOW",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "핵심 사업 및 재무 근거의 부재가 판단 범위를 지배한다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "현재 이익 및 추정 근거가 없어 실적 방향을 판단하지 않는다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "핵심 사업, 이익 또는 현금흐름에서 지속적 악화가 공식 자료로 확인되면 중립적 검토 상태가 무효화된다.",
+        "business_invalidation_condition_refs": [
+          "F8_E2"
+        ],
+        "stance": "REVIEW",
+        "summary": "보유 가능성을 지지하거나 훼손할 핵심 근거가 없어 검토가 필요하다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "핵심 사업 개선과 이를 뒷받침하는 이익 또는 현금흐름 근거가 공식 자료에서 확인되어야 한다.",
+        "confirmation_business_condition_refs": [
+          "F8_E2"
+        ],
+        "stance": "WAIT",
+        "summary": "방향성 있는 사업 근거가 생길 때까지 신규 관점의 판단을 유보한다."
+      },
+      "hold_lean": "NEUTRAL",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "시장 기대 근거가 없어 기대 방향을 판단하지 않는다."
+      },
+      "material_directional_anchor_basis": [],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "구조적 위험 근거가 없어 위험의 방향과 강도를 판단하지 않는다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "F8_E1"
+        ],
+        "text": "업종 분류는 확인됐지만 투자 방향을 제공하지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "OTHER_EVIDENCE",
+          "evidence_refs": [
+            "F8_E2"
+          ],
+          "text": "부정 방향을 뒷받침할 현재 사업 또는 위험 근거가 없다."
+        }
+      ],
+      "ticker": "FICKR04",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "핵심 사업, 이익, 현금흐름, 가치평가, 기대와 구조 위험 근거의 부재가 판단을 제한한다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "F8_E2"
+          ],
+          "summary": "누락된 정보는 부정 증거로 보지 않고 양방향 확인이 필요한 불확실성으로 처리한다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "F8_E2"
+        ],
+        "text": "가치평가 근거가 없어 어느 방향에도 반영하지 않는다."
+      }
+    }
+  ],
+  "contract": "directional-core-output-v1",
+  "packet_id": "20260908-directional-calibration-fictional-20260908T043000Z-3d5220a4528a"
+}

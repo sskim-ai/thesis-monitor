@@ -1,0 +1,42 @@
+{
+  "contract": "diagnostic-historical-scope-quality-carry-forward-v1",
+  "formal_generalization_status": "NOT_ESTABLISHED",
+  "formal_stability_status": "NOT_MEASURED",
+  "historical": {
+    "hard_audit_source_status": "PASS",
+    "historical_a_hard_gate_status": "PASS",
+    "historical_a_message_quality_status": "FAIL",
+    "historical_completion_status": "PASS_OFFLINE_CLOSEOUT_WITH_OPEN_TRANSPORT_AND_QUALITY_ISSUES",
+    "historical_failed_contexts": 1,
+    "historical_failure_classification": "WATCHDOG_TRANSPORT_TIMEOUT_AFTER_WEBSOCKET_DISCONNECT",
+    "historical_first_a_descriptive_comparison": {
+      "boundary_direction_changes": "7/16",
+      "direct_buy_sell_flips": 0,
+      "same_direction": "9/16"
+    },
+    "historical_first_hard_gate_status": "PASS",
+    "historical_first_message_quality_status": "FAIL",
+    "historical_formal_generalization_status": "NOT_ESTABLISHED",
+    "historical_formal_stability_status": "NOT_MEASURED",
+    "historical_model_subprocess_invocations": 17,
+    "historical_prompt_bytes": 17940,
+    "historical_repeated_substantive_spans": {
+      "A": 9,
+      "FIRST": 14
+    },
+    "historical_successful_contexts": 16,
+    "quality_audit_source_status": "UNRESOLVED_MESSAGE_QUALITY_FAIL_PRESERVED"
+  },
+  "new_probe_scope": {
+    "fictional_subjects": [
+      "SYNTHETIC_WS_A",
+      "SYNTHETIC_WS_B",
+      "SYNTHETIC_WS_C",
+      "SYNTHETIC_WS_D"
+    ],
+    "fills_missing_historical_runs": false,
+    "historical_b_or_c_resumed": 0,
+    "real_issuer_calls": 0
+  },
+  "status": "PASS_SCOPE_PRESERVED"
+}

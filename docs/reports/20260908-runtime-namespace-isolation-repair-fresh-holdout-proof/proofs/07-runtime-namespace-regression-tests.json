@@ -1,0 +1,13 @@
+{
+  "collision_stops_before_spawn": "PASS",
+  "contract": "runtime-namespace-regression-tests-v1",
+  "different_invocation_different_workdir": "PASS",
+  "focused_test_command": "pytest tests/test_codex_runtime_state_service.py tests/test_runtime_namespace_isolation_repair_fresh_holdout_proof.py tests/test_real_holdout_runner_adapter_repair_ownership_resume.py",
+  "model_effort_timeout_unchanged": "PASS",
+  "prompt_schema_packet_bytes_unchanged": "PASS",
+  "same_generation_different_batch": "PASS",
+  "same_generation_different_run": "PASS",
+  "same_generation_different_stage": "PASS",
+  "status": "PASS",
+  "test_result": "PASS"
+}

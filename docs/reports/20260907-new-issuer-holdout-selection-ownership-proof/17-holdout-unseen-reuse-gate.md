@@ -1,0 +1,13 @@
+# 17 Holdout Unseen Reuse Gate
+
+| Field | Value |
+| --- | --- |
+| contract | holdout-unseen-reuse-gate-v1 |
+| final_cohort | [] |
+| future_unseen_holdout_reuse_allowed | NOT_APPLICABLE_NO_FINAL_COHORT |
+| holdout_output_exposure_state | UNEXPOSED |
+| holdout_retirement_state | NOT_CREATED |
+| holdout_semantic_revelation_state | NOT_MEASURED |
+| status | STOP_SOURCE_SUFFICIENCY_GATE |
+
+Machine proof: `proofs/17-holdout-unseen-reuse-gate.json`.

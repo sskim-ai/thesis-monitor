@@ -1,0 +1,13 @@
+{
+  "business_date_preserved": "PASS",
+  "contract": "krx-night-futures-session-quote-v1",
+  "contract_month": "202609",
+  "cross_midnight": "PASS",
+  "instrument_id": "XKRX:KOSPI200:FUTURES",
+  "market_state": "CLOSED",
+  "observed_at": "2026-09-05 22:00:00+09:00",
+  "session_business_date": "2026-09-04",
+  "session_end_kst": "2026-09-05 06:00:00+09:00",
+  "session_start_kst": "2026-09-04 18:00:00+09:00",
+  "weekend_closed": "PASS"
+}

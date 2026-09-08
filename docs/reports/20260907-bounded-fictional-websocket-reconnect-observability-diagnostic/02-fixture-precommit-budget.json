@@ -1,0 +1,191 @@
+{
+  "budget": {
+    "consumed": 3,
+    "planned": 3,
+    "unattempted": [],
+    "wrapper_retries": 0
+  },
+  "contract": "diagnostic-fixture-precommit-budget-proof-v1",
+  "fixture_audit": {
+    "checks": {
+      "fictional_source_lineage": true,
+      "four_subjects": true,
+      "historical_real_cohort_overlap": true,
+      "reserved_fictional_identity": true,
+      "routing_market_us": true,
+      "subject_order": true
+    },
+    "contract": "fictional-four-subject-fixture-audit-v1",
+    "historical_real_cohort_overlap": [],
+    "rows": [
+      {
+        "all_ref_ids_fictional": true,
+        "all_source_refs_fictional": true,
+        "company_name": "Fictional US SYNTHETIC_WS_A",
+        "routing_market": "us",
+        "ticker": "SYNTHETIC_WS_A",
+        "ticker_reserved_fictional": true
+      },
+      {
+        "all_ref_ids_fictional": true,
+        "all_source_refs_fictional": true,
+        "company_name": "Fictional US SYNTHETIC_WS_B",
+        "routing_market": "us",
+        "ticker": "SYNTHETIC_WS_B",
+        "ticker_reserved_fictional": true
+      },
+      {
+        "all_ref_ids_fictional": true,
+        "all_source_refs_fictional": true,
+        "company_name": "Fictional US SYNTHETIC_WS_C",
+        "routing_market": "us",
+        "ticker": "SYNTHETIC_WS_C",
+        "ticker_reserved_fictional": true
+      },
+      {
+        "all_ref_ids_fictional": true,
+        "all_source_refs_fictional": true,
+        "company_name": "Fictional US SYNTHETIC_WS_D",
+        "routing_market": "us",
+        "ticker": "SYNTHETIC_WS_D",
+        "ticker_reserved_fictional": true
+      }
+    ],
+    "status": "PASS"
+  },
+  "precommit": {
+    "batch_semantics": "MODEL_CONTEXT_COUPLED",
+    "canonical_transport_mutation": 0,
+    "cli_identity": {
+      "checks": {
+        "sha256": true,
+        "version": true
+      },
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "sha256": "7645c3caf5607e4528eb3a15b12496c284c2a918939aed34e863c760c1b421e7",
+      "status": "PASS",
+      "version": "codex-cli 0.148.0-alpha.15"
+    },
+    "configured_timeout_seconds": 1800,
+    "contract": "bounded-fictional-websocket-diagnostic-precommit-v1",
+    "diagnostic_generation_id": "20260907-fictional-websocket-diagnostic-20260907T140521Z-ca51375d5ccb",
+    "fictional_subject_count": 4,
+    "fictional_subject_ids": [
+      "SYNTHETIC_WS_A",
+      "SYNTHETIC_WS_B",
+      "SYNTHETIC_WS_C",
+      "SYNTHETIC_WS_D"
+    ],
+    "fixture_sha256": "109685201d17d35098fa075af370cb1b077d64ca6c59bdfa4fc80ecefead62a0",
+    "fresh_namespace_policy": "DISTINCT_PREDECLARED_NAMESPACE_PER_CALL",
+    "fresh_session_policy": "CODEX_EXEC_EPHEMERAL_PER_CALL",
+    "historical_prompt_bytes": 17940,
+    "identity_normalized_prompt_semantic_hash": "c86644d7394f321097faf609950ee0dbd98e7562a9a330539604c3888e149a02",
+    "identity_normalized_schema_semantic_hash": "17b29cc32fa70d2315c77a056c8af71c1817bb6019bc7d7e40ad55187e85ba6a",
+    "implementation_commit": "09e6df237209aa1ce6afdbaa1bca124c6dcdcf22",
+    "implementation_hashes": {
+      "artifact_preserver": "50609e194076e24ba88badcefa344960ec0776b931120ccd15874380ad4e5e72",
+      "attempt_classifier": "e68f02f739dcd65ceacf590ab786b177890780dce8c621c9e8690a650f73245b",
+      "canonical_adapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1",
+      "core_prompt_builder": "496d8a5a87269a6969ab5f00549e149a0b39fd762ba1607c235baaa19563ce39",
+      "diagnostic_script": "068e9498a42f6b2064eb4dc5a2cd679a1e42a22d2239bce895bc6d42ac895514",
+      "fixture_builder": "fe71025a96fb1ba2aefcfbae9576f8ee0382720653bbfbc2a67ce87ed00a0099",
+      "guarded_adapter": "6ec23b4f66348535ef47d31691cb9b9d55d1942dc076d391ad6e9f213374094c",
+      "instrumented_lifecycle": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13",
+      "observer": "037ea7cf00c7a0dcd6d26c1570cc4d4b9064c9736fa53690f716952a9003b522",
+      "runtime_event_extractor": "3f8d56e315dfc4b0cf83870feea6ca227c85f40e357e7696ac0f6f23bc2f6d3f",
+      "schema_builder": "8d5116bb8b07277924d673975b31123f61962d725ca500aecc7e8652bd9035dd",
+      "single_observation_guard": "0b1e329d6e9f46ae0f092873d5729341eaaca497b1040a1679716e15304e84a6"
+    },
+    "market": "us",
+    "maximum_subprocess_call_budget": 3,
+    "model": "gpt-5.6-sol",
+    "model_prompt_schema_semantic_mutation": 0,
+    "network_readiness_check": "existing_probe_codex_network_readiness_once_per_allowed_call",
+    "packet_file_sha256": {
+      "SYNTHETIC_WS_A": "6b4d8976ae665e19cf566b7984159982bcf6d17502ede8a33e5ec9e7217a8c9c",
+      "SYNTHETIC_WS_B": "2201539fb381d532ce4fa307a41305d79a289409dcafdc3eab1c1d81d38120d5",
+      "SYNTHETIC_WS_C": "e980510c8089b38d9514f3c040f630d3a541352ad051f3349c900ad6efb02660",
+      "SYNTHETIC_WS_D": "0759402dc2d65b3ec6ea819aca11128b85d8d0b9a23c4b51c533e0c4cf42361b"
+    },
+    "planned_call_budget": 3,
+    "planned_calls": [
+      {
+        "call_id": "call-01",
+        "invocation_id": "20260907-fictional-websocket-diagnostic-20260907T140521Z-ca51375d5ccb:call-01:DIRECTIONAL_CORE:call-01",
+        "ordinal": 1,
+        "state_namespace": "FICTIONAL_WEBSOCKET_DIAGNOSTIC_20260907_CALL_01",
+        "subjects": [
+          "SYNTHETIC_WS_A",
+          "SYNTHETIC_WS_B",
+          "SYNTHETIC_WS_C",
+          "SYNTHETIC_WS_D"
+        ]
+      },
+      {
+        "call_id": "call-02",
+        "invocation_id": "20260907-fictional-websocket-diagnostic-20260907T140521Z-ca51375d5ccb:call-02:DIRECTIONAL_CORE:call-02",
+        "ordinal": 2,
+        "state_namespace": "FICTIONAL_WEBSOCKET_DIAGNOSTIC_20260907_CALL_02",
+        "subjects": [
+          "SYNTHETIC_WS_A",
+          "SYNTHETIC_WS_B",
+          "SYNTHETIC_WS_C",
+          "SYNTHETIC_WS_D"
+        ]
+      },
+      {
+        "call_id": "call-03",
+        "invocation_id": "20260907-fictional-websocket-diagnostic-20260907T140521Z-ca51375d5ccb:call-03:DIRECTIONAL_CORE:call-03",
+        "ordinal": 3,
+        "state_namespace": "FICTIONAL_WEBSOCKET_DIAGNOSTIC_20260907_CALL_03",
+        "subjects": [
+          "SYNTHETIC_WS_A",
+          "SYNTHETIC_WS_B",
+          "SYNTHETIC_WS_C",
+          "SYNTHETIC_WS_D"
+        ]
+      }
+    ],
+    "precommit_sha256": "248c966a82487efebbf6227a12935c880948231f29e59e2fa7c465d91482dcd2",
+    "prepared_at": "2026-09-07T14:05:21.045581+00:00",
+    "prompt_byte_delta_from_historical": -236,
+    "prompt_bytes": 17704,
+    "prompt_sha256": "096f66daebf773e1f9a0bb3e8bde7c65019f7f1c068ed9bcce716fe1c4f365c1",
+    "reasoning_effort": "xhigh",
+    "repository": {
+      "base_sha": "428cb9523e2f56460b537e556ce3b91ac5e10a2e",
+      "branch": "codex/20260907-bounded-fictional-websocket-reconnect-observability-diagnostic",
+      "head": "09e6df237209aa1ce6afdbaa1bca124c6dcdcf22",
+      "status_short": [],
+      "tree": "adfcf714f9cef70f2947f6937501d7f9a689946f"
+    },
+    "schema_sha256": "0539b680fe746ea5c0563f5a5b33b05640825c1ae65f569d9f280564f4609137",
+    "source_lock_sha256": "cf368d433a58329c022fcc206bcdd5cd050b231d523d2a6bb87f01c183b4e7c1",
+    "stage": "DIRECTIONAL_CORE",
+    "stop_rules": [
+      "first watchdog timeout or nonzero terminal failure",
+      "first explicit capacity or context-length failure",
+      "first schema or runtime identity failure",
+      "first evidence preservation failure",
+      "first unsafe or unavailable pre-spawn observation",
+      "first fixture/model/schema/CLI/transport drift",
+      "first real-issuer contamination"
+    ],
+    "timeout_increase": 0,
+    "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+    "timeout_owner_count": 1,
+    "validation_before_freeze": {
+      "diff_check": "PASS (git diff --check)",
+      "focused": "11 passed in 0.56s",
+      "full_pytest": "2703 passed, 2 warnings in 60.79s",
+      "ruff": "PASS (ruff check .)"
+    },
+    "work_instruction_commit": "0dfd97f9b53d11857806c7216ccdd7c071192b4f",
+    "workload_guard": "SingleObservationWorkloadGuard",
+    "workload_observer": "PausedScheduleProcessObserver",
+    "wrapper_explicit_retry_budget": 0,
+    "wrapper_explicit_retry_count": 0
+  },
+  "status": "PASS"
+}

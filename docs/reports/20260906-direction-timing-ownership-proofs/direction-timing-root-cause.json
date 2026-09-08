@@ -1,0 +1,10 @@
+{
+  "contract": "direction-timing-root-cause-v1",
+  "observed": {
+    "hold_lean_flip": "PLTR regression observation only",
+    "price_dominated_sell": "NKE regression observation only"
+  },
+  "repair": "generic evidence-domain and field ownership separation",
+  "root_cause_class": "DIRECTION_TIMING_OWNERSHIP_LEAKAGE",
+  "ticker_specific_rule_count": 0
+}

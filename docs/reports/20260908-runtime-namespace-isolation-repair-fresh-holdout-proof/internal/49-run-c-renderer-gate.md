@@ -1,0 +1,12 @@
+# 49 Run C Renderer Gate
+
+| Field | Value |
+| --- | --- |
+| ai_imperative_primary_action | 0 |
+| contract | run-renderer-ownership-gate-v1 |
+| primary_user_action_wording_owner | RENDERER |
+| renderer_ownership_violations | 0 |
+| run | c |
+| status | PASS |
+
+Machine proof: `proofs/49-run-c-renderer-gate.json`.

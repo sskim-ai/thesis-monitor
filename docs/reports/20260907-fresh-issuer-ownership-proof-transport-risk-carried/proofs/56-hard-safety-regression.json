@@ -1,0 +1,6 @@
+{
+  "contract": "hard-safety-regression-v1",
+  "known_hard_safety_regression": "NOT_MEASURED",
+  "reason": "REQUIRED_SOURCE_CONFIGURATION_UNAVAILABLE",
+  "status": "NOT_MEASURED"
+}

@@ -1,0 +1,34 @@
+{
+  "canonical_transport_mutation": 0,
+  "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+  "contract": "transport-topology-freeze-v1",
+  "hashes": {
+    "ContinuationTransportAdapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1",
+    "GuardedTransportAdapter": "6ec23b4f66348535ef47d31691cb9b9d55d1942dc076d391ad6e9f213374094c",
+    "PauseAwareWorkloadObserver": "037ea7cf00c7a0dcd6d26c1570cc4d4b9064c9736fa53690f716952a9003b522",
+    "PausedScheduleProcessObserver": "037ea7cf00c7a0dcd6d26c1570cc4d4b9064c9736fa53690f716952a9003b522",
+    "SingleObservationWorkloadGuard": "0b1e329d6e9f46ae0f092873d5729341eaaca497b1040a1679716e15304e84a6",
+    "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd",
+    "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13",
+    "risk_carried_adapter": "29a7caf663e41c48e06f8370ae7400d7700c21297a2540be753f429687dbcd10",
+    "runtime_context_augmenter": "957e7559857c9f3a9cc1ab9cc8ae9b3efc879a2e82034ce28dd827a69ee89a7c",
+    "runtime_event_classifier": "7a29e37f6e706d41217a2f6c47b4b04fc46f404d5b23aae86c878f7cb0832e7a"
+  },
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "signed_in_cli_identity": {
+    "checks": {
+      "sha256": true,
+      "version": true
+    },
+    "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "sha256": "7645c3caf5607e4528eb3a15b12496c284c2a918939aed34e863c760c1b421e7",
+    "status": "PASS",
+    "version": "codex-cli 0.148.0-alpha.15"
+  },
+  "status": "FROZEN",
+  "timeout_owner_count": 1,
+  "timeout_seconds": 1800,
+  "transport_topology_mutation": 0,
+  "wrapper_explicit_retry_count": 0
+}

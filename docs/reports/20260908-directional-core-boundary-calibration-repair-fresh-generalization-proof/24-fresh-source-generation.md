@@ -1,0 +1,8 @@
+# 24-fresh-source-generation
+
+| Field | Value |
+| --- | --- |
+| contract | "16-new-source-generation-v1" |
+| model_subprocess_count | 0 |
+| reason | "US=FAIL;KR=PASS" |
+| status | "NOT_RUN_PRE_MODEL" |

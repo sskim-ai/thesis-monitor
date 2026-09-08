@@ -1,0 +1,28 @@
+{
+  "canary": "C1",
+  "contract": "schema-valid-canary-smoke-v1",
+  "fictional_subjects_only": 1,
+  "receipt": {
+    "child_cleanup_status": "NOT_NEEDED",
+    "elapsed_to_exit_seconds": 7.641698,
+    "elapsed_to_first_output_seconds": 0.9577,
+    "input_bytes": 75,
+    "invocation_id": "20260906-synthetic-canary-resume-20260906T115500Z-6adb47774f0e:canary:c1-smoke",
+    "model": "gpt-5.6-sol",
+    "orphan_model_process_count": 0,
+    "output_bytes": 15,
+    "prompt_sha256": "5caee7345921da56bbf5cc723a5f93579bfb0ad198fb0d8ab58fbeb0c57a0317",
+    "reasoning_effort": "xhigh",
+    "receipt_sha256": "4ece11aeea200f8334e1e56036d544096d6ee43c4e58133bad18b12647979200",
+    "schema_sha256": "c7124e2c7cb644c79435130d36456aa38ee30bb9496c8e40983f4c16a54cdfe9",
+    "secret_exposure_count": 0,
+    "status": "PASS",
+    "stderr_bytes": 456,
+    "stdout_bytes": 16,
+    "subject_count": 1,
+    "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+    "transport_grouping_mode": "SINGLE_MODEL_CONTEXT"
+  },
+  "status": "PASS",
+  "structured_output_validation": "PASS"
+}

@@ -1,0 +1,21 @@
+{
+  "cases": {
+    "accounting_attribution": "PASS",
+    "adr_share_basis": "PASS",
+    "cross_generation_ref": "PASS",
+    "cross_ticker_evidence_ref": "PASS",
+    "duplicate_terminal_lifecycle": "PASS",
+    "logical_and_to_or": "PASS",
+    "logical_or_to_and": "PASS",
+    "mandatory_actionable_trade_language": "PASS",
+    "nonexistent_evidence_ref": "PASS",
+    "numeric_semantic_mismatch": "PASS",
+    "severity_escalation": "PASS",
+    "unknown_causal_driver_invention": "PASS",
+    "unsupported_numeric": "PASS",
+    "valuation_evidence_eligibility": "PASS"
+  },
+  "contract": "known-hard-safety-regression-v1",
+  "known_hard_safety_regression": 0,
+  "leaf_schema_failure": 0
+}

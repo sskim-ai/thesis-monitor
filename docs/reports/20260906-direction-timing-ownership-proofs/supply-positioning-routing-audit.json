@@ -1,0 +1,8 @@
+{
+  "business_thesis_mutation_allowed": 0,
+  "contract": "supply-positioning-routing-audit-v1",
+  "directional_core_allowed": 0,
+  "domain": "SUPPLY_POSITIONING",
+  "stale_supply_as_current_allowed": 0,
+  "timing_overlay_allowed": 1
+}

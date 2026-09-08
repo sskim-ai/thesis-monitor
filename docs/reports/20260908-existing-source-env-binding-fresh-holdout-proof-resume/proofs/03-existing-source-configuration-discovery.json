@@ -1,0 +1,9 @@
+{
+  "canonical_env_override_configured": true,
+  "contract": "existing-source-configuration-discovery-v1",
+  "protected_source_config_located": true,
+  "secret_values_emitted": 0,
+  "source_config_loader": "app.config.get_settings:_settings_env_file",
+  "status": "PASS",
+  "working_directory_env_file_present": false
+}

@@ -1,0 +1,100 @@
+{
+  "contract": "night-futures-kiwoom-fixture-proof-v1",
+  "fixture_role": "HUMAN_ACCEPTANCE_FIXTURE_NOT_PRODUCTION_PROVIDER",
+  "historical_sessions": [
+    {
+      "close": 1064.2,
+      "date": "2026-08-28",
+      "high": 1086.3,
+      "low": 1061.7,
+      "open": 1068.0,
+      "volume": 23973
+    },
+    {
+      "close": 1064.5,
+      "date": "2026-08-31",
+      "high": 1072.45,
+      "low": 1053.8,
+      "open": 1067.0,
+      "volume": 22349
+    },
+    {
+      "close": 1040.5,
+      "date": "2026-09-01",
+      "high": 1061.4,
+      "low": 1031.3,
+      "open": 1061.0,
+      "volume": 30651
+    },
+    {
+      "close": 1043.6,
+      "date": "2026-09-02",
+      "high": 1048.35,
+      "low": 1020.25,
+      "open": 1023.0,
+      "volume": 22676
+    },
+    {
+      "close": 1049.05,
+      "date": "2026-09-03",
+      "high": 1052.45,
+      "low": 1020.75,
+      "open": 1030.95,
+      "volume": 26252
+    },
+    {
+      "close": 1093.9,
+      "date": "2026-09-04",
+      "high": 1097.65,
+      "low": 1043.85,
+      "open": 1055.65,
+      "volume": 32666
+    }
+  ],
+  "market_message_shadow": "🌙 최근 KOSPI200 야간선물\n9/4 야간 세션 종가 1,093.90 | 202609 계약\n전 야간 종가 대비 +4.28%",
+  "production_provider": false,
+  "production_send": 0,
+  "quote": {
+    "comparisons": [
+      {
+        "change": "41.40",
+        "change_pct": "3.93",
+        "reference_price": "1052.5",
+        "reference_type": "UNKNOWN",
+        "source_ref": "fixture.header_change",
+        "source_semantic_explicit": false
+      },
+      {
+        "change": "44.85",
+        "change_pct": "4.28",
+        "reference_price": "1049.05",
+        "reference_type": "PRIOR_NIGHT_CLOSE",
+        "source_ref": "fixture.prior_night_close",
+        "source_semantic_explicit": true
+      }
+    ],
+    "contract": "krx-night-futures-session-quote-v1",
+    "contract_month": "202609",
+    "days_to_expiry": null,
+    "exchange": "XKRX",
+    "high": "1097.65",
+    "instrument_id": "XKRX:KOSPI200:FUTURES",
+    "instrument_type": "KOSPI200_FUTURES",
+    "is_delayed": null,
+    "last": "1093.9",
+    "last_trading_date": null,
+    "low": "1043.85",
+    "market_state": "CLOSED",
+    "observed_at": "2026-09-05T22:00:00+09:00",
+    "open": "1055.65",
+    "roll_state": "UNKNOWN",
+    "session_business_date": "2026-09-04",
+    "session_end_kst": "2026-09-05T06:00:00+09:00",
+    "session_start_kst": "2026-09-04T18:00:00+09:00",
+    "session_type": "NIGHT",
+    "source": "Kiwoom screenshot acceptance fixture",
+    "source_quality": "HUMAN_FIXTURE",
+    "stale_reason": "completed_historical_session",
+    "volume": 32666
+  }
+}

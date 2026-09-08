@@ -1,0 +1,13 @@
+{
+  "contract": "us-bank-insurer-remediation-tests-v1",
+  "focused_command": "pytest -q tests/test_coldstart_fundamental_enrichment_service.py",
+  "focused_result": "11 passed",
+  "missing_provenance_rejection": "PASS",
+  "negative_standard_company_fixture": "PASS",
+  "positive_bank_fixture": "PASS",
+  "positive_insurer_fixture": "PASS",
+  "stale_period_rejection": "PASS",
+  "status": "PASS",
+  "ticker_specific_source_exception_count": 0,
+  "wrong_taxonomy_rejection": "PASS"
+}

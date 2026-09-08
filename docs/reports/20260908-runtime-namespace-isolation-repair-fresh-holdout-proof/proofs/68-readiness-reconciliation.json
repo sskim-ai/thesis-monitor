@@ -1,0 +1,46 @@
+{
+  "authoritative_internal_completion": {
+    "ownership_generalization_verdict": "NOT_ESTABLISHED",
+    "readiness": "NOT_READY",
+    "status": "STOPPED"
+  },
+  "contract": "post-execution-readiness-reconciliation-v1",
+  "core_stability": {
+    "counts": {
+      "BOUNDARY_UNCERTAINTY": 4,
+      "STABLE": 4,
+      "UNSTABLE": 8
+    },
+    "status": "REVIEW"
+  },
+  "corrected_readiness": "NOT_READY_DIRECTIONAL_CORE_STABILITY",
+  "corrected_status": "STOPPED",
+  "decision_rule": "FULL_PROOF_SUCCESS_REQUIRES_REQUIRED_HARD_GATES_AND_FORMAL_STABILITY_GENERALIZATION",
+  "execution_results": {
+    "a": "16/16",
+    "b": "16/16",
+    "c": "16/16",
+    "first": "16/16"
+  },
+  "hard_gate_failures": 0,
+  "message_quality_advisory": {
+    "a": "FAIL",
+    "b": "FAIL",
+    "c": "FAIL",
+    "first": "FAIL"
+  },
+  "model_call_count_during_reconciliation": 0,
+  "next_scope": "GENERIC_OWNERSHIP_ARCHITECTURE_REVIEW",
+  "prompt_builder_validator_renderer_mutation_count": 0,
+  "reason": "The generated outer completion used run completion alone and contradicted the frozen acceptance rule plus the authoritative internal NOT_READY verdict.",
+  "same_cohort_rerun_count": 0,
+  "status": "PASS_REPORTING_RECONCILIATION",
+  "timing_stability": {
+    "counts": {
+      "BOUNDARY_UNCERTAINTY": 8,
+      "STABLE": 8,
+      "UNSTABLE": 0
+    },
+    "status": "PASS"
+  }
+}

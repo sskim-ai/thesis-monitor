@@ -1,0 +1,14 @@
+# Source Assembly Root Cause
+
+| Gate | Value |
+| --- | --- |
+| archive_absence_relabelled_provider_failure | 0 |
+| contract | "source-assembly-root-cause-v1" |
+| decision_engine_repair | 0 |
+| previous_base_message_count | 0 |
+| previous_eligible | 0 |
+| previous_packet_count | 0 |
+| previous_selected | 11 |
+| repair_target | "SOURCE_ASSEMBLY_HARNESS" |
+| root_cause_class | "COLD_START_SOURCE_ASSEMBLY_HARNESS_GAP" |
+| source_report_bundle_sha256 | "c4201d6b960ef68f49e51fd8caa2b6c59bbca2747743348ffa982d5da0b61a22" |

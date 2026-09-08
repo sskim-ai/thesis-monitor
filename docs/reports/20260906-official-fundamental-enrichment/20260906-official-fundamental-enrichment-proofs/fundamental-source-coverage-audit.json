@@ -1,0 +1,22 @@
+{
+  "candidate_count": 64,
+  "candidate_status_counts": {
+    "INSUFFICIENT_FUNDAMENTAL_EVIDENCE": 3,
+    "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT": 55,
+    "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY": 6
+  },
+  "contract": "fundamental-source-coverage-audit-v1",
+  "fixture_count": 16,
+  "fixture_status_counts": {
+    "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT": 16
+  },
+  "provider_totals": {
+    "cache_hits": 0,
+    "companyfacts_requests": 15,
+    "companyfacts_successes": 15,
+    "profile_requests": 64,
+    "profile_successes": 64,
+    "statement_requests": 147,
+    "statement_successes": 47
+  }
+}

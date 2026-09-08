@@ -1,0 +1,19 @@
+# 17 Historical Pre First Freeze Audit
+
+Contract: `historical-pre-first-implementation-freeze-audit-v1`
+
+Status: `PASS_WITH_LIMITATION`
+
+```json
+{
+  "contract": "historical-pre-first-implementation-freeze-audit-v1",
+  "first_invocation_started_at": "2026-09-06T13:30:21.890362+00:00",
+  "historical_pre_first_implementation_freeze_proof": "STRONG_BUT_TIMESTAMP_INCOMPLETE",
+  "implementation_commit": "16681321683d4ef6bdbff4007770524b1b153136",
+  "implementation_commit_precedes_first": true,
+  "implementation_commit_time": "2026-09-06T22:29:54+09:00",
+  "independent_immutable_uncommitted_worktree_timestamp_proof": "UNAVAILABLE",
+  "reported_pre_first_freeze_checks": "PASS",
+  "status": "PASS_WITH_LIMITATION"
+}
+```

@@ -1,0 +1,10 @@
+# 46 Run C Context Artifact Manifest
+
+| Field | Value |
+| --- | --- |
+| contract | new-issuer-holdout-not-run-v1 |
+| reason | SemanticStop:runtime_context_gate_failed:first:DIRECTIONAL_CORE:2 |
+| run | c |
+| status | NOT_RUN |
+
+Machine proof: `proofs/46-run-c-context-artifact-manifest.json`.

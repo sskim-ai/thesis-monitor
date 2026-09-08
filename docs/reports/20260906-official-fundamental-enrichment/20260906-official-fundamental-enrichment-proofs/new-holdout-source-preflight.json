@@ -1,0 +1,471 @@
+{
+  "all_directional_source_sufficient": true,
+  "contract": "new-holdout-source-preflight-v1",
+  "directional_model_calls": 0,
+  "program_generation_id": "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4",
+  "rows": [
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "9e08381bf5cda2515902c0d80422dd4742c54c52ccf646c3022a8fdde16c16c9",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 5,
+          "price_success_count": 5,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "PLTR",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "1396240cf452276f68dc9a824d9c923db882579f6863ff25298e64a7df8c7b1b",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "V",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "23f1fb3dd3acc39a3789360623950bef86b155c6f51a76e156db5c6b6987e26b",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "MA",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "4c275e2828cef65c4962e13333ae597af73422b84b3d55017aecb5a6dd1294cc",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "AMZN",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "302bbc5c86dbc161d8d88df882d58afbd3b06a7c750126968887d34cfd185987",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 4,
+          "price_success_count": 4,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "XOM",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "d568a348684ddb6e626583ce9def22b7c093f9240042a87cbce1f083fa3db81b",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "DIS",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "8c3f613295b6fb85d0d7becb17b5a404f464d79f35218ef82f771d19b8578815",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 4,
+          "price_success_count": 4,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "NKE",
+      "validation_errors": []
+    },
+    {
+      "base_status": "VALIDATION_BLOCK",
+      "directional_model_eligible": false,
+      "market": "us",
+      "packet_sha256": null,
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "WMT",
+      "validation_errors": [
+        "current_price_unavailable",
+        "price_as_of_unavailable",
+        "technical_context_not_safe:UNAVAILABLE"
+      ]
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "us",
+      "packet_sha256": "8475566e2a35f915cb77572ee594cd775a16b71da3e27bf6d2a3c53b04f7dbea",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "MCD",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "4365e5a6ba825b7bca3e71daa36a7b89e937e8336e57673f951076da9479505f",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "033920",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "e19963f6c5dbdf6da77324d1ee918de289bc52215e88ff18d2ea60e32f1b328a",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "104480",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "acb651746dbb9c9fe0b7432c7ac77a2cf8c0277a66052f0e4e92555ddc5c7271",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "071320",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "6833afc1b9e39a7c19312d7ba1cde82c58b03d0ac520cec3a7d1f00819f7a5ad",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "096240",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "177f9f91e9d0eb249b992720453e739237beab77026c597650199a9e45a26e8b",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "032860",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "10df1d5c6185aa62ecb5bec23db371ed89b76e5cfb9373da2df40e3c2ab5cb50",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "060570",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "5914240e3f80f7d0682a2a6a2364aee7d803f9be271fb483923c5f089015ee74",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "016600",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "directional_model_eligible": true,
+      "market": "kr",
+      "packet_sha256": "543b7bbf37601d1cdfa2c12498f28d3136fc12e7025419675bc736661cacdf9a",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "462520",
+      "validation_errors": []
+    }
+  ],
+  "selected": [
+    "PLTR",
+    "V",
+    "MA",
+    "AMZN",
+    "XOM",
+    "DIS",
+    "NKE",
+    "MCD",
+    "033920",
+    "104480",
+    "071320",
+    "096240",
+    "032860",
+    "060570",
+    "016600",
+    "462520"
+  ],
+  "selected_count": 16,
+  "status": "PASS"
+}

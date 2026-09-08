@@ -1,0 +1,42 @@
+{
+  "canonical_security_schema": [
+    "contract",
+    "market",
+    "canonical_security_id",
+    "canonical_issuer_key",
+    "issuer_key_namespace",
+    "display_symbol",
+    "provider_symbol",
+    "provider_aliases",
+    "issuer_name",
+    "security_name",
+    "exchange",
+    "provider_exchange",
+    "security_type",
+    "is_adr",
+    "reference_source",
+    "reference_row_id",
+    "reference_as_of",
+    "reference_retrieved_at",
+    "reference_snapshot_sha256",
+    "identity_resolution_status",
+    "routing_support_status",
+    "eligibility_decision",
+    "eligibility_reasons",
+    "provenance"
+  ],
+  "contract": "reference-universe-counting-unit-v1",
+  "status": "PASS",
+  "units": {
+    "canonical_issuer": "one SEC CIK or OpenDART corp_code",
+    "fundamental_source_sufficient_issuer": "unchanged source gate PASS",
+    "price_timing_ready_security": "separate existing price readiness gate",
+    "provider_symbol_alias": "one spelling routed to one security",
+    "raw_reference_row": "one official directory row before eligibility",
+    "supported_issuer": "canonical issuer with at least one supported security",
+    "supported_security": "identity, type, exchange and route all verified",
+    "tradable_security_share_class": "one exchange security/share class",
+    "unseen_supported_issuer": "supported issuer outside canonical exclusion union"
+  },
+  "unknown_identity_is_new_issuer": 0
+}

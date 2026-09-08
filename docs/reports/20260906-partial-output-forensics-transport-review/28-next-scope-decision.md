@@ -1,0 +1,53 @@
+# 28 Next Scope Decision
+
+Contract: `forensic-next-scope-decision-v1`
+
+Status: `PASS`
+
+```json
+{
+  "contract": "forensic-next-scope-decision-v1",
+  "future_per_context_exact_preservation_required": 1,
+  "new_real_holdout_selected": 0,
+  "next_scope": "NEW_ISSUER_HOLDOUT_SELECTION_AND_OWNERSHIP_PROOF",
+  "partial_output_semantic_audit_status": "CLEAN_ON_RECOVERED_DIRECTIONAL_CORE",
+  "readiness": "READY_FOR_NEW_ISSUER_HOLDOUT_SELECTION_AND_OWNERSHIP_PROOF",
+  "required_future_exclusions": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520",
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620",
+    "PLTR",
+    "V",
+    "MA",
+    "AMZN",
+    "XOM",
+    "DIS",
+    "NKE",
+    "MCD",
+    "033920",
+    "104480",
+    "071320",
+    "096240",
+    "032860",
+    "060570",
+    "016600",
+    "462520"
+  ],
+  "status": "PASS",
+  "stop_reason": null,
+  "transport_root_cause_classification": "TRANSIENT_STALL_NOT_REPRODUCED"
+}
+```

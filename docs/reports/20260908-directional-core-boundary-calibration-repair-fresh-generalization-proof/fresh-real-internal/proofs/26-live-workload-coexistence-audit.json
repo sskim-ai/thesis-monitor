@@ -1,0 +1,45 @@
+{
+  "contract": "natural-live-workload-coexistence-guard-v1",
+  "events": [
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "all-16",
+      "model_execution_pids": [],
+      "natural_job_rows": [],
+      "observation_capabilities": {
+        "model_execution_observable": true,
+        "natural_process_observable": true,
+        "paused_schedule_registry_observable": true,
+        "protected_window_observable": true,
+        "scheduler_mutation": false
+      },
+      "observed_at": "2026-09-08T00:18:15.791217+00:00",
+      "pause_observed_at": "2026-09-08T00:18:15.791239+00:00",
+      "paused_schedule_count": 8,
+      "running_model_process_count": 0,
+      "safe_to_spawn": true,
+      "scheduled_window": null,
+      "scheduled_window_end": null,
+      "stage": "SOURCE_PREPARATION",
+      "subject_count": 16,
+      "unexpected_active_monitoring_paths": [],
+      "workload_observation_backend": "PAUSE_REGISTRY_PLUS_PS_NATURAL_MARKERS_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    }
+  ],
+  "live_workload_contention_risk": 0,
+  "natural_live_cancel_count": 0,
+  "observation_capabilities": {
+    "model_execution_observable": true,
+    "natural_process_observable": true,
+    "paused_schedule_registry_observable": true,
+    "protected_window_observable": true,
+    "scheduler_mutation": false
+  },
+  "observation_unavailable_fail_closed_count": 0,
+  "observation_unavailable_fail_open_count": 0,
+  "scheduler_mutation": 0,
+  "shadow_pause_for_natural_live": 0,
+  "status": "PASS",
+  "workload_observation_backend": "PAUSE_REGISTRY_PLUS_PS_NATURAL_MARKERS_PLUS_LSOF_CODEX_RUNTIME_STATE"
+}

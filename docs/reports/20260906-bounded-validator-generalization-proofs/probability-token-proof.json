@@ -1,0 +1,21 @@
+{
+  "contract": "probability-token-boundary-v1",
+  "non_probability_rate": [
+    "상승률",
+    "하락률",
+    "성장률",
+    "증가율",
+    "감소율",
+    "수익률",
+    "마진율",
+    "변동률"
+  ],
+  "probability_token_boundary": "PASS",
+  "probability_true_positive_regression": 0,
+  "true_positive": [
+    "승률 70%",
+    "성공확률이 높다",
+    "probability",
+    "odds"
+  ]
+}

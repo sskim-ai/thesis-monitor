@@ -1,0 +1,14 @@
+{
+  "changed_surface": [
+    "shared ordinal evidence-sufficiency ladder",
+    "symmetric conservative adjacent-bucket tie-break"
+  ],
+  "contract": "directional-calibration-prompt-diff-v1",
+  "current_prompt_owner_sha256": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061",
+  "directional_threshold_changed": 0,
+  "historical_prompt_owner_sha256": "caf95d9f8191825892dc71a922e2898d71d4aaf06befdcad616860a622c2ebaa",
+  "price_timing_prompt_changed": 0,
+  "schema_changed": 0,
+  "status": "PASS",
+  "ticker_specific_rule_count": 0
+}

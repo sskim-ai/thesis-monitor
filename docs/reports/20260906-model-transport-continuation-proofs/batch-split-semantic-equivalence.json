@@ -1,0 +1,8 @@
+{
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "batch_split_adopted": 0,
+  "batch_split_semantic_equivalence": "FAIL",
+  "contract": "batch-split-semantic-equivalence-v1",
+  "reason": "splitting would change the shared model context; no split was adopted",
+  "status": "PASS"
+}

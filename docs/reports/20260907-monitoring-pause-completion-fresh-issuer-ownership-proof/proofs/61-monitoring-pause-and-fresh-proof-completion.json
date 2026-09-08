@@ -1,0 +1,175 @@
+{
+  "actual_model_invocation_count": 17,
+  "artifact_count": 1165,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "contract": "monitoring-pause-completion-fresh-issuer-ownership-proof-v1",
+  "current_paused_scheduler_object_count": 8,
+  "current_task_new_scheduler_mutation_count": 2,
+  "diff_check": "PASS",
+  "exposure": {
+    "output_exposure_state": "FULLY_EXPOSED",
+    "raw_subject_row_count": 64,
+    "stage_context_counts": {
+      "DIRECTIONAL_CORE": 8,
+      "PRICE_TIMING": 8
+    },
+    "unique_exposed_issuer_count": 16,
+    "unique_exposed_issuers": [
+      "001440",
+      "006910",
+      "023440",
+      "025000",
+      "043100",
+      "045340",
+      "064820",
+      "073490",
+      "130740",
+      "131030",
+      "288980",
+      "372910",
+      "LNG",
+      "NU",
+      "TCI",
+      "WMG"
+    ]
+  },
+  "final_head_sha": "46e09b999d6c5834fa5f5adf7ec1ff0df159bfb1",
+  "focused_tests": "PASS",
+  "full_tests": "PASS",
+  "historical_changed_scheduler_object_count": 6,
+  "market_mix": {
+    "kr": 12,
+    "us": 4
+  },
+  "model": "gpt-5.6-sol",
+  "model_retry_count": 0,
+  "model_timeout_owner_count": 1,
+  "model_timeout_seconds": 1800,
+  "next_scope": "BOUNDED_TRANSPORT_RUNTIME_REVIEW",
+  "operational_pause_kr_status": "PAUSED_COMPLETE",
+  "operational_pause_status": "PAUSED_COMPLETE",
+  "operational_pause_us_status": "PAUSED_COMPLETE",
+  "ordered_cohort": [
+    "NU",
+    "LNG",
+    "TCI",
+    "WMG",
+    "043100",
+    "025000",
+    "131030",
+    "372910",
+    "130740",
+    "045340",
+    "006910",
+    "288980",
+    "023440",
+    "064820",
+    "001440",
+    "073490"
+  ],
+  "ownership_generalization_verdict": "NOT_ESTABLISHED",
+  "production_change": {
+    "additional_dependencies_paused": [
+      "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "com.seungsoo.thesis-monitor.ai-review-delivery-retry"
+    ],
+    "auto_resume_configured": false,
+    "contract": "production-change-accounting-v1",
+    "current_paused_scheduler_objects": 8,
+    "current_task_new_scheduler_mutations": 2,
+    "deployment": 0,
+    "forced_termination_count": 0,
+    "historical_transition_activity": null,
+    "main_merge": 0,
+    "night_futures_change": 0,
+    "prior_task_changed_scheduler_objects": 6,
+    "production_db_mutation_task_initiated": 0,
+    "production_scheduler_change": 1,
+    "production_telegram_send_task_initiated": 0,
+    "status": "PASS",
+    "stock_registration_change": 0,
+    "unauthorized_scheduler_change": 0
+  },
+  "readiness": "NOT_READY_TRANSPORT_TIMEOUT",
+  "reasoning_effort": "xhigh",
+  "restoration_requires_explicit_user_request": true,
+  "ruff": "PASS",
+  "run_results": {
+    "a": "16/16",
+    "b": "FAILED_0/16",
+    "c": "NOT_RUN",
+    "first": "16/16"
+  },
+  "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe",
+  "source_generation_id": "20260907-fresh-issuer-source-20260907T090500Z-2b1e0d043243",
+  "status": "STOPPED",
+  "stop_reason": "InstrumentedTransportError:TIMEOUT:20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+  "transition_backlog_observation": {
+    "contract": "monitoring-pause-transition-ledger-v1",
+    "historical_held_packet": {
+      "packet_id": "2026-09-07-kr-run-60-4ec80c93055c",
+      "state_at_2026-09-07T16:30:35+09:00": {
+        "held_or_pending": 9,
+        "sent": 0
+      }
+    },
+    "natural_fallback_transition": {
+      "attempt_count_per_item": 1,
+      "completed_through_kst": "2026-09-07T17:10:18+09:00",
+      "delivery_item_count": 9,
+      "delivery_mode": "deterministic_fallback",
+      "delivery_row_ids": [
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572,
+        573,
+        574
+      ],
+      "evidence": [
+        "read-only notificationdelivery ledger",
+        "ai-review-fallback.out.log final result"
+      ],
+      "interpretation": "the natural 17:10 fallback consumed the held backlog before the current task disabled and unloaded the fallback job",
+      "job": "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "pending_count": 0,
+      "result": "FALLBACK_DELIVERED",
+      "sent_count": 9,
+      "task_initiated": false,
+      "tickers": [
+        "__DAILY_DIGEST_KR__",
+        "000660",
+        "003690",
+        "005490",
+        "005930",
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ],
+      "trigger_kst": "2026-09-07T17:10:00+09:00"
+    },
+    "preservation": {
+      "delivery_rows_deleted": 0,
+      "delivery_rows_manually_marked_sent": 0,
+      "delivery_rows_requeued": 0,
+      "investment_history_rewritten": 0,
+      "task_initiated_database_mutation": 0,
+      "task_initiated_telegram_send": 0
+    },
+    "state_after_transition": {
+      "historical_kr_packet_pending_count": 0,
+      "historical_kr_packet_sent_count": 9,
+      "in_flight_relevant_process_count": 0,
+      "observed_at": "2026-09-07T17:42:54+09:00",
+      "same_day_pending_count": 0,
+      "same_day_sent_count": 24
+    },
+    "status": "PASS_WITH_NATURAL_TRANSITION_DELIVERY"
+  }
+}

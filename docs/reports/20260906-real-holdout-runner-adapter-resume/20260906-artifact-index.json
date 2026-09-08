@@ -1,0 +1,324 @@
+{
+  "artifact_count": 63,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "contract": "real-holdout-runner-adapter-artifact-index-v1",
+  "rows": [
+    {
+      "bytes": 656,
+      "path": "20260906-01-repository-provenance.md",
+      "sha256": "17755fb1e6e343c4d473c914ceb6887649cbac52682146186d82ae57edd60b46"
+    },
+    {
+      "bytes": 1119,
+      "path": "20260906-02-runner-adapter-root-cause.md",
+      "sha256": "9741b9258dec5d615ecfbb0a4ceab5e0f38dd1ef4140d52f3d03c716b521536f"
+    },
+    {
+      "bytes": 566,
+      "path": "20260906-03-runner-adapter-binding-contract.md",
+      "sha256": "cb5ed0a9189ea6b24425cef5253227388b71bd4a143c3f55a35b99a38efdccac"
+    },
+    {
+      "bytes": 749,
+      "path": "20260906-04-runner-adapter-binding-preflight.md",
+      "sha256": "aa243e20db0683a78f25d5c61e9eeb5dc8cde67a970ec211f04f6c7ded7a9036"
+    },
+    {
+      "bytes": 873,
+      "path": "20260906-05-bounded-diff-audit.md",
+      "sha256": "18b54a105a086033c02deccd443e2f736f5ec0cc5a2dca1f9eb174e68e7382be"
+    },
+    {
+      "bytes": 1390,
+      "path": "20260906-06-architecture-semantic-freeze-reverification.md",
+      "sha256": "bcff92023ce256e508b2d99b48f28cb5b2628425c0fb6f90d1a46ce9f54e7d97"
+    },
+    {
+      "bytes": 404,
+      "path": "20260906-07-source-freeze-reverification.md",
+      "sha256": "580b6baaceb6d6c9819081d130259f807b39a78d166160f2c49b0d8fb03de36e"
+    },
+    {
+      "bytes": 1593,
+      "path": "20260906-08-transport-topology-freeze-reverification.md",
+      "sha256": "9b0cd1dd20b35787b334d90f209d47802385a7688ab00b3fcef2a26b95f3a0a9"
+    },
+    {
+      "bytes": 540,
+      "path": "20260906-09-model-semantic-input-freeze.md",
+      "sha256": "5579b8f946c57558f558ec7ec897a4f026d499bea4d79ffd05daa9a8b363d064"
+    },
+    {
+      "bytes": 845,
+      "path": "20260906-10-current-holdout-reuse-gate.md",
+      "sha256": "421fbc3eb5b160eacff29bb882752148ccc2523bc58e75e032ecdf6ea25843c5"
+    },
+    {
+      "bytes": 526,
+      "path": "20260906-11-live-workload-coexistence-audit.md",
+      "sha256": "733f2d9cf0dad3c7e03b35763ad98a137c96dbee1a1e45688cc82fb5bab597ce"
+    },
+    {
+      "bytes": 685,
+      "path": "20260906-12-resume-source-lock.md",
+      "sha256": "339f7c422564dbccae3f3a1e5cb96197967518f560cb41a0ca3093a558d8b1df"
+    },
+    {
+      "bytes": 793,
+      "path": "20260906-13-resume-first.md",
+      "sha256": "73e7dcd8dab0ef6ad93d4ccc105ab53a35f18ccb1f0ebd0354ef4419a535c5dc"
+    },
+    {
+      "bytes": 408,
+      "path": "20260906-14-first-per-run-semantic-gates.md",
+      "sha256": "31d898cced243b166cde593feed35ffe80d1d47fc5f5b5a11baf604012a3ab7b"
+    },
+    {
+      "bytes": 598,
+      "path": "20260906-15-resume-run-a.md",
+      "sha256": "054b15c749f3d5897d535fff741b79b9bef34faf40bdf3704b0bd75bb265653a"
+    },
+    {
+      "bytes": 391,
+      "path": "20260906-16-run-a-per-run-semantic-gates.md",
+      "sha256": "98b7e4cae06da1b3a5615326101159a5a76280014fd243ff154e0a27f95959f8"
+    },
+    {
+      "bytes": 598,
+      "path": "20260906-17-resume-run-b.md",
+      "sha256": "f16ca73061ca679a6276f564fdd2affe01b6cbce825d3151bcc3c43c20067223"
+    },
+    {
+      "bytes": 391,
+      "path": "20260906-18-run-b-per-run-semantic-gates.md",
+      "sha256": "2a6cb06fdc943d80cdd067e247fd24c22544506649e1611876d00bba97a9b270"
+    },
+    {
+      "bytes": 598,
+      "path": "20260906-19-resume-run-c.md",
+      "sha256": "42d009eabd87abfbd95010994f674af8e15c12873cc47f014f80567ea6839799"
+    },
+    {
+      "bytes": 391,
+      "path": "20260906-20-run-c-per-run-semantic-gates.md",
+      "sha256": "75ea5f812740074a9ffb9d63f428e99a8b675ced0fdef189aedb86ec18f4f2f1"
+    },
+    {
+      "bytes": 513,
+      "path": "20260906-21-holdout-exposure-retirement-state.md",
+      "sha256": "cc3c5d9e7fc4e882da090eb6f8e3282b9c3ff897480b4868860995b2dbc91fd5"
+    },
+    {
+      "bytes": 314,
+      "path": "20260906-22-resume-core-stability.md",
+      "sha256": "5b446e4f1860d093b9629185210d16118b4d064ee655c2f59fd7e9c238f60282"
+    },
+    {
+      "bytes": 314,
+      "path": "20260906-23-resume-timing-stability.md",
+      "sha256": "262ff1a9a5bb194b5ff4b49ff8b35575d5b25a703428137d837cc772452f4bcf"
+    },
+    {
+      "bytes": 390,
+      "path": "20260906-24-resume-dominance-ownership.md",
+      "sha256": "f8ea0692de2b1c60f53e909ab9534bf04d4eaff95bcb9c603f4652f0054a3756"
+    },
+    {
+      "bytes": 365,
+      "path": "20260906-25-resume-renderer-action-ownership.md",
+      "sha256": "77c6d3b2cebc30071118f257cf2b81655245de7c9b5bc539c3728d1e5e2b392a"
+    },
+    {
+      "bytes": 774,
+      "path": "20260906-26-resume-hard-safety-regression.md",
+      "sha256": "02a10b7b84be738614e14522b48fa65dd4b01db09b36fb0ed3dee5fe87da1fb5"
+    },
+    {
+      "bytes": 395,
+      "path": "20260906-27-production-no-change.md",
+      "sha256": "a63aaac762f644225f6e69e8f652921b43a90ee447b05354d83db3eac7951ae8"
+    },
+    {
+      "bytes": 264,
+      "path": "20260906-28-night-futures-no-change.md",
+      "sha256": "e3ef749fdf57ed699ed606798f9a133a259c936aee8b8eac74f4335f7d10f5d8"
+    },
+    {
+      "bytes": 378,
+      "path": "20260906-29-monitoring-bootstrap-next-handoff.md",
+      "sha256": "39bf20338f2a29ff30dbdd8c0135745be56ee65b1cdcc2f6d4616d6a7405a63b"
+    },
+    {
+      "bytes": 4542,
+      "path": "20260906-30-program-completion.md",
+      "sha256": "009b3132297e8298c901598587df1746924679d11f98b8e0862b5bf6f4e22674"
+    },
+    {
+      "bytes": 561,
+      "path": "proofs/01-repository-provenance.json",
+      "sha256": "8d9dad273cbd0b7e8f5823c6978b643d6a94acd437505ce2bd04169e54b51ef2"
+    },
+    {
+      "bytes": 1108,
+      "path": "proofs/02-runner-adapter-root-cause.json",
+      "sha256": "71207722fd0610556399e99ec0a199daa999e55577474b42110d5675a3a5cd5a"
+    },
+    {
+      "bytes": 495,
+      "path": "proofs/03-runner-adapter-binding-contract.json",
+      "sha256": "a494177c3802bfd7a90589ea453e1a1dfdd7d9b93801073e8e99795765848aa9"
+    },
+    {
+      "bytes": 696,
+      "path": "proofs/04-runner-adapter-binding-preflight.json",
+      "sha256": "08507788fda36b4c387122d443bdd1c744cbd38be3dc7146d0b13e41d4773685"
+    },
+    {
+      "bytes": 778,
+      "path": "proofs/05-bounded-diff-audit.json",
+      "sha256": "02ec3fcab275040edf513d5d8022dad0aa9d7f123dafc1c7db0f1c7ea773f767"
+    },
+    {
+      "bytes": 1293,
+      "path": "proofs/06-architecture-semantic-freeze-reverification.json",
+      "sha256": "bb4d8d761c7d31eb6f1d99af9485a985bb2445bf4cd422b1501fdd1fc871536a"
+    },
+    {
+      "bytes": 1983,
+      "path": "proofs/07-source-freeze-reverification.json",
+      "sha256": "160100e824e7afbe513eec0cc06267a96825b4a9e0271d52cdaf6a95ca54bacb"
+    },
+    {
+      "bytes": 1498,
+      "path": "proofs/08-transport-topology-freeze-reverification.json",
+      "sha256": "939ee0ba51125ad23f5d0c598f55f03281debc9e563fadc23e4fe0352aea8acf"
+    },
+    {
+      "bytes": 1651,
+      "path": "proofs/09-model-semantic-input-freeze.json",
+      "sha256": "2e7c08d37aa95ddbaf777d019210b739c215d14445ad8d38459ec7ab8571acdc"
+    },
+    {
+      "bytes": 798,
+      "path": "proofs/10-current-holdout-reuse-gate.json",
+      "sha256": "ba9f5afc016114b52c551ca8662ad01ad57ffed16c1a107c194937980b168c96"
+    },
+    {
+      "bytes": 1129,
+      "path": "proofs/11-live-workload-coexistence-audit.json",
+      "sha256": "fbfb02620cf92804a479d359b827134079990d4cf8929473d4cfb4e4b92be04a"
+    },
+    {
+      "bytes": 656,
+      "path": "proofs/12-resume-source-lock.json",
+      "sha256": "eb30360dccf74806c5b403896eead3b7db23977176d0a1dde54c8f922de31ba3"
+    },
+    {
+      "bytes": 3618,
+      "path": "proofs/13-resume-first.json",
+      "sha256": "2d65450788878ec922ce38cb24fff4e47dd3a53b49dce3f1f56de9a07ee639d8"
+    },
+    {
+      "bytes": 295,
+      "path": "proofs/14-first-per-run-semantic-gates.json",
+      "sha256": "12bb8cf1186c9002dbde890ec61db3ffabd4a86c589ce5308ac4b6150f7bfe0a"
+    },
+    {
+      "bytes": 517,
+      "path": "proofs/15-resume-run-a.json",
+      "sha256": "27f3c9df27353813e41375fd68124ffb740cfe2a18f012a97379309ed0557dc9"
+    },
+    {
+      "bytes": 278,
+      "path": "proofs/16-run-a-per-run-semantic-gates.json",
+      "sha256": "ae4064b34303207b34776d7934f309a6980684a7d515ea7d24e3a738f6d9a025"
+    },
+    {
+      "bytes": 517,
+      "path": "proofs/17-resume-run-b.json",
+      "sha256": "bdc575bdf6b6bbdc7326997880f6efea24ae5ad10f5a704972467938455bb4c8"
+    },
+    {
+      "bytes": 278,
+      "path": "proofs/18-run-b-per-run-semantic-gates.json",
+      "sha256": "2cc2272dc8a5e5850de23f397e402fc610ae0aae71dbb603e59c1ae8c29407a3"
+    },
+    {
+      "bytes": 517,
+      "path": "proofs/19-resume-run-c.json",
+      "sha256": "d4e28b5ce36781ac5ef17d08d127e0d9e8b512796422fe5ae5e4aac2332db8d8"
+    },
+    {
+      "bytes": 278,
+      "path": "proofs/20-run-c-per-run-semantic-gates.json",
+      "sha256": "8a082d8cf73879fc369c512dd2891cb56024ac39819b811d28113221c3273820"
+    },
+    {
+      "bytes": 515,
+      "path": "proofs/21-holdout-exposure-retirement-state.json",
+      "sha256": "67c3577d31ac3419ad9fd8c56cf2bcb195285cf77dd3e3d7a0fcec710e8ac914"
+    },
+    {
+      "bytes": 223,
+      "path": "proofs/22-resume-core-stability.json",
+      "sha256": "e38c9149e6fdd5e117c7c1aaf2c810790e0339c0aa7ad52b40a645458c707b5e"
+    },
+    {
+      "bytes": 219,
+      "path": "proofs/23-resume-timing-stability.json",
+      "sha256": "b0148c93bc8b796273f503f4e48a9efa1fd2a7d7434a4f2f0b49bca115962f1e"
+    },
+    {
+      "bytes": 279,
+      "path": "proofs/24-resume-dominance-ownership.json",
+      "sha256": "5096161db6f27e158e1ca027053307146ff1fe7bd0fdb861e17c26bfdf6a0c71"
+    },
+    {
+      "bytes": 254,
+      "path": "proofs/25-resume-renderer-action-ownership.json",
+      "sha256": "a02a71b3af1a300867580568d80c79101b1bd129c2c16785326bbd1fb7a28854"
+    },
+    {
+      "bytes": 691,
+      "path": "proofs/26-resume-hard-safety-regression.json",
+      "sha256": "337a5c3bfd12ed510b24dfafe4260922b0cf2ddc2253212c601c532f8c673032"
+    },
+    {
+      "bytes": 288,
+      "path": "proofs/27-production-no-change.json",
+      "sha256": "d49fba7672b7cba63254cd6916cde179a1204e9df5afbbdbc75c1082a580021d"
+    },
+    {
+      "bytes": 151,
+      "path": "proofs/28-night-futures-no-change.json",
+      "sha256": "fa916eb9ae102adeb8c5616ce04421bd34f1072bcf41ce9711f82fcab60752cd"
+    },
+    {
+      "bytes": 249,
+      "path": "proofs/29-monitoring-bootstrap-next-handoff.json",
+      "sha256": "5b8c7388759288014e402505aea1d642a9a4572c3748a6b994cafa59deb70335"
+    },
+    {
+      "bytes": 4593,
+      "path": "proofs/30-program-completion.json",
+      "sha256": "a218590282706d86f52e4e141cd1977c941aa7e14e78fd436ee4ddfd8c79e917"
+    },
+    {
+      "bytes": 2930,
+      "path": "proofs/transport-receipts/8f273f5e35b0c461.json",
+      "sha256": "758c2a5dd89a5aae4bd244e9b3f58d2d51d926ee1fa3ef2ef8b5c0bdbc7e211e"
+    },
+    {
+      "bytes": 2887,
+      "path": "proofs/transport-receipts/af35fbf6ef8c90d1.json",
+      "sha256": "1d2ce5155f3e22667a9e42c099b654401b42464cfa508b31dd8f291f2a1207bb"
+    },
+    {
+      "bytes": 2929,
+      "path": "proofs/transport-receipts/c43975e1fca911bb.json",
+      "sha256": "2f663eb3761a817033bbca9e208572ca250dcb45978c5ec831a8efae13428f50"
+    }
+  ],
+  "status": "PASS"
+}

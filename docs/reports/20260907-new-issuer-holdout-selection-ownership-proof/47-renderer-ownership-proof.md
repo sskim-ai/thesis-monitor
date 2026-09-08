@@ -1,0 +1,10 @@
+# 47 Renderer Ownership Proof
+
+| Field | Value |
+| --- | --- |
+| contract | renderer-ownership-proof-v1 |
+| known_hard_safety_regression | 0 |
+| reason | NO_REAL_MODEL_OUTPUT |
+| status | NOT_MEASURED |
+
+Machine proof: `proofs/47-renderer-ownership-proof.json`.

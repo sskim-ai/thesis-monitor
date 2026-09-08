@@ -1,0 +1,494 @@
+{
+  "bounded_candidate_count": 48,
+  "candidate_rows": [
+    {
+      "candidate_rank": 1,
+      "company_name": "유니트론텍",
+      "exchange": "KOSDAQ",
+      "industry": "자동차 부품 및 내장품 판매업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "자동차 부품 및 내장품 판매업",
+      "ticker": "142210"
+    },
+    {
+      "candidate_rank": 2,
+      "company_name": "에이전트AI",
+      "exchange": "KOSDAQ",
+      "industry": "전기업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "전기업",
+      "ticker": "060900"
+    },
+    {
+      "candidate_rank": 3,
+      "company_name": "한탑",
+      "exchange": "KOSDAQ",
+      "industry": "곡물가공품, 전분 및 전분제품 제조업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "곡물가공품, 전분 및 전분제품 제조업",
+      "ticker": "002680"
+    },
+    {
+      "candidate_rank": 4,
+      "company_name": "NAVER",
+      "exchange": "KOSPI",
+      "industry": "자료처리, 호스팅, 포털 및 기타 인터넷 정보매개 서비스업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "자료처리, 호스팅, 포털 및 기타 인터넷 정보매개 서비스업",
+      "ticker": "035420"
+    },
+    {
+      "candidate_rank": 5,
+      "company_name": "인크로스",
+      "exchange": "KOSDAQ",
+      "industry": "광고업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "광고업",
+      "ticker": "216050"
+    },
+    {
+      "candidate_rank": 6,
+      "company_name": "세운메디칼",
+      "exchange": "KOSDAQ",
+      "industry": "의료용품 및 기타 의약 관련제품 제조업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "의료용품 및 기타 의약 관련제품 제조업",
+      "ticker": "100700"
+    },
+    {
+      "candidate_rank": 7,
+      "company_name": "디아이동일",
+      "exchange": "KOSPI",
+      "industry": "상품 중개업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "상품 중개업",
+      "ticker": "001530"
+    },
+    {
+      "candidate_rank": 8,
+      "company_name": "폴레드",
+      "exchange": "KOSDAQ",
+      "industry": "가정용 기기 제조업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "가정용 기기 제조업",
+      "ticker": "487580"
+    },
+    {
+      "candidate_rank": 9,
+      "company_name": "에코심플렉스",
+      "exchange": "KOSDAQ",
+      "industry": "사업시설 유지·관리 서비스업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "사업시설 유지·관리 서비스업",
+      "ticker": "038870"
+    },
+    {
+      "candidate_rank": 10,
+      "company_name": "오아",
+      "exchange": "KOSDAQ",
+      "industry": "가전제품 및 정보통신장비 소매업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "가전제품 및 정보통신장비 소매업",
+      "ticker": "342870"
+    },
+    {
+      "candidate_rank": 11,
+      "company_name": "제이케이시냅스",
+      "exchange": "KOSDAQ",
+      "industry": "기타 화학제품 제조업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "기타 화학제품 제조업",
+      "ticker": "060230"
+    },
+    {
+      "candidate_rank": 12,
+      "company_name": "맵스리얼티",
+      "exchange": "KOSPI",
+      "industry": "신탁업 및 집합투자업",
+      "primary_or_reserve": "INITIAL",
+      "sector": "신탁업 및 집합투자업",
+      "ticker": "094800"
+    },
+    {
+      "candidate_rank": 13,
+      "company_name": "스튜디오삼익",
+      "exchange": "KOSDAQ",
+      "industry": "기타 생활용품 소매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "기타 생활용품 소매업",
+      "ticker": "415380"
+    },
+    {
+      "candidate_rank": 14,
+      "company_name": "KZ정밀",
+      "exchange": "KOSDAQ",
+      "industry": "일반 목적용 기계 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "일반 목적용 기계 제조업",
+      "ticker": "036560"
+    },
+    {
+      "candidate_rank": 15,
+      "company_name": "트루엔",
+      "exchange": "KOSDAQ",
+      "industry": "영상 및 음향기기 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "영상 및 음향기기 제조업",
+      "ticker": "417790"
+    },
+    {
+      "candidate_rank": 16,
+      "company_name": "에스엘에스바이오",
+      "exchange": "KOSDAQ",
+      "industry": "그외 기타 전문, 과학 및 기술 서비스업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "그외 기타 전문, 과학 및 기술 서비스업",
+      "ticker": "246250"
+    },
+    {
+      "candidate_rank": 17,
+      "company_name": "남양유업",
+      "exchange": "KOSPI",
+      "industry": "동·식물성 유지 및 낙농제품 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "동·식물성 유지 및 낙농제품 제조업",
+      "ticker": "003920"
+    },
+    {
+      "candidate_rank": 18,
+      "company_name": "일신석재",
+      "exchange": "KOSPI",
+      "industry": "건축자재, 철물 및 난방장치 도매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "건축자재, 철물 및 난방장치 도매업",
+      "ticker": "007110"
+    },
+    {
+      "candidate_rank": 19,
+      "company_name": "쿠쿠홈시스",
+      "exchange": "KOSPI",
+      "industry": "개인 및 가정용품 임대업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "개인 및 가정용품 임대업",
+      "ticker": "284740"
+    },
+    {
+      "candidate_rank": 20,
+      "company_name": "토모큐브",
+      "exchange": "KOSDAQ",
+      "industry": "사진장비 및 광학기기 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "사진장비 및 광학기기 제조업",
+      "ticker": "475960"
+    },
+    {
+      "candidate_rank": 21,
+      "company_name": "CJ프레시웨이",
+      "exchange": "KOSDAQ",
+      "industry": "음·식료품 및 담배 도매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "음·식료품 및 담배 도매업",
+      "ticker": "051500"
+    },
+    {
+      "candidate_rank": 22,
+      "company_name": "대한항공",
+      "exchange": "KOSPI",
+      "industry": "항공",
+      "primary_or_reserve": "RESERVE",
+      "sector": "운송",
+      "ticker": "003490"
+    },
+    {
+      "candidate_rank": 23,
+      "company_name": "우리손에프앤지",
+      "exchange": "KOSDAQ",
+      "industry": "도축, 육류 가공 및 저장 처리업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "도축, 육류 가공 및 저장 처리업",
+      "ticker": "073560"
+    },
+    {
+      "candidate_rank": 24,
+      "company_name": "주연테크",
+      "exchange": "KOSPI",
+      "industry": "컴퓨터 및 주변장치 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "컴퓨터 및 주변장치 제조업",
+      "ticker": "044380"
+    },
+    {
+      "candidate_rank": 25,
+      "company_name": "양지사",
+      "exchange": "KOSDAQ",
+      "industry": "인쇄 및 인쇄관련 산업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "인쇄 및 인쇄관련 산업",
+      "ticker": "030960"
+    },
+    {
+      "candidate_rank": 26,
+      "company_name": "메타케어",
+      "exchange": "KOSPI",
+      "industry": "기계장비 및 관련 물품 도매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "기계장비 및 관련 물품 도매업",
+      "ticker": "118000"
+    },
+    {
+      "candidate_rank": 27,
+      "company_name": "더본코리아",
+      "exchange": "KOSPI",
+      "industry": "상품 종합 도매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "상품 종합 도매업",
+      "ticker": "475560"
+    },
+    {
+      "candidate_rank": 28,
+      "company_name": "삼양컴텍",
+      "exchange": "KOSDAQ",
+      "industry": "무기 및 총포탄 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "무기 및 총포탄 제조업",
+      "ticker": "484590"
+    },
+    {
+      "candidate_rank": 29,
+      "company_name": "신영증권",
+      "exchange": "KOSPI",
+      "industry": "금융 지원 서비스업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "금융 지원 서비스업",
+      "ticker": "001720"
+    },
+    {
+      "candidate_rank": 30,
+      "company_name": "KG에코솔루션",
+      "exchange": "KOSDAQ",
+      "industry": "자동차 차체나 트레일러 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "자동차 차체나 트레일러 제조업",
+      "ticker": "151860"
+    },
+    {
+      "candidate_rank": 31,
+      "company_name": "대영포장",
+      "exchange": "KOSPI",
+      "industry": "골판지, 종이 상자 및 종이용기 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "골판지, 종이 상자 및 종이용기 제조업",
+      "ticker": "014160"
+    },
+    {
+      "candidate_rank": 32,
+      "company_name": "코아스",
+      "exchange": "KOSPI",
+      "industry": "가구 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "가구 제조업",
+      "ticker": "071950"
+    },
+    {
+      "candidate_rank": 33,
+      "company_name": "메가엠디",
+      "exchange": "KOSDAQ",
+      "industry": "일반 교습 학원",
+      "primary_or_reserve": "RESERVE",
+      "sector": "일반 교습 학원",
+      "ticker": "133750"
+    },
+    {
+      "candidate_rank": 34,
+      "company_name": "아이엘",
+      "exchange": "KOSDAQ",
+      "industry": "전구 및 조명장치 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "전구 및 조명장치 제조업",
+      "ticker": "307180"
+    },
+    {
+      "candidate_rank": 35,
+      "company_name": "옵티코어",
+      "exchange": "KOSDAQ",
+      "industry": "마그네틱 및 광학 매체 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "마그네틱 및 광학 매체 제조업",
+      "ticker": "380540"
+    },
+    {
+      "candidate_rank": 36,
+      "company_name": "모다이노칩",
+      "exchange": "KOSDAQ",
+      "industry": "섬유, 의복, 신발 및 가죽제품 소매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "섬유, 의복, 신발 및 가죽제품 소매업",
+      "ticker": "080420"
+    },
+    {
+      "candidate_rank": 37,
+      "company_name": "인탑스",
+      "exchange": "KOSDAQ",
+      "industry": "통신 및 방송 장비 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "통신 및 방송 장비 제조업",
+      "ticker": "049070"
+    },
+    {
+      "candidate_rank": 38,
+      "company_name": "삼익악기",
+      "exchange": "KOSPI",
+      "industry": "악기 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "악기 제조업",
+      "ticker": "002450"
+    },
+    {
+      "candidate_rank": 39,
+      "company_name": "원풍",
+      "exchange": "KOSDAQ",
+      "industry": "플라스틱제품 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "플라스틱제품 제조업",
+      "ticker": "008370"
+    },
+    {
+      "candidate_rank": 40,
+      "company_name": "신세계푸드",
+      "exchange": "KOSPI",
+      "industry": "음식점업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "음식점업",
+      "ticker": "031440"
+    },
+    {
+      "candidate_rank": 41,
+      "company_name": "서울반도체",
+      "exchange": "KOSDAQ",
+      "industry": "반도체 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "반도체 제조업",
+      "ticker": "046890"
+    },
+    {
+      "candidate_rank": 42,
+      "company_name": "DB손해보험",
+      "exchange": "KOSPI",
+      "industry": "보험업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "보험업",
+      "ticker": "005830"
+    },
+    {
+      "candidate_rank": 43,
+      "company_name": "대성산업",
+      "exchange": "KOSPI",
+      "industry": "연료 소매업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "연료 소매업",
+      "ticker": "128820"
+    },
+    {
+      "candidate_rank": 44,
+      "company_name": "NH농우바이오",
+      "exchange": "KOSDAQ",
+      "industry": "작물 재배업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "작물 재배업",
+      "ticker": "054050"
+    },
+    {
+      "candidate_rank": 45,
+      "company_name": "iMBC",
+      "exchange": "KOSDAQ",
+      "industry": "영상·오디오물 제공 서비스업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "영상·오디오물 제공 서비스업",
+      "ticker": "052220"
+    },
+    {
+      "candidate_rank": 46,
+      "company_name": "동양",
+      "exchange": "KOSPI",
+      "industry": "시멘트, 석회, 플라스터 및 그 제품 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "시멘트, 석회, 플라스터 및 그 제품 제조업",
+      "ticker": "001520"
+    },
+    {
+      "candidate_rank": 47,
+      "company_name": "SM Life Design",
+      "exchange": "KOSDAQ",
+      "industry": "기록매체 복제업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "기록매체 복제업",
+      "ticker": "063440"
+    },
+    {
+      "candidate_rank": 48,
+      "company_name": "MH에탄올",
+      "exchange": "KOSPI",
+      "industry": "알코올음료 제조업",
+      "primary_or_reserve": "RESERVE",
+      "sector": "알코올음료 제조업",
+      "ticker": "023150"
+    }
+  ],
+  "contract": "kr-candidate-manifest-v1",
+  "initial_candidates": [
+    "142210",
+    "060900",
+    "002680",
+    "035420",
+    "216050",
+    "100700",
+    "001530",
+    "487580",
+    "038870",
+    "342870",
+    "060230",
+    "094800"
+  ],
+  "market": "kr",
+  "model_calls": 0,
+  "ordered_reserve": [
+    "415380",
+    "036560",
+    "417790",
+    "246250",
+    "003920",
+    "007110",
+    "284740",
+    "475960",
+    "051500",
+    "003490",
+    "073560",
+    "044380",
+    "030960",
+    "118000",
+    "475560",
+    "484590",
+    "001720",
+    "151860",
+    "014160",
+    "071950",
+    "133750",
+    "307180",
+    "380540",
+    "080420",
+    "049070",
+    "002450",
+    "008370",
+    "031440",
+    "046890",
+    "005830",
+    "128820",
+    "054050",
+    "052220",
+    "001520",
+    "063440",
+    "023150"
+  ],
+  "status": "FROZEN",
+  "target_count": 12
+}

@@ -1,0 +1,1081 @@
+{
+  "acceptance_protocol_hash": "939459e6efc6b21cb8b14f2c256e6e56364724ae1f76a2a5cdb518ce66a77c17",
+  "ai_imperative_primary_action": 0,
+  "architecture_semantic_drift": 0,
+  "artifact_count": "PENDING_FINALIZE",
+  "artifact_hash_mismatch_count": "PENDING_FINALIZE",
+  "artifact_size_mismatch_count": "PENDING_FINALIZE",
+  "base_sha": "3d5cbddd20df8120423cc9786a3b0ac3382d0f49",
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "branch": "codex/20260908-runtime-namespace-isolation-repair-fresh-holdout-proof",
+  "buy_without_nonprice_material_anchor": 0,
+  "carried_runtime_risk": "RUNTIME_NAMESPACE_ISOLATION_REPAIRED_AND_PREFLIGHT_PROVEN",
+  "context_evidence_preservation_failure_count": 0,
+  "contract": "dual-market-source-coverage-new-issuer-holdout-ownership-proof-v1",
+  "core_stability_counts": {
+    "BOUNDARY_UNCERTAINTY": 4,
+    "STABLE": 4,
+    "UNSTABLE": 8
+  },
+  "diff_check": "PENDING_FINAL_VALIDATION",
+  "directional_core_price_technical_refs": 0,
+  "directional_core_supply_refs": 0,
+  "directional_model_calls_on_source_insufficient": 0,
+  "dual_market_source_policy_hash": "c6a7c4609690a228f37d8f73d7b97c4915489894e20eb908a4694929a364f6f1",
+  "dual_market_source_status": "BOTH_PASS",
+  "exclusion_registry_count": 133,
+  "execution_reconciliation": {
+    "accepted_stage_rows": 128,
+    "attempted_contexts": 32,
+    "composed_rows": 64,
+    "context_preservation_failures": 0,
+    "contract": "risk-carried-execution-reconciliation-v1",
+    "disconnect_then_success_count": 2,
+    "disconnect_then_timeout_count": 0,
+    "distinct_invocation_count": 32,
+    "distinct_namespace_count": 32,
+    "distinct_session_count": 32,
+    "distinct_working_directory_count": 32,
+    "explicit_capacity_count": 0,
+    "explicit_context_failure_count": 0,
+    "failed_contexts": 0,
+    "namespace_collision_count": 0,
+    "not_run_contexts": 0,
+    "observed_cli_retry_signal_count": 2,
+    "observed_websocket_disconnect_signal_count": 2,
+    "orphan_count": 0,
+    "per_run_stage_attempts": {
+      "A:DIRECTIONAL_CORE": 4,
+      "A:PRICE_TIMING": 4,
+      "B:DIRECTIONAL_CORE": 4,
+      "B:PRICE_TIMING": 4,
+      "C:DIRECTIONAL_CORE": 4,
+      "C:PRICE_TIMING": 4,
+      "FIRST:DIRECTIONAL_CORE": 4,
+      "FIRST:PRICE_TIMING": 4
+    },
+    "per_run_stage_successes": {
+      "A:DIRECTIONAL_CORE": 4,
+      "A:PRICE_TIMING": 4,
+      "B:DIRECTIONAL_CORE": 4,
+      "B:PRICE_TIMING": 4,
+      "C:DIRECTIONAL_CORE": 4,
+      "C:PRICE_TIMING": 4,
+      "FIRST:DIRECTIONAL_CORE": 4,
+      "FIRST:PRICE_TIMING": 4
+    },
+    "planned_contexts": 32,
+    "raw_output_document_count": 32,
+    "raw_stage_rows": 128,
+    "rendered_rows": 64,
+    "request_accepted_observability": "UNAVAILABLE",
+    "semantic_checked_rows": 128,
+    "status": "PASS",
+    "successful_contexts": 32,
+    "terminal_contexts": 32,
+    "unique_issuer_output_count": 16,
+    "unique_issuer_outputs": [
+      "020180",
+      "023910",
+      "053270",
+      "064850",
+      "065510",
+      "078860",
+      "122310",
+      "145720",
+      "199730",
+      "299900",
+      "396470",
+      "417200",
+      "ASTI",
+      "DOX",
+      "NWS",
+      "WYNN"
+    ],
+    "upstream_request_attempt_count": "UNKNOWN",
+    "watchdog_timeout_count": 0,
+    "working_directory_collision_count": 0,
+    "wrapper_explicit_retry_count": 0
+  },
+  "final_direction_owner": "DIRECTIONAL_CORE",
+  "final_head_sha": "54d746f0fddccdbb70088d4d05d3f823e3e7623f",
+  "first_complete_run_attempt_count": 1,
+  "first_hard_safety_gate_status": "PASS",
+  "first_ownership_gate_status": "PASS",
+  "first_renderer_gate_status": "PASS",
+  "first_spawn_time": "2026-09-07T18:39:14.974425+00:00",
+  "frozen_evaluation_cutoff": "2026-09-07T18:16:51+00:00",
+  "full_tests": "PENDING_FINAL_VALIDATION",
+  "future_unseen_holdout_reuse_allowed": 0,
+  "historical_predecessor_zip_sha256": "1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3",
+  "historical_stall_pattern_recurred": 0,
+  "holdout_output_exposure_state": "FULLY_EXPOSED",
+  "holdout_retirement_state": "RETIRED_AFTER_EVALUATION",
+  "holdout_semantic_revelation_state": "NO_SEMANTIC_DEFECT_OBSERVED",
+  "implementation_commit": "0379cd604a0c305147585835e399f40e1e8d5933",
+  "input_integrity_status": "PASS",
+  "input_zip_sha256": "1546b6830ab350f7d7cee68f8b2732806aa5e53b3a5cde8ed4648ee1223d49ec",
+  "known_hard_safety_regression": 0,
+  "kr_candidate_attempt_count": 15,
+  "kr_pipeline_coverage_gap_count": 0,
+  "kr_source_absence_count": 3,
+  "kr_source_insufficient_count": 3,
+  "kr_source_sufficient_count": 12,
+  "kr_source_target_status": "PASS",
+  "kr_target_count": 12,
+  "kr_unknown_failure_count": 0,
+  "latest_forensic_bundle_integrity": "PASS",
+  "latest_forensic_zip_sha256": "c88368357cd4fbde183d90620194307f9e5498cfd75d2dcafad6b8d04ffbc3b4",
+  "live_structured_autonomy_activation": 0,
+  "live_v2_change": 0,
+  "main_merge": 0,
+  "message_quality": {
+    "contract": "risk-carried-advisory-message-quality-summary-v1",
+    "gate_role": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+    "issuer_specific_evidence_omission_status": "NOT_MEASURED",
+    "rows": [
+      {
+        "quality": {
+          "average_character_count": 631.0,
+          "contract": "structured-autonomy-message-quality-v2-shadow",
+          "errors": [
+            "cross_ticker_substantive_repetition"
+          ],
+          "max_character_count": 721,
+          "message_count": 16,
+          "repeated_substantive_span_count": 9,
+          "repeated_substantive_spans": [
+            "BUY 쪽: 매출 기반과 영업·순이익이 후속 공시에서도 유지되면 상방 근거가 강화된다.",
+            "BUY 쪽: 후속 공시에서도 매출 기반과 영업·순이익이 유지되고 세부 사업 지표가 뒷받침되면 상향 재평가한다.",
+            "SELL 쪽: 후속 공시에서 매출 기반 약화와 영업·순이익의 적자 전환이 확인되면 하향 재평가한다.",
+            "공식 매출과 영업·순이익 흑자가 발행사 차원의 긍정 방향을 지지한다.",
+            "사업 방향은 우호적이나 지속성 확인 전 신규 관점은 대기 상태다.",
+            "현재 수익 창출은 우호적이지만 지속성과 가치평가 근거가 부족해 긍정 강도는 제한된다.",
+            "현재 이익 창출을 근거로 보유 가능한 사업 상태지만 후속 실적 확인이 필요하다.",
+            "후속 공시에서 수익 지속성과 세부 사업 지표의 뒷받침이 확인돼야 한다.",
+            "후속 공시에서도 매출과 영업·순이익이 유지되고 세부 사업 KPI가 이를 뒷받침해야 한다."
+          ],
+          "repetition_taxonomy": {
+            "ACTION_CONTEXT_WRAPPER_REPEAT": 17,
+            "MATERIAL_SPAM_REPEAT": 9,
+            "MODEL_OWNED_SUBSTANTIVE_REPEAT": 175,
+            "RENDERER_OWNED_REPEAT": 192,
+            "REQUIRED_SAFETY_REPEAT": 0
+          },
+          "rows": [
+            {
+              "character_count": 609,
+              "duplicate_substantive_lines": [],
+              "ticker": "WYNN",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 667,
+              "duplicate_substantive_lines": [],
+              "ticker": "DOX",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 597,
+              "duplicate_substantive_lines": [],
+              "ticker": "NWS",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 663,
+              "duplicate_substantive_lines": [],
+              "ticker": "ASTI",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 608,
+              "duplicate_substantive_lines": [],
+              "ticker": "064850",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 609,
+              "duplicate_substantive_lines": [],
+              "ticker": "053270",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 602,
+              "duplicate_substantive_lines": [],
+              "ticker": "078860",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 609,
+              "duplicate_substantive_lines": [],
+              "ticker": "145720",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 688,
+              "duplicate_substantive_lines": [],
+              "ticker": "199730",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 721,
+              "duplicate_substantive_lines": [],
+              "ticker": "065510",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 693,
+              "duplicate_substantive_lines": [],
+              "ticker": "396470",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 678,
+              "duplicate_substantive_lines": [],
+              "ticker": "299900",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 587,
+              "duplicate_substantive_lines": [],
+              "ticker": "020180",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 567,
+              "duplicate_substantive_lines": [],
+              "ticker": "122310",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 607,
+              "duplicate_substantive_lines": [],
+              "ticker": "417200",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 591,
+              "duplicate_substantive_lines": [],
+              "ticker": "023910",
+              "validation": "PASS"
+            }
+          ],
+          "status": "FAIL"
+        },
+        "repeated_substantive_span_count": 9,
+        "run": "first",
+        "status": "FAIL"
+      },
+      {
+        "quality": {
+          "average_character_count": 624.44,
+          "contract": "structured-autonomy-message-quality-v2-shadow",
+          "errors": [
+            "cross_ticker_substantive_repetition"
+          ],
+          "max_character_count": 657,
+          "message_count": 16,
+          "repeated_substantive_span_count": 7,
+          "repeated_substantive_spans": [
+            "BUY 쪽: 후속 공식 공시에서 매출 기반 확대와 영업·순이익의 지속이 확인되는 경우다.",
+            "SELL 쪽: 후속 공식 공시에서 매출 기반 약화나 영업·순손실 전환이 확인되는 경우다.",
+            "최근 공식 분기의 매출과 영업·순이익 흑자는 긍정적이지만, 추세와 세부 사업 지표·가치 근거가 부족해 약한 긍정의 보유 판단이다.",
+            "현재 분기 흑자와 매출 기반은 보유 논리를 지지하지만 지속성 검증이 남아 있다.",
+            "현재 실적은 긍정적이지만 추세와 세부 사업 지표·가치 근거가 부족해 신규 판단은 대기다.",
+            "현재 연결 영업흑자와 순이익은 보유 가능한 사업 기초를 제공한다.",
+            "후속 공식 공시에서 매출 기반과 이익의 지속, 세부 사업 지표의 실행 성과가 함께 확인되는 경우다."
+          ],
+          "repetition_taxonomy": {
+            "ACTION_CONTEXT_WRAPPER_REPEAT": 24,
+            "MATERIAL_SPAM_REPEAT": 7,
+            "MODEL_OWNED_SUBSTANTIVE_REPEAT": 168,
+            "RENDERER_OWNED_REPEAT": 196,
+            "REQUIRED_SAFETY_REPEAT": 0
+          },
+          "rows": [
+            {
+              "character_count": 615,
+              "duplicate_substantive_lines": [],
+              "ticker": "WYNN",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 633,
+              "duplicate_substantive_lines": [],
+              "ticker": "DOX",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 615,
+              "duplicate_substantive_lines": [],
+              "ticker": "NWS",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 618,
+              "duplicate_substantive_lines": [],
+              "ticker": "ASTI",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 651,
+              "duplicate_substantive_lines": [],
+              "ticker": "064850",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 649,
+              "duplicate_substantive_lines": [],
+              "ticker": "053270",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 589,
+              "duplicate_substantive_lines": [],
+              "ticker": "078860",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 657,
+              "duplicate_substantive_lines": [],
+              "ticker": "145720",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 607,
+              "duplicate_substantive_lines": [],
+              "ticker": "199730",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 652,
+              "duplicate_substantive_lines": [],
+              "ticker": "065510",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 646,
+              "duplicate_substantive_lines": [],
+              "ticker": "396470",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 616,
+              "duplicate_substantive_lines": [],
+              "ticker": "299900",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 606,
+              "duplicate_substantive_lines": [],
+              "ticker": "020180",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 594,
+              "duplicate_substantive_lines": [],
+              "ticker": "122310",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 613,
+              "duplicate_substantive_lines": [],
+              "ticker": "417200",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 630,
+              "duplicate_substantive_lines": [],
+              "ticker": "023910",
+              "validation": "PASS"
+            }
+          ],
+          "status": "FAIL"
+        },
+        "repeated_substantive_span_count": 7,
+        "run": "a",
+        "status": "FAIL"
+      },
+      {
+        "quality": {
+          "average_character_count": 664.06,
+          "contract": "structured-autonomy-message-quality-v2-shadow",
+          "errors": [
+            "cross_ticker_substantive_repetition"
+          ],
+          "max_character_count": 697,
+          "message_count": 16,
+          "repeated_substantive_span_count": 13,
+          "repeated_substantive_spans": [
+            "BUY 쪽: 후속 공식 공시에서 현재의 흑자 구조가 유지되고 핵심 사업 KPI의 실행력이 확인되면 상향 재평가한다.",
+            "BUY 쪽: 후속 공식 실적에서 영업·순이익 흑자가 이어지고 매출 기반과 사업 KPI가 함께 개선되는 경우다.",
+            "BUY 쪽: 후속 공식 실적에서도 영업·순이익이 유지되고 세부 사업 KPI가 뒷받침되면 상향 재평가한다.",
+            "SELL 쪽: 후속 공식 공시에서 매출 기반이 약해지거나 영업이익과 순이익이 훼손되고 사업 KPI가 둔화하면 하향 재평가한다.",
+            "SELL 쪽: 후속 공식 실적에서 영업·순손익이 적자로 전환되고 매출 기반이나 사업 KPI가 약화되는 경우다.",
+            "SELL 쪽: 후속 공식 실적에서 영업·순이익이 손실로 전환되거나 매출 기반이 약해지면 하향 재평가한다.",
+            "수익성 지속성과 가격 매력도 확인 전에는 신규 판단을 유보한다.",
+            "현재 매출과 흑자 실적은 긍정적이지만 밸류에이션과 지속성 KPI가 없어 보유 관점의 매수 기울기다.",
+            "현재 수익성이 후속 공식 실적에서도 유지되고 세부 사업 KPI와 안전한 밸류에이션 근거가 확인되는 경우다.",
+            "현재 흑자 실적은 보유 논리를 지지하지만 지속성 확인이 필요하다.",
+            "현재 흑자와 매출은 긍정적이지만 사업 KPI와 밸류에이션 확인이 부족해 보유 판단이 적절하다.",
+            "후속 공식 공시에서 이익 지속성과 핵심 사업 KPI가 확인되고 검증 가능한 가치 근거가 확보될 때다.",
+            "후속 공식 실적에서 흑자 지속과 매출 기반의 안정성이 확인되고 사업 KPI와 실행 진척이 구체화되는 경우다."
+          ],
+          "repetition_taxonomy": {
+            "ACTION_CONTEXT_WRAPPER_REPEAT": 20,
+            "MATERIAL_SPAM_REPEAT": 13,
+            "MODEL_OWNED_SUBSTANTIVE_REPEAT": 172,
+            "RENDERER_OWNED_REPEAT": 200,
+            "REQUIRED_SAFETY_REPEAT": 0
+          },
+          "rows": [
+            {
+              "character_count": 658,
+              "duplicate_substantive_lines": [],
+              "ticker": "WYNN",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 675,
+              "duplicate_substantive_lines": [],
+              "ticker": "DOX",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 693,
+              "duplicate_substantive_lines": [],
+              "ticker": "NWS",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 684,
+              "duplicate_substantive_lines": [],
+              "ticker": "ASTI",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 688,
+              "duplicate_substantive_lines": [],
+              "ticker": "064850",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 687,
+              "duplicate_substantive_lines": [],
+              "ticker": "053270",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 622,
+              "duplicate_substantive_lines": [],
+              "ticker": "078860",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 687,
+              "duplicate_substantive_lines": [],
+              "ticker": "145720",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 666,
+              "duplicate_substantive_lines": [],
+              "ticker": "199730",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 697,
+              "duplicate_substantive_lines": [],
+              "ticker": "065510",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 689,
+              "duplicate_substantive_lines": [],
+              "ticker": "396470",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 614,
+              "duplicate_substantive_lines": [],
+              "ticker": "299900",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 646,
+              "duplicate_substantive_lines": [],
+              "ticker": "020180",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 621,
+              "duplicate_substantive_lines": [],
+              "ticker": "122310",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 654,
+              "duplicate_substantive_lines": [],
+              "ticker": "417200",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 644,
+              "duplicate_substantive_lines": [],
+              "ticker": "023910",
+              "validation": "PASS"
+            }
+          ],
+          "status": "FAIL"
+        },
+        "repeated_substantive_span_count": 13,
+        "run": "b",
+        "status": "FAIL"
+      },
+      {
+        "quality": {
+          "average_character_count": 638.25,
+          "contract": "structured-autonomy-message-quality-v2-shadow",
+          "errors": [
+            "cross_ticker_substantive_repetition"
+          ],
+          "max_character_count": 689,
+          "message_count": 16,
+          "repeated_substantive_span_count": 5,
+          "repeated_substantive_spans": [
+            "BUY 쪽: 후속 공시에서도 매출과 영업·순이익 흑자가 유지되고 사업 KPI가 확인되면 상향 재평가한다.",
+            "SELL 쪽: 후속 공시에서 영업손실로 전환하거나 매출 기반 수익성이 약화되면 하향 재평가한다.",
+            "현재 매출과 흑자 이익 구조는 보유 가능한 사업 상태를 뒷받침한다.",
+            "현재 흑자 실적은 긍정적 방향을 지지하지만 밸류에이션과 세부 KPI 공백이 확신을 제한한다.",
+            "후속 공식 공시에서 매출과 영업흑자의 지속 및 사업 KPI 공개가 확인되는 경우다."
+          ],
+          "repetition_taxonomy": {
+            "ACTION_CONTEXT_WRAPPER_REPEAT": 21,
+            "MATERIAL_SPAM_REPEAT": 5,
+            "MODEL_OWNED_SUBSTANTIVE_REPEAT": 171,
+            "RENDERER_OWNED_REPEAT": 192,
+            "REQUIRED_SAFETY_REPEAT": 0
+          },
+          "rows": [
+            {
+              "character_count": 647,
+              "duplicate_substantive_lines": [],
+              "ticker": "WYNN",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 666,
+              "duplicate_substantive_lines": [],
+              "ticker": "DOX",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 623,
+              "duplicate_substantive_lines": [],
+              "ticker": "NWS",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 618,
+              "duplicate_substantive_lines": [],
+              "ticker": "ASTI",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 664,
+              "duplicate_substantive_lines": [],
+              "ticker": "064850",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 689,
+              "duplicate_substantive_lines": [],
+              "ticker": "053270",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 647,
+              "duplicate_substantive_lines": [],
+              "ticker": "078860",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 667,
+              "duplicate_substantive_lines": [],
+              "ticker": "145720",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 591,
+              "duplicate_substantive_lines": [],
+              "ticker": "199730",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 620,
+              "duplicate_substantive_lines": [],
+              "ticker": "065510",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 599,
+              "duplicate_substantive_lines": [],
+              "ticker": "396470",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 561,
+              "duplicate_substantive_lines": [],
+              "ticker": "299900",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 661,
+              "duplicate_substantive_lines": [],
+              "ticker": "020180",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 627,
+              "duplicate_substantive_lines": [],
+              "ticker": "122310",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 687,
+              "duplicate_substantive_lines": [],
+              "ticker": "417200",
+              "validation": "PASS"
+            },
+            {
+              "character_count": 645,
+              "duplicate_substantive_lines": [],
+              "ticker": "023910",
+              "validation": "PASS"
+            }
+          ],
+          "status": "FAIL"
+        },
+        "repeated_substantive_span_count": 5,
+        "run": "c",
+        "status": "FAIL"
+      }
+    ],
+    "status": "RECORDED"
+  },
+  "model": "gpt-5.6-sol",
+  "model_semantic_input_drift": 0,
+  "model_timeout_owner_count": 1,
+  "model_timeout_seconds": 1800,
+  "monitoring_registration_calls": 0,
+  "new_holdout_cohort": [
+    "WYNN",
+    "DOX",
+    "NWS",
+    "ASTI",
+    "064850",
+    "053270",
+    "078860",
+    "145720",
+    "199730",
+    "065510",
+    "396470",
+    "299900",
+    "020180",
+    "122310",
+    "417200",
+    "023910"
+  ],
+  "new_holdout_exclusion_count": 133,
+  "new_holdout_kr_count": 12,
+  "new_holdout_selection_seed_or_rule": "20260907-new-issuer-holdout-selection-ownership-proof-v1",
+  "new_holdout_us_count": 4,
+  "new_source_generation_id": "20260907-fresh-issuer-source-20260907T181651Z-c5cb0cee45e8",
+  "new_source_lock": "d66f7425646512e1eb6916b61912e52660ce3fc2449fd9d6af59e5e3dd15210b",
+  "next_scope": "MONITORING_BOOTSTRAP_INTEGRATION_REVIEW",
+  "night_futures_code_mutation": 0,
+  "ownership_generalization_verdict": "NOT_ESTABLISHED",
+  "ownership_proof_completion_state": "COMPLETE",
+  "per_context_semantic_failure_count": 0,
+  "per_run_gates": {
+    "contract": "risk-carried-per-run-hard-gate-summary-v1",
+    "rows": [
+      {
+        "execution": "PASS",
+        "hard_safety": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS",
+        "run": "first",
+        "validation_pass_count": 16
+      },
+      {
+        "execution": "PASS",
+        "hard_safety": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS",
+        "run": "a",
+        "validation_pass_count": 16
+      },
+      {
+        "execution": "PASS",
+        "hard_safety": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS",
+        "run": "b",
+        "validation_pass_count": 16
+      },
+      {
+        "execution": "PASS",
+        "hard_safety": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS",
+        "run": "c",
+        "validation_pass_count": 16
+      }
+    ],
+    "status": "PASS"
+  },
+  "precommit_hash": "d5637ceb494ddb2701f5342d93a838e691a5dc0fb206552a82a3bf517909c5f8",
+  "precommit_time": "2026-09-07T18:38:37.540338+00:00",
+  "price_only_directional_model_calls": 0,
+  "price_only_directional_ownership_violations": 0,
+  "price_only_holder_reduce": 0,
+  "price_timing_new_buyer_upgrade": 0,
+  "primary_user_action_wording_owner": "RENDERER",
+  "prior_real_issuer_exposure_registry_count": 117,
+  "production_and_policy_change_ledger": {
+    "auto_resume_executed": 0,
+    "canonical_transport_mutation": 0,
+    "contract": "risk-carried-production-and-policy-no-change-v1",
+    "historical_b_or_c_resumed": 0,
+    "live_v2_or_structured_autonomy_activation": 0,
+    "main_merge_or_deployment": 0,
+    "model_or_effort_change": 0,
+    "monitoring_registration_change": 0,
+    "new_free_api_management_gate": 0,
+    "night_futures_change": 0,
+    "paid_data_service_change": 0,
+    "production_db_mutation": 0,
+    "production_scheduler_mutation": 0,
+    "production_send": 0,
+    "status": "PASS",
+    "timeout_increase": 0,
+    "wrapper_explicit_retry_count": 0
+  },
+  "production_db_mutation": 0,
+  "production_scheduler_change": 0,
+  "production_telegram_send": 0,
+  "prompt_semantic_drift": 0,
+  "quality_gate_role": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+  "readiness": "NOT_READY",
+  "real_holdout_directional_context_count": 16,
+  "real_holdout_model_calls_while_source_target_failed": 0,
+  "real_holdout_model_invocation_count": 32,
+  "real_holdout_price_timing_context_count": 16,
+  "real_holdout_renderer_context_count": 16,
+  "real_holdout_subject_output_count": 16,
+  "reasoning_effort": "xhigh",
+  "reconnect_path_exercised": "OBSERVED",
+  "renderer_ownership_violations": 0,
+  "report_input_normalization": {
+    "exclusion": {
+      "prior": {
+        "semantic": "prior_exclusion_count",
+        "sources": [
+          {
+            "source": "reconciled_exclusion_count-appended_count",
+            "value": 117
+          }
+        ],
+        "status": "RESOLVED",
+        "value": 117
+      },
+      "reconciled": {
+        "semantic": "new_holdout_exclusion_count",
+        "sources": [
+          {
+            "source": "reconciled_count",
+            "value": 133
+          }
+        ],
+        "status": "RESOLVED",
+        "value": 133
+      }
+    },
+    "markets": {
+      "kr": {
+        "fields": {
+          "attempted_count": {
+            "semantic": "kr_attempted_count",
+            "sources": [
+              {
+                "source": "attempted_count",
+                "value": 15
+              },
+              {
+                "source": "len(rows)",
+                "value": 15
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 15
+          },
+          "pipeline_coverage_gap_count": {
+            "semantic": "kr_pipeline_coverage_gap_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 0
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 0
+          },
+          "source_absence_count": {
+            "semantic": "kr_source_absence_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 3
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 3
+          },
+          "source_insufficient_count": {
+            "semantic": "kr_source_insufficient_count",
+            "sources": [
+              {
+                "source": "source_insufficient_count",
+                "value": 3
+              },
+              {
+                "source": "rows.source_sufficiency",
+                "value": 3
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 3
+          },
+          "source_sufficient_count": {
+            "semantic": "kr_source_sufficient_count",
+            "sources": [
+              {
+                "source": "source_sufficient_count",
+                "value": 12
+              },
+              {
+                "source": "rows.source_sufficiency",
+                "value": 12
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 12
+          },
+          "target_count": {
+            "semantic": "kr_target_count",
+            "sources": [
+              {
+                "source": "target_count",
+                "value": 12
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 12
+          },
+          "unknown_failure_count": {
+            "semantic": "kr_unknown_failure_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 0
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 0
+          }
+        },
+        "market": "kr",
+        "source_target_status": "PASS"
+      },
+      "us": {
+        "fields": {
+          "attempted_count": {
+            "semantic": "us_attempted_count",
+            "sources": [
+              {
+                "source": "attempted_count",
+                "value": 10
+              },
+              {
+                "source": "len(rows)",
+                "value": 10
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 10
+          },
+          "pipeline_coverage_gap_count": {
+            "semantic": "us_pipeline_coverage_gap_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 0
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 0
+          },
+          "source_absence_count": {
+            "semantic": "us_source_absence_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 6
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 6
+          },
+          "source_insufficient_count": {
+            "semantic": "us_source_insufficient_count",
+            "sources": [
+              {
+                "source": "source_insufficient_count",
+                "value": 6
+              },
+              {
+                "source": "rows.source_sufficiency",
+                "value": 6
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 6
+          },
+          "source_sufficient_count": {
+            "semantic": "us_source_sufficient_count",
+            "sources": [
+              {
+                "source": "source_sufficient_count",
+                "value": 4
+              },
+              {
+                "source": "rows.source_sufficiency",
+                "value": 4
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 4
+          },
+          "target_count": {
+            "semantic": "us_target_count",
+            "sources": [
+              {
+                "source": "target_count",
+                "value": 4
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 4
+          },
+          "unknown_failure_count": {
+            "semantic": "us_unknown_failure_count",
+            "sources": [
+              {
+                "source": "rows.failure_class",
+                "value": 0
+              }
+            ],
+            "status": "RESOLVED",
+            "value": 0
+          }
+        },
+        "market": "us",
+        "source_target_status": "PASS"
+      }
+    },
+    "registry": {
+      "prior": {
+        "semantic": "prior_real_issuer_exposure_registry_count",
+        "sources": [
+          {
+            "source": "prior_registry_count",
+            "value": 117
+          },
+          {
+            "source": "reconciled_registry_count-appended_exposed_issuer_count",
+            "value": 117
+          }
+        ],
+        "status": "RESOLVED",
+        "value": 117
+      },
+      "reconciled": {
+        "semantic": "reconciled_registry_count",
+        "sources": [
+          {
+            "source": "reconciled_registry_count",
+            "value": 133
+          },
+          {
+            "source": "len(rows)",
+            "value": 133
+          },
+          {
+            "source": "len(all_excluded_issuer_keys)",
+            "value": 133
+          }
+        ],
+        "status": "RESOLVED",
+        "value": 133
+      }
+    }
+  },
+  "ruff": "PENDING_FINAL_VALIDATION",
+  "run_a_hard_safety_gate_status": "PASS",
+  "run_a_ownership_gate_status": "PASS",
+  "run_a_renderer_gate_status": "PASS",
+  "run_b_hard_safety_gate_status": "PASS",
+  "run_b_ownership_gate_status": "PASS",
+  "run_b_renderer_gate_status": "PASS",
+  "run_c_hard_safety_gate_status": "PASS",
+  "run_c_ownership_gate_status": "PASS",
+  "run_c_renderer_gate_status": "PASS",
+  "run_results": {
+    "a": "16/16",
+    "b": "16/16",
+    "c": "16/16",
+    "first": "16/16"
+  },
+  "runtime_reliability_status": "NOT_ESTABLISHED",
+  "same_cohort_architecture_tuning_rerun_allowed": 0,
+  "schema_semantic_drift": 0,
+  "sell_without_nonprice_material_anchor": 0,
+  "shared_context_subject_count": 4,
+  "source_identity_status": "PASS",
+  "source_sufficiency_status": "PASS",
+  "status": "STOPPED",
+  "stop_reason": null,
+  "supply_directional_core_usage": 0,
+  "timeout_increase_this_task": 0,
+  "timing_stability_counts": {
+    "BOUNDARY_UNCERTAINTY": 8,
+    "STABLE": 8,
+    "UNSTABLE": 0
+  },
+  "timing_stage_balance_mutation": 0,
+  "timing_stage_direction_mutation": 0,
+  "timing_stage_hold_lean_mutation": 0,
+  "transport_retry_count": 0,
+  "transport_timeout_count": 0,
+  "transport_topology_mutation": 0,
+  "us_candidate_attempt_count": 10,
+  "us_pipeline_coverage_gap_count": 0,
+  "us_source_absence_count": 6,
+  "us_source_insufficient_count": 6,
+  "us_source_sufficient_count": 4,
+  "us_source_target_status": "PASS",
+  "us_target_count": 4,
+  "us_unknown_failure_count": 0,
+  "work_instruction_commit": "8b5477c45023d2330fb686dab6f792e2a8e09715"
+}

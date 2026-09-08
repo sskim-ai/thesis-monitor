@@ -1,0 +1,11 @@
+{
+  "architecture_result": "SYNTHETIC_AND_RETIRED_REGRESSION_COMPLETE",
+  "contract": "structured-actionability-generalization-audit-v1",
+  "eligible_count": 0,
+  "evidence_standard_lowered": 0,
+  "minimum_eligible": 12,
+  "same_generation_repair": 0,
+  "selected_count": 11,
+  "unseen_result": "NOT_EXECUTABLE_SOURCE_COVERAGE",
+  "verdict": "GENERALIZATION_BLOCKED_BY_SOURCE_COVERAGE"
+}

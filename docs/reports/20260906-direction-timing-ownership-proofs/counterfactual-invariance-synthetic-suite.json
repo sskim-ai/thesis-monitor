@@ -1,0 +1,178 @@
+{
+  "cases": [
+    {
+      "case": "A",
+      "core_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "core_direction": "BUY",
+      "core_hold_lean": "NOT_HOLD",
+      "final_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "final_direction": "BUY",
+      "final_hold_lean": "NOT_HOLD",
+      "final_holder": "HOLDABLE",
+      "final_new_buyer": "ATTRACTIVE",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "A_ADVERSE",
+      "core_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "core_direction": "BUY",
+      "core_hold_lean": "NOT_HOLD",
+      "final_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "final_direction": "BUY",
+      "final_hold_lean": "NOT_HOLD",
+      "final_holder": "REVIEW",
+      "final_new_buyer": "AVOID",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "B",
+      "core_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "core_direction": "HOLD",
+      "core_hold_lean": "NEUTRAL",
+      "final_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "final_direction": "HOLD",
+      "final_hold_lean": "NEUTRAL",
+      "final_holder": "HOLDABLE",
+      "final_new_buyer": "WAIT",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "B_COLLAPSE",
+      "core_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "core_direction": "HOLD",
+      "core_hold_lean": "NEUTRAL",
+      "final_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "final_direction": "HOLD",
+      "final_hold_lean": "NEUTRAL",
+      "final_holder": "REVIEW",
+      "final_new_buyer": "AVOID",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "C",
+      "core_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "core_direction": "SELL",
+      "core_hold_lean": "NOT_HOLD",
+      "final_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "final_direction": "SELL",
+      "final_hold_lean": "NOT_HOLD",
+      "final_holder": "REDUCE",
+      "final_new_buyer": "AVOID",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "D",
+      "core_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "core_direction": "BUY",
+      "core_hold_lean": "NOT_HOLD",
+      "final_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "final_direction": "BUY",
+      "final_hold_lean": "NOT_HOLD",
+      "final_holder": "REVIEW",
+      "final_new_buyer": "WAIT",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "E",
+      "core_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "core_direction": "HOLD",
+      "core_hold_lean": "NEUTRAL",
+      "final_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "final_direction": "HOLD",
+      "final_hold_lean": "NEUTRAL",
+      "final_holder": "REVIEW",
+      "final_new_buyer": "AVOID",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "F",
+      "core_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "core_direction": "SELL",
+      "core_hold_lean": "NOT_HOLD",
+      "final_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "final_direction": "SELL",
+      "final_hold_lean": "NOT_HOLD",
+      "final_holder": "REDUCE",
+      "final_new_buyer": "AVOID",
+      "ownership_errors": [],
+      "pass": true
+    },
+    {
+      "case": "G",
+      "core_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "core_direction": "HOLD",
+      "core_hold_lean": "NEUTRAL",
+      "final_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "final_direction": "HOLD",
+      "final_hold_lean": "NEUTRAL",
+      "final_holder": "REVIEW",
+      "final_new_buyer": "WAIT",
+      "ownership_errors": [],
+      "pass": true
+    }
+  ],
+  "contract": "direction-timing-counterfactual-suite-v1",
+  "direction_timing_counterfactual_suite": "PASS",
+  "ticker_free": 1
+}

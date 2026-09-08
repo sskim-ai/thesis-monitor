@@ -1,0 +1,34 @@
+{
+  "actual_generic_provider_route_already_existed": 1,
+  "eligibility_reason_counts": {
+    "debt_or_note": 668,
+    "exchange_traded_fund": 5656,
+    "fund_or_trust": 1002,
+    "preferred": 482,
+    "provider_exchange_route_not_supported": 4349,
+    "provider_http_502": 2,
+    "reit": 50,
+    "right": 145,
+    "sec_cik_unresolved": 6033,
+    "spac": 531,
+    "test_issue": 33,
+    "unit": 372,
+    "unsupported_or_unknown_security_description": 7352,
+    "warrant": 473
+  },
+  "historical_static_discovery_registry_was_bottleneck": 1,
+  "identity_resolution_counts": {
+    "IDENTITY_RESOLVED": 7155,
+    "IDENTITY_UNRESOLVED": 6033
+  },
+  "old_codepath": "scripts/unseen_source_assembly_coldstart.py::_us_identities -> AST literal US_EXCHANGE_BY_TICKER",
+  "provider_capability_codepath": "ohlcv-analyst OhlcvService._resolve_symbol -> KiwoomProvider.resolve_us_symbol -> official provider ND/NY/NA stock lists",
+  "raw_listing_rows": 13188,
+  "route_candidate_issuer_count": 5110,
+  "routing_status_counts": {
+    "ROUTING_CANDIDATE": 5095,
+    "ROUTING_SUPPORTED": 52,
+    "ROUTING_UNSUPPORTED": 8041
+  },
+  "status": "PASS"
+}

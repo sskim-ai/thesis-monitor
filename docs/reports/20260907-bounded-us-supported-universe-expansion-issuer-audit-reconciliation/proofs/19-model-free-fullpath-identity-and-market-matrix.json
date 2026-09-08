@@ -1,0 +1,12 @@
+{
+  "context_manifest_count": 64,
+  "fresh_status": "PASS",
+  "kr4_context_manifest_count": 48,
+  "market_manifest_conflict_count": 0,
+  "model_free_identity_failure_count": 0,
+  "model_free_real_model_call_count": 0,
+  "model_free_simulated_invocation_count": 64,
+  "resumed_status": "PASS",
+  "status": "PASS",
+  "us4_context_manifest_count": 16
+}

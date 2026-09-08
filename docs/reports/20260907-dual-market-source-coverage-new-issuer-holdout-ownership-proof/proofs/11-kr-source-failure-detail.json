@@ -1,0 +1,77 @@
+{
+  "contract": "kr-source-failure-detail-v1",
+  "failure_count": 1,
+  "failure_reason_code_counts": {
+    "EARNINGS_CONTEXT_INSUFFICIENT": 1,
+    "OFFICIAL_FINANCIAL_SOURCE_UNAVAILABLE": 1,
+    "REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT": 1
+  },
+  "market": "kr",
+  "rows": [
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 12,
+      "canonical_issuer_identity": "00600013",
+      "company_name": "맵스리얼티",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "UNAVAILABLE",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY"
+      ],
+      "failure_class": "SOURCE_ABSENCE",
+      "failure_domains": [
+        "BUSINESS_CURRENTORSECTOR_OPERATING_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENTORLIQUIDITY_CASHFLOW_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "failure_reason_codes": [
+        "EARNINGS_CONTEXT_INSUFFICIENT",
+        "OFFICIAL_FINANCIAL_SOURCE_UNAVAILABLE",
+        "REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT"
+      ],
+      "filing_or_official_financial_status": "UNAVAILABLE",
+      "framework": "standard_operating_company",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00600013",
+      "market": "kr",
+      "missing_required_families": [
+        "BUSINESS_CURRENTORSECTOR_OPERATING_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENTORLIQUIDITY_CASHFLOW_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "INSUFFICIENT",
+      "packet_created": false,
+      "packet_hash": null,
+      "price_context_status": "NOT_ATTEMPTED_SOURCE_GATE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 1,
+        "statement_successes": 0
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": false,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment"
+      ],
+      "source_pipeline_status": "SOURCE_INSUFFICIENT",
+      "source_provenance": [
+        {
+          "source": "opendart_formal_filings",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "FAIL",
+      "ticker": "094800",
+      "true_source_absence_suspected": true,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE"
+}

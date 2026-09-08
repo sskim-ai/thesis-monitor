@@ -1,0 +1,39 @@
+{
+  "alias_resolution": "PASS",
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "canary": "c5-shared-context-kr4",
+  "contract": "schema-valid-directional-core-canary-v1",
+  "core_only_evidence_validation": "PASS",
+  "core_only_evidence_violations": {},
+  "real_issuer_used_as_canary": 0,
+  "receipt": {
+    "child_cleanup_status": "NOT_NEEDED",
+    "elapsed_to_exit_seconds": 159.14421,
+    "elapsed_to_first_output_seconds": 1.030494,
+    "input_bytes": 17983,
+    "invocation_id": "20260906-synthetic-canary-resume-20260906T115500Z-6adb47774f0e:canary:c5-shared-context-kr4",
+    "model": "gpt-5.6-sol",
+    "orphan_model_process_count": 0,
+    "output_bytes": 16463,
+    "prompt_sha256": "914d09c5e251bfdc9b2ff9f0652cc5e48b911d984323deee89f29876b5918e2e",
+    "reasoning_effort": "xhigh",
+    "receipt_sha256": "307aa921ad55f01a013b60d27737e4c3376708890e09ad3e60e9bf583bc49095",
+    "schema_sha256": "52d63158c11465a2484e4f94e5599ceb6d8c6b30adc30037656fffabb8c038e3",
+    "secret_exposure_count": 0,
+    "status": "PASS",
+    "stderr_bytes": 34825,
+    "stdout_bytes": 16464,
+    "subject_count": 4,
+    "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+    "transport_grouping_mode": "MODEL_CONTEXT_COUPLED"
+  },
+  "resolved_candidate_sha256": {
+    "SYNTHETIC_KR_C5_SHARED_CONTEXT_KR4_1": "902e5074002fd10a1b41725a5c0a27f0b09adf547eaf2dc11347386b8dfbf048",
+    "SYNTHETIC_KR_C5_SHARED_CONTEXT_KR4_2": "5a406348a5b7699ab27fe236b17ebb130e0f45697f4957afff1450796936787a",
+    "SYNTHETIC_KR_C5_SHARED_CONTEXT_KR4_3": "08bd00b094bab8e353fcb12dec14514234a74c99423cc6f5a7caefcb07404d87",
+    "SYNTHETIC_KR_C5_SHARED_CONTEXT_KR4_4": "987a47a4b66d8bb921e0525f6a21c0ba5d45460985e6f6a3db207a9ae07c8d5d"
+  },
+  "routing_market": "kr",
+  "status": "PASS",
+  "subject_count": 4
+}

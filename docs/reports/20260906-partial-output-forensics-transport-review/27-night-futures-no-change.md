@@ -1,0 +1,14 @@
+# 27 Night Futures No Change
+
+Contract: `night-futures-no-change-v1`
+
+Status: `PASS`
+
+```json
+{
+  "contract": "night-futures-no-change-v1",
+  "night_futures_code_mutation": 0,
+  "night_futures_packet_injection": 0,
+  "status": "PASS"
+}
+```

@@ -1,0 +1,1599 @@
+{
+  "$defs": {
+    "T1_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T1_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T1_DirectionalBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "buy": {
+          "title": "Buy",
+          "type": "number"
+        },
+        "sell": {
+          "title": "Sell",
+          "type": "number"
+        }
+      },
+      "required": [
+        "buy",
+        "sell"
+      ],
+      "title": "DirectionalBalance",
+      "type": "object"
+    },
+    "T1_DirectionalClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs"
+      ],
+      "title": "DirectionalClaim",
+      "type": "object"
+    },
+    "T1_DirectionalSellDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "SECTOR_NORMAL",
+            "DETERIORATION_SIGNAL",
+            "STRUCTURAL_RISK",
+            "OTHER_EVIDENCE"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs",
+        "classification"
+      ],
+      "title": "DirectionalSellDriver",
+      "type": "object"
+    },
+    "T1_DirectionalUnknown": {
+      "additionalProperties": false,
+      "properties": {
+        "directional_negative_basis": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "title": "Directional Negative Basis",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "CONFIDENCE_LIMIT",
+            "CONFIRMATION_REQUIRED",
+            "DIRECTIONAL_NEGATIVE"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "evidence_refs",
+        "treatment",
+        "directional_negative_basis"
+      ],
+      "title": "DirectionalUnknown",
+      "type": "object"
+    },
+    "T1_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "type": "string"
+    },
+    "T1_HoldLean": {
+      "enum": [
+        "BUY_LEAN",
+        "NEUTRAL",
+        "SELL_LEAN",
+        "NOT_HOLD"
+      ],
+      "title": "HoldLean",
+      "type": "string"
+    },
+    "T2_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T2_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T2_DirectionalBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "buy": {
+          "title": "Buy",
+          "type": "number"
+        },
+        "sell": {
+          "title": "Sell",
+          "type": "number"
+        }
+      },
+      "required": [
+        "buy",
+        "sell"
+      ],
+      "title": "DirectionalBalance",
+      "type": "object"
+    },
+    "T2_DirectionalClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs"
+      ],
+      "title": "DirectionalClaim",
+      "type": "object"
+    },
+    "T2_DirectionalSellDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "SECTOR_NORMAL",
+            "DETERIORATION_SIGNAL",
+            "STRUCTURAL_RISK",
+            "OTHER_EVIDENCE"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs",
+        "classification"
+      ],
+      "title": "DirectionalSellDriver",
+      "type": "object"
+    },
+    "T2_DirectionalUnknown": {
+      "additionalProperties": false,
+      "properties": {
+        "directional_negative_basis": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "title": "Directional Negative Basis",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "CONFIDENCE_LIMIT",
+            "CONFIRMATION_REQUIRED",
+            "DIRECTIONAL_NEGATIVE"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "evidence_refs",
+        "treatment",
+        "directional_negative_basis"
+      ],
+      "title": "DirectionalUnknown",
+      "type": "object"
+    },
+    "T2_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "type": "string"
+    },
+    "T2_HoldLean": {
+      "enum": [
+        "BUY_LEAN",
+        "NEUTRAL",
+        "SELL_LEAN",
+        "NOT_HOLD"
+      ],
+      "title": "HoldLean",
+      "type": "string"
+    },
+    "T3_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T3_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T3_DirectionalBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "buy": {
+          "title": "Buy",
+          "type": "number"
+        },
+        "sell": {
+          "title": "Sell",
+          "type": "number"
+        }
+      },
+      "required": [
+        "buy",
+        "sell"
+      ],
+      "title": "DirectionalBalance",
+      "type": "object"
+    },
+    "T3_DirectionalClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs"
+      ],
+      "title": "DirectionalClaim",
+      "type": "object"
+    },
+    "T3_DirectionalSellDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "SECTOR_NORMAL",
+            "DETERIORATION_SIGNAL",
+            "STRUCTURAL_RISK",
+            "OTHER_EVIDENCE"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs",
+        "classification"
+      ],
+      "title": "DirectionalSellDriver",
+      "type": "object"
+    },
+    "T3_DirectionalUnknown": {
+      "additionalProperties": false,
+      "properties": {
+        "directional_negative_basis": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "title": "Directional Negative Basis",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "CONFIDENCE_LIMIT",
+            "CONFIRMATION_REQUIRED",
+            "DIRECTIONAL_NEGATIVE"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "evidence_refs",
+        "treatment",
+        "directional_negative_basis"
+      ],
+      "title": "DirectionalUnknown",
+      "type": "object"
+    },
+    "T3_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "type": "string"
+    },
+    "T3_HoldLean": {
+      "enum": [
+        "BUY_LEAN",
+        "NEUTRAL",
+        "SELL_LEAN",
+        "NOT_HOLD"
+      ],
+      "title": "HoldLean",
+      "type": "string"
+    },
+    "T4_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T4_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T4_DirectionalBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "buy": {
+          "title": "Buy",
+          "type": "number"
+        },
+        "sell": {
+          "title": "Sell",
+          "type": "number"
+        }
+      },
+      "required": [
+        "buy",
+        "sell"
+      ],
+      "title": "DirectionalBalance",
+      "type": "object"
+    },
+    "T4_DirectionalClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs"
+      ],
+      "title": "DirectionalClaim",
+      "type": "object"
+    },
+    "T4_DirectionalSellDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "enum": [
+            "SECTOR_NORMAL",
+            "DETERIORATION_SIGNAL",
+            "STRUCTURAL_RISK",
+            "OTHER_EVIDENCE"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence_refs",
+        "classification"
+      ],
+      "title": "DirectionalSellDriver",
+      "type": "object"
+    },
+    "T4_DirectionalUnknown": {
+      "additionalProperties": false,
+      "properties": {
+        "directional_negative_basis": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "title": "Directional Negative Basis",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "treatment": {
+          "enum": [
+            "CONFIDENCE_LIMIT",
+            "CONFIRMATION_REQUIRED",
+            "DIRECTIONAL_NEGATIVE"
+          ],
+          "title": "Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary",
+        "evidence_refs",
+        "treatment",
+        "directional_negative_basis"
+      ],
+      "title": "DirectionalUnknown",
+      "type": "object"
+    },
+    "T4_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "type": "string"
+    },
+    "T4_HoldLean": {
+      "enum": [
+        "BUY_LEAN",
+        "NEUTRAL",
+        "SELL_LEAN",
+        "NOT_HOLD"
+      ],
+      "title": "HoldLean",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "items": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "business_reevaluation_down": {
+                "items": {
+                  "$ref": "#/$defs/T1_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Down",
+                "type": "array"
+              },
+              "business_reevaluation_up": {
+                "items": {
+                  "$ref": "#/$defs/T1_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Up",
+                "type": "array"
+              },
+              "business_thesis_change": {
+                "enum": [
+                  "STRENGTHENED",
+                  "UNCHANGED",
+                  "WEAKENED",
+                  "UNRESOLVED"
+                ],
+                "title": "Business Thesis Change",
+                "type": "string"
+              },
+              "business_thesis_context": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "buy_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T1_DirectionalClaim"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Buy Drivers",
+                "type": "array"
+              },
+              "core_investment_judgment": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "directional_balance": {
+                "$ref": "#/$defs/T1_DirectionalBalance"
+              },
+              "directional_confidence": {
+                "enum": [
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW"
+                ],
+                "title": "Directional Confidence",
+                "type": "string"
+              },
+              "dominant_evidence": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "earnings_estimate_context": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "fundamental_holder": {
+                "$ref": "#/$defs/T1_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T1_CoreNewBuyerView"
+              },
+              "hold_lean": {
+                "$ref": "#/$defs/T1_HoldLean"
+              },
+              "market_expectation_context": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "material_directional_anchor_basis": {
+                "items": {
+                  "$ref": "#/$defs/T1_EvidenceAlias"
+                },
+                "maxItems": 6,
+                "title": "Material Directional Anchor Basis",
+                "type": "array"
+              },
+              "overall_direction": {
+                "enum": [
+                  "BUY",
+                  "HOLD",
+                  "SELL"
+                ],
+                "title": "Overall Direction",
+                "type": "string"
+              },
+              "risk_context": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "sector_interpretation": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "sell_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T1_DirectionalSellDriver"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Sell Drivers",
+                "type": "array"
+              },
+              "ticker": {
+                "const": "SYNTHETIC_SEQ_KR_B1",
+                "title": "Ticker",
+                "type": "string"
+              },
+              "uncertainty_limit": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              },
+              "unknown_treatments": {
+                "items": {
+                  "$ref": "#/$defs/T1_DirectionalUnknown"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Unknown Treatments",
+                "type": "array"
+              },
+              "valuation_context": {
+                "$ref": "#/$defs/T1_DirectionalClaim"
+              }
+            },
+            "required": [
+              "ticker",
+              "overall_direction",
+              "directional_balance",
+              "hold_lean",
+              "directional_confidence",
+              "business_thesis_change",
+              "business_thesis_context",
+              "earnings_estimate_context",
+              "market_expectation_context",
+              "valuation_context",
+              "risk_context",
+              "sector_interpretation",
+              "buy_drivers",
+              "sell_drivers",
+              "dominant_evidence",
+              "uncertainty_limit",
+              "core_investment_judgment",
+              "unknown_treatments",
+              "material_directional_anchor_basis",
+              "fundamental_new_buyer",
+              "fundamental_holder",
+              "business_reevaluation_up",
+              "business_reevaluation_down"
+            ],
+            "title": "DirectionalCoreCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "business_reevaluation_down": {
+                "items": {
+                  "$ref": "#/$defs/T2_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Down",
+                "type": "array"
+              },
+              "business_reevaluation_up": {
+                "items": {
+                  "$ref": "#/$defs/T2_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Up",
+                "type": "array"
+              },
+              "business_thesis_change": {
+                "enum": [
+                  "STRENGTHENED",
+                  "UNCHANGED",
+                  "WEAKENED",
+                  "UNRESOLVED"
+                ],
+                "title": "Business Thesis Change",
+                "type": "string"
+              },
+              "business_thesis_context": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "buy_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T2_DirectionalClaim"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Buy Drivers",
+                "type": "array"
+              },
+              "core_investment_judgment": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "directional_balance": {
+                "$ref": "#/$defs/T2_DirectionalBalance"
+              },
+              "directional_confidence": {
+                "enum": [
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW"
+                ],
+                "title": "Directional Confidence",
+                "type": "string"
+              },
+              "dominant_evidence": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "earnings_estimate_context": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "fundamental_holder": {
+                "$ref": "#/$defs/T2_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T2_CoreNewBuyerView"
+              },
+              "hold_lean": {
+                "$ref": "#/$defs/T2_HoldLean"
+              },
+              "market_expectation_context": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "material_directional_anchor_basis": {
+                "items": {
+                  "$ref": "#/$defs/T2_EvidenceAlias"
+                },
+                "maxItems": 6,
+                "title": "Material Directional Anchor Basis",
+                "type": "array"
+              },
+              "overall_direction": {
+                "enum": [
+                  "BUY",
+                  "HOLD",
+                  "SELL"
+                ],
+                "title": "Overall Direction",
+                "type": "string"
+              },
+              "risk_context": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "sector_interpretation": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "sell_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T2_DirectionalSellDriver"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Sell Drivers",
+                "type": "array"
+              },
+              "ticker": {
+                "const": "SYNTHETIC_SEQ_KR_B2",
+                "title": "Ticker",
+                "type": "string"
+              },
+              "uncertainty_limit": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              },
+              "unknown_treatments": {
+                "items": {
+                  "$ref": "#/$defs/T2_DirectionalUnknown"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Unknown Treatments",
+                "type": "array"
+              },
+              "valuation_context": {
+                "$ref": "#/$defs/T2_DirectionalClaim"
+              }
+            },
+            "required": [
+              "ticker",
+              "overall_direction",
+              "directional_balance",
+              "hold_lean",
+              "directional_confidence",
+              "business_thesis_change",
+              "business_thesis_context",
+              "earnings_estimate_context",
+              "market_expectation_context",
+              "valuation_context",
+              "risk_context",
+              "sector_interpretation",
+              "buy_drivers",
+              "sell_drivers",
+              "dominant_evidence",
+              "uncertainty_limit",
+              "core_investment_judgment",
+              "unknown_treatments",
+              "material_directional_anchor_basis",
+              "fundamental_new_buyer",
+              "fundamental_holder",
+              "business_reevaluation_up",
+              "business_reevaluation_down"
+            ],
+            "title": "DirectionalCoreCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "business_reevaluation_down": {
+                "items": {
+                  "$ref": "#/$defs/T3_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Down",
+                "type": "array"
+              },
+              "business_reevaluation_up": {
+                "items": {
+                  "$ref": "#/$defs/T3_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Up",
+                "type": "array"
+              },
+              "business_thesis_change": {
+                "enum": [
+                  "STRENGTHENED",
+                  "UNCHANGED",
+                  "WEAKENED",
+                  "UNRESOLVED"
+                ],
+                "title": "Business Thesis Change",
+                "type": "string"
+              },
+              "business_thesis_context": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "buy_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T3_DirectionalClaim"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Buy Drivers",
+                "type": "array"
+              },
+              "core_investment_judgment": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "directional_balance": {
+                "$ref": "#/$defs/T3_DirectionalBalance"
+              },
+              "directional_confidence": {
+                "enum": [
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW"
+                ],
+                "title": "Directional Confidence",
+                "type": "string"
+              },
+              "dominant_evidence": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "earnings_estimate_context": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "fundamental_holder": {
+                "$ref": "#/$defs/T3_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T3_CoreNewBuyerView"
+              },
+              "hold_lean": {
+                "$ref": "#/$defs/T3_HoldLean"
+              },
+              "market_expectation_context": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "material_directional_anchor_basis": {
+                "items": {
+                  "$ref": "#/$defs/T3_EvidenceAlias"
+                },
+                "maxItems": 6,
+                "title": "Material Directional Anchor Basis",
+                "type": "array"
+              },
+              "overall_direction": {
+                "enum": [
+                  "BUY",
+                  "HOLD",
+                  "SELL"
+                ],
+                "title": "Overall Direction",
+                "type": "string"
+              },
+              "risk_context": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "sector_interpretation": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "sell_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T3_DirectionalSellDriver"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Sell Drivers",
+                "type": "array"
+              },
+              "ticker": {
+                "const": "SYNTHETIC_SEQ_KR_B3",
+                "title": "Ticker",
+                "type": "string"
+              },
+              "uncertainty_limit": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              },
+              "unknown_treatments": {
+                "items": {
+                  "$ref": "#/$defs/T3_DirectionalUnknown"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Unknown Treatments",
+                "type": "array"
+              },
+              "valuation_context": {
+                "$ref": "#/$defs/T3_DirectionalClaim"
+              }
+            },
+            "required": [
+              "ticker",
+              "overall_direction",
+              "directional_balance",
+              "hold_lean",
+              "directional_confidence",
+              "business_thesis_change",
+              "business_thesis_context",
+              "earnings_estimate_context",
+              "market_expectation_context",
+              "valuation_context",
+              "risk_context",
+              "sector_interpretation",
+              "buy_drivers",
+              "sell_drivers",
+              "dominant_evidence",
+              "uncertainty_limit",
+              "core_investment_judgment",
+              "unknown_treatments",
+              "material_directional_anchor_basis",
+              "fundamental_new_buyer",
+              "fundamental_holder",
+              "business_reevaluation_up",
+              "business_reevaluation_down"
+            ],
+            "title": "DirectionalCoreCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "business_reevaluation_down": {
+                "items": {
+                  "$ref": "#/$defs/T4_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Down",
+                "type": "array"
+              },
+              "business_reevaluation_up": {
+                "items": {
+                  "$ref": "#/$defs/T4_DirectionalClaim"
+                },
+                "maxItems": 3,
+                "minItems": 1,
+                "title": "Business Reevaluation Up",
+                "type": "array"
+              },
+              "business_thesis_change": {
+                "enum": [
+                  "STRENGTHENED",
+                  "UNCHANGED",
+                  "WEAKENED",
+                  "UNRESOLVED"
+                ],
+                "title": "Business Thesis Change",
+                "type": "string"
+              },
+              "business_thesis_context": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "buy_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T4_DirectionalClaim"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Buy Drivers",
+                "type": "array"
+              },
+              "core_investment_judgment": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "directional_balance": {
+                "$ref": "#/$defs/T4_DirectionalBalance"
+              },
+              "directional_confidence": {
+                "enum": [
+                  "HIGH",
+                  "MEDIUM",
+                  "LOW"
+                ],
+                "title": "Directional Confidence",
+                "type": "string"
+              },
+              "dominant_evidence": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "earnings_estimate_context": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "fundamental_holder": {
+                "$ref": "#/$defs/T4_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T4_CoreNewBuyerView"
+              },
+              "hold_lean": {
+                "$ref": "#/$defs/T4_HoldLean"
+              },
+              "market_expectation_context": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "material_directional_anchor_basis": {
+                "items": {
+                  "$ref": "#/$defs/T4_EvidenceAlias"
+                },
+                "maxItems": 6,
+                "title": "Material Directional Anchor Basis",
+                "type": "array"
+              },
+              "overall_direction": {
+                "enum": [
+                  "BUY",
+                  "HOLD",
+                  "SELL"
+                ],
+                "title": "Overall Direction",
+                "type": "string"
+              },
+              "risk_context": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "sector_interpretation": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "sell_drivers": {
+                "items": {
+                  "$ref": "#/$defs/T4_DirectionalSellDriver"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Sell Drivers",
+                "type": "array"
+              },
+              "ticker": {
+                "const": "SYNTHETIC_SEQ_KR_B4",
+                "title": "Ticker",
+                "type": "string"
+              },
+              "uncertainty_limit": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              },
+              "unknown_treatments": {
+                "items": {
+                  "$ref": "#/$defs/T4_DirectionalUnknown"
+                },
+                "maxItems": 4,
+                "minItems": 1,
+                "title": "Unknown Treatments",
+                "type": "array"
+              },
+              "valuation_context": {
+                "$ref": "#/$defs/T4_DirectionalClaim"
+              }
+            },
+            "required": [
+              "ticker",
+              "overall_direction",
+              "directional_balance",
+              "hold_lean",
+              "directional_confidence",
+              "business_thesis_change",
+              "business_thesis_context",
+              "earnings_estimate_context",
+              "market_expectation_context",
+              "valuation_context",
+              "risk_context",
+              "sector_interpretation",
+              "buy_drivers",
+              "sell_drivers",
+              "dominant_evidence",
+              "uncertainty_limit",
+              "core_investment_judgment",
+              "unknown_treatments",
+              "material_directional_anchor_basis",
+              "fundamental_new_buyer",
+              "fundamental_holder",
+              "business_reevaluation_up",
+              "business_reevaluation_down"
+            ],
+            "title": "DirectionalCoreCandidate",
+            "type": "object"
+          }
+        ]
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "type": "array"
+    },
+    "contract": {
+      "const": "directional-core-output-v1",
+      "type": "string"
+    },
+    "packet_id": {
+      "const": "20260906-fictional-sequential-probe-20260906T145131Z-f73521e2bd18:fictional-sequential-core:03",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "packet_id",
+    "candidates"
+  ],
+  "title": "AliasConstrainedStructuredAutonomyBatch",
+  "type": "object"
+}

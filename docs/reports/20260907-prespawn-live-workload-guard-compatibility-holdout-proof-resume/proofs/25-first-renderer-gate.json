@@ -1,0 +1,7 @@
+{
+  "contract": "run-gate-not-measured-v1",
+  "gate": "RENDERER",
+  "reason": "SemanticStop:core_output_semantic_failure:first:1",
+  "run": "first",
+  "status": "NOT_MEASURED"
+}

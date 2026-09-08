@@ -1,0 +1,30 @@
+{
+  "contract": "us-supported-universe-funnel-root-cause-v1",
+  "prior_bounded_candidate_count": 9,
+  "prior_candidate_order": [
+    "YARW",
+    "DMII",
+    "ISOU",
+    "SHOT",
+    "PBLS",
+    "DXYZ",
+    "RMD",
+    "VRAX",
+    "MSFT"
+  ],
+  "remaining_route_supported_order": [
+    "YARW",
+    "DMII",
+    "ISOU",
+    "SHOT",
+    "PBLS",
+    "DXYZ",
+    "RMD",
+    "VRAX",
+    "MSFT"
+  ],
+  "result": "US_SUPPORTED_UNIVERSE_FUNNEL_ROOT_CAUSE_CONFIRMED",
+  "root_cause": "OPTIONAL_PRICE_SUPPORT_OVERCOUPLING",
+  "source_attemptable_unseen_issuer_count": 5059,
+  "status": "PASS"
+}

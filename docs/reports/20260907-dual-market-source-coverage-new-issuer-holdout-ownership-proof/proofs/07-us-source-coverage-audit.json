@@ -1,0 +1,389 @@
+{
+  "attempted_count": 5,
+  "contract": "us-source-coverage-audit-v1",
+  "identity_validation_pass_count": 5,
+  "market": "us",
+  "pipeline_coverage_gap_count": 2,
+  "provider_totals": {
+    "cache_hits": 0,
+    "companyfacts_requests": 5,
+    "companyfacts_successes": 5,
+    "profile_requests": 5,
+    "profile_successes": 5,
+    "statement_requests": 0,
+    "statement_successes": 0
+  },
+  "real_model_calls": 0,
+  "rows": [
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 1,
+      "canonical_issuer_identity": "0001045810",
+      "company_name": "NVDA",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "asset_heavy_or_cyclical",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0001045810",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "3dd1d47d0c9f721f1d27ab974bb733dee668c374bd0cf054bcdbc71e8078c002",
+      "price_context_status": "PASS",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0001045810",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "NVDA",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": true,
+      "candidate_rank": 2,
+      "canonical_issuer_identity": "0000019617",
+      "company_name": "JPM",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "PIPELINE_COVERAGE_GAP",
+      "failure_domains": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "failure_reason_codes": [
+        "NORMALIZATION_OR_MAPPING_GAP",
+        "REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT"
+      ],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "bank_or_insurer",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0000019617",
+      "market": "us",
+      "missing_required_families": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "INSUFFICIENT",
+      "packet_created": false,
+      "packet_hash": null,
+      "price_context_status": "NOT_ATTEMPTED_SOURCE_GATE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "raw_required_domain_evidence_present": true,
+      "selected": false,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment"
+      ],
+      "source_pipeline_status": "SOURCE_INSUFFICIENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0000019617",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "FAIL",
+      "ticker": "JPM",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 3,
+      "canonical_issuer_identity": "0000104169",
+      "company_name": "WMT",
+      "data_received_but_not_assembled": true,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "SOURCE_ABSENCE",
+      "failure_domains": [
+        "PRICE_CONTEXT"
+      ],
+      "failure_reason_codes": [
+        "SOURCE_FETCH_SUCCEEDED_PACKET_ASSEMBLY_FAILED",
+        "VALIDATION_FAILURE"
+      ],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0000104169",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": false,
+      "packet_hash": null,
+      "price_context_status": "UNAVAILABLE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": false,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "source_provenance": [
+        {
+          "issuer_id": "0000104169",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "FAIL",
+      "ticker": "WMT",
+      "true_source_absence_suspected": true,
+      "validation_errors": [
+        "current_price_unavailable",
+        "price_as_of_unavailable",
+        "technical_context_not_safe:UNAVAILABLE"
+      ],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": true,
+      "candidate_rank": 4,
+      "canonical_issuer_identity": "0001067983",
+      "company_name": "BRK-B",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "PIPELINE_COVERAGE_GAP",
+      "failure_domains": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "failure_reason_codes": [
+        "NORMALIZATION_OR_MAPPING_GAP",
+        "REQUIRED_FUNDAMENTAL_DOMAIN_INSUFFICIENT"
+      ],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "bank_or_insurer",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0001067983",
+      "market": "us",
+      "missing_required_families": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "INSUFFICIENT",
+      "packet_created": false,
+      "packet_hash": null,
+      "price_context_status": "NOT_ATTEMPTED_SOURCE_GATE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "raw_required_domain_evidence_present": true,
+      "selected": false,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment"
+      ],
+      "source_pipeline_status": "SOURCE_INSUFFICIENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0001067983",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "FAIL",
+      "ticker": "BRK-B",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 5,
+      "canonical_issuer_identity": "0000789019",
+      "company_name": "MSFT",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0000789019",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "b8d22c68e4a7ee8acecd98ef5df93e7d34cacf75c933d44635b085a241bae57d",
+      "price_context_status": "PASS",
+      "primary_or_reserve": "RESERVE",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "companyfacts_requests": 1,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0000789019",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "MSFT",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    }
+  ],
+  "source_absence_count": 1,
+  "source_insufficient_count": 3,
+  "source_sufficient_count": 2,
+  "source_target_status": "FAIL",
+  "status": "FAIL_CLOSED",
+  "target_count": 4,
+  "unknown_failure_count": 0
+}

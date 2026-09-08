@@ -1,0 +1,35 @@
+{
+  "composite": {
+    "forbids": [
+      "leaf_ref"
+    ],
+    "operators": [
+      "ANY_OF",
+      "ALL_OF"
+    ],
+    "requires": [
+      "children>=2"
+    ]
+  },
+  "contract": "logical-condition-discriminated-union-proof-v1",
+  "discriminator": "type",
+  "leaf": {
+    "forbids": [
+      "children"
+    ],
+    "requires": [
+      "leaf_ref"
+    ]
+  },
+  "schema": "DISCRIMINATED_UNION",
+  "silent_child_drop": 0,
+  "ticker_exception_added": 0,
+  "frozen_generation_id": "20260905-uskr22-validator-night-20260905T161259Z-1a32918a3962",
+  "leaf_child_shape_failure": {
+    "first": 0,
+    "a": 0,
+    "b": 0,
+    "c": 0
+  },
+  "c_status": "NOT_RUN_STOPPED_B_GATE"
+}

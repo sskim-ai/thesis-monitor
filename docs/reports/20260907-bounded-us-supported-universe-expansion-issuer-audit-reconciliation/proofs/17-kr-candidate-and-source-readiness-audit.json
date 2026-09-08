@@ -1,0 +1,37 @@
+{
+  "attempted_count": 12,
+  "budget_exhausted": false,
+  "candidate_failure_membership": [],
+  "candidate_limit": 24,
+  "candidate_success_membership": [
+    "373160",
+    "452200",
+    "389470",
+    "380550",
+    "008970",
+    "047080",
+    "068270",
+    "475830",
+    "033160",
+    "079940",
+    "103140",
+    "278280"
+  ],
+  "details_path": "evidence/diagnostics/kr-source-readiness.json",
+  "fundamental_source_sufficient_count": 12,
+  "kr_fundamental_source_sufficient_count": 12,
+  "market": "kr",
+  "provider_totals": {
+    "cache_hits": 0,
+    "companyfacts_requests": 0,
+    "companyfacts_successes": 0,
+    "profile_requests": 12,
+    "profile_successes": 12,
+    "statement_requests": 36,
+    "statement_successes": 12
+  },
+  "provider_unavailability_counts": {},
+  "status": "PASS",
+  "target": 12,
+  "untested_ranked_candidate_count": 12
+}

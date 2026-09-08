@@ -1,0 +1,495 @@
+{
+  "all_selected_source_sufficient": true,
+  "candidate_attempt_count": 64,
+  "candidate_status_counts": {
+    "INSUFFICIENT_FUNDAMENTAL_EVIDENCE": 2,
+    "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT": 60,
+    "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY": 2
+  },
+  "contract": "new-issuer-holdout-source-preflight-v1",
+  "directional_calls_on_source_insufficient": 0,
+  "model_calls": 0,
+  "program_generation_id": "20260906-direction-timing-holdout-20260906T093200Z-bd30668470f0",
+  "provider_totals": {
+    "cache_hits": 11,
+    "companyfacts_requests": 0,
+    "companyfacts_successes": 7,
+    "profile_requests": 64,
+    "profile_successes": 64,
+    "statement_requests": 161,
+    "statement_successes": 56
+  },
+  "selected_rows": [
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "0001341439",
+      "market": "us",
+      "packet_sha256": "e92ce5de0b68feb8e69c7f699fc204cf09281c7d2cc32e3d94b8c8bbefe8a8e6",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "ORCL",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": false,
+      "issuer_key": "0000104169",
+      "market": "us",
+      "packet_sha256": null,
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "WMT",
+      "validation_errors": [
+        "current_price_unavailable",
+        "price_as_of_unavailable",
+        "technical_context_not_safe:UNAVAILABLE"
+      ]
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "0000731766",
+      "market": "us",
+      "packet_sha256": "62548337d962d7c0eaec8ecafd0f2c1b5195c188be1adcb0d6e08b15d3cc02a1",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "UNH",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "0000021344",
+      "market": "us",
+      "packet_sha256": "6c682d664c88ce4ee2ab4ad3240b250c944e3cbb7f663c72227f22fee0128899",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "KO",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "0001730168",
+      "market": "us",
+      "packet_sha256": "e50c88ef9884a015bdf5dd401aa831b1a2afb5310de37223c580c53a8c0162fc",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "AVGO",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00365387",
+      "market": "kr",
+      "packet_sha256": "a7a30e94323c4a48aec4d594a590509514047793788cbef12c7d2aebafeb16f6",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "095570",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00372873",
+      "market": "kr",
+      "packet_sha256": "05dc00cd2c0635e6da6c732429a0c033868686eb8fb21618dfa456afb0dacbcf",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "058860",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "01110182",
+      "market": "kr",
+      "packet_sha256": "4de2f9b9be430bf2855d77082c9a3a83f125425f804bda00fcf227e7968953eb",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "246960",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00627029",
+      "market": "kr",
+      "packet_sha256": "232c057d2ae962e3379a4399b7f8b6455d0170cf4d97505b2de39728bf296d94",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "099520",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "01288827",
+      "market": "kr",
+      "packet_sha256": "86820fc64a9ededf6446d13f80cf2cee837b07ef83437dd451bdfe19909265c2",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "403870",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00161116",
+      "market": "kr",
+      "packet_sha256": "6d7b0215853bcd1c4e96b6f79d142ad52888c18d947103047be4ea86f6bf7bb8",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "014790",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00445160",
+      "market": "kr",
+      "packet_sha256": "7b2e2cbff2c22c9f4c2c89fc71159a1b1e91ddf30314c8f18a7a5b8a81d63f4b",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "079810",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00299002",
+      "market": "kr",
+      "packet_sha256": "3dfc6681bd5254fd88b4b8a26450544bbfd21dfe5a9d38dc846617cd59050e8f",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "060980",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": false,
+      "issuer_key": "0000104169",
+      "market": "us",
+      "packet_sha256": null,
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "WMT",
+      "validation_errors": [
+        "current_price_unavailable",
+        "price_as_of_unavailable",
+        "technical_context_not_safe:UNAVAILABLE"
+      ]
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00412348",
+      "market": "kr",
+      "packet_sha256": "92172f678ab0a226d2afd6aa6d9e2ff7033cd16eb0833454ce4532f02eda06fb",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "061970",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00163345",
+      "market": "kr",
+      "packet_sha256": "7ade04eb03f0569f401778c55443a264790be193dc5edb1e198870dcee122d87",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "012030",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "00992543",
+      "market": "kr",
+      "packet_sha256": "34aa252ed4fc7d15bf3f22e6ede926d67097cffc963b8f5605f30b52b7195789",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "225190",
+      "validation_errors": []
+    },
+    {
+      "directional_model_eligible": true,
+      "issuer_key": "01182550",
+      "market": "kr",
+      "packet_sha256": "d3329884fae7af0bb68cfd3fd11d5fb71204dd1ed2a3123eb56ef5b258219897",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "technical_context": "FULL"
+        },
+        "fundamental": {
+          "cache_hits": 0,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 3,
+          "statement_successes": 1
+        }
+      },
+      "source_sufficiency_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "ticker": "245620",
+      "validation_errors": []
+    }
+  ],
+  "status": "PASS"
+}

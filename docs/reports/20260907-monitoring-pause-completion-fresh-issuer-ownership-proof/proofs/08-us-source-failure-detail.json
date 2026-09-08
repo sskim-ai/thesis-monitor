@@ -1,0 +1,108 @@
+{
+  "contract": "fresh-us-source-failure-detail-v1",
+  "failure_count": 2,
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 1,
+      "canonical_issuer_key": "sec:cik:0001566044",
+      "canonical_security_id": "us:nd:YARW",
+      "diagnostic_packet_sha256": "33f1a56cda7973fd505c3649849d56157c415b19eb93752db5a577d1bb302b66",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "CLINICAL_REGULATORY_CURRENT",
+        "LIQUIDITY_CASHFLOW_CURRENT"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "pre_profit_biotech",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 1,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "58acb5d1e59521360b87b061d9405f50a079a327701b3bb44342c79309b89c04",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0001566044",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "YARW"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 2,
+      "canonical_issuer_key": "sec:cik:0002040475",
+      "canonical_security_id": "us:nd:DMII",
+      "diagnostic_packet_sha256": "43dacc96b0386d3152267543fa11e765153e15e8c6a0a62171fd7e80680f5a53",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY"
+      ],
+      "failure_reasons": [
+        "BUSINESS_CURRENTORSECTOR_OPERATING_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENTORLIQUIDITY_CASHFLOW_CURRENTORSECTOR_OPERATING_CURRENT",
+        "validated_current_sec_financial_occurrence_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 0,
+        "companyfacts_requests": 1,
+        "companyfacts_successes": 0,
+        "profile_requests": 1,
+        "profile_successes": 1
+      },
+      "rank": 2,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "65808f04aaf2a636de024eae516811853b4965ba0b9649403fa21f40f85b1836",
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "issuer_id": "0002040475",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": false,
+          "source": "sec_companyfacts",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "DMII"
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE"
+}

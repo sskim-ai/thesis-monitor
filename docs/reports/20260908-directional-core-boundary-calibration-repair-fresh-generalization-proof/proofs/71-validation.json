@@ -1,0 +1,17 @@
+{
+  "contract": "directional-calibration-proof-validation-v1",
+  "diff_check": "PASS",
+  "focused_pytest": {
+    "passed": 16,
+    "status": "PASS"
+  },
+  "full_pytest": {
+    "passed": 2734,
+    "status": "PASS",
+    "third_party_deprecation_warnings": 1
+  },
+  "production_mutation": 0,
+  "real_model_calls": 0,
+  "ruff": "PASS",
+  "status": "PASS"
+}

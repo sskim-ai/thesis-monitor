@@ -1,0 +1,12 @@
+# 59 Monitoring Bootstrap Next Handoff
+
+| Field | Value |
+| --- | --- |
+| bootstrap_production_mutation | 0 |
+| contract | monitoring-bootstrap-next-handoff-v1 |
+| monitoring_registration_calls | 0 |
+| next_scope | BOUNDED_EXISTING_SECRET_ENV_BINDING_REPAIR |
+| readiness | NOT_READY_PREPARATION_CONFIGURATION_BLOCKED |
+| status | NOT_READY |
+
+Machine proof: `proofs/59-monitoring-bootstrap-next-handoff.json`.

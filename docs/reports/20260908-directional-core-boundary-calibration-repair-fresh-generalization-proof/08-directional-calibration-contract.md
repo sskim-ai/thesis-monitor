@@ -1,0 +1,20 @@
+# 08-directional-calibration-contract
+
+| Field | Value |
+| --- | --- |
+| contract | "directional-balance-ordinal-calibration-v1" |
+| meaning_ladder | {"3.5:6.5_or_stronger": "SYMMETRIC_STRONGER_NEGATIVE_DIRECTION", "4.0:6.0": "SYMMETRIC_MINIMUM_SELL", "4.5:5.5": "SYMMETRIC_NEGATIVE_LEAN", "5.0:5.0": "BALANCED_UNRESOLVED_OR_TOO_INCOMPLETE_FOR_LEAN", "5.5:4.5": "POSITIVE_MATERIAL_ANCHOR_WITHOUT_SUFFICIENT_CORROBORATION", "6.0:4.0": "MINIMUM_BUY_WITH_MATERIAL_ANCHOR_AND_SUFFICIENT_CORROBORATION", "6.5:3.5_or_stronger": "PROGRESSIVELY_STRONGER_POSITIVE_CORROBORATION"} |
+| ambiguity_rule | "CHOOSE_LESS_DIRECTIONAL_ADJACENT_BUCKET_TOWARD_5_0" |
+| missing_evidence_policy | "LIMITS_CONVICTION_NOT_AUTOMATICALLY_NEGATIVE" |
+| low_confidence_policy | "RECHECK_FULL_BUCKET_NOT_MECHANICAL_HOLD" |
+| buy_threshold | 6.0 |
+| sell_threshold | 6.0 |
+| balance_sum | 10.0 |
+| balance_increment | 0.5 |
+| threshold_changed | 0 |
+| fixed_weight_scorecard | 0 |
+| majority_vote | 0 |
+| ticker_specific_exception | 0 |
+| price_timing_mutation | 0 |
+| prompt_text_sha256 | "79afdb9ddcbf5a9213009dc0ba1c0c87882319ca4bffafa4e64994b3002399c6" |
+| status | "FROZEN" |

@@ -1,0 +1,22 @@
+# Continuation Hard Safety Regression
+
+| Gate | Value |
+| --- | --- |
+| accounting_attribution | REUSED_UNCHANGED |
+| actionability_command_detection | NOT_MEASURED |
+| adr_security_basis | REUSED_UNCHANGED |
+| contract | continuation-hard-safety-regression-v1 |
+| diff_check | PASS |
+| evidence_identity_fencing | NOT_MEASURED |
+| full_tests | PASS |
+| future_checkpoint | REUSED_UNCHANGED |
+| issuer_dedup | PASS |
+| known_hard_safety_regression | NOT_MEASURED |
+| logical_condition | REUSED_UNCHANGED |
+| numeric_provenance | REUSED_UNCHANGED |
+| renderer_ownership | NOT_MEASURED |
+| ruff | PASS |
+| source_sufficiency | PASS |
+| status | NOT_MEASURED |
+
+Machine proof: `20260906-model-transport-continuation-proofs/continuation-hard-safety-regression.json`.

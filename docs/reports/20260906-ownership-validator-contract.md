@@ -1,0 +1,10 @@
+# Ownership Validator Contract
+
+| Gate | Value |
+| --- | --- |
+| arbitrary_prose_ownership_parsing | 0 |
+| contract | direction-timing-ownership-validator-v1 |
+| hard_checks | ["core price/technical ref", "core supply ref", "BUY/SELL non-price material anchor", "core fingerprint", "timing ref domain", "new-buyer no-upgrade", "price-only no-REDUCE", "business invalidation core ownership"] |
+| structured_domain_validation | 1 |
+
+Machine proof: `20260906-direction-timing-ownership-proofs/ownership-validator-contract.json`.

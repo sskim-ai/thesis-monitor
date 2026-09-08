@@ -1,0 +1,15 @@
+# 04 New Holdout Exclusion Set
+
+| Field | Value |
+| --- | --- |
+| appended_count | 16 |
+| contract | runtime-isolation-repair-exclusion-continuity-v1 |
+| exclusion_shrink_count | 0 |
+| new_registry_sha256 | 6e729964feaaea89e6e19c41db33797589c60932324907829aa38191421daf6b |
+| previous_count | 117 |
+| previous_registry_sha256 | 7ffd6fed1125e88073efb867d3d5adc4024a0f22485e0c376151fbe5e3b6b437 |
+| reconciled_count | 133 |
+| retired_tickers | ["ACHR", "BNED", "CROX", "AWX", "095720", "000250", "389030", "009310", "042700", "002690", "103590", "025750", "084680", "377330", "024840", "360070"] |
+| status | PASS |
+
+Machine proof: `proofs/04-new-holdout-exclusion-set.json`.

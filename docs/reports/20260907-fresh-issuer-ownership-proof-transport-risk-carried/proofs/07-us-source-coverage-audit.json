@@ -1,0 +1,665 @@
+{
+  "attempted_count": 17,
+  "bounded_candidate_count": 17,
+  "contract": "fresh-us-source-coverage-audit-v1",
+  "market": "us",
+  "model_calls": 0,
+  "provider_totals": {
+    "profile_requests": 17,
+    "profile_successes": 0
+  },
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 1,
+      "canonical_issuer_key": "sec:cik:0001566044",
+      "canonical_security_id": "us:nd:YARW",
+      "diagnostic_packet_sha256": "c1ee1cd8438e333bd6103bd1aa8a2427650102c75736f1775cc7ebc5374910a2",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "YARW"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 2,
+      "canonical_issuer_key": "sec:cik:0002040475",
+      "canonical_security_id": "us:nd:DMII",
+      "diagnostic_packet_sha256": "b9fb48bdfcc97c9e666b8f75faf16fe6f84e3e1d1c81a0e29c439d43b2cce582",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 2,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "DMII"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 3,
+      "canonical_issuer_key": "sec:cik:0001824502",
+      "canonical_security_id": "us:ny:ACHR",
+      "diagnostic_packet_sha256": "8c124fa7003b47c987f2a5b4cd4d6226fe46b6574ca25b414b520f2f9d14c8a8",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 3,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "ACHR"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 4,
+      "canonical_issuer_key": "sec:cik:0001997377",
+      "canonical_security_id": "us:na:ISOU",
+      "diagnostic_packet_sha256": "49828622a2be38ad090a58b6f72ffcb826df9f7f6d29cedcf36419eb0cc18f60",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "ISOU"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 5,
+      "canonical_issuer_key": "sec:cik:0002104879",
+      "canonical_security_id": "us:nd:SHOT",
+      "diagnostic_packet_sha256": "a7fc3f8e21f5d675b61b639734e2a4f245f2184ac3fe2b1d41353b05f3702f7d",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 5,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "SHOT"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 6,
+      "canonical_issuer_key": "sec:cik:0001657677",
+      "canonical_security_id": "us:nd:PBLS",
+      "diagnostic_packet_sha256": "b1c644d714702cd2eb5c742adc74de3ffba028bc8d962b4292fcd38755f7a6ff",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 6,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "PBLS"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 7,
+      "canonical_issuer_key": "sec:cik:0001634117",
+      "canonical_security_id": "us:ny:BNED",
+      "diagnostic_packet_sha256": "03840ff88c28ce7d5961aad8a1979b606d91d6e501e1ed7b836aaf875131cdad",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 7,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "BNED"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 8,
+      "canonical_issuer_key": "sec:cik:0001334036",
+      "canonical_security_id": "us:nd:CROX",
+      "diagnostic_packet_sha256": "67effbb388194366c4b80e5c6ab93d825b32bbb5f84092eb2c8301b17f670a80",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 8,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "CROX"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 9,
+      "canonical_issuer_key": "sec:cik:0001061069",
+      "canonical_security_id": "us:na:AWX",
+      "diagnostic_packet_sha256": "18f20b7134ad4a01e412ca1c63621e14fe51c0568692a3845fb9c18791692a40",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "AWX"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 10,
+      "canonical_issuer_key": "sec:cik:0001174922",
+      "canonical_security_id": "us:nd:WYNN",
+      "diagnostic_packet_sha256": "9343f1493195974cac58ee143d66c44026029260eb6a791084fb0cb71bfcaf29",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 10,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "WYNN"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 11,
+      "canonical_issuer_key": "sec:cik:0001062579",
+      "canonical_security_id": "us:nd:DOX",
+      "diagnostic_packet_sha256": "6c8eb9414bae690cc231f4fdca23be9a3de560f4778058c2258ee2e399873147",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 11,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "DOX"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 12,
+      "canonical_issuer_key": "sec:cik:0001843974",
+      "canonical_security_id": "us:ny:DXYZ",
+      "diagnostic_packet_sha256": "0d4b55c78f423960534267fdbe9c7ba5873a638f44d96a6847b3533f2cbdd4be",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 12,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "DXYZ"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 13,
+      "canonical_issuer_key": "sec:cik:0001564708",
+      "canonical_security_id": "us:nd:NWS",
+      "diagnostic_packet_sha256": "40aab58089543c498c8f0f76b5e6d071e719d9d2e74d6fa73b4b08fc5c03ec76",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 13,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "NWS"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 14,
+      "canonical_issuer_key": "sec:cik:0001350102",
+      "canonical_security_id": "us:nd:ASTI",
+      "diagnostic_packet_sha256": "6867bdf0b1cbc1a7b47a9e9fdac3ab880f543631fc0699bf61598e79f5a9d43f",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 14,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "ASTI"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 15,
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "canonical_security_id": "us:ny:RMD",
+      "diagnostic_packet_sha256": "0469fc398f86df0360d033280a9c7519709cdeac85bcc770c645fd014dcdb4d8",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 15,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "RMD"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 16,
+      "canonical_issuer_key": "sec:cik:0001885827",
+      "canonical_security_id": "us:nd:VRAX",
+      "diagnostic_packet_sha256": "b450072d131f6a959f0d0520478800570631d3af5476d238a97158baa4e2cfbf",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 16,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "VRAX"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 17,
+      "canonical_issuer_key": "sec:cik:0000789019",
+      "canonical_security_id": "us:nd:MSFT",
+      "diagnostic_packet_sha256": "eef0d5d39dd87c94c51d04f93e403bc4ea7f31cebe8a54cd57c468d98c85e294",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile:HTTPStatusError"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 17,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "error": "HTTPStatusError",
+          "source": "official_profile",
+          "status": "failed"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "MSFT"
+    }
+  ],
+  "source_insufficient_count": 17,
+  "source_sufficient_count": 0,
+  "source_target_status": "FAIL",
+  "status": "FAIL_CLOSED",
+  "target_count": 4,
+  "untested_candidate_count": 0
+}

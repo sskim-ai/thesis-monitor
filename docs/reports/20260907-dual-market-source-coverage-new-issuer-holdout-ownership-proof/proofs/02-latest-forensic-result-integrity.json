@@ -1,0 +1,10 @@
+{
+  "actual_sha256": "c88368357cd4fbde183d90620194307f9e5498cfd75d2dcafad6b8d04ffbc3b4",
+  "contract": "latest-forensic-result-integrity-v1",
+  "expected_sha256": "c88368357cd4fbde183d90620194307f9e5498cfd75d2dcafad6b8d04ffbc3b4",
+  "historical_stall_classification": "TRANSIENT_STALL_NOT_REPRODUCED",
+  "historical_stall_fixed_claimed": 0,
+  "latest_forensic_bundle_integrity": "PASS",
+  "path": "/Users/sskim/Documents/Codex/Reports/thesis-monitor-20260906-partial-output-forensics-bounded-transport-stall-review-report.zip",
+  "status": "PASS"
+}

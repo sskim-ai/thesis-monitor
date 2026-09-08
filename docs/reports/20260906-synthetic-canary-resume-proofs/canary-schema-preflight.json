@@ -1,0 +1,77 @@
+{
+  "cases": [
+    {
+      "case": "us_single",
+      "core_candidate_validation": "PASS",
+      "market": "us",
+      "owned_packet_validation": "PASS",
+      "packet_validation": "PASS",
+      "prompt_sha256": "e08ca846262b1df8713f650411a79c288994fe5777da47f8c31106d582d48814",
+      "schema_sha256": "ddfd567d95237280d5b522521875cd705b52d5446c7ab5774e6a1cdd9522c15b",
+      "status": "PASS",
+      "subject_count": 1
+    },
+    {
+      "case": "kr_single",
+      "core_candidate_validation": "PASS",
+      "market": "kr",
+      "owned_packet_validation": "PASS",
+      "packet_validation": "PASS",
+      "prompt_sha256": "d78166ee45a10750a2cef281e5100c0c82cc11426956148d3e58b2ea69308c67",
+      "schema_sha256": "ea546fee5b8fdb515f43873f75494463196c3ec30a3faa42930cf2353a4db4c9",
+      "status": "PASS",
+      "subject_count": 1
+    },
+    {
+      "case": "us4",
+      "core_candidate_validation": "PASS",
+      "market": "us",
+      "owned_packet_validation": "PASS",
+      "packet_validation": "PASS",
+      "prompt_sha256": "ac534dbe0110b739416885adc49bfa39dc53670f49d9a3750e223c1921c435d0",
+      "schema_sha256": "cdb8cbae6ac1395a59b1247e1be3cddc1a954a57b1b60bdb230165f5fa0f6f60",
+      "status": "PASS",
+      "subject_count": 4
+    },
+    {
+      "case": "kr4",
+      "core_candidate_validation": "PASS",
+      "market": "kr",
+      "owned_packet_validation": "PASS",
+      "packet_validation": "PASS",
+      "prompt_sha256": "4bb2501785fbbb3c94968b253e1629bcf5430afd787f481397f56a994047fedb",
+      "schema_sha256": "5013046ab0e3bd359f3d8d2ce631587ac21961be178b72cf17b2e070462e22ca",
+      "status": "PASS",
+      "subject_count": 4
+    },
+    {
+      "case": "timing_us",
+      "market": "us",
+      "ownership_validation": "PASS",
+      "prompt_sha256": "f85e40abb41be1747e5285347d2c536bac39fdbde497c1adf53b6a8ae1edb9c4",
+      "schema_sha256": "c87cb7f1051f723cb3f2480756ef6a951abaddaa48139a5267b58fb182621a3d",
+      "status": "PASS",
+      "subject_count": 1,
+      "timing_input_validation": "PASS"
+    },
+    {
+      "case": "timing_kr",
+      "market": "kr",
+      "ownership_validation": "PASS",
+      "prompt_sha256": "1f05337d746e71d1d7767ba89192b21c5afd3f119076a80871b2380dc15d9d2a",
+      "schema_sha256": "7739f682002634dc34d13688902483fa712985c8e1368c1bbb75540c68696818",
+      "status": "PASS",
+      "subject_count": 1,
+      "timing_input_validation": "PASS"
+    }
+  ],
+  "contract": "synthetic-packet-schema-preflight-v1",
+  "fictional_identity_routing_market_separated": 1,
+  "fixture_sidecar_only": 1,
+  "production_market_enum_mutation": 0,
+  "production_packet_schema_mutation": 0,
+  "real_issuer_used_as_canary": 0,
+  "status": "PASS",
+  "synthetic_packet_schema_preflight": "PASS",
+  "ticker_specific_production_exception": 0
+}

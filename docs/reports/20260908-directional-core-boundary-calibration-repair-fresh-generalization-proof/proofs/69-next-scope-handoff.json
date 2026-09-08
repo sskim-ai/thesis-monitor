@@ -1,0 +1,8 @@
+{
+  "automatic_monitoring_resume": 0,
+  "contract": "directional-calibration-next-scope-handoff-v1",
+  "monitoring_remains_paused": true,
+  "next_scope": "BOUNDED_SOURCE_COVERAGE_REVIEW",
+  "readiness": "NOT_READY_SOURCE_COVERAGE_BLOCKED",
+  "status": "NOT_READY"
+}

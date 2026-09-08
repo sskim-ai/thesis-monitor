@@ -1,0 +1,22 @@
+{
+  "accounting_attribution": "REUSED_UNCHANGED",
+  "actionability_command_detection": "NOT_MEASURED",
+  "adr_security_basis": "REUSED_UNCHANGED",
+  "contract": "resume-hard-safety-regression-v1",
+  "diff_check": "PASS",
+  "evidence_identity_fencing": "NOT_MEASURED",
+  "full_tests": "PASS",
+  "future_checkpoint": "REUSED_UNCHANGED",
+  "known_hard_safety_regression": 0,
+  "logical_condition": "REUSED_UNCHANGED",
+  "numeric_provenance": "REUSED_UNCHANGED",
+  "official_provisional_earnings": "REUSED_UNCHANGED",
+  "per_run_status": {
+    "a": "NOT_MEASURED",
+    "b": "NOT_MEASURED",
+    "c": "NOT_MEASURED",
+    "first": "NOT_MEASURED"
+  },
+  "ruff": "PASS",
+  "status": "NOT_MEASURED"
+}

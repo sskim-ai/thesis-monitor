@@ -1,0 +1,5 @@
+{
+  "contract": "transport-canary-price-timing-v1",
+  "reason": "ValidationError:1 validation error for DecisionEvidencePacket\nmarket\n  Input should be 'kr' or 'us' [type=literal_error, input_value='synthetic', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error",
+  "status": "NOT_RUN"
+}

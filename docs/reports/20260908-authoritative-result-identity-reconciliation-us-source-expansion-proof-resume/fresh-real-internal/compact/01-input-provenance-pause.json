@@ -1,0 +1,229 @@
+{
+  "carried_runtime_risk": "RUNTIME_NAMESPACE_ISOLATION_REPAIRED_AND_PREFLIGHT_PROVEN",
+  "contract": "risk-carried-input-provenance-pause-v1",
+  "inputs": {
+    "authoritative_calibration": {
+      "actual_sha256": "ab330fa13a53775ecdd162f36f4f7afeda42415db03bd0c766c48bf3a2eaddac",
+      "adjacent_checksum_matches": true,
+      "adjacent_checksum_present": true,
+      "contract": "indexed-result-bundle-integrity-v1",
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "expected_sha256": "ab330fa13a53775ecdd162f36f4f7afeda42415db03bd0c766c48bf3a2eaddac",
+      "hash_mismatch_count": 0,
+      "index_membership_mismatch": 0,
+      "indexed_payload_count": 433,
+      "member_count": 434,
+      "name": "thesis-monitor-20260908-directional-core-boundary-calibration-repair-fresh-generalization-proof-report.zip",
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-directional-core-boundary-calibration-repair-fresh-generalization-proof-report.zip",
+      "secret_scan_failure_count": 0,
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_member_count": 0
+    },
+    "contract": "task-input-integrity-v1",
+    "historical_runtime": {
+      "actual_sha256": "5ade7e8d06c1ae41343f555ae65ff4979ac94d4f1bcf0d94bda8701e4bd5e8c5",
+      "adjacent_checksum_matches": true,
+      "adjacent_checksum_present": true,
+      "contract": "indexed-result-bundle-integrity-v1",
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "expected_sha256": "5ade7e8d06c1ae41343f555ae65ff4979ac94d4f1bcf0d94bda8701e4bd5e8c5",
+      "hash_mismatch_count": 0,
+      "index_membership_mismatch": 0,
+      "indexed_payload_count": 2165,
+      "member_count": 2166,
+      "name": "thesis-monitor-20260908-runtime-namespace-isolation-repair-fresh-holdout-proof-report.zip",
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-runtime-namespace-isolation-repair-fresh-holdout-proof-report.zip",
+      "secret_scan_failure_count": 0,
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_member_count": 0
+    },
+    "latest_stop": {
+      "actual_sha256": "e2f0c5f84e637ca10a18211c7fa8a4c061232eac5d15ca4874ceccf2930a7fc0",
+      "adjacent_checksum_matches": true,
+      "adjacent_checksum_present": true,
+      "contract": "indexed-result-bundle-integrity-v1",
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "expected_sha256": "e2f0c5f84e637ca10a18211c7fa8a4c061232eac5d15ca4874ceccf2930a7fc0",
+      "hash_mismatch_count": 0,
+      "index_membership_mismatch": 0,
+      "indexed_payload_count": 9,
+      "member_count": 13,
+      "name": "thesis-monitor-20260908-us-source-universe-expansion-fresh-generalization-proof-resume-report.zip",
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-us-source-universe-expansion-fresh-generalization-proof-resume-report.zip",
+      "secret_scan_failure_count": 0,
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_member_count": 0
+    },
+    "reference_expansion": {
+      "actual_sha256": "12ed21a8fcd378036fb86e08193fcffb5b3e0f9f0710f92602a2f3c595c18cf4",
+      "adjacent_checksum_matches": true,
+      "adjacent_checksum_present": true,
+      "contract": "indexed-result-bundle-integrity-v1",
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "expected_sha256": "12ed21a8fcd378036fb86e08193fcffb5b3e0f9f0710f92602a2f3c595c18cf4",
+      "hash_mismatch_count": 0,
+      "index_membership_mismatch": 0,
+      "indexed_payload_count": 1308,
+      "member_count": 1309,
+      "name": "thesis-monitor-20260907-bounded-us-supported-universe-expansion-issuer-audit-reconciliation-report.zip",
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-bounded-us-supported-universe-expansion-issuer-audit-reconciliation-report.zip",
+      "secret_scan_failure_count": 0,
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_member_count": 0
+    },
+    "status": "PASS"
+  },
+  "latest_pause": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-08T03:32:25.724242+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "pause": {
+    "approved_pause_scheduler_mutation_count": 0,
+    "automatic_monitoring_resume": 0,
+    "contract": "runtime-isolation-proof-schedule-pause-observation-v1",
+    "observed_paused_schedule_count": 8,
+    "pause": {
+      "auto_resume_executed": 0,
+      "codex_automations": [
+        {
+          "active": false,
+          "name": "Thesis Monitor AI Review US Primary",
+          "state": "PAUSED"
+        },
+        {
+          "active": false,
+          "name": "Thesis Monitor AI Review US Backup",
+          "state": "PAUSED"
+        },
+        {
+          "active": false,
+          "name": "Thesis Monitor AI Review KR Primary",
+          "state": "PAUSED"
+        },
+        {
+          "active": false,
+          "name": "Thesis Monitor AI Review KR Backup",
+          "state": "PAUSED"
+        }
+      ],
+      "contract": "current-monitoring-pause-observation-v1",
+      "launch_agents": [
+        {
+          "active": false,
+          "name": "com.seungsoo.thesis-monitor.daily",
+          "state": "PAUSED_DISABLED_UNLOADED"
+        },
+        {
+          "active": false,
+          "name": "com.seungsoo.thesis-monitor.kr-close",
+          "state": "PAUSED_DISABLED_UNLOADED"
+        },
+        {
+          "active": false,
+          "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "state": "PAUSED_DISABLED_UNLOADED"
+        },
+        {
+          "active": false,
+          "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "state": "PAUSED_DISABLED_UNLOADED"
+        }
+      ],
+      "observation_only": true,
+      "observed_at": "2026-09-08T01:37:27.969619+00:00",
+      "observed_scheduler_object_count": 8,
+      "scheduler_mutation_count": 0,
+      "status": "VERIFIED_PAUSED_COMPLETE",
+      "unexpected_active_paths": []
+    },
+    "process_observation": {
+      "active_natural_job_count": 0,
+      "model_execution_pids": [],
+      "natural_job_rows": [],
+      "observation_capabilities": {
+        "model_execution_observable": true,
+        "natural_process_observable": true,
+        "paused_schedule_registry_observable": true,
+        "protected_window_observable": true,
+        "scheduler_mutation": false
+      },
+      "pause_observed_at": "2026-09-08T01:37:27.987403+00:00",
+      "paused_schedule_count": 8,
+      "running_model_process_count": 0,
+      "unexpected_active_monitoring_paths": [],
+      "workload_observation_backend": "PAUSE_REGISTRY_PLUS_PS_NATURAL_MARKERS_PLUS_LSOF_CODEX_RUNTIME_STATE"
+    },
+    "status": "PASS"
+  },
+  "repository": {
+    "base_is_ancestor": true,
+    "base_sha": "5323a73d9adde926eae5ff2b349faf954b201518",
+    "branch": "codex/20260908-us-source-universe-expansion-fresh-generalization-proof-resume",
+    "contract": "repository-provenance-v1",
+    "implementation_commit": "ab1a061defb75879e97bda2505bc95fac8fcb1d5",
+    "implementation_tree": "30f89f697e3c3eba90c1a61d950c68cdb7de0401",
+    "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+    "status": "PASS",
+    "work_instruction_commit": "f128a88f1599ac50116c94b9ae2b660df1bfeb17",
+    "work_instruction_sha256": "ea1363c6707f55691f9ee13f73eb2ad02b40492033551b624fbb0488dcbab215"
+  },
+  "status": "PASS"
+}

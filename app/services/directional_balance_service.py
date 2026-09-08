@@ -10,8 +10,20 @@ from app.services.cross_market_decision_engine_service import Decision, FrozenMo
 
 
 CONTRACT_VERSION = "v2-directional-balance-v1"
+ORDINAL_CALIBRATION_CONTRACT_VERSION = "directional-balance-ordinal-calibration-v1"
+ORDINAL_CALIBRATION_PROMPT = """Calibrate directional_balance as an ordinal evidence-sufficiency ladder, not as probability or a fixed-weight scorecard.
+
+5.0:5.0 means the evidence is genuinely balanced, unresolved, or too incomplete to support even a lean. 5.5:4.5 means a positive issuer-level material anchor exists, but missing corroboration, currentness, persistence, valuation, or a critical business KPI prevents a full positive direction. 6.0:4.0 is the minimum BUY and requires both a positive issuer-level material anchor and sufficiently current or independent corroboration; unresolved counterevidence must not keep the case at lean-only. 6.5:3.5 and stronger positive balances require progressively stronger corroboration, persistence, quality, visibility, or valuation support under the same evidence-only rules.
+
+Apply the exact symmetric meanings to 4.5:5.5, 4.0:6.0, and 3.5:6.5 or stronger negative balances. Missing evidence limits conviction but is not negative evidence by itself. When the same supplied evidence reasonably fits two adjacent balance buckets, choose the less directional bucket toward 5.0:5.0. Low confidence should trigger a careful check that the full directional bucket is actually supported, but LOW confidence does not mechanically require HOLD."""
+_KOREAN_TOKEN_PARTICLE = r"(?:은|는|이|가|을|를|도|만)?"
 _PROBABILITY_LANGUAGE = re.compile(
-    r"확률|승률|기대\s*수익률|probability|expected\s+return|odds",
+    rf"(?<![가-힣A-Za-z0-9_])(?:성공\s*)?확률{_KOREAN_TOKEN_PARTICLE}"
+    rf"(?![가-힣A-Za-z0-9_])|"
+    rf"(?<![가-힣A-Za-z0-9_])승률{_KOREAN_TOKEN_PARTICLE}"
+    rf"(?![가-힣A-Za-z0-9_])|"
+    r"기대\s*수익률|\bprobability\b|\bexpected\s+return\b|\bodds\b|"
+    r"\bwin\s+rate\b",
     re.IGNORECASE,
 )
 _FIXED_SCORE_LANGUAGE = re.compile(
@@ -70,3 +82,7 @@ def directional_balance_language_errors(texts: Iterable[str]) -> tuple[str, ...]
     if _FIXED_SCORE_LANGUAGE.search(combined):
         errors.append("directional_balance_fixed_score_language")
     return tuple(errors)
+
+
+def directional_balance_ordinal_calibration_prompt() -> str:
+    return ORDINAL_CALIBRATION_PROMPT

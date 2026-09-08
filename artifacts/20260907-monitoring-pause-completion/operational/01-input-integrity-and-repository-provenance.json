@@ -1,0 +1,31 @@
+{
+  "contract": "monitoring-pause-completion-fresh-issuer-proof-v1",
+  "historical_input": {
+    "file": "thesis-monitor-20260907-scheduled-monitoring-pause-capacity-failure-partial-proof-closeout-report.zip",
+    "sha256": "6c63a46a135a0abd6f5491366d33d56bbfe2d19f40e4b1f171633a3078b4adbe",
+    "sha256_matches_instruction": true,
+    "zip_member_count": 127,
+    "indexed_payload_count": 126,
+    "hash_mismatch_count": 0,
+    "size_mismatch_count": 0,
+    "crc_failure_count": 0,
+    "stale_historical_completion_counters": {
+      "zip_member_count": 126,
+      "indexed_payload_count": 125,
+      "treatment": "CORRECTION_OVERLAY_ONLY"
+    }
+  },
+  "work_instruction": {
+    "source_zip_sha256": "899518ffca1ba67e3f11049e2a660d802e759a0b73a0140c7001010651511eb9",
+    "document": "docs/work-instructions/20260907-monitoring-pause-completion-and-fresh-issuer-ownership-proof.md",
+    "document_sha256": "4b6d6f858d3518f7a813c3722af9e0ddad06cc6be89c29f83a1469cb9fe707a1",
+    "commit": "2bb58e9ae22f3ec5bd97d3a94e92a3a13e4fe257"
+  },
+  "repository": {
+    "branch": "codex/20260907-monitoring-pause-completion-fresh-issuer-ownership-proof",
+    "base_sha": "63f5f57df51566ed2198f1e007d470bbb61e1a02",
+    "head_before_operational_mutation": "2bb58e9ae22f3ec5bd97d3a94e92a3a13e4fe257",
+    "semantic_runtime_change_before_pause": 0
+  },
+  "status": "PASS"
+}

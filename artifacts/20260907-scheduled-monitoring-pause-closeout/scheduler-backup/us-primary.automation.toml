@@ -1,0 +1,14 @@
+version = 1
+id = "thesis-monitor-ai-review-us-primary"
+kind = "cron"
+name = "Thesis Monitor AI Review US Primary"
+prompt = "In the current local thesis-monitor project, invoke $thesis-monitor-daily-review. Require Pilot ai-assisted-pilot-v3, policy daily-review-v3.10, final schema 4, OHLCV ohlcv-structure-v2, renderer ai-assisted-pilot-renderer-v3, security identity security-identity-v2, and financial quality financial-quality-taint-v2. Run .venv/bin/python -m app.jobs.ai_review claim --market us --owner codex-us-primary --wait-seconds 300 --poll-seconds 15 --lease-minutes 10. If it returns no_pending_packet, stop without modifying anything. Otherwise follow the skill against the claimed immutable packet and claim-specific temporary path. Author every new investment number with {{numeric:ref_id}} plus numeric_fact_refs; do not transcribe, calculate, round, relabel, or guess a value. Use only routed packet facts and the two repository Knowledge mirrors. Do not browse, edit source or tests, mutate official assessment/database state, or send Telegram directly. Run the claim-specific validator/finalizer after writing the draft. On validation rejection, use the archived machine context to correct the reference or wording, or remove the unsafe number, once; then rewrite the claim-specific temporary draft and validate one final time. If it still rejects, stop and leave the deterministic fallback eligible. On delivery retry, reuse persisted finalized content without recollection, packet regeneration, analysis rerun, or reformatting. Production Assist stays disabled."
+status = "ACTIVE"
+rrule = "RRULE:FREQ=DAILY;BYHOUR=8;BYMINUTE=15"
+model = "gpt-5.6-sol"
+reasoning_effort = "high"
+execution_environment = "local"
+target = { type = "project", project_id = "0df45c32-3cf4-4072-b703-2b2f1f54930c" }
+cwds = ["/Users/sskim/Codex/thesis-monitor"]
+created_at = 1786586747232
+updated_at = 1786803104982

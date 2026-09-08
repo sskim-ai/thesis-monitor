@@ -1,0 +1,13 @@
+# Source Enrichment Freeze
+
+| Gate | Value |
+| --- | --- |
+| contract | "source-enrichment-freeze-v1" |
+| fixture_judgment_model_calls | 0 |
+| frozen_at | "2026-09-06T15:50:29+09:00" |
+| implementation_commit | "25906030070830327401ae7bc77aefb0910b6b58" |
+| implementation_tree | "05d1e5f82ad6239628e238aee5824e3835c3c1be" |
+| program_generation_id | "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4" |
+| source_enrichment_hashes | {"coldstart_assembler": "ce6bd772ad105cd2425570607806ae1ec8afa109eca94fd4c6b2e08c4b306780", "company_profile": "fd4854c7781d672bf414ea43341e21ceb1879436c97defc5dff153037bdbbf5f", "financial_lineage": "1a9ba3fa0d867f4d0c1fb2c5e1b034d9adeebbe32b22b0d796571d468922ff91", "fundamental_enrichment": "c18627e3dd3a9a124b08583466de4361e1c5246be7ed6d2aadb306c770ed7538", "opendart_recovery": "c3190d3db087ca474a9cdf250570ba36c4fd82554439b60a6ac31354cfec19b0", "orchestrator": "2599d049400eab81fdf54336807bd37912496836504d1722c636cad70710afbe", "provider_sector_map": "e0c1ca2c52809484594b88e1dd904fd0a985c9db76d8524c21134ab8850d99bf", "provider_symbol_registry": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6", "sec_financial_normalizer": "9fa2d3c12c75adf0872010a84ef749b8a4c6449d244ee4f35bb042ded7874136"} |
+| source_enrichment_mutation_after_freeze | 0 |
+| synthetic_suite | "PASS" |

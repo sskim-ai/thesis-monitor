@@ -1,0 +1,18 @@
+# 08-us-universe-before-after-membership
+
+| Field | Value |
+| --- | --- |
+| snapshot_definition | before=static provider registry; after=before plus bounded, individually provider-route-verified official reference members |
+| us_raw_reference_rows_before | 33 |
+| us_raw_reference_rows_after | 13188 |
+| us_supported_security_count_before | 32 |
+| us_supported_security_count_after | 52 |
+| us_supported_issuer_count_before | 31 |
+| us_supported_issuer_count_after | 52 |
+| us_unseen_supported_issuer_count_before | 1 |
+| us_unseen_supported_issuer_count_after | 25 |
+| static_supported_issuer_count_reconciled | 31 |
+| new_route_verified_security_count | 24 |
+| membership_path | evidence/membership/us-reference-membership.jsonl |
+| membership_sha256 | 02be98a1eabe5207117a47108b8818880309bd37af1ae15044c664a80e886c62 |
+| status | PASS |

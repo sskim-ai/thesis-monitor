@@ -1,0 +1,80 @@
+{
+  "cache_isolation": {
+    "production_cache_write": 0,
+    "rule": "Use a new task-scoped artifact root under /private/tmp; never reuse or mutate production caches."
+  },
+  "candidate_budgets": {
+    "kr_full_fundamental_source_diagnostics": 24,
+    "us_full_fundamental_source_diagnostics": 24,
+    "us_identity_and_routing_inspections": 40
+  },
+  "contract": "bounded-reference-and-source-diagnostic-policy-v1",
+  "diagnostic_objectives": {
+    "kr_minimum_fundamental_source_sufficient_issuers": 12,
+    "us_identity_supported_reserve_issuers": 8,
+    "us_minimum_fundamental_source_sufficient_issuers": 4
+  },
+  "diagnostic_policy_hash": "f278d2ede1e5556dbee2404cc0acdd7fe8850b9fa6e7e836d1a410fd27c60d86",
+  "model_boundary": {
+    "final_proof_source_lock_created": 0,
+    "final_real_holdout_created": 0,
+    "model_backed_fictional_canary_count": 0,
+    "new_real_model_invocation_count": 0,
+    "real_first_a_b_c": "NOT_RUN"
+  },
+  "natural_live_coexistence": {
+    "active_model_process_action": "BLOCK",
+    "active_natural_job_action": "BLOCK",
+    "observation_unavailable_action": "BLOCK",
+    "schedule_source": "Current LaunchAgent configuration inspected at execution time; no copied hardcoded window.",
+    "shared_production_store_write": 0
+  },
+  "network_policy": {
+    "page_request_cap": 4,
+    "per_resource_attempt_cap": 1,
+    "provider_unavailability_action": "Classify explicitly and stop that provider path without expanding the budget.",
+    "retry_count": 0
+  },
+  "reference_retrieval_not_after_utc": "2026-09-07T04:00:00Z",
+  "reference_sources": [
+    {
+      "max_requests": 1,
+      "role": "US issuer CIK identity",
+      "source": "SEC company_tickers.json",
+      "url": "https://www.sec.gov/files/company_tickers.json"
+    },
+    {
+      "max_requests": 1,
+      "role": "NASDAQ security type and listing identity",
+      "source": "Nasdaq Trader nasdaqlisted.txt",
+      "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
+    },
+    {
+      "max_requests": 1,
+      "role": "NYSE/NYSE American security type and listing identity",
+      "source": "Nasdaq Trader otherlisted.txt",
+      "url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+    },
+    {
+      "max_requests": 1,
+      "role": "KR corporate identity",
+      "source": "OpenDART corpCode.xml",
+      "url": "https://opendart.fss.or.kr/api/corpCode.xml"
+    }
+  ],
+  "representative_security_rule": {
+    "ambiguous_identity_action": "QUARANTINE",
+    "preference": [
+      "supported common or ordinary share",
+      "non-ADR before ADR for the same issuer when both are supported",
+      "lexicographically smallest canonical security ID"
+    ],
+    "share_class_aliases_remain_issuer_fenced": true
+  },
+  "selection_rule": {
+    "outcome_dependent_reordering": 0,
+    "rank_material": "sha256(selection_salt|market|canonical_issuer_key|canonical_security_id)",
+    "selection_salt": "20260907-bounded-us-universe-expansion-issuer-reconciliation-v1"
+  },
+  "status": "FROZEN_PRE_NETWORK"
+}

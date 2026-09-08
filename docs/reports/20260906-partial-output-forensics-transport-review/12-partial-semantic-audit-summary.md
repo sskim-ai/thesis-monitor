@@ -1,0 +1,16 @@
+# 12 Partial Semantic Audit Summary
+
+Contract: `partial-semantic-audit-summary-v1`
+
+Status: `PASS`
+
+```json
+{
+  "architecture_repair_needed": 0,
+  "contract": "partial-semantic-audit-summary-v1",
+  "holdout_semantic_revelation_state": "NOT_MEASURED",
+  "ownership_generalization_verdict": "NOT_MEASURED",
+  "partial_output_semantic_audit_status": "CLEAN_ON_RECOVERED_DIRECTIONAL_CORE",
+  "status": "PASS"
+}
+```
