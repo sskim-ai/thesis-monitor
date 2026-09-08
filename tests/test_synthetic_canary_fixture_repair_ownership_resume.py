@@ -1,3 +1,6 @@
+import hashlib
+import json
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -38,8 +41,29 @@ def test_synthetic_packet_preflight_covers_all_frozen_shapes() -> None:
     }
 
 
-def test_production_packet_schema_and_transport_topology_remain_frozen() -> None:
-    assert resume.packet_schema_sha256() == resume.EXPECTED_PACKET_SCHEMA_SHA256
+def test_additive_packet_extension_preserves_legacy_schema_and_transport() -> None:
+    schema = deepcopy(DecisionEvidencePacket.model_json_schema())
+    schema["$defs"]["DecisionEvidenceRef"]["properties"].pop("financial_context")
+    for definition in (
+        "FinancialAttributionBasis",
+        "FinancialComparison",
+        "FinancialComparisonKind",
+        "FinancialContext",
+        "FinancialDerivation",
+        "FinancialEvidenceQuality",
+        "FinancialEvidenceStatus",
+        "FinancialPeriod",
+        "FinancialPeriodType",
+    ):
+        schema["$defs"].pop(definition)
+    legacy_schema_sha256 = hashlib.sha256(
+        json.dumps(schema, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+    assert resume.packet_schema_sha256() == (
+        "a2b03be7380caebb1f7d772c05866b4aebc3991e0411f6b5f2a3d2c78600991b"
+    )
+    assert legacy_schema_sha256 == resume.EXPECTED_PACKET_SCHEMA_SHA256
     current = resume.transport_hashes(Path.cwd())
     intentional_runtime_isolation_changes = {
         "continuation_harness_file",

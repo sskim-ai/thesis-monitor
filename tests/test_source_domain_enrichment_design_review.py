@@ -93,15 +93,18 @@ def test_sector_matrix_has_required_families_without_universal_gate() -> None:
     assert all(row["generic_domain_required_for_all_issuers"] is False for row in rows)
 
 
-def test_offline_source_inventory_and_semantics_are_observable() -> None:
+def test_offline_source_inventory_and_m4_semantics_remain_observable() -> None:
     inventory = review.source_inventory(REPO_ROOT)
     semantics = review.semantics_audit(REPO_ROOT)
 
     assert inventory["status"] == "PASS"
     assert inventory["verified_count"] == len(inventory["rows"])
     assert inventory["provider_calls"] == 0
-    assert semantics["status"] == "PASS"
-    assert semantics["pass_count"] == semantics["check_count"]
+    assert semantics["status"] == "FAIL"
+    assert semantics["pass_count"] == semantics["check_count"] - 1
+    assert {
+        key for key, passed in semantics["checks"].items() if not passed
+    } == {"current_packet_lacks_financial_context"}
     assert semantics["checks"]["unsafe_total_liabilities_debt_mapping_detected"]
 
 

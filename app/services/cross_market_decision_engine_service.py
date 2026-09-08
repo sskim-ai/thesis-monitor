@@ -5,11 +5,20 @@ import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    StringConstraints,
+    model_serializer,
+    model_validator,
+)
 
 from app.services.ohlcv_feature_engine_service import MultiTimeframeFeaturePacket
 from app.services.packet_owned_technical_context_service import (
@@ -101,6 +110,184 @@ class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
+CanonicalFinancialMetric: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[a-z][a-z0-9_]*$",
+    ),
+]
+CanonicalFinancialIdentifier: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[A-Za-z][A-Za-z0-9_.:-]*$",
+    ),
+]
+CanonicalFinancialFormula: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[a-z][a-z0-9_]*$",
+    ),
+]
+SafeFinancialSourceRef: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=240,
+        pattern=r"^\S+$",
+    ),
+]
+FinancialCurrency: TypeAlias = Annotated[
+    str,
+    StringConstraints(pattern=r"^[A-Z]{3}$"),
+]
+
+
+class FinancialPeriodType(StrEnum):
+    QTD = "QTD"
+    YTD = "YTD"
+    FY = "FY"
+    TTM = "TTM"
+    POINT_IN_TIME = "POINT_IN_TIME"
+
+
+class FinancialAttributionBasis(StrEnum):
+    TOTAL = "total"
+    PARENT = "parent"
+    COMMON = "common"
+
+
+class FinancialEvidenceStatus(StrEnum):
+    DIRECT_REPORTED = "DIRECT_REPORTED"
+    DERIVED_SAFE = "DERIVED_SAFE"
+
+
+class FinancialEvidenceQuality(StrEnum):
+    VERIFIED = "verified"
+    PARTIAL = "partial"
+
+
+class FinancialComparisonKind(StrEnum):
+    PRIOR_YEAR_COMPARABLE = "prior_year_comparable"
+    PRIOR_YEAR_END = "prior_year_end"
+    NONE = "none"
+
+
+class FinancialPeriod(FrozenModel):
+    type: FinancialPeriodType
+    start: date | None = None
+    end: date
+    duration_days: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def validate_period_structure(self) -> FinancialPeriod:
+        if self.type == FinancialPeriodType.POINT_IN_TIME:
+            if self.start is not None:
+                raise ValueError("financial_point_in_time_start_forbidden")
+            if self.duration_days is not None:
+                raise ValueError("financial_point_in_time_duration_forbidden")
+            return self
+
+        if self.start is None:
+            raise ValueError("financial_duration_period_start_required")
+        if self.end < self.start:
+            raise ValueError("financial_period_end_before_start")
+        if self.duration_days is not None:
+            inclusive_days = (self.end - self.start).days + 1
+            if self.duration_days != inclusive_days:
+                raise ValueError("financial_period_duration_mismatch")
+        return self
+
+
+class FinancialComparison(FrozenModel):
+    kind: FinancialComparisonKind
+    compatibility_status: Literal["PASS"] = "PASS"
+    input_source_refs: tuple[SafeFinancialSourceRef, ...] = Field(
+        default=(),
+        max_length=8,
+    )
+
+    @model_validator(mode="after")
+    def validate_comparison_lineage(self) -> FinancialComparison:
+        if len(set(self.input_source_refs)) != len(self.input_source_refs):
+            raise ValueError("financial_comparison_duplicate_source_ref")
+        if self.kind == FinancialComparisonKind.NONE:
+            if self.input_source_refs:
+                raise ValueError("financial_comparison_refs_forbidden_for_none")
+        elif not self.input_source_refs:
+            raise ValueError("financial_comparison_refs_required")
+        return self
+
+
+class FinancialDerivation(FrozenModel):
+    formula: CanonicalFinancialFormula
+    input_source_refs: tuple[SafeFinancialSourceRef, ...] = Field(
+        min_length=1,
+        max_length=16,
+    )
+    version: CanonicalFinancialIdentifier
+
+    @model_validator(mode="after")
+    def validate_derivation_lineage(self) -> FinancialDerivation:
+        if len(set(self.input_source_refs)) != len(self.input_source_refs):
+            raise ValueError("financial_derivation_duplicate_source_ref")
+        return self
+
+
+_NON_CURRENCY_FINANCIAL_METRICS = frozenset(
+    {
+        "capex_intensity_ppe",
+        "cash_conversion_cycle",
+        "days_payables_outstanding",
+        "days_sales_outstanding",
+        "financial_flow_yoy_growth",
+        "free_cash_flow_margin_ppe",
+        "inventory_days",
+        "operating_cash_flow_margin",
+        "operating_cash_flow_to_net_income",
+        "return_on_invested_capital",
+        "working_capital_balance_yoy_growth",
+    }
+)
+
+
+class FinancialContext(FrozenModel):
+    metric: CanonicalFinancialMetric
+    currency: FinancialCurrency | None
+    unit_scale: int = Field(gt=0)
+    period: FinancialPeriod
+    entity_scope: CanonicalFinancialIdentifier
+    statement_basis: CanonicalFinancialIdentifier
+    attribution_basis: FinancialAttributionBasis | None = None
+    evidence_status: FinancialEvidenceStatus
+    quality: FinancialEvidenceQuality
+    comparison: FinancialComparison | None = None
+    derivation: FinancialDerivation | None = None
+    limitations: tuple[CanonicalFinancialMetric, ...] = Field(default=(), max_length=16)
+
+    @model_validator(mode="after")
+    def validate_financial_context(self) -> FinancialContext:
+        if self.currency is None and self.metric not in _NON_CURRENCY_FINANCIAL_METRICS:
+            raise ValueError("financial_currency_required")
+        if len(set(self.limitations)) != len(self.limitations):
+            raise ValueError("duplicate_financial_limitation")
+        if self.evidence_status == FinancialEvidenceStatus.DIRECT_REPORTED:
+            if self.derivation is not None:
+                raise ValueError("direct_reported_derivation_forbidden")
+        elif self.derivation is None:
+            raise ValueError("derived_safe_derivation_required")
+        return self
+
+
 class DecisionEvidenceRef(FrozenModel):
     ref_id: str
     category: EvidenceCategory
@@ -113,6 +300,17 @@ class DecisionEvidenceRef(FrozenModel):
     numeric_prose_eligible: bool = False
     metric_refs: tuple[CheckpointMetric, ...] = ()
     logical_condition: SourceLogicalCondition | None = None
+    financial_context: FinancialContext | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_legacy_compatible(
+        self,
+        handler: SerializerFunctionWrapHandler,
+    ) -> dict[str, object]:
+        serialized = handler(self)
+        if self.financial_context is None:
+            serialized.pop("financial_context", None)
+        return serialized
 
 
 class DecisionEvidencePacket(FrozenModel):
