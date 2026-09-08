@@ -1,0 +1,30 @@
+{
+  "base_sha": "5990caa239f8778ae46670abddf30f68db1bb332",
+  "branch": "codex/20260908-source-domain-enrichment-directional-specificity-design-review",
+  "changed_paths_from_base": [
+    "docs/MASTER_WORKFLOW.md",
+    "docs/work-instructions/20260908-source-domain-enrichment-and-directional-specificity-design-review.md",
+    "scripts/source_domain_enrichment_design_review.py",
+    "tests/test_source_domain_enrichment_design_review.py"
+  ],
+  "contract": "m4-repository-provenance-v1",
+  "drift_classification": {
+    "accounting_attribution": "UNCHANGED_DESIGN_ONLY",
+    "adr_security_basis": "UNCHANGED",
+    "decision_evidence_packet": "UNCHANGED_DESIGN_ONLY",
+    "directional_ownership": "UNCHANGED_DESIGN_ONLY",
+    "onboarding_daily_delta_lifecycle": "UNCHANGED",
+    "renderer_message_ownership": "UNCHANGED",
+    "source_ingestion_normalization": "UNCHANGED",
+    "valuation_safety": "UNCHANGED"
+  },
+  "implementation_commit": "9fc4e0019df9861453bab36438e732aed345af4b",
+  "merge_base_base_origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "observed_head": "9fc4e0019df9861453bab36438e732aed345af4b",
+  "origin_main_is_ancestor_of_base": true,
+  "origin_main_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "unexpected_changed_paths": [],
+  "unexplained_semantic_drift": false,
+  "work_instruction_commit": "accb58f5463765605242a7a014aa8cc06a4d3db6"
+}

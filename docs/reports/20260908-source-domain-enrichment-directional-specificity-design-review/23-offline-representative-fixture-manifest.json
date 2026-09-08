@@ -1,0 +1,112 @@
+{
+  "contract": "m4-offline-representative-fixture-manifest-v1",
+  "fixture_count": 7,
+  "historical_subjects_used_as_generic_rules": false,
+  "model_calls": 0,
+  "pass_count": 7,
+  "provider_calls": 0,
+  "rows": [
+    {
+      "case": "profitable_strong_cash_conversion",
+      "evidence": {
+        "capex_fact_id": "cashflow-reported:e30d0fdfcfacdd51bd80fc98",
+        "currency": "USD",
+        "fcf_fact_id": "cashflow:edba1f4cc124c9d484ce5d21",
+        "lineage_complete": true,
+        "ocf": "139568000",
+        "ocf_fact_id": "cashflow-reported:7ddd8b49101b2595f8231510",
+        "ocf_less_ppe_capex": "138914000",
+        "period_end": "2023-12-31",
+        "period_start": "2023-01-01",
+        "period_type": "FY",
+        "ppe_capex": "654000",
+        "ticker": "CRCL"
+      },
+      "fixture_type": "PRESERVED_CANONICAL_FACT_SELECTION",
+      "selection_rule": "first complete OCF>0 and OCF-less-PPE>0 lineage chain",
+      "status": "PASS",
+      "validated_semantics": [
+        "period",
+        "currency",
+        "PPE scope",
+        "arithmetic"
+      ]
+    },
+    {
+      "case": "profitable_weak_post_ppe_cash_conversion",
+      "evidence": {
+        "capex_fact_id": "cashflow-reported:80cff5b40115f895a90588f8",
+        "currency": "USD",
+        "fcf_fact_id": "cashflow:b1a1a13e0a18860a86b8598a",
+        "lineage_complete": true,
+        "ocf": "22174000",
+        "ocf_fact_id": "cashflow-reported:86d58dbf4bae82851a4fffbf",
+        "ocf_less_ppe_capex": "-9720000",
+        "period_end": "2024-03-31",
+        "period_start": "2024-01-01",
+        "period_type": "YTD",
+        "ppe_capex": "31894000",
+        "ticker": "CORZ"
+      },
+      "fixture_type": "PRESERVED_CANONICAL_FACT_SELECTION",
+      "selection_rule": "first complete OCF>0 and OCF-less-PPE<0 lineage chain",
+      "status": "PASS",
+      "validated_semantics": [
+        "positive OCF is distinct from negative post-PPE residual",
+        "no automatic business deterioration verdict"
+      ]
+    },
+    {
+      "case": "high_leverage_weak_liquidity",
+      "fixture_type": "CONTRACT_NEGATIVE_CONTROL",
+      "observed_legacy_mapping": "snapshot.debt = liabilities; snapshot.cash = None",
+      "result": "BLOCKED_UNSAFE_DEBT_SCOPE",
+      "source_anchor": "app/services/financial_snapshot_service.py",
+      "status": "PASS",
+      "validated_semantics": [
+        "total liabilities are not interest-bearing debt"
+      ]
+    },
+    {
+      "case": "inventory_receivables_buildup",
+      "fixture_type": "PRESERVED_KR_COVERAGE_CONTROL",
+      "result": "PARTIAL; no buildup conclusion without compatible comparison",
+      "safe_inventory_facts": 6,
+      "source_anchor": "docs/reports/20260817-phase8-1-1-authoritative-financial-recovery-audit.json",
+      "status": "PASS",
+      "trade_receivables_coverage": "NOT_PROVEN"
+    },
+    {
+      "case": "cumulative_loss_despite_latest_quarter_profit",
+      "fixture_type": "REPOSITORY_PERIOD_CONTRACT_FIXTURE",
+      "source_anchor": "tests/test_kr_financial_lineage_service.py",
+      "status": "PASS",
+      "validated_semantics": [
+        "single-quarter and YTD cumulative fields remain distinct",
+        "no mixed-period directional conclusion"
+      ]
+    },
+    {
+      "case": "net_income_improvement_with_non_operating_effect",
+      "fixture_type": "SOURCE_MAPPING_BOUNDARY_CONTROL",
+      "result": "SECTOR_SPECIFIC_ONLY; generic attribution remains mapping-incomplete",
+      "source_anchor": "app/services/coldstart_fundamental_enrichment_service.py",
+      "status": "PASS",
+      "verified_available_concepts": [
+        "InterestIncomeExpenseNet",
+        "NoninterestIncome"
+      ]
+    },
+    {
+      "case": "generic_domain_not_applicable",
+      "fixture_type": "PRESERVED_INDUSTRY_APPLICABILITY_CONTROL",
+      "generic_fcf_status": "NOT_APPLICABLE",
+      "observed_industry": "insurance_reinsurance",
+      "observed_subject": "003690",
+      "result": "GENERIC_ENTERPRISE_FCF_NOT_APPLICABLE",
+      "source_anchor": "docs/reports/20260820-phase9-0b-canonical-facts.json",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

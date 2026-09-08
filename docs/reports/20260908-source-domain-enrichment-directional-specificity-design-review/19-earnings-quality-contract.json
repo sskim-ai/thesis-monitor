@@ -1,0 +1,20 @@
+{
+  "allowed_roles": [
+    "SUPPORTING",
+    "LIMITING",
+    "WARNING"
+  ],
+  "causality_rule": "state observed relation; do not invent working-capital or capex cause",
+  "contract": "earnings-quality-cross-domain-v1-design",
+  "deterministic_score": false,
+  "invariant": "reported net-income growth is not earnings-quality improvement",
+  "qualifying_domains": [
+    "operating profit",
+    "operating cash flow",
+    "PPE reinvestment",
+    "working capital",
+    "debt/liquidity",
+    "financial/non-operating effects"
+  ],
+  "status": "FROZEN_DESIGN"
+}

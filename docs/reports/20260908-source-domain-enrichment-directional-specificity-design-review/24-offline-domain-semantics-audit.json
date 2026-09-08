@@ -1,0 +1,22 @@
+{
+  "all_domains_audited": true,
+  "check_count": 11,
+  "checks": {
+    "acquisition_and_intangible_rejected": true,
+    "current_packet_lacks_financial_context": true,
+    "generic_investing_rejected": true,
+    "guarded_fcf_derivation_exists": true,
+    "guarded_qtd_derivation_exists": true,
+    "guarded_ttm_derivation_exists": true,
+    "kr_comparison_compatibility_exists": true,
+    "kr_ocf_requires_xbrl_period": true,
+    "official_ocf_semantic_exists": true,
+    "qtd_ytd_fy_ttm_types_exist": true,
+    "unsafe_total_liabilities_debt_mapping_detected": true
+  },
+  "contract": "m4-offline-domain-semantics-audit-v1",
+  "domain_count": 6,
+  "pass_count": 11,
+  "provider_calls": 0,
+  "status": "PASS"
+}

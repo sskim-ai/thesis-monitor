@@ -1,0 +1,27 @@
+{
+  "contract": "m4-production-no-change-v1",
+  "production_prompt_changed": false,
+  "production_readiness": "NOT_READY",
+  "production_schema_changed": false,
+  "renderer_changed": false,
+  "side_effect_counts": {
+    "assessment_persistence_mutations": 0,
+    "automatic_monitoring_resume": 0,
+    "deployments": 0,
+    "live_v2_changes": 0,
+    "main_merges": 0,
+    "model_calls_fictional": 0,
+    "model_calls_judge": 0,
+    "model_calls_real": 0,
+    "monitoring_registrations": 0,
+    "night_futures_changes": 0,
+    "notification_queue_writes": 0,
+    "production_db_mutations": 0,
+    "production_sends": 0,
+    "provider_source_fetches": 0,
+    "scheduler_mutation_count": 0,
+    "warning_mutations": 0
+  },
+  "source_parser_output_changed": false,
+  "status": "PASS"
+}

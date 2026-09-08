@@ -1,0 +1,47 @@
+{
+  "contract": "m4-required-schema-change-decision-v1",
+  "decision": "ADDITIVE_OPTIONAL_FINANCIAL_CONTEXT_REQUIRED",
+  "implemented_in_m4": false,
+  "proposal": {
+    "existing_fields_reused": [
+      "value",
+      "unit",
+      "source_ref",
+      "as_of"
+    ],
+    "field": "financial_context",
+    "migration": "additive and optional; no existing packet rewrite",
+    "placement": "optional field on DecisionEvidenceRef",
+    "production_activation": false,
+    "required_when": "typed financial domain evidence is emitted",
+    "shape": {
+      "attribution_basis": "total/parent/common/null as applicable",
+      "comparison": {
+        "compatibility_status": "PASS",
+        "input_source_refs": "ordered references",
+        "kind": "prior_year_comparable | prior_year_end | none"
+      },
+      "currency": "verified financial currency",
+      "derivation": {
+        "formula": "registered formula or null",
+        "input_source_refs": "ordered references",
+        "version": "derivation contract or null"
+      },
+      "entity_scope": "issuer/consolidation scope",
+      "evidence_status": "DIRECT_REPORTED | DERIVED_SAFE",
+      "limitations": "bounded list",
+      "metric": "canonical metric identifier",
+      "period": {
+        "duration_days": "integer or null",
+        "end": "date",
+        "start": "date or null for point-in-time",
+        "type": "QTD | YTD | FY | TTM | POINT_IN_TIME"
+      },
+      "quality": "verified/partial status",
+      "statement_basis": "official statement basis",
+      "unit_scale": "explicit source/normalized scale"
+    }
+  },
+  "schema_change_required": true,
+  "status": "DECIDED"
+}

@@ -1,0 +1,88 @@
+{
+  "contract": "m4-kr-free-source-domain-support-audit-v1",
+  "market": "kr",
+  "partial_domain_count": 5,
+  "provider_calls": 0,
+  "rows": [
+    {
+      "domain": "same_period_prior_year_comparison",
+      "known_gap": "coverage remains selective and basis-validated",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/services/sec_financial_snapshot_service.py",
+        "app/services/kr_financial_lineage_service.py::growth_lineage_compatible"
+      ],
+      "provider_call_used": false,
+      "support_status": "SUPPORTED_CURRENTLY",
+      "universal_issuer_coverage_claimed": false
+    },
+    {
+      "domain": "operating_cash_flow",
+      "known_gap": "stored rows exist; actual XBRL duration reconciliation is 0/7",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/services/official_cash_flow_service.py",
+        "app/services/cash_flow_capital_efficiency_service.py",
+        "app/services/opendart_financial_recovery_service.py"
+      ],
+      "provider_call_used": false,
+      "support_status": "PARTIALLY_SUPPORTED",
+      "universal_issuer_coverage_claimed": false
+    },
+    {
+      "domain": "ppe_capex_simple_cash_conversion",
+      "known_gap": "PPE candidates exist; aggregation eligible is 0",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/services/official_cash_flow_service.py",
+        "app/services/cash_flow_capital_efficiency_service.py::derive_fcf",
+        "app/services/opendart_financial_recovery_service.py::CAPEX_COMPONENTS"
+      ],
+      "provider_call_used": false,
+      "support_status": "PARTIALLY_SUPPORTED",
+      "universal_issuer_coverage_claimed": false
+    },
+    {
+      "domain": "debt_liquidity",
+      "known_gap": "legacy liabilities-as-debt field is unsafe for this contract",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/models/financial.py::FinancialSnapshot",
+        "app/services/financial_snapshot_service.py",
+        "app/services/coldstart_fundamental_enrichment_service.py"
+      ],
+      "provider_call_used": false,
+      "support_status": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "universal_issuer_coverage_claimed": false
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "known_gap": "inventory has selective safe facts; trade AR/AP unavailable",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/services/cash_flow_capital_efficiency_service.py",
+        "app/services/opendart_financial_recovery_service.py",
+        "docs/reports/20260820-phase9-0b-canonical-facts.json"
+      ],
+      "provider_call_used": false,
+      "support_status": "PARTIALLY_SUPPORTED",
+      "universal_issuer_coverage_claimed": false
+    },
+    {
+      "domain": "non_operating_financial_income_effects",
+      "known_gap": "no complete mapped generic attribution bridge",
+      "market": "kr",
+      "parser_mapping_paths": [
+        "app/services/coldstart_fundamental_enrichment_service.py",
+        "app/services/sec_financial_snapshot_service.py",
+        "app/services/opendart_financial_recovery_service.py"
+      ],
+      "provider_call_used": false,
+      "support_status": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "universal_issuer_coverage_claimed": false
+    }
+  ],
+  "status": "COMPLETE",
+  "supported_domain_count": 1,
+  "unsupported_domain_count": 0
+}

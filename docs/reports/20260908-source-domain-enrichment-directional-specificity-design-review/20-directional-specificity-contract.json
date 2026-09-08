@@ -1,0 +1,39 @@
+{
+  "anchor_classes": [
+    "absolute_condition",
+    "trend",
+    "cash_conversion_quality",
+    "balance_sheet_resilience",
+    "sector_kpi",
+    "valuation_evidence",
+    "risk"
+  ],
+  "anchor_count": {
+    "maximum": 3,
+    "minimum": 1
+  },
+  "checklist_or_fixed_score": false,
+  "contract": "directional-financial-specificity-v1-design",
+  "correlated_groups": [
+    {
+      "automatic_independent_anchor_count": 0,
+      "observations": [
+        "revenue",
+        "operating_profit",
+        "net_income"
+      ],
+      "possible_single_conclusion": "profitable operation or profitability trend"
+    }
+  ],
+  "production_prompt_modified": false,
+  "required_specific_patterns_when_proven": [
+    "profit growth plus cash-flow weakness",
+    "profit growth plus leverage pressure",
+    "single-quarter profit plus cumulative loss",
+    "net-income growth driven by non-operating effects",
+    "profit growth plus inventory/receivable buildup",
+    "profit growth plus strong cash conversion and liquidity"
+  ],
+  "selection_rule": "prefer decision relevance and independence over line-item count",
+  "status": "FROZEN_DESIGN"
+}

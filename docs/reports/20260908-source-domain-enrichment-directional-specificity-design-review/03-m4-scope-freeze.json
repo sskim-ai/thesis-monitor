@@ -1,0 +1,38 @@
+{
+  "contract": "m4-scope-freeze-v1",
+  "excluded": [
+    "provider/source fetch",
+    "model/judge call",
+    "broad parser or packet production change",
+    "Directional prompt/renderer/source-sufficiency change",
+    "production merge/deploy/send/database mutation",
+    "scheduler resume",
+    "paid source"
+  ],
+  "included": [
+    "offline parser/mapping introspection",
+    "six safe domain contracts",
+    "sector and market support classification",
+    "bounded schema and implementation-order decision",
+    "offline fixture and static validation"
+  ],
+  "side_effect_counts": {
+    "assessment_persistence_mutations": 0,
+    "automatic_monitoring_resume": 0,
+    "deployments": 0,
+    "live_v2_changes": 0,
+    "main_merges": 0,
+    "model_calls_fictional": 0,
+    "model_calls_judge": 0,
+    "model_calls_real": 0,
+    "monitoring_registrations": 0,
+    "night_futures_changes": 0,
+    "notification_queue_writes": 0,
+    "production_db_mutations": 0,
+    "production_sends": 0,
+    "provider_source_fetches": 0,
+    "scheduler_mutation_count": 0,
+    "warning_mutations": 0
+  },
+  "status": "FROZEN"
+}

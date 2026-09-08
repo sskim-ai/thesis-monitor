@@ -1,0 +1,104 @@
+{
+  "contract": "m4-domain-design-v1",
+  "design": {
+    "applicable_sector_families": [
+      "standard operating company",
+      "manufacturing",
+      "software",
+      "cloud/platform",
+      "biotech"
+    ],
+    "comparability_requirements": [
+      "same cash-flow semantic",
+      "same issuer, currency, unit, entity, and statement basis",
+      "source filing version compatibility"
+    ],
+    "currency_basis": "same verified financial currency; no inferred FX conversion",
+    "current_parser_mapping_locations": [
+      "app/services/official_cash_flow_service.py",
+      "app/services/cash_flow_capital_efficiency_service.py",
+      "app/services/opendart_financial_recovery_service.py"
+    ],
+    "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+    "decision_evidence_packet_representation": {
+      "activation_in_m4": false,
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "proposal": "optional typed financial_context on DecisionEvidenceRef"
+    },
+    "directional_core_usage": [
+      "cash-conversion evidence, not an automatic thesis verdict",
+      "contrast with compatible earnings only",
+      "negative OCF is a fact requiring sector and stage context"
+    ],
+    "directly_reported_vs_derived": [
+      "DIRECT_REPORTED",
+      "DERIVED_SAFE_PERIOD"
+    ],
+    "domain": "operating_cash_flow",
+    "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+    "forbidden_derivations": [
+      "EBITDA, operating income, or net income as OCF proxy",
+      "interim annualization",
+      "cumulative YTD labeled as a single quarter",
+      "industrial interpretation for a financial institution",
+      "missing OCF converted to zero"
+    ],
+    "implementation_risk": "MEDIUM",
+    "initial_analysis_use": "eligible as absolute evidence when valid and material",
+    "investment_purpose": [
+      "earnings cash conversion",
+      "growth-quality cross-check",
+      "operating cash generation"
+    ],
+    "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+    "message_usage": [
+      "label operating cash flow and period explicitly",
+      "avoid implying a working-capital cause without supporting facts"
+    ],
+    "missing_data_behavior": "Unknown for a cash-conversion claim; otherwise no negative inference",
+    "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+    "non_applicable_or_caution_sector_families": [
+      "bank",
+      "insurance/reinsurance",
+      "financial institution"
+    ],
+    "period_basis": [
+      "reported QTD",
+      "YTD",
+      "FY",
+      "safe TTM"
+    ],
+    "required_validation_tests": [
+      "official operating-activities semantic acceptance",
+      "YTD/QTD/TTM period safety",
+      "financial-industry interpretation suppression"
+    ],
+    "safe_derivations": [
+      {
+        "failure_conditions": [
+          "period or source-version mismatch"
+        ],
+        "formula": "current YTD OCF - prior-quarter YTD OCF",
+        "inputs": 2,
+        "name": "ocf_qtd",
+        "status": "DERIVED_SAFE"
+      },
+      {
+        "failure_conditions": [
+          "missing or incompatible component"
+        ],
+        "formula": "prior FY + current YTD - prior comparable YTD",
+        "inputs": 3,
+        "name": "ocf_ttm",
+        "status": "DERIVED_SAFE"
+      }
+    ],
+    "schema_change_required": true,
+    "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+    "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+    "us_free_public_source_availability": "SUPPORTED_CURRENTLY",
+    "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+    "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+  },
+  "status": "FROZEN_DESIGN"
+}
