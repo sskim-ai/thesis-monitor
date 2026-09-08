@@ -1,0 +1,14 @@
+# 51 Holdout Exposure Retirement State
+
+| Field | Value |
+| --- | --- |
+| contract | holdout-exposure-retirement-state-v1 |
+| exposed_subjects | ["014820", "026960", "039980", "066900", "079370", "106240", "170900", "183300", "247540", "251970", "263750", "318060", "AA", "NEON", "RMD", "TDW"] |
+| future_unseen_holdout_reuse_allowed | 0 |
+| holdout_output_exposure_state | FULLY_EXPOSED |
+| holdout_retirement_state | RETIRED_FOR_ARCHITECTURE_REPAIR |
+| holdout_semantic_revelation_state | REVEALED_FOR_ARCHITECTURE_TUNING |
+| same_cohort_architecture_tuning_rerun_allowed | 0 |
+| status | STOPPED |
+
+Machine proof: `proofs/51-holdout-exposure-retirement-state.json`.

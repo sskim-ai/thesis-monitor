@@ -1,0 +1,8 @@
+{
+  "automatic_monitoring_resume": 0,
+  "contract": "directional-calibration-next-scope-handoff-v1",
+  "monitoring_remains_paused": true,
+  "next_scope": "GENERIC_OWNERSHIP_ARCHITECTURE_REPAIR",
+  "readiness": "NOT_READY",
+  "status": "NOT_READY"
+}
