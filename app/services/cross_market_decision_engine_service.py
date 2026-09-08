@@ -41,6 +41,9 @@ from app.services.logical_condition_service import (
     source_checkpoint_metric_refs,
     source_logical_condition,
 )
+from app.services.financial_context_adapter_service import (
+    adapt_fact_catalog_financial_context,
+)
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -659,6 +662,7 @@ def build_decision_evidence_packet(
             fact_id = str(row.get("fact_id") or "")
             if not fact_id:
                 continue
+            adapted_financial = adapt_fact_catalog_financial_context(row, scoped_facts)
             refs.append(
                 DecisionEvidenceRef(
                     ref_id=f"canonical:{fact_id}",
@@ -668,6 +672,11 @@ def build_decision_evidence_packet(
                     as_of=str(row.get("as_of_date") or assessment_date),
                     source_ref=f"stock.fact_catalog.{fact_id}",
                     metric_refs=_checkpoint_metrics_for_fact(row),
+                    financial_context=(
+                        FinancialContext.model_validate(adapted_financial.context)
+                        if adapted_financial.context is not None
+                        else None
+                    ),
                 )
             )
 
