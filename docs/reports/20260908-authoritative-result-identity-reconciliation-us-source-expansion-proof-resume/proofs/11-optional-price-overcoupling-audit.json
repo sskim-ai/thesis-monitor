@@ -1,0 +1,10 @@
+{
+  "contract": "optional-price-support-overcoupling-audit-v1",
+  "fundamental_source_sufficiency_mutation": 0,
+  "fundamental_source_test_requires_price_route": false,
+  "optional_price_support_overcoupling_found": 1,
+  "price_fabrication_count": 0,
+  "price_unavailable_safe_preserved": true,
+  "status": "PASS",
+  "technical_claim_without_data_count": 0
+}

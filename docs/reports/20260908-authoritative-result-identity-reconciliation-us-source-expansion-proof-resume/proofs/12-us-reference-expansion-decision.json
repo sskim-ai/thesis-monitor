@@ -1,0 +1,11 @@
+{
+  "contract": "generic-us-reference-expansion-decision-v1",
+  "decision": "ALLOW_OFFICIAL_FUNDAMENTAL_SOURCE_ATTEMPT_BEFORE_OPTIONAL_PRICE_ROUTE",
+  "generic_us_reference_expansion_applied": 1,
+  "issuer_dedup_policy_changed": 0,
+  "new_provider_count": 0,
+  "paid_provider_count": 0,
+  "security_class_policy_changed": 0,
+  "status": "PASS",
+  "ticker_specific_exception_count": 0
+}
