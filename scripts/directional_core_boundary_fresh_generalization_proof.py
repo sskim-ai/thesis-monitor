@@ -16,6 +16,7 @@ from app.services.codex_runtime_state_service import (
     context_runtime_state_namespace,
 )
 from scripts import directional_core_boundary_calibration_repair_fresh_generalization_proof as calibration
+from scripts import existing_source_env_binding_fresh_holdout_resume as source_env
 from scripts import fresh_issuer_ownership_proof_transport_risk_carried as legacy
 from scripts import model_transport_revalidation_ownership_continuation as transport
 from scripts import monitoring_pause_completion_fresh_issuer_ownership_proof as selection
@@ -501,6 +502,36 @@ def _namespace_preflight() -> dict[str, object]:
     return result
 
 
+def _source_config_presence_preflight(repo_root: Path) -> dict[str, object]:
+    configuration = source_env.source_configuration_audit(repo_root)
+    required = configuration.get("required_setting_presence")
+    required = required if isinstance(required, Mapping) else {}
+    passed = (
+        configuration.get("status") == "PASS"
+        and required.get("OPENDART_API_KEY") is True
+        and required.get("SEC_USER_AGENT") is True
+        and configuration.get("protected_source_config_bound") is True
+    )
+    result = {
+        "contract": "directional-calibration-source-config-presence-preflight-v1",
+        "source_config_loader": configuration.get("source_config_loader"),
+        "source_config_loader_sha256": configuration.get(
+            "source_config_loader_sha256"
+        ),
+        "opendart_api_key_present": required.get("OPENDART_API_KEY") is True,
+        "sec_user_agent_present": required.get("SEC_USER_AGENT") is True,
+        "protected_source_config_present": configuration.get(
+            "protected_source_config_bound"
+        ),
+        "secret_values_emitted": 0,
+        "candidate_source_request_count": 0,
+        "status": "PASS" if passed else "FAIL",
+    }
+    if not passed:
+        raise ValueError("SOURCE_CONFIGURATION_ABSENT_BEFORE_CANDIDATE_LOOP")
+    return result
+
+
 def _repository_provenance() -> dict[str, object]:
     instruction_commit = git_value("log", "-1", "--format=%H", "--", WORK_INSTRUCTION_PATH)
     return {
@@ -544,9 +575,7 @@ def bootstrap(args: argparse.Namespace) -> None:
         raise ValueError("bootstrap_requires_fixed_as_of")
     calibration_gate = assert_calibration_frozen(repo_root)
     integrity = calibration.verify_latest_result(args.latest_result_zip)
-    source_config = runtime_proof._source_config_preflight(
-        repo_root, args.latest_result_zip
-    )
+    source_config = _source_config_presence_preflight(repo_root)
     pause = runtime_proof._pause_observation()
     namespace = _namespace_preflight()
     with zipfile.ZipFile(args.latest_result_zip) as archive:
