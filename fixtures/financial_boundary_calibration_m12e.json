@@ -1,0 +1,14 @@
+{
+  "contract": "m12e-generic-ordinal-contract-fixtures-v1",
+  "purpose": "Documented contract expectations, not an investment scoring engine or model outputs",
+  "fixtures": [
+    {"id": "CAL-BAL-01", "facts": ["positive operating anchor", "positive cash conversion", "positive resilience"], "limitation": "material valuation/persistence confirmation unresolved; adjacent fit remains reasonable", "supportable_buy_buckets": [6.0, 6.5], "selected_buy": 6.0, "rule": "minimum_vs_strong"},
+    {"id": "CAL-BAL-02", "facts": ["healthy accounting growth", "negative OCF", "negative OCF-less-PPE sharing OCF lineage"], "limitation": "cause/reversibility unresolved; no distinct negative corroboration; adjacent fit remains reasonable", "supportable_buy_buckets": [4.0, 4.5], "selected_buy": 4.5, "rule": "shared_lineage"},
+    {"id": "CAL-BAL-03", "facts": ["flat operations", "non-operating support improves net income"], "limitation": "no separate positive material issuer anchor", "supportable_buy_buckets": [5.0], "selected_buy": 5.0, "rule": "composition_only"},
+    {"id": "CAL-BAL-04", "facts": ["positive material anchor", "distinct independent supporting economic fact"], "limitation": "no material causal or persistence blocker", "supportable_buy_buckets": [6.0], "selected_buy": 6.0, "rule": "independent_support"},
+    {"id": "CAL-BAL-05", "facts": ["minimum positive direction", "materially stronger persistence, visibility or valuation support"], "limitation": "stronger support actually established", "supportable_buy_buckets": [6.5], "selected_buy": 6.5, "rule": "stronger_support"},
+    {"id": "CAL-NEG-LEAN", "facts": ["negative material anchor"], "limitation": "distinct corroboration missing; adjacent fit remains reasonable", "supportable_buy_buckets": [4.0, 4.5], "selected_buy": 4.5, "rule": "limiting_unknown"},
+    {"id": "CAL-NEG-MIN", "facts": ["negative material anchor", "distinct independent corroboration"], "limitation": "no material causal or persistence blocker", "supportable_buy_buckets": [4.0], "selected_buy": 4.0, "rule": "independent_support"},
+    {"id": "CAL-NEG-STRONG", "facts": ["minimum negative direction", "materially stronger persistence of negative economics"], "limitation": "stronger support actually established", "supportable_buy_buckets": [3.5], "selected_buy": 3.5, "rule": "stronger_support"}
+  ]
+}
