@@ -274,7 +274,7 @@ _PERIOD_RELATION_PATTERNS = (
     re.compile(r"(?<![a-z])(?:while|whereas|but|versus|vs)[.]?(?![a-z])"),
     re.compile(r"(?<![a-z])contrast(?:s|ed|ing)?(?![a-z])"),
     re.compile(r"(?<![a-z])coexist(?:s|ed|ing)?(?![a-z])"),
-    re.compile(r"지만|반면|공존|충돌|맞서|엇갈"),
+    re.compile(r"지만|반면|공존|충돌|상충|맞서|엇갈"),
 )
 
 
