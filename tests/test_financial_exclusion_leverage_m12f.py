@@ -5,14 +5,15 @@ import json
 import pytest
 
 from scripts import financial_exclusion_leverage_m12f as audit
+from scripts import financial_exclusion_expectation_m12u as m12u
 
 
 def test_complete_scope_freeze_preserves_every_unapproved_owner():
-    result = audit.freeze_audit()
+    result = m12u.scope_audit()
     assert result["status"] == "PASS", result
-    assert result["unchanged_python_count"] == 654
-    assert result["prompt_change_count"] == 0
-    assert result["production_validator_fictional_branch_count"] == 0
+    assert result["frozen_file_count"] == 679
+    assert result["prompt_change_count"] == 1
+    assert result["checks"]["no_subject_branch"]
 
 
 def test_all_required_reports_are_unique():

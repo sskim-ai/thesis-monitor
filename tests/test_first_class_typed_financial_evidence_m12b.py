@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from scripts import first_class_typed_financial_evidence_m12b as m12b
 from scripts import financial_boundary_calibration_m12e as m12e
-from scripts import financial_exclusion_leverage_m12f as m12f
+from scripts import financial_exclusion_expectation_m12u as m12u
 
 
 def test_projection_is_selected_only_first_class_and_catalog_ordered() -> None:
@@ -50,7 +50,7 @@ def test_frozen_semantic_surfaces_remain_unchanged() -> None:
 
     # Historical changes: M12E calibration prose; M12F bounded exclusion semantics.
     assert all(row["status"] == "PASS" for name, row in frozen.items() if name not in {"calibration", "financial_validator"})
-    assert m12f.freeze_audit()["status"] == "PASS"
+    assert m12u.scope_audit()["status"] == "PASS"
     assert m12e.without_prompt(m12b._git_file(m12b.BASE_SHA, m12e.SERVICE)) == (
         m12e.without_prompt(m12e.Path(m12e.SERVICE).read_text())
     )

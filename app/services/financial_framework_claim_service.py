@@ -33,20 +33,20 @@ _TERM = "(?:" + "|".join(_FRAMEWORKS.values()) + ")"
 _CLUSTER = re.compile(_TERM + r"(?:\s*(?:[·,/]|및|와|과|and)\s*" + _TERM + r")*", re.I)
 _NOMINAL_BRIDGE = (
     r"(?:(?:의|은|는|이|가|을|를|으로|로|도|만)\s*|"
-    r"(?:등|일반|영업기업|기업|산업재|해당|이|금융업종|금융업|핵심|"
+    r"(?:등|일반|영업기업|기업|산업재|해당|이|금융업종|금융업|업종|핵심|"
     r"평가틀|틀|기준|프레임워크|분석|평가|모형|체계)\s*)*"
 )
 _KO_EXCLUSION = re.compile(
     _NOMINAL_BRIDGE + r"(?:(?:적용|사용|평가|활용|해당)\s*하지\s*않(?:는다|습니다|음)|"
+    r"(?:(?:적용|평가|사용)\s*)?대상(?:이|은)\s*아니(?:다|며)|"
     r"배제(?:한다|합니다)|아니(?:다|며|라고\s*명시한다))\s*$"
 )
 _EN_FRAMEWORK = r"(?:(?:frameworks?|approach|criteria|analysis|metrics?)\s*)?"
 _EN_SECTOR = r"(?:(?:to|for|in)\s+(?:the\s+)?(?:banks?|insurers?|insurance|financial\s+sector|this\s+sector))?"
 _EN_SUFFIX = re.compile(
-    _EN_FRAMEWORK
-    + r"(?:is|are)\s+(?:not\s+(?:applicable|applied|used)|excluded)\s*"
-    + _EN_SECTOR
-    + r"\s*$",
+    _EN_FRAMEWORK + r"(?:(?:is|are)\s+(?:not\s+(?:applicable|applied|used|"
+    r"(?:an?\s+applicable|the\s+relevant)\s+framework)|excluded)|"
+    r"(?:does|do)\s+not\s+apply)\s*" + _EN_SECTOR + r"\s*$",
     re.I,
 )
 _EN_PREFIX = re.compile(r"(?:\b(?:do|does)\s+not\s+(?:apply|use|evaluate)|\bexclude)\s*$", re.I)
@@ -70,10 +70,16 @@ def financial_framework_claims(text: str) -> tuple[FrameworkClaim, ...]:
         for cluster in _CLUSTER.finditer(clause):
             prefix = clause[: cluster.start()].strip()
             suffix = clause[cluster.end() :].strip()
-            excluded = not _CONDITIONAL.search(clause) and (
-                _KO_EXCLUSION.fullmatch(suffix)
-                or _EN_SUFFIX.fullmatch(suffix)
-                or (_EN_PREFIX.search(prefix) and _EN_OBJECT_END.fullmatch(suffix))
+            exclusion_prefix = _EN_PREFIX.search(prefix)
+            preceding = prefix[: exclusion_prefix.start()] if exclusion_prefix else prefix
+            excluded = (
+                not _CONDITIONAL.search(clause)
+                and not _AMBIGUITY.search(preceding)
+                and (
+                    _KO_EXCLUSION.fullmatch(suffix)
+                    or _EN_SUFFIX.fullmatch(suffix)
+                    or (_EN_PREFIX.search(prefix) and _EN_OBJECT_END.fullmatch(suffix))
+                )
             )
             kind = (
                 FrameworkClaimKind.EXPLICIT_EXCLUSION
