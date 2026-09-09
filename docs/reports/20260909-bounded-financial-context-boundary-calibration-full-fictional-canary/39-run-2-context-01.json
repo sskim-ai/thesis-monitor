@@ -1,0 +1,6 @@
+{
+  "status": "NOT_RUN",
+  "reason": "Whole-generation stop after run-1/context-02 hard validator failure",
+  "model_calls": 0,
+  "wrapper_retry_count": 0
+}

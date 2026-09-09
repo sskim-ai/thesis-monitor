@@ -1,0 +1,15 @@
+{
+  "facts": [
+    "flat operations",
+    "non-operating support improves net income"
+  ],
+  "id": "CAL-BAL-03",
+  "limitation": "no separate positive material issuer anchor",
+  "rule": "composition_only",
+  "selected_buy": 5.0,
+  "selected_contract_buy": 5.0,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    5.0
+  ]
+}

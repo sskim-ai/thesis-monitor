@@ -1,0 +1,11 @@
+{
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+      "current_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+      "path": "app/services/directional_financial_context_service.py"
+    }
+  ],
+  "status": "PASS"
+}

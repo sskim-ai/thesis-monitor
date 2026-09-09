@@ -1,0 +1,23 @@
+{
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "basis": "isolated worktree; only offline fictional runner invoked; no production command",
+  "deployments": 0,
+  "main_merges": 0,
+  "model_calls_judge": 0,
+  "model_calls_real": 0,
+  "monitoring_registrations": 0,
+  "notification_queue_writes": 0,
+  "production_db_mutations": 0,
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "real_issuer_model_exposure_count": 0,
+  "scheduler_mutation_count": 0,
+  "status": "PASS",
+  "warning_mutations": 0,
+  "existing_python_surfaces_audited": 656,
+  "post_generation_code_freeze": "PASS",
+  "production_behavior_changed": false,
+  "implementation_branch_contains_prompt_change": true,
+  "operating_deployment_changed": false
+}

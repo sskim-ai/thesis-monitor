@@ -1,0 +1,11 @@
+{
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+      "current_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+      "path": "scripts/directional_core_price_timing_holdout.py"
+    }
+  ],
+  "status": "PASS"
+}

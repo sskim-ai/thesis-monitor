@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m12g-directional-financial-anchor-grounding-closeout-v1
+**버전:** 2026-09-09 / m12e-financial-boundary-calibration-partial-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12G deterministic grounding repair 완료 / full fictional canary 2/6 fail-closed 중단`
+**현재 위치:** `M12E deterministic calibration repair 완료 / fictional canary 2/6 fail-closed 중단 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12G는 `FIC_FIN_06_TYPED_FINANCIAL_EVIDENCE_NOT_GROUNDED`를 대상으로 typed-ref grounding instruction과 독립 audit을 추가했고 deterministic fixture는 모두 통과했다. 그러나 새 frozen canary의 두 번째 호출에서 FIC-FIN-06이 선택된 재고·매출채권 typed refs를 다시 인용하지 않아 prompt-only repair가 불충분함을 확인하고 중단했다. Price-Timing, selector, cases, schema, validator, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
+**M12E는 기존 Directional ordinal prompt에 shared-lineage corroboration, limiting Unknown, non-operating support, 6.0/6.5 경계의 일반 계약만 추가했다. Astra/xhigh canary 두 번째 호출에서 금융업 비적용 문장에 대한 validator 오류로 중단했다. 원본 FAIL은 보존하며 별도 감사상 false reject 2건과 FIC-FIN-05 core 경계 회귀 관측을 분리한다. 반복 안정성은 미측정이고 재호출·hotfix·main merge·운영 변경은 0이다. 역사적 M12G~M12S 결과는 아래 각 절에 유지한다.**
 
 ---
 
@@ -830,6 +830,81 @@ notification/send, monitoring registration, main merge, deploy도 0이고 승인
 8개는 PAUSED/DISABLED 상태를 유지한다. `M12S_COMPLETE`,
 `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 repaired full
 fictional canary 전에는 fresh real proof나 monitoring resume를 시작하지 않는다.
+
+---
+
+## 12E. M12E boundary calibration repair와 부분 canary 종료
+
+작업지시서 commit은 `3dd15fdc9ef60ad14a120fa22bf03a7b79a6ac1a`, base는
+`67bdc56bcd0dba05d154c727fa1f819816b1a1f4`, frozen implementation은
+`44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630`이다. branch는
+`codex/20260909-bounded-financial-context-boundary-calibration-m12e`이며
+main `d18e68b1e944d7749d093b08797fcd9498412680`에 merge/deploy하지 않았다.
+M12S 권위 ZIP SHA `d9533246a23d7fc6eab6da6637f1254a8748f7e37aa45252840566df5602f3de`와
+payload 38개를 재검증했다. 기존 M12D source context는 내용 변경 없이 재사용했다.
+
+변경 owner는 `directional_balance_service.ORDINAL_CALIBRATION_PROMPT`의 일반 문단
+4개뿐이다. 같은 OCF/PPE residual lineage를 독립 근거로 중복 계산하지 않고,
+원인·가역성·지속성 Unknown을 negative evidence가 아닌 강도 제한으로 취급하며,
+flat operations와 non-operating support만으로 positive lean을 만들지 않고,
+최소 방향 6.0과 더 강한 6.5의 근거를 분리한다. threshold 6.0, increment 0.5,
+HOLD lean, 보수적 tie-break, buyer/holder, schema, selector, financial/QTD/WC validator,
+classifier, Price-Timing, renderer, source sufficiency, Daily Delta는 그대로다.
+
+모델 호출 전 focused 107/107, full pytest 3123/3123, Ruff 및 diff 검사가 PASS했다.
+초기 deterministic 실패 3건은 원본을 보존하고, historical 전체 파일 freeze를
+non-prompt AST freeze로 구분하며 역사적 transport 크기 fixture에 정확한 이전 prompt를
+사용하도록 테스트만 수리했다. transport 크기 제한은 그대로이고 실제 M12E canary는
+새 prompt를 사용했다. GitHub Actions implementation exact SHA는 **FAIL**이다:
+shallow checkout의 historical git object 부재 4건, hosted Linux에 local-only ZIP 부재
+1건이다. 이 중 2건은 신규 M12E history-dependent test이고 3건은 기존 테스트다.
+이를 CI PASS로 표시하지 않으며 frozen generation 이후 CI hotfix도 하지 않는다.
+
+초기 구현 authoring receipt는 Astra/ultra였음을 사용자에게 공개했다. 사용자의 모델
+설정 변경 후 Astra/xhigh turn receipt를 확인하고 frozen diff를 재검토했다. 실제
+investment canary 두 호출은 모두 `gpt-6-astra / xhigh`, CLI `0.153.4`로 확인됐다.
+모든 구현이 처음부터 xhigh였다고 주장하지 않는다.
+
+```text
+generation_id = 20260909-m12e-fictional-20260909T135434Z-60be4412b6eb
+source_lock_sha256 = f560bb1aa9ed648916d5a1b5c40ca2973c6cdd27a16297789195189b467666c6
+planned contexts = 6 (2 contexts x 3 repetitions)
+completed calls = 2; remaining 4 = NOT_RUN
+transport = 2/2 PASS; canary contexts = 1 PASS / 1 FAIL
+schema = 8/8 PASS; frozen semantic = 7/8 PASS
+frozen validator errors = 2; separate false-reject findings = 2
+selected / first-class / used typed refs = 15 / 15 / 15
+grounding failures = 0; QTD/YTD violations = 0
+full formal/core/stance repeated stability = NOT_MEASURED
+retry / timeout / capacity failure / orphan receipt count = 0
+```
+
+FIC-FIN-08은 보험업에 일반 영업기업의 순부채·운전자본 틀을 **적용하지 않는다**고
+명시했고 typed financial refs는 사용하지 않았다. 그러나 `순부채` 존재만 보는
+financial validator와 case audit이 각각 `net_debt_claim_without_complete_net_debt_evidence`,
+`financial_sector_generic_reasoning`을 발생시켰다. 소스 감사상 비적용 문장의 false
+reject 2건이며 해당 오류가 가리킨 실질적 부채 계산·금융업 일반화 위반은 확인되지
+않았다. 원본 후보와 frozen FAIL은 수정하지 않는다. 두 번째 호출 즉시 전체 generation을
+중단했으며 나머지 4회 호출·selective rerun·중간 hotfix는 0이다.
+
+목표 FIC-FIN-01/02/04의 첫 관측은 각각 BUY 6:4, HOLD 4.5:5.5 SELL_LEAN,
+HOLD 5:5 NEUTRAL로 계약에 부합했다. 단 한 번의 관측이므로 안정성 성공은 아니다.
+독립 회귀 관측 FIC-FIN-05는 기존 M12D의 SELL 4:6 / WEAKENED에서 이번에는
+HOLD 4.5:5.5 SELL_LEAN / UNCHANGED로 나타났다. complete interest-bearing debt와
+cash 근거를 인용했지만 재융자 조건·만기 집중 Unknown을 강도 제한으로 사용했다.
+계약 clarification이 독립 leverage 근거까지 과도하게 제한하는지 bounded review가
+필요하다. 모델도 Sol에서 Astra로 바뀌었으므로 prompt만의 인과 효과로 단정하지 않는다.
+buyer/holder summary의 literal `[E..]` alias 8건은 별도 메시지 품질 advisory다.
+
+`M12E=PARTIAL_STOPPED`, `P0 open=0`, `P1 open=2`이며 다음 scope는
+`BOUNDED_FINANCIAL_EXCLUSION_VALIDATOR_REPAIR_AND_LEVERAGE_BOUNDARY_REVIEW`다.
+이 scope는 다음 승인 작업의 제안이지 현재 frozen canary 수리 권한이 아니다.
+new-buyer/holder 독립 안정성 후속은 미측정 상태로 유지한다.
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다.
+실종목·judge·provider 신규 호출, production DB/assessment/warning/notification/send,
+monitoring registration, scheduler 변경·자동 재개는 모두 0이다. 종료 관측에서도 승인된
+예약 8개는 PAUSED/DISABLED였다. 증거 및 세부 completion은
+[M12E reports](reports/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/59-program-completion.json)에 보존한다.
 
 ---
 

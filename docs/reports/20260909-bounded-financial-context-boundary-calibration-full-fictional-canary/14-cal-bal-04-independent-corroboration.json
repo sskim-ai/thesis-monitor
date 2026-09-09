@@ -1,0 +1,15 @@
+{
+  "facts": [
+    "positive material anchor",
+    "distinct independent supporting economic fact"
+  ],
+  "id": "CAL-BAL-04",
+  "limitation": "no material causal or persistence blocker",
+  "rule": "independent_support",
+  "selected_buy": 6.0,
+  "selected_contract_buy": 6.0,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    6.0
+  ]
+}

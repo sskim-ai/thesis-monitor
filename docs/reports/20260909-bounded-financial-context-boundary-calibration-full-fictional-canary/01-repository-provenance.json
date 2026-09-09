@@ -1,0 +1,8 @@
+{
+  "base_sha": "67bdc56bcd0dba05d154c727fa1f819816b1a1f4",
+  "branch": "codex/20260909-bounded-financial-context-boundary-calibration-m12e",
+  "implementation_commit": "44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "production_merge": 0,
+  "work_instruction_commit": "3dd15fdc9ef60ad14a120fa22bf03a7b79a6ac1a"
+}

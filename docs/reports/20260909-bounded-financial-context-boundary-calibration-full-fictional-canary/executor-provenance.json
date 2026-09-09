@@ -1,0 +1,26 @@
+{
+  "contract": "m12e-executor-model-provenance-v1",
+  "implementation_authoring": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "ultra",
+    "observed_turn_timestamp": "2026-09-09T13:44:17.175Z",
+    "matches_requested_effort": false,
+    "disclosed_to_user": true
+  },
+  "frozen_implementation_review_and_canary_execution": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "observed_turn_timestamp": "2026-09-09T13:55:59.519Z",
+    "matches_requested_effort": true,
+    "implementation_commit": "44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630",
+    "code_changes_after_generation_freeze": 0
+  },
+  "receipt_source": "current Codex task turn_context records, model/effort fields only",
+  "investment_runner_first_transport_header": {
+    "cli_version": "0.153.4",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh"
+  },
+  "all_implementation_authored_at_xhigh_claim": false,
+  "cross_model_same_runtime_claim_count": 0
+}

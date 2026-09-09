@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "sha256": "61c1312f4335a76c7be31bb024008e406bcd59ad972887bec2736a3874365584",
+  "changes": [
+    "Current header now identifies M12E partial stopped; historical M12G through M12S retained",
+    "Section 12E records four prompt-only contracts, deterministic gates, frozen generation and actual Astra/xhigh call receipts",
+    "Preserves frozen FAIL, separately explains FIC-FIN-08 false rejects and FIC-FIN-05 regression observation",
+    "Marks repeated stability NOT_MEASURED and fresh-real/production NOT_READY",
+    "Records bounded next-scope proposal, no rerun/hotfix/production changes and eight paused schedules"
+  ],
+  "implementation_authoring_effort_deviation_disclosed": true,
+  "ci_failure_disclosed": true,
+  "historical_result_rewrite_count": 0
+}

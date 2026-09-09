@@ -1,0 +1,17 @@
+{
+  "facts": [
+    "healthy accounting growth",
+    "negative OCF",
+    "negative OCF-less-PPE sharing OCF lineage"
+  ],
+  "id": "CAL-BAL-02",
+  "limitation": "cause/reversibility unresolved; no distinct negative corroboration; adjacent fit remains reasonable",
+  "rule": "shared_lineage",
+  "selected_buy": 4.5,
+  "selected_contract_buy": 4.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4.0,
+    4.5
+  ]
+}

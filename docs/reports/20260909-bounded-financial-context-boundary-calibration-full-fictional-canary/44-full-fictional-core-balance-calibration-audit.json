@@ -1,0 +1,43 @@
+{
+  "contract": "m12e-boundary-evidence-review-v1",
+  "status": "PARTIAL_NOT_PROVEN",
+  "full_repetition_stability": "NOT_MEASURED",
+  "reviewed_target_rows": 3,
+  "target_bucket_contract_violation_count_observed": 0,
+  "full_target_bucket_contract_violation_count": "NOT_MEASURED",
+  "rows": [
+    {
+      "run": 1,
+      "ticker": "FIC-FIN-01",
+      "result": "PASS",
+      "reason": "Minimum BUY 6.0 explicitly limited by unproven durability; distinct operating, OCF and net-cash anchors, not two cash metrics counted as independent."
+    },
+    {
+      "run": 1,
+      "ticker": "FIC-FIN-02",
+      "result": "PASS",
+      "reason": "HOLD SELL_LEAN 5.5 explicitly treats OCF/OCF-less-PPE as shared lineage, preserves positive-but-lower OCF and causal/reversibility Unknown as confirmation limits."
+    },
+    {
+      "run": 1,
+      "ticker": "FIC-FIN-04",
+      "result": "PASS",
+      "reason": "NEUTRAL 5.0 separates financial-effect-assisted net income from small operating gain, without calling effects one-off or low quality."
+    }
+  ],
+  "other_regression": {
+    "ticker": "FIC-FIN-05",
+    "historical_model": "gpt-5.6-sol",
+    "current_model": "gpt-6-astra",
+    "historical_balance": "4.0:6.0 SELL",
+    "observed_balance": "4.5:5.5 HOLD SELL_LEAN",
+    "historical_thesis": "WEAKENED",
+    "observed_thesis": "UNCHANGED",
+    "historical_buyer": "AVOID",
+    "observed_buyer": "WAIT",
+    "result": "EXPECTED_REGRESSION_PATTERN_NOT_PRESERVED",
+    "reason": "Current candidate recognizes complete debt and cash as distinct resilience evidence but limits negative strength due stable operating profit and missing refinancing/maturity confirmation.",
+    "causal_attribution": "UNRESOLVED: model and prompt both changed; not same-model evidence",
+    "followup": "Review whether limiting Unknowns are over-constraining minimum negative direction with independent debt/cash corroboration. Do not prescribe a ticker label."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "NOT_MEASURED",
+  "reason": "Generation stopped after repetition 1 context 2; only one observation per subject. The unchanged classifier requires three repetitions.",
+  "formal_classifier_change_count": 0,
+  "opposite_direction_reversal_count": "NOT_MEASURED",
+  "historical_m12d": {
+    "STABLE": 4,
+    "BOUNDARY_UNCERTAINTY": 3,
+    "UNSTABLE": 1,
+    "status": "FAIL",
+    "rewritten": false
+  }
+}
