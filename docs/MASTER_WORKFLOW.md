@@ -780,7 +780,7 @@ mutation과 automatic resume도 0이다.
 
 M12S work-instruction commit은 `1c50d011d9bb12665fb0b5075eff1077c5557ea4`,
 offline fingerprint tooling implementation commit은
-`88c448fee420b91dc018af9cf52570c8767692a7`다. M12D authoritative bundle SHA
+`8dfe7dadb5f90375d547bd55217437c6420658a2`다. M12D authoritative bundle SHA
 `b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3`와 indexed
 payload 127개의 hash/size mismatch 0을 다시 확인하고, generation
 `20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f`의 보존 output 24개만
