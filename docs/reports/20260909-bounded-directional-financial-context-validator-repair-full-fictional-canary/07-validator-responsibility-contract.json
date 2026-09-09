@@ -1,0 +1,10 @@
+{
+  "contract": "m12r-validator-responsibility-v1",
+  "rejects_loose_cumulative_substring": true,
+  "requires_explicit_period_relation": true,
+  "requires_explicit_qtd_language": true,
+  "requires_explicit_ytd_or_cumulative_language": true,
+  "requires_same_claim_qtd_and_ytd_linkage": true,
+  "requires_same_metric_qtd_and_ytd_selected_refs": true,
+  "status": "PASS"
+}

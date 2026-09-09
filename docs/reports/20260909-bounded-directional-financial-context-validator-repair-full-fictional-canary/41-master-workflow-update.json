@@ -1,0 +1,10 @@
+{
+  "contract": "m12r-master-workflow-update-v1",
+  "m12r_recorded": true,
+  "next_scope_recorded": true,
+  "path": "docs/MASTER_WORKFLOW.md",
+  "production_not_ready_recorded": true,
+  "sha256": "ee6d94324ac428ec0dabc3b9f4c679ed79d636cf0fa57ba854cc6eb74d0ad414",
+  "status": "PASS",
+  "validator_root_cause_recorded": true
+}

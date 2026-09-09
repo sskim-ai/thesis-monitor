@@ -1,0 +1,7 @@
+{
+  "contract": "m12r-validator-false-accept-control-v1",
+  "fixture_count": 10,
+  "rejected_count": 10,
+  "status": "PASS",
+  "validator_false_accept_count": 0
+}

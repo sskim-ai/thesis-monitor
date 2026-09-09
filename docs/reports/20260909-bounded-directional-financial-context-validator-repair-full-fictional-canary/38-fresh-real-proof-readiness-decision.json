@@ -1,0 +1,9 @@
+{
+  "contract": "m12r-fresh-real-proof-readiness-decision-v1",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "full_fictional_canary_status": "FAIL",
+  "next_scope": "BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR",
+  "production_readiness": "NOT_READY",
+  "status": "FAIL",
+  "validator_repair_status": "PASS"
+}

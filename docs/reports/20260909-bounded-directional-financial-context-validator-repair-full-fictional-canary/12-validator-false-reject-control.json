@@ -1,0 +1,8 @@
+{
+  "contract": "m12r-validator-false-reject-control-v1",
+  "fixture_count": 6,
+  "historical_fic_fin_03_status": "PASS",
+  "pass_count": 6,
+  "status": "PASS",
+  "validator_false_reject_count": 0
+}

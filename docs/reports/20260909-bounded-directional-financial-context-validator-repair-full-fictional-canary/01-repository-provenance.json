@@ -1,0 +1,18 @@
+{
+  "actual_base_head": "d0e17f537d111203eafec057012182b983069831",
+  "base_sha": "d0e17f537d111203eafec057012182b983069831",
+  "branch": "codex/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary",
+  "changed_paths_from_instruction_commit": [
+    "app/services/directional_financial_context_service.py",
+    "scripts/directional_financial_context_m12.py",
+    "scripts/directional_financial_context_m12r.py",
+    "tests/test_directional_financial_context_m12.py",
+    "tests/test_directional_financial_context_m12r.py",
+    "tests/test_directional_financial_context_service.py"
+  ],
+  "contract": "m12r-repository-provenance-v1",
+  "implementation_commit": "ffc3fd557f056feac693e596cb48214a5e41aea3",
+  "status": "PASS",
+  "unexpected_changed_paths": [],
+  "work_instruction_commit": "d01c02f3338093bf5ee380f65b8b5907ff5bbf25"
+}

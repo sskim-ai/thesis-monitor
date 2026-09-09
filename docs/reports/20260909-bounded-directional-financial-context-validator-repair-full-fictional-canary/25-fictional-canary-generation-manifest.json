@@ -1,0 +1,72 @@
+{
+  "contexts": [
+    {
+      "context": 1,
+      "tickers": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ]
+    },
+    {
+      "context": 2,
+      "tickers": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ]
+    }
+  ],
+  "contract": "m12r-fictional-canary-generation-manifest-v1",
+  "fictional_context_count": 2,
+  "fictional_repetition_count": 3,
+  "fictional_subject_count": 8,
+  "generation_id": "20260909-m12r-fictional-20260909T043009Z-ffc3fd557f05",
+  "model_calls": 6,
+  "real_issuer_model_exposure_count": 0,
+  "status": "FROZEN",
+  "subjects": [
+    {
+      "case": "strong_quality",
+      "fictional": true,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "case": "profit_cash_divergence",
+      "fictional": true,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "case": "qtd_ytd_conflict",
+      "fictional": true,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "case": "non_operating_net_income_boost",
+      "fictional": true,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "case": "leverage_liquidity_pressure",
+      "fictional": true,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "case": "inventory_receivables_build",
+      "fictional": true,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "case": "missing_optional_context",
+      "fictional": true,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "case": "financial_sector_exclusion",
+      "fictional": true,
+      "ticker": "FIC-FIN-08"
+    }
+  ]
+}

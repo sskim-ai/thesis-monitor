@@ -1,0 +1,23 @@
+{
+  "ai_imperative_primary_action_count": 0,
+  "all_rows_pass": false,
+  "contract": "m12r-fictional-canary-semantic-audit-v1",
+  "directional_core_price_technical_refs": 0,
+  "directional_core_supply_refs": 0,
+  "fictional_output_row_count": 8,
+  "fictional_schema_pass_count": 8,
+  "financial_sector_generic_financial_context_leak_count": 0,
+  "fixed_financial_score_rule_count": 0,
+  "generation_id": "20260909-m12r-fictional-20260909T043009Z-ffc3fd557f05",
+  "hard_error_count": 2,
+  "hard_financial_semantic_violation_count": 2,
+  "invalid_financial_reference_count": 0,
+  "normalized_earnings_claim_violation_count": 0,
+  "partial_capex_called_fcf_count": 0,
+  "partial_debt_total_claim_count": 0,
+  "qtd_ytd_conflict_pass_count": 1,
+  "qtd_ytd_conflict_required_count": 1,
+  "qtd_ytd_conflict_violation_count": 0,
+  "status": "FAIL",
+  "year_end_as_yoy_count": 0
+}

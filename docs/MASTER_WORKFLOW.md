@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m12-directional-financial-context-canary-closeout-v1
+**버전:** 2026-09-09 / m12r-directional-financial-context-validator-repair-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12 deterministic 구현 완료 / fictional canary validator false reject로 fail-closed 중단`
+**현재 위치:** `M12R validator repair 완료 / 새 financial-anchor 누락으로 fictional canary 2/6 fail-closed 중단`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12는 typed financial context를 sector-aware bounded context로 선택해 Directional Core에만 공급하는 deterministic 구현을 완료했다. Phase A는 전부 PASS했지만 첫 fictional context의 실제 QTD/YTD 설명을 frozen validator가 `누적` 표현 때문에 거부해 1/6에서 중단했다. Price-Timing, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
+**M12R은 `QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT`를 generic semantic validation으로 수리했고 보존 M12 raw output과 positive/negative fixture가 모두 통과했다. 새 frozen canary는 첫 호출 PASS 후 두 번째 호출의 FIC-FIN-06이 재고·매출채권 canonical anchor를 인용하지 않아 중단했다. Price-Timing, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -591,6 +591,22 @@ Fictional canary는 첫 context 4개 결과를 schema 4/4, transport 1/1로 받�
 따라서 현재 상태는 `M12_DETERMINISTIC_COMPLETE_CANARY_BLOCKED`, fresh real proof와 production readiness는 `NOT_READY`다. 다음 한 작업은 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`: ticker 예외나 threshold 변경 없이 generic QTD/YTD 의미 validator가 `누계`와 `누적` 같은 정상 누적 표현을 동등하게 처리하도록 수리하고, 새 generation에서 fictional 6-context canary 전체를 다시 검증한다. 실 issuer proof는 그 뒤에만 진행한다.
 
 운영 변경은 0이다. 승인된 Codex 4개 automation은 PAUSED, launchd 4개 경로는 DISABLED이며 자동 재개하지 않았다. provider fetch, production DB/assessment/warning/notification/send, main merge, deploy도 모두 0이다.
+
+---
+
+## 12R. M12R validator repair와 fail-closed 결과
+
+M12R instruction commit은 `d01c02f3338093bf5ee380f65b8b5907ff5bbf25`, validator repair commit은 `5c26778d708d5c25fae2b2a2e9fb5433f174045e`, read-only schedule observation compatibility commit은 `ffc3fd557f056feac693e596cb48214a5e41aea3`다. formal generation은 `20260909-m12r-fictional-20260909T043009Z-ffc3fd557f05`, source lock은 `326d00b2dd12077427cc13b721e9d6287cfc68401d9d1b1f484765a79864f47d`다.
+
+Generic QTD/YTD validator는 같은 metric의 structured QTD/YTD evidence, 같은 claim의 양쪽 fact 인용, 제한된 분기·누계 표지와 명시적 대비 관계를 함께 요구한다. 정상 한국어 `누계`·`누적`·`연초 이후`, 영어 `YTD`·`year-to-date`·`cumulative`를 인식하되 무관한 `누적적으로`는 허용하지 않는다. 보존 M12 FIC-FIN-03 raw output은 이제 PASS했고 positive fixture `6/6`, negative fixture `10/10`이 각각 통과·거부됐다. historical root cause는 `QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT`로 닫혔다.
+
+Phase A는 focused `570 passed`, full `3022 passed`(warning 2), Ruff와 `git diff --check`까지 PASS했다. 새 model call 전 prompt, selector, fictional cases, schema, threshold와 calibration 변경은 0이었고 source sufficiency, Daily Delta, renderer, warning 의미 변경도 0이었다.
+
+새 fictional canary는 run-1/context-01이 PASS한 뒤 run-1/context-02의 FIC-FIN-06에서 `material_financial_anchor_not_used`와 `working_capital_checkpoint_not_used`가 발생해 규칙대로 즉시 중단했다. 해당 output은 재고·매출채권을 해석했지만 선택된 `canonical:fictional:FIC-FIN-06:inventory-current`와 `canonical:fictional:FIC-FIN-06:trade-receivables-current`를 인용하지 않았다. transport·schema는 정상이고 QTD/YTD false reject/accept 및 나머지 고위험 financial semantic 오류는 0이었다. 완료 호출은 `2/6`, 나머지 `4/6`은 NOT_RUN이며 retry, timeout, capacity failure, orphan은 모두 0이다. 후보·prompt·builder·validator·config는 model 시작 후 수정하지 않았다.
+
+따라서 M12R 상태는 `BLOCKED`, stability는 `NOT_MEASURED`, `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 scope는 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`이며 FIC-FIN-06의 canonical working-capital anchor 누락만 별도 bounded repair로 다룬다. fresh real proof, provider fetch, production DB/assessment/warning/notification/send, main merge, deploy는 수행하지 않는다.
+
+운영 중단은 그대로다. Codex automation 4개는 PAUSED, launchd 4개는 DISABLED로 관측됐고 scheduler mutation과 자동 재개는 0이다.
 
 ---
 
