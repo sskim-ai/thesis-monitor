@@ -26,6 +26,7 @@ from app.services.directional_financial_context_service import (
     build_financial_decision_context,
     compact_financial_decision_context,
     validate_directional_financial_semantics,
+    validate_qtd_ytd_conflict_semantics,
 )
 from scripts import directional_core_price_timing_holdout as holdout
 
@@ -416,6 +417,123 @@ def test_financial_sector_semantic_use_is_rejected() -> None:
 
     assert not result.valid
     assert result.financial_sector_generic_financial_context_leak_count == 1
+
+
+def _qtd_ytd_conflict_refs() -> tuple[DecisionEvidenceRef, DecisionEvidenceRef]:
+    return (
+        _financial_ref(
+            "operating_income",
+            "30",
+            suffix="operating-income.qtd",
+            period_type=FinancialPeriodType.QTD,
+        ),
+        _financial_ref(
+            "operating_income",
+            "-10",
+            suffix="operating-income.ytd",
+            period_type=FinancialPeriodType.YTD,
+        ),
+    )
+
+
+def test_qtd_ytd_validator_accepts_explicit_bilingual_period_contrasts() -> None:
+    refs = _qtd_ytd_conflict_refs()
+    texts = (
+        "최근 분기는 흑자지만 연초 이후 누적 기준은 적자다.",
+        "분기 영업흑자와 누계 영업손실이 공존한다.",
+        "QTD profit is positive while YTD operating income remains negative.",
+        "The latest quarter is profitable whereas year-to-date income is negative.",
+        "Quarterly profit is positive while cumulative operating income is negative.",
+        "이번 분기는 개선됐지만 연초부터 누적 실적은 아직 손실이다.",
+    )
+
+    for text in texts:
+        result = validate_qtd_ytd_conflict_semantics(
+            {"claim": {"text": text, "evidence_refs": [ref.ref_id for ref in refs]}},
+            supplied_refs=refs,
+            required_ref_ids=tuple(ref.ref_id for ref in refs),
+        )
+
+        assert result.required
+        assert result.valid
+        assert result.linked_claim_count == 1
+        assert result.explicit_claim_count == 1
+
+
+def test_qtd_ytd_validator_rejects_vague_unlinked_and_unrelated_markers() -> None:
+    qtd, ytd = _qtd_ytd_conflict_refs()
+    both = [qtd.ref_id, ytd.ref_id]
+    candidates = (
+        {"claim": {"text": "최근 실적은 엇갈린다.", "evidence_refs": both}},
+        {
+            "claim": {
+                "text": "분기 실적이 좋지만 누적적으로도 중요하다.",
+                "evidence_refs": both,
+            }
+        },
+        {"claim": {"text": "최근 분기 실적만 개선됐다.", "evidence_refs": both}},
+        {"claim": {"text": "연초 이후 누적 실적은 손실이다.", "evidence_refs": both}},
+        {
+            "claim": {
+                "text": "분기는 흑자지만 누계는 적자다.",
+                "evidence_refs": [qtd.ref_id],
+            }
+        },
+        {
+            "claim": {
+                "text": "분기는 흑자지만 누계는 적자다.",
+                "evidence_refs": [ytd.ref_id],
+            }
+        },
+        {
+            "claim": {
+                "text": "QTD와 YTD 영업실적을 확인했다.",
+                "evidence_refs": both,
+            }
+        },
+        {
+            "claims": [
+                {"text": "최근 실적은 엇갈린다.", "evidence_refs": both},
+                {"text": "다음 분기 수요를 확인한다.", "evidence_refs": []},
+            ]
+        },
+        {
+            "claims": [
+                {"text": "최근 실적은 엇갈린다.", "evidence_refs": both},
+                {"text": "고객 누적 수는 별도 지표다.", "evidence_refs": []},
+            ]
+        },
+    )
+
+    for candidate in candidates:
+        result = validate_qtd_ytd_conflict_semantics(
+            candidate,
+            supplied_refs=(qtd, ytd),
+            required_ref_ids=(qtd.ref_id, ytd.ref_id),
+        )
+
+        assert result.required
+        assert not result.valid
+        assert result.errors == ("qtd_ytd_conflict_not_explicit",)
+
+
+def test_qtd_ytd_validator_is_not_required_without_same_metric_period_pair() -> None:
+    qtd, _ytd = _qtd_ytd_conflict_refs()
+    other_ytd = _financial_ref(
+        "revenue",
+        "100",
+        suffix="revenue.ytd",
+        period_type=FinancialPeriodType.YTD,
+    )
+    result = validate_qtd_ytd_conflict_semantics(
+        {"claim": {"text": "최근 실적은 엇갈린다.", "evidence_refs": []}},
+        supplied_refs=(qtd, other_ytd),
+        required_ref_ids=(qtd.ref_id, other_ytd.ref_id),
+    )
+
+    assert not result.required
+    assert result.valid
+    assert result.errors == ()
 
 
 def test_directional_prompt_freezes_m12_financial_specificity_without_timing_leak() -> None:

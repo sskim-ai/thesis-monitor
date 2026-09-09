@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from collections.abc import Mapping, Sequence
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
@@ -14,12 +15,14 @@ from app.services.cross_market_decision_engine_service import (
     FinancialEvidenceQuality,
     FinancialEvidenceStatus,
     FinancialPeriod,
+    FinancialPeriodType,
     FrozenModel,
 )
 
 
 CONTRACT_VERSION = "directional-financial-decision-context-v1"
 VALIDATOR_CONTRACT = "directional-financial-semantic-validator-v1"
+QTD_YTD_VALIDATOR_CONTRACT = "directional-financial-qtd-ytd-validator-v1"
 FINANCIAL_DECISION_CONTEXT_ITEM_CAP = 8
 FINANCIAL_DECISION_CONTEXT_CATEGORY_CAP = 2
 
@@ -84,6 +87,18 @@ class FinancialSemanticValidation(FrozenModel):
     normalized_earnings_claim_violation_count: int = 0
     financial_sector_generic_financial_context_leak_count: int = 0
     fixed_financial_score_rule_count: int = 0
+
+
+class QtdYtdConflictValidation(FrozenModel):
+    contract: str = QTD_YTD_VALIDATOR_CONTRACT
+    required: bool
+    valid: bool
+    errors: tuple[str, ...]
+    required_metrics: tuple[str, ...] = ()
+    qtd_evidence_ref_count: int = 0
+    ytd_evidence_ref_count: int = 0
+    linked_claim_count: int = 0
+    explicit_claim_count: int = 0
 
 
 _CATEGORY_ORDER = {
@@ -214,6 +229,30 @@ _METRIC_PRIORITY = {
     "fair_value_result_context": 3,
     "continuing_operations_income": 4,
 }
+
+_QTD_PERIOD_PATTERNS = (
+    re.compile(r"(?<![a-z0-9])qtd(?![a-z0-9])"),
+    re.compile(
+        r"(?<![a-z])(?:(?:current|latest|this|recent|single)[ ]+)?"
+        r"quarter(?:ly)?(?![a-z])"
+    ),
+    re.compile(r"(?<![가-힣])(?:최근|해당|이번|지난|단일|한)?[ ]*분기(?!점)"),
+)
+_YTD_PERIOD_PATTERNS = (
+    re.compile(r"(?<![a-z0-9])ytd(?![a-z0-9])"),
+    re.compile(r"(?<![a-z])year[ -]*to[ -]*date(?![a-z])"),
+    re.compile(r"(?<![a-z])since[ ]+(?:the[ ]+)?start[ ]+of[ ]+(?:the[ ]+)?year(?![a-z])"),
+    re.compile(r"(?<![a-z])cumulative(?:[ ]+ytd)?(?![a-z])"),
+    re.compile(r"누계"),
+    re.compile(r"누적(?!적)"),
+    re.compile(r"연초[ ]*(?:이후|부터)(?:[ ]*누적)?"),
+)
+_PERIOD_RELATION_PATTERNS = (
+    re.compile(r"(?<![a-z])(?:while|whereas|but|versus|vs)[.]?(?![a-z])"),
+    re.compile(r"(?<![a-z])contrast(?:s|ed|ing)?(?![a-z])"),
+    re.compile(r"(?<![a-z])coexist(?:s|ed|ing)?(?![a-z])"),
+    re.compile(r"지만|반면|공존|충돌|맞서|엇갈"),
+)
 
 
 def normalize_sector_framework(value: object) -> str:
@@ -517,6 +556,146 @@ def _claim_rows(value: object) -> list[tuple[str, tuple[str, ...]]]:
 
     collect(value)
     return rows
+
+
+def _period_claim_rows(value: object) -> list[tuple[str, tuple[str, ...]]]:
+    rows: list[tuple[str, tuple[str, ...]]] = []
+
+    def refs_for(item: Mapping[object, object], key: str) -> tuple[str, ...]:
+        raw = item.get(key)
+        if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes)):
+            return ()
+        return tuple(str(ref) for ref in raw)
+
+    def collect(item: object) -> None:
+        if isinstance(item, Mapping):
+            direct_refs = refs_for(item, "evidence_refs")
+            for key in ("text", "summary"):
+                text = item.get(key)
+                if isinstance(text, str) and text.strip():
+                    rows.append((text, direct_refs))
+            for text_key, refs_key in (
+                (
+                    "confirmation_business_condition",
+                    "confirmation_business_condition_refs",
+                ),
+                (
+                    "business_invalidation_condition",
+                    "business_invalidation_condition_refs",
+                ),
+            ):
+                text = item.get(text_key)
+                if isinstance(text, str) and text.strip():
+                    rows.append((text, refs_for(item, refs_key)))
+            for child in item.values():
+                collect(child)
+        elif isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
+            for child in item:
+                collect(child)
+
+    collect(value)
+    return rows
+
+
+def _normalized_period_text(text: str) -> str:
+    normalized = unicodedata.normalize("NFKC", text).casefold()
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def _matches_period_family(
+    text: str,
+    patterns: Sequence[re.Pattern[str]],
+) -> bool:
+    return any(pattern.search(text) is not None for pattern in patterns)
+
+
+def validate_qtd_ytd_conflict_semantics(
+    candidate: object,
+    *,
+    supplied_refs: Sequence[DecisionEvidenceRef],
+    required_ref_ids: Sequence[str],
+) -> QtdYtdConflictValidation:
+    """Require one evidence-linked claim to distinguish comparable QTD and YTD facts."""
+
+    required = set(required_ref_ids)
+    by_metric: dict[str, dict[FinancialPeriodType, set[str]]] = {}
+    for ref in supplied_refs:
+        context = ref.financial_context
+        if ref.ref_id not in required or context is None:
+            continue
+        if context.period.type not in {
+            FinancialPeriodType.QTD,
+            FinancialPeriodType.YTD,
+        }:
+            continue
+        by_metric.setdefault(context.metric, {}).setdefault(
+            context.period.type, set()
+        ).add(ref.ref_id)
+
+    required_metrics = tuple(
+        sorted(
+            metric
+            for metric, periods in by_metric.items()
+            if periods.get(FinancialPeriodType.QTD)
+            and periods.get(FinancialPeriodType.YTD)
+        )
+    )
+    qtd_refs = {
+        ref
+        for metric in required_metrics
+        for ref in by_metric[metric][FinancialPeriodType.QTD]
+    }
+    ytd_refs = {
+        ref
+        for metric in required_metrics
+        for ref in by_metric[metric][FinancialPeriodType.YTD]
+    }
+    if not required_metrics:
+        return QtdYtdConflictValidation(
+            required=False,
+            valid=True,
+            errors=(),
+            qtd_evidence_ref_count=len(qtd_refs),
+            ytd_evidence_ref_count=len(ytd_refs),
+        )
+
+    payload = (
+        candidate.model_dump(mode="json")
+        if hasattr(candidate, "model_dump")
+        else candidate
+    )
+    linked_claim_count = 0
+    explicit_claim_count = 0
+    for text, refs in _period_claim_rows(payload):
+        claim_refs = set(refs)
+        linked_metrics = tuple(
+            metric
+            for metric in required_metrics
+            if claim_refs & by_metric[metric][FinancialPeriodType.QTD]
+            and claim_refs & by_metric[metric][FinancialPeriodType.YTD]
+        )
+        if not linked_metrics:
+            continue
+        linked_claim_count += 1
+        normalized = _normalized_period_text(text)
+        if (
+            _matches_period_family(normalized, _QTD_PERIOD_PATTERNS)
+            and _matches_period_family(normalized, _YTD_PERIOD_PATTERNS)
+            and _matches_period_family(normalized, _PERIOD_RELATION_PATTERNS)
+        ):
+            explicit_claim_count += 1
+
+    errors = (() if explicit_claim_count else ("qtd_ytd_conflict_not_explicit",))
+    return QtdYtdConflictValidation(
+        required=True,
+        valid=not errors,
+        errors=errors,
+        required_metrics=required_metrics,
+        qtd_evidence_ref_count=len(qtd_refs),
+        ytd_evidence_ref_count=len(ytd_refs),
+        linked_claim_count=linked_claim_count,
+        explicit_claim_count=explicit_claim_count,
+    )
 
 
 def validate_directional_financial_semantics(

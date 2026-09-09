@@ -56,6 +56,7 @@ from app.services.directional_financial_context_service import (
     FINANCIAL_DECISION_CONTEXT_ITEM_CAP,
     FinancialDecisionContext,
     build_financial_decision_context,
+    validate_qtd_ytd_conflict_semantics,
     validate_directional_financial_semantics,
 )
 from app.services.structured_autonomy_alias_service import (
@@ -2089,12 +2090,6 @@ def _case_semantic_errors(
         token in text.casefold() for token in ("cash", "현금", "전환")
     ):
         errors.append("profit_cash_divergence_not_explained")
-    if ticker == "FIC-FIN-03":
-        folded = text.casefold()
-        has_qtd = "qtd" in folded or "분기" in text
-        has_ytd = "ytd" in folded or "누계" in text
-        if not has_qtd or not has_ytd or len(used) < 2:
-            errors.append("qtd_ytd_conflict_not_explicit")
     if ticker == "FIC-FIN-04" and not any(
         "net-financial-effect" in ref for ref in used
     ):
@@ -2146,6 +2141,11 @@ def _audit_core_batch(
             allowed_ref_ids=tuple(catalogs[ticker].by_ref),
             sector_framework=owned[ticker].sector_framework,
         )
+        qtd_ytd = validate_qtd_ytd_conflict_semantics(
+            candidate,
+            supplied_refs=tuple(row.ref for row in owned[ticker].evidence),
+            required_ref_ids=tuple(selected_financial_refs),
+        )
         case_errors = _case_semantic_errors(
             ticker,
             candidate,
@@ -2162,6 +2162,7 @@ def _audit_core_batch(
                 (
                     *ownership.errors,
                     *semantic.errors,
+                    *qtd_ytd.errors,
                     *case_errors,
                     *(("ai_imperative_primary_action",) if directive_count else ()),
                 )
@@ -2187,6 +2188,9 @@ def _audit_core_batch(
                 "directional_core_supply_refs": ownership.directional_core_supply_refs,
                 "ai_imperative_primary_action_count": directive_count,
                 "case_semantic_error_count": len(case_errors),
+                "qtd_ytd_conflict_required_count": int(qtd_ytd.required),
+                "qtd_ytd_conflict_pass_count": int(qtd_ytd.required and qtd_ytd.valid),
+                "qtd_ytd_conflict_violation_count": len(qtd_ytd.errors),
                 "hard_error_count": len(errors),
             }
         )
@@ -2198,6 +2202,7 @@ def _audit_core_batch(
                 "core": candidate.model_dump(mode="json"),
                 "ownership": ownership.model_dump(mode="json"),
                 "financial_semantics": semantic.model_dump(mode="json"),
+                "qtd_ytd_semantics": qtd_ytd.model_dump(mode="json"),
                 "selected_financial_refs": sorted(selected_financial_refs),
                 "used_financial_refs": used_financial,
                 "financial_anchor_count": len(used_financial),
@@ -2379,6 +2384,7 @@ def _final_canary_audits(
     semantic_totals = Counter()
     for row in all_rows:
         semantics = row["financial_semantics"]
+        qtd_ytd = row["qtd_ytd_semantics"]
         ownership = row["ownership"]
         semantic_totals.update(
             {
@@ -2413,6 +2419,11 @@ def _final_canary_audits(
                 "ai_imperative_primary_action_count": row[
                     "ai_imperative_primary_action_count"
                 ],
+                "qtd_ytd_conflict_required_count": int(qtd_ytd["required"]),
+                "qtd_ytd_conflict_pass_count": int(
+                    qtd_ytd["required"] and qtd_ytd["valid"]
+                ),
+                "qtd_ytd_conflict_violation_count": len(qtd_ytd["errors"]),
                 "hard_error_count": len(row["errors"]),
             }
         )

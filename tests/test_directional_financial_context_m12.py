@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from app.services.directional_financial_context_service import (
     FinancialSemanticCategory,
 )
@@ -148,3 +151,32 @@ def test_missing_context_is_not_bearish_without_explicit_negative_treatment() ->
         )()
     )
     assert owned[ticker].sector_framework == "standard_operating_company"
+
+
+def test_preserved_m12_qtd_ytd_raw_reasoning_passes_repaired_validator() -> None:
+    report = json.loads(
+        Path(
+            "docs/reports/20260909-directional-financial-context-"
+            "consumption-specificity-implementation/"
+            "33-canary-context-01-run-1.json"
+        ).read_text(encoding="utf-8")
+    )
+    candidate = next(
+        row["core"] for row in report["rows"] if row["ticker"] == "FIC-FIN-03"
+    )
+    _packets, owned, _catalogs, _contexts = m12.fictional_inputs(
+        report["generation_id"]
+    )
+    context = m12.financial_decision_context_for_owned(owned["FIC-FIN-03"])
+    assert context is not None
+
+    validation = m12.validate_qtd_ytd_conflict_semantics(
+        candidate,
+        supplied_refs=tuple(row.ref for row in owned["FIC-FIN-03"].evidence),
+        required_ref_ids=tuple(item.evidence_id for item in context.evidence_items),
+    )
+
+    assert validation.required
+    assert validation.valid
+    assert validation.linked_claim_count >= 1
+    assert validation.explicit_claim_count >= 1
