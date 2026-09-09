@@ -1,0 +1,15 @@
+{
+  "change_count": 0,
+  "fic_fin_03_regression_status": "PASS",
+  "functions": [
+    {
+      "after_sha256": "227d93c7502ef54bce60320b2dc9446563d3f1b4b6b852d65af6ffb1aab56a1f",
+      "before_sha256": "227d93c7502ef54bce60320b2dc9446563d3f1b4b6b852d65af6ffb1aab56a1f",
+      "changed": false,
+      "function": "validate_qtd_ytd_conflict_semantics"
+    }
+  ],
+  "path": "app/services/directional_financial_context_service.py",
+  "qtd_ytd_validator_semantic_change_count": 0,
+  "status": "PASS"
+}

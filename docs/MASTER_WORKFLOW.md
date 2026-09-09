@@ -662,6 +662,66 @@ FIC-FIN-02는 선택된 typed ref `3/3`을 출력 전체에서 모두 사용했�
 
 ---
 
+## 12C. M12C materiality-scoped working-capital grounding repair와 fail-closed 결과
+
+M12C work-instruction commit은 `6a75e839fd05d7d8b095ae5d23180f621b7abb3a`,
+forensic freeze commit은 `d7ce2b7e24b3fee8373aa2daee5313242b3e325f`, 최종
+implementation commit은 `4f367e27588b030508ae4c9d4ad0181caf64d0de`다. M12B
+authoritative bundle SHA
+`66b53e4991ec46774f2000c871650d2a4390bd88505cc4ae802be0bbc17844cd`와
+indexed payload 112개의 missing/extra/hash/size/secret mismatch 0을 다시 확인했다.
+
+코드 변경 전 forensic은 M12B FIC-FIN-02 run-2 실패를
+`SELECTION_TRIGGERED_OVERREACH`로 동결했다. 선택된 inventory fact가 별도
+Unknown/context claim에서 직접 사용되고 cash-conversion typed anchor도 material claim에
+귀속됐지만, generic `운전자본` narrative가 checkpoint path에 있다는 이유만으로 기존
+validator가 inventory-specific checkpoint grounding을 요구했다. Branch A repair는 선택
+자체가 아니라 material checkpoint claim의 explicit inventory/trade-AR/trade-AP metric
+사용을 hard trigger로 만들고, 해당 metric과 일치하는 typed ref만 그 claim을 ground하도록
+좁혔다. ticker/case branch는 0이다.
+
+결정론적 회귀에서 M12B FIC-FIN-02 run-1/run-2와 M12B FIC-FIN-06 run-1은
+PASS, old M12G FIC-FIN-06 narrative substitution은 FAIL 유지, corrected FIC-FIN-06은
+PASS였다. positive fixture 4/4와 negative fixture 5/5가 기대대로 닫혔고 FIC-FIN-03
+QTD/YTD 역사 회귀도 PASS했다. first-class projection, selector, Directional/Price-Timing
+prompt, output schema, QTD/YTD 및 non-WC financial validator, calibration, source
+sufficiency, Daily Delta/lifecycle/warning, renderer 변경은 0이다. focused/full pytest,
+Ruff, `git diff --check`와 production side-effect firewall도 PASS했다. 최초 deterministic
+preflight는 model call 전에 report-builder field-name mismatch로 중단됐고, 산출물을
+분리 보존한 뒤 새 SHA와 새 generation으로 다시 동결했다. 이 preflight의 model call은
+0이다.
+
+formal generation은
+`20260909-m12c-fictional-20260909T101525Z-4f367e27588b`, source lock은
+`3b8ae0ec3b8b3fc9f8cfd82aab2919abc4c4a701f8e71022cba9fd10f7c44c9a`다.
+동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh,
+1800초 single watchdog, retry 0으로 실행했다. 첫 4개 context는 PASS했고
+run-3/context-01 transport와 schema도 정상이라 총 `5/6` model contexts와 `20/24`
+rows를 보존했다. material-anchor, true metric-specific WC grounding, narrative
+substitution, irrelevant financial ref, invalid ref, FCF/debt/normalized-earnings 및
+price/technical/supply 위반은 0이었다.
+
+run-3/context-01의 FIC-FIN-03만 `qtd_ytd_conflict_not_explicit`로 FAIL했다. 출력은
+QTD와 YTD operating-income typed ref를 모두 인용하고 `분기 영업흑자`와 `누적
+영업손실`을 `상충`, `기간별로 구분해 함께 반영`, `섞지 않는다`고 명시했다. 그러나
+frozen QTD/YTD validator의 relation matcher가 이 정상 관계 표현을 인식하지 않아
+linked claim 7개에도 explicit claim을 0개로 계산했다. 이는 M12C working-capital
+repair 실패가 아니라 별도의 generic QTD/YTD relation-language false reject다. 범위
+규칙대로 validator/prompt/candidate를 수정하거나 선택 재실행하지 않았고, 6번째 호출은
+NOT_RUN이다. formal stability와 message-specificity는 `NOT_MEASURED`다.
+
+따라서 `M12C_CANARY_FAIL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. 다음 한 작업은
+`BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`: ticker 예외나 threshold 완화 없이
+structured QTD/YTD 양쪽 ref를 인용한 claim의 일반적인 한국어 대비·구분 관계를
+bounded하게 인식하는지 검토하고 새 generation으로 전체 fictional canary를 다시
+증명한다. real issuer model call/provider fetch와 production
+DB/assessment/warning/notification/send, main merge, deploy는 모두 0이다. 승인된 8개
+monitoring 경로는 PAUSED/DISABLED 상태를 유지하며 scheduler mutation과 automatic
+resume도 0이다.
+
+---
+
 ## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |

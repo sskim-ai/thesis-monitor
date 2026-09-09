@@ -1,0 +1,276 @@
+{
+  "audit": {
+    "ai_imperative_primary_action_count": 0,
+    "case_semantic_error_count": 2,
+    "directional_core_price_technical_refs": 0,
+    "directional_core_supply_refs": 0,
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "hard_error_count": 5,
+    "invalid_financial_reference_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 1,
+    "narrative_substitution_failure_count": 1,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "pass_count": 0,
+    "qtd_ytd_conflict_pass_count": 0,
+    "qtd_ytd_conflict_required_count": 0,
+    "qtd_ytd_conflict_violation_count": 0,
+    "row_count": 1,
+    "schema_pass_count": 1,
+    "selected_financial_ref_count": 2,
+    "status": "FAIL",
+    "used_financial_ref_count": 0,
+    "working_capital_grounding_failure_count": 1,
+    "year_end_as_yoy_count": 0
+  },
+  "contract": "m12c-fic-fin-06-old-fail-regression-v1",
+  "expected_result": "FAIL",
+  "regression_status": "PASS",
+  "row": {
+    "ai_imperative_primary_action_count": 0,
+    "core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:structural-risk",
+            "fictional:FIC-FIN-06:remaining-unknown",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "재고와 매출채권 증가가 실제 수요와 회수로 전환되지 않고 영업 성장도 둔화하는 경우"
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:operating-evidence",
+            "fictional:FIC-FIN-06:structural-risk",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "text": "매출과 영업이익 성장이 이어지며 늘어난 재고와 매출채권이 실제 청구 수요와 현금 회수로 연결되는 경우"
+        }
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:business-thesis",
+          "fictional:FIC-FIN-06:operating-evidence",
+          "fictional:FIC-FIN-06:remaining-unknown"
+        ],
+        "text": "성장 논거는 유지되지만 운전자본의 질은 아직 확인이 필요하다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "최근 동일기간 비교에서 매출과 영업이익이 함께 증가했다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:operating-evidence",
+          "fictional:FIC-FIN-06:structural-risk",
+          "fictional:FIC-FIN-06:remaining-unknown"
+        ],
+        "text": "최근 영업 성장은 긍정적이지만 운전자본 증가의 수요·회수 전환이 확인되지 않아 긍정 방향까지는 부족하다."
+      },
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:operating-evidence",
+          "fictional:FIC-FIN-06:structural-risk",
+          "fictional:FIC-FIN-06:remaining-unknown"
+        ],
+        "text": "매출과 영업이익 성장이 긍정적 앵커이나 재고·매출채권 증가의 질은 미확인이다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:operating-evidence"
+        ],
+        "text": "최근 동일기간 비교에서 매출과 영업이익이 증가해 현재 영업 흐름은 긍정적이다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "재고와 매출채권 증가가 수요 및 회수로 연결되지 않으면서 매출과 영업이익 성장도 훼손되는 경우",
+        "business_invalidation_condition_refs": [
+          "fictional:FIC-FIN-06:structural-risk",
+          "fictional:FIC-FIN-06:remaining-unknown",
+          "fictional:FIC-FIN-06:operating-evidence"
+        ],
+        "stance": "HOLDABLE",
+        "summary": "성장은 유지되고 있어 보유 가능하지만 운전자본 전환을 점검해야 한다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "늘어난 재고와 매출채권이 실제 청구 수요와 적시 회수로 전환되고 영업 성장이 지속되는지 확인",
+        "confirmation_business_condition_refs": [
+          "fictional:FIC-FIN-06:structural-risk",
+          "fictional:FIC-FIN-06:remaining-unknown",
+          "fictional:FIC-FIN-06:operating-evidence"
+        ],
+        "stance": "WAIT",
+        "summary": "긍정적 영업 성장에 대한 운전자본 전환의 독립적 확인이 필요하다."
+      },
+      "hold_lean": "BUY_LEAN",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:market-expectation",
+          "fictional:FIC-FIN-06:remaining-unknown"
+        ],
+        "text": "기대는 자산 잔액 증가가 실제 청구 수요와 현금으로 전환된다는 전제를 담고 있다."
+      },
+      "material_directional_anchor_basis": [
+        "fictional:FIC-FIN-06:operating-evidence"
+      ],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:structural-risk",
+          "fictional:FIC-FIN-06:remaining-unknown",
+          "fictional:FIC-FIN-06:sector-context"
+        ],
+        "text": "재고와 매출채권의 증가 자체는 부정 확정이 아니며 수요의 질과 회수 시점 확인이 핵심이다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:sector-context"
+        ],
+        "text": "재고와 매출채권은 확인 지표이며 잔액 증가만으로 악화를 뜻하지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "OTHER_EVIDENCE",
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:structural-risk",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "text": "연말 이후 재고와 매출채권이 늘었지만 수요의 질과 회수 전환은 확인되지 않았다."
+        }
+      ],
+      "ticker": "FIC-FIN-06",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:valuation-limit",
+          "fictional:FIC-FIN-06:remaining-unknown"
+        ],
+        "text": "현재 가치평가와 수요·회수의 질이 확인되지 않아 긍정 판단을 매수 기울기에서 제한한다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:valuation-limit"
+          ],
+          "summary": "현재 가치평가 부재는 확신만 제한한다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:remaining-unknown",
+            "fictional:FIC-FIN-06:structural-risk"
+          ],
+          "summary": "잔액 증가가 실제 수요와 회수로 전환되는지 확인이 필요하다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-06:valuation-limit"
+        ],
+        "text": "안전한 현재 가치평가 배수가 없어 매수 방향을 뒷받침하지 못한다."
+      }
+    },
+    "errors": [
+      "material_financial_anchor_not_used",
+      "working_capital_checkpoint_not_used",
+      "material_financial_anchor_grounding_failure",
+      "working_capital_grounding_failure",
+      "narrative_substitution_failure"
+    ],
+    "financial_anchor_count": 0,
+    "financial_grounding": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [
+        "material_financial_anchor_grounding_failure",
+        "working_capital_grounding_failure",
+        "narrative_substitution_failure"
+      ],
+      "financial_checkpoint_refs": [],
+      "grounded_claim_count": 0,
+      "grounded_working_capital_checkpoint_count": 0,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 1,
+      "material_financial_anchor_refs": [],
+      "material_grounding_required": true,
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-06:business-thesis",
+        "fictional:FIC-FIN-06:operating-evidence",
+        "fictional:FIC-FIN-06:remaining-unknown",
+        "fictional:FIC-FIN-06:sector-context",
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "narrative_substitution_failure_count": 1,
+      "relevant_claim_count": 10,
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "status": "FAIL",
+      "used_financial_refs": [],
+      "valid": false,
+      "working_capital_checkpoint_count": 7,
+      "working_capital_grounding_failure_count": 1,
+      "working_capital_grounding_required": true
+    },
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 0,
+      "valid": true,
+      "year_end_as_yoy_count": 0
+    },
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "qtd_ytd_semantics": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 0,
+      "linked_claim_count": 0,
+      "qtd_evidence_ref_count": 0,
+      "required": false,
+      "required_metrics": [],
+      "valid": true,
+      "ytd_evidence_ref_count": 0
+    },
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-06:inventory-current",
+      "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+    ],
+    "status": "FAIL",
+    "ticker": "FIC-FIN-06",
+    "used_financial_refs": []
+  },
+  "source_modified": false,
+  "source_output_sha256": "dfe323433e17d0732e85965224acdd315d72984e62732c20560bff3eb1af6926",
+  "source_path": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/31-run-1-context-02.json",
+  "status": "PASS"
+}

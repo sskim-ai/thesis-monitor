@@ -1,0 +1,8 @@
+{
+  "contract": "m12c-full-fictional-stability-v1",
+  "fictional_boundary_uncertainty_count": "NOT_MEASURED",
+  "fictional_stable_count": "NOT_MEASURED",
+  "fictional_unstable_count": "NOT_MEASURED",
+  "opposite_direction_reversal_count": "NOT_MEASURED",
+  "status": "NOT_MEASURED"
+}

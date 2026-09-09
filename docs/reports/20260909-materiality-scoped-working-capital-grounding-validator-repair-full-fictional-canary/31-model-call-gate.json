@@ -1,0 +1,74 @@
+{
+  "branch_decision": "BRANCH_A",
+  "checks": {
+    "daily_delta_lifecycle_warning": "PASS",
+    "directional_prompt": "PASS",
+    "fic_fin_02_run1": "PASS",
+    "fic_fin_02_run2": "PASS",
+    "fic_fin_03_qtd_ytd": "PASS",
+    "fic_fin_06_corrected": "PASS",
+    "fic_fin_06_m12b_run1": "PASS",
+    "fic_fin_06_old_rejected": "PASS",
+    "first_class_projection": "PASS",
+    "focused_tests": "PASS",
+    "full_tests": "PASS",
+    "genericity": "PASS",
+    "git_diff_check": "PASS",
+    "negative_fixtures": "PASS",
+    "other_financial_validators": "PASS",
+    "output_schema": "PASS",
+    "positive_fixtures": "PASS",
+    "price_timing": "PASS",
+    "production_side_effect_firewall": "PASS",
+    "qtd_ytd_validator": "PASS",
+    "renderer": "PASS",
+    "root_cause_branch_a": "PASS",
+    "ruff": "PASS",
+    "schedule_pause": "PASS",
+    "source_sufficiency": "PASS",
+    "validator_scope": "PASS"
+  },
+  "contract": "m12c-model-call-gate-v1",
+  "decision": "MODEL_CALLS_ALLOWED",
+  "deterministic_preflight_restart_count": 1,
+  "deterministic_preflight_restart_reason": "REPORT_BUILDER_FIELD_NAME_MISMATCH_BEFORE_MODEL_CALL_GATE",
+  "generation_id": "20260909-m12c-fictional-20260909T101525Z-4f367e27588b",
+  "implementation_commit": "4f367e27588b030508ae4c9d4ad0181caf64d0de",
+  "model_calls_before_gate": 0,
+  "model_inputs": {
+    "contexts": [
+      {
+        "context": 1,
+        "prompt_path": "artifacts/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/frozen-contexts/context-01/prompt.txt",
+        "prompt_sha256": "f9e91b3f1ce7b5bca56b37ddf05a66b9dc25a1d189adf35145df551025555912",
+        "schema_path": "artifacts/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/frozen-contexts/context-01/schema.json",
+        "schema_sha256": "d373be441101656d4d0b3c4e365eff740cb150e4117e4ed948904e740c3ef941",
+        "tickers": [
+          "FIC-FIN-01",
+          "FIC-FIN-02",
+          "FIC-FIN-03",
+          "FIC-FIN-04"
+        ]
+      },
+      {
+        "context": 2,
+        "prompt_path": "artifacts/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/frozen-contexts/context-02/prompt.txt",
+        "prompt_sha256": "917c1e7df4b8fd411c54c507bd2c51cf10a3d5500370ecd979a5e39ccacc10be",
+        "schema_path": "artifacts/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/frozen-contexts/context-02/schema.json",
+        "schema_sha256": "9f4cbc461dc462d04ea4aab8d704db01f0f2ca6ad54cca38ebc38867478a4203",
+        "tickers": [
+          "FIC-FIN-05",
+          "FIC-FIN-06",
+          "FIC-FIN-07",
+          "FIC-FIN-08"
+        ]
+      }
+    ],
+    "contract": "m12-frozen-model-inputs-v1",
+    "generation_id": "20260909-m12c-fictional-20260909T101525Z-4f367e27588b",
+    "status": "FROZEN"
+  },
+  "source_lock_sha256": "3b8ae0ec3b8b3fc9f8cfd82aab2919abc4c4a701f8e71022cba9fd10f7c44c9a",
+  "status": "PASS",
+  "stop_reason": null
+}
