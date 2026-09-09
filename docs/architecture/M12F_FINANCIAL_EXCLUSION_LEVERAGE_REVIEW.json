@@ -1,0 +1,179 @@
+{
+  "contract": "m12f-offline-root-cause-freeze-v1",
+  "authoring": {
+    "timestamp": "2026-09-09T14:34:33.045Z",
+    "model": "gpt-6-astra",
+    "effort": "xhigh",
+    "target_match": true
+  },
+  "base_sha": "19b3dd7bc2353f418452e2db67c78e886a73cbc6",
+  "work_instruction_commit": "a7029856c189599c96f6c357bb2c949a47af10a3",
+  "integrity": {
+    "sha256": "2cfab9aa676cc61af733198bddadb18971fcb631ca22b17e4735c05a9734484e",
+    "indexed_payload_count": 177,
+    "missing": [],
+    "extra": [],
+    "hash_mismatches": [],
+    "size_mismatches": [],
+    "duplicate_member_count": 0,
+    "status": "PASS"
+  },
+  "schedule_start": {
+    "contract": "m12s-schedule-pause-observation-v1",
+    "observed_at": "2026-09-09T14:36:39.803848+00:00",
+    "launchctl_returncode": 0,
+    "rows": [
+      {
+        "id": "thesis-monitor-ai-review-us-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-us-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.daily",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.kr-close",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "status": "PAUSED"
+      }
+    ],
+    "observed_paused_schedule_count": 8,
+    "scheduler_mutation_count": 0,
+    "automatic_monitoring_resume": 0,
+    "status": "PASS"
+  },
+  "before_replay": {
+    "rows": [
+      {
+        "ticker": "FIC-FIN-05",
+        "errors": [],
+        "status": "PASS"
+      },
+      {
+        "ticker": "FIC-FIN-06",
+        "errors": [],
+        "status": "PASS"
+      },
+      {
+        "ticker": "FIC-FIN-07",
+        "errors": [],
+        "status": "PASS"
+      },
+      {
+        "ticker": "FIC-FIN-08",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "status": "FAIL"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "selected_branch": "A",
+  "descriptive_policy": "CROSS_MODEL_DESCRIPTIVE_ONLY",
+  "cross_model_same_runtime_claim_count": 0,
+  "exclusion": {
+    "root_cause": "TOKEN_PRESENCE_IGNORES_EXPLICIT_NON_APPLICATION_SCOPE",
+    "classification": [
+      "ASSERTION_OR_APPLICATION",
+      "EXPLICIT_EXCLUSION",
+      "UNCERTAIN_OR_AMBIGUOUS"
+    ],
+    "rule": "Only a metric occurrence governed by an explicit framework-exclusion predicate is exempt. Each occurrence and candidate field is inspected independently. Ambiguity fails closed; exclusions never legalize typed industrial evidence or actual application elsewhere.",
+    "unsupported_grammar": "Not a general NLP classifier: unrecognized negation, double negative, conditional and mixed clauses do not receive exemption."
+  },
+  "leverage": {
+    "root_cause": "ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT",
+    "secondary_finding": "HISTORICAL_WEAKENED_EXPECTATION_HAS_NO_EXPLICIT_BASELINE_CHANGE_IN_FROZEN_CASE",
+    "debt_cash_independence": "CONTEXT_DEPENDENT; here components of one financial-resilience dimension, not two independent negative confirmations merely because there are two refs.",
+    "case_change_semantics": "CURRENT_ABSOLUTE_CONDITION_WITHOUT_EXPLICIT_BASELINE_DETERIORATION",
+    "support": "Complete interest-bearing debt and cash are contemporaneous, no prior comparison. Narrative risk restates these same economics. Stable operating profit is an offset. Conditional refinancing expectation is not confirmed financing stress.",
+    "lev01_expected": {
+      "overall_direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "hold_lean": "SELL_LEAN"
+    },
+    "minimum_sell_pattern": "A material negative resilience anchor plus sufficiently current/independent evidence that establishes actual severity, persistence or financing/debt-service pressure can support minimum SELL. No mandatory checklist, new numeric cutoff or evidence-count rule.",
+    "sell_lean_pattern": "High complete debt/thin compatible cash plus stable operating support and unresolved refinancing, maturity and debt-service severity supports the conservative 5.5 negative lean. Missing details limit strength, never create bullish evidence.",
+    "positive_symmetry": "Low debt and ample cash do not by themselves create minimum BUY. Resilience can corroborate a separate material business/value anchor; do not count cash and debt components twice.",
+    "thesis_change": "UNCHANGED is defensible; WEAKENED requires supplied baseline-relative deterioration, not absolute negative balance-sheet state.",
+    "new_buyer": "WAIT is defensible with unresolved severity/confirmation. Do not impose SELL->AVOID or globally change stance policy.",
+    "holder": "REVIEW observed; contract unchanged.",
+    "historical_comparison": "Prior Sol SELL/WEAKENED/AVOID remains historical, not a mandatory Astra output.",
+    "prompt_change": 0,
+    "case_data_change": 0
+  },
+  "leverage_fixtures": [
+    {
+      "id": "LEV-01",
+      "pattern": "complete high debt + thin cash + stable operating profit + refinancing/maturity unknown",
+      "expected": "HOLD_SELL_LEAN_5_5",
+      "supportable_buy_buckets": [
+        4,
+        4.5
+      ],
+      "selected_buy": 4.5
+    },
+    {
+      "id": "LEV-02",
+      "pattern": "same leverage plus confirmed refinancing or debt-service stress",
+      "expected": "MINIMUM_SELL_MAY_BE_SUPPORTED_WITH_DISTINCT_NEGATIVE_CONFIRMATION"
+    },
+    {
+      "id": "LEV-03",
+      "pattern": "high debt with strong compatible liquidity and stable operations",
+      "expected": "NO_AUTOMATIC_MINIMUM_SELL"
+    },
+    {
+      "id": "LEV-04",
+      "pattern": "partial debt components only",
+      "expected": "NO_TOTAL_OR_NET_DEBT_CONCLUSION"
+    },
+    {
+      "id": "LEV-05",
+      "pattern": "bank insurance reinsurance",
+      "expected": "INDUSTRIAL_LEVERAGE_NOT_APPLICABLE"
+    },
+    {
+      "id": "LEV-POSITIVE",
+      "pattern": "low debt and ample cash without distinct business/value support",
+      "expected": "NO_AUTOMATIC_MINIMUM_BUY"
+    }
+  ],
+  "prohibitions": [
+    "no threshold increment lean tie-break changes",
+    "no prompt change under Branch A",
+    "no global buyer/holder change",
+    "no historical verdict rewrite",
+    "no real issuer model calls",
+    "no provider fetch",
+    "no production side effects or schedule resume",
+    "no model call before Phase A",
+    "no retry or post-generation code edits"
+  ]
+}
