@@ -1,0 +1,31 @@
+{
+  "status": "FAIL_FROZEN_TARGET",
+  "target_bucket_contract_violations": 1,
+  "issue": {
+    "id": "M12T_LEVERAGE_BUCKET_INCONSISTENCY",
+    "priority": "P1",
+    "ticker": "FIC-FIN-05",
+    "expected": {
+      "direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "lean": "SELL_LEAN"
+    },
+    "observed": {
+      "direction": "SELL",
+      "buy": 4,
+      "sell": 6,
+      "lean": "NOT_HOLD",
+      "business_thesis_change": "UNCHANGED",
+      "new_buyer": "AVOID",
+      "holder": "REDUCE"
+    },
+    "raw_error": "frozen_ordinal_contract_inconsistent",
+    "root_cause": "SUPPLIED_MARKET_EXPECTATION_TREATED_AS_SEPARATE_NEGATIVE_CORROBORATION",
+    "source_alias": "E07",
+    "source_statement": "Expectations do not appear to allow for a prolonged refinancing burden.",
+    "explanation": "The model expressly used supplied E07 as a second negative evidence axis alongside debt/cash resilience. E07 exists; this is not fabricated evidence or simply treating missing refinancing terms as bearish. The frozen M12F target is still violated. Whether this expectation is independent enough to cross 6.0 was not expressly resolved in the leverage review; exact economic root cause remains a bounded contract question.",
+    "bounded_next": "Review full-source expectation/resilience independence and conservative 5.5/6.0 boundary, preserve threshold/increment/tie-break and symmetric controls. Do not force old Sol label or delete E07 after seeing this output."
+  },
+  "full_stability": "NOT_MEASURED"
+}

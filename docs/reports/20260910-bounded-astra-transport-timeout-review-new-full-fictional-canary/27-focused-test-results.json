@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_financial_exclusion_leverage_m12f.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_directional_financial_context_m12g.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_financial_boundary_calibration_m12e.py",
+    "tests/test_astra_transport_m12t.py"
+  ],
+  "finished_at": "2026-09-09T16:20:09.343637+00:00",
+  "output_path": "artifacts/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/validation/focused.txt",
+  "output_sha256": "27d2679bcbae69648c9b19dd6dc74d0b6b3ac658d1b00c98140c3cf5728749ef",
+  "returncode": 0,
+  "started_at": "2026-09-09T16:20:07.155500+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

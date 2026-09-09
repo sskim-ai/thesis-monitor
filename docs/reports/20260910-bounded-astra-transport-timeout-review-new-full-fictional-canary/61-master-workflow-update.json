@@ -1,0 +1,13 @@
+{
+  "phase": "M12T",
+  "status": "PARTIAL_STOPPED",
+  "model": "gpt-6-astra/xhigh",
+  "phase_a": "PASS",
+  "runtime": "2/2 returned; 6-call proof incomplete",
+  "new_generation": "20260910-m12t-fictional-20260909T162127Z-9bdf3fffd52c",
+  "rows": "8/24 emitted, 6/8 final accepted",
+  "next_scope": "BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR_GPT6_ASTRA",
+  "main_merge": 0,
+  "monitoring": "8 PAUSED",
+  "master": "docs/MASTER_WORKFLOW.md"
+}

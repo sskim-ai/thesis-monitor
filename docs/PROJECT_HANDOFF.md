@@ -1,5 +1,19 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-10 M12T Nonproduction Closeout
+
+M12T: PARTIAL_STOPPED. Read `docs/reports/20260910-m12t-completion.md` and
+`docs/reports/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/62-program-completion.json`.
+Frozen implementation: `695464f2b122bfe6e5378476b066cd945415eb61`.
+Transport returned 2/2 in 321.70s/331.91s with timeout/internal retry/wrapper retry 0.
+New generation emitted 8 schema-valid rows, but final acceptance was 6/8: FIC-FIN-08
+explicit non-applicability false reject and FIC-FIN-05 frozen 5.5/6.0 leverage boundary violation.
+Remaining four contexts were NOT_RUN; full stability is NOT_MEASURED.
+Next: bounded generic exclusion-scope repair and full-source leverage/market-expectation
+independence review, no current-generation hotfix or retry. CI retains the same five portability
+failures; new M12T failures 0. Fresh real and production NOT_READY. Eight schedules remain PAUSED.
+This nonproduction state does not supersede or deploy changes to the historical live implementation.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and

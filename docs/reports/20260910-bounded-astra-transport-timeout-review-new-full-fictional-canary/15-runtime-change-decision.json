@@ -1,0 +1,13 @@
+{
+  "batch_split": 0,
+  "internal_retry_config_change": 0,
+  "official_configuration_reference": "https://learn.chatgpt.com/docs/config-file/config-reference",
+  "official_reference_limitation": "Documentation does not establish the root cause of the recorded disconnect. No internal retry configuration change.",
+  "receipt_observability": "New M12T audit wrapper records observed header, elapsed and CLI internal retry events for both success and failure; no retry/timeout behavior change",
+  "runner_process_management_change_count": 0,
+  "semantic_change_count": 0,
+  "subjects_per_context_change_count": 0,
+  "timeout_change_count": 0,
+  "timeout_seconds": 1800,
+  "wrapper_retry_change_count": 0
+}

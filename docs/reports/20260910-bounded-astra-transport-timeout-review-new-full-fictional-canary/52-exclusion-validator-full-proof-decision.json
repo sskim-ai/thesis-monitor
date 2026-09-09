@@ -1,0 +1,19 @@
+{
+  "status": "FAIL",
+  "explicit_exclusion_false_reject_count": 1,
+  "actual_financial_sector_misuse_count": 0,
+  "issue": {
+    "id": "M12T_EXCLUSION_FALSE_REJECT",
+    "priority": "P1",
+    "ticker": "FIC-FIN-08",
+    "field": "sector_interpretation.text",
+    "text": "보험사에 맞춰 보험영업 규율과 규제자본을 평가한다. 일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다.",
+    "raw_error": "financial_sector_generic_reasoning",
+    "raw_claim_kind": "UNCERTAIN_OR_AMBIGUOUS",
+    "actual_industrial_framework_misuse": false,
+    "root_cause": "EXPLICIT_NON_APPLICABILITY_NOMINAL_COMPLEMENT_NOT_RECOGNIZED",
+    "explanation": "The bounded M12F suffix recognizes direct non-application forms but not '적용 대상이 아니다'. Candidate-wide review found no positive industrial-framework application and no financial refs selected. Original rejection is retained.",
+    "bounded_next": "Review assertion/exclusion scope generically with positive/negative/mixed-clause controls; do not whitelist this ticker or sentence."
+  },
+  "original_verdict_preserved": true
+}

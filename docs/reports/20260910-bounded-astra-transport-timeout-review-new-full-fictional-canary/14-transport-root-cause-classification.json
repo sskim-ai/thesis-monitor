@@ -1,0 +1,9 @@
+{
+  "certainty": "Inference from identical prompt/schema content except generation ID, same CLI/runtime, no detected local defect, WebSocket resets only in M12F; not a proven backend root cause",
+  "historical_resource_contention": "NOT_MEASURED",
+  "primary": "TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY",
+  "secondary": [
+    "UNRESOLVED_BACKEND_OR_CLI_RECOVERY_CAUSE"
+  ],
+  "semantic_failure_claim": false
+}

@@ -1,0 +1,57 @@
+{
+  "historical_isolation_defect": false,
+  "identities": {
+    "invocation_id": [
+      "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-01",
+      "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-02",
+      "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-01",
+      "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02"
+    ],
+    "runtime_state_namespace_hash": [
+      "6723fb46c2434d096495e673",
+      "cf5a577dd0fa0333df5b98fc",
+      "41dc02709e061917e7b4d79a",
+      "3d34170739880127f328c031"
+    ],
+    "session_id": [
+      "01a08674-e676-7db1-a28c-86bace9e7ebe",
+      "01a0867a-8f4a-79b2-9ad3-a76ce9f75498",
+      "01a086b1-d78d-7002-8553-41ce6bf86303",
+      "01a086c3-2383-76f1-ab51-9c601df7157b"
+    ],
+    "working_directory_identity": [
+      "f2221f5f2c778f3d76d75d6f9990bde9d5415e8feca99f1fe98358cfa33fb5b3",
+      "da5345b25afa1774a66595101d2569cba3c5aea0fce3b052403915acf2ce97d5",
+      "f2533af102ccd42483ef546b3120b1ec74363928be6dd83acb1fc06fa2cb264c",
+      "bdf00f2eed2fde19a1e9036383c38fefbb53adc59a7a93296765a779fc34a0ff"
+    ]
+  },
+  "metadata": [
+    {
+      "auth_reference_is_symlink": true,
+      "exists": true,
+      "home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/6723fb46c2434d096495e673/home",
+      "mode": "0o700"
+    },
+    {
+      "auth_reference_is_symlink": true,
+      "exists": true,
+      "home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/cf5a577dd0fa0333df5b98fc/home",
+      "mode": "0o700"
+    },
+    {
+      "auth_reference_is_symlink": true,
+      "exists": true,
+      "home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/41dc02709e061917e7b4d79a/home",
+      "mode": "0o700"
+    },
+    {
+      "auth_reference_is_symlink": true,
+      "exists": true,
+      "home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/3d34170739880127f328c031/home",
+      "mode": "0o700"
+    }
+  ],
+  "status": "PASS",
+  "unique_identities": true
+}

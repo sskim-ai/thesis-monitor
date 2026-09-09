@@ -1,0 +1,15 @@
+{
+  "comparisons": [
+    {
+      "context": 1,
+      "prompt_equal_except_generation": true,
+      "schema_equal_except_generation": true
+    },
+    {
+      "context": 2,
+      "prompt_equal_except_generation": true,
+      "schema_equal_except_generation": true
+    }
+  ],
+  "regression": false
+}

@@ -1,0 +1,9 @@
+{
+  "base_sha": "be3ee8d17e97edcf82ab2c8535d222c03b13667f",
+  "branch": "codex/20260910-astra-transport-review-m12t",
+  "implementation_commit": "695464f2b122bfe6e5378476b066cd945415eb61",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "remote_base_branch_sha": "be3ee8d17e97edcf82ab2c8535d222c03b13667f",
+  "work_instruction_commit": "09f434f3353db01e75af8b6c7b1526679f16fe99",
+  "working_tree_state": "?? docs/reports/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/"
+}

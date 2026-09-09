@@ -1,0 +1,17 @@
+{
+  "backend_sampling_request_count": "NOT_MEASURED",
+  "capacity_failure_count": 0,
+  "cli_internal_retry_event_count": 0,
+  "model_calls_fictional": 2,
+  "model_context_failure_count": 0,
+  "model_context_success_count": 2,
+  "stop": {
+    "failed_invocation": "20260910-m12t-fictional-20260909T162127Z-9bdf3fffd52c:run-1:context-02",
+    "model_calls_completed": 2,
+    "status": "FAIL",
+    "stop_reason": "M12B_MODEL_CANARY_FAIL",
+    "wrapper_retry_count": 0
+  },
+  "timeout_count": 0,
+  "wrapper_retry_count": 0
+}

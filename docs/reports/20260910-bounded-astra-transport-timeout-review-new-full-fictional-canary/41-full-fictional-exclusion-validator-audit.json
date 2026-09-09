@@ -1,0 +1,87 @@
+{
+  "full_proof": false,
+  "rows": [
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "claims": [],
+      "errors": [
+        "frozen_ordinal_contract_inconsistent"
+      ],
+      "repetition": 1,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "매출과 영업이익 개선으로 사업 논거는 강화됐지만 운전자본의 질은 확인이 필요하다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "실적 개선으로 보유 근거가 유지되며 운전자본의 질은 확인이 필요하다"
+        }
+      ],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다"
+        }
+      ],
+      "errors": [
+        "financial_sector_generic_reasoning"
+      ],
+      "repetition": 1,
+      "ticker": "FIC-FIN-08"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "single Popen per context",
+    "start_new_session=True",
+    "file-backed stdin/stdout, no PIPE backpressure",
+    "process.wait(timeout=1800)",
+    "TimeoutExpired -> SIGTERM process group -> wait5 -> SIGKILL fallback -> wait5",
+    "M12F failed context returncode=-15 after1800.009935seconds",
+    "sequential context01 finish precedes context02 start",
+    "no previous experiment CLI/Python process in current process inventory"
+  ],
+  "defect_found": false,
+  "observation_limit": "Historical concurrent CPU/memory sampling unavailable; current process inventory cannot prove historical contention absent.",
+  "source": "scripts/directional_financial_context_m12.py::_single_attempt_model_call",
+  "source_baseline": "be3ee8d17e97edcf82ab2c8535d222c03b13667f",
+  "status": "PASS"
+}

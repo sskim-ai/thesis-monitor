@@ -1,14 +1,29 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12f-exclusion-leverage-runtime-partial-closeout-v1
+**버전:** 2026-09-10 / m12t-transport-review-fictional-partial-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12F exclusion validator 수리·leverage 계약 검토 완료 / 새 canary 1 context PASS + 1 MODEL_TIMEOUT / fresh real NOT_READY`
+**현재 위치:** `M12T transport 2/2 정상 반환 / 새 canary 6/8 최종 PASS 후 중단 / exclusion false reject 및 leverage 경계 후속 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
 **M12F는 명시적 금융업 비적용 문장과 실제 산업재 금융지표 적용을 구분하는 validator만 수리했다. Directional prompt는 변경하지 않았다. 현재 Astra 계약상 FIC-FIN-05의 HOLD SELL_LEAN 5.5는 타당하며, 과거 Sol SELL을 필수 정답으로 취급하지 않는다. 새 canary는 첫 context 4/4 PASS 후 두 번째 context가 출력 없이 1,800초 MODEL_TIMEOUT으로 중단됐다. 전체 반복 안정성과 새 FIC-FIN-05/08 관측은 미측정이다. 원본 출력·FAIL·receipt는 보존하고 재호출·hotfix·main merge·운영 변경은 0이다.**
 
 ---
 
 ## 1. 지금 프로젝트가 달성하려는 것
+
+### 최신 M12T 결과
+
+M12E/M12F prompt와 schema는 generation ID 외 동일하고 격리·watchdog 결함은 발견되지 않았다.
+분류는 `TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY`이며 정확한 내부 원인은 미확정이다.
+지시서 `09f434f`, 구현 `695464f`를 동결한 새 generation은 두 호출 모두 321.70초/331.91초에 반환했다.
+timeout, CLI 내부 retry, wrapper retry는 모두 0이다. 그러나 FIC-FIN-05가 동결된 HOLD 4.5:5.5 대신
+입력의 market-expectation을 별도 부정 근거로 해석해 SELL 4:6을 선택했고, FIC-FIN-08의
+"일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다"가 false reject됐다.
+schema 8/8, 최종 gate 6/8; 이후 4개 context는 시작하지 않았다. 3회 안정성은 미측정이다.
+추가 모델 호출·수정·재시도·main merge·운영 변경은 0. 8개 예약 중단 유지.
+집중 140/full local 3179 PASS, Ruff/diff PASS. Hosted CI는 기존 portability 5건 실패 유지,
+M12T 신규 실패 0. P0 0/P1 3; fresh real 및 production NOT_READY.
+다음은 generic 명시적 비적용 범위와 leverage/기대 근거 독립성의 bounded repair이다.
+결과와 원본 구분은 `docs/reports/20260910-m12t-completion.md` 및 M12T report 62/63을 따른다.
 
 ```text
 사용자가 원하는 종목

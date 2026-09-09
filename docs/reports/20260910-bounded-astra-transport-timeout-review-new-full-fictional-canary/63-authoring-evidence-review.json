@@ -1,0 +1,215 @@
+{
+  "reviewer": "Codex authoring gpt-6-astra/xhigh",
+  "independent_judge_calls": 0,
+  "full_generation": false,
+  "raw_artifacts_unchanged": true,
+  "rows": [
+    {
+      "ticker": "FIC-FIN-01",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 6,
+        "sell": 4
+      },
+      "direction": "BUY",
+      "change": "STRENGTHENED",
+      "buyer": "ATTRACTIVE",
+      "holder": "HOLDABLE",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-02",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "direction": "HOLD",
+      "change": "WEAKENED",
+      "buyer": "WAIT",
+      "holder": "REVIEW",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-03",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "direction": "HOLD",
+      "change": "UNRESOLVED",
+      "buyer": "WAIT",
+      "holder": "REVIEW",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-04",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 5,
+        "sell": 5
+      },
+      "direction": "HOLD",
+      "change": "UNCHANGED",
+      "buyer": "WAIT",
+      "holder": "HOLDABLE",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-05",
+      "status": "FAIL",
+      "errors": [
+        "frozen_ordinal_contract_inconsistent"
+      ],
+      "balance": {
+        "buy": 4,
+        "sell": 6
+      },
+      "direction": "SELL",
+      "change": "UNCHANGED",
+      "buyer": "AVOID",
+      "holder": "REDUCE",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-06",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "direction": "HOLD",
+      "change": "STRENGTHENED",
+      "buyer": "WAIT",
+      "holder": "HOLDABLE",
+      "claims": [
+        {
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "매출과 영업이익 개선으로 사업 논거는 강화됐지만 운전자본의 질은 확인이 필요하다",
+          "field_path": "business_thesis_context.text",
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ]
+        },
+        {
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "실적 개선으로 보유 근거가 유지되며 운전자본의 질은 확인이 필요하다",
+          "field_path": "fundamental_holder.summary",
+          "evidence_refs": []
+        }
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-07",
+      "status": "PASS",
+      "errors": [],
+      "balance": {
+        "buy": 5,
+        "sell": 5
+      },
+      "direction": "HOLD",
+      "change": "UNCHANGED",
+      "buyer": "WAIT",
+      "holder": "HOLDABLE",
+      "claims": []
+    },
+    {
+      "ticker": "FIC-FIN-08",
+      "status": "FAIL",
+      "errors": [
+        "financial_sector_generic_reasoning"
+      ],
+      "balance": {
+        "buy": 5,
+        "sell": 5
+      },
+      "direction": "HOLD",
+      "change": "UNCHANGED",
+      "buyer": "WAIT",
+      "holder": "REVIEW",
+      "claims": [
+        {
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다",
+          "field_path": "sector_interpretation.text",
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "M12T_EXCLUSION_FALSE_REJECT",
+      "priority": "P1",
+      "ticker": "FIC-FIN-08",
+      "field": "sector_interpretation.text",
+      "text": "보험사에 맞춰 보험영업 규율과 규제자본을 평가한다. 일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다.",
+      "raw_error": "financial_sector_generic_reasoning",
+      "raw_claim_kind": "UNCERTAIN_OR_AMBIGUOUS",
+      "actual_industrial_framework_misuse": false,
+      "root_cause": "EXPLICIT_NON_APPLICABILITY_NOMINAL_COMPLEMENT_NOT_RECOGNIZED",
+      "explanation": "The bounded M12F suffix recognizes direct non-application forms but not '적용 대상이 아니다'. Candidate-wide review found no positive industrial-framework application and no financial refs selected. Original rejection is retained.",
+      "bounded_next": "Review assertion/exclusion scope generically with positive/negative/mixed-clause controls; do not whitelist this ticker or sentence."
+    },
+    {
+      "id": "M12T_LEVERAGE_BUCKET_INCONSISTENCY",
+      "priority": "P1",
+      "ticker": "FIC-FIN-05",
+      "expected": {
+        "direction": "HOLD",
+        "buy": 4.5,
+        "sell": 5.5,
+        "lean": "SELL_LEAN"
+      },
+      "observed": {
+        "direction": "SELL",
+        "buy": 4,
+        "sell": 6,
+        "lean": "NOT_HOLD",
+        "business_thesis_change": "UNCHANGED",
+        "new_buyer": "AVOID",
+        "holder": "REDUCE"
+      },
+      "raw_error": "frozen_ordinal_contract_inconsistent",
+      "root_cause": "SUPPLIED_MARKET_EXPECTATION_TREATED_AS_SEPARATE_NEGATIVE_CORROBORATION",
+      "source_alias": "E07",
+      "source_statement": "Expectations do not appear to allow for a prolonged refinancing burden.",
+      "explanation": "The model expressly used supplied E07 as a second negative evidence axis alongside debt/cash resilience. E07 exists; this is not fabricated evidence or simply treating missing refinancing terms as bearish. The frozen M12F target is still violated. Whether this expectation is independent enough to cross 6.0 was not expressly resolved in the leverage review; exact economic root cause remains a bounded contract question.",
+      "bounded_next": "Review full-source expectation/resilience independence and conservative 5.5/6.0 boundary, preserve threshold/increment/tie-break and symmetric controls. Do not force old Sol label or delete E07 after seeing this output."
+    },
+    {
+      "id": "HOSTED_CI_HISTORICAL_ARTIFACT_PORTABILITY_REPAIR",
+      "priority": "P1",
+      "failing_tests": 5,
+      "new_m12t_failures": 0,
+      "transport_related": false,
+      "next": "Separate portability work; retain existing assertion strength."
+    }
+  ],
+  "measurement_scope": "8 emitted rows, one repetition only. No full stability or stance variance inference.",
+  "aggregate_reconciliation": {
+    "original_context02_audit_pass_count": 3,
+    "post_calibration_context02_pass_count": 2,
+    "total_post_calibration_pass_count": 6,
+    "original_receipts_rewritten": false
+  },
+  "freeze": {
+    "code_files": 664,
+    "config_files": 6,
+    "changed_paths": []
+  }
+}
