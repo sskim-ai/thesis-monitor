@@ -122,6 +122,30 @@ _FAMILY_TOKENS = {
     ),
 }
 
+_WORKING_CAPITAL_METRIC_TOKENS = {
+    "inventory": (
+        "inventory",
+        "inventories",
+        "재고",
+    ),
+    "trade_accounts_receivable": (
+        "trade receivable",
+        "trade accounts receivable",
+        "accounts receivable",
+        "receivable",
+        "receivables",
+        "매출채권",
+    ),
+    "trade_accounts_payable": (
+        "trade payable",
+        "trade accounts payable",
+        "accounts payable",
+        "payable",
+        "payables",
+        "매입채무",
+    ),
+}
+
 _CHECKPOINT_PATH_MARKERS = (
     "core_investment_judgment",
     "dominant_evidence",
@@ -269,6 +293,23 @@ def _text_families(text: str) -> set[str]:
     }
 
 
+def _working_capital_metrics_in_text(
+    text: str,
+    *,
+    selected_metrics: set[str],
+) -> set[str]:
+    folded = text.casefold()
+    return {
+        metric
+        for metric in selected_metrics
+        if metric in _WORKING_CAPITAL_METRIC_TOKENS
+        and any(
+            token.casefold() in folded
+            for token in _WORKING_CAPITAL_METRIC_TOKENS[metric]
+        )
+    }
+
+
 def _candidate_mapping(candidate: object) -> Mapping[str, object]:
     if hasattr(candidate, "model_dump"):
         value = candidate.model_dump(mode="json")
@@ -342,6 +383,11 @@ def audit_financial_grounding(
         for metric in selected_metrics_by_ref.values()
         if (family := _metric_family(metric)) is not None
     }
+    selected_working_capital_metrics = {
+        metric
+        for metric in selected_metrics_by_ref.values()
+        if metric in _WORKING_CAPITAL_METRIC_TOKENS
+    }
     all_refs = m12._candidate_refs(data)
     used_refs = all_refs & selected_refs
     claims = _claim_rows(data)
@@ -363,11 +409,24 @@ def audit_financial_grounding(
             if _metric_family(selected_metrics_by_ref[ref]) in families
         }
         selected_wrong_family_refs = (refs & selected_refs) - relevant_typed_refs
+        working_capital_metrics = _working_capital_metrics_in_text(
+            text,
+            selected_metrics=selected_working_capital_metrics,
+        )
+        matching_working_capital_refs = {
+            ref
+            for ref in refs & selected_refs
+            if selected_metrics_by_ref[ref] in working_capital_metrics
+        }
         row = {
             **claim,
             "financial_families": sorted(families),
             "relevant_typed_refs": sorted(relevant_typed_refs),
             "selected_wrong_family_refs": sorted(selected_wrong_family_refs),
+            "working_capital_metrics": sorted(working_capital_metrics),
+            "matching_working_capital_refs": sorted(
+                matching_working_capital_refs
+            ),
         }
         relevant_claim_rows.append(row)
         if relevant_typed_refs:
@@ -376,11 +435,11 @@ def audit_financial_grounding(
             narrative_only_rows.append(row)
         if selected_wrong_family_refs and not relevant_typed_refs:
             irrelevant_rows.append(row)
-        if "WORKING_CAPITAL" in families and any(
+        if working_capital_metrics and any(
             marker in str(claim["path"]) for marker in _CHECKPOINT_PATH_MARKERS
         ):
             checkpoint_rows.append(row)
-            if relevant_typed_refs:
+            if matching_working_capital_refs:
                 checkpoint_grounded_rows.append(row)
 
     anchor_refs = {
@@ -390,7 +449,7 @@ def audit_financial_grounding(
     }
     material_required = bool(selected_refs and relevant_claim_rows)
     material_grounded = bool(grounded_rows or anchor_refs)
-    working_capital_required = bool("WORKING_CAPITAL" in selected_families and checkpoint_rows)
+    working_capital_required = bool(checkpoint_rows)
     working_capital_grounded = bool(checkpoint_grounded_rows)
     material_failure = int(material_required and not material_grounded)
     working_capital_failure = int(working_capital_required and not working_capital_grounded)
@@ -417,7 +476,11 @@ def audit_financial_grounding(
             {ref for row in grounded_rows for ref in row["relevant_typed_refs"]} | anchor_refs
         ),
         "financial_checkpoint_refs": sorted(
-            {ref for row in checkpoint_grounded_rows for ref in row["relevant_typed_refs"]}
+            {
+                ref
+                for row in checkpoint_grounded_rows
+                for ref in row["matching_working_capital_refs"]
+            }
         ),
         "narrative_only_duplicate_refs": sorted(
             {
