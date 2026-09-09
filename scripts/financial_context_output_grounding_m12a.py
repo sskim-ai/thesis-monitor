@@ -1564,8 +1564,9 @@ def generate(args: argparse.Namespace) -> None:
     reports[35] = (
         "schedule-pause-observation",
         {
-            "contract": "m12a-schedule-pause-observation-v1",
             **schedule,
+            "contract": "m12a-schedule-pause-observation-v1",
+            "observation_parser_contract": schedule["contract"],
             "scheduler_mutation_count": 0,
             "automatic_monitoring_resume": 0,
         },
