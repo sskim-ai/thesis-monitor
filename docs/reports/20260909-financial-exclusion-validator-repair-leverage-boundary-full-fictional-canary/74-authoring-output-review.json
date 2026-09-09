@@ -1,0 +1,23 @@
+{
+  "status": "PARTIAL_REVIEW",
+  "rows": [
+    {
+      "repetition": 1,
+      "context": 1,
+      "status": "NO_HARD_ISSUE_OBSERVED",
+      "reviewer": "Codex authoring review, not an independent judge call",
+      "notes": {
+        "FIC-FIN-01": "BUY 6:4 supported by operating/cash-conversion quality and separate net-cash evidence; shared cash lineage not double-counted; longer durability/valuation remains limiting.",
+        "FIC-FIN-02": "HOLD 4.5:5.5, not duplicate-counting OCF/residual; YTD language and prior-year-end inventory comparison correctly distinct; causality/reversibility unresolved, not assumed.",
+        "FIC-FIN-03": "QTD profit and YTD loss distinctly stated; no annual profit or prior comparison invented; future loss expansion conditional only.",
+        "FIC-FIN-04": "HOLD neutral; non-operating contribution not upgraded to operating acceleration, normalized earnings, or confirmed deterioration."
+      }
+    }
+  ],
+  "review_model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "independent_judge_calls": 0,
+  "scope": "Only four completed outputs, no substitute for full formal stability",
+  "new_FIC_FIN_05_and_08": "NOT_MEASURED",
+  "code_changes_from_output_review": 0
+}

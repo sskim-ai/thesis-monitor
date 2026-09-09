@@ -1,0 +1,320 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "순부채가 높아 재무위험이 크다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채가 높아 재무위험이 크다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "보험사의 순부채와 운전자본 악화가 핵심 리스크다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "보험사의 순부채와 운전자본 악화가 핵심 리스크다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "보험사의 순부채와 운전자본 악화가 핵심 리스크다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "보험사는 운전자본 악화로 수익성이 낮다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "보험사는 운전자본 악화로 수익성이 낮다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "보험사라 순부채 틀은 적용하지 않지만 순부채가 높아 SELL 근거다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "보험사라 순부채 틀은 적용하지 않지만 순부채가 높아 SELL 근거다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "보험사라 순부채 틀은 적용하지 않지만 순부채가 높아 SELL 근거다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채 틀은 적용하지 않는다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "순부채가 높아 위험하다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채 틀은 적용하지 않는다. 순부채가 높아 위험하다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채가 높고 보험 규정은 적용하지 않는다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채가 높고 보험 규정은 적용하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채가 중요하지 않지 않다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채가 중요하지 않지 않다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채 틀을 적용하지 않지 않는다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채 틀을 적용하지 않지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채 틀을 적용하지 않는다고 볼 수 없다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채 틀을 적용하지 않는다고 볼 수 없다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채가 낮지 않다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채가 낮지 않다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채 100이라는 수치는 적용하지 않는다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채 100이라는 수치는 적용하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채 틀은 적용하지 않지만 높아 위험하다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채 틀은 적용하지 않지만 높아 위험하다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채는 적용하지 않는다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "운전자본 악화가 위험이다"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "순부채는 적용하지 않는다. 운전자본 악화가 위험이다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "We do not use net debt, but net debt is high"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "We do not use net debt, but net debt is high"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "We do not use net debt, but net debt is high."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "Net debt is not low"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "Net debt is not low."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "If net debt is not applicable to insurers"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "If net debt is not applicable to insurers."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "Net debt is not inapplicable"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "Net debt is not inapplicable."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "Net debt framework is not used unless refinancing deteriorates"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "Net debt framework is not used unless refinancing deteriorates."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "Net debt is high"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "Net debt is high; we do not apply this unrelated policy."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "We do not apply contracts to net debt"
+        }
+      ],
+      "expected": "negative",
+      "status": "PASS",
+      "text": "We do not apply contracts to net debt."
+    }
+  ],
+  "status": "PASS"
+}

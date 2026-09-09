@@ -1,0 +1,120 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-01:net-debt"
+          ],
+          "field_path": "buy_drivers[2].text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "보고시점의 안전하게 산출된 순부채 지표는 순현금 상태를 보여 재무 완충력을 뒷받침한다"
+        }
+      ],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:operating-evidence"
+          ],
+          "field_path": "business_reevaluation_down[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "매출·회계이익 개선에도 누적 현금 전환 부진이 지속되고 운전자본 흡수가 구조적인 것으로 확인되는 경우"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "business_reevaluation_up[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "누적 현금 전환이 회복되고 운전자본 사용의 원인과 가역성이 확인되는 경우"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:business-thesis",
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "fundamental_holder.business_invalidation_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "건전한 수요에도 누적 현금 전환 부진이 지속되고 운전자본 사용이 되돌려지기 어렵다고 확인되는 경우"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "fundamental_new_buyer.confirmation_business_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "누적 현금 전환이 회복되고 운전자본 사용의 원인과 가역성이 확인되는 경우"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "보고시점 재고는 전년 말보다 늘었지만, 이 사실만으로 악화 원인을 확정할 수 없고 운전자본 사용의 가역성도 미확인이다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[1].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "운전자본의 현금 흡수가 지속될 수 있다는 위험이 있다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:remaining-unknown",
+            "canonical:fictional:FIC-FIN-02:inventory-current"
+          ],
+          "field_path": "unknown_treatments[0].summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "전년 말 이후 재고 증가는 확인되지만 운전자본 사용의 원인과 가역성은 추가 확인이 필요하다"
+        }
+      ],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    }
+  ],
+  "scope": "all completed rows, not full proof unless 24",
+  "status": "NOT_MEASURED",
+  "fic_fin_08_observed_rows": 0,
+  "explicit_exclusion_false_reject_count": "NOT_MEASURED",
+  "financial_sector_true_misuse_count": "NOT_MEASURED",
+  "completed_nonfinancial_rows_with_errors": 0,
+  "offline_regression": "PASS; not a replacement for new fictional observation",
+  "reason": "Context containing financial-sector case timed out before output"
+}

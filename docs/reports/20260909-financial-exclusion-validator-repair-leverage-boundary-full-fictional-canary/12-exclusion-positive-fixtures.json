@@ -1,0 +1,187 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "보험사에는 일반 영업기업의 순부채 틀을 적용하지 않는다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "보험사에는 일반 영업기업의 순부채 틀을 적용하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "운전자본 기준은 이 금융업종의 핵심 평가틀로 사용하지 않는다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "운전자본 기준은 이 금융업종의 핵심 평가틀로 사용하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "은행은 운전자본 기준으로 평가하지 않는다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "은행은 운전자본 기준으로 평가하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채 분석은 해당하지 않는다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채 분석은 해당하지 않는다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채 등 일반 틀을 배제한다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채 등 일반 틀을 배제한다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채는 일반 영업기업 기준이 아니다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채는 일반 영업기업 기준이 아니다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "보험사에는 순부채 틀을 적용하지 않습니다"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "보험사에는 순부채 틀을 적용하지 않습니다. 규제자본과 보험 인수 규율로 평가합니다."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Industrial net debt is not applicable to insurers"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Industrial net debt is not applicable to insurers."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Working capital metrics are not used for banks"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Working capital metrics are not used for banks."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "We do not use net debt and working capital frameworks"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "We do not use net debt and working capital frameworks"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "We do not use net debt and working capital frameworks."
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "We exclude industrial net debt framework"
+        }
+      ],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "We exclude industrial net debt framework."
+    }
+  ],
+  "status": "PASS"
+}

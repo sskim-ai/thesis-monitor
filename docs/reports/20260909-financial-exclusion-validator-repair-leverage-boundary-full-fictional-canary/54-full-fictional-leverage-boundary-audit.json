@@ -1,0 +1,28 @@
+{
+  "frozen_contract": {
+    "case_change_semantics": "CURRENT_ABSOLUTE_CONDITION_WITHOUT_EXPLICIT_BASELINE_DETERIORATION",
+    "case_data_change": 0,
+    "debt_cash_independence": "CONTEXT_DEPENDENT; here components of one financial-resilience dimension, not two independent negative confirmations merely because there are two refs.",
+    "historical_comparison": "Prior Sol SELL/WEAKENED/AVOID remains historical, not a mandatory Astra output.",
+    "holder": "REVIEW observed; contract unchanged.",
+    "lev01_expected": {
+      "buy": 4.5,
+      "hold_lean": "SELL_LEAN",
+      "overall_direction": "HOLD",
+      "sell": 5.5
+    },
+    "minimum_sell_pattern": "A material negative resilience anchor plus sufficiently current/independent evidence that establishes actual severity, persistence or financing/debt-service pressure can support minimum SELL. No mandatory checklist, new numeric cutoff or evidence-count rule.",
+    "new_buyer": "WAIT is defensible with unresolved severity/confirmation. Do not impose SELL->AVOID or globally change stance policy.",
+    "positive_symmetry": "Low debt and ample cash do not by themselves create minimum BUY. Resilience can corroborate a separate material business/value anchor; do not count cash and debt components twice.",
+    "prompt_change": 0,
+    "root_cause": "ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT",
+    "secondary_finding": "HISTORICAL_WEAKENED_EXPECTATION_HAS_NO_EXPLICIT_BASELINE_CHANGE_IN_FROZEN_CASE",
+    "sell_lean_pattern": "High complete debt/thin compatible cash plus stable operating support and unresolved refinancing, maturity and debt-service severity supports the conservative 5.5 negative lean. Missing details limit strength, never create bullish evidence.",
+    "support": "Complete interest-bearing debt and cash are contemporaneous, no prior comparison. Narrative risk restates these same economics. Stable operating profit is an offset. Conditional refinancing expectation is not confirmed financing stress.",
+    "thesis_change": "UNCHANGED is defensible; WEAKENED requires supplied baseline-relative deterioration, not absolute negative balance-sheet state."
+  },
+  "rows": [],
+  "status": "NOT_MEASURED",
+  "fic_fin_05_observed_rows": 0,
+  "reason": "Context containing leverage case timed out before output; frozen generic contract remains unchanged"
+}

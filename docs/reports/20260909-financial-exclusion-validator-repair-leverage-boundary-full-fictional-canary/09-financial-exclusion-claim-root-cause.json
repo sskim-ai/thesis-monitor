@@ -1,0 +1,10 @@
+{
+  "classification": [
+    "ASSERTION_OR_APPLICATION",
+    "EXPLICIT_EXCLUSION",
+    "UNCERTAIN_OR_AMBIGUOUS"
+  ],
+  "root_cause": "TOKEN_PRESENCE_IGNORES_EXPLICIT_NON_APPLICATION_SCOPE",
+  "rule": "Only a metric occurrence governed by an explicit framework-exclusion predicate is exempt. Each occurrence and candidate field is inspected independently. Ambiguity fails closed; exclusions never legalize typed industrial evidence or actual application elsewhere.",
+  "unsupported_grammar": "Not a general NLP classifier: unrecognized negation, double negative, conditional and mixed clauses do not receive exemption."
+}

@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m12e-financial-boundary-calibration-partial-closeout-v1
+**버전:** 2026-09-10 / m12f-exclusion-leverage-runtime-partial-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12E deterministic calibration repair 완료 / fictional canary 2/6 fail-closed 중단 / fresh real NOT_READY`
+**현재 위치:** `M12F exclusion validator 수리·leverage 계약 검토 완료 / 새 canary 1 context PASS + 1 MODEL_TIMEOUT / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12E는 기존 Directional ordinal prompt에 shared-lineage corroboration, limiting Unknown, non-operating support, 6.0/6.5 경계의 일반 계약만 추가했다. Astra/xhigh canary 두 번째 호출에서 금융업 비적용 문장에 대한 validator 오류로 중단했다. 원본 FAIL은 보존하며 별도 감사상 false reject 2건과 FIC-FIN-05 core 경계 회귀 관측을 분리한다. 반복 안정성은 미측정이고 재호출·hotfix·main merge·운영 변경은 0이다. 역사적 M12G~M12S 결과는 아래 각 절에 유지한다.**
+**M12F는 명시적 금융업 비적용 문장과 실제 산업재 금융지표 적용을 구분하는 validator만 수리했다. Directional prompt는 변경하지 않았다. 현재 Astra 계약상 FIC-FIN-05의 HOLD SELL_LEAN 5.5는 타당하며, 과거 Sol SELL을 필수 정답으로 취급하지 않는다. 새 canary는 첫 context 4/4 PASS 후 두 번째 context가 출력 없이 1,800초 MODEL_TIMEOUT으로 중단됐다. 전체 반복 안정성과 새 FIC-FIN-05/08 관측은 미측정이다. 원본 출력·FAIL·receipt는 보존하고 재호출·hotfix·main merge·운영 변경은 0이다.**
 
 ---
 
@@ -905,6 +905,75 @@ new-buyer/holder 독립 안정성 후속은 미측정 상태로 유지한다.
 monitoring registration, scheduler 변경·자동 재개는 모두 0이다. 종료 관측에서도 승인된
 예약 8개는 PAUSED/DISABLED였다. 증거 및 세부 completion은
 [M12E reports](reports/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/59-program-completion.json)에 보존한다.
+
+---
+
+## 12F. 금융업 비적용 수리, 레버리지 계약 검토와 실행 시간초과 종료
+
+작업지시서 commit은 `a7029856c189599c96f6c357bb2c949a47af10a3`, base는
+`19b3dd7bc2353f418452e2db67c78e886a73cbc6`이다. 코드 구현은
+`dc80d2b67961d7e71983db91351657a4132f2e78`, 최종 사전 동결은
+`13d21ae25b9a61b95ab433bb5070d4cf8fb21666`이다. 첫 Phase A는 첨부 지시서 끝의
+빈 줄 하나로 diff 검사만 실패했다. 원본 FAIL과 모델 호출 0회를 보존한 뒤 공백만
+정리하고 focused 135/135, full pytest 3174/3174, Ruff, base 대비 diff를 재통과했다.
+M12E ZIP SHA와 payload 177개 무결성도 재확인했다.
+
+일반 helper는 `ASSERTION_OR_APPLICATION`, `EXPLICIT_EXCLUSION`,
+`UNCERTAIN_OR_AMBIGUOUS`를 구분한다. 명시적으로 지배되는 명사형 framework
+비적용만 허용하고, 다른 절·필드의 실제 적용이나 산업재 typed ref를 면제하지 않는다.
+기존 M12E FIC-FIN-08 원본의 별도 오프라인 replay는 PASS다. positive 12개와
+negative 20개 대조군, 혼합·모호한 문장 대조군을 확인했다. 원래 M12E FAIL은 유지한다.
+
+레버리지 root cause는 `ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT`다.
+이 사례의 complete debt와 cash는 같은 재무완충력 축의 구성요소이며 참조 수로
+독립 악재를 중복 계산하지 않는다. 영업이익이 안정적이고 차환·만기·상환 압력의
+심각성이 미확인인 경우 5.5 negative lean이 타당하다. Unknown은 호재가 아니라
+강도 제한이다. 실제 차환·상환 압력은 별도 최소 SELL 근거가 될 수 있지만 점수표나
+기계적 checklist는 만들지 않는다. baseline 대비 악화가 입력에 없으므로 UNCHANGED는
+타당하다. Sol의 과거 SELL/WEAKENED/AVOID를 Astra 필수 label로 삼지 않는다.
+따라서 Branch A를 선택했고 prompt·threshold·increment·lean·tie-break·buyer/holder는
+변경 0이다. selector·typed projection·WC/QTD·기타 financial validator·Price-Timing·
+renderer·source sufficiency·Daily Delta도 그대로다.
+
+```text
+generation = 20260909-m12f-fictional-20260909T150248Z-04f38944c4bf
+source_lock_sha256 = 7e8f87c4ae0c931e6d893206097ad03e2d4ccb1e481a34194e343ac653c78c19
+authoring / attempted runner = gpt-6-astra / xhigh
+planned = 6 contexts / 24 rows
+attempted = 2 contexts; remaining 4 NOT_RUN
+run-1/context-01 = PASS, 4/4 schema + semantic + grounding
+run-1/context-02 = MODEL_TIMEOUT at 1800 seconds, raw output absent
+completed selected / used typed refs = 11 / 11
+completed-row financial violations / grounding failures = 0 / 0
+wrapper retry = 0; CLI internal reconnect warnings = 2
+timeout = 1; observed capacity failure = 0; orphan = 0
+full formal/core/stance stability = NOT_MEASURED
+new FIC-FIN-05/08 result = NOT_MEASURED
+```
+
+첫 context는 약 1133.48초에 완료됐다. FIC-FIN-01/02/04의 첫 bucket은 각각
+BUY 6:4, HOLD 4.5:5.5, HOLD 5:5로 동결 계약과 부합했고 FIC-FIN-03의 QTD 흑자와
+YTD 손실도 구분했다. 단 한 번의 관측은 안정성 PASS가 아니다. 두 번째 context는
+WebSocket connection-reset 경고 뒤 완성 출력 없이 watchdog에서 SIGTERM 종료됐다.
+첫 context에도 내부 재연결 경고가 1건 있었으므로 총 2건을 명시한다. 원본 receipt의
+transport_attempt_count=1은 wrapper 호출 수이며 실제 내부 sampling 재시도 전체를
+뜻하지 않는다. backend request 총수는 미측정이다. timeout을 금융 validator 또는
+capacity 문제로 단정하지 않는다. 실패 receipt의 observed_runtime 후처리 누락은
+로그 header로 보완해 검증했으며 원본 receipt는 변경하지 않는다.
+
+GitHub hosted CI는 코드 구현 및 공백 정리 SHA에서 3169 PASS / 5 FAIL이다.
+historical Git object 부재 3건, 로컬 전용 ZIP 부재 2건이며 새 M12F 테스트의 ZIP
+의존 실패 1건도 포함된다. hosted lint는 test 실패로 SKIPPED다. 이를 CI PASS로
+표시하지 않는다. 생성 이후 662개 코드 파일과 4개 설정 파일의 해시 변경은 0이다.
+
+`P0 open=0`, `P1 open=2`는 실행 timeout의 원인 검토와 hosted CI portability다.
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 다음은
+`BOUNDED_ASTRA_TRANSPORT_TIMEOUT_REVIEW_BEFORE_NEW_FULL_FICTIONAL_CANARY`다.
+현재 결과를 보고 금융 계약을 다시 바꾸거나 즉시 재호출하지 않는다. 보존된 실행
+증거 검토 후 별도 승인과 새 generation이 필요하다. 전역 buyer/holder 수리 필요성은
+현재 표본으로 판단하지 않는다. 실종목·judge·provider 호출과 모든 운영 mutation은 0,
+종료 관측에서도 승인된 예약 8개는 PAUSED다. 원본과 세부 결과는
+[M12F reports](reports/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/71-program-completion.json)에 있다.
 
 ---
 

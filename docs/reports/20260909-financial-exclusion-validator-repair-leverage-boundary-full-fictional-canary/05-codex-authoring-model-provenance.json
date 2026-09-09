@@ -1,0 +1,11 @@
+{
+  "effort": "xhigh",
+  "model": "gpt-6-astra",
+  "target_match": true,
+  "timestamp": "2026-09-09T14:34:33.045Z",
+  "continuation_receipt": {
+    "timestamp": "2026-09-09T15:00:32.277Z",
+    "model": "gpt-6-astra",
+    "effort": "xhigh"
+  }
+}

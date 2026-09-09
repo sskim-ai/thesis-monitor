@@ -1,0 +1,9 @@
+{
+  "status": "NOT_MEASURED",
+  "completed_contexts": 1,
+  "complete_repetitions": 0,
+  "reason": "Full three-repetition sample unavailable after runtime timeout",
+  "decision": "Defer any current-model stability or stance-repair conclusion until a separately authorized complete new generation",
+  "contract_changed": false,
+  "historical_sol_evidence": "DESCRIPTIVE_ONLY"
+}

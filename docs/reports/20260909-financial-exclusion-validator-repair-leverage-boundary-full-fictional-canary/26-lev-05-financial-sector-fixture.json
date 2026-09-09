@@ -1,0 +1,5 @@
+{
+  "expected": "INDUSTRIAL_LEVERAGE_NOT_APPLICABLE",
+  "id": "LEV-05",
+  "pattern": "bank insurance reinsurance"
+}

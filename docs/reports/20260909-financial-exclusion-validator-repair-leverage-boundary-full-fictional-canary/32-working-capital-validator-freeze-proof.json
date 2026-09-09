@@ -1,0 +1,16 @@
+{
+  "exclusion_only_exception": true,
+  "leverage_prompt_change": 0,
+  "scope": {
+    "all_unapproved_ast_unchanged": {
+      "app/services/directional_financial_context_service.py": true,
+      "scripts/directional_financial_context_m12.py": true
+    },
+    "production_validator_fictional_branch_count": 0,
+    "prompt_change_count": 0,
+    "status": "PASS",
+    "unchanged_python_count": 654,
+    "unexpected_file_changes": []
+  },
+  "status": "PASS"
+}

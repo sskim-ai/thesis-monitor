@@ -1,0 +1,270 @@
+{
+  "policy": "CROSS_MODEL_DESCRIPTIVE_ONLY",
+  "m12d_sol": {
+    "verified_zip_sha256": "b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3",
+    "model": "gpt-5.6-sol",
+    "rows": [
+      {
+        "report": "reports/34-run-1-context-01.json",
+        "ticker": "FIC-FIN-01",
+        "balance": {
+          "buy": 6.5,
+          "sell": 3.5
+        },
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "thesis": "STRENGTHENED",
+        "buyer": "ATTRACTIVE",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/34-run-1-context-01.json",
+        "ticker": "FIC-FIN-02",
+        "balance": {
+          "buy": 4,
+          "sell": 6
+        },
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "thesis": "WEAKENED",
+        "buyer": "AVOID",
+        "holder": "REVIEW"
+      },
+      {
+        "report": "reports/34-run-1-context-01.json",
+        "ticker": "FIC-FIN-04",
+        "balance": {
+          "buy": 5,
+          "sell": 5
+        },
+        "direction": "HOLD",
+        "lean": "NEUTRAL",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/35-run-1-context-02.json",
+        "ticker": "FIC-FIN-05",
+        "balance": {
+          "buy": 4,
+          "sell": 6
+        },
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "thesis": "WEAKENED",
+        "buyer": "AVOID",
+        "holder": "REDUCE"
+      },
+      {
+        "report": "reports/36-run-2-context-01.json",
+        "ticker": "FIC-FIN-01",
+        "balance": {
+          "buy": 6,
+          "sell": 4
+        },
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "thesis": "STRENGTHENED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/36-run-2-context-01.json",
+        "ticker": "FIC-FIN-02",
+        "balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "thesis": "WEAKENED",
+        "buyer": "WAIT",
+        "holder": "REVIEW"
+      },
+      {
+        "report": "reports/36-run-2-context-01.json",
+        "ticker": "FIC-FIN-04",
+        "balance": {
+          "buy": 5,
+          "sell": 5
+        },
+        "direction": "HOLD",
+        "lean": "NEUTRAL",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/37-run-2-context-02.json",
+        "ticker": "FIC-FIN-05",
+        "balance": {
+          "buy": 4,
+          "sell": 6
+        },
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "thesis": "WEAKENED",
+        "buyer": "AVOID",
+        "holder": "REVIEW"
+      },
+      {
+        "report": "reports/38-run-3-context-01.json",
+        "ticker": "FIC-FIN-01",
+        "balance": {
+          "buy": 6.5,
+          "sell": 3.5
+        },
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "thesis": "STRENGTHENED",
+        "buyer": "ATTRACTIVE",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/38-run-3-context-01.json",
+        "ticker": "FIC-FIN-02",
+        "balance": {
+          "buy": 4,
+          "sell": 6
+        },
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "thesis": "WEAKENED",
+        "buyer": "WAIT",
+        "holder": "REVIEW"
+      },
+      {
+        "report": "reports/38-run-3-context-01.json",
+        "ticker": "FIC-FIN-04",
+        "balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "direction": "HOLD",
+        "lean": "BUY_LEAN",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      },
+      {
+        "report": "reports/39-run-3-context-02.json",
+        "ticker": "FIC-FIN-05",
+        "balance": {
+          "buy": 4,
+          "sell": 6
+        },
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "thesis": "WEAKENED",
+        "buyer": "AVOID",
+        "holder": "REDUCE"
+      }
+    ]
+  },
+  "m12e_astra_partial": {
+    "model": "gpt-6-astra",
+    "rows": [
+      {
+        "ticker": "FIC-FIN-01",
+        "repetition": 1,
+        "balance": {
+          "buy": 6,
+          "sell": 4
+        },
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "thesis": "STRENGTHENED",
+        "buyer": "ATTRACTIVE",
+        "holder": "HOLDABLE"
+      },
+      {
+        "ticker": "FIC-FIN-02",
+        "repetition": 1,
+        "balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "thesis": "WEAKENED",
+        "buyer": "WAIT",
+        "holder": "REVIEW"
+      },
+      {
+        "ticker": "FIC-FIN-04",
+        "repetition": 1,
+        "balance": {
+          "buy": 5,
+          "sell": 5
+        },
+        "direction": "HOLD",
+        "lean": "NEUTRAL",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      },
+      {
+        "ticker": "FIC-FIN-05",
+        "repetition": 1,
+        "balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "REVIEW"
+      }
+    ]
+  },
+  "m12f_astra_partial": {
+    "model": "gpt-6-astra",
+    "rows": [
+      {
+        "ticker": "FIC-FIN-01",
+        "repetition": 1,
+        "balance": {
+          "buy": 6,
+          "sell": 4
+        },
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "thesis": "STRENGTHENED",
+        "buyer": "ATTRACTIVE",
+        "holder": "HOLDABLE"
+      },
+      {
+        "ticker": "FIC-FIN-02",
+        "repetition": 1,
+        "balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "thesis": "WEAKENED",
+        "buyer": "WAIT",
+        "holder": "REVIEW"
+      },
+      {
+        "ticker": "FIC-FIN-04",
+        "repetition": 1,
+        "balance": {
+          "buy": 5,
+          "sell": 5
+        },
+        "direction": "HOLD",
+        "lean": "NEUTRAL",
+        "thesis": "UNCHANGED",
+        "buyer": "WAIT",
+        "holder": "HOLDABLE"
+      }
+    ],
+    "fic_fin_05": "NOT_MEASURED - context timeout"
+  },
+  "same_model_improvement_rate": "NOT_MEASURED",
+  "cross_model_same_runtime_claim_count": 0,
+  "note": "Neither old Sol labels nor an incomplete new Astra sample establish required labels or repeated stability."
+}
