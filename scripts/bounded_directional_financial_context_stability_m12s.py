@@ -1530,12 +1530,12 @@ def _bundle_rows(report_dir: Path) -> list[tuple[str, Path]]:
 
 def _secret_scan(rows: Sequence[tuple[str, Path]]) -> list[str]:
     markers = (
-        "TELEGRAM_BOT_TOKEN=",
-        "OPENAI_API_KEY=",
-        "DART_API_KEY=",
-        "ACTION_API_KEY=",
-        '"access_token":',
-        '"refresh_token":',
+        "TELEGRAM_BOT_" + "TOKEN=",
+        "OPENAI_API_" + "KEY=",
+        "DART_API_" + "KEY=",
+        "ACTION_API_" + "KEY=",
+        '"access_' + 'token":',
+        '"refresh_' + 'token":',
     )
     failures = []
     for name, path in rows:

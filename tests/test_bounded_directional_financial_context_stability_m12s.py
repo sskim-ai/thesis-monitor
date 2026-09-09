@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from scripts.bounded_directional_financial_context_stability_m12s import (
+    _secret_scan,
     build_fingerprint,
     classify_interpretation_delta,
     classify_subject,
     evidence_roles,
 )
+
+
+SCRIPT_PATH = "scripts/bounded_directional_financial_context_stability_m12s.py"
 
 
 def _core(
@@ -198,3 +202,9 @@ def test_mixed_to_positive_is_emphasis_not_polarity_reversal() -> None:
     delta = classify_interpretation_delta(left, right)
     assert delta["classification"] == "MINOR_EMPHASIS_DELTA"
     assert delta["material_semantic_change"] is False
+
+
+def test_secret_scanner_does_not_flag_its_own_source() -> None:
+    from pathlib import Path
+
+    assert _secret_scan([(SCRIPT_PATH, Path(SCRIPT_PATH))]) == []
