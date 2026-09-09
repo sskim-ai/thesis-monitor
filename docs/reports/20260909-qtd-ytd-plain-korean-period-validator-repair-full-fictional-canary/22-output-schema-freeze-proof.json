@@ -1,0 +1,10 @@
+{
+  "after_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+  "before_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+  "change_count": 0,
+  "changed": false,
+  "contract": "m12d-output-schema-freeze-v1",
+  "output_schema_change_count": 0,
+  "path": "app/services/direction_timing_ownership_service.py",
+  "status": "PASS"
+}

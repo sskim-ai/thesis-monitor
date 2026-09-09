@@ -1,0 +1,80 @@
+{
+  "branch_decision": "BRANCH_A",
+  "changed_paths_from_root_cause_commit": [
+    "app/services/directional_financial_context_service.py",
+    "scripts/qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py"
+  ],
+  "checks": {
+    "branch_a_frozen": "PASS",
+    "claim_path_contract": "PASS",
+    "daily_delta_lifecycle_warning": "PASS",
+    "directional_prompt": "PASS",
+    "evidence_linkage": "PASS",
+    "first_class_projection": "PASS",
+    "focused_tests": "PASS",
+    "full_tests": "PASS",
+    "git_diff_check": "PASS",
+    "historical_regression": "PASS",
+    "implementation_paths": "PASS",
+    "negative_fixtures": "PASS",
+    "other_financial_validators": "PASS",
+    "output_schema": "PASS",
+    "positive_fixtures": "PASS",
+    "price_timing": "PASS",
+    "production_side_effect_firewall": "PASS",
+    "qtd_marker_contract": "PASS",
+    "renderer": "PASS",
+    "ruff": "PASS",
+    "run1_regression": "PASS",
+    "run2_regression": "PASS",
+    "run3_regression": "PASS",
+    "schedule_pause": "PASS",
+    "source_sufficiency": "PASS",
+    "validator_scope": "PASS",
+    "working_capital_freeze": "PASS",
+    "ytd_marker_contract": "PASS"
+  },
+  "contract": "m12d-model-call-gate-v1",
+  "decision": "MODEL_CALLS_ALLOWED",
+  "generation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f",
+  "implementation_commit": "3ad040f73f7f159519cb5d47058571c101f1a6c3",
+  "model_calls_before_gate": 0,
+  "model_inputs": {
+    "contexts": [
+      {
+        "context": 1,
+        "prompt_path": "artifacts/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary/frozen-contexts/context-01/prompt.txt",
+        "prompt_sha256": "5f4aa7af2bdbb223961466ab0957ea4032e54bd9d2e037d6ecf58937fef8489d",
+        "schema_path": "artifacts/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary/frozen-contexts/context-01/schema.json",
+        "schema_sha256": "a956bad1b8927e24f40f2b7335951b704c09135a0f7f8f6ed0f7cf2661c08305",
+        "tickers": [
+          "FIC-FIN-01",
+          "FIC-FIN-02",
+          "FIC-FIN-03",
+          "FIC-FIN-04"
+        ]
+      },
+      {
+        "context": 2,
+        "prompt_path": "artifacts/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary/frozen-contexts/context-02/prompt.txt",
+        "prompt_sha256": "2cc140a19261b4bbe8fd6882385529ceeb65bbd23cd736301168e0cb191448b4",
+        "schema_path": "artifacts/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary/frozen-contexts/context-02/schema.json",
+        "schema_sha256": "770188bcff4fdede222b61b26627f45c5c1f12323e4f0c2627dcb5034e1f72f8",
+        "tickers": [
+          "FIC-FIN-05",
+          "FIC-FIN-06",
+          "FIC-FIN-07",
+          "FIC-FIN-08"
+        ]
+      }
+    ],
+    "contract": "m12-frozen-model-inputs-v1",
+    "generation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f",
+    "status": "FROZEN"
+  },
+  "source_lock_sha256": "b8f7a16ab2570b2d738a4891ca1d7d3f793a4686581da4cf6b5955367231ba67",
+  "status": "PASS",
+  "stop_reason": null,
+  "unexpected_changed_paths": []
+}

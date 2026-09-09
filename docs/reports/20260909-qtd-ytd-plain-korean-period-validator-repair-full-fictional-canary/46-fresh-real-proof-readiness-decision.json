@@ -1,0 +1,9 @@
+{
+  "contract": "m12d-fresh-real-proof-readiness-decision-v1",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "full_fictional_canary_status": "FAIL",
+  "next_scope": "BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_STABILITY_REVIEW",
+  "production_readiness": "NOT_READY",
+  "qtd_ytd_repair_status": "PASS",
+  "status": "FAIL"
+}

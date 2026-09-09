@@ -1,0 +1,75 @@
+{
+  "calibration": {
+    "after_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "before_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "change_count": 0,
+    "changed": false,
+    "path": "app/services/directional_balance_service.py",
+    "status": "PASS"
+  },
+  "calibration_tiebreak_changed": false,
+  "case_validator": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "6126bc92da9cf9f9b3a0000200af8ca6e209e342ab03d644638ffbfa6a4275c3",
+        "before_sha256": "6126bc92da9cf9f9b3a0000200af8ca6e209e342ab03d644638ffbfa6a4275c3",
+        "changed": false,
+        "function": "_case_semantic_errors"
+      },
+      {
+        "after_sha256": "e913ec21ebf504a2ae8a67ddfefda269642a1ae873da997596f2d6d9649ec76a",
+        "before_sha256": "e913ec21ebf504a2ae8a67ddfefda269642a1ae873da997596f2d6d9649ec76a",
+        "changed": false,
+        "function": "_audit_core_batch"
+      }
+    ],
+    "path": "scripts/directional_financial_context_m12.py",
+    "status": "PASS"
+  },
+  "contract": "m12d-other-financial-validator-freeze-v1",
+  "directional_increment_changed": false,
+  "directional_threshold_changed": false,
+  "fictional_case_change_count": 0,
+  "fictional_cases": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "d5a7ad187fe8770f7a4155e926ae82d34fd3a3b676438ad1514ea64761ad5dd2",
+        "before_sha256": "d5a7ad187fe8770f7a4155e926ae82d34fd3a3b676438ad1514ea64761ad5dd2",
+        "changed": false,
+        "function": "_case_refs"
+      },
+      {
+        "after_sha256": "b33e5e212f798c39320cf7d843d76777a0028ccad7f8cf98379f79453ed8d0b5",
+        "before_sha256": "b33e5e212f798c39320cf7d843d76777a0028ccad7f8cf98379f79453ed8d0b5",
+        "changed": false,
+        "function": "fictional_inputs"
+      },
+      {
+        "after_sha256": "9609814c159c6373c91ef2f4d0461361ed64d52db31391e591c5a2106b0ea390",
+        "before_sha256": "9609814c159c6373c91ef2f4d0461361ed64d52db31391e591c5a2106b0ea390",
+        "changed": false,
+        "function": "fictional_manifest"
+      }
+    ],
+    "path": "scripts/directional_financial_context_m12.py",
+    "status": "PASS"
+  },
+  "financial_validator": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "a9308a29d248d9adea060bd95b5a2f77ee481e5ff24790719128879c584bfb5b",
+        "before_sha256": "a9308a29d248d9adea060bd95b5a2f77ee481e5ff24790719128879c584bfb5b",
+        "changed": false,
+        "function": "validate_directional_financial_semantics"
+      }
+    ],
+    "path": "app/services/directional_financial_context_service.py",
+    "status": "PASS"
+  },
+  "hold_lean_contract_changed": false,
+  "non_qtd_ytd_financial_validator_change_count": 0,
+  "status": "PASS"
+}

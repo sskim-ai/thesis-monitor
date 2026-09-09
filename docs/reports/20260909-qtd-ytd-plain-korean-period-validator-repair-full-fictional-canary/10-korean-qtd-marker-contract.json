@@ -1,0 +1,44 @@
+{
+  "contract": "m12d-korean-qtd-marker-contract-v1",
+  "plain_quarter_requires_same_claim_qtd_ytd_evidence_linkage": true,
+  "registry_changed": false,
+  "rows": [
+    {
+      "detected": true,
+      "marker": "분기"
+    },
+    {
+      "detected": true,
+      "marker": "분기 기준"
+    },
+    {
+      "detected": true,
+      "marker": "분기 실적"
+    },
+    {
+      "detected": true,
+      "marker": "분기 영업흑자"
+    },
+    {
+      "detected": true,
+      "marker": "분기 영업손실"
+    },
+    {
+      "detected": true,
+      "marker": "최근 분기"
+    },
+    {
+      "detected": true,
+      "marker": "이번 분기"
+    },
+    {
+      "detected": true,
+      "marker": "해당 분기"
+    },
+    {
+      "detected": true,
+      "marker": "직전 분기"
+    }
+  ],
+  "status": "PASS"
+}

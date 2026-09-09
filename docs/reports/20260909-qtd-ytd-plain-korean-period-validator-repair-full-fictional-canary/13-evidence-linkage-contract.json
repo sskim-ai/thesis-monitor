@@ -1,0 +1,63 @@
+{
+  "contract": "m12d-qtd-ytd-evidence-linkage-v1",
+  "qtd_only": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [
+      "qtd_ytd_conflict_not_explicit"
+    ],
+    "explicit_claim_count": 0,
+    "linked_claim_count": 0,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": false,
+    "ytd_evidence_ref_count": 1
+  },
+  "same_claim_both_refs": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [],
+    "explicit_claim_count": 1,
+    "linked_claim_count": 1,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": true,
+    "ytd_evidence_ref_count": 1
+  },
+  "same_metric_pair_required": true,
+  "status": "PASS",
+  "unlinked": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [
+      "qtd_ytd_conflict_not_explicit"
+    ],
+    "explicit_claim_count": 0,
+    "linked_claim_count": 0,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": false,
+    "ytd_evidence_ref_count": 1
+  },
+  "ytd_only": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [
+      "qtd_ytd_conflict_not_explicit"
+    ],
+    "explicit_claim_count": 0,
+    "linked_claim_count": 0,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": false,
+    "ytd_evidence_ref_count": 1
+  }
+}

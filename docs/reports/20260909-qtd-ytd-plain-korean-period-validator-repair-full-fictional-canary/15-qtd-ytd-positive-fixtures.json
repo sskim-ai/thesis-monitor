@@ -1,0 +1,80 @@
+{
+  "contract": "m12d-qtd-ytd-positive-fixtures-v1",
+  "fixture_count": 4,
+  "pass_count": 4,
+  "rows": [
+    {
+      "fixture_id": "positive-01",
+      "status": "PASS",
+      "text": "분기 영업흑자와 누적 영업손실이 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-02",
+      "status": "PASS",
+      "text": "분기 흑자와 연초 이후 누적 적자가 공존한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-03",
+      "status": "PASS",
+      "text": "분기 기준은 흑자지만 누계 기준은 적자다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-04",
+      "status": "PASS",
+      "text": "이번 분기는 흑자지만 YTD는 손실이다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    }
+  ],
+  "status": "PASS"
+}

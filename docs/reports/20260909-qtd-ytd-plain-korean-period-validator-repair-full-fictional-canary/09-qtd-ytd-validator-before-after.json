@@ -1,0 +1,18 @@
+{
+  "after": {
+    "authoritative_run3_status": "PASS",
+    "korean_ytd_marker_detected": true,
+    "plain_korean_qtd_marker_detected": true,
+    "상충_relation_marker_detected": true
+  },
+  "before": {
+    "authoritative_run3_status": "FAIL",
+    "korean_ytd_marker_detected": true,
+    "plain_korean_qtd_marker_detected": true,
+    "상충_relation_marker_detected": false
+  },
+  "contract": "m12d-qtd-ytd-validator-before-after-v1",
+  "root_cause": "OTHER_BOUNDED_VALIDATOR_DEFECT",
+  "root_cause_subtype": "KOREAN_PERIOD_RELATION_MARKER_FALSE_REJECT",
+  "status": "PASS"
+}

@@ -722,6 +722,60 @@ resume도 0이다.
 
 ---
 
+## 12D. M12D QTD/YTD plain-Korean validator repair와 stability fail-closed 결과
+
+M12D work-instruction commit은 `dd28946351e9a1517d1c50992c93265113efdba0`,
+forensic freeze commit은 `4b1b0417514b85b5c37a7ca61394ab98f522f099`,
+implementation commit은 `3ad040f73f7f159519cb5d47058571c101f1a6c3`다. M12C
+authoritative bundle SHA
+`2ce3b4e501743fb9e640b62807a96658e54b1f682298a486ea0d0c3dc32dd92e`와
+indexed payload 121개의 hash/size mismatch 0 및 secret-scan failure 0을 확인했다.
+
+구현 전 forensic은 M12C run-3 FIC-FIN-03 실패를
+`OTHER_BOUNDED_VALIDATOR_DEFECT:KOREAN_PERIOD_RELATION_MARKER_FALSE_REJECT`로
+동결했다. 기존 validator는 plain `분기` QTD와 `누적` YTD marker, 같은 metric의 양쪽
+typed evidence linkage를 이미 인식했지만, 두 기간 결과의 관계를 명시한 `상충`을
+relation marker로 인식하지 못했다. Branch A 구현은 QTD/YTD relation matcher에 일반
+한국어 marker `상충` 하나만 추가했다. fictional case, WC validator, first-class
+projection/selection, Directional·Price-Timing prompt, output schema, 다른 financial
+validator, threshold/increment/HOLD lean/calibration, source sufficiency, Daily
+Delta/lifecycle/warning, renderer 변경은 0이다.
+
+보존 M12C run-1/run-2/run-3 및 historical FIC-FIN-03 회귀, positive fixture와
+false-accept negative fixture, claim-path와 same-metric evidence-linkage 검사는 모두
+PASS했다. focused pytest는 625 passed, full pytest는 3087 passed, Ruff와
+`git diff --check`도 PASS했다. model-call gate 전 호출은 0이었다.
+
+formal generation은
+`20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f`, source lock은
+`b8f7a16ab2570b2d738a4891ca1d7d3f793a4686581da4cf6b5955367231ba67`다.
+동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh, single
+watchdog, retry 0으로 전체 6/6 context와 24/24 output을 완료했다. schema 24/24,
+hard financial semantic violation, QTD/YTD false reject/false accept/true semantic
+violation, working-capital/material-anchor grounding failure, narrative substitution,
+invalid financial ref와 opposite-direction reversal은 모두 0이다. model context는
+6/6 PASS했고 retry/timeout/capacity/orphan도 모두 0이다. 특히 세 반복의
+FIC-FIN-03은 QTD/YTD contract를 모두 PASS했다.
+
+그러나 formal stability는 STABLE 4, BOUNDARY_UNCERTAINTY 3, UNSTABLE 1로
+FAIL했다. FIC-FIN-02가 동일 동결 입력에서 `SELL -> HOLD(SELL_LEAN) -> SELL`로
+변해 `DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED`로 분류됐다. opposite-direction
+reversal은 0이고 hard semantics와 grounding은 전부 PASS이므로, 이는 이번 QTD/YTD
+repair의 재실패나 runtime failure가 아니라 별도의 material financial interpretation
+stability 문제다. 지시대로 threshold/calibration/prompt/candidate를 수정하거나
+선택 재실행하지 않았다.
+
+따라서 `M12D_CANARY_FAIL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. 다음 한 작업은
+`BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_STABILITY_REVIEW`이며 FIC-FIN-02의 경계
+변동을 threshold-adjacent uncertainty와 material evidence interpretation variability로
+분리해 조사한다. real issuer model call, judge call, provider fetch, production
+DB/assessment/warning/notification/send, monitoring registration, main merge, deploy는
+모두 0이다. 승인된 8개 monitoring 경로는 PAUSED/DISABLED 상태를 유지하고 scheduler
+mutation과 automatic resume도 0이다.
+
+---
+
 ## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |

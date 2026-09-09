@@ -1,0 +1,58 @@
+{
+  "batch_split": 0,
+  "capacity_failure_count": 0,
+  "contract": "m12d-runtime-observations-v1",
+  "invocation_identity_count": 6,
+  "model": "gpt-5.6-sol",
+  "model_calls_fictional": 6,
+  "model_calls_judge": 0,
+  "model_calls_real": 0,
+  "model_context_failure_count": 0,
+  "model_context_success_count": 6,
+  "orphan_process_count": 0,
+  "reasoning_effort": "xhigh",
+  "receipts": [
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-1:context-01",
+      "network_probe_attempts": 1,
+      "output_sha256": "d65caecb29c0977c0898c28b36f77afb5232865bd9b5bee9cc18ba7deaf5669b",
+      "status": "PASS"
+    },
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-1:context-02",
+      "network_probe_attempts": 1,
+      "output_sha256": "98c9be954efdc5697da1298c55395b2c404c2822c99ab30ab5c5eb8a5cab545e",
+      "status": "PASS"
+    },
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-2:context-01",
+      "network_probe_attempts": 1,
+      "output_sha256": "70ae73f6578269372acf8f58669b55d943939b30882ef8135e64049ae34cf2c5",
+      "status": "PASS"
+    },
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-2:context-02",
+      "network_probe_attempts": 1,
+      "output_sha256": "36bb376dc1fc52d714e17eabf1f7d0a5221a6fe6d55fd9487d91edb5bd417580",
+      "status": "PASS"
+    },
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-3:context-01",
+      "network_probe_attempts": 1,
+      "output_sha256": "7d890d5c6f2f82d2812be2ddd9e1cc0111054d234baebd7a1ce418412a30711d",
+      "status": "PASS"
+    },
+    {
+      "invocation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f:run-3:context-02",
+      "network_probe_attempts": 1,
+      "output_sha256": "cedd24f0aa0e6c2009b0f07c5839c221fdca6229fbbf0bcbedad4304abd4ff54",
+      "status": "PASS"
+    }
+  ],
+  "runtime_namespace_count": 6,
+  "single_authoritative_watchdog": true,
+  "status": "PASS",
+  "timeout_count": 0,
+  "working_directory_count": 6,
+  "wrapper_retry_count": 0
+}
