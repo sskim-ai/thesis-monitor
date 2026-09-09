@@ -1,0 +1,18 @@
+{
+  "auto_financial_income_classification_count": 0,
+  "auto_one_off_classification_count": 0,
+  "contract": "m11-equity-method-policy-v1",
+  "policy": "SEPARATE_INVESTMENT_RESULT_CONTEXT",
+  "rows": [
+    {
+      "canonical_metric": "equity_method_result_context",
+      "continuity_scope": "unspecified",
+      "economic_role": "INVESTMENT_RESULT",
+      "financial_effect_scope": "equity_method_investment_result",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod"
+    }
+  ]
+}

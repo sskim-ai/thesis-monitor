@@ -1,0 +1,20 @@
+{
+  "activated": [
+    "exact_registry",
+    "sec_companyfacts_duration_adapter",
+    "opendart_exact_xbrl_duration_promotion",
+    "canonical_projection",
+    "internal_financial_context_adapter"
+  ],
+  "contract": "m11-activation-surface-v1",
+  "dormant": [
+    "compact_ai_context",
+    "directional_core",
+    "price_timing",
+    "renderer",
+    "source_sufficiency",
+    "daily_delta",
+    "warnings",
+    "production"
+  ]
+}

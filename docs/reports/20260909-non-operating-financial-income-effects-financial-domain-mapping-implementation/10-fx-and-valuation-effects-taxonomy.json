@@ -1,0 +1,58 @@
+{
+  "cash_flow_fx_excluded": true,
+  "contract": "m11-fx-valuation-taxonomy-v1",
+  "oci_translation_excluded": true,
+  "recurrence_assumption_count": 0,
+  "rows": [
+    {
+      "canonical_metric": "foreign_exchange_gain",
+      "continuity_scope": "unspecified",
+      "economic_role": "GAIN",
+      "financial_effect_scope": "foreign_exchange_gain_component",
+      "parent_scope": "finance_income_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:NetForeignExchangeGain"
+    },
+    {
+      "canonical_metric": "foreign_exchange_loss",
+      "continuity_scope": "unspecified",
+      "economic_role": "LOSS",
+      "financial_effect_scope": "foreign_exchange_loss_component",
+      "parent_scope": "finance_cost_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:NetForeignExchangeLoss"
+    },
+    {
+      "canonical_metric": "foreign_exchange_net_effect",
+      "continuity_scope": "unspecified",
+      "economic_role": "NET_EFFECT",
+      "financial_effect_scope": "foreign_exchange_net_effect",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "us-gaap:ForeignCurrencyTransactionGainLossBeforeTax"
+    },
+    {
+      "canonical_metric": "fair_value_gain",
+      "continuity_scope": "unspecified",
+      "economic_role": "GAIN",
+      "financial_effect_scope": "financial_instrument_fair_value_gain",
+      "parent_scope": "finance_income_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "dart:GainsOnValuationOfFairValueFinancialAsset"
+    },
+    {
+      "canonical_metric": "fair_value_loss",
+      "continuity_scope": "unspecified",
+      "economic_role": "LOSS",
+      "financial_effect_scope": "financial_instrument_fair_value_loss",
+      "parent_scope": "finance_cost_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "dart:LossesOnValuationOfFairValueFinancialAsset"
+    }
+  ]
+}

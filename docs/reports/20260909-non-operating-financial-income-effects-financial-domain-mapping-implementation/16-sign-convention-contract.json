@@ -1,0 +1,19 @@
+{
+  "ambiguous_arithmetic_policy": "BLOCK_SIGN_SEMANTICS_UNRESOLVED",
+  "contract": "m11-sign-convention-v1",
+  "direct_source_amount": "PRESERVE_SIGNED_REPORTED_AMOUNT",
+  "economic_roles": [
+    "INCOME",
+    "EXPENSE",
+    "GAIN",
+    "LOSS",
+    "NET_EFFECT",
+    "BROAD_CONTEXT",
+    "INVESTMENT_RESULT",
+    "TAX_EFFECT",
+    "CONTINUING_RESULT",
+    "DISCONTINUED_RESULT"
+  ],
+  "negative_direct_effect_allowed": true,
+  "net_formula_input_policy": "POSITIVE_AGGREGATE_MAGNITUDES_ONLY"
+}

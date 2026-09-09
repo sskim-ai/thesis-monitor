@@ -1,0 +1,29 @@
+{
+  "contract": "m11-denial-accounting-v1",
+  "real_denial_counts": {
+    "exact_context_unresolved": 4,
+    "oci_translation_not_profit_or_loss_fx": 24,
+    "official_direct_net_precedence": 4,
+    "revenue_not_non_operating": 24,
+    "sector_not_applicable": 16
+  },
+  "required_reason_taxonomy": [
+    "aggregate_child_overlap",
+    "attribution_basis_mismatch",
+    "broad_context_not_specific",
+    "component_scope_incomplete",
+    "continuing_discontinued_mismatch",
+    "currency_mismatch",
+    "entity_scope_mismatch",
+    "exact_context_unresolved",
+    "period_context_unresolved",
+    "period_mismatch",
+    "sector_not_applicable",
+    "sign_semantics_unresolved",
+    "source_conflict",
+    "statement_basis_mismatch"
+  ],
+  "rules_weakened_to_reduce_denials": 0,
+  "sign_semantics_unresolved_count": 0,
+  "source_conflict_count": 0
+}

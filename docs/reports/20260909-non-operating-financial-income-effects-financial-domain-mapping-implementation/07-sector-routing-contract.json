@@ -1,0 +1,11 @@
+{
+  "contract": "m11-sector-routing-v1",
+  "financial_sector_route": "SECTOR_FRAMEWORK_REQUIRED",
+  "holding_and_preprofit_route": "CONTEXT_ONLY",
+  "missing_breakdown_default": "UNAVAILABLE_NONNEGATIVE",
+  "routes": [
+    "GENERIC_OPERATING_COMPANY",
+    "CONTEXT_ONLY",
+    "SECTOR_FRAMEWORK_REQUIRED"
+  ]
+}

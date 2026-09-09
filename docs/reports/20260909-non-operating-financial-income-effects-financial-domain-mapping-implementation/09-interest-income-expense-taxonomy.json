@@ -1,0 +1,67 @@
+{
+  "contract": "m11-interest-taxonomy-v1",
+  "default_policy": "DIRECT_COMPONENTS_NO_AUTOMATIC_INTEREST_NET",
+  "financial_sector_generic_promotion_allowed": false,
+  "rows": [
+    {
+      "canonical_metric": "interest_income",
+      "continuity_scope": "unspecified",
+      "economic_role": "INCOME",
+      "financial_effect_scope": "interest_income_component",
+      "parent_scope": "finance_income_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "dart:InterestIncomeFinanceIncome"
+    },
+    {
+      "canonical_metric": "interest_expense",
+      "continuity_scope": "unspecified",
+      "economic_role": "EXPENSE",
+      "financial_effect_scope": "interest_expense_component",
+      "parent_scope": "finance_cost_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "dart:InterestExpenseFinanceExpense"
+    },
+    {
+      "canonical_metric": "interest_income",
+      "continuity_scope": "unspecified",
+      "economic_role": "INCOME",
+      "financial_effect_scope": "interest_income_component",
+      "parent_scope": "finance_income_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:InterestIncome"
+    },
+    {
+      "canonical_metric": "interest_expense",
+      "continuity_scope": "unspecified",
+      "economic_role": "EXPENSE",
+      "financial_effect_scope": "interest_expense_component",
+      "parent_scope": "finance_cost_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:InterestExpense"
+    },
+    {
+      "canonical_metric": "interest_income",
+      "continuity_scope": "unspecified",
+      "economic_role": "INCOME",
+      "financial_effect_scope": "interest_income_component",
+      "parent_scope": "finance_income_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "us-gaap:InterestIncomeNonoperating"
+    },
+    {
+      "canonical_metric": "interest_expense",
+      "continuity_scope": "unspecified",
+      "economic_role": "EXPENSE",
+      "financial_effect_scope": "interest_expense_component",
+      "parent_scope": "finance_cost_aggregate",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "us-gaap:InterestExpenseNonOperating"
+    }
+  ]
+}

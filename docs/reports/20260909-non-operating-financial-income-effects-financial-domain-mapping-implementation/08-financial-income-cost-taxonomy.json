@@ -1,0 +1,37 @@
+{
+  "contract": "m11-financial-income-cost-taxonomy-v1",
+  "direct_aggregate_only_for_net_derivation": true,
+  "rows": [
+    {
+      "canonical_metric": "financial_income",
+      "continuity_scope": "unspecified",
+      "economic_role": "INCOME",
+      "financial_effect_scope": "finance_income_aggregate",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "ifrs-full:FinanceIncome"
+    },
+    {
+      "canonical_metric": "financial_cost",
+      "continuity_scope": "unspecified",
+      "economic_role": "EXPENSE",
+      "financial_effect_scope": "finance_cost_aggregate",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "ifrs-full:FinanceCosts"
+    },
+    {
+      "canonical_metric": "net_financial_income_effect",
+      "continuity_scope": "unspecified",
+      "economic_role": "NET_EFFECT",
+      "financial_effect_scope": "finance_net_aggregate",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 110,
+      "source_semantic": "ifrs-full:FinanceIncomeCost"
+    }
+  ],
+  "ticker_specific_mapping_count": 0
+}

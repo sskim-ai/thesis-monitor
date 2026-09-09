@@ -1,0 +1,14 @@
+{
+  "child_component_total_synthesis_allowed": false,
+  "contract": "m11-net-financial-effect-decision-v1",
+  "decision": "IMPLEMENT_BOUNDED_EXACT_AGGREGATE_FORMULA",
+  "formula": "financial_income_minus_financial_cost",
+  "metric": "net_financial_income_effect",
+  "requirements": [
+    "exact_financial_income_aggregate",
+    "exact_financial_cost_aggregate",
+    "same_period_currency_unit_entity_statement_attribution_document",
+    "positive_magnitude_sign_semantics",
+    "official_direct_net_precedence"
+  ]
+}

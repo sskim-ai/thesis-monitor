@@ -1,0 +1,14 @@
+{
+  "contract": "m11-source-inventory-v1",
+  "coverage_boundary": "NO_REAL_US_ARCHIVE_COVERAGE_CLAIM",
+  "model_calls": 0,
+  "official_sources": [
+    "SEC EDGAR CompanyFacts",
+    "OpenDART XBRL"
+  ],
+  "preserved_kr_filing_count": 7,
+  "preserved_us_income_statement_payload_count": 0,
+  "production_mutations": 0,
+  "provider_source_fetches": 0,
+  "registry_entry_count": 27
+}

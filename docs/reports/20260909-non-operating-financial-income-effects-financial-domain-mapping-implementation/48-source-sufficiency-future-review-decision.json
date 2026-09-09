@@ -1,0 +1,7 @@
+{
+  "contract": "m11-source-sufficiency-future-decision-v1",
+  "future_policy": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+  "m11_status": "UNCHANGED_IN_M11",
+  "next_scope_blocker": false,
+  "universal_gate": false
+}

@@ -1,0 +1,9 @@
+{
+  "canonical_source": "canonical_financial_fact",
+  "compact_ai_consumption": false,
+  "contract": "m11-adapter-contract-v1",
+  "derived_evidence_status": "DERIVED_SAFE",
+  "direct_evidence_status": "DIRECT_REPORTED",
+  "lineage_required": true,
+  "source_contract": "non-operating-financial-income-effects-v1"
+}

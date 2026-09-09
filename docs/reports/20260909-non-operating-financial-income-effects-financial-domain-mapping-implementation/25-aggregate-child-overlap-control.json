@@ -1,0 +1,65 @@
+{
+  "aggregate_precedence_count": 8,
+  "child_detail_preserved_count": 8,
+  "conflict_count": 8,
+  "contract": "m11-overlap-control-v1",
+  "derived_child_sum_count": 0,
+  "events": [
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:3716c336d1c7151140f34fc5",
+      "parent_fact_ids": "non-operating-reported:cb024c74a6315b49befd690c",
+      "parent_scope": "finance_income_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:a89f5e67e8072c68c77db646",
+      "parent_fact_ids": "non-operating-reported:8f180ed6d34659390f71a5f3",
+      "parent_scope": "finance_cost_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:b23264407606472f17cbe118",
+      "parent_fact_ids": "non-operating-reported:554c5baa756ef1ddb3d7b752",
+      "parent_scope": "finance_income_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:d4067bb882c328170f26f5b1",
+      "parent_fact_ids": "non-operating-reported:72f3f2acabe3362b0646ab74",
+      "parent_scope": "finance_cost_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:c8a497858852a851dbbffb6f",
+      "parent_fact_ids": "non-operating-reported:011510904019c6586283182a",
+      "parent_scope": "finance_income_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:d357f83d7276c36e7656ac9a",
+      "parent_fact_ids": "non-operating-reported:c50c6c54819a3d5122473b4a",
+      "parent_scope": "finance_cost_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:821e6782a122cccba25e52b8",
+      "parent_fact_ids": "non-operating-reported:a19e25f9f896ca062c269c25",
+      "parent_scope": "finance_income_aggregate",
+      "reason": "aggregate_child_overlap"
+    },
+    {
+      "action": "aggregate_precedence_children_preserved_no_summation",
+      "child_fact_ids": "non-operating-reported:b9661e4b41b2d325dcee571e",
+      "parent_fact_ids": "non-operating-reported:49929cd79f4ac627756de1e0",
+      "parent_scope": "finance_cost_aggregate",
+      "reason": "aggregate_child_overlap"
+    }
+  ]
+}

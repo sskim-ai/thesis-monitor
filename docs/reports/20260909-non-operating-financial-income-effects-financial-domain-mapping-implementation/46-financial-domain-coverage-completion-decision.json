@@ -1,0 +1,17 @@
+{
+  "contract": "m11-financial-domain-coverage-decision-v1",
+  "decision": "READY_WITH_KNOWN_OPTIONAL_GAPS",
+  "domains": {
+    "debt_liquidity": "IMPLEMENTED_SELECTIVE",
+    "inventory_receivables_working_capital": "IMPLEMENTED_SELECTIVE",
+    "non_operating_financial_effects": "IMPLEMENTED_SELECTIVE",
+    "ocf_ppe_fcf": "IMPLEMENTED_SELECTIVE",
+    "same_period_comparison": "IMPLEMENTED"
+  },
+  "generic_source_mapping_package_required_first": false,
+  "known_optional_gaps": [
+    "preserved_real_us_income_statement_archive_absent",
+    "financial_sector_specific_framework_deferred",
+    "issuer_specific_granularity_varies"
+  ]
+}

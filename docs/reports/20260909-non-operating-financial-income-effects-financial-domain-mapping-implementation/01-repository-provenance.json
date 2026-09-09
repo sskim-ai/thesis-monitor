@@ -1,0 +1,18 @@
+{
+  "base_is_ancestor": true,
+  "base_sha": "c9ddbcb7ea149ce317eda6b16be300a2149c7e6e",
+  "branch": "codex/20260909-non-operating-financial-income-effects-financial-domain-mapping-implementation",
+  "changed_paths": [
+    "M\tapp/services/cash_flow_capital_efficiency_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "M\tapp/services/financial_lineage_projection_service.py",
+    "A\tapp/services/non_operating_financial_mapping_service.py",
+    "M\tdocs/MASTER_WORKFLOW.md",
+    "A\tscripts/non_operating_financial_mapping_evidence.py",
+    "A\ttests/test_non_operating_financial_mapping_service.py"
+  ],
+  "contract": "m11-repository-provenance-v1",
+  "implementation_commit": "a5d561c238d13b4904bd116aed3d7e47a61f4abd",
+  "work_instruction_commit": "af1931336d4499592e84d203c6fcb53b5a33ed54",
+  "work_instruction_sha256": "f9fb67126e87f0b321695270492746417860c48ff8dc0dd7b4b2a9bd285bdd69"
+}
