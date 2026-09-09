@@ -357,7 +357,11 @@ def option_a_prototype(state: FictionalState, ticker: str) -> dict[str, object]:
         catalog.by_ref[item.evidence_id].alias: item
         for item in items
     }
-    narrative = {str(row["alias"]): row for row in before["evidence"]}
+    narrative = {
+        str(row["alias"]): row
+        for row in before["evidence"]
+        if row.get("evidence_kind") != "TYPED_FINANCIAL"
+    }
     unified = []
     for entry in catalog.entries:
         if entry.alias in narrative:

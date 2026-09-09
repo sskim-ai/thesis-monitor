@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from decimal import Decimal
 
+import pytest
+
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
@@ -23,8 +25,11 @@ from app.services.direction_timing_ownership_service import (
 )
 from app.services.directional_financial_context_service import (
     FINANCIAL_DECISION_CONTEXT_ITEM_CAP,
+    FIRST_CLASS_FINANCIAL_EVIDENCE_KIND,
     build_financial_decision_context,
     compact_financial_decision_context,
+    first_class_financial_evidence_projection,
+    neutral_financial_evidence_statement,
     validate_directional_financial_semantics,
     validate_qtd_ytd_conflict_semantics,
 )
@@ -259,12 +264,194 @@ def test_directional_context_activates_selected_financial_block_only_for_core() 
 
     assert "financial_decision_context" in core
     assert "financial_decision_context" not in timing
-    assert all("operating_cash_flow" not in row["label"] for row in core["evidence"])
+    typed_rows = [
+        row
+        for row in core["evidence"]
+        if row.get("evidence_kind") == FIRST_CLASS_FINANCIAL_EVIDENCE_KIND
+    ]
+    assert {row["label"] for row in typed_rows} == {
+        "operating_cash_flow",
+        "ocf_less_ppe_capex",
+    }
+    assert all(not row["statement"].startswith("{") for row in typed_rows)
     assert all("financial_context" not in row for row in timing["evidence"])
     aliases = set(core_catalog.by_alias)
     selected = core["financial_decision_context"]["evidence_items"]
     assert selected
     assert all(row["evidence_id"] in aliases for row in selected)
+    assert {row["alias"] for row in typed_rows} == {
+        row["evidence_id"] for row in selected
+    }
+
+
+@pytest.mark.parametrize(
+    ("metric", "derived", "period_type"),
+    (
+        ("operating_cash_flow", False, FinancialPeriodType.YTD),
+        ("ocf_less_ppe_capex", True, FinancialPeriodType.YTD),
+        ("net_debt", True, FinancialPeriodType.POINT_IN_TIME),
+        ("inventory", False, FinancialPeriodType.POINT_IN_TIME),
+        ("trade_accounts_receivable", False, FinancialPeriodType.POINT_IN_TIME),
+        ("net_financial_income_effect", True, FinancialPeriodType.YTD),
+        ("operating_income", False, FinancialPeriodType.QTD),
+    ),
+)
+def test_selected_typed_financial_refs_become_first_class_without_new_alias(
+    metric: str,
+    derived: bool,
+    period_type: FinancialPeriodType,
+) -> None:
+    ref = _financial_ref(
+        metric,
+        "200",
+        derived=derived,
+        period_type=period_type,
+    )
+    owned = build_owned_evidence_packet(
+        _packet(
+            (
+                _plain_ref("thesis"),
+                ref,
+                _plain_ref("technical", EvidenceCategory.TECHNICAL_FEATURE),
+            )
+        ),
+        stock={"analysis_framework": "standard_operating_company", "fact_catalog": []},
+    )
+    catalog, _ = stage_alias_catalogs(owned)
+    context = holdout._owned_context(owned, catalog)
+    typed = [
+        row
+        for row in context["evidence"]
+        if row.get("evidence_kind") == FIRST_CLASS_FINANCIAL_EVIDENCE_KIND
+    ]
+
+    assert len(typed) == 1
+    assert typed[0]["alias"] == catalog.by_ref[ref.ref_id].alias
+    assert typed[0]["financial_semantics"]["metric"] == metric
+    assert typed[0]["financial_semantics"]["period_type"] == period_type.value
+    assert typed[0]["statement"] == neutral_financial_evidence_statement(
+        financial_decision_context_for_owned(owned).evidence_items[0]
+    )
+    assert not any(
+        word in typed[0]["statement"].casefold()
+        for word in ("deterioration", "weak", "strong", "dangerous", "poor")
+    )
+    assert len(context["evidence"]) == len(
+        {row["alias"] for row in context["evidence"]}
+    )
+    assert context["financial_decision_context"]["evidence_items"][0][
+        "source_ref"
+    ] == ref.source_ref
+
+
+def test_first_class_projection_preserves_catalog_order_and_selected_only_rule() -> None:
+    refs = (
+        _plain_ref("thesis"),
+        _financial_ref("net_debt", "500", derived=True),
+        _financial_ref("interest_bearing_debt_total", "700"),
+        _financial_ref("cash_and_cash_equivalents", "200"),
+        _financial_ref("inventory", "130"),
+        _financial_ref("inventory_component", "40"),
+        _financial_ref("trade_accounts_receivable", "150"),
+        _financial_ref("accounts_receivable_broad", "180"),
+        _financial_ref("net_financial_income_effect", "20", derived=True),
+        _financial_ref("financial_income", "35"),
+        _financial_ref("financial_cost", "15"),
+        _plain_ref("technical", EvidenceCategory.TECHNICAL_FEATURE),
+    )
+    owned = build_owned_evidence_packet(
+        _packet(refs),
+        stock={"analysis_framework": "standard_operating_company", "fact_catalog": []},
+    )
+    decision_context = financial_decision_context_for_owned(owned)
+    assert decision_context is not None
+    assert decision_context.suppressed_input_count > 0
+    selected_refs = {item.evidence_id for item in decision_context.evidence_items}
+    catalog, _ = stage_alias_catalogs(owned)
+    compact = holdout._owned_context(owned, catalog)
+    typed_aliases = {
+        row["alias"]
+        for row in compact["evidence"]
+        if row.get("evidence_kind") == FIRST_CLASS_FINANCIAL_EVIDENCE_KIND
+    }
+
+    assert [row["alias"] for row in compact["evidence"]] == [
+        entry.alias for entry in catalog.entries
+    ]
+    assert typed_aliases == {
+        catalog.by_ref[ref_id].alias for ref_id in selected_refs
+    }
+    assert not ({ref.ref_id for ref in refs if ref.financial_context} - selected_refs).intersection(
+        catalog.by_ref
+    )
+
+
+def test_neutral_statement_expresses_point_in_time_comparison_without_yoy() -> None:
+    current = _financial_ref(
+        "inventory",
+        "130",
+        suffix="inventory.current",
+        comparison_kind=FinancialComparisonKind.PRIOR_YEAR_END,
+    )
+    prior = _financial_ref(
+        "inventory",
+        "100",
+        suffix="inventory.current.prior",
+        period_end="2025-12-31",
+    )
+    context = build_financial_decision_context((prior, current))
+    assert context is not None
+
+    statement = neutral_financial_evidence_statement(context.evidence_items[0])
+    projection = first_class_financial_evidence_projection(context)
+
+    assert statement == (
+        "Reported inventory balance as of 2026-06-30 is higher than the "
+        "prior year-end balance."
+    )
+    assert "YoY" not in statement
+    assert projection[current.ref_id]["statement"] == statement
+
+
+def test_legacy_context_is_byte_equivalent_without_financial_context() -> None:
+    refs = (
+        _plain_ref("thesis"),
+        _plain_ref("technical", EvidenceCategory.TECHNICAL_FEATURE),
+    )
+    owned = build_owned_evidence_packet(_packet(refs), stock={"fact_catalog": []})
+    core_catalog, _ = stage_alias_catalogs(owned)
+    by_ref = {row.ref.ref_id: row for row in owned.evidence}
+    expected = {
+        "ticker": owned.source_packet.ticker,
+        "company_name": owned.source_packet.company_name,
+        "market": owned.source_packet.market,
+        "assessment_date": owned.source_packet.assessment_date,
+        "evidence": [
+            {
+                "alias": entry.alias,
+                "domain": by_ref[entry.canonical_ref].domain,
+                "category": entry.category,
+                "label": entry.label,
+                "statement": entry.statement,
+                "as_of": entry.as_of,
+                "value": (
+                    str(by_ref[entry.canonical_ref].ref.value)
+                    if by_ref[entry.canonical_ref].ref.value is not None
+                    else None
+                ),
+                "unit": by_ref[entry.canonical_ref].ref.unit,
+                "metric_refs": list(entry.metric_refs),
+            }
+            for entry in core_catalog.entries
+        ],
+    }
+
+    actual = holdout._owned_context(owned, core_catalog)
+    assert json.dumps(actual, separators=(",", ":"), default=str) == json.dumps(
+        expected,
+        separators=(",", ":"),
+        default=str,
+    )
 
 
 def test_legacy_packet_omits_empty_financial_block() -> None:

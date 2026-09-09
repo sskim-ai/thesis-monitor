@@ -23,6 +23,7 @@ from app.services.cross_market_decision_engine_service import (
 CONTRACT_VERSION = "directional-financial-decision-context-v1"
 VALIDATOR_CONTRACT = "directional-financial-semantic-validator-v1"
 QTD_YTD_VALIDATOR_CONTRACT = "directional-financial-qtd-ytd-validator-v1"
+FIRST_CLASS_FINANCIAL_EVIDENCE_KIND = "TYPED_FINANCIAL"
 FINANCIAL_DECISION_CONTEXT_ITEM_CAP = 8
 FINANCIAL_DECISION_CONTEXT_CATEGORY_CAP = 2
 
@@ -228,6 +229,28 @@ _METRIC_PRIORITY = {
     "asset_disposal_result_context": 2,
     "fair_value_result_context": 3,
     "continuing_operations_income": 4,
+}
+
+_FINANCIAL_METRIC_LABELS = {
+    "operating_cash_flow": "operating cash flow",
+    "ppe_capex_cash_outflow": "PPE acquisition cash outflow",
+    "ocf_less_ppe_capex": "OCF less PPE acquisition cash outflow",
+    "cash_and_cash_equivalents": "cash and cash equivalents",
+    "cash_and_restricted_cash": "cash and restricted cash",
+    "interest_bearing_debt_total": "complete interest-bearing debt",
+    "net_debt": "net debt",
+    "inventory": "inventory",
+    "trade_accounts_receivable": "trade accounts receivable",
+    "trade_accounts_payable": "trade accounts payable",
+    "operating_income": "operating income",
+    "net_income": "net income",
+    "net_financial_income_effect": "net financial income effect",
+}
+
+_FINANCIAL_COMPARISON_LABELS = {
+    FinancialComparisonKind.PRIOR_YEAR_COMPARABLE: "prior-year comparable period",
+    FinancialComparisonKind.PRIOR_YEAR_END: "prior year-end balance",
+    FinancialComparisonKind.NONE: "supplied comparison basis",
 }
 
 _QTD_PERIOD_PATTERNS = (
@@ -531,6 +554,74 @@ def compact_financial_decision_context(
         rows.append(row)
     payload["evidence_items"] = rows
     return payload
+
+
+def _comparison_relation(item: FinancialDecisionEvidenceItem) -> str | None:
+    if item.comparison is None or item.comparison.comparison_value is None:
+        return None
+    if item.value > item.comparison.comparison_value:
+        return "higher"
+    if item.value < item.comparison.comparison_value:
+        return "lower"
+    return "unchanged"
+
+
+def neutral_financial_evidence_statement(
+    item: FinancialDecisionEvidenceItem,
+) -> str:
+    label = _FINANCIAL_METRIC_LABELS.get(
+        item.metric,
+        item.metric.replace("_", " "),
+    )
+    status = (
+        "Reported"
+        if item.evidence_status == FinancialEvidenceStatus.DIRECT_REPORTED
+        else "Safely derived"
+    )
+    period_end = item.period.end.isoformat()
+    if item.period.type == FinancialPeriodType.POINT_IN_TIME:
+        subject = f"{status} {label} balance as of {period_end}"
+    else:
+        subject = (
+            f"{status} {label} for {item.period.type.value} ending {period_end}"
+        )
+
+    relation = _comparison_relation(item)
+    if relation is None or item.comparison is None:
+        return subject + "."
+    comparison = _FINANCIAL_COMPARISON_LABELS[item.comparison.kind]
+    return f"{subject} is {relation} than the {comparison}."
+
+
+def first_class_financial_evidence_projection(
+    context: FinancialDecisionContext | None,
+) -> dict[str, dict[str, object]]:
+    if context is None:
+        return {}
+    rows: dict[str, dict[str, object]] = {}
+    for item in context.evidence_items:
+        if item.evidence_id in rows:
+            raise ValueError(
+                f"duplicate_selected_financial_evidence:{item.evidence_id}"
+            )
+        rows[item.evidence_id] = {
+            "evidence_kind": FIRST_CLASS_FINANCIAL_EVIDENCE_KIND,
+            "statement": neutral_financial_evidence_statement(item),
+            "value": str(item.value),
+            "financial_semantics": {
+                "metric": item.metric,
+                "semantic_category": item.semantic_category.value,
+                "period_type": item.period.type.value,
+                "comparison_kind": (
+                    item.comparison.kind.value
+                    if item.comparison is not None
+                    else None
+                ),
+                "evidence_status": item.evidence_status.value,
+                "quality": item.quality.value,
+            },
+        }
+    return rows
 
 
 def _claim_rows(value: object) -> list[tuple[str, tuple[str, ...]]]:

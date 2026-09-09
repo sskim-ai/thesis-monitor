@@ -26,6 +26,7 @@ from app.services.directional_balance_service import (
 )
 from app.services.directional_financial_context_service import (
     compact_financial_decision_context,
+    first_class_financial_evidence_projection,
     validate_directional_financial_semantics,
 )
 from app.services.direction_timing_ownership_service import (
@@ -283,30 +284,46 @@ def _owned_context(
     aliases_by_ref = {
         entry.canonical_ref: entry.alias for entry in catalog.entries
     }
+    typed_financial = first_class_financial_evidence_projection(financial_context)
+    evidence = []
+    for entry in catalog.entries:
+        owned_ref = by_ref[entry.canonical_ref]
+        ref = owned_ref.ref
+        projection = typed_financial.get(entry.canonical_ref)
+        if ref.financial_context is not None:
+            if not is_directional_core:
+                continue
+            if projection is None:
+                raise ValueError(
+                    f"unselected_financial_ref_in_core_catalog:{entry.canonical_ref}"
+                )
+        row = {
+            "alias": entry.alias,
+            "domain": owned_ref.domain,
+            "category": entry.category,
+            "label": entry.label,
+            "statement": (
+                projection["statement"] if projection is not None else entry.statement
+            ),
+            "as_of": entry.as_of,
+            "value": (
+                projection["value"]
+                if projection is not None
+                else str(ref.value) if ref.value is not None else None
+            ),
+            "unit": ref.unit,
+            "metric_refs": list(entry.metric_refs),
+        }
+        if projection is not None:
+            row["evidence_kind"] = projection["evidence_kind"]
+            row["financial_semantics"] = projection["financial_semantics"]
+        evidence.append(row)
     context = {
         "ticker": owned.source_packet.ticker,
         "company_name": owned.source_packet.company_name,
         "market": owned.source_packet.market,
         "assessment_date": owned.source_packet.assessment_date,
-        "evidence": [
-            {
-                "alias": entry.alias,
-                "domain": by_ref[entry.canonical_ref].domain,
-                "category": entry.category,
-                "label": entry.label,
-                "statement": entry.statement,
-                "as_of": entry.as_of,
-                "value": (
-                    str(by_ref[entry.canonical_ref].ref.value)
-                    if by_ref[entry.canonical_ref].ref.value is not None
-                    else None
-                ),
-                "unit": by_ref[entry.canonical_ref].ref.unit,
-                "metric_refs": list(entry.metric_refs),
-            }
-            for entry in catalog.entries
-            if by_ref[entry.canonical_ref].ref.financial_context is None
-        ],
+        "evidence": evidence,
     }
     compact_financial = compact_financial_decision_context(
         financial_context,
