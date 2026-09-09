@@ -644,6 +644,24 @@ M12A 상태는 `COMPLETE`지만 repaired architecture는 아직 실제 Direction
 
 ---
 
+## 12B. M12B first-class typed financial evidence 구현과 fail-closed 결과
+
+M12B work-instruction commit은 `c92194414db5200cf30df1f912f9ebedc6036a43`, frozen implementation commit은 `746ef9ba1586973d84b49fd233e460660f5b91fa`다. authoritative M12A bundle SHA `cef338a297c6a04908d0255f845b3526f78eabb9aa8d8f5d6c12fdcb97e9b227`를 다시 계산했고 indexed payload `46`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
+
+동결한 Option A `FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION`을 구현했다. selector가 선택한 typed financial item만 ordinary `evidence[]`에 기존 canonical alias와 catalog 순서 그대로 한 번 투영하고, `evidence_kind=TYPED_FINANCIAL` 및 compact financial semantics를 붙였다. metric·기간·비교관계에서 결정적으로 만든 neutral statement를 사용하면서 상세 lineage와 basis는 기존 `financial_decision_context`에 유지한다. 선택 15개는 first-class projection 15개와 정확히 일치했고 suppressed projection, alias renumber, duplicate alias, detail removal은 모두 0이었다. financial context가 없는 FIC-FIN-07과 sector-framework-only FIC-FIN-08은 ordinary context가 byte-equivalent였고 price/technical/supply leakage도 0이었다.
+
+기존 핵심 회귀는 그대로 보존했다. 과거 M12G FIC-FIN-06 raw output은 여전히 FAIL이고 corrected fixture는 PASS이며 FIC-FIN-03 QTD/YTD 회귀도 PASS다. selector, directional/Price-Timing prompt, financial/QTD-YTD validator semantics, output schema, renderer, calibration, source sufficiency, Daily Delta와 warning 의미 변경은 0이다. Phase A는 model call 전 전 항목 PASS했고 focused `594 passed`, full `3056 passed`(기존 warning 2), Ruff와 `git diff --check`도 PASS했다. source lock은 `5bfe8b8ed1f8878bc2d6787e81e34c3a35bc2c424aff80b137d6b44fc9300149`다.
+
+새 generation `20260909-m12b-fictional-20260909T085320Z-746ef9ba1586`은 동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh, 1800초 single watchdog으로 동결했다. run-1/context-01과 run-1/context-02는 모두 PASS했고, 첫 반복의 FIC-FIN-06도 first-class inventory/trade-AR 근거를 직접 사용해 PASS했다. run-2/context-01은 transport와 schema가 정상이고 4개 중 3개 subject가 PASS했으나 FIC-FIN-02에서 `working_capital_grounding_failure` 1건이 발생해 규칙대로 즉시 중단했다. 완료 호출은 `3/6`, 출력은 `12/24`, 나머지 `3/6`은 NOT_RUN이며 formal stability는 `NOT_MEASURED`다. retry, timeout, capacity failure, orphan process는 모두 0이고 model 시작 후 candidate, prompt, builder, selector, validator, schema 또는 config 수정은 0이다.
+
+FIC-FIN-02는 선택된 typed ref `3/3`을 출력 전체에서 모두 사용했고 material financial anchor와 narrative-substitution 검사도 통과했다. 그러나 `risk_context`의 “운전자본 흡수가 지속될 수 있다”는 claim은 narrative structural-risk와 remaining-unknown만 인용했고 typed inventory ref는 별도 Unknown treatment에서만 사용했다. 따라서 이는 source/transport/schema/QTD-YTD 문제가 아니라, 운전자본 claim과 checkpoint가 같은 typed 근거를 직접 소유해야 한다는 claim-level grounding 계약 실패다. 부분 표본 합계는 selected/first-class/used typed refs `26/26/26`, material-anchor failure `0`, working-capital grounding failure `1`, narrative-substitution failure `0`, irrelevant-ref failure `0`이다.
+
+따라서 M12B projection 구현은 완료됐지만 full fictional canary는 `BLOCKED`다. `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 자동 gate의 다음 scope는 `DIRECTIONAL_OUTPUT_FINANCIAL_GROUNDING_SCHEMA_REVIEW_OR_IMPLEMENTATION`이다. 다음 작업은 validator 완화나 prompt-only 문구 추가가 아니라, typed working-capital evidence가 이를 주장하는 material claim/checkpoint에 구조적으로 귀속되는지 좁게 검토해야 한다. fresh real issuer proof와 production integration은 시작하지 않는다.
+
+실 issuer model call, judge call, provider fetch, production DB/assessment/warning/notification/send, monitoring registration, main merge와 deploy는 모두 0이다. Codex automation 4개는 PAUSED, launchd 4개는 DISABLED 상태를 유지하며 scheduler mutation과 automatic resume도 0이다.
+
+---
+
 ## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |

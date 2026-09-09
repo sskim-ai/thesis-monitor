@@ -1,0 +1,3281 @@
+{
+  "alias_renumber_count": 0,
+  "catalog_order_failure_count": 0,
+  "contract": "m12b-first-class-typed-projection-audit-v1",
+  "duplicate_alias_count": 0,
+  "financial_decision_context_detail_removed_count": 0,
+  "first_class_typed_financial_projection_count": 15,
+  "neutral_financial_statement_count": 15,
+  "packet_count": 8,
+  "raw_json_statement_count": 0,
+  "rows": [
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 01",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Recurring demand and disciplined reinvestment support durable economics.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "The market expects continued profitable growth, leaving an execution bar.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": null,
+              "evidence_status": "DERIVED_SAFE",
+              "metric": "net_debt",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE"
+            },
+            "label": "net_debt",
+            "metric_refs": [],
+            "statement": "Safely derived net debt balance as of 2026-06-30.",
+            "unit": null,
+            "value": "-200"
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Comparable-period revenue and operating profit both improved.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Durability beyond the current reporting cycle remains unproven.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Competition could narrow pricing power.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "operating_cash_flow",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION"
+            },
+            "label": "operating_cash_flow",
+            "metric_refs": [],
+            "statement": "Reported operating cash flow for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "unit": null,
+            "value": "180"
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DERIVED_SAFE",
+              "metric": "ocf_less_ppe_capex",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION"
+            },
+            "label": "ocf_less_ppe_capex",
+            "metric_refs": [],
+            "statement": "Safely derived OCF less PPE acquisition cash outflow for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "unit": null,
+            "value": "130"
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A scalable operating-company framework applies.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 5,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "70",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "ocf_less_ppe_capex",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current.input"
+              ],
+              "evidence_id": "E09",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "growth_vs_maintenance_capex_unknown",
+                "ppe_only_not_management_defined_fcf"
+              ],
+              "metric": "ocf_less_ppe_capex",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+              "unit_scale": 1000000,
+              "value": "130"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "110",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-01:ocf-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_cash_flow",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+              "unit_scale": 1000000,
+              "value": "180"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": "net_debt",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-01:net-debt.input"
+              ],
+              "evidence_id": "E03",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "restricted_cash_not_netted"
+              ],
+              "metric": "net_debt",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:net-debt",
+              "unit_scale": 1000000,
+              "value": "-200"
+            }
+          ],
+          "limitations": [
+            "growth_vs_maintenance_capex_unknown",
+            "ppe_only_not_management_defined_fcf",
+            "restricted_cash_not_netted"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 2,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-01"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 01",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Recurring demand and disciplined reinvestment support durable economics.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "The market expects continued profitable growth, leaving an execution bar.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Comparable-period revenue and operating profit both improved.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Durability beyond the current reporting cycle remains unproven.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Competition could narrow pricing power.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A scalable operating-company framework applies.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 5,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "70",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "ocf_less_ppe_capex",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current.input"
+              ],
+              "evidence_id": "E09",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "growth_vs_maintenance_capex_unknown",
+                "ppe_only_not_management_defined_fcf"
+              ],
+              "metric": "ocf_less_ppe_capex",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+              "unit_scale": 1000000,
+              "value": "130"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "110",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-01:ocf-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_cash_flow",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+              "unit_scale": 1000000,
+              "value": "180"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": "net_debt",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-01:net-debt.input"
+              ],
+              "evidence_id": "E03",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "restricted_cash_not_netted"
+              ],
+              "metric": "net_debt",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:net-debt",
+              "unit_scale": 1000000,
+              "value": "-200"
+            }
+          ],
+          "limitations": [
+            "growth_vs_maintenance_capex_unknown",
+            "ppe_only_not_management_defined_fcf",
+            "restricted_cash_not_netted"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 2,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-01"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 5,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "financial_detail_count": 3,
+      "financial_detail_lineage_count": 3,
+      "first_class_aliases": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-01:net-debt",
+        "canonical:fictional:FIC-FIN-01:ocf-current"
+      ],
+      "first_class_typed_count": 3,
+      "neutral_statement_count": 3,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-01:net-debt",
+        "canonical:fictional:FIC-FIN-01:ocf-current"
+      ],
+      "selected_typed_count": 3,
+      "suppressed_input_count": 2,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-prior",
+        "canonical:fictional:FIC-FIN-01:ocf-prior"
+      ],
+      "ticker": "FIC-FIN-01",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 02",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DERIVED_SAFE",
+              "metric": "ocf_less_ppe_capex",
+              "period_type": "YTD",
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION"
+            },
+            "label": "ocf_less_ppe_capex",
+            "metric_refs": [],
+            "statement": "Safely derived OCF less PPE acquisition cash outflow for YTD ending 2026-06-30 is lower than the prior-year comparable period.",
+            "unit": null,
+            "value": "-20"
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Working-capital absorption could persist.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-06-30",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_end",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "inventory",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL"
+            },
+            "label": "inventory",
+            "metric_refs": [],
+            "statement": "Reported inventory balance as of 2026-06-30 is higher than the prior year-end balance.",
+            "unit": null,
+            "value": "240"
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A standard operating-company cash-conversion framework applies.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Demand remains healthy, but conversion of growth into cash needs confirmation.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume growth continues without a larger funding burden.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "operating_cash_flow",
+              "period_type": "YTD",
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION"
+            },
+            "label": "operating_cash_flow",
+            "metric_refs": [],
+            "statement": "Reported operating cash flow for YTD ending 2026-06-30 is lower than the prior-year comparable period.",
+            "unit": null,
+            "value": "40"
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "The cause and reversibility of working-capital use are not supplied.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Comparable-period sales and accounting profit improved.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 6,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 181,
+                  "end": "2025-06-30",
+                  "start": "2025-01-01",
+                  "type": "YTD"
+                },
+                "comparison_value": "55",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "ocf_less_ppe_capex",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current.input"
+              ],
+              "evidence_id": "E01",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "ppe_only_not_management_defined_fcf"
+              ],
+              "metric": "ocf_less_ppe_capex",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+              "unit_scale": 1000000,
+              "value": "-20"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 181,
+                  "end": "2025-06-30",
+                  "start": "2025-01-01",
+                  "type": "YTD"
+                },
+                "comparison_value": "100",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:ocf-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_cash_flow",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+              "unit_scale": 1000000,
+              "value": "40"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "150",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:inventory-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E04",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "inventory",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+              "unit_scale": 1000000,
+              "value": "240"
+            }
+          ],
+          "limitations": [
+            "ppe_only_not_management_defined_fcf"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-02"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 02",
+        "evidence": [
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Working-capital absorption could persist.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A standard operating-company cash-conversion framework applies.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Demand remains healthy, but conversion of growth into cash needs confirmation.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume growth continues without a larger funding burden.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "The cause and reversibility of working-capital use are not supplied.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Comparable-period sales and accounting profit improved.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 6,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 181,
+                  "end": "2025-06-30",
+                  "start": "2025-01-01",
+                  "type": "YTD"
+                },
+                "comparison_value": "55",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "ocf_less_ppe_capex",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current.input"
+              ],
+              "evidence_id": "E01",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "ppe_only_not_management_defined_fcf"
+              ],
+              "metric": "ocf_less_ppe_capex",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+              "unit_scale": 1000000,
+              "value": "-20"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 181,
+                  "end": "2025-06-30",
+                  "start": "2025-01-01",
+                  "type": "YTD"
+                },
+                "comparison_value": "100",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:ocf-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_cash_flow",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "CASH_CONVERSION",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+              "unit_scale": 1000000,
+              "value": "40"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "150",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-02:inventory-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E04",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "inventory",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+              "unit_scale": 1000000,
+              "value": "240"
+            }
+          ],
+          "limitations": [
+            "ppe_only_not_management_defined_fcf"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-02"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 6,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "financial_detail_count": 3,
+      "financial_detail_lineage_count": 3,
+      "first_class_aliases": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "first_class_typed_count": 3,
+      "neutral_statement_count": 3,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "selected_typed_count": 3,
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-prior",
+        "canonical:fictional:FIC-FIN-02:inventory-prior",
+        "canonical:fictional:FIC-FIN-02:ocf-prior"
+      ],
+      "ticker": "FIC-FIN-02",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 03",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": null,
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "operating_income",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND"
+            },
+            "label": "operating_income",
+            "metric_refs": [],
+            "statement": "Reported operating income for QTD ending 2026-06-30.",
+            "unit": null,
+            "value": "30"
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "A single profitable quarter may not establish durable recovery.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "A recent operating rebound is visible, but cumulative recovery is incomplete.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations require the quarterly rebound to persist.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "The latest quarter is profitable while the year-to-date result remains a loss.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Period-specific operating evidence is the primary framework.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": null,
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "operating_income",
+              "period_type": "YTD",
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND"
+            },
+            "label": "operating_income",
+            "metric_refs": [],
+            "statement": "Reported operating income for YTD ending 2026-06-30.",
+            "unit": null,
+            "value": "-10"
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Whether the rebound persists into the next quarter is unknown.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 2,
+          "evidence_items": [
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E01",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-qtd",
+              "unit_scale": 1000000,
+              "value": "30"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-ytd",
+              "unit_scale": 1000000,
+              "value": "-10"
+            }
+          ],
+          "limitations": [],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 0,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-03"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 03",
+        "evidence": [
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "A single profitable quarter may not establish durable recovery.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "A recent operating rebound is visible, but cumulative recovery is incomplete.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations require the quarterly rebound to persist.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "The latest quarter is profitable while the year-to-date result remains a loss.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Period-specific operating evidence is the primary framework.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Whether the rebound persists into the next quarter is unknown.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 2,
+          "evidence_items": [
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E01",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-qtd",
+              "unit_scale": 1000000,
+              "value": "30"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E08",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 181,
+                "end": "2026-06-30",
+                "start": "2026-01-01",
+                "type": "YTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-ytd",
+              "unit_scale": 1000000,
+              "value": "-10"
+            }
+          ],
+          "limitations": [],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 0,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-03"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 2,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "financial_detail_count": 2,
+      "financial_detail_lineage_count": 2,
+      "first_class_aliases": [
+        "E01",
+        "E08"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "first_class_typed_count": 2,
+      "neutral_statement_count": 2,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E01",
+        "E08"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "selected_typed_count": 2,
+      "suppressed_input_count": 0,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [],
+      "ticker": "FIC-FIN-03",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 04",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Operating and non-operating attribution must remain separate.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "net_income",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND"
+            },
+            "label": "net_income",
+            "metric_refs": [],
+            "statement": "Reported net income for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "unit": null,
+            "value": "90"
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume reported net-income strength becomes operationally durable.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Non-operating support may not repeat.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Recurrence of the financial effect is not established.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DERIVED_SAFE",
+              "metric": "net_financial_income_effect",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "NON_OPERATING_EFFECT"
+            },
+            "label": "net_financial_income_effect",
+            "metric_refs": [],
+            "statement": "Safely derived net financial income effect for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "unit": null,
+            "value": "38"
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_comparable",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "operating_income",
+              "period_type": "QTD",
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND"
+            },
+            "label": "operating_income",
+            "metric_refs": [],
+            "statement": "Reported operating income for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "unit": null,
+            "value": "52"
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Operating result is broadly flat while reported net income improved.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The operating franchise is stable but has not shown material acceleration.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 6,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "45",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-income-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E02",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "net_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+              "unit_scale": 1000000,
+              "value": "90"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "50",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E07",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+              "unit_scale": 1000000,
+              "value": "52"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "4",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "net_financial_income_effect",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current.input"
+              ],
+              "evidence_id": "E06",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "recurrence_not_determined",
+                "not_normalized_earnings"
+              ],
+              "metric": "net_financial_income_effect",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "NON_OPERATING_EFFECT",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+              "unit_scale": 1000000,
+              "value": "38"
+            }
+          ],
+          "limitations": [
+            "recurrence_not_determined",
+            "not_normalized_earnings"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-04"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 04",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Operating and non-operating attribution must remain separate.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume reported net-income strength becomes operationally durable.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Non-operating support may not repeat.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Recurrence of the financial effect is not established.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Operating result is broadly flat while reported net income improved.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E10",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The operating franchise is stable but has not shown material acceleration.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 6,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "45",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-income-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E02",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "net_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+              "unit_scale": 1000000,
+              "value": "90"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "50",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E07",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "operating_income",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "PERFORMANCE_TREND",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+              "unit_scale": 1000000,
+              "value": "52"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": 91,
+                  "end": "2025-06-30",
+                  "start": "2025-04-01",
+                  "type": "QTD"
+                },
+                "comparison_value": "4",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-prior"
+                ],
+                "kind": "prior_year_comparable"
+              },
+              "currency": "USD",
+              "derivation_formula": "net_financial_income_effect",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current.input"
+              ],
+              "evidence_id": "E06",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "recurrence_not_determined",
+                "not_normalized_earnings"
+              ],
+              "metric": "net_financial_income_effect",
+              "period": {
+                "duration_days": 91,
+                "end": "2026-06-30",
+                "start": "2026-04-01",
+                "type": "QTD"
+              },
+              "quality": "verified",
+              "semantic_category": "NON_OPERATING_EFFECT",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+              "unit_scale": 1000000,
+              "value": "38"
+            }
+          ],
+          "limitations": [
+            "recurrence_not_determined",
+            "not_normalized_earnings"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 3,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-04"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 6,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "financial_detail_count": 3,
+      "financial_detail_lineage_count": 3,
+      "first_class_aliases": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "first_class_typed_count": 3,
+      "neutral_statement_count": 3,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "selected_typed_count": 3,
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-prior",
+        "canonical:fictional:FIC-FIN-04:net-income-prior",
+        "canonical:fictional:FIC-FIN-04:operating-profit-prior"
+      ],
+      "ticker": "FIC-FIN-04",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 05",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Current operating profit is positive and broadly stable.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "A high complete debt balance and thin cash buffer reduce resilience.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A standard operating-company debt and liquidity framework applies.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": null,
+              "evidence_status": "DERIVED_SAFE",
+              "metric": "interest_bearing_debt_total",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE"
+            },
+            "label": "interest_bearing_debt_total",
+            "metric_refs": [],
+            "statement": "Safely derived complete interest-bearing debt balance as of 2026-06-30.",
+            "unit": null,
+            "value": "900"
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-06-30",
+            "category": "earnings",
+            "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": null,
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "cash_and_cash_equivalents",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE"
+            },
+            "label": "cash_and_cash_equivalents",
+            "metric_refs": [],
+            "statement": "Reported cash and cash equivalents balance as of 2026-06-30.",
+            "unit": null,
+            "value": "40"
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations do not appear to allow for a prolonged refinancing burden.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Refinancing terms and maturity concentration are not supplied.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The business remains profitable, but balance-sheet resilience constrains optionality.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 2,
+          "evidence_items": [
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": "interest_bearing_debt_total",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt.input"
+              ],
+              "evidence_id": "E05",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "lease_liabilities_excluded_from_debt_scope"
+              ],
+              "metric": "interest_bearing_debt_total",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt",
+              "unit_scale": 1000000,
+              "value": "900"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E06",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [
+                "cash_basis_cash_and_cash_equivalents_only"
+              ],
+              "metric": "cash_and_cash_equivalents",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:cash",
+              "unit_scale": 1000000,
+              "value": "40"
+            }
+          ],
+          "limitations": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "cash_basis_cash_and_cash_equivalents_only"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 0,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-05"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 05",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Current operating profit is positive and broadly stable.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "A high complete debt balance and thin cash buffer reduce resilience.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "A standard operating-company debt and liquidity framework applies.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations do not appear to allow for a prolonged refinancing burden.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Refinancing terms and maturity concentration are not supplied.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The business remains profitable, but balance-sheet resilience constrains optionality.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 2,
+          "evidence_items": [
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": "interest_bearing_debt_total",
+              "derivation_input_source_refs": [
+                "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt.input"
+              ],
+              "evidence_id": "E05",
+              "evidence_status": "DERIVED_SAFE",
+              "limitations": [
+                "lease_liabilities_excluded_from_debt_scope"
+              ],
+              "metric": "interest_bearing_debt_total",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt",
+              "unit_scale": 1000000,
+              "value": "900"
+            },
+            {
+              "comparison": null,
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E06",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [
+                "cash_basis_cash_and_cash_equivalents_only"
+              ],
+              "metric": "cash_and_cash_equivalents",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "FINANCIAL_RESILIENCE",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:cash",
+              "unit_scale": 1000000,
+              "value": "40"
+            }
+          ],
+          "limitations": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "cash_basis_cash_and_cash_equivalents_only"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 0,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-05"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 2,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "financial_detail_count": 2,
+      "financial_detail_lineage_count": 2,
+      "first_class_aliases": [
+        "E05",
+        "E06"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "first_class_typed_count": 2,
+      "neutral_statement_count": 2,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E05",
+        "E06"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "selected_typed_count": 2,
+      "suppressed_input_count": 0,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [],
+      "ticker": "FIC-FIN-05",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 06",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Inventory and trade receivables have risen since year-end.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume balance growth converts into billed demand and cash.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-06-30",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_end",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "trade_accounts_receivable",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL"
+            },
+            "label": "trade_accounts_receivable",
+            "metric_refs": [],
+            "statement": "Reported trade accounts receivable balance as of 2026-06-30 is higher than the prior year-end balance.",
+            "unit": null,
+            "value": "260"
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-06-30",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "evidence_kind": "TYPED_FINANCIAL",
+            "financial_semantics": {
+              "comparison_kind": "prior_year_end",
+              "evidence_status": "DIRECT_REPORTED",
+              "metric": "inventory",
+              "period_type": "POINT_IN_TIME",
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL"
+            },
+            "label": "inventory",
+            "metric_refs": [],
+            "statement": "Reported inventory balance as of 2026-06-30 is higher than the prior year-end balance.",
+            "unit": null,
+            "value": "300"
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Sales growth is intact, with working-capital quality needing confirmation.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Demand quality and collection timing are not established by balances alone.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Inventory and receivables are confirmation points, not automatic negatives.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Sales and operating profit increased in the latest comparable period.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 4,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "180",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-06:inventory-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E04",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "inventory",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+              "unit_scale": 1000000,
+              "value": "300"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "150",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E03",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "trade_accounts_receivable",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+              "unit_scale": 1000000,
+              "value": "260"
+            }
+          ],
+          "limitations": [],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 2,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-06"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 06",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Inventory and trade receivables have risen since year-end.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations assume balance growth converts into billed demand and cash.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Sales growth is intact, with working-capital quality needing confirmation.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Demand quality and collection timing are not established by balances alone.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E08",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "Inventory and receivables are confirmation points, not automatic negatives.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E09",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Sales and operating profit increased in the latest comparable period.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 4,
+          "evidence_items": [
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "180",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-06:inventory-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E04",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "inventory",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+              "unit_scale": 1000000,
+              "value": "300"
+            },
+            {
+              "comparison": {
+                "comparison_period": {
+                  "duration_days": null,
+                  "end": "2025-12-31",
+                  "start": null,
+                  "type": "POINT_IN_TIME"
+                },
+                "comparison_value": "150",
+                "input_source_refs": [
+                  "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+                  "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-prior"
+                ],
+                "kind": "prior_year_end"
+              },
+              "currency": "USD",
+              "derivation_formula": null,
+              "derivation_input_source_refs": [],
+              "evidence_id": "E03",
+              "evidence_status": "DIRECT_REPORTED",
+              "limitations": [],
+              "metric": "trade_accounts_receivable",
+              "period": {
+                "duration_days": null,
+                "end": "2026-06-30",
+                "start": null,
+                "type": "POINT_IN_TIME"
+              },
+              "quality": "verified",
+              "semantic_category": "WORKING_CAPITAL",
+              "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+              "unit_scale": 1000000,
+              "value": "260"
+            }
+          ],
+          "limitations": [],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 2,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 2,
+          "unavailable_or_not_applicable": []
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-06"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 4,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09"
+      ],
+      "financial_detail_count": 2,
+      "financial_detail_lineage_count": 2,
+      "first_class_aliases": [
+        "E03",
+        "E04"
+      ],
+      "first_class_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "first_class_typed_count": 2,
+      "neutral_statement_count": 2,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [
+        "E03",
+        "E04"
+      ],
+      "selected_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "selected_typed_count": 2,
+      "suppressed_input_count": 2,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-prior",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-prior"
+      ],
+      "ticker": "FIC-FIN-06",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 07",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Execution remains the principal non-financial risk.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The business evidence is balanced and the thesis remains intact.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Market expectations and demonstrated progress are broadly balanced.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "No optional financial domain is required for the current absolute judgment.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Optional cash-conversion context is unavailable and limits specificity only.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Operating evidence is stable without a decisive acceleration or decline.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 0,
+          "evidence_items": [],
+          "limitations": [
+            "typed_context_without_structured_value"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 0,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 1,
+          "unavailable_or_not_applicable": [
+            "FINANCIAL_VALUE_UNAVAILABLE"
+          ]
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-07"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 07",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Execution remains the principal non-financial risk.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "The business evidence is balanced and the thesis remains intact.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Market expectations and demonstrated progress are broadly balanced.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "No optional financial domain is required for the current absolute judgment.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "Optional cash-conversion context is unavailable and limits specificity only.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Operating evidence is stable without a decisive acceleration or decline.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 0,
+          "evidence_items": [],
+          "limitations": [
+            "typed_context_without_structured_value"
+          ],
+          "sector_framework": "standard_operating_company",
+          "selected_input_count": 0,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 1,
+          "unavailable_or_not_applicable": [
+            "FINANCIAL_VALUE_UNAVAILABLE"
+          ]
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-07"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 0,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "financial_detail_count": 0,
+      "financial_detail_lineage_count": 0,
+      "first_class_aliases": [],
+      "first_class_refs": [],
+      "first_class_typed_count": 0,
+      "neutral_statement_count": 0,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [],
+      "selected_refs": [],
+      "selected_typed_count": 0,
+      "suppressed_input_count": 1,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-07:optional-cash-conversion-unavailable"
+      ],
+      "ticker": "FIC-FIN-07",
+      "verdict_statement_count": 0
+    },
+    {
+      "after": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 08",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations require disciplined pricing and adequate regulatory capital.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Underwriting discipline and regulatory capital are the applicable business framework.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Underwriting result is stable while claims volatility remains material.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "This is an insurer; industrial net-debt and working-capital templates do not apply.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Adverse claims development could weaken sector-specific economics.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "A sector-specific capital adequacy trend is not supplied.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 3,
+          "evidence_items": [],
+          "limitations": [
+            "generic_industrial_financial_context_disabled"
+          ],
+          "sector_framework": "bank_or_insurer",
+          "selected_input_count": 0,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": [
+            "SECTOR_FRAMEWORK_REQUIRED"
+          ]
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-08"
+      },
+      "before": {
+        "assessment_date": "2026-09-09",
+        "company_name": "Fictional Financial Case 08",
+        "evidence": [
+          {
+            "alias": "E01",
+            "as_of": "2026-09-09",
+            "category": "valuation",
+            "domain": "VALUATION_SAFE",
+            "label": "valuation-limit",
+            "metric_refs": [],
+            "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E02",
+            "as_of": "2026-09-09",
+            "category": "expectations",
+            "domain": "MARKET_EXPECTATIONS",
+            "label": "market-expectation",
+            "metric_refs": [],
+            "statement": "Expectations require disciplined pricing and adequate regulatory capital.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E03",
+            "as_of": "2026-09-09",
+            "category": "thesis",
+            "domain": "BUSINESS_CURRENT",
+            "label": "business-thesis",
+            "metric_refs": [],
+            "statement": "Underwriting discipline and regulatory capital are the applicable business framework.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E04",
+            "as_of": "2026-09-09",
+            "category": "earnings",
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "label": "operating-evidence",
+            "metric_refs": [],
+            "statement": "Underwriting result is stable while claims volatility remains material.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E05",
+            "as_of": "2026-09-09",
+            "category": "earnings_quality",
+            "domain": "SECTOR_OPERATING_CURRENT",
+            "label": "sector-context",
+            "metric_refs": [],
+            "statement": "This is an insurer; industrial net-debt and working-capital templates do not apply.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E06",
+            "as_of": "2026-09-09",
+            "category": "risks",
+            "domain": "STRUCTURAL_RISK",
+            "label": "structural-risk",
+            "metric_refs": [],
+            "statement": "Adverse claims development could weaken sector-specific economics.",
+            "unit": null,
+            "value": null
+          },
+          {
+            "alias": "E07",
+            "as_of": "2026-09-09",
+            "category": "unknown",
+            "domain": "DATA_QUALITY_LIMIT",
+            "label": "remaining-unknown",
+            "metric_refs": [],
+            "statement": "A sector-specific capital adequacy trend is not supplied.",
+            "unit": null,
+            "value": null
+          }
+        ],
+        "financial_decision_context": {
+          "contract": "directional-financial-decision-context-v1",
+          "eligible_input_count": 3,
+          "evidence_items": [],
+          "limitations": [
+            "generic_industrial_financial_context_disabled"
+          ],
+          "sector_framework": "bank_or_insurer",
+          "selected_input_count": 0,
+          "selected_item_cap": 8,
+          "suppressed_input_count": 3,
+          "unavailable_or_not_applicable": [
+            "SECTOR_FRAMEWORK_REQUIRED"
+          ]
+        },
+        "market": "us",
+        "ticker": "FIC-FIN-08"
+      },
+      "catalog_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "eligible_typed_input_count": 3,
+      "evidence_alias_order": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "financial_detail_count": 0,
+      "financial_detail_lineage_count": 0,
+      "first_class_aliases": [],
+      "first_class_refs": [],
+      "first_class_typed_count": 0,
+      "neutral_statement_count": 0,
+      "raw_json_statement_count": 0,
+      "selected_aliases": [],
+      "selected_refs": [],
+      "selected_typed_count": 0,
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-08:industrial-net-debt",
+        "canonical:fictional:FIC-FIN-08:industrial-receivables",
+        "canonical:fictional:FIC-FIN-08:interest-income"
+      ],
+      "ticker": "FIC-FIN-08",
+      "verdict_statement_count": 0
+    }
+  ],
+  "selected_typed_financial_ref_count": 15,
+  "status": "PASS",
+  "suppressed_typed_projection_count": 0,
+  "verdict_statement_count": 0
+}

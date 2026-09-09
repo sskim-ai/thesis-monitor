@@ -1,0 +1,8 @@
+{
+  "contract": "m12b-m12a-architecture-decision-reuse-v1",
+  "narrative_lineage_bridge_added": false,
+  "output_grounding_field_added": false,
+  "second_alias_namespace_created": false,
+  "selected_architecture": "FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION",
+  "status": "PASS"
+}

@@ -1,0 +1,18 @@
+{
+  "actual_base_head": "efd31109b0f52bd7151f37cebef03820e40eb2ef",
+  "base_sha": "efd31109b0f52bd7151f37cebef03820e40eb2ef",
+  "branch": "codex/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary",
+  "changed_paths_from_instruction_commit": [
+    "app/services/directional_financial_context_service.py",
+    "scripts/directional_core_price_timing_holdout.py",
+    "scripts/financial_context_output_grounding_m12a.py",
+    "scripts/first_class_typed_financial_evidence_m12b.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py"
+  ],
+  "contract": "m12b-repository-provenance-v1",
+  "implementation_commit": "746ef9ba1586973d84b49fd233e460660f5b91fa",
+  "status": "PASS",
+  "unexpected_changed_paths": [],
+  "work_instruction_commit": "c92194414db5200cf30df1f912f9ebedc6036a43"
+}

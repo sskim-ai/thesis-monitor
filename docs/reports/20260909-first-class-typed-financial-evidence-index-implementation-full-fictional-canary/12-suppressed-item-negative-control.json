@@ -1,0 +1,75 @@
+{
+  "contract": "m12b-suppressed-item-negative-control-v1",
+  "rows": [
+    {
+      "suppressed_input_count": 2,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-prior",
+        "canonical:fictional:FIC-FIN-01:ocf-prior"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-prior",
+        "canonical:fictional:FIC-FIN-02:inventory-prior",
+        "canonical:fictional:FIC-FIN-02:ocf-prior"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "suppressed_input_count": 0,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-prior",
+        "canonical:fictional:FIC-FIN-04:net-income-prior",
+        "canonical:fictional:FIC-FIN-04:operating-profit-prior"
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "suppressed_input_count": 0,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "suppressed_input_count": 2,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-prior",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-prior"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "suppressed_input_count": 1,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-07:optional-cash-conversion-unavailable"
+      ],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "suppressed_input_count": 3,
+      "suppressed_typed_projection_count": 0,
+      "suppressed_typed_refs": [
+        "canonical:fictional:FIC-FIN-08:industrial-net-debt",
+        "canonical:fictional:FIC-FIN-08:industrial-receivables",
+        "canonical:fictional:FIC-FIN-08:interest-income"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS",
+  "suppressed_typed_projection_count": 0
+}

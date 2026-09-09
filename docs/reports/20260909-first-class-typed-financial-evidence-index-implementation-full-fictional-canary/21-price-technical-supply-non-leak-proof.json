@@ -1,0 +1,8 @@
+{
+  "contract": "m12b-price-technical-supply-non-leak-v1",
+  "financial_sector_generic_financial_context_leak_count": 0,
+  "status": "PASS",
+  "typed_financial_price_ref_count": 0,
+  "typed_financial_supply_ref_count": 0,
+  "typed_financial_technical_ref_count": 0
+}

@@ -1,0 +1,94 @@
+{
+  "contract": "m12b-double-counting-advisory-v1",
+  "detail_metadata_counts_as_second_anchor": false,
+  "deterministic_double_counting_violation_count": 0,
+  "events": [
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_ref": "canonical:fictional:FIC-FIN-03:operating-profit-qtd"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_ref": "canonical:fictional:FIC-FIN-04:operating-profit-current"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_ref": "canonical:fictional:FIC-FIN-04:net-income-current"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "ticker": "FIC-FIN-05",
+      "typed_ref": "canonical:fictional:FIC-FIN-05:cash"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "ticker": "FIC-FIN-05",
+      "typed_ref": "canonical:fictional:FIC-FIN-05:complete-debt"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "ticker": "FIC-FIN-06",
+      "typed_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "ticker": "FIC-FIN-06",
+      "typed_ref": "canonical:fictional:FIC-FIN-06:inventory-current"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_ref": "canonical:fictional:FIC-FIN-03:operating-profit-qtd"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_ref": "canonical:fictional:FIC-FIN-04:operating-profit-current"
+    },
+    {
+      "cited_narrative_duplicates": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_ref": "canonical:fictional:FIC-FIN-04:net-income-current"
+    }
+  ],
+  "status": "DOUBLE_COUNTING_ADVISORY",
+  "typed_canonical_ref_is_single_anchor_identity": true,
+  "typed_plus_narrative_co_citation_event_count": 12
+}

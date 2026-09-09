@@ -1,0 +1,11 @@
+{
+  "alias_behavior": "reuse without renumbering",
+  "contract": "m12b-frozen-implementation-contract-reuse-v1",
+  "evidence_index_behavior": "selected typed items appear once in evidence[] in catalog order",
+  "financial_semantic_validator_change_count": 0,
+  "output_schema_change_count": 0,
+  "qtd_ytd_validator_semantic_change_count": 0,
+  "renderer_substantive_change_count": 0,
+  "selector_change_count": 0,
+  "status": "PASS"
+}

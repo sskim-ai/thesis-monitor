@@ -1,0 +1,9 @@
+{
+  "after_sha256": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+  "before_sha256": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+  "byte_equivalent": true,
+  "contract": "m12b-legacy-context-compatibility-v1",
+  "first_class_typed_count": 0,
+  "status": "PASS",
+  "ticker": "FIC-FIN-07"
+}

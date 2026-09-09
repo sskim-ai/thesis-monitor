@@ -1,0 +1,14 @@
+{
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "contract": "m12b-production-side-effect-firewall-v1",
+  "deployments": 0,
+  "main_merges": 0,
+  "monitoring_registrations": 0,
+  "notification_queue_writes": 0,
+  "production_db_mutations": 0,
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "status": "PASS",
+  "warning_mutations": 0
+}

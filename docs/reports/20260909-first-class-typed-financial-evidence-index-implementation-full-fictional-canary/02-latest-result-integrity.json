@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "cef338a297c6a04908d0255f845b3526f78eabb9aa8d8f5d6c12fdcb97e9b227",
+  "artifact_extra_count": 0,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_missing_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "checksum_match": true,
+  "contract": "m12b-latest-result-integrity-v1",
+  "duplicate_member_count": 0,
+  "expected_sha256": "cef338a297c6a04908d0255f845b3526f78eabb9aa8d8f5d6c12fdcb97e9b227",
+  "indexed_payload_count": 46,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-financial-context-output-grounding-architecture-review-report.zip",
+  "status": "PASS",
+  "zip_test_failure": null
+}
