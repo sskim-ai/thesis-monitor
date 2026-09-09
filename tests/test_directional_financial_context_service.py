@@ -549,12 +549,11 @@ def test_directional_prompt_freezes_m12_financial_specificity_without_timing_lea
     )
 
     assert "financial_decision_context" in core_prompt
-    assert "1–3 distinct value-relevant anchors" in core_prompt
+    assert "in 1–3 typed refs, not narrative alone" in core_prompt
     assert "prior_year_end=since year-end, never YoY" in core_prompt
     assert "cash-conversion proxy, never FCF" in core_prompt
-    assert "cite its typed financial evidence alias" in core_prompt
-    assert "generic narrative paraphrase may supplement but cannot replace" in core_prompt
-    assert "Do not cite every selected item" in core_prompt
+    assert "material financial_decision_context claims" in core_prompt
+    assert "no force/list/double count" in core_prompt
     assert "No fixed financial scorecard" in core_prompt
     assert "financial_decision_context" not in timing_prompt
     assert "ocf_less_ppe_capex" not in timing_prompt

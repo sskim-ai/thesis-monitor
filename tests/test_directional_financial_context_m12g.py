@@ -28,8 +28,8 @@ def test_m12g_prompt_adds_only_material_typed_grounding_behavior() -> None:
     )
 
     assert m12g.GROUNDING_PROMPT_MARKER in core_prompt
-    assert "generic narrative paraphrase may supplement" in core_prompt
-    assert "Do not cite every selected item" in core_prompt
+    assert "not narrative alone" in core_prompt
+    assert "no force/list/double count" in core_prompt
     assert m12g.GROUNDING_PROMPT_MARKER not in timing_prompt
 
 

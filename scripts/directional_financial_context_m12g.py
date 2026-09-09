@@ -41,7 +41,9 @@ INSTRUCTION_PATH = Path("docs/work-instructions") / (
     "20260909-bounded-directional-financial-anchor-grounding-repair-and-full-fictional-canary.md"
 )
 
-GROUNDING_PROMPT_MARKER = "cite its typed financial evidence alias"
+GROUNDING_PROMPT_MARKER = (
+    "Ground material financial_decision_context claims in 1–3 typed refs"
+)
 GROUNDING_ROOT_CAUSE = "FIC_FIN_06_TYPED_FINANCIAL_EVIDENCE_NOT_GROUNDED"
 
 _METRIC_FAMILY = {
@@ -756,11 +758,17 @@ def _prompt_before_after() -> dict[str, object]:
     added = [line[1:] for line in diff if line.startswith("+") and not line.startswith("+++")]
     removed = [line[1:] for line in diff if line.startswith("-") and not line.startswith("---")]
     marker_lines = [line for line in added if GROUNDING_PROMPT_MARKER in line]
+    replaced_anchor_lines = [
+        line
+        for line in removed
+        if line.startswith("From financial_decision_context choose 1–3")
+    ]
     status = (
         "PASS"
         if len(marker_lines) == 1
-        and not removed
-        and all(not line.strip() or line in marker_lines for line in added)
+        and len(replaced_anchor_lines) == 1
+        and len(added) == 1
+        and len(removed) == 1
         else "FAIL"
     )
     return {
@@ -771,6 +779,7 @@ def _prompt_before_after() -> dict[str, object]:
         "after_sha256": m12r._sha_text(after),
         "directional_prompt_change_count": int(before != after),
         "bounded_grounding_clarification_count": len(marker_lines),
+        "replaced_anchor_instruction_count": len(replaced_anchor_lines),
         "removed_line_count": len(removed),
         "added_lines": added,
         "removed_lines": removed,
