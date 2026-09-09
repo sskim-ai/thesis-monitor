@@ -1,0 +1,246 @@
+{
+  "ai_imperative_primary_action_count": 0,
+  "core": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-03:structural-risk",
+          "fictional:FIC-FIN-03:business-thesis",
+          "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+        ],
+        "text": "최근 영업 반등이 되돌려지고 누적 회복이 계속 미완성으로 남으면 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+          "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+          "fictional:FIC-FIN-03:remaining-unknown"
+        ],
+        "text": "최근 분기 흑자가 이어져 연초 이후 누적 손실이 해소되는 방향이 확인되면 상향 재평가한다."
+      }
+    ],
+    "business_thesis_change": "UNRESOLVED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:business-thesis",
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "text": "최근 영업 반등은 보이지만 연초 이후 누적 손실과 충돌해 회복 논리는 아직 미해결이다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+          "fictional:FIC-FIN-03:operating-evidence"
+        ],
+        "text": "최근 분기 영업 결과가 흑자로 전환된 상태다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+        "fictional:FIC-FIN-03:remaining-unknown"
+      ],
+      "text": "최근 분기 흑자와 연초 이후 누적 손실이 맞서고 지속성도 확인되지 않아 방향 우위를 정하기 어렵다."
+    },
+    "directional_balance": {
+      "buy": 5.0,
+      "sell": 5.0
+    },
+    "directional_confidence": "LOW",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "text": "최근 분기 영업 흑자와 연초 이후 누적 영업 손실의 기간별 충돌이 핵심이다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:operating-evidence",
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "text": "최근 분기 수익성과 연초 이후 누적 손실을 구분하면 실적 방향은 아직 확정되지 않는다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "최근 분기 흑자가 이어지지 않고 연초 이후 누적 회복도 진전되지 않는 경우다.",
+      "business_invalidation_condition_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "fictional:FIC-FIN-03:structural-risk",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "stance": "REVIEW",
+      "summary": "회복 조짐과 누적 손실이 공존해 기존 보유 논리를 재검토할 단계다."
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "최근 영업 흑자가 후속 기간에도 이어지고 누적 손실이 해소되는 방향이 확인되는 경우다.",
+      "confirmation_business_condition_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+        "fictional:FIC-FIN-03:remaining-unknown"
+      ],
+      "stance": "WAIT",
+      "summary": "회복의 지속성이 확인되기 전에는 균형 판단이 적절하다."
+    },
+    "hold_lean": "NEUTRAL",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:market-expectation",
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "fictional:FIC-FIN-03:remaining-unknown"
+      ],
+      "text": "시장의 지속 회복 기대를 충족하려면 최근 분기 반등의 반복 확인이 필요하다."
+    },
+    "material_directional_anchor_basis": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "overall_direction": "HOLD",
+    "risk_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:structural-risk",
+        "fictional:FIC-FIN-03:remaining-unknown"
+      ],
+      "text": "최근의 수익성만으로 지속적인 회복을 확정하기 어렵다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:sector-context",
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "text": "최근 분기와 연초 이후 누적 영업 결과를 분리해 해석해야 한다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "OTHER_EVIDENCE",
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+          "fictional:FIC-FIN-03:operating-evidence"
+        ],
+        "text": "연초 이후 누적 영업 결과는 여전히 손실이다."
+      },
+      {
+        "classification": "STRUCTURAL_RISK",
+        "evidence_refs": [
+          "fictional:FIC-FIN-03:structural-risk"
+        ],
+        "text": "최근의 수익성이 지속적인 회복을 보장하지 않는다."
+      }
+    ],
+    "ticker": "FIC-FIN-03",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:valuation-limit",
+        "fictional:FIC-FIN-03:remaining-unknown"
+      ],
+      "text": "안전한 현재 가치평가와 반등의 지속성이 모두 확인되지 않아 방향 확신이 낮다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-03:valuation-limit"
+        ],
+        "summary": "안전한 현재 가치평가 근거가 없어 방향 확신을 제한한다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-03:remaining-unknown"
+        ],
+        "summary": "최근 반등이 후속 기간에도 이어질지는 확인이 필요하다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-03:valuation-limit"
+      ],
+      "text": "안전한 현재 가치평가 근거가 없어 회복 조짐의 가치 반영 수준은 판단할 수 없다."
+    }
+  },
+  "errors": [],
+  "financial_anchor_count": 2,
+  "financial_grounding": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 12,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "material_financial_anchor_refs": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "material_grounding_required": true,
+    "narrative_only_duplicate_refs": [],
+    "narrative_substitution_failure_count": 0,
+    "relevant_claim_count": 12,
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "status": "PASS",
+    "used_financial_refs": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "valid": true,
+    "working_capital_checkpoint_count": 0,
+    "working_capital_grounding_failure_count": 0,
+    "working_capital_grounding_required": false
+  },
+  "financial_semantics": {
+    "contract": "directional-financial-semantic-validator-v1",
+    "errors": [],
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "invalid_financial_reference_count": 0,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "valid": true,
+    "year_end_as_yoy_count": 0
+  },
+  "ownership": {
+    "buy_without_nonprice_material_anchor": 0,
+    "contract": "direction-timing-ownership-validator-v1",
+    "directional_core_price_technical_refs": 0,
+    "directional_core_supply_refs": 0,
+    "directional_core_unknown_refs": 0,
+    "errors": [],
+    "sell_without_nonprice_material_anchor": 0,
+    "valid": true
+  },
+  "qtd_ytd_semantics": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [],
+    "explicit_claim_count": 2,
+    "linked_claim_count": 8,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": true,
+    "ytd_evidence_ref_count": 1
+  },
+  "selected_financial_refs": [
+    "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+    "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+  ],
+  "status": "PASS",
+  "ticker": "FIC-FIN-03",
+  "used_financial_refs": [
+    "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+    "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+  ]
+}

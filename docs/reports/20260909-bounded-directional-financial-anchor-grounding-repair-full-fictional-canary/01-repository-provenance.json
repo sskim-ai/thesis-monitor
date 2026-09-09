@@ -1,0 +1,16 @@
+{
+  "actual_base_head": "6a870cd34dd9ec7825559dc3ad964021b7cea64a",
+  "base_sha": "6a870cd34dd9ec7825559dc3ad964021b7cea64a",
+  "branch": "codex/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary",
+  "changed_paths_from_instruction_commit": [
+    "scripts/directional_core_price_timing_holdout.py",
+    "scripts/directional_financial_context_m12g.py",
+    "tests/test_directional_financial_context_m12g.py",
+    "tests/test_directional_financial_context_service.py"
+  ],
+  "contract": "m12g-repository-provenance-v1",
+  "implementation_commit": "63aaf9f72cc7ee021c0bf70a746ba5ae5472b218",
+  "status": "PASS",
+  "unexpected_changed_paths": [],
+  "work_instruction_commit": "7e3fac6385760e3356213eab81c67e957d1c55d6"
+}

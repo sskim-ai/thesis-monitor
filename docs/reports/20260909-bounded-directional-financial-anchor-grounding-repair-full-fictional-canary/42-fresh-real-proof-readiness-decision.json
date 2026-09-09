@@ -1,0 +1,9 @@
+{
+  "contract": "m12g-fresh-real-proof-readiness-decision-v1",
+  "financial_grounding_repair_status": "PASS",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "full_fictional_canary_status": "FAIL",
+  "next_scope": "FINANCIAL_CONTEXT_OUTPUT_GROUNDING_ARCHITECTURE_REVIEW",
+  "production_readiness": "NOT_READY",
+  "status": "FAIL"
+}

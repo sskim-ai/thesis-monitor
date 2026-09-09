@@ -1,0 +1,132 @@
+{
+  "context_rows": [
+    {
+      "after_normalized_sha256": "df9759d8f7b8758ad77a93f7ecf5b45ac81b2e2e581e64d29c383dad213acdbd",
+      "artifact": "context",
+      "before_normalized_sha256": "df9759d8f7b8758ad77a93f7ecf5b45ac81b2e2e581e64d29c383dad213acdbd",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after_normalized_sha256": "5c3b8ca00c5baf9023822a430b4e01e6259cd31ba2670bf1ac48a38fd4c214c9",
+      "artifact": "context",
+      "before_normalized_sha256": "5c3b8ca00c5baf9023822a430b4e01e6259cd31ba2670bf1ac48a38fd4c214c9",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after_normalized_sha256": "34b0ae013201da91e87118f9233fe0265f8f31a017d995105b24b980398d5e73",
+      "artifact": "context",
+      "before_normalized_sha256": "34b0ae013201da91e87118f9233fe0265f8f31a017d995105b24b980398d5e73",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after_normalized_sha256": "24b60f0303ddeec56e7a7624ea34df94e5c8c94cf558deb9c5b04f2c8eb7a289",
+      "artifact": "context",
+      "before_normalized_sha256": "24b60f0303ddeec56e7a7624ea34df94e5c8c94cf558deb9c5b04f2c8eb7a289",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after_normalized_sha256": "f210e7d3771207eef502f169e92a00bbbe6ae0b2a0c4236fb77680e6917a406a",
+      "artifact": "context",
+      "before_normalized_sha256": "f210e7d3771207eef502f169e92a00bbbe6ae0b2a0c4236fb77680e6917a406a",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after_normalized_sha256": "8171a3e080a5f5d04e9deff70d89c3c1aec0dc0e14ba23e99610a0d2fdad97a3",
+      "artifact": "context",
+      "before_normalized_sha256": "8171a3e080a5f5d04e9deff70d89c3c1aec0dc0e14ba23e99610a0d2fdad97a3",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after_normalized_sha256": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+      "artifact": "context",
+      "before_normalized_sha256": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after_normalized_sha256": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd",
+      "artifact": "context",
+      "before_normalized_sha256": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "contract": "m12g-financial-context-selection-freeze-proof-v1",
+  "financial_context_selection_change_count": 0,
+  "function_freeze": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "fdac283fc60aed52b072db9683b98940cc0cb00c0a649b178724bffaf1835fbc",
+        "before_sha256": "fdac283fc60aed52b072db9683b98940cc0cb00c0a649b178724bffaf1835fbc",
+        "changed": false,
+        "function": "semantic_category"
+      },
+      {
+        "after_sha256": "1afb35bd835ffbabbcff7ff0f98100e1e1b718c7a4346de686d3e1e158fcc4fa",
+        "before_sha256": "1afb35bd835ffbabbcff7ff0f98100e1e1b718c7a4346de686d3e1e158fcc4fa",
+        "changed": false,
+        "function": "_period_rank"
+      },
+      {
+        "after_sha256": "1e13e9bae0a141ddab621796d0ceeec8feb14f08e24c00ac50d62292f23dd579",
+        "before_sha256": "1e13e9bae0a141ddab621796d0ceeec8feb14f08e24c00ac50d62292f23dd579",
+        "changed": false,
+        "function": "_metric_rank"
+      },
+      {
+        "after_sha256": "f336b20b0d7cf12489090f4ff36afa9b39f853f44f98a81d8dcc70d9701b62f9",
+        "before_sha256": "f336b20b0d7cf12489090f4ff36afa9b39f853f44f98a81d8dcc70d9701b62f9",
+        "changed": false,
+        "function": "_latest_per_metric_period"
+      },
+      {
+        "after_sha256": "8c55300ad6838c1956d1813dc6ec6b8064a7b96a193f8c46d1a9aee055dccfbb",
+        "before_sha256": "8c55300ad6838c1956d1813dc6ec6b8064a7b96a193f8c46d1a9aee055dccfbb",
+        "changed": false,
+        "function": "_suppress_redundant_refs"
+      },
+      {
+        "after_sha256": "701918b4c65e7ee43207d7d369ca52a24443dc6b1e9e1562dbd49a1bae2b106c",
+        "before_sha256": "701918b4c65e7ee43207d7d369ca52a24443dc6b1e9e1562dbd49a1bae2b106c",
+        "changed": false,
+        "function": "_comparison"
+      },
+      {
+        "after_sha256": "7177a707a3d4272ed135ec45c7aaf0979851af951a360551d87bbf41de939868",
+        "before_sha256": "7177a707a3d4272ed135ec45c7aaf0979851af951a360551d87bbf41de939868",
+        "changed": false,
+        "function": "_decision_item"
+      },
+      {
+        "after_sha256": "56e610c02bc81bbe70a68069e8023258b1bd79cf113112dd15279bb21f582c8d",
+        "before_sha256": "56e610c02bc81bbe70a68069e8023258b1bd79cf113112dd15279bb21f582c8d",
+        "changed": false,
+        "function": "build_financial_decision_context"
+      },
+      {
+        "after_sha256": "80f96df55893134be1151c796b3b39c4e677686d94fd7acf58d1a7b9d71d2f19",
+        "before_sha256": "80f96df55893134be1151c796b3b39c4e677686d94fd7acf58d1a7b9d71d2f19",
+        "changed": false,
+        "function": "compact_financial_decision_context"
+      }
+    ],
+    "path": "app/services/directional_financial_context_service.py",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_decision_evidence_financial_context.py",
+    "tests/test_financial_context_adapter_service.py",
+    "tests/test_financial_lineage_projection_service.py",
+    "tests/test_source_class_financial_mapping_service.py",
+    "tests/test_debt_liquidity_financial_mapping_service.py",
+    "tests/test_working_capital_financial_mapping_service.py",
+    "tests/test_non_operating_financial_mapping_service.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_directional_financial_context_m12.py",
+    "tests/test_directional_financial_context_m12r.py",
+    "tests/test_directional_financial_context_m12g.py",
+    "tests/test_direction_timing_ownership_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_coldstart_fundamental_enrichment_service.py",
+    "tests/test_nonproduction_monitoring_lifecycle_service.py",
+    "tests/test_structured_autonomy_shadow_service.py"
+  ],
+  "finished_at": "2026-09-09T05:47:57.140076+00:00",
+  "output_path": "artifacts/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/validation/focused-tests.txt",
+  "output_sha256": "0014527a4a9fa123e9510c54397b443ea3f0e3d50e0f75676d07187145d54376",
+  "returncode": 0,
+  "started_at": "2026-09-09T05:47:47.320088+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

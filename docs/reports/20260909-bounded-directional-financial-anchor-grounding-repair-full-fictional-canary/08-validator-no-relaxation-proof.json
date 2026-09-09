@@ -1,0 +1,51 @@
+{
+  "case_semantic_validator": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "6126bc92da9cf9f9b3a0000200af8ca6e209e342ab03d644638ffbfa6a4275c3",
+        "before_sha256": "6126bc92da9cf9f9b3a0000200af8ca6e209e342ab03d644638ffbfa6a4275c3",
+        "changed": false,
+        "function": "_case_semantic_errors"
+      },
+      {
+        "after_sha256": "e913ec21ebf504a2ae8a67ddfefda269642a1ae873da997596f2d6d9649ec76a",
+        "before_sha256": "e913ec21ebf504a2ae8a67ddfefda269642a1ae873da997596f2d6d9649ec76a",
+        "changed": false,
+        "function": "_audit_core_batch"
+      }
+    ],
+    "path": "scripts/directional_financial_context_m12.py",
+    "status": "PASS"
+  },
+  "contract": "m12g-validator-no-relaxation-proof-v1",
+  "financial_semantic_validator": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "a9308a29d248d9adea060bd95b5a2f77ee481e5ff24790719128879c584bfb5b",
+        "before_sha256": "a9308a29d248d9adea060bd95b5a2f77ee481e5ff24790719128879c584bfb5b",
+        "changed": false,
+        "function": "validate_directional_financial_semantics"
+      }
+    ],
+    "path": "app/services/directional_financial_context_service.py",
+    "status": "PASS"
+  },
+  "financial_semantic_validator_change_count": 0,
+  "qtd_ytd_validator": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "227d93c7502ef54bce60320b2dc9446563d3f1b4b6b852d65af6ffb1aab56a1f",
+        "before_sha256": "227d93c7502ef54bce60320b2dc9446563d3f1b4b6b852d65af6ffb1aab56a1f",
+        "changed": false,
+        "function": "validate_qtd_ytd_conflict_semantics"
+      }
+    ],
+    "path": "app/services/directional_financial_context_service.py",
+    "status": "PASS"
+  },
+  "qtd_ytd_validator_semantic_change_count": 0,
+  "status": "PASS"
+}

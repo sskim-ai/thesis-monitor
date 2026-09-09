@@ -1,0 +1,9 @@
+{
+  "all_selected_refs_required": false,
+  "contract": "directional-financial-anchor-grounding-audit-v1",
+  "exact_numeric_prose_required": false,
+  "generic_narrative_may_substitute": false,
+  "generic_narrative_may_supplement": true,
+  "material_claim_requires_relevant_typed_ref": true,
+  "status": "PASS"
+}

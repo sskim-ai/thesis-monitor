@@ -1,0 +1,69 @@
+{
+  "checks": {
+    "corrected_fic_fin_06": "PASS",
+    "daily_delta_no_change": "PASS",
+    "fictional_case_freeze": "PASS",
+    "financial_context_selection_freeze": "PASS",
+    "focused_tests": "PASS",
+    "full_tests": "PASS",
+    "git_diff_check": "PASS",
+    "latest_result_integrity": "PASS",
+    "model_input_freeze": "PASS",
+    "negative_grounding_fixtures": "PASS",
+    "no_selected_financial_context": "PASS",
+    "old_fic_fin_03": "PASS",
+    "old_fic_fin_06": "PASS",
+    "positive_grounding_fixtures": "PASS",
+    "price_timing_freeze": "PASS",
+    "production_side_effect_firewall": "PASS",
+    "prompt_diff_scope": "PASS",
+    "renderer_no_change": "PASS",
+    "repository_scope": "PASS",
+    "ruff": "PASS",
+    "schedule_pause": "PASS",
+    "schema_freeze": "PASS",
+    "source_sufficiency_no_change": "PASS",
+    "validator_no_relaxation": "PASS",
+    "warning_no_change": "PASS"
+  },
+  "contract": "m12g-phase-a-gate-v1",
+  "generation_id": "20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7",
+  "implementation_commit": "63aaf9f72cc7ee021c0bf70a746ba5ae5472b218",
+  "model_calls_before_gate": 0,
+  "model_inputs": {
+    "contexts": [
+      {
+        "context": 1,
+        "prompt_path": "artifacts/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/frozen-contexts/context-01/prompt.txt",
+        "prompt_sha256": "05b78b601a2e90fea522d402f940b8c623fbda2abd9722420cd64eedfcb81bcd",
+        "schema_path": "artifacts/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/frozen-contexts/context-01/schema.json",
+        "schema_sha256": "66e664be32edaf2d745cecdf938c224b0594576e0098da9620a8a7f3977d5d40",
+        "tickers": [
+          "FIC-FIN-01",
+          "FIC-FIN-02",
+          "FIC-FIN-03",
+          "FIC-FIN-04"
+        ]
+      },
+      {
+        "context": 2,
+        "prompt_path": "artifacts/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/frozen-contexts/context-02/prompt.txt",
+        "prompt_sha256": "ba957d00e5589748c8f0209ba9f22a364e6a75dbe31ece40445a567e0a8bcd10",
+        "schema_path": "artifacts/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/frozen-contexts/context-02/schema.json",
+        "schema_sha256": "b96436c2efd0ddb95e45305a100b840e929075a7a81013d173f962b2f7ec4127",
+        "tickers": [
+          "FIC-FIN-05",
+          "FIC-FIN-06",
+          "FIC-FIN-07",
+          "FIC-FIN-08"
+        ]
+      }
+    ],
+    "contract": "m12-frozen-model-inputs-v1",
+    "generation_id": "20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7",
+    "status": "FROZEN"
+  },
+  "source_lock_sha256": "2a46c2abd2740b52a21799c5b3ed91a77061c7c79520eaef5e2adae30b1544ff",
+  "status": "PASS",
+  "stop_reason": null
+}

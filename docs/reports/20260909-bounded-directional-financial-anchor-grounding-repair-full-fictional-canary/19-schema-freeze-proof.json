@@ -1,0 +1,19 @@
+{
+  "contract": "m12g-schema-freeze-proof-v1",
+  "rows": [
+    {
+      "after_normalized_sha256": "175540f94727b992fad5ca218ca0115cb215d1de6c33d6d50425a0c00a89c7b0",
+      "before_normalized_sha256": "175540f94727b992fad5ca218ca0115cb215d1de6c33d6d50425a0c00a89c7b0",
+      "changed": false,
+      "context": 1
+    },
+    {
+      "after_normalized_sha256": "1ed3e0f5749c84ce3721a866a8b5c04955c23ed8501a3f8432f72825b9bd57cd",
+      "before_normalized_sha256": "1ed3e0f5749c84ce3721a866a8b5c04955c23ed8501a3f8432f72825b9bd57cd",
+      "changed": false,
+      "context": 2
+    }
+  ],
+  "schema_change_count": 0,
+  "status": "PASS"
+}

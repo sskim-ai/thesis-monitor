@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m12r-directional-financial-context-validator-repair-closeout-v1
+**버전:** 2026-09-09 / m12g-directional-financial-anchor-grounding-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12R validator repair 완료 / 새 financial-anchor 누락으로 fictional canary 2/6 fail-closed 중단`
+**현재 위치:** `M12G deterministic grounding repair 완료 / full fictional canary 2/6 fail-closed 중단`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12R은 `QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT`를 generic semantic validation으로 수리했고 보존 M12 raw output과 positive/negative fixture가 모두 통과했다. 새 frozen canary는 첫 호출 PASS 후 두 번째 호출의 FIC-FIN-06이 재고·매출채권 canonical anchor를 인용하지 않아 중단했다. Price-Timing, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
+**M12G는 `FIC_FIN_06_TYPED_FINANCIAL_EVIDENCE_NOT_GROUNDED`를 대상으로 typed-ref grounding instruction과 독립 audit을 추가했고 deterministic fixture는 모두 통과했다. 그러나 새 frozen canary의 두 번째 호출에서 FIC-FIN-06이 선택된 재고·매출채권 typed refs를 다시 인용하지 않아 prompt-only repair가 불충분함을 확인하고 중단했다. Price-Timing, selector, cases, schema, validator, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -607,6 +607,20 @@ Phase A는 focused `570 passed`, full `3022 passed`(warning 2), Ruff와 `git dif
 따라서 M12R 상태는 `BLOCKED`, stability는 `NOT_MEASURED`, `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 scope는 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`이며 FIC-FIN-06의 canonical working-capital anchor 누락만 별도 bounded repair로 다룬다. fresh real proof, provider fetch, production DB/assessment/warning/notification/send, main merge, deploy는 수행하지 않는다.
 
 운영 중단은 그대로다. Codex automation 4개는 PAUSED, launchd 4개는 DISABLED로 관측됐고 scheduler mutation과 자동 재개는 0이다.
+
+---
+
+## 12G. M12G financial-anchor grounding repair와 fail-closed 결과
+
+M12G instruction commit은 `7e3fac6385760e3356213eab81c67e957d1c55d6`, initial implementation commit은 `b89aec98b59d38b9b1cfb6dfa946a1c47a52f53e`, 최종 frozen implementation commit은 `63aaf9f72cc7ee021c0bf70a746ba5ae5472b218`다. formal generation은 `20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7`, source lock은 `2a46c2abd2740b52a21799c5b3ed91a77061c7c79520eaef5e2adae30b1544ff`다. 첫 Phase A 시도는 모델 호출 0 상태에서 legacy 20KB prompt-size gate 두 건 때문에 중단했고 그 증거를 별도 보존했다. prompt 의미나 legacy threshold를 완화하지 않고 grounding 문구를 압축해 diagnostic `19,957 bytes`, sequential probes `19,985 / 19,997 / 19,997 bytes`로 기존 경계를 복구했다.
+
+Deterministic gate는 보존 FIC-FIN-03 PASS, 기존 FIC-FIN-06 FAIL 유지, typed inventory/AR refs를 relevant fields에 넣은 corrected FIC-FIN-06 PASS를 확인했다. positive grounding fixture `6/6`은 통과했고 narrative-only substitution, irrelevant typed ref, unrelated-field-only typed ref의 negative fixture `3/3`은 거부됐다. selected financial context가 없는 control에는 새 인용 의무를 만들지 않았다. selector, fictional case, schema, financial/QTD-YTD validator, calibration, Price-Timing, source sufficiency, Daily Delta, renderer와 warning semantic change는 모두 0이다. Phase A는 focused `578 passed`, full `3030 passed`(warning 2), Ruff와 `git diff --check`까지 PASS했다.
+
+새 canary는 run-1/context-01의 4개 subject가 PASS했고 selected/used typed financial refs는 `11/11`이었다. run-1/context-02는 transport PASS(`gpt-5.6-sol`, xhigh, return code 0, retry/timeout/capacity/orphan 0), schema `4/4`였지만 FIC-FIN-06이 선택된 `inventory-current`와 `trade-receivables-current` refs를 사용하지 않았다. 이에 `material_financial_anchor_not_used`, `working_capital_checkpoint_not_used`, `material_financial_anchor_grounding_failure`, `working_capital_grounding_failure`, `narrative_substitution_failure`가 발생했다. 해당 context의 나머지 3개 subject는 PASS했고, 규칙대로 `2/6`에서 즉시 중단해 나머지 `4/6`은 NOT_RUN이다. 새 model call 이후 candidate, prompt, builder, selector, validator, schema와 config 수정은 0이다.
+
+따라서 M12G deterministic repair는 완료됐지만 full fictional canary는 `PROMPT_GROUNDING_INSUFFICIENT`로 BLOCKED다. formal stability와 message-specificity는 `NOT_MEASURED`, `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 scope는 `FINANCIAL_CONTEXT_OUTPUT_GROUNDING_ARCHITECTURE_REVIEW`다. 이는 validator 완화나 ticker 예외 추가가 아니라, 선택된 typed financial anchor가 material claim/checkpoint output에 구조적으로 귀속되도록 하는 계약 검토여야 한다.
+
+실 issuer model call, provider fetch, production DB/assessment/warning/notification/send, main merge, deploy는 모두 0이다. 예약 중단은 유지하며 scheduler mutation과 자동 재개도 0이다.
 
 ---
 
