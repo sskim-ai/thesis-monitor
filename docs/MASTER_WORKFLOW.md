@@ -1,14 +1,33 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12t-transport-review-fictional-partial-closeout-v1
+**버전:** 2026-09-10 / m12u-exclusion-expectation-timeout-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12T transport 2/2 정상 반환 / 새 canary 6/8 최종 PASS 후 중단 / exclusion false reject 및 leverage 경계 후속 / fresh real NOT_READY`
+**현재 위치:** `M12U semantic repair offline PASS / 첫 호출 1,800초 timeout / 출력 0 / 다음은 Astra transport runtime architecture review / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
 **M12F는 명시적 금융업 비적용 문장과 실제 산업재 금융지표 적용을 구분하는 validator만 수리했다. Directional prompt는 변경하지 않았다. 현재 Astra 계약상 FIC-FIN-05의 HOLD SELL_LEAN 5.5는 타당하며, 과거 Sol SELL을 필수 정답으로 취급하지 않는다. 새 canary는 첫 context 4/4 PASS 후 두 번째 context가 출력 없이 1,800초 MODEL_TIMEOUT으로 중단됐다. 전체 반복 안정성과 새 FIC-FIN-05/08 관측은 미측정이다. 원본 출력·FAIL·receipt는 보존하고 재호출·hotfix·main merge·운영 변경은 0이다.**
 
 ---
 
 ## 1. 지금 프로젝트가 달성하려는 것
+
+### 최신 M12U 결과
+
+지시서 `459af10`, 오프라인 계약 검토 `f73ce3a`, 구현 `551f98f` 순서로 동결했다.
+명시적 비적용의 명사 보어 표현을 generic classifier에서 허용하되 실제 적용/모순/산업재 anchor는 차단한다.
+서로 다른 evidence category가 곧 경제적으로 독립된 근거는 아니다. 미확인 재융자 부담에 의존한
+시장기대는 같은 위험의 중복 corroboration이므로 해당 패턴은 HOLD 4.5:5.5 SELL_LEAN이다.
+확인된 별도 위험과 독립된 현재 기대 불일치는 추가 근거가 될 수 있다. 숫자 threshold/증분/tie-break는 그대로다.
+한 문단 외 prompt, source, schema, selector, financial grounding, Daily Delta, Price-Timing, renderer 및 runtime은 동결했다.
+
+새 generation `20260910-m12u-fictional-20260909T231913Z-1e045065810d`의 첫 context가
+출력 없이 1,800.068784초 MODEL_TIMEOUT으로 종료됐다. 1회 시도/출력 0건, 이후 5개 context NOT_RUN.
+내부 retry/wrapper retry/orphan은 0. 실제 semantic/core/formal/stance/delta 안정성은 NOT_MEASURED이다.
+집중 186/full local 3225 PASS, Ruff/diff PASS. Hosted CI는 기존 portability 5건 실패, M12U 신규 실패 0.
+P0 0/P1 2(timeout 재발, 기존 hosted CI). 8개 예약 중단 유지, main/운영 변경 0.
+다음은 `ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW`. 현재 generation 재개/재시도/timeout 증가는 금지한다.
+결과 근거: `docs/reports/20260910-m12u-completion.md` 및 M12U reports 79/81/82.
+
+아래 M12T 및 이전 단계는 역사적 결과이며, M12U 실행 안정성이나 운영 재개 승인을 뜻하지 않는다.
 
 ### 최신 M12T 결과
 

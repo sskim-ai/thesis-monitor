@@ -1,0 +1,108 @@
+{
+  "review": {
+    "authoring": {
+      "effort": "xhigh",
+      "model": "gpt-6-astra",
+      "observed_at": "2026-09-09T23:10:15.879Z",
+      "source": "local turn_context",
+      "target_match": true
+    },
+    "base_sha": "e8e82e353ff71f251c66a1c6940af4d70ff0c778",
+    "exclusion": {
+      "before_replay": {
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "status": "FAIL",
+        "ticker": "FIC-FIN-08"
+      },
+      "repair": "Extend directly governed nominal non-applicability predicates; preserve clause/field/anchor independence and conditional/double-negative fail-closed behavior.",
+      "root_cause": "EXPLICIT_NON_APPLICABILITY_NOMINAL_COMPLEMENT_NOT_RECOGNIZED",
+      "vocabulary": "Reuse UNCERTAIN_OR_AMBIGUOUS for AMBIGUOUS_OR_CONTRADICTORY; no schema rename."
+    },
+    "expectation": {
+      "all_target_buys": {
+        "FIC-FIN-01": 6,
+        "FIC-FIN-02": 4.5,
+        "FIC-FIN-04": 5,
+        "FIC-FIN-05": 4.5
+      },
+      "boundary": {
+        "evidence_count_rule": false,
+        "increment": 0.5,
+        "scorecard": false,
+        "threshold": 6,
+        "tie_break": "toward 5.0"
+      },
+      "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+      "outcome": "LEV_EXPECTATION_CONTEXT_DEPENDENT_WITH_EXPLICIT_RULE",
+      "prompt_change_required": true,
+      "reasoning": [
+        "E07 is supplied, not hallucinated. It describes expectation exposure to prolonged refinancing burden, while E08 leaves severity and persistence unresolved.",
+        "Complete debt and thin cash establish current low resilience, not actual refinancing failure or debt-service stress. E07 supplies no distinct current pricing fact establishing a separate downside axis.",
+        "Source-category independence is not economic independence. Same lineage can nevertheless contain distinct established propositions.",
+        "Adopt conditional-expectation rule: a second category conditional on the same unresolved premise does not automatically meet minimum-direction corroboration.",
+        "Adopt independent-expectation positive control: confirmed financing stress plus independently established benign expectations may support minimum SELL.",
+        "No safe valuation multiple is supplied. Expectation asymmetry may be evaluated qualitatively, but expensive/cheap or a fabricated multiple cannot be inferred.",
+        "A separate established current expectation/pricing risk may support direction without a numeric multiple; missing valuation is a limit, not a universal veto.",
+        "No explicit baseline deterioration: UNCHANGED remains valid. New-buyer/holder semantics unchanged."
+      ],
+      "target": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "target_pattern": "High complete debt + thin cash + stable profitable operations + unresolved refinancing severity/maturity + expectation conditional on that same unresolved downside, without distinct established pricing or other corroboration."
+    },
+    "latest_result_integrity": {
+      "hash_mismatches": [],
+      "indexed_payload_count": 142,
+      "size_mismatches": [],
+      "status": "PASS"
+    },
+    "latest_result_sha256": "d3202a35bcf5b13cd0afc86b59b1eda76c5088ecab377f3e63f316f6ca7a004b",
+    "model_call_gate": "Only after offline repair and all local deterministic gates PASS; new generation only; stop first failed context.",
+    "phase": "M12U",
+    "production_authorized": false,
+    "real_issuer_calls_authorized": false,
+    "schedule_start": {
+      "observed_at": "2026-09-09T23:12:07.312933+00:00",
+      "observed_paused_schedule_count": 8,
+      "status": "PASS"
+    },
+    "source_facts_change": false,
+    "status": "FROZEN_OFFLINE_BEFORE_IMPLEMENTATION",
+    "transport": {
+      "batch_split": 0,
+      "classification": "TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY",
+      "contexts": 2,
+      "effort": "xhigh",
+      "exact_backend_cause": "UNRESOLVED",
+      "model": "gpt-6-astra",
+      "repetitions": 3,
+      "runtime_change_required": false,
+      "subjects_per_context": 4,
+      "timeout": 1800,
+      "wrapper_retry": 0
+    },
+    "work_instruction_commit": "459af10"
+  },
+  "scope": {
+    "addition": "Source-category independence is not economic independence. A market-expectation claim conditional on the same materially unresolved business or financing downside does not automatically add independent corroboration to cross from a 5.5 lean to minimum direction. It may describe surprise asymmetry or caution, but a stronger bucket requires the adverse condition to be sufficiently established or the expectation evidence to establish a distinct current pricing/expectation risk. Confirmed financing stress together with independently established expectations of benign financing may support minimum negative direction; expectations already reflecting stress do not mechanically add a negative axis. Apply the same economic-independence test to positive cases: strong resilience with already elevated expectations does not mechanically justify BUY. Judge distinct established economic propositions, not source categories or reference counts. Expectation assumptions are not a valuation multiple and do not alone establish that a stock is expensive or cheap; missing safe valuation remains a limitation, not an invented negative fact or universal directional veto.",
+    "after_prompt": "Calibrate directional_balance as an ordinal evidence-sufficiency ladder, not as probability or a fixed-weight scorecard.\n\n5.0:5.0 means the evidence is genuinely balanced, unresolved, or too incomplete to support even a lean. 5.5:4.5 means a positive issuer-level material anchor exists, but missing corroboration, currentness, persistence, valuation, or a critical business KPI prevents a full positive direction. 6.0:4.0 is the minimum BUY and requires both a positive issuer-level material anchor and sufficiently current or independent corroboration; unresolved counterevidence must not keep the case at lean-only. 6.5:3.5 and stronger positive balances require progressively stronger corroboration, persistence, quality, visibility, or valuation support under the same evidence-only rules.\n\nApply the exact symmetric meanings to 4.5:5.5, 4.0:6.0, and 3.5:6.5 or stronger negative balances. Missing evidence limits conviction but is not negative evidence by itself. When the same supplied evidence reasonably fits two adjacent balance buckets, choose the less directional bucket toward 5.0:5.0. Low confidence should trigger a careful check that the full directional bucket is actually supported, but LOW confidence does not mechanically require HOLD.\n\nIndependent corroboration adds a distinct economic fact. Multiple financial metrics sharing underlying cash-flow inputs, derivation lineage, or substantially overlapping source basis are not automatically independent corroboration for moving from a 5.5 lean to a 6.0 directional bucket. For example, operating cash flow and OCF less identified PPE cash outflow can describe overlapping economics. Judge the economic contribution, not the number of metrics or evidence references; apply this equally to positive and negative cases.\n\nA material unresolved causal, reversibility, persistence, or critical-validation limit constrains justified directional strength without becoming negative evidence. When an anchor and support exist but such a limit leaves adjacent buckets reasonably supportable, apply the existing tie-break toward 5.0. Do not mechanically subtract strength for every Unknown or require HOLD solely from LOW confidence.\n\nA financial or non-operating effect that improves reported net income while underlying operations remain broadly flat explains earnings composition; by itself it does not support a positive 5.5 lean. A positive lean needs a separate positive issuer-level operating/business, cash-conversion, balance-sheet, valuation, or other material anchor. Apply the same composition-versus-direction distinction on the negative side where appropriate. Do not assume that all non-operating gains are one-off or low quality.\n\n6.0 is minimum directional support. A 6.5-or-stronger bucket needs evidence beyond that minimum which materially strengthens persistence, quality, visibility, independent corroboration, or valuation support. If an unresolved material confirmation leaves both 6.0 and 6.5 reasonably supportable, the existing tie-break selects 6.0. Apply this equally to BUY and SELL strength; missing one particular domain is not an automatic cap when distinct stronger support is actually established.\n\nSource-category independence is not economic independence. A market-expectation claim conditional on the same materially unresolved business or financing downside does not automatically add independent corroboration to cross from a 5.5 lean to minimum direction. It may describe surprise asymmetry or caution, but a stronger bucket requires the adverse condition to be sufficiently established or the expectation evidence to establish a distinct current pricing/expectation risk. Confirmed financing stress together with independently established expectations of benign financing may support minimum negative direction; expectations already reflecting stress do not mechanically add a negative axis. Apply the same economic-independence test to positive cases: strong resilience with already elevated expectations does not mechanically justify BUY. Judge distinct established economic propositions, not source categories or reference counts. Expectation assumptions are not a valuation multiple and do not alone establish that a stock is expensive or cheap; missing safe valuation remains a limitation, not an invented negative fact or universal directional veto.",
+    "baseline_sha": "e8e82e353ff71f251c66a1c6940af4d70ff0c778",
+    "before_prompt": "Calibrate directional_balance as an ordinal evidence-sufficiency ladder, not as probability or a fixed-weight scorecard.\n\n5.0:5.0 means the evidence is genuinely balanced, unresolved, or too incomplete to support even a lean. 5.5:4.5 means a positive issuer-level material anchor exists, but missing corroboration, currentness, persistence, valuation, or a critical business KPI prevents a full positive direction. 6.0:4.0 is the minimum BUY and requires both a positive issuer-level material anchor and sufficiently current or independent corroboration; unresolved counterevidence must not keep the case at lean-only. 6.5:3.5 and stronger positive balances require progressively stronger corroboration, persistence, quality, visibility, or valuation support under the same evidence-only rules.\n\nApply the exact symmetric meanings to 4.5:5.5, 4.0:6.0, and 3.5:6.5 or stronger negative balances. Missing evidence limits conviction but is not negative evidence by itself. When the same supplied evidence reasonably fits two adjacent balance buckets, choose the less directional bucket toward 5.0:5.0. Low confidence should trigger a careful check that the full directional bucket is actually supported, but LOW confidence does not mechanically require HOLD.\n\nIndependent corroboration adds a distinct economic fact. Multiple financial metrics sharing underlying cash-flow inputs, derivation lineage, or substantially overlapping source basis are not automatically independent corroboration for moving from a 5.5 lean to a 6.0 directional bucket. For example, operating cash flow and OCF less identified PPE cash outflow can describe overlapping economics. Judge the economic contribution, not the number of metrics or evidence references; apply this equally to positive and negative cases.\n\nA material unresolved causal, reversibility, persistence, or critical-validation limit constrains justified directional strength without becoming negative evidence. When an anchor and support exist but such a limit leaves adjacent buckets reasonably supportable, apply the existing tie-break toward 5.0. Do not mechanically subtract strength for every Unknown or require HOLD solely from LOW confidence.\n\nA financial or non-operating effect that improves reported net income while underlying operations remain broadly flat explains earnings composition; by itself it does not support a positive 5.5 lean. A positive lean needs a separate positive issuer-level operating/business, cash-conversion, balance-sheet, valuation, or other material anchor. Apply the same composition-versus-direction distinction on the negative side where appropriate. Do not assume that all non-operating gains are one-off or low quality.\n\n6.0 is minimum directional support. A 6.5-or-stronger bucket needs evidence beyond that minimum which materially strengthens persistence, quality, visibility, independent corroboration, or valuation support. If an unresolved material confirmation leaves both 6.0 and 6.5 reasonably supportable, the existing tie-break selects 6.0. Apply this equally to BUY and SELL strength; missing one particular domain is not an automatic cap when distinct stronger support is actually established.",
+    "checks": {
+      "balance_nonprompt_ast_unchanged": true,
+      "helper_unrelated_ast_unchanged": true,
+      "no_subject_branch": true,
+      "one_appended_paragraph": true,
+      "unrelated_files_unchanged": true
+    },
+    "frozen_file_count": 679,
+    "prompt_change_count": 1,
+    "status": "PASS",
+    "unexpected_file_changes": []
+  }
+}

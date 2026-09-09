@@ -1,0 +1,15 @@
+{
+  "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+  "facts": [
+    "confirmed refinancing stress",
+    "independently established expectations assume benign financing"
+  ],
+  "id": "LEV-MKT-02",
+  "limitation": "minimum downside supported; no stronger persistence proof",
+  "rule": "independent_expectation",
+  "selected_buy": 4,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "classification": "PARTIAL_STOPPED_MODEL_TIMEOUT",
+  "scope": "Authoring closeout; no model or candidate call",
+  "facts": {
+    "attempted_contexts": 1,
+    "remaining_contexts_not_run": 5,
+    "model_output_rows": 0,
+    "elapsed_seconds": 1800.068784,
+    "exit_code": -15,
+    "cli_internal_retry": 0,
+    "wrapper_retry": 0,
+    "orphan": 0
+  },
+  "no_output_interpretation": "Empty audit rows/errors are not a clean semantic proof. All actual M12U exclusion, leverage, grounding, formal/core/stance/delta stability and specificity claims remain NOT_MEASURED.",
+  "offline_repair": {
+    "exclusion": "Directly scoped nominal non-applicability, English equivalent and double-negative controls. Preserved M12T row newly passes without rewriting old FAIL.",
+    "expectation": "Conditional on the same unresolved refinancing premise; current qualitative pattern HOLD 4.5:5.5 SELL_LEAN. A distinct established expectation risk can corroborate direction. No source-count score or valuation invention."
+  },
+  "actual_transport": "No output or reconnect marker; client watchdog timed out. M12T's earlier likely classification remains historical, not proof of this backend cause.",
+  "constraints": {
+    "code_or_config_edits_after_generation": 0,
+    "new_model_calls_after_failure": 0,
+    "real_issuer_calls": 0,
+    "production_changes": 0
+  },
+  "next_scope": "ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW"
+}

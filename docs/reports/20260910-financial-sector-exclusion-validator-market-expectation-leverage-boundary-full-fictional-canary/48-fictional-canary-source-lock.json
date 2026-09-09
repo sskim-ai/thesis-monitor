@@ -1,0 +1,54 @@
+{
+  "alias_sha256": {
+    "FIC-FIN-01": "062fe6802bccf12cb1e8e31699cbf9616e3b0e95c0e40bddba02d6811c5bec3d",
+    "FIC-FIN-02": "42a4393a115ccc9ee5e5da577f4a6115d6ed0935dc2e7706dfe546eae73d6964",
+    "FIC-FIN-03": "63233f95306a9898778d1d620d850333a60f037727226891a8ee8b31e78e9ecd",
+    "FIC-FIN-04": "03fe69b65fe0da44645ec723918a6100a5f53b74cb3aa6516cf71c0ff989b41a",
+    "FIC-FIN-05": "16f2d3f7cf9cfa72893eb4de5b9255470244abb3c8367e0b75ba3a7aa87c34e9",
+    "FIC-FIN-06": "ebe1ef53905f043fd7ad4be9855b858447d2a6e89a9670a3f8c7d070cab2d441",
+    "FIC-FIN-07": "fffd84edc855ccbb5445fe84fa66d178e0fe661d5d05b8378d97d9d54f8dc1ad",
+    "FIC-FIN-08": "699441fef2b3b46cf1f2072256f255d309b52b811e0ee55a9567b805ee2294ba"
+  },
+  "batch_split": 0,
+  "context_sha256": {
+    "FIC-FIN-01": "242ef2169c882c1c7cfa6c48b1d91230f13ca997151bac738bae7623e1bf3bbf",
+    "FIC-FIN-02": "df2511bdf97ee1fbf8ff0ada4d999c1928073853bb85da8b0eb3f546986138d0",
+    "FIC-FIN-03": "bca000b81efa2d5330c11ddbc21eb446609b010796e6e884ea083da3cc3ec6f3",
+    "FIC-FIN-04": "fc3ebac9fd933a96028c665807a70ba18bb2494b5bd822489b86ac5d1c4fb5c0",
+    "FIC-FIN-05": "49aab3c926b1a84c6ff0371ade3ad77b2431414a5555027aff6172bffa7a5356",
+    "FIC-FIN-06": "68366fbaf2fa672a89bd3da083b8e1cc02d2099b5dfb4002903f1592ac4a53da",
+    "FIC-FIN-07": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+    "FIC-FIN-08": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd"
+  },
+  "contract": "m12-fictional-source-lock-v1",
+  "generation_id": "20260910-m12u-fictional-20260909T231913Z-1e045065810d",
+  "model": "gpt-6-astra",
+  "owned_sha256": {
+    "FIC-FIN-01": "9a8013ffda08a040ae37c4f328c3ecc90583d2a3df18f6eff7308aa01367e852",
+    "FIC-FIN-02": "8438f2e9552c3b7f1b64521be5546a0bee5e20c0f96522c8db2eabf2cbd76e23",
+    "FIC-FIN-03": "4c0c7d34b3d9981047485687a2dd7a78e1c238d06c1154bdf85b33b4fc4575ed",
+    "FIC-FIN-04": "f30d3035629f879f773c6298b65fc779ba38390feab706c03b84777b04378c36",
+    "FIC-FIN-05": "e6007a2109ad14d309bd88d7f4461a0c4d19299489e9f5c2b7087d8aab22e504",
+    "FIC-FIN-06": "893b5706051ed749cec50ca16d7e54ba6734e512157122f3e770c567a3ee7847",
+    "FIC-FIN-07": "a0c29db993c71a6a8748ea846a76a2231e8e83f7244a37c6c9f17d0e51699bce",
+    "FIC-FIN-08": "527641e11fb9cbef54b33e6c5ded3680380d815b78cbc85bdb6cf82557e5d3d6"
+  },
+  "packet_sha256": {
+    "FIC-FIN-01": "44f0da88878c7208c3355bde37b895b082998fc9c75010d3f43ec12388077fec",
+    "FIC-FIN-02": "037f70fc20422c05b7a17b7eb92d9f052784085ff72e765d60e2062d7e536475",
+    "FIC-FIN-03": "00030b74d7a5f79b2da924e305a27568a988e12ccdfada64b0eb02ae80684034",
+    "FIC-FIN-04": "a0276b73ef3f814fdff85e4eacd5c2a6d286c005d1a1aa4bbe6e8622edc7c3fe",
+    "FIC-FIN-05": "8808cf19a3403e4e80ccee1757a071c09644f93c63d9f6627d18d41871e000b8",
+    "FIC-FIN-06": "0964060ba6152f72a6482dac5981bf44568b8ccf9bf4b41770e0bb62dbb53565",
+    "FIC-FIN-07": "ebb29b6ed7db9e81b869541d515b1135b1162fa83f9fd3c8b27e3d6a1c7b4d19",
+    "FIC-FIN-08": "78524ba0e49f5ed886c0da45b51c3da9f74ecd0f3416de977374a7f72a2debcc"
+  },
+  "provider_source_fetches": 0,
+  "real_issuer_model_exposure_count": 0,
+  "reasoning_effort": "xhigh",
+  "runtime_mode": "MODEL_CONTEXT_COUPLED",
+  "source_lock_sha256": "578672415e57bf74b15621face986961992a54ba17cac1d21d2b1a14753b6f9a",
+  "subjects_per_shared_context": 4,
+  "timeout_seconds": 1800,
+  "wrapper_auto_retry": 0
+}

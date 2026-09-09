@@ -1,0 +1,29 @@
+{
+  "changed": {
+    "code_file_sha256": [],
+    "config_file_sha256": []
+  },
+  "code_file_count": 666,
+  "config_file_count": 6,
+  "final_pid_check": {
+    "both_absent": true,
+    "cli_pid": 13000,
+    "ps_returncode": 1,
+    "runner_pid": 12996
+  },
+  "input_checks": [
+    {
+      "context": 1,
+      "prompt_diff_is_one_frozen_paragraph": true,
+      "schema_equal_except_generation": true
+    },
+    {
+      "context": 2,
+      "prompt_diff_is_one_frozen_paragraph": true,
+      "schema_equal_except_generation": true
+    }
+  ],
+  "instruction_sha256": "0e9e1ecd6d5614568b5dbc5ffd9b895a1db5cbe0eb313018b4ce50e2699ca351",
+  "original_latest_zip_sha256": "d3202a35bcf5b13cd0afc86b59b1eda76c5088ecab377f3e63f316f6ca7a004b",
+  "status": "PASS"
+}

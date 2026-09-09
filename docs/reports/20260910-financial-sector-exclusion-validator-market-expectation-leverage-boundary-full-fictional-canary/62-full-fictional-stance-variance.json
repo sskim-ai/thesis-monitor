@@ -1,0 +1,58 @@
+{
+  "complete": false,
+  "rows": [
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "variance": {
+    "business_delta": "NOT_MEASURED",
+    "holder": "NOT_MEASURED",
+    "new_buyer": "NOT_MEASURED"
+  }
+}

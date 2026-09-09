@@ -1,5 +1,11 @@
 # Next Session Prompt
 
+## 2026-09-10 M12U Nonproduction Closeout
+
+M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.
+
+The M12T and older sections below are historical. They do not authorize retries or production resumption.
+
 ## 2026-09-10 M12T Nonproduction Closeout
 
 M12T: PARTIAL_STOPPED. Read `docs/reports/20260910-m12t-completion.md` and

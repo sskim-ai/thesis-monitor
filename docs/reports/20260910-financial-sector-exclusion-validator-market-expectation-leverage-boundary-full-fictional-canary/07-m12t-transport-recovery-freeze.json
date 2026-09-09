@@ -1,0 +1,16 @@
+{
+  "frozen_transport": {
+    "batch_split": 0,
+    "classification": "TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY",
+    "contexts": 2,
+    "effort": "xhigh",
+    "exact_backend_cause": "UNRESOLVED",
+    "model": "gpt-6-astra",
+    "repetitions": 3,
+    "runtime_change_required": false,
+    "subjects_per_context": 4,
+    "timeout": 1800,
+    "wrapper_retry": 0
+  },
+  "runtime_changes": 0
+}

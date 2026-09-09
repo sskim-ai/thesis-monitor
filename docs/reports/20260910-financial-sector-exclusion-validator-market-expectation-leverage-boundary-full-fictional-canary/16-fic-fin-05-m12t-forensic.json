@@ -1,0 +1,272 @@
+{
+  "ai_imperative_primary_action_count": 0,
+  "core": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash",
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "text": "현금 완충력이 더 줄거나 불리한 재융자 조건으로 부채 부담이 장기화되는 경우."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash",
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "text": "재융자 조건과 만기 부담이 확인되고 부채 부담이나 현금 완충력이 개선되는 경우."
+      }
+    ],
+    "business_thesis_change": "UNCHANGED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:business-thesis",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "text": "수익성 유지와 재무 유연성 제약이 공존한다. 현재 잔액만으로 재무 악화 추세를 단정하지 않는다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:operating-evidence"
+        ],
+        "text": "안정적인 영업 흑자가 사업 유지의 근거다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash",
+        "fictional:FIC-FIN-05:market-expectation"
+      ],
+      "text": "부채 부담과 얇은 현금 완충력에 재융자 부담을 충분히 고려하지 않는 기대가 겹쳐 부정 방향이 지지된다."
+    },
+    "directional_balance": {
+      "buy": 4.0,
+      "sell": 6.0
+    },
+    "directional_confidence": "MEDIUM",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "text": "완전 집계된 이자부채 부담과 제한적인 현금 완충력이 재무 회복력을 제약한다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:operating-evidence",
+        "fictional:FIC-FIN-05:remaining-unknown"
+      ],
+      "text": "영업이익은 안정적이지만 재융자 조건이 없어 향후 금융비용 영향을 확정하기 어렵다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "재융자 차질이나 현금 완충력의 추가 축소가 정상적인 사업 유지를 제약하는 경우.",
+      "business_invalidation_condition_refs": [
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash",
+        "fictional:FIC-FIN-05:remaining-unknown"
+      ],
+      "stance": "REDUCE",
+      "summary": "재무 회복력 제약으로 보유 적합성이 낮다. [E03, E05, E06]"
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "재융자 조건과 만기 부담이 확인되고 부채 부담 또는 현금 완충력이 개선되는 경우.",
+      "confirmation_business_condition_refs": [
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash",
+        "fictional:FIC-FIN-05:remaining-unknown"
+      ],
+      "stance": "AVOID",
+      "summary": "현재 재무 부담을 고려하면 신규 투자 매력이 제한적이다. [E03, E05, E06]"
+    },
+    "hold_lean": "NOT_HOLD",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:market-expectation"
+      ],
+      "text": "기대는 재융자 부담의 장기화를 충분히 고려하지 않는 것으로 보인다."
+    },
+    "material_directional_anchor_basis": [
+      "fictional:FIC-FIN-05:structural-risk",
+      "canonical:fictional:FIC-FIN-05:complete-debt",
+      "canonical:fictional:FIC-FIN-05:cash"
+    ],
+    "overall_direction": "SELL",
+    "risk_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "text": "부채 부담과 얇은 현금 완충력은 확인된 재무 취약성이다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:sector-context",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "text": "일반 사업회사 기준을 적용한다. 부채 집계는 리스부채를 제외하며 현금 범위는 현금및현금성자산이다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "STRUCTURAL_RISK",
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:structural-risk",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "text": "높은 이자부채와 얇은 현금 완충력이 재무적 선택지를 제한한다."
+      },
+      {
+        "classification": "OTHER_EVIDENCE",
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:market-expectation"
+        ],
+        "text": "재융자 부담의 장기화를 충분히 고려하지 않는 기대가 별도의 부정 근거다."
+      }
+    ],
+    "ticker": "FIC-FIN-05",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:operating-evidence",
+        "fictional:FIC-FIN-05:remaining-unknown",
+        "fictional:FIC-FIN-05:valuation-limit"
+      ],
+      "text": "영업 흑자 유지가 반대 근거이며, 재융자 조건과 만기 집중도 및 가치평가 미확인이 더 강한 부정 판단을 제한한다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "summary": "재융자 조건과 만기 집중도는 부담의 지속성과 강도를 확인할 항목이다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:valuation-limit"
+        ],
+        "summary": "가치평가 미확인은 판단의 확신을 제한하며 별도 악재로 계산하지 않는다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-05:valuation-limit"
+      ],
+      "text": "안전한 현재 가치평가 배수가 없어 재무 부담이 평가에 얼마나 반영됐는지 판단할 수 없다."
+    }
+  },
+  "errors": [
+    "frozen_ordinal_contract_inconsistent"
+  ],
+  "financial_anchor_count": 2,
+  "financial_grounding": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 8,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "material_financial_anchor_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "material_grounding_required": true,
+    "narrative_only_duplicate_refs": [],
+    "narrative_substitution_failure_count": 0,
+    "relevant_claim_count": 8,
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "status": "PASS",
+    "used_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "valid": true,
+    "working_capital_checkpoint_count": 0,
+    "working_capital_grounding_failure_count": 0,
+    "working_capital_grounding_required": false
+  },
+  "financial_semantics": {
+    "contract": "directional-financial-semantic-validator-v1",
+    "errors": [],
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "invalid_financial_reference_count": 0,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "valid": true,
+    "year_end_as_yoy_count": 0
+  },
+  "first_class_typed_financial_refs": [
+    "canonical:fictional:FIC-FIN-05:complete-debt",
+    "canonical:fictional:FIC-FIN-05:cash"
+  ],
+  "m12f_calibration": {
+    "basis": "Frozen source-pattern ordinal contract; matching number alone still requires final evidence review",
+    "expected_buy": 4.5,
+    "observed_buy": 4.0,
+    "status": "FAIL"
+  },
+  "material_financial_anchor_refs": [
+    "canonical:fictional:FIC-FIN-05:cash",
+    "canonical:fictional:FIC-FIN-05:complete-debt"
+  ],
+  "narrative_duplicate_refs": [
+    "fictional:FIC-FIN-05:structural-risk"
+  ],
+  "ownership": {
+    "buy_without_nonprice_material_anchor": 0,
+    "contract": "direction-timing-ownership-validator-v1",
+    "directional_core_price_technical_refs": 0,
+    "directional_core_supply_refs": 0,
+    "directional_core_unknown_refs": 0,
+    "errors": [],
+    "sell_without_nonprice_material_anchor": 0,
+    "valid": true
+  },
+  "qtd_ytd_semantics": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [],
+    "explicit_claim_count": 0,
+    "linked_claim_count": 0,
+    "qtd_evidence_ref_count": 0,
+    "required": false,
+    "required_metrics": [],
+    "valid": true,
+    "ytd_evidence_ref_count": 0
+  },
+  "selected_financial_refs": [
+    "canonical:fictional:FIC-FIN-05:cash",
+    "canonical:fictional:FIC-FIN-05:complete-debt"
+  ],
+  "selected_typed_financial_refs": [
+    "canonical:fictional:FIC-FIN-05:cash",
+    "canonical:fictional:FIC-FIN-05:complete-debt"
+  ],
+  "status": "FAIL",
+  "ticker": "FIC-FIN-05",
+  "used_financial_refs": [
+    "canonical:fictional:FIC-FIN-05:cash",
+    "canonical:fictional:FIC-FIN-05:complete-debt"
+  ],
+  "used_typed_financial_refs": [
+    "canonical:fictional:FIC-FIN-05:cash",
+    "canonical:fictional:FIC-FIN-05:complete-debt"
+  ]
+}

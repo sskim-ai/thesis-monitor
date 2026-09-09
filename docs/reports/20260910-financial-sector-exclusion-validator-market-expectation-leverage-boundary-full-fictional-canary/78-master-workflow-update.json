@@ -1,0 +1,7 @@
+{
+  "status": "UPDATED",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "related_paths": ["docs/PROJECT_HANDOFF.md", "docs/NEXT_SESSION_PROMPT.md", "docs/project-state.json"],
+  "next_scope": "ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW",
+  "production_state_changed": false
+}

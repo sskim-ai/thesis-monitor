@@ -1,0 +1,17 @@
+{
+  "classification": "NO_EXPECTATION_AXIS",
+  "facts": [
+    "high complete debt and thin cash",
+    "stable profit",
+    "no expectation evidence"
+  ],
+  "id": "LEV-MKT-03",
+  "limitation": "refinancing severity unresolved",
+  "rule": "limiting_unknown",
+  "selected_buy": 4.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4,
+    4.5
+  ]
+}

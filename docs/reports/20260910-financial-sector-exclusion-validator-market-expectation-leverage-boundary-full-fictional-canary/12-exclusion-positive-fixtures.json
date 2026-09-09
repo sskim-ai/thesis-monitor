@@ -1,0 +1,235 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채 틀은 적용하지 않는다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채 틀은 적용하지 않는다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "보험사에는 일반 기업의 순부채 틀이 적용 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "보험사에는 일반 기업의 순부채 틀이 적용 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채는 평가 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채는 평가 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "운전자본은 사용 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "운전자본은 사용 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채는 해당 기준의 적용 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채는 해당 기준의 적용 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채는 일반 영업기업 기준의 대상이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "순부채는 일반 영업기업 기준의 대상이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "운전자본 기준은 이 업종의 핵심 평가틀이 아니다"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "운전자본 기준은 이 업종의 핵심 평가틀이 아니다.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Net debt is not applicable"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Net debt is not applicable.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Working capital does not apply"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Working capital does not apply.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Net debt is not an applicable framework"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Net debt is not an applicable framework.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Working capital is not the relevant framework"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Working capital is not the relevant framework.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "We do not apply net debt"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "We do not apply net debt.",
+      "valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Net debt and working capital are not applicable to insurers"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "Net debt and working capital are not applicable to insurers"
+        }
+      ],
+      "errors": [],
+      "expected": "positive",
+      "status": "PASS",
+      "text": "Net debt and working capital are not applicable to insurers.",
+      "valid": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "observation_window_start_utc": "2026-09-09T23:34:58Z",
+  "observation_window_end_utc": "2026-09-09T23:35:31Z",
+  "observation": "Read-only process metadata; no process mutation",
+  "runner_pid": 12996,
+  "cli_pid": 13000,
+  "cli_parent_pid": 12996,
+  "runner_elapsed": "15:20",
+  "cli_elapsed": "15:19",
+  "runner_cpu_percent_snapshot": 0.0,
+  "cli_cpu_percent_snapshot": 1.0,
+  "current_context": "run-1/context-01",
+  "backend_root_cause": "NOT_MEASURED"
+}
