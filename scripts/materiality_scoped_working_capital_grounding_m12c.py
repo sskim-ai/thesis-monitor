@@ -644,8 +644,8 @@ def phase_b(args: argparse.Namespace) -> None:
             and ref in fic02_audit["used_financial_refs"]
             for ref, metric in fic02_run2["selected_metrics_by_ref"].items()
         ),
-        "inventory_specific_checkpoint_claim_count": len(
-            fic02_audit["working_capital_checkpoint_claims"]
+        "inventory_specific_checkpoint_claim_count": int(
+            fic02_audit["working_capital_checkpoint_count"]
         ),
         "working_capital_grounding_required": fic02_audit[
             "working_capital_grounding_required"
@@ -896,6 +896,10 @@ def phase_b(args: argparse.Namespace) -> None:
         "model_inputs": model_inputs,
         "branch_decision": "BRANCH_A",
         "checks": checks,
+        "deterministic_preflight_restart_count": 1,
+        "deterministic_preflight_restart_reason": (
+            "REPORT_BUILDER_FIELD_NAME_MISMATCH_BEFORE_MODEL_CALL_GATE"
+        ),
         "model_calls_before_gate": 0,
         "status": (
             "PASS" if all(value == "PASS" for value in checks.values()) else "FAIL"
