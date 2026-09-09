@@ -1,0 +1,251 @@
+{
+  "business_thesis_change_sequence": [
+    "WEAKENED",
+    "WEAKENED",
+    "WEAKENED"
+  ],
+  "buy_balance_sequence": [
+    4.0,
+    4.0,
+    4.0
+  ],
+  "contract": "m12s-ticker-stability-forensic-v1",
+  "direction_sequence": [
+    "SELL",
+    "SELL",
+    "SELL"
+  ],
+  "economic_semantic_flags_stable": true,
+  "formal_classification": "BOUNDARY_UNCERTAINTY",
+  "holder_stance_sequence": [
+    "REDUCE",
+    "REVIEW",
+    "REDUCE"
+  ],
+  "material_interpretation_delta": "MINOR_EMPHASIS_DELTA",
+  "new_buyer_stance_sequence": [
+    "AVOID",
+    "AVOID",
+    "AVOID"
+  ],
+  "pairwise_deltas": [
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "fundamental_holder_stance"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "fundamental_holder_stance"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3
+    }
+  ],
+  "primary_root_cause": "HOLDER_STANCE_CALIBRATION_AMBIGUITY",
+  "repeated_values": [
+    {
+      "business_thesis_change": "WEAKENED",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "hold_lean": "NOT_HOLD",
+      "holder": "REDUCE",
+      "invalidation_domains": [
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "material_anchors": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "new_buyer": "AVOID",
+      "overall_direction": "SELL",
+      "reevaluation_down_domains": [
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "reevaluation_up_domains": [
+        "FINANCIAL_RESILIENCE",
+        "UNKNOWN"
+      ],
+      "repetition": 1,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NEGATIVE",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "hold_lean": "NOT_HOLD",
+      "holder": "REVIEW",
+      "invalidation_domains": [
+        "EARNINGS",
+        "RISKS",
+        "UNKNOWN"
+      ],
+      "material_anchors": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "new_buyer": "AVOID",
+      "overall_direction": "SELL",
+      "reevaluation_down_domains": [
+        "FINANCIAL_RESILIENCE",
+        "RISKS"
+      ],
+      "reevaluation_up_domains": [
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "repetition": 2,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NEGATIVE",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    },
+    {
+      "business_thesis_change": "WEAKENED",
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "hold_lean": "NOT_HOLD",
+      "holder": "REDUCE",
+      "invalidation_domains": [
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "material_anchors": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "new_buyer": "AVOID",
+      "overall_direction": "SELL",
+      "reevaluation_down_domains": [
+        "RISKS"
+      ],
+      "reevaluation_up_domains": [
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "repetition": 3,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NEGATIVE",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    }
+  ],
+  "secondary_root_causes": [
+    "ANCHOR_SELECTION_PRESENTATION_VARIANCE"
+  ],
+  "semantic_flags_sequence": [
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NEGATIVE",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "NOT_USED",
+      "operating_trend": "POSITIVE",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    },
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NEGATIVE",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "NOT_USED",
+      "operating_trend": "POSITIVE",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    },
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NEGATIVE",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "NOT_USED",
+      "operating_trend": "POSITIVE",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    }
+  ],
+  "stability_root_cause_scope": "NONSTABLE_ROOT_CAUSE",
+  "status": "PASS",
+  "ticker": "FIC-FIN-05"
+}

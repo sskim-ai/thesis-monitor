@@ -1,0 +1,11 @@
+{
+  "contract": "m12s-new-buyer-stance-calibration-decision-v1",
+  "decision": "INDEPENDENT_SECONDARY_AMBIGUITY",
+  "directly_coupled_to_balance_bucket_in_all_runs": false,
+  "included_in_primary_repair": false,
+  "status": "PASS",
+  "tickers": [
+    "FIC-FIN-01",
+    "FIC-FIN-02"
+  ]
+}

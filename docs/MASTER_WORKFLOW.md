@@ -776,6 +776,63 @@ mutation과 automatic resume도 0이다.
 
 ---
 
+## 12S. M12S financial-context stability root-cause review와 다음 수리 동결
+
+M12S work-instruction commit은 `1c50d011d9bb12665fb0b5075eff1077c5557ea4`,
+offline fingerprint tooling implementation commit은
+`88c448fee420b91dc018af9cf52570c8767692a7`다. M12D authoritative bundle SHA
+`b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3`와 indexed
+payload 127개의 hash/size mismatch 0을 다시 확인하고, generation
+`20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f`의 보존 output 24개만
+결정론적으로 fingerprint했다. 새 model/judge/provider call은 0이다.
+
+정규화한 fingerprint는 direction/balance/thesis/new-buyer/holder뿐 아니라 material 및
+dominant anchor, driver·Unknown·reevaluation·invalidation domain, 실제 사용된 typed
+financial metric과 operating/cash-conversion/debt-liquidity/working-capital/non-operating
+semantic polarity를 분리한다. 단순 ref 추가, claim field 이동, 동일 경제 사실의 공동
+인용 또는 0.5 balance 차이는 material interpretation delta로 승격하지 않는다. 24개
+pairwise 비교에서 명시적 polarity 반전이나 causal-domain 교체는 0이었고, stable control의
+anchor/thesis label 차이는 formal success를 고쳐 쓰지 않는 advisory로만 보존했다.
+
+비안정 4종목의 primary root cause는 다음과 같다. FIC-FIN-01은 같은 positive
+operating/cash-conversion/resilience 해석에서 6.0/6.5와 ATTRACTIVE/WAIT가 갈린
+`ADJACENT_BALANCE_BUCKET_CALIBRATION_AMBIGUITY`이고, new-buyer 차이는 독립 secondary
+ambiguity다. FIC-FIN-02는 같은 cash-conversion deterioration, healthy demand, 원인·가역성
+Unknown 아래 SELL 6.0과 HOLD SELL_LEAN 5.5가 갈린 같은 primary root cause다.
+FIC-FIN-04도 flat operations와 non-operating net-income support를 동일하게 해석하면서
+5.0/5.5가 갈렸다. FIC-FIN-05는 direction 4.0:6.0, WEAKENED, debt/liquidity anchors가
+동일한데 holder만 REVIEW/REDUCE로 갈린 `HOLDER_STANCE_CALIBRATION_AMBIGUITY`다.
+`true_semantic_variance_subject_count=0`이며 M12D의 STABLE 4,
+BOUNDARY_UNCERTAINTY 3, UNSTABLE 1과 전체 FAIL은 그대로 유지한다.
+
+현재 Directional contract는 5.0/5.5/6.0/6.5와 6.0 threshold, 0.5 increment,
+adjacent-fit 시 5.0 방향의 보수적 tie-break를 이미 명시한다. 그러나 shared-lineage cash
+metrics와 independent corroboration의 차이, corroboration과 limiting Unknown의 ordinal
+배치, flat operations와 non-operating support의 5.0/5.5 경계, valuation/persistence
+Unknown이 남을 때 6.0/6.5 경계가 financial context에 충분히 구체적이지 않다. 실제
+M12D 세 경계 case는 보수적 tie-break를 일관되게 적용하지 않았다. new-buyer와 holder
+enum도 각각 valuation/confirmation 및 fundamental REVIEW/REDUCE 경계를 명확히 닫지
+않지만 하나의 직접 결합 원인은 아니므로 primary repair에 함께 넣지 않는다. formal
+stability classifier는 실제 output instability를 올바르게 검출했으므로 `KEEP`이고 과거
+결과 재분류는 0이다.
+
+따라서 한정된 다음 repair는
+`BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR`로 동결한다. 다음 scope는
+`BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR_AND_FULL_FICTIONAL_CANARY`다.
+threshold/increment/HOLD lean은 바꾸지 않고 evidence sufficiency와 기존 tie-break의
+적용만 일반 계약으로 명확히 한 뒤, 새 generation에서 동일 8개 subject x 3회 전체
+fictional canary를 수행한다. new-buyer와 holder ambiguity는 독립 후속 검토로 남긴다.
+
+M12S는 review-only이므로 Directional prompt/calibration/new-buyer/holder/classifier,
+financial selector/source mapping, QTD/YTD·working-capital validator, schema,
+Price-Timing, renderer, production runtime 변경은 0이다. production DB/assessment/warning/
+notification/send, monitoring registration, main merge, deploy도 0이고 승인된 monitoring
+8개는 PAUSED/DISABLED 상태를 유지한다. `M12S_COMPLETE`,
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 repaired full
+fictional canary 전에는 fresh real proof나 monitoring resume를 시작하지 않는다.
+
+---
+
 ## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |

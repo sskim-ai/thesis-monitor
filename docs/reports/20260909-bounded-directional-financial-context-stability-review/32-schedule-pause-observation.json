@@ -1,0 +1,101 @@
+{
+  "automatic_monitoring_resume": 0,
+  "contract": "m12s-schedule-pause-start-end-observation-v1",
+  "end": {
+    "automatic_monitoring_resume": 0,
+    "contract": "m12s-schedule-pause-observation-v1",
+    "launchctl_returncode": 0,
+    "observed_at": "2026-09-09T13:16:45.901842+00:00",
+    "observed_paused_schedule_count": 8,
+    "rows": [
+      {
+        "id": "thesis-monitor-ai-review-us-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-us-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.daily",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.kr-close",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "status": "PAUSED"
+      }
+    ],
+    "scheduler_mutation_count": 0,
+    "status": "PASS"
+  },
+  "observed_paused_schedule_count": 8,
+  "scheduler_mutation_count": 0,
+  "start": {
+    "automatic_monitoring_resume": 0,
+    "contract": "m12s-schedule-pause-observation-v1",
+    "launchctl_returncode": 0,
+    "observed_at": "2026-09-09T12:45:49.790160+00:00",
+    "observed_paused_schedule_count": 8,
+    "rows": [
+      {
+        "id": "thesis-monitor-ai-review-us-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-us-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.daily",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.kr-close",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "status": "PAUSED"
+      }
+    ],
+    "scheduler_mutation_count": 0,
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,522 @@
+{
+  "contract": "m12s-material-interpretation-delta-matrix-v1",
+  "counts": {
+    "MINOR_EMPHASIS_DELTA": 24
+  },
+  "rows": [
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "fundamental_new_buyer_stance",
+        "material_directional_anchor_basis",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "fundamental_new_buyer_stance",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "buy_driver_classifications",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "fundamental_new_buyer_stance",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "overall_direction",
+        "sector_interpretation_domains"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "fundamental_new_buyer_stance",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "overall_direction",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "buy_driver_classifications",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "buy_driver_classifications",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications",
+        "semantic_flags"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": false,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications",
+        "semantic_flags"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": false,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "fundamental_holder_stance"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "fundamental_holder_stance"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "business_thesis_change",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "business_thesis_change",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_up_domains",
+        "business_thesis_change",
+        "buy_driver_classifications",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_up_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2,
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "business_thesis_change",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_thesis_change",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS",
+  "subject_summary": {
+    "FIC-FIN-01": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-02": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-03": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-04": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-05": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-06": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-07": "MINOR_EMPHASIS_DELTA",
+    "FIC-FIN-08": "MINOR_EMPHASIS_DELTA"
+  }
+}

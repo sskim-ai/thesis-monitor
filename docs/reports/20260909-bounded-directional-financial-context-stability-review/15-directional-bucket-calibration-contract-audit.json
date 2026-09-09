@@ -1,0 +1,21 @@
+{
+  "buckets": {
+    "5.0": "balanced_unresolved_or_too_incomplete_for_lean",
+    "5.5": "material_anchor_but_missing_sufficient_corroboration",
+    "6.0": "minimum_direction_with_material_anchor_and_sufficient_corroboration",
+    "6.5_plus": "progressively_stronger_corroboration_persistence_quality_visibility_or_valuation"
+  },
+  "contract": "m12s-directional-bucket-calibration-contract-audit-v1",
+  "contract_text": "Calibrate directional_balance as an ordinal evidence-sufficiency ladder, not as probability or a fixed-weight scorecard.\n\n5.0:5.0 means the evidence is genuinely balanced, unresolved, or too incomplete to support even a lean. 5.5:4.5 means a positive issuer-level material anchor exists, but missing corroboration, currentness, persistence, valuation, or a critical business KPI prevents a full positive direction. 6.0:4.0 is the minimum BUY and requires both a positive issuer-level material anchor and sufficiently current or independent corroboration; unresolved counterevidence must not keep the case at lean-only. 6.5:3.5 and stronger positive balances require progressively stronger corroboration, persistence, quality, visibility, or valuation support under the same evidence-only rules.\n\nApply the exact symmetric meanings to 4.5:5.5, 4.0:6.0, and 3.5:6.5 or stronger negative balances. Missing evidence limits conviction but is not negative evidence by itself. When the same supplied evidence reasonably fits two adjacent balance buckets, choose the less directional bucket toward 5.0:5.0. Low confidence should trigger a careful check that the full directional bucket is actually supported, but LOW confidence does not mechanically require HOLD.",
+  "financial_context_ambiguities": [
+    "shared-lineage cash metrics are not distinguished from independent corroboration",
+    "limiting Unknowns versus corroborating anchors have no ordinal placement rule",
+    "flat operations plus non-operating support has no explicit 5.0/5.5 boundary",
+    "valuation and persistence gaps do not crisply distinguish 6.0 from 6.5"
+  ],
+  "increment": 0.5,
+  "source_path": "app/services/directional_balance_service.py",
+  "source_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+  "status": "UNDER_SPECIFIED_FOR_FINANCIAL_CONTEXT_BOUNDARIES",
+  "threshold": 6.0
+}

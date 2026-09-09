@@ -1,0 +1,14 @@
+{
+  "basis": "normalized economic polarity, causal domains, thesis economics, and Unknown treatment did not reverse; output labels and emphasis varied",
+  "business_thesis_label_variance": {
+    "classification": "FIELD_CALIBRATION_ADVISORY_NOT_ECONOMIC_POLARITY_REVERSAL",
+    "tickers": [
+      "FIC-FIN-06",
+      "FIC-FIN-08"
+    ]
+  },
+  "contract": "m12s-true-semantic-variance-decision-v1",
+  "decision": "NO_TRUE_SEMANTIC_VARIANCE_FOUND",
+  "status": "PASS",
+  "subject_count": 0
+}

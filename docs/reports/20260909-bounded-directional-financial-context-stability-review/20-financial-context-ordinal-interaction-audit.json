@@ -1,0 +1,28 @@
+{
+  "contract": "m12s-financial-context-ordinal-interaction-audit-v1",
+  "financial_fact_parsing_defect": false,
+  "finding": "richer corroborating financial evidence and explicit limitations can fit adjacent ordinal buckets when independence and Unknown-limiting rules are not explicit",
+  "rows": [
+    {
+      "corroboration": "operating improvement, cash conversion, resilience",
+      "limitation": "valuation and persistence unknown",
+      "observed_boundary": "6.0/6.5",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "corroboration": "two related cash-conversion metrics",
+      "counterevidence": "healthy demand and accounting growth",
+      "limitation": "cause and reversibility unknown",
+      "observed_boundary": "negative 5.5/6.0",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "corroboration": "net-income and non-operating financial effect",
+      "counterevidence": "broadly flat operations",
+      "limitation": "recurrence unknown",
+      "observed_boundary": "5.0/5.5",
+      "ticker": "FIC-FIN-04"
+    }
+  ],
+  "status": "PASS"
+}

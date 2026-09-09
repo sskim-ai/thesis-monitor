@@ -1,0 +1,41 @@
+{
+  "base_sha": "ba511cd1c46a6b3fb0758f56eafa3f190af50884",
+  "branch": "codex/20260909-bounded-directional-financial-context-stability-review",
+  "contract": "m12s-repository-provenance-v1",
+  "current_head_sha": "88c448fee420b91dc018af9cf52570c8767692a7",
+  "implementation_commit": "88c448fee420b91dc018af9cf52570c8767692a7",
+  "origin_main_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "production_module_freeze": {
+    "change_count": 0,
+    "rows": [
+      {
+        "base_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+        "changed": false,
+        "current_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+        "path": "app/services/directional_balance_service.py"
+      },
+      {
+        "base_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+        "changed": false,
+        "current_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+        "path": "app/services/direction_timing_ownership_service.py"
+      },
+      {
+        "base_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+        "changed": false,
+        "current_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+        "path": "app/services/directional_financial_context_service.py"
+      },
+      {
+        "base_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+        "changed": false,
+        "current_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+        "path": "scripts/directional_core_price_timing_holdout.py"
+      }
+    ],
+    "status": "PASS"
+  },
+  "report_commit": "NOT_MEASURED",
+  "status": "PASS",
+  "work_instruction_commit": "1c50d011d9bb12665fb0b5075eff1077c5557ea4"
+}

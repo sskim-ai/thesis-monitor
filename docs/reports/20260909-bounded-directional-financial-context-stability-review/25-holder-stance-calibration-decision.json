@@ -1,0 +1,10 @@
+{
+  "contract": "m12s-holder-stance-calibration-decision-v1",
+  "decision": "INDEPENDENT_SECONDARY_AMBIGUITY",
+  "included_in_primary_repair": false,
+  "price_timing_involved": false,
+  "status": "PASS",
+  "tickers": [
+    "FIC-FIN-05"
+  ]
+}

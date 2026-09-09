@@ -1,0 +1,15 @@
+{
+  "contract": "m12s-latest-result-integrity-v1",
+  "expected_sha256": "b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3",
+  "hash_mismatch_count": 0,
+  "indexed_payload_count": 127,
+  "m12d_generation_id": "20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f",
+  "m12d_status": "M12D_CANARY_FAIL",
+  "m12d_stop_reason": "M12D_FINANCIAL_INTERPRETATION_STABILITY_FAILURE",
+  "missing_count": 0,
+  "observed_sha256": "b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3",
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary-report.zip",
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

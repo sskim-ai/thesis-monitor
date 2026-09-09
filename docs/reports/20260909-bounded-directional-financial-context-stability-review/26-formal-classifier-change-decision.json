@@ -1,0 +1,9 @@
+{
+  "contract": "m12s-formal-classifier-change-decision-v1",
+  "decision": "KEEP",
+  "detects_output_instability": true,
+  "formal_classifier_change_required": false,
+  "historical_m12d_result_remains": "FAIL",
+  "separate_full_fingerprint_advisory_next_canary": true,
+  "status": "PASS"
+}
