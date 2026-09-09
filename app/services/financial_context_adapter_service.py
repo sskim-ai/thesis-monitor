@@ -62,6 +62,39 @@ _FACT_TYPE_METRICS = {
     "balance_sheet_working_capital_balance_delta": (
         "working_capital_balance_delta"
     ),
+    "income_statement_financial_income": "financial_income",
+    "income_statement_financial_cost": "financial_cost",
+    "income_statement_net_financial_income_effect": (
+        "net_financial_income_effect"
+    ),
+    "income_statement_interest_income": "interest_income",
+    "income_statement_interest_expense": "interest_expense",
+    "income_statement_foreign_exchange_gain": "foreign_exchange_gain",
+    "income_statement_foreign_exchange_loss": "foreign_exchange_loss",
+    "income_statement_foreign_exchange_net_effect": (
+        "foreign_exchange_net_effect"
+    ),
+    "income_statement_other_income_context": "other_income_context",
+    "income_statement_other_expense_context": "other_expense_context",
+    "income_statement_asset_disposal_gain": "asset_disposal_gain",
+    "income_statement_asset_disposal_loss": "asset_disposal_loss",
+    "income_statement_asset_disposal_result_context": (
+        "asset_disposal_result_context"
+    ),
+    "income_statement_fair_value_gain": "fair_value_gain",
+    "income_statement_fair_value_loss": "fair_value_loss",
+    "income_statement_fair_value_result_context": "fair_value_result_context",
+    "income_statement_equity_method_result_context": (
+        "equity_method_result_context"
+    ),
+    "income_statement_income_tax_expense": "income_tax_expense",
+    "income_statement_income_tax_benefit": "income_tax_benefit",
+    "income_statement_continuing_operations_income": (
+        "continuing_operations_income"
+    ),
+    "income_statement_discontinued_operations_result": (
+        "discontinued_operations_result"
+    ),
 }
 _CANONICAL_METRIC_BY_FACT_TYPE = {
     "cash_flow_ocf": "operating_cash_flow",
@@ -102,6 +135,39 @@ _CANONICAL_METRIC_BY_FACT_TYPE = {
     "balance_sheet_working_capital_balance_delta": (
         "working_capital_balance_delta"
     ),
+    "income_statement_financial_income": "financial_income",
+    "income_statement_financial_cost": "financial_cost",
+    "income_statement_net_financial_income_effect": (
+        "net_financial_income_effect"
+    ),
+    "income_statement_interest_income": "interest_income",
+    "income_statement_interest_expense": "interest_expense",
+    "income_statement_foreign_exchange_gain": "foreign_exchange_gain",
+    "income_statement_foreign_exchange_loss": "foreign_exchange_loss",
+    "income_statement_foreign_exchange_net_effect": (
+        "foreign_exchange_net_effect"
+    ),
+    "income_statement_other_income_context": "other_income_context",
+    "income_statement_other_expense_context": "other_expense_context",
+    "income_statement_asset_disposal_gain": "asset_disposal_gain",
+    "income_statement_asset_disposal_loss": "asset_disposal_loss",
+    "income_statement_asset_disposal_result_context": (
+        "asset_disposal_result_context"
+    ),
+    "income_statement_fair_value_gain": "fair_value_gain",
+    "income_statement_fair_value_loss": "fair_value_loss",
+    "income_statement_fair_value_result_context": "fair_value_result_context",
+    "income_statement_equity_method_result_context": (
+        "equity_method_result_context"
+    ),
+    "income_statement_income_tax_expense": "income_tax_expense",
+    "income_statement_income_tax_benefit": "income_tax_benefit",
+    "income_statement_continuing_operations_income": (
+        "continuing_operations_income"
+    ),
+    "income_statement_discontinued_operations_result": (
+        "discontinued_operations_result"
+    ),
 }
 _CASH_FLOW_DIRECT_FACT_TYPES = {"cash_flow_ocf", "cash_flow_ppe_capex"}
 _DEBT_LIQUIDITY_DIRECT_FACT_TYPES = {
@@ -136,6 +202,33 @@ _WORKING_CAPITAL_DIRECT_FACT_TYPES = {
 }
 _WORKING_CAPITAL_DERIVED_FACT_TYPES = {
     "balance_sheet_working_capital_balance_delta"
+}
+_NON_OPERATING_NET_FACT_TYPE = "income_statement_net_financial_income_effect"
+_NON_OPERATING_DIRECT_FACT_TYPES = {
+    "income_statement_financial_income",
+    "income_statement_financial_cost",
+    "income_statement_interest_income",
+    "income_statement_interest_expense",
+    "income_statement_foreign_exchange_gain",
+    "income_statement_foreign_exchange_loss",
+    "income_statement_foreign_exchange_net_effect",
+    "income_statement_other_income_context",
+    "income_statement_other_expense_context",
+    "income_statement_asset_disposal_gain",
+    "income_statement_asset_disposal_loss",
+    "income_statement_asset_disposal_result_context",
+    "income_statement_fair_value_gain",
+    "income_statement_fair_value_loss",
+    "income_statement_fair_value_result_context",
+    "income_statement_equity_method_result_context",
+    "income_statement_income_tax_expense",
+    "income_statement_income_tax_benefit",
+    "income_statement_continuing_operations_income",
+    "income_statement_discontinued_operations_result",
+}
+_NON_OPERATING_FACT_TYPES = {
+    *_NON_OPERATING_DIRECT_FACT_TYPES,
+    _NON_OPERATING_NET_FACT_TYPE,
 }
 _WORKING_CAPITAL_CONTEXT_METRICS = {
     _FACT_TYPE_METRICS[fact_type]
@@ -174,7 +267,11 @@ _DEBT_LIQUIDITY_DERIVED_FACT_TYPES = {
     "balance_sheet_interest_bearing_debt_total",
     "balance_sheet_net_debt",
 }
-_DIRECT_FACT_TYPES = _CASH_FLOW_DIRECT_FACT_TYPES | _BALANCE_SHEET_DIRECT_FACT_TYPES
+_DIRECT_FACT_TYPES = (
+    _CASH_FLOW_DIRECT_FACT_TYPES
+    | _BALANCE_SHEET_DIRECT_FACT_TYPES
+    | _NON_OPERATING_DIRECT_FACT_TYPES
+)
 _COMPARABLE_PERIOD_TYPES = {"QTD", "YTD", "FY", "POINT_IN_TIME"}
 _PERIOD_TYPES = {*_COMPARABLE_PERIOD_TYPES, "TTM"}
 _ATTRIBUTION_BASES = {"total", "parent", "common"}
@@ -193,6 +290,8 @@ _CANONICAL_FCF_FORMULA = "OCF_MINUS_PPE_CAPEX_CASH_OUTFLOW"
 _CANONICAL_DERIVATION_VERSION = "cash-flow-capital-efficiency-v1"
 _DEBT_LIQUIDITY_DERIVATION_VERSION = "interest-bearing-debt-liquidity-v1"
 _WORKING_CAPITAL_DERIVATION_VERSION = "inventory-receivables-working-capital-v1"
+_NON_OPERATING_DERIVATION_VERSION = "non-operating-financial-income-effects-v1"
+_NET_FINANCIAL_EFFECT_FORMULA = "financial_income_minus_financial_cost"
 _WORKING_CAPITAL_BALANCE_DELTA_FORMULA = "balance_absolute_delta"
 _DEBT_TOTAL_FORMULA = "interest_bearing_debt_total"
 _NET_DEBT_FORMULA = "net_debt"
@@ -225,6 +324,10 @@ class CanonicalFinancialIdentity:
     balance_scope: str | None = None
     net_gross_scope: str | None = None
     comparison_kind: str | None = None
+    financial_effect_scope: str | None = None
+    economic_role: str | None = None
+    presentation_type: str | None = None
+    continuity_scope: str | None = None
     source_document_id: str | None = None
 
     def period_payload(self) -> dict[str, object]:
@@ -330,6 +433,15 @@ def _lineage_projection(
         canonical_fact_type != "REPORTED"
     ):
         reasons.append("canonical_lineage_metric_fact_type_mismatch")
+    elif fact_type in _NON_OPERATING_DIRECT_FACT_TYPES and (
+        canonical_fact_type != "REPORTED"
+    ):
+        reasons.append("canonical_lineage_metric_fact_type_mismatch")
+    elif fact_type == _NON_OPERATING_NET_FACT_TYPE and canonical_fact_type not in {
+        "REPORTED",
+        "DERIVED_METRIC",
+    }:
+        reasons.append("canonical_lineage_metric_fact_type_mismatch")
     elif (
         fact_type
         in {
@@ -358,6 +470,11 @@ def _lineage_projection(
         ("balance_scope", fields.get("balance_scope"), _text),
         ("net_gross_scope", fields.get("net_gross_scope"), _text),
         ("comparison_kind", fields.get("comparison_kind"), _text),
+        ("attribution_basis", fields.get("attribution_basis"), _text),
+        ("financial_effect_scope", fields.get("financial_effect_scope"), _text),
+        ("economic_role", fields.get("economic_role"), _text),
+        ("presentation_type", fields.get("presentation_type"), _text),
+        ("continuity_scope", fields.get("continuity_scope"), _text),
     )
     for name, expected, normalizer in identity_pairs:
         if normalizer(lineage.get(name)) != expected:
@@ -396,6 +513,8 @@ def _lineage_projection(
             expected_version = _DEBT_LIQUIDITY_DERIVATION_VERSION
         elif fact_type in _WORKING_CAPITAL_DERIVED_FACT_TYPES:
             expected_version = _WORKING_CAPITAL_DERIVATION_VERSION
+        elif fact_type == _NON_OPERATING_NET_FACT_TYPE:
+            expected_version = _NON_OPERATING_DERIVATION_VERSION
         else:
             expected_version = _CANONICAL_DERIVATION_VERSION
         if version is not None and version != expected_version:
@@ -444,6 +563,7 @@ def canonical_identity_from_fact_catalog(
         *_BALANCE_SHEET_DIRECT_FACT_TYPES,
         *_DEBT_LIQUIDITY_DERIVED_FACT_TYPES,
         *_WORKING_CAPITAL_DERIVED_FACT_TYPES,
+        *_NON_OPERATING_FACT_TYPES,
     }:
         reasons.append("canonical_source_metric_scope_mismatch")
     metric = _FACT_TYPE_METRICS.get(fact_type)
@@ -514,6 +634,25 @@ def canonical_identity_from_fact_catalog(
     attribution_basis = _text(fields.get("attribution_basis"))
     if attribution_basis is not None and attribution_basis not in _ATTRIBUTION_BASES:
         reasons.append("financial_attribution_basis_invalid")
+    financial_effect_scope = _text(fields.get("financial_effect_scope"))
+    economic_role = _text(fields.get("economic_role"))
+    presentation_type = _text(fields.get("presentation_type"))
+    continuity_scope = _text(fields.get("continuity_scope"))
+    if fact_type in _NON_OPERATING_FACT_TYPES:
+        if period_type == "POINT_IN_TIME":
+            reasons.append("non_operating_duration_period_required")
+        if financial_effect_scope is None:
+            reasons.append("financial_effect_scope_missing")
+        if economic_role is None:
+            reasons.append("financial_effect_economic_role_missing")
+        if presentation_type is None:
+            reasons.append("financial_effect_presentation_type_missing")
+        if continuity_scope not in {
+            "unspecified",
+            "continuing_operations",
+            "discontinued_operations",
+        }:
+            reasons.append("financial_effect_continuity_scope_invalid")
 
     if reasons:
         return None, tuple(dict.fromkeys(reasons))
@@ -550,6 +689,10 @@ def canonical_identity_from_fact_catalog(
             balance_scope=_text(fields.get("balance_scope")),
             net_gross_scope=_text(fields.get("net_gross_scope")),
             comparison_kind=_text(fields.get("comparison_kind")),
+            financial_effect_scope=financial_effect_scope,
+            economic_role=economic_role,
+            presentation_type=presentation_type,
+            continuity_scope=continuity_scope,
             source_document_id=(
                 _text(lineage.get("source_document_id"))
                 if lineage is not None
@@ -580,6 +723,10 @@ def prior_year_comparison(
         "semantic_mapping",
         "balance_scope",
         "net_gross_scope",
+        "financial_effect_scope",
+        "economic_role",
+        "presentation_type",
+        "continuity_scope",
     ):
         if getattr(current, field_name) != getattr(prior, field_name):
             reasons.append(f"comparison_{field_name}_mismatch")
@@ -636,6 +783,10 @@ def prior_year_end_comparison(
         "semantic_mapping",
         "balance_scope",
         "net_gross_scope",
+        "financial_effect_scope",
+        "economic_role",
+        "presentation_type",
+        "continuity_scope",
     ):
         if getattr(current, field_name) != getattr(prior, field_name):
             reasons.append(f"comparison_{field_name}_mismatch")
@@ -703,6 +854,12 @@ def _prior_comparison(
                 )
             elif fact_type == "balance_sheet_net_debt":
                 derivation, _ = _derived_net_debt(
+                    candidate,
+                    row,
+                    rows_by_id,
+                )
+            elif fact_type == _NON_OPERATING_NET_FACT_TYPE:
+                derivation, _ = _derived_net_financial_effect(
                     candidate,
                     row,
                     rows_by_id,
@@ -1318,6 +1475,92 @@ def _derived_working_capital_balance_delta(
     )
 
 
+def _derived_net_financial_effect(
+    current: CanonicalFinancialIdentity,
+    row: Mapping[str, object],
+    rows_by_id: Mapping[str, Mapping[str, object]],
+) -> tuple[dict[str, object] | None, tuple[str, ...]]:
+    fields = _mapping(row.get("fields")) or {}
+    input_ids = _input_fact_ids(fields)
+    if input_ids is None or len(input_ids) != 2:
+        return None, ("net_financial_effect_requires_two_aggregate_inputs",)
+    output_lineage, lineage_reasons = _lineage_projection(row)
+    if output_lineage is None:
+        return None, tuple(
+            dict.fromkeys(["net_financial_effect_lineage_invalid", *lineage_reasons])
+        )
+    if (
+        output_lineage.get("canonical_fact_type") != "DERIVED_METRIC"
+        or output_lineage.get("derivation_formula")
+        != _NET_FINANCIAL_EFFECT_FORMULA
+        or output_lineage.get("derivation_version")
+        != _NON_OPERATING_DERIVATION_VERSION
+        or tuple(output_lineage.get("ordered_input_fact_ids") or ()) != input_ids
+    ):
+        return None, ("net_financial_effect_lineage_invalid",)
+    input_rows = [rows_by_id.get(fact_id) for fact_id in input_ids]
+    if any(input_row is None for input_row in input_rows):
+        return None, ("net_financial_effect_input_ref_missing",)
+    identities: list[CanonicalFinancialIdentity] = []
+    fact_types: list[str] = []
+    for input_row in input_rows:
+        assert input_row is not None
+        identity, reasons = canonical_identity_from_fact_catalog(input_row)
+        if identity is None:
+            return None, tuple(
+                dict.fromkeys(["net_financial_effect_input_invalid", *reasons])
+            )
+        lineage, input_lineage_reasons = _lineage_projection(input_row)
+        if lineage is None or lineage.get("canonical_fact_type") != "REPORTED":
+            return None, tuple(
+                dict.fromkeys(
+                    ["net_financial_effect_input_not_reported", *input_lineage_reasons]
+                )
+            )
+        input_fields = _mapping(input_row.get("fields")) or {}
+        if _input_fact_ids(input_fields):
+            return None, ("net_financial_effect_input_has_derivation",)
+        identities.append(identity)
+        fact_types.append(str(input_row.get("fact_type") or ""))
+    income, cost = identities
+    reasons = list(_same_basis(current, identities))
+    if fact_types != [
+        "income_statement_financial_income",
+        "income_statement_financial_cost",
+    ]:
+        reasons.append("net_financial_effect_input_metric_order_invalid")
+    if income.financial_effect_scope != "finance_income_aggregate":
+        reasons.append("net_financial_effect_income_scope_invalid")
+    if cost.financial_effect_scope != "finance_cost_aggregate":
+        reasons.append("net_financial_effect_cost_scope_invalid")
+    if current.financial_effect_scope != "finance_net_aggregate":
+        reasons.append("net_financial_effect_output_scope_invalid")
+    if income.economic_role != "INCOME" or cost.economic_role != "EXPENSE":
+        reasons.append("net_financial_effect_economic_role_invalid")
+    if current.economic_role != "NET_EFFECT":
+        reasons.append("net_financial_effect_output_economic_role_invalid")
+    if current.presentation_type != "DERIVED_AGGREGATE":
+        reasons.append("net_financial_effect_output_presentation_type_invalid")
+    if len({item.continuity_scope for item in (current, income, cost)}) != 1:
+        reasons.append("net_financial_effect_continuity_scope_mismatch")
+    if income.value < 0 or cost.value < 0:
+        reasons.append("sign_semantics_unresolved")
+    if len({item.source_document_id for item in (current, income, cost)}) != 1:
+        reasons.append("derivation_source_document_id_mismatch")
+    if current.value != income.value - cost.value:
+        reasons.append("net_financial_effect_arithmetic_mismatch")
+    if reasons:
+        return None, tuple(dict.fromkeys(reasons))
+    return (
+        {
+            "formula": _NET_FINANCIAL_EFFECT_FORMULA,
+            "input_source_refs": [income.source_ref, cost.source_ref],
+            "version": _NON_OPERATING_DERIVATION_VERSION,
+        },
+        (),
+    )
+
+
 def adapt_fact_catalog_financial_context(
     row: Mapping[str, object],
     all_rows: Sequence[Mapping[str, object]],
@@ -1416,6 +1659,56 @@ def adapt_fact_catalog_financial_context(
             limitations.append("lease_liabilities_separate_context_only")
         if fact_type.startswith("balance_sheet_convertible_debt_"):
             limitations.append("convertible_dilution_terms_not_evaluated")
+    elif fact_type in _NON_OPERATING_FACT_TYPES:
+        if current.period_type == "POINT_IN_TIME":
+            return FinancialContextAdapterResult(
+                None,
+                ("non_operating_duration_period_required",),
+            )
+        if not all(
+            (
+                current.financial_effect_scope,
+                current.economic_role,
+                current.presentation_type,
+                current.continuity_scope,
+            )
+        ):
+            return FinancialContextAdapterResult(
+                None,
+                ("financial_effect_scope_metadata_missing",),
+            )
+        if input_ids:
+            if fact_type != _NON_OPERATING_NET_FACT_TYPE:
+                return FinancialContextAdapterResult(
+                    None,
+                    ("reported_non_operating_fact_has_derivation",),
+                )
+            derivation, derivation_reasons = _derived_net_financial_effect(
+                current,
+                row,
+                rows_by_id,
+            )
+            if derivation is None:
+                return FinancialContextAdapterResult(None, derivation_reasons)
+            evidence_status = "DERIVED_SAFE"
+        comparison = _prior_comparison(current, all_rows)
+        limitations.extend(("recurrence_not_determined", "not_normalized_earnings"))
+        if fact_type in {
+            "income_statement_other_income_context",
+            "income_statement_other_expense_context",
+        }:
+            limitations.append("broad_other_context_not_specific")
+        if fact_type == "income_statement_equity_method_result_context":
+            limitations.append("equity_method_separate_investment_result")
+        if fact_type in {
+            "income_statement_income_tax_expense",
+            "income_statement_income_tax_benefit",
+        }:
+            limitations.extend(
+                ("tax_not_operating_performance", "effective_tax_rate_not_derived")
+            )
+        if fact_type == "income_statement_discontinued_operations_result":
+            limitations.append("discontinued_not_ordinary_operating_performance")
     elif fact_type == "cash_flow_fcf_ppe":
         evidence_status = "DERIVED_SAFE"
         if fields.get("capex_scope") != "ppe_only":

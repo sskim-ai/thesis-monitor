@@ -75,6 +75,27 @@ class Metric(StrEnum):
     CURRENT_LIABILITIES = "current_liabilities"
     CONTRACT_ASSETS = "contract_assets_context"
     CONTRACT_LIABILITIES = "contract_liabilities_context"
+    FINANCIAL_INCOME = "financial_income"
+    FINANCIAL_COST = "financial_cost"
+    NET_FINANCIAL_INCOME_EFFECT = "net_financial_income_effect"
+    INTEREST_INCOME = "interest_income"
+    INTEREST_EXPENSE = "interest_expense"
+    FOREIGN_EXCHANGE_GAIN = "foreign_exchange_gain"
+    FOREIGN_EXCHANGE_LOSS = "foreign_exchange_loss"
+    FOREIGN_EXCHANGE_NET_EFFECT = "foreign_exchange_net_effect"
+    OTHER_INCOME_CONTEXT = "other_income_context"
+    OTHER_EXPENSE_CONTEXT = "other_expense_context"
+    ASSET_DISPOSAL_GAIN = "asset_disposal_gain"
+    ASSET_DISPOSAL_LOSS = "asset_disposal_loss"
+    ASSET_DISPOSAL_RESULT_CONTEXT = "asset_disposal_result_context"
+    FAIR_VALUE_GAIN = "fair_value_gain"
+    FAIR_VALUE_LOSS = "fair_value_loss"
+    FAIR_VALUE_RESULT_CONTEXT = "fair_value_result_context"
+    EQUITY_METHOD_RESULT_CONTEXT = "equity_method_result_context"
+    INCOME_TAX_EXPENSE = "income_tax_expense"
+    INCOME_TAX_BENEFIT = "income_tax_benefit"
+    CONTINUING_OPERATIONS_INCOME = "continuing_operations_income"
+    DISCONTINUED_OPERATIONS_RESULT = "discontinued_operations_result"
     EXCESS_CASH = "excess_cash"
     OCF_MARGIN = "operating_cash_flow_margin"
     FCF_MARGIN = "free_cash_flow_margin_ppe"
@@ -159,6 +180,11 @@ class FinancialFact:
     balance_scope: str | None = None
     net_gross_scope: str | None = None
     comparison_kind: str | None = None
+    attribution_basis: str | None = None
+    financial_effect_scope: str | None = None
+    economic_role: str | None = None
+    presentation_type: str | None = None
+    continuity_scope: str | None = None
 
 
 def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
@@ -268,6 +294,31 @@ def financial_fact_from_mapping(row: Mapping[str, object]) -> FinancialFact:
         comparison_kind=(
             str(row["comparison_kind"])
             if row.get("comparison_kind") is not None
+            else None
+        ),
+        attribution_basis=(
+            str(row["attribution_basis"])
+            if row.get("attribution_basis") is not None
+            else None
+        ),
+        financial_effect_scope=(
+            str(row["financial_effect_scope"])
+            if row.get("financial_effect_scope") is not None
+            else None
+        ),
+        economic_role=(
+            str(row["economic_role"])
+            if row.get("economic_role") is not None
+            else None
+        ),
+        presentation_type=(
+            str(row["presentation_type"])
+            if row.get("presentation_type") is not None
+            else None
+        ),
+        continuity_scope=(
+            str(row["continuity_scope"])
+            if row.get("continuity_scope") is not None
             else None
         ),
     )

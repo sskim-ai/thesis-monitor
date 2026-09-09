@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m9-interest-bearing-debt-liquidity-v1
+**버전:** 2026-09-09 / m11-non-operating-financial-income-effects-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M9 완료 — interest-bearing debt/liquidity canonical mapping, working-capital mapping이 다음 범위`
+**현재 위치:** `M11 완료 — 6개 금융 evidence domain mapping 완료, Directional financial_context 소비가 다음 범위`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M9는 정확한 official balance-sheet semantic에서 cash와 interest-bearing debt component를 만들고, complete·non-overlapping·same-date/basis인 경우에만 debt total과 net debt를 파생한다. compact AI input, prompt, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
+**M11은 official income-statement occurrence에서 financial income/cost와 구분 가능한 non-operating component를 direct canonical fact로 보존하고, 호환되는 aggregate finance income/cost만 net financial effect로 파생한다. normalized earnings, compact AI input, prompt, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -538,13 +538,13 @@ Master 갱신 때마다 기록:
 5. 최신 운영 관측 시각과 운영 변경 유무.
 6. 후속 phase의 진입 조건.
 
-이 문서의 M0~M7 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
+이 문서의 M0~M11 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
 
 ---
 
-## 11. M10 결론과 다음 한 작업
+## 11. M11 결론과 다음 한 작업
 
-**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현, M10 inventory/receivables/payables와 명시적 balance-comparison mapping 구현.
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현, M10 inventory/receivables/payables와 명시적 balance-comparison mapping 구현, M11 non-operating/financial-income effects exact mapping과 bounded net-financial-effect derivation 구현.
 
 M8 source-class 판정:
 
@@ -558,15 +558,23 @@ HUT은 보존된 추출 결과에 OCF만 있고 원본 CompanyFacts concept set�
 
 KR은 실제 7개 보존 OpenDART full-statement/XBRL cache에서 동일 원인을 확인했다. `ConsolidatedAndSeparateFinancialStatementsAxis`라는 축 이름 자체에 두 basis 단어가 함께 있어 이전 parser가 모호하다고 판단했지만, 실제 member는 각 context에서 `ConsolidatedMember` 또는 `SeparateMember`로 단일하다. M8은 basis member를 우선하고 exact taxonomy·amount·KRW unit·entity·duration·filing identity가 모두 일치할 때만 direct reported canonical fact로 승격한다. 7개 issuer의 OCF/PPE source fact는 exact YTD context로 재현됐고 ticker 분기는 0이다. 보험 1개는 source evidence 보존과 generic enterprise FCF applicability를 분리해 기존 N/A를 유지한다.
 
-**권장 다음 한 작업, 아직 미승인:** `NON_OPERATING_FINANCIAL_INCOME_EFFECTS_MAPPING_IMPLEMENTATION`.
-- M4의 남은 higher-risk financial domain인 non-operating/financial-income effects만 별도 bounded package로 다룬다.
-- M10의 balance fact를 Directional Core가 소비하거나 working-capital warning으로 활성화하지 않는다.
+M11 contract는 `non-operating-financial-income-effects-v1`이다. Direct source 금액의 부호와 official presentation을 보존하고 financial income, financial cost, interest income/expense, FX gain/loss, disposal·fair-value effect, broad other context, equity-method context, tax, continuing/discontinued result를 서로 다른 semantic으로 유지한다. 유일한 파생은 exact official aggregate finance income minus compatible aggregate finance cost이며, official direct net가 있으면 이를 우선한다. Child component만으로 total을 합성하거나 aggregate와 child를 이중 합산하지 않는다.
+
+보존된 실제 KR 자료에서는 비금융 6개 모두 finance income/cost와 tax direct fact가 있었고, safe net-financial-effect는 6개 issuer에서 확인됐다. 이 중 5개는 동일 document·period·currency·unit·entity·basis·attribution의 aggregate 두 입력에서 파생됐고 1개는 official direct net다. Interest income/expense는 각각 1개 issuer에서만 exact direct fact로 확인됐다. Aggregate/child overlap 8건은 parent precedence와 child descriptive preservation으로 처리했으며 합산 0, source conflict 0, sign-ambiguous derivation 0이다. 보험 1개는 `SECTOR_FRAMEWORK_REQUIRED`로 분리해 generic emission 0을 유지한다.
+
+보존된 US/foreign income-statement 원본은 0개이므로 M11은 실 US issuer coverage를 주장하지 않는다. SEC CompanyFacts adapter의 exact taxonomy capability는 fixture로만 검증하며 issuer별 실제 coverage와 구분한다. Broad other income/expense는 context-only이고 equity-method와 tax는 operating performance나 finance aggregate로 재분류하지 않는다. Universal non-operating total, reconstructed operating profit, adjusted/normalized earnings·EPS, ETR, recurrence/materiality score 파생은 모두 0이다.
+
+6개 financial domain의 model-free 검토 결과는 `READY_WITH_KNOWN_OPTIONAL_GAPS`다. 남은 공백은 US 실 archive와 sector-specific framework 같은 선택적 source/industry 범위이며, 다음 Directional specificity 구현을 막는 generic schema/semantic gap은 확인되지 않았다.
+
+**권장 다음 한 작업, 아직 미승인:** `DIRECTIONAL_FINANCIAL_CONTEXT_CONSUMPTION_AND_SPECIFICITY_IMPLEMENTATION`.
+- M5~M11 typed financial context 중 claim과 sector에 필요한 최소 evidence만 Directional Core에 공급한다.
+- data activation과 최종 real-model proof를 분리한다.
+- source-sufficiency gate, Daily Delta, warning, Price-Timing, renderer, production 활성화와 schedule resume는 계속 포함하지 않는다.
 - financial-sector capital framework와 `010120`의 ambiguous convertible preferred liability는 별도 문제로 유지한다.
-- source-sufficiency gate, 모델 holdout, production 활성화와 schedule resume는 계속 포함하지 않는다.
 
 M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
 
-6개 도메인 모두 missing을 negative로 바꾸지 않는다. 새 universal source gate는 0개다. debt/liquidity만 financing-dependent sector/framework의 조건부 gate 후보이며, 실제 gate 변경 전 별도 coverage 검토가 필요하다. CCC·ROIC, maintenance capex, generic net debt, partial capex를 company FCF로 부르는 경로는 허용하지 않는다.
+6개 도메인 모두 missing을 negative로 바꾸지 않는다. 새 universal source gate는 0개다. debt/liquidity만 financing-dependent sector/framework의 조건부 gate 후보이며, 실제 gate 변경 전 별도 coverage 검토가 필요하다. CCC·ROIC, maintenance capex, generic net debt, partial capex를 company FCF로 부르는 경로는 허용하지 않는다. M11 fact도 Directional Core, compact AI context, source sufficiency, Daily Delta 또는 warning에 아직 소비되지 않는다.
 
 **새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
 
@@ -611,7 +619,7 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 | current assets minus current liabilities를 operating working capital로 사용 | M10에서 universal NWC/OWC 공식과 DSO/DIO/DPO/CCC 파생을 모두 금지 |
 | 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
 
-이번 갱신은 M10 비운영 inventory/receivables/payables/current/contract balance mapping과 명시적 comparison-kind lineage를 반영한다. 완료 의미는 `M10_COMPLETE`이며 `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
+이번 갱신은 M11 non-operating/financial-income effects direct mapping, statement-presentation 보존, aggregate/child overlap 제어와 bounded net-financial-effect derivation을 반영한다. 완료 의미는 `M11_COMPLETE`이며 `financial_domain_coverage_readiness=READY_WITH_KNOWN_OPTIONAL_GAPS`, `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
 
 ---
 

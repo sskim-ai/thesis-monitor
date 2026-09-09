@@ -63,6 +63,41 @@ _FACT_TYPE_BY_METRIC = {
     Metric.CONTRACT_ASSETS: "balance_sheet_contract_assets_context",
     Metric.CONTRACT_LIABILITIES: "balance_sheet_contract_liabilities_context",
     Metric.BALANCE_DELTA: "balance_sheet_working_capital_balance_delta",
+    Metric.FINANCIAL_INCOME: "income_statement_financial_income",
+    Metric.FINANCIAL_COST: "income_statement_financial_cost",
+    Metric.NET_FINANCIAL_INCOME_EFFECT: (
+        "income_statement_net_financial_income_effect"
+    ),
+    Metric.INTEREST_INCOME: "income_statement_interest_income",
+    Metric.INTEREST_EXPENSE: "income_statement_interest_expense",
+    Metric.FOREIGN_EXCHANGE_GAIN: "income_statement_foreign_exchange_gain",
+    Metric.FOREIGN_EXCHANGE_LOSS: "income_statement_foreign_exchange_loss",
+    Metric.FOREIGN_EXCHANGE_NET_EFFECT: (
+        "income_statement_foreign_exchange_net_effect"
+    ),
+    Metric.OTHER_INCOME_CONTEXT: "income_statement_other_income_context",
+    Metric.OTHER_EXPENSE_CONTEXT: "income_statement_other_expense_context",
+    Metric.ASSET_DISPOSAL_GAIN: "income_statement_asset_disposal_gain",
+    Metric.ASSET_DISPOSAL_LOSS: "income_statement_asset_disposal_loss",
+    Metric.ASSET_DISPOSAL_RESULT_CONTEXT: (
+        "income_statement_asset_disposal_result_context"
+    ),
+    Metric.FAIR_VALUE_GAIN: "income_statement_fair_value_gain",
+    Metric.FAIR_VALUE_LOSS: "income_statement_fair_value_loss",
+    Metric.FAIR_VALUE_RESULT_CONTEXT: (
+        "income_statement_fair_value_result_context"
+    ),
+    Metric.EQUITY_METHOD_RESULT_CONTEXT: (
+        "income_statement_equity_method_result_context"
+    ),
+    Metric.INCOME_TAX_EXPENSE: "income_statement_income_tax_expense",
+    Metric.INCOME_TAX_BENEFIT: "income_statement_income_tax_benefit",
+    Metric.CONTINUING_OPERATIONS_INCOME: (
+        "income_statement_continuing_operations_income"
+    ),
+    Metric.DISCONTINUED_OPERATIONS_RESULT: (
+        "income_statement_discontinued_operations_result"
+    ),
 }
 
 _CASH_FLOW_METRICS = frozenset({Metric.OCF, Metric.CAPEX, Metric.FCF})
@@ -128,6 +163,16 @@ def canonical_lineage_projection(fact: FinancialFact) -> dict[str, object]:
         payload["net_gross_scope"] = fact.net_gross_scope
     if fact.comparison_kind is not None:
         payload["comparison_kind"] = fact.comparison_kind
+    for field_name in (
+        "attribution_basis",
+        "financial_effect_scope",
+        "economic_role",
+        "presentation_type",
+        "continuity_scope",
+    ):
+        field_value = getattr(fact, field_name)
+        if field_value is not None:
+            payload[field_name] = field_value
     payload["lineage_sha256"] = lineage_projection_digest(payload)
     return payload
 
@@ -230,6 +275,16 @@ def _fact_catalog_entry(
         fields["net_gross_scope"] = fact.net_gross_scope
     if fact.comparison_kind is not None:
         fields["comparison_kind"] = fact.comparison_kind
+    for field_name in (
+        "attribution_basis",
+        "financial_effect_scope",
+        "economic_role",
+        "presentation_type",
+        "continuity_scope",
+    ):
+        field_value = getattr(fact, field_name)
+        if field_value is not None:
+            fields[field_name] = field_value
     if support_only:
         return with_fact_consumer_scopes(
             row,
