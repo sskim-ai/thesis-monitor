@@ -181,7 +181,12 @@ def test_missing_required_receipt_is_preservation_failure_and_stop(tmp_path: Pat
     assert classification["stop_remaining_calls"] is True
 
 
-def test_fixed_fixture_is_fictional_us4_and_comparable_core_size() -> None:
+def test_fixed_fixture_is_fictional_us4_and_comparable_core_size(monkeypatch) -> None:
+    # This historical transport comparison holds its pre-M12E calibration text fixed.
+    prior = Path("fixtures/pre_m12e_ordinal_calibration_prompt.txt").read_text().strip()
+    monkeypatch.setattr(
+        diagnostic.frozen, "directional_balance_ordinal_calibration_prompt", lambda: prior
+    )
     generation = "20260907-fictional-websocket-diagnostic-20260907T000000Z-000000000000"
 
     owned, _catalogs, prompt, schema = diagnostic.build_fixture(generation)

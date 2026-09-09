@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scripts import first_class_typed_financial_evidence_m12b as m12b
+from scripts import financial_boundary_calibration_m12e as m12e
 
 
 def test_projection_is_selected_only_first_class_and_catalog_ordered() -> None:
@@ -46,7 +47,11 @@ def test_old_and_corrected_financial_grounding_regressions_are_preserved() -> No
 def test_frozen_semantic_surfaces_remain_unchanged() -> None:
     frozen = m12b._frozen_surfaces()
 
-    assert all(row["status"] == "PASS" for row in frozen.values())
+    # M12E explicitly evolves only the shared calibration prose, not its executable contract.
+    assert all(row["status"] == "PASS" for name, row in frozen.items() if name != "calibration")
+    assert m12e.without_prompt(m12b._git_file(m12b.BASE_SHA, m12e.SERVICE)) == (
+        m12e.without_prompt(m12e.Path(m12e.SERVICE).read_text())
+    )
     assert frozen["core_prompt"]["change_count"] == 0
     assert frozen["timing_prompt"]["change_count"] == 0
     assert frozen["selector"]["change_count"] == 0

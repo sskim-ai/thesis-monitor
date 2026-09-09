@@ -31,6 +31,11 @@ SERVICE = "app/services/directional_balance_service.py"
 FIXTURE = Path("fixtures/financial_boundary_calibration_m12e.json")
 SCRIPT = Path("scripts/financial_boundary_calibration_m12e.py")
 TEST = Path("tests/test_financial_boundary_calibration_m12e.py")
+HISTORICAL_TESTS = {
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py",
+    "tests/test_partial_output_forensics_transport_stall_review.py",
+}
 LATEST = Path(
     "/Users/sskim/Documents/Codex/thesis-monitor-20260909-bounded-directional-financial-context-stability-review-report.zip"
 )
@@ -135,11 +140,18 @@ def freeze_audit():
         p
         for p in existing
         if p.endswith(".py")
-        and p != SERVICE
+        and p not in {SERVICE, *HISTORICAL_TESTS}
         and (not Path(p).is_file() or base_bytes(p) != Path(p).read_bytes())
     ]
     path_changes = git("diff", "--name-only", INSTRUCTION_COMMIT).splitlines()
-    allowed = {SERVICE, str(FIXTURE), str(SCRIPT), str(TEST)}
+    allowed = {
+        SERVICE,
+        str(FIXTURE),
+        str(SCRIPT),
+        str(TEST),
+        *HISTORICAL_TESTS,
+        "fixtures/pre_m12e_ordinal_calibration_prompt.txt",
+    }
     unexpected = [p for p in path_changes if p not in allowed and not p.startswith("docs/")]
     checks = {
         "existing_prompt_preserved": new_prompt.startswith(old_prompt),
@@ -715,6 +727,15 @@ def finalize():
 def bundle():
     destination = Path("/Users/sskim/Documents/Codex") / f"thesis-monitor-{NAME}-report.zip"
     rows = [("reports/" + p.name, p) for p in sorted(REPORTS.glob("*.json"))]
+    previous = OUTPUT.with_name(OUTPUT.name + "-phase-a-attempt-1")
+    rows += [
+        ("initial-validation/" + str(p.relative_to(previous)), p)
+        for p in sorted(previous.rglob("*"))
+        if p.is_file()
+    ]
+    rows += [(str(p), p) for p in map(Path, sorted(HISTORICAL_TESTS))]
+    prior_prompt = Path("fixtures/pre_m12e_ordinal_calibration_prompt.txt")
+    rows.append((str(prior_prompt), prior_prompt))
     rows += [
         ("experiment/" + str(p.relative_to(OUTPUT)), p)
         for p in sorted(OUTPUT.rglob("*"))

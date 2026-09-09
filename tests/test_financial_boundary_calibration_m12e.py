@@ -96,6 +96,11 @@ def test_all_required_reports_are_distinct():
     assert len(audit.SLUGS) == len(set(audit.SLUGS)) == 59
 
 
+def test_historical_transport_prompt_is_exact_prior_text():
+    prior = audit.Path("fixtures/pre_m12e_ordinal_calibration_prompt.txt").read_text().strip()
+    assert prior == audit.prompt_value(audit.base_bytes(audit.SERVICE).decode())
+
+
 def test_runtime_only_accepts_frozen_phase_a_gate(tmp_path, monkeypatch):
     monkeypatch.setattr(audit, "OUTPUT", tmp_path)
     (tmp_path / "phase-a-receipt.json").write_text(json.dumps({"status": "FAIL"}))

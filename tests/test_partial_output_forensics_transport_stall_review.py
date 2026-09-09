@@ -54,7 +54,13 @@ def test_recovered_core_audit_is_core_only() -> None:
 
 def test_probe_precommit_is_fictional_same_namespace_and_sized(
     tmp_path: Path,
+    monkeypatch,
 ) -> None:
+    # Preserve the historical 15-20 KB comparison; do not relax the transport size gate.
+    prior = Path("fixtures/pre_m12e_ordinal_calibration_prompt.txt").read_text().strip()
+    monkeypatch.setattr(
+        review.frozen, "directional_balance_ordinal_calibration_prompt", lambda: prior
+    )
     rows, namespace = review.build_probe_inputs(tmp_path, "fictional-generation")
 
     assert [row["market_mix"] for row in rows] == [
