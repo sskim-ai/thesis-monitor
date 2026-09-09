@@ -203,6 +203,75 @@ def _file_freeze(path: str) -> dict[str, object]:
     }
 
 
+def _launchd_label_disabled(output: str, label: str) -> bool:
+    return any(
+        marker in output
+        for marker in (
+            f'"{label}" => true',
+            f'"{label}" => disabled',
+        )
+    )
+
+
+def _schedule_observation() -> dict[str, object]:
+    automation_ids = (
+        "thesis-monitor-ai-review-us-primary",
+        "thesis-monitor-ai-review-us-backup",
+        "thesis-monitor-ai-review-kr-primary",
+        "thesis-monitor-ai-review-kr-backup",
+    )
+    automation_rows = []
+    for automation_id in automation_ids:
+        path = Path.home() / ".codex" / "automations" / automation_id / "automation.toml"
+        text = path.read_text(encoding="utf-8") if path.is_file() else ""
+        automation_rows.append(
+            {
+                "id": automation_id,
+                "status": (
+                    "PAUSED"
+                    if 'status = "PAUSED"' in text
+                    else "NOT_CONFIRMED_PAUSED"
+                ),
+                "path_exists": path.is_file(),
+            }
+        )
+    launch_labels = (
+        "com.seungsoo.thesis-monitor.daily",
+        "com.seungsoo.thesis-monitor.kr-close",
+        "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+    )
+    result = subprocess.run(
+        ["launchctl", "print-disabled", f"gui/{os.getuid()}"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    launch_rows = [
+        {
+            "id": label,
+            "status": (
+                "PAUSED"
+                if _launchd_label_disabled(result.stdout, label)
+                else "NOT_CONFIRMED_PAUSED"
+            ),
+        }
+        for label in launch_labels
+    ]
+    rows = [*automation_rows, *launch_rows]
+    paused = sum(row["status"] == "PAUSED" for row in rows)
+    return {
+        "contract": "m12r-schedule-pause-observation-v1",
+        "observed_at": datetime.now(UTC).isoformat(),
+        "rows": rows,
+        "launchctl_returncode": result.returncode,
+        "observed_paused_schedule_count": paused,
+        "scheduler_mutation_count": 0,
+        "automatic_monitoring_resume": 0,
+        "status": "PASS" if paused == 8 else "REVIEW",
+    }
+
+
 def _period_fixture_refs() -> tuple[object, object]:
     refs, _framework = m12._case_refs("FIC-FIN-03")
     qtd = next(
@@ -645,7 +714,7 @@ def phase_a(args: argparse.Namespace) -> None:
         "notification": _file_freeze("app/services/notification_service.py"),
     }
     validations = _validation_commands(args.output_root)
-    schedule = m12._schedule_observation()
+    schedule = _schedule_observation()
 
     changed_paths = tuple(
         path
@@ -1395,7 +1464,7 @@ def finalize(args: argparse.Namespace) -> None:
     schedule_start = m12.read_json(
         _report_path(args.report_dir, 40, "schedule-pause-observation")
     )
-    schedule_end = m12._schedule_observation()
+    schedule_end = _schedule_observation()
     schedule = {
         "contract": "m12r-schedule-pause-start-end-observation-v1",
         "start": schedule_start["start"],

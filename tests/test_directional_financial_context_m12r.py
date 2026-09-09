@@ -39,3 +39,11 @@ def test_generation_normalization_changes_identity_only() -> None:
     assert m12r._normalized_json_sha(
         left, "old-generation"
     ) == m12r._normalized_json_sha(right, "new-generation")
+
+
+def test_launchd_pause_parser_accepts_boolean_and_named_disabled_forms() -> None:
+    label = "com.example.monitor"
+
+    assert m12r._launchd_label_disabled(f'"{label}" => true', label)
+    assert m12r._launchd_label_disabled(f'"{label}" => disabled', label)
+    assert not m12r._launchd_label_disabled(f'"{label}" => enabled', label)
