@@ -1,0 +1,24 @@
+{
+  "contract": "m12c-working-capital-grounding-trigger-audit-v1",
+  "validator_path": "scripts/directional_financial_context_m12g.py",
+  "validator_sha256_before_repair": "4b1d775612437e98348d320699f5058a7f643c2c20bc7a567dcad4b332b606df",
+  "current_logic": {
+    "selected_families": "all selected metric families",
+    "relevant_claim_rows": "claim text family intersects selected families",
+    "checkpoint_rows": "WORKING_CAPITAL appears in intersected families and path matches checkpoint markers",
+    "working_capital_required": "selected WORKING_CAPITAL family exists and checkpoint_rows is non-empty",
+    "working_capital_grounded": "at least one checkpoint row has any relevant selected typed ref"
+  },
+  "defect_trace": {
+    "selected_inventory_ref_exists": true,
+    "explicit_inventory_checkpoint_claim_exists": false,
+    "generic_working_capital_checkpoint_claim_exists": true,
+    "inventory_ref_used_in_context_unknown": true,
+    "cash_conversion_material_anchor_grounded": true,
+    "current_working_capital_required": true,
+    "result": "FALSE_REJECT"
+  },
+  "intended_logic": "Require WC grounding only when a material checkpoint claim uses an explicit selected WC metric; generic working-capital narrative alone does not inherit a requirement from selection.",
+  "production_validator_fictional_branch_count": 0,
+  "status": "PASS"
+}

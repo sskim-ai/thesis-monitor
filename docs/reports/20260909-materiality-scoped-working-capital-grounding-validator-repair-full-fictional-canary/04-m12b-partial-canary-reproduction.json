@@ -1,0 +1,42 @@
+{
+  "contract": "m12c-m12b-partial-canary-reproduction-v1",
+  "generation_id": "20260909-m12b-fictional-20260909T085320Z-746ef9ba1586",
+  "completed_contexts": [
+    {
+      "run": 1,
+      "context": 1,
+      "status": "PASS"
+    },
+    {
+      "run": 1,
+      "context": 2,
+      "status": "PASS"
+    },
+    {
+      "run": 2,
+      "context": 1,
+      "transport_status": "PASS",
+      "schema_pass_count": 4,
+      "subject_count": 4,
+      "status": "FAIL"
+    }
+  ],
+  "completed_model_calls": 3,
+  "intended_model_calls": 6,
+  "completed_subject_rows": 12,
+  "intended_subject_rows": 24,
+  "selected_typed_ref_count": 26,
+  "first_class_typed_ref_count": 26,
+  "used_typed_ref_count": 26,
+  "material_financial_anchor_grounding_failure_count": 0,
+  "working_capital_grounding_failure_count": 1,
+  "narrative_substitution_failure_count": 0,
+  "irrelevant_financial_ref_grounding_failure_count": 0,
+  "wrapper_retry_count": 0,
+  "timeout_count": 0,
+  "capacity_failure_count": 0,
+  "orphan_process_count": 0,
+  "formal_stability": "NOT_MEASURED",
+  "reproduced_with_current_validator": true,
+  "status": "PASS"
+}

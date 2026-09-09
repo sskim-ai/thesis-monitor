@@ -1,0 +1,27 @@
+{
+  "contract": "m12c-grounding-validator-root-cause-v1",
+  "frozen_at": "2026-09-09T09:47:44Z",
+  "frozen_repository_head": "6a75e839fd05d7d8b095ae5d23180f621b7abb3a",
+  "code_changes_before_root_cause_freeze": 0,
+  "model_calls_before_root_cause_freeze": 0,
+  "classification": "SELECTION_TRIGGERED_OVERREACH",
+  "branch_decision": "BRANCH_A",
+  "evidence": [
+    "FIC-FIN-02 focal domain is CASH_CONVERSION and its OCF/cash-conversion anchors are materially grounded.",
+    "The selected inventory fact is directly cited in an Unknown/context claim and is not promoted to an inventory-specific reevaluation condition.",
+    "The only checkpoint texts are generic working-capital risk statements supported by narrative risk/unknown refs.",
+    "Current validator makes generic WORKING_CAPITAL token membership intersect selected inventory family, then treats checkpoint-path presence as a hard requirement.",
+    "FIC-FIN-06 controls prove explicit inventory/receivables claims still need typed WC grounding."
+  ],
+  "repair_authorized": true,
+  "repair_boundary": "Replace selection-triggered generic WC checkpoint requirement with material-claim/explicit-metric-use triggering; preserve candidate-level hard failure for explicit inventory/AR/AP checkpoint claims without matching typed grounding.",
+  "forbidden": [
+    "ticker-specific branch",
+    "fictional case-specific branch",
+    "prompt change",
+    "output schema change",
+    "validator threshold relaxation outside working-capital trigger"
+  ],
+  "next_step": "BOUNDED_GENERIC_VALIDATOR_REPAIR",
+  "status": "FROZEN"
+}

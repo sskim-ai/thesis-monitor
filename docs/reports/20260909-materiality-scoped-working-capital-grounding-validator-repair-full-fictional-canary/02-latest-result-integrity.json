@@ -1,0 +1,14 @@
+{
+  "contract": "m12c-latest-result-integrity-v1",
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary-report.zip",
+  "expected_sha256": "66b53e4991ec46774f2000c871650d2a4390bd88505cc4ae802be0bbc17844cd",
+  "actual_sha256": "66b53e4991ec46774f2000c871650d2a4390bd88505cc4ae802be0bbc17844cd",
+  "indexed_payload_count": 112,
+  "artifact_missing_count": 0,
+  "artifact_extra_count": 0,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "zip_test_failure": null,
+  "checked_at": "2026-09-09T09:47:44Z",
+  "status": "PASS"
+}
