@@ -1,0 +1,28 @@
+{
+  "allowed_changes": [
+    "generic QTD/YTD validator relation-language coverage",
+    "QTD/YTD validator fixtures and regressions",
+    "M12D evidence orchestration and reports"
+  ],
+  "branch_decision": "BRANCH_A_BOUNDED_VALIDATOR_FALSE_REJECT_REPAIR",
+  "contract": "m12d-scope-freeze-v1",
+  "fictional_cases_frozen": true,
+  "first_class_typed_evidence_architecture_frozen": true,
+  "fresh_real_issuer_proof_allowed": false,
+  "frozen_at": "2026-09-09T11:13:49Z",
+  "monitoring_schedules_must_remain_paused": true,
+  "production_changes_allowed": false,
+  "prohibited_changes": [
+    "working-capital grounding validator",
+    "financial-context selection",
+    "Directional prompt",
+    "Price-Timing prompt",
+    "output schema",
+    "directional thresholds or increments",
+    "HOLD lean or calibration tie-break",
+    "source mappings or sufficiency",
+    "renderer ownership",
+    "Daily Delta, lifecycle, warnings, production delivery"
+  ],
+  "status": "FROZEN"
+}

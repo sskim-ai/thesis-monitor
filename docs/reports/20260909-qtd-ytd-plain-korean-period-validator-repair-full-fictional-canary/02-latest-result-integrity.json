@@ -1,0 +1,14 @@
+{
+  "artifact_hash_mismatch_count": 0,
+  "artifact_index_contract": "m12c-artifact-index-v1",
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "contract": "m12d-latest-result-integrity-v1",
+  "expected_sha256": "2ce3b4e501743fb9e640b62807a96658e54b1f682298a486ea0d0c3dc32dd92e",
+  "independent_payload_hash_check": "PASS",
+  "independent_payload_size_check": "PASS",
+  "latest_result_bundle": "thesis-monitor-20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary-report.zip",
+  "observed_sha256": "2ce3b4e501743fb9e640b62807a96658e54b1f682298a486ea0d0c3dc32dd92e",
+  "payload_count": 121,
+  "status": "PASS"
+}

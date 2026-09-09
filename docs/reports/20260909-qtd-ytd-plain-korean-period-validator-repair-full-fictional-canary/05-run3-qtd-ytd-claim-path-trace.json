@@ -1,0 +1,57 @@
+{
+  "contract": "m12d-run3-qtd-ytd-claim-path-trace-v1",
+  "explicit_claim_count_before": 0,
+  "linked_claim_count": 7,
+  "rows": [
+    {
+      "path": "business_reevaluation_up[0].text",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "분기 영업흑자가 다음 보고기간에도 지속되고 누적 영업손실이 해소되는 경우다.",
+      "ytd_marker": true
+    },
+    {
+      "path": "core_investment_judgment.text",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "분기 영업흑자와 누적 영업손실이 상충해 어느 방향의 충분성도 확보되지 않았다.",
+      "ytd_marker": true
+    },
+    {
+      "path": "dominant_evidence.text",
+      "qtd_marker": false,
+      "relation_marker": false,
+      "text": "서로 다른 기간의 영업흑자와 영업손실이 동시에 존재한다.",
+      "ytd_marker": false
+    },
+    {
+      "path": "earnings_estimate_context.text",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "분기 영업흑자와 누적 영업손실을 기간별로 구분해 함께 반영한다.",
+      "ytd_marker": true
+    },
+    {
+      "path": "fundamental_holder.business_invalidation_condition",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "분기 영업흑자가 이어지지 않고 누적 영업손실이 해소되지 않는 경우다.",
+      "ytd_marker": true
+    },
+    {
+      "path": "fundamental_new_buyer.confirmation_business_condition",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "분기 영업흑자가 다음 보고기간에도 이어지고 누적 영업손실이 해소되는 경우다.",
+      "ytd_marker": true
+    },
+    {
+      "path": "sector_interpretation.text",
+      "qtd_marker": true,
+      "relation_marker": false,
+      "text": "기간별 영업 근거를 우선하며 분기와 누적 결과를 섞지 않는다.",
+      "ytd_marker": true
+    }
+  ],
+  "status": "FROZEN"
+}
