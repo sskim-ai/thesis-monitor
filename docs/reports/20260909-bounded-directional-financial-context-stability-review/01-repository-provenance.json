@@ -2,7 +2,7 @@
   "base_sha": "ba511cd1c46a6b3fb0758f56eafa3f190af50884",
   "branch": "codex/20260909-bounded-directional-financial-context-stability-review",
   "contract": "m12s-repository-provenance-v1",
-  "current_head_sha": "8dfe7dadb5f90375d547bd55217437c6420658a2",
+  "current_head_sha": "76f882803af3f5e05bc0d31e4e7a30b2f41a8dbf",
   "implementation_commit": "8dfe7dadb5f90375d547bd55217437c6420658a2",
   "origin_main_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
   "production_module_freeze": {
@@ -35,7 +35,7 @@
     ],
     "status": "PASS"
   },
-  "report_commit": "NOT_MEASURED",
+  "report_commit": "76f882803af3f5e05bc0d31e4e7a30b2f41a8dbf",
   "status": "PASS",
   "work_instruction_commit": "1c50d011d9bb12665fb0b5075eff1077c5557ea4"
 }
