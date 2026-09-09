@@ -3,7 +3,7 @@
   "contract": "m12a-schedule-pause-observation-v1",
   "launchctl_returncode": 0,
   "observation_parser_contract": "m12r-schedule-pause-observation-v1",
-  "observed_at": "2026-09-09T07:39:05.238877+00:00",
+  "observed_at": "2026-09-09T07:42:48.931913+00:00",
   "observed_paused_schedule_count": 8,
   "rows": [
     {

@@ -626,7 +626,7 @@ Deterministic gate는 보존 FIC-FIN-03 PASS, 기존 FIC-FIN-06 FAIL 유지, typ
 
 ## 12A. M12A financial-context output grounding architecture review
 
-M12A work-instruction commit은 `938569446f309376c3519dd63fd33d505c790e57`, offline review/prototype 최종 implementation commit은 `d25051be68ca2990ee159f974f57c36bb6b26ee2`다. authoritative M12G bundle SHA `69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68`를 다시 계산했고 indexed payload `160`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
+M12A work-instruction commit은 `938569446f309376c3519dd63fd33d505c790e57`, offline review/prototype 최종 implementation commit은 `20e5fec5bf0b243e6205c48aa4f875c37b203164`다. authoritative M12G bundle SHA `69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68`를 다시 계산했고 indexed payload `160`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
 
 현재 grounding 흐름을 끝까지 추적한 결과 alias 체계 자체는 이미 하나다. `stage_alias_catalogs`는 narrative ref와 selector가 고른 typed financial ref를 동일 `EvidenceAliasCatalog`에 넣고, 기존 alias resolver와 output `evidence_refs`도 양쪽을 동일하게 해석할 수 있다. 실제 split은 모델 입력 직전 `scripts/directional_core_price_timing_holdout.py::_owned_context`에서 생긴다. 선택된 typed financial alias `15/15`는 catalog에 있지만 ordinary `evidence[]`에는 `0/15`이고, 별도 `financial_decision_context.evidence_items[]`에만 들어간다. typed alias의 catalog statement `15/15`도 `{"value":"..."}` 형태라 narrative alias보다 사람에게 보이는 의미가 약하다.
 

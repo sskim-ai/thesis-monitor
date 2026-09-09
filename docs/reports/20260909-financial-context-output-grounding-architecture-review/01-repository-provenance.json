@@ -4,7 +4,7 @@
   "contract": "m12a-repository-provenance-v1",
   "final_head_sha": "NOT_MEASURED",
   "head_descends_from_base": true,
-  "implementation_commit": "d25051be68ca2990ee159f974f57c36bb6b26ee2",
+  "implementation_commit": "20e5fec5bf0b243e6205c48aa4f875c37b203164",
   "report_commit": "NOT_MEASURED",
   "status": "PASS",
   "work_instruction_commit": "938569446f309376c3519dd63fd33d505c790e57"
