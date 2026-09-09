@@ -23,6 +23,7 @@ from app.services.directional_financial_context_service import (
 from app.services.structured_autonomy_alias_service import EvidenceAliasCatalog
 from scripts import directional_financial_context_m12 as m12
 from scripts import directional_financial_context_m12g as m12g
+from scripts import directional_financial_context_m12r as m12r
 
 
 PROGRAM_CONTRACT = "financial-context-output-grounding-architecture-review-m12a-v1"
@@ -1014,6 +1015,7 @@ def validate(args: argparse.Namespace) -> None:
             "tests/test_directional_financial_context_service.py",
             "tests/test_direction_timing_ownership_service.py",
             "tests/test_structured_autonomy_alias_service.py",
+            "tests/test_directional_financial_context_m12r.py",
             "tests/test_directional_financial_context_m12g.py",
         )
     )
@@ -1422,7 +1424,7 @@ def generate(args: argparse.Namespace) -> None:
     alias_audit = _current_alias_audit(state)
     ergonomics = _ergonomics_audit(state)
     validation = _validation_summary(output_root)
-    schedule = m12._schedule_observation()
+    schedule = m12r._schedule_observation()
     implementation_commit = _git("rev-parse", "HEAD")
     branch = _git("branch", "--show-current")
 
