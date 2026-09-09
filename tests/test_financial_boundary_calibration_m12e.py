@@ -11,13 +11,15 @@ from app.services.directional_balance_service import (
 )
 from scripts import financial_boundary_calibration_m12e as audit
 from scripts import directional_financial_context_m12 as m12
+from scripts import financial_exclusion_leverage_m12f as m12f
 
 
 def test_calibration_preserves_nonprompt_code_and_other_owners():
-    result = audit.freeze_audit()
+    # M12F permits exclusion validation only; M12E calibration remains byte-identical.
+    result = m12f.freeze_audit()
     assert result["status"] == "PASS", result
-    assert len(result["additions"]) == 4
-    assert result["changed_other_python"] == []
+    assert result["prompt_change_count"] == 0
+    assert result["unexpected_file_changes"] == []
 
 
 def test_all_four_generic_clarifications_are_model_facing():

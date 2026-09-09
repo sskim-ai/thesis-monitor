@@ -18,6 +18,11 @@ from app.services.cross_market_decision_engine_service import (
     FinancialPeriodType,
     FrozenModel,
 )
+from app.services.financial_framework_claim_service import (
+    FrameworkClaimKind,
+    candidate_financial_framework_claims,
+    financial_framework_claims,
+)
 
 
 CONTRACT_VERSION = "directional-financial-decision-context-v1"
@@ -851,7 +856,10 @@ def validate_directional_financial_semantics(
             counts["year_end_as_yoy_count"] += 1
             errors.append("prior_year_end_described_as_yoy")
 
-        net_debt_language = "net debt" in folded or "순부채" in text
+        net_debt_language = any(
+            claim.framework == "net_debt" and claim.kind != FrameworkClaimKind.EXPLICIT_EXCLUSION
+            for claim in financial_framework_claims(text)
+        )
         total_debt_language = any(
             token in folded for token in ("total debt", "총부채", "전체 부채")
         )
@@ -896,6 +904,19 @@ def validate_directional_financial_semantics(
         if fixed_score_language:
             counts["fixed_financial_score_rule_count"] += 1
             errors.append("fixed_financial_scorecard_language")
+
+    if financial_sector:
+        applications = [
+            claim for claim in candidate_financial_framework_claims(payload)
+            if claim.kind != FrameworkClaimKind.EXPLICIT_EXCLUSION
+        ]
+        if applications:
+            counts["financial_sector_generic_financial_context_leak_count"] += len(applications)
+            errors.append("financial_sector_generic_reasoning")
+        anchors = payload.get("material_directional_anchor_basis", ()) if isinstance(payload, Mapping) else ()
+        if isinstance(anchors, (list, tuple)) and any(ref in financial for ref in anchors):
+            counts["financial_sector_generic_financial_context_leak_count"] += 1
+            errors.append("financial_sector_industrial_financial_anchor_used")
 
     unique_errors = tuple(dict.fromkeys(errors))
     return FinancialSemanticValidation(

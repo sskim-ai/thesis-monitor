@@ -2110,9 +2110,7 @@ def _case_semantic_errors(
     if ticker == "FIC-FIN-08":
         if used:
             errors.append("financial_sector_generic_context_used")
-        forbidden = ("순부채", "산업재 운전자본", "비영업 이자", "industrial net debt")
-        if any(token in text.casefold() for token in forbidden):
-            errors.append("financial_sector_generic_reasoning")
+        # Shared, sector-aware assertion/exclusion validation owns framework language.
     return tuple(errors)
 
 
