@@ -1,0 +1,58 @@
+{
+  "accounting_mapping_change_count": 0,
+  "contract": "financial-context-output-grounding-architecture-review-m12a-v1",
+  "financial_selector_change_count": 0,
+  "financial_validator_change_count": 0,
+  "mode": "MODEL_FREE_ARCHITECTURE_REVIEW_OFFLINE_PROTOTYPE",
+  "production_activation_count": 0,
+  "qtd_ytd_validator_change_count": 0,
+  "shared_semantic_files": [
+    {
+      "after_sha256": "9c2f3107d1c8fad169ca49b81221e6b08cdc6029698f193d9001c9d44afcb992",
+      "before_sha256": "9c2f3107d1c8fad169ca49b81221e6b08cdc6029698f193d9001c9d44afcb992",
+      "changed": false,
+      "path": "app/services/cross_market_decision_engine_service.py",
+      "semantic_change_count": 0,
+      "semantic_owner": "shared_semantic_contract",
+      "status": "PASS"
+    },
+    {
+      "after_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+      "before_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+      "changed": false,
+      "path": "app/services/direction_timing_ownership_service.py",
+      "semantic_change_count": 0,
+      "semantic_owner": "shared_semantic_contract",
+      "status": "PASS"
+    },
+    {
+      "after_sha256": "978037fc5a53d15c3e61977f256c55856df738500bf728853600feb470aa2e1b",
+      "before_sha256": "978037fc5a53d15c3e61977f256c55856df738500bf728853600feb470aa2e1b",
+      "changed": false,
+      "path": "app/services/directional_financial_context_service.py",
+      "semantic_change_count": 0,
+      "semantic_owner": "shared_semantic_contract",
+      "status": "PASS"
+    },
+    {
+      "after_sha256": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+      "before_sha256": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+      "changed": false,
+      "path": "app/services/structured_autonomy_alias_service.py",
+      "semantic_change_count": 0,
+      "semantic_owner": "shared_semantic_contract",
+      "status": "PASS"
+    },
+    {
+      "after_sha256": "611e0260463ce8f669fc0a0254fa11293233a1015e612321ea366fcb05711d53",
+      "before_sha256": "611e0260463ce8f669fc0a0254fa11293233a1015e612321ea366fcb05711d53",
+      "changed": false,
+      "path": "scripts/directional_core_price_timing_holdout.py",
+      "semantic_change_count": 0,
+      "semantic_owner": "shared_semantic_contract",
+      "status": "PASS"
+    }
+  ],
+  "status": "FROZEN",
+  "threshold_or_calibration_change_count": 0
+}

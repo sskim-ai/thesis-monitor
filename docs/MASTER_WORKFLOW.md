@@ -624,6 +624,26 @@ Deterministic gate는 보존 FIC-FIN-03 PASS, 기존 FIC-FIN-06 FAIL 유지, typ
 
 ---
 
+## 12A. M12A financial-context output grounding architecture review
+
+M12A work-instruction commit은 `938569446f309376c3519dd63fd33d505c790e57`, offline review/prototype 최종 implementation commit은 `d25051be68ca2990ee159f974f57c36bb6b26ee2`다. authoritative M12G bundle SHA `69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68`를 다시 계산했고 indexed payload `160`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
+
+현재 grounding 흐름을 끝까지 추적한 결과 alias 체계 자체는 이미 하나다. `stage_alias_catalogs`는 narrative ref와 selector가 고른 typed financial ref를 동일 `EvidenceAliasCatalog`에 넣고, 기존 alias resolver와 output `evidence_refs`도 양쪽을 동일하게 해석할 수 있다. 실제 split은 모델 입력 직전 `scripts/directional_core_price_timing_holdout.py::_owned_context`에서 생긴다. 선택된 typed financial alias `15/15`는 catalog에 있지만 ordinary `evidence[]`에는 `0/15`이고, 별도 `financial_decision_context.evidence_items[]`에만 들어간다. typed alias의 catalog statement `15/15`도 `{"value":"..."}` 형태라 narrative alias보다 사람에게 보이는 의미가 약하다.
+
+보존된 완료 출력의 model-free replay 감사는 M12 `11 selected / 8 used`, M12R `15 / 12`, M12G `15 / 13`, 합계 `41 / 33`이었다. FIC-FIN-06은 M12R과 M12G 모두 working-capital 내용을 narrative로 올바르게 설명했지만 selected inventory/trade-AR typed ref를 전혀 쓰지 않아 narrative-substitution failure가 두 번 반복됐다. 현재 8개 fictional packet에서 selected typed item 15개 중 8개는 동일 사실을 요약하는 narrative row가 있었지만 producer-supplied backing lineage는 `0`이었다. text/topic 유사성은 분류 감사에만 썼고 lineage로 승격하지 않았다.
+
+Option A/B/C를 FIC-FIN-05와 FIC-FIN-06에 오프라인 직렬화했다. Option A는 기존 alias 번호와 canonical/source/comparison/derivation lineage를 그대로 두고 selector가 고른 typed item만 ordinary `evidence[]`에 한 번 추가한다. statement는 metric, period, comparison에서 결정적으로 만든 neutral 문장이고, value와 상세 period/basis는 structured metadata에 남는다. output schema, resolver, validator 의미, renderer를 바꿀 필요가 없다. Option B는 provenance-based `backing_financial_refs`가 있으면 안전하지만 현재 narrative producer의 실제 lineage가 0이므로 text matching 없이 문제를 해결할 수 없다. 기존 `metric_refs`는 checkpoint metric ownership이지 source provenance가 아니어서 재사용하지 않는다. Option C는 새 output field로 검사할 수 있지만 schema migration, legacy artifact, model compliance surface를 늘리면서 이미 가능한 ordinary `evidence_refs` 기능을 중복한다. 별도 proven problem이 없어 hybrid도 선택하지 않았다.
+
+따라서 preferred architecture는 `FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION`, 다음 bounded scope는 `FIRST_CLASS_TYPED_FINANCIAL_EVIDENCE_INDEX_IMPLEMENTATION`으로 동결했다. double-counting identity는 canonical ref다. 같은 typed fact가 `evidence[]` claim과 `financial_decision_context` detail metadata에 함께 보여도 하나의 anchor로만 센다. lineage 없는 narrative summary는 typed anchor로 세지 않으며, financial detail block은 두 번째 증거가 아니다. narrative는 사실의 의미, Unknown, sector interpretation을 계속 소유한다. raw financial dump와 unselected fact projection은 모두 0이다.
+
+과거 M12G FIC-FIN-06 output은 Option A와 B에서도 그대로 FAIL이고 Option C에서는 legacy/NOT_APPLICABLE이다. corrected FIC-FIN-06 fixture는 세 옵션 모두 표현 가능하지만 model result로 재분류하지 않았다. 이 review는 과거 실패를 소급 수정하지 않는다.
+
+검증은 focused `51 passed`, full `3040 passed`(기존 warning 2), Ruff PASS, `git diff --check` PASS다. model/provider 호출, production DB/assessment/warning/notification/send, monitoring registration, main merge, deploy는 모두 0이다. 8개 승인 중단 경로는 PAUSED/DISABLED 상태로 관측했고 scheduler mutation과 automatic resume도 0이다.
+
+M12A 상태는 `COMPLETE`지만 repaired architecture는 아직 실제 Directional runner에 구현하지 않았고 새 fictional canary도 실행하지 않았다. 따라서 `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 작업은 동결한 Option A만 구현한 뒤 동일 8-subject x 3-repeat fictional canary를 새 generation으로 실행하는 것이다. 그 전체가 통과한 뒤에만 fresh-real financial-context generalization proof로 이동한다.
+
+---
+
 ## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |

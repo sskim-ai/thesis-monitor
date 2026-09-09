@@ -1,0 +1,15 @@
+{
+  "context_token_overhead": "ACCEPTABLE",
+  "contract": "m12a-option-c-design-v1",
+  "design": "Add material_financial_evidence_refs to Directional output.",
+  "enforceability": "ACCEPTABLE",
+  "legacy_output_compatibility": "WEAK",
+  "moves_prompt_compliance_problem": true,
+  "option": "STRUCTURED_OUTPUT_FINANCIAL_GROUNDING",
+  "output_schema_migration_cost": "BLOCKING",
+  "real_model_compliance_risk": "WEAK",
+  "renderer_impact": "ACCEPTABLE",
+  "status": "WEAK",
+  "stored_artifact_impact": "WEAK",
+  "test_surface": "WEAK"
+}

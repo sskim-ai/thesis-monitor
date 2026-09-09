@@ -1,0 +1,17 @@
+{
+  "contract": "m12a-renderer-impact-decision-v1",
+  "new_renderer_field": null,
+  "renderer_change_required": false,
+  "renderer_ownership_semantic_change_count": 0,
+  "renderer_receives_resolved_canonical_candidate": true,
+  "source_freeze": {
+    "after_sha256": "897efb78e0ed727ec814537b0bc1c0448b22122151e1ed5b7e01954b69127cad",
+    "before_sha256": "897efb78e0ed727ec814537b0bc1c0448b22122151e1ed5b7e01954b69127cad",
+    "changed": false,
+    "path": "app/services/structured_autonomy_shadow_service.py",
+    "semantic_change_count": 0,
+    "semantic_owner": "renderer",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

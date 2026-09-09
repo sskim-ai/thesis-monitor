@@ -1,0 +1,21 @@
+{
+  "contract": "m12a-hybrid-analysis-v1",
+  "decision": "NO_HYBRID_SELECTED",
+  "options": {
+    "A_PLUS_B": {
+      "distinct_second_problem_proven": false,
+      "status": "WEAK"
+    },
+    "A_PLUS_C": {
+      "distinct_second_problem_proven": false,
+      "status": "WEAK"
+    },
+    "B_PLUS_C": {
+      "input_lineage_blocker_remains": true,
+      "schema_cost_added": true,
+      "status": "BLOCKING"
+    }
+  },
+  "reason": "Option A addresses the proven split without a second mechanism.",
+  "status": "PASS"
+}

@@ -1,0 +1,135 @@
+{
+  "contract": "m12a-current-alias-architecture-audit-v1",
+  "duplicate_alias_count": 0,
+  "finding": "ALIAS_NAMESPACE_IS_UNIFIED_MODEL_INPUT_EVIDENCE_SURFACE_IS_SPLIT",
+  "one_alias_namespace_per_ticker": true,
+  "one_catalog_per_ticker": true,
+  "rows": [
+    {
+      "catalog_alias_count": 10,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 3,
+      "selected_typed_aliases": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "catalog_alias_count": 10,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 3,
+      "selected_typed_aliases": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "catalog_alias_count": 9,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 2,
+      "selected_typed_aliases": [
+        "E01",
+        "E08"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E01",
+        "E08"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "catalog_alias_count": 10,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 3,
+      "selected_typed_aliases": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "catalog_alias_count": 9,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 2,
+      "selected_typed_aliases": [
+        "E05",
+        "E06"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E05",
+        "E06"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "catalog_alias_count": 9,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 2,
+      "selected_typed_aliases": [
+        "E03",
+        "E04"
+      ],
+      "selected_typed_aliases_in_catalog": [
+        "E03",
+        "E04"
+      ],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "catalog_alias_count": 7,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 0,
+      "selected_typed_aliases": [],
+      "selected_typed_aliases_in_catalog": [],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "catalog_alias_count": 7,
+      "duplicate_alias_count": 0,
+      "ordinary_evidence_alias_count": 7,
+      "selected_typed_alias_count": 0,
+      "selected_typed_aliases": [],
+      "selected_typed_aliases_in_catalog": [],
+      "selected_typed_aliases_in_evidence_array": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "selected_typed_alias_count": 15,
+  "selected_typed_alias_in_catalog_count": 15,
+  "selected_typed_alias_in_evidence_array_count": 0,
+  "status": "PASS"
+}

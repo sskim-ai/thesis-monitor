@@ -1,0 +1,9 @@
+command=["/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python", "-m", "ruff", "check", "."]
+returncode=0
+status=PASS
+
+STDOUT
+All checks passed!
+
+
+STDERR

@@ -1,0 +1,38 @@
+{
+  "contract": "m12a-real-packet-producer-compatibility-audit-v1",
+  "duplicate_existing_packet_rows_created": false,
+  "existing_evidence_ids_remain_stable": true,
+  "m2_m3_lifecycle_semantics_unchanged": true,
+  "producers": [
+    {
+      "generic_selected_projection_possible": true,
+      "owner": "Initial/Daily canonical packet builder",
+      "path": "app/services/cross_market_decision_engine_service.py",
+      "ticker_branch_required": false,
+      "typed_financial_refs_available": true
+    },
+    {
+      "generic_selected_projection_possible": true,
+      "owner": "cold-start source assembly",
+      "path": "app/services/coldstart_source_assembly_service.py",
+      "ticker_branch_required": false,
+      "typed_financial_refs_available": true
+    },
+    {
+      "duplicate_financial_row_risk": false,
+      "legacy_no_financial_context_compatible": true,
+      "owner": "legacy onboarding decision packet",
+      "path": "app/services/onboarding_decision_service.py",
+      "typed_financial_refs_available": false
+    },
+    {
+      "future_projection_must_be_separately_gated": true,
+      "m12a_activation": false,
+      "owner": "daily accepted-decision runtime",
+      "path": "app/jobs/accepted_decision_v2_runtime.py",
+      "typed_financial_refs_available": true
+    }
+  ],
+  "real_packet_producer_compatibility_status": "PASS",
+  "status": "PASS"
+}

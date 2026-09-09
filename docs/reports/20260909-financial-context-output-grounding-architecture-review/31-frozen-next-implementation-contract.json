@@ -1,0 +1,49 @@
+{
+  "alias_behavior": "reuse existing aliases without renumbering",
+  "contract": "m12a-frozen-next-implementation-contract-v1",
+  "daily_delta_impact": "NONE",
+  "evidence_index_behavior": "add selected typed financial items once to ordinary evidence[] in catalog order",
+  "forbidden": [
+    "prompt-only repair",
+    "raw financial dump",
+    "ticker exception",
+    "validator weakening",
+    "output schema change",
+    "production activation"
+  ],
+  "human_statement_behavior": "deterministic neutral metric/period/comparison statement; no investment verdict",
+  "legacy_behavior": "no financial_context means exact existing projection",
+  "lineage_behavior": "retain existing canonical/source/comparison/derivation lineage",
+  "migration_artifact_compatibility": "NO_MIGRATION",
+  "modules_to_change": [
+    "app/services/directional_financial_context_service.py",
+    "scripts/directional_core_price_timing_holdout.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_direction_timing_ownership_service.py",
+    "tests/test_directional_financial_context_m12g.py"
+  ],
+  "new_changed_data_fields": {
+    "input_projection": [
+      "evidence_kind",
+      "financial_semantics"
+    ],
+    "output_schema": [],
+    "persistent_models": []
+  },
+  "next_scope": "FIRST_CLASS_TYPED_FINANCIAL_EVIDENCE_INDEX_IMPLEMENTATION",
+  "output_schema_impact": "NONE",
+  "renderer_impact": "NONE",
+  "required_tests": [
+    "selected-only projection",
+    "one alias namespace and no duplicates",
+    "neutral statement relation/period coverage",
+    "legacy byte-equivalent context",
+    "old FIC-FIN-06 remains fail",
+    "corrected FIC-FIN-06 remains pass",
+    "no price/technical/supply leakage",
+    "full financial and QTD/YTD validator regression"
+  ],
+  "source_sufficiency_impact": "NONE",
+  "status": "FROZEN",
+  "validator_behavior": "unchanged semantics; direct typed refs remain required"
+}

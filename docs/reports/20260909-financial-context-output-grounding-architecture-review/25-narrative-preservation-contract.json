@@ -1,0 +1,9 @@
+{
+  "contract": "m12a-narrative-preservation-contract-v1",
+  "narrative_deletion_required": false,
+  "narrative_owns": "why it matters, remaining Unknowns, sector interpretation, and business implications",
+  "status": "FROZEN",
+  "typed_fact_owns": "what the financial fact is",
+  "typed_fact_plus_narrative_interpretation_supported": true,
+  "typed_fact_replacement_by_narrative_allowed": false
+}

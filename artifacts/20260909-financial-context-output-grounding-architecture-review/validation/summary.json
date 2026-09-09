@@ -1,0 +1,14 @@
+{
+  "contract": "m12a-deterministic-validation-v1",
+  "focused_returncode": 0,
+  "focused_test_result": "PASS",
+  "full_returncode": 0,
+  "full_test_result": "PASS",
+  "git_diff_check": "PASS",
+  "git_diff_returncode": 0,
+  "model_tests": 0,
+  "provider_calls": 0,
+  "ruff_result": "PASS",
+  "ruff_returncode": 0,
+  "status": "PASS"
+}

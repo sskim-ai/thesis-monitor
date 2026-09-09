@@ -1,0 +1,122 @@
+{
+  "contract": "m12a-evidence-ref-ergonomics-audit-v1",
+  "current_evidence_surface_count": 2,
+  "distance_is_causal_proof": false,
+  "finding": "ALIASES_RESOLVE_UNIFORMLY_BUT_TYPED_ITEMS_ARE_VISUALLY_SECONDARY_AND_THEIR_ALIAS_STATEMENTS_ARE_RAW_VALUE_JSON",
+  "narrative_surface_count": 1,
+  "one_alias_namespace": true,
+  "rows": [
+    {
+      "context_serialized_chars": 4351,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 3,
+      "ticker": "FIC-FIN-01",
+      "typed_alias_distance_from_instruction_chars": [
+        2975,
+        3888,
+        4608
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 4469,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 3,
+      "ticker": "FIC-FIN-02",
+      "typed_alias_distance_from_instruction_chars": [
+        2994,
+        3871,
+        4592
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 3031,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 2,
+      "ticker": "FIC-FIN-03",
+      "typed_alias_distance_from_instruction_chars": [
+        3014,
+        3466
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 4577,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 3,
+      "ticker": "FIC-FIN-04",
+      "typed_alias_distance_from_instruction_chars": [
+        2993,
+        3725,
+        4481
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 3313,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 2,
+      "ticker": "FIC-FIN-05",
+      "typed_alias_distance_from_instruction_chars": [
+        3028,
+        3619
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 3652,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 2,
+      "ticker": "FIC-FIN-06",
+      "typed_alias_distance_from_instruction_chars": [
+        3043,
+        3772
+      ],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 2206,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 0,
+      "ticker": "FIC-FIN-07",
+      "typed_alias_distance_from_instruction_chars": [],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    },
+    {
+      "context_serialized_chars": 2230,
+      "first_narrative_alias_distance_from_instruction_chars": 1167,
+      "one_alias_namespace": true,
+      "ordinary_evidence_count": 7,
+      "ordinary_surface": "evidence[]",
+      "selected_typed_financial_count": 0,
+      "ticker": "FIC-FIN-08",
+      "typed_alias_distance_from_instruction_chars": [],
+      "typed_surface": "financial_decision_context.evidence_items[]"
+    }
+  ],
+  "status": "PASS",
+  "typed_financial_surface_count": 1,
+  "typed_item_raw_json_only_statement_count": 15
+}

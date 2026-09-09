@@ -1,0 +1,972 @@
+{
+  "contract": "m12a-m12g-failure-summary-v1",
+  "failed_ticker": "FIC-FIN-06",
+  "generation_id": "20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7",
+  "historical_grounding_audit": {
+    "aggregate_completed_subject_count": 20,
+    "aggregate_narrative_substitution_failure_count": 2,
+    "aggregate_selected_typed_financial_ref_count": 41,
+    "aggregate_typed_financial_ref_used_count": 33,
+    "contract": "m12a-preserved-grounding-history-audit-v1",
+    "finding": "SPLIT_SURFACE_RISK_RECURRED_IN_M12R_AND_M12G_FIC_FIN_06",
+    "phases": [
+      {
+        "completed_subject_count": 4,
+        "generation_ids": [
+          "20260909-m12-fictional-20260909T031350Z-72c281729499"
+        ],
+        "narrative_substitution_failure_count": 0,
+        "phase": "M12",
+        "rows": [
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 8,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 8,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-directional-financial-context-consumption-specificity-implementation/33-canary-context-01-run-1.json",
+            "ticker": "FIC-FIN-01",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [
+                "working_capital_grounding_failure"
+              ],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 11,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-02:remaining-unknown",
+                "fictional:FIC-FIN-02:structural-risk",
+                "fictional:FIC-FIN-02:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 15,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "status": "FAIL",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "valid": false,
+              "working_capital_checkpoint_count": 3,
+              "working_capital_grounding_failure_count": 1,
+              "working_capital_grounding_required": true
+            },
+            "phase": "M12",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-02:inventory-current",
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-directional-financial-context-consumption-specificity-implementation/33-canary-context-01-run-1.json",
+            "ticker": "FIC-FIN-02",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 11,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-03:market-expectation",
+                "fictional:FIC-FIN-03:remaining-unknown",
+                "fictional:FIC-FIN-03:structural-risk",
+                "fictional:FIC-FIN-03:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 16,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12",
+            "row_status": "FAIL",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ],
+            "source_report": "docs/reports/20260909-directional-financial-context-consumption-specificity-implementation/33-canary-context-01-run-1.json",
+            "ticker": "FIC-FIN-03",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 12,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-04:remaining-unknown",
+                "fictional:FIC-FIN-04:structural-risk",
+                "fictional:FIC-FIN-04:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 15,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ],
+            "source_report": "docs/reports/20260909-directional-financial-context-consumption-specificity-implementation/33-canary-context-01-run-1.json",
+            "ticker": "FIC-FIN-04",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ]
+          }
+        ],
+        "selected_typed_financial_ref_count": 11,
+        "typed_financial_ref_used_count": 8,
+        "zero_typed_use_subject_count": 0
+      },
+      {
+        "completed_subject_count": 8,
+        "generation_ids": [
+          "20260909-m12r-fictional-20260909T043009Z-ffc3fd557f05"
+        ],
+        "narrative_substitution_failure_count": 1,
+        "phase": "M12R",
+        "rows": [
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 11,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 11,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/26-run-1-context-01.json",
+            "ticker": "FIC-FIN-01",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "grounded_claim_count": 13,
+              "grounded_working_capital_checkpoint_count": 5,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-02:remaining-unknown",
+                "fictional:FIC-FIN-02:structural-risk",
+                "fictional:FIC-FIN-02:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 16,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 6,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": true
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-02:inventory-current",
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/26-run-1-context-01.json",
+            "ticker": "FIC-FIN-02",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-02:inventory-current",
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 12,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 12,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/26-run-1-context-01.json",
+            "ticker": "FIC-FIN-03",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 10,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-04:business-thesis",
+                "fictional:FIC-FIN-04:market-expectation",
+                "fictional:FIC-FIN-04:remaining-unknown",
+                "fictional:FIC-FIN-04:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 13,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/26-run-1-context-01.json",
+            "ticker": "FIC-FIN-04",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 2,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-05:business-thesis",
+                "fictional:FIC-FIN-05:operating-evidence",
+                "fictional:FIC-FIN-05:remaining-unknown",
+                "fictional:FIC-FIN-05:sector-context",
+                "fictional:FIC-FIN-05:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 5,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-05:cash",
+              "canonical:fictional:FIC-FIN-05:complete-debt"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/27-run-1-context-02.json",
+            "ticker": "FIC-FIN-05",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-05:cash",
+              "canonical:fictional:FIC-FIN-05:complete-debt"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [
+                "material_financial_anchor_grounding_failure",
+                "working_capital_grounding_failure",
+                "narrative_substitution_failure"
+              ],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 1,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-06:business-thesis",
+                "fictional:FIC-FIN-06:market-expectation",
+                "fictional:FIC-FIN-06:operating-evidence",
+                "fictional:FIC-FIN-06:remaining-unknown",
+                "fictional:FIC-FIN-06:sector-context",
+                "fictional:FIC-FIN-06:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 1,
+              "relevant_claim_count": 9,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-06:inventory-current",
+                "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+              ],
+              "status": "FAIL",
+              "used_financial_refs": [],
+              "valid": false,
+              "working_capital_checkpoint_count": 7,
+              "working_capital_grounding_failure_count": 1,
+              "working_capital_grounding_required": true
+            },
+            "phase": "M12R",
+            "row_status": "FAIL",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/27-run-1-context-02.json",
+            "ticker": "FIC-FIN-06",
+            "used_financial_refs": []
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": false,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 0,
+              "selected_financial_refs": [],
+              "status": "PASS",
+              "used_financial_refs": [],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/27-run-1-context-02.json",
+            "ticker": "FIC-FIN-07",
+            "used_financial_refs": []
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": false,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 0,
+              "selected_financial_refs": [],
+              "status": "PASS",
+              "used_financial_refs": [],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12R",
+            "row_status": "PASS",
+            "selected_financial_refs": [],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/27-run-1-context-02.json",
+            "ticker": "FIC-FIN-08",
+            "used_financial_refs": []
+          }
+        ],
+        "selected_typed_financial_ref_count": 15,
+        "typed_financial_ref_used_count": 12,
+        "zero_typed_use_subject_count": 1
+      },
+      {
+        "completed_subject_count": 8,
+        "generation_ids": [
+          "20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7"
+        ],
+        "narrative_substitution_failure_count": 1,
+        "phase": "M12G",
+        "rows": [
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 8,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 8,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-01:net-debt",
+                "canonical:fictional:FIC-FIN-01:ocf-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/30-run-1-context-01.json",
+            "ticker": "FIC-FIN-01",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-01:net-debt",
+              "canonical:fictional:FIC-FIN-01:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "grounded_claim_count": 13,
+              "grounded_working_capital_checkpoint_count": 5,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-02:remaining-unknown",
+                "fictional:FIC-FIN-02:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 15,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+                "canonical:fictional:FIC-FIN-02:inventory-current",
+                "canonical:fictional:FIC-FIN-02:ocf-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 5,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": true
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-02:inventory-current",
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/30-run-1-context-01.json",
+            "ticker": "FIC-FIN-02",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+              "canonical:fictional:FIC-FIN-02:inventory-current",
+              "canonical:fictional:FIC-FIN-02:ocf-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 12,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-03:market-expectation",
+                "fictional:FIC-FIN-03:remaining-unknown",
+                "fictional:FIC-FIN-03:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 14,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+                "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/30-run-1-context-01.json",
+            "ticker": "FIC-FIN-03",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 9,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-04:business-thesis",
+                "fictional:FIC-FIN-04:remaining-unknown",
+                "fictional:FIC-FIN-04:structural-risk",
+                "fictional:FIC-FIN-04:valuation-limit"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 13,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+                "canonical:fictional:FIC-FIN-04:net-income-current",
+                "canonical:fictional:FIC-FIN-04:operating-profit-current"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/30-run-1-context-01.json",
+            "ticker": "FIC-FIN-04",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+              "canonical:fictional:FIC-FIN-04:net-income-current",
+              "canonical:fictional:FIC-FIN-04:operating-profit-current"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 3,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-05:business-thesis",
+                "fictional:FIC-FIN-05:remaining-unknown",
+                "fictional:FIC-FIN-05:sector-context",
+                "fictional:FIC-FIN-05:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 6,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "status": "PASS",
+              "used_financial_refs": [
+                "canonical:fictional:FIC-FIN-05:cash",
+                "canonical:fictional:FIC-FIN-05:complete-debt"
+              ],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-05:cash",
+              "canonical:fictional:FIC-FIN-05:complete-debt"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/31-run-1-context-02.json",
+            "ticker": "FIC-FIN-05",
+            "used_financial_refs": [
+              "canonical:fictional:FIC-FIN-05:cash",
+              "canonical:fictional:FIC-FIN-05:complete-debt"
+            ]
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [
+                "material_financial_anchor_grounding_failure",
+                "working_capital_grounding_failure",
+                "narrative_substitution_failure"
+              ],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 1,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": true,
+              "narrative_only_duplicate_refs": [
+                "fictional:FIC-FIN-06:business-thesis",
+                "fictional:FIC-FIN-06:operating-evidence",
+                "fictional:FIC-FIN-06:remaining-unknown",
+                "fictional:FIC-FIN-06:sector-context",
+                "fictional:FIC-FIN-06:structural-risk"
+              ],
+              "narrative_substitution_failure_count": 1,
+              "relevant_claim_count": 10,
+              "selected_financial_refs": [
+                "canonical:fictional:FIC-FIN-06:inventory-current",
+                "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+              ],
+              "status": "FAIL",
+              "used_financial_refs": [],
+              "valid": false,
+              "working_capital_checkpoint_count": 8,
+              "working_capital_grounding_failure_count": 1,
+              "working_capital_grounding_required": true
+            },
+            "phase": "M12G",
+            "row_status": "FAIL",
+            "selected_financial_refs": [
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+            ],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/31-run-1-context-02.json",
+            "ticker": "FIC-FIN-06",
+            "used_financial_refs": []
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": false,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 0,
+              "selected_financial_refs": [],
+              "status": "PASS",
+              "used_financial_refs": [],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/31-run-1-context-02.json",
+            "ticker": "FIC-FIN-07",
+            "used_financial_refs": []
+          },
+          {
+            "grounding_replay": {
+              "contract": "directional-financial-anchor-grounding-audit-v1",
+              "errors": [],
+              "financial_checkpoint_refs": [],
+              "grounded_claim_count": 0,
+              "grounded_working_capital_checkpoint_count": 0,
+              "irrelevant_financial_ref_grounding_failure_count": 0,
+              "material_financial_anchor_grounding_failure_count": 0,
+              "material_financial_anchor_refs": [],
+              "material_grounding_required": false,
+              "narrative_only_duplicate_refs": [],
+              "narrative_substitution_failure_count": 0,
+              "relevant_claim_count": 0,
+              "selected_financial_refs": [],
+              "status": "PASS",
+              "used_financial_refs": [],
+              "valid": true,
+              "working_capital_checkpoint_count": 0,
+              "working_capital_grounding_failure_count": 0,
+              "working_capital_grounding_required": false
+            },
+            "phase": "M12G",
+            "row_status": "PASS",
+            "selected_financial_refs": [],
+            "source_report": "docs/reports/20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary/31-run-1-context-02.json",
+            "ticker": "FIC-FIN-08",
+            "used_financial_refs": []
+          }
+        ],
+        "selected_typed_financial_ref_count": 15,
+        "typed_financial_ref_used_count": 13,
+        "zero_typed_use_subject_count": 1
+      }
+    ],
+    "status": "PASS"
+  },
+  "m12g_status": "M12G_CANARY_FAIL",
+  "material_financial_anchor_grounding_failure": 1,
+  "narrative_substitution_failure": 1,
+  "schema_pass_count": 8,
+  "status": "PASS",
+  "stop_reason": "PROMPT_GROUNDING_INSUFFICIENT",
+  "subject_output_count": 8,
+  "transport_pass": true,
+  "working_capital_grounding_failure": 1
+}

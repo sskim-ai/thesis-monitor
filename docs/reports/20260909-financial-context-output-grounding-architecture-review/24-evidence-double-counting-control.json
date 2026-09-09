@@ -1,0 +1,12 @@
+{
+  "bullish_bearish_weighting": false,
+  "contract": "m12a-evidence-double-counting-control-v1",
+  "detail_metadata_counts_as_second_anchor": false,
+  "double_counting_contract_status": "FROZEN",
+  "future_backed_narrative_group": "canonical-ref:<backing_financial_ref>",
+  "group_rule": "One typed canonical_ref is one financial anchor regardless of appearances in evidence[] claims or financial_decision_context detail metadata.",
+  "identity_key": "canonical_ref",
+  "narrative_counts_as_typed_anchor_without_lineage": false,
+  "status": "PASS",
+  "unique_typed_anchor_counting": true
+}

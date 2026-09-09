@@ -1,0 +1,12 @@
+{
+  "blocker": "NO_CURRENT_DETERMINISTIC_NARRATIVE_TO_FINANCIAL_PROVENANCE",
+  "contract": "m12a-option-b-design-v1",
+  "current_producer_lineage_coverage": 0,
+  "design": "Keep surfaces separate and permit narrative grounding only through producer-supplied backing_financial_refs.",
+  "metric_refs_reason": "metric_refs owns checkpoint metric semantics, not source provenance",
+  "metric_refs_semantically_appropriate": false,
+  "option": "EXPLICIT_EVIDENCE_LINEAGE_BRIDGE",
+  "required_shared_input_field": "backing_financial_refs",
+  "status": "BLOCKING",
+  "text_similarity_lineage_forbidden": true
+}
