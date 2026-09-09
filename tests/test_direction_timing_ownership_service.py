@@ -25,6 +25,7 @@ from app.services.direction_timing_ownership_service import (
     core_fingerprint,
     stage_alias_catalogs,
     technical_feature_inventory,
+    validate_directional_core_ownership,
     validate_ownership,
 )
 from app.services.directional_balance_service import DirectionalBalance
@@ -318,6 +319,30 @@ def test_directional_core_rejects_price_and_supply_refs() -> None:
     assert not validation.valid
     assert validation.directional_core_price_technical_refs == 1
     assert validation.directional_core_supply_refs == 1
+
+
+def test_core_only_validator_reuses_domain_fences_and_stage_catalog() -> None:
+    packet, stock = _packet()
+    owned = build_owned_evidence_packet(packet, stock=stock)
+    core_catalog, _ = stage_alias_catalogs(owned)
+    valid = validate_directional_core_ownership(
+        owned,
+        _core(decision="BUY"),
+        allowed_core_ref_ids=tuple(core_catalog.by_ref),
+    )
+    invalid_core = _core().model_copy(
+        update={"material_directional_anchor_basis": ("canonical:price:current",)}
+    )
+    invalid = validate_directional_core_ownership(
+        owned,
+        invalid_core,
+        allowed_core_ref_ids=tuple(core_catalog.by_ref),
+    )
+
+    assert valid.valid
+    assert not invalid.valid
+    assert invalid.directional_core_price_technical_refs == 1
+    assert invalid.directional_core_unknown_refs == 1
 
 
 def test_technical_inventory_preserves_unavailable_distinct_from_neutral() -> None:

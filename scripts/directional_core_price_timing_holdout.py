@@ -24,6 +24,10 @@ from app.services.directional_balance_service import (
     DirectionalBalance,
     directional_balance_ordinal_calibration_prompt,
 )
+from app.services.directional_financial_context_service import (
+    compact_financial_decision_context,
+    validate_directional_financial_semantics,
+)
 from app.services.direction_timing_ownership_service import (
     CORE_DOMAINS,
     CORE_OUTPUT_CONTRACT,
@@ -48,6 +52,7 @@ from app.services.direction_timing_ownership_service import (
     canonical_sha256,
     compose_decision,
     core_fingerprint,
+    financial_decision_context_for_owned,
     stage_alias_catalogs,
     technical_feature_inventory,
     validate_ownership,
@@ -266,7 +271,19 @@ def _owned_context(
     catalog: EvidenceAliasCatalog,
 ) -> dict[str, object]:
     by_ref = {row.ref.ref_id: row for row in owned.evidence}
-    return {
+    catalog_domains = {
+        by_ref[entry.canonical_ref].domain for entry in catalog.entries
+    }
+    is_directional_core = bool(catalog_domains.intersection(CORE_DOMAINS)) and not bool(
+        catalog_domains.intersection(TIMING_DOMAINS)
+    )
+    financial_context = (
+        financial_decision_context_for_owned(owned) if is_directional_core else None
+    )
+    aliases_by_ref = {
+        entry.canonical_ref: entry.alias for entry in catalog.entries
+    }
+    context = {
         "ticker": owned.source_packet.ticker,
         "company_name": owned.source_packet.company_name,
         "market": owned.source_packet.market,
@@ -288,8 +305,16 @@ def _owned_context(
                 "metric_refs": list(entry.metric_refs),
             }
             for entry in catalog.entries
+            if by_ref[entry.canonical_ref].ref.financial_context is None
         ],
     }
+    compact_financial = compact_financial_decision_context(
+        financial_context,
+        aliases_by_ref=aliases_by_ref,
+    )
+    if compact_financial is not None:
+        context["financial_decision_context"] = compact_financial
+    return context
 
 
 def _core_prompt(
@@ -309,6 +334,10 @@ Return one candidate per ticker in input order. directional_balance buy and sell
         + """
 
 Every claim and condition must cite only aliases supplied for that ticker. BUY or SELL requires material_directional_anchor_basis with at least one same-direction issuer-level business, earnings, cash-flow, capital, valuation, expectations, or structural-risk anchor. Macro alone is insufficient. Unknown evidence may limit confidence but is not automatically negative. Use directional_negative_basis only for DIRECTIONAL_NEGATIVE and cite a supplied confirmed negative fact there; keep it empty for CONFIDENCE_LIMIT and CONFIRMATION_REQUIRED, while contextual historical facts remain in evidence_refs. The fundamental new-buyer and holder stances are pre-timing views. Business invalidation and reevaluation conditions must be issuer-specific and non-price. Keep all prose concise and natural Korean. Do not put exact numbers in prose. Never state unsupported FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, or runway months.
+
+From financial_decision_context choose 1–3 distinct value-relevant anchors; no lists or revenue-profit double counts. Keep QTD/YTD/FY/TTM/POINT_IN_TIME distinct; report both sides of conflicts. prior_year_comparable=same-period; prior_year_end=since year-end, never YoY.
+
+ocf_less_ppe_capex is a cash-conversion proxy, never FCF. Net-debt/interest-bearing-debt totals need complete metrics. Debt parts/liabilities/restricted cash/inventory/receivables prove neither total nor deterioration. Invent no working-capital metrics or one-off/low-quality/normalized/adjusted earnings. Separate operating/non-operating/financial/tax effects. Bank/insurance forbids industrial templates. Missing/N/A/omitted is neutral; cannot raise SELL. No fixed financial scorecard.
 
 The schema is the complete output and alias contract. Return strict JSON only and match IDENTITY exactly.
 
@@ -1366,6 +1395,12 @@ def execute_two_stage_run(
         timing = timing_by_ticker[ticker]
         composed = compose_decision(core, timing)
         ownership = validate_ownership(owned[ticker], core, timing, composed)
+        financial_semantics = validate_directional_financial_semantics(
+            core,
+            supplied_refs=tuple(row.ref for row in owned[ticker].evidence),
+            allowed_ref_ids=tuple(core_aliases[ticker].by_ref),
+            sector_framework=owned[ticker].sector_framework,
+        )
         industry = str(stocks[ticker].get("industry") or stocks[ticker].get("sector") or "")
         legacy = validate_structured_autonomy_candidate(
             evidence[ticker], composed.candidate, price_map=price_maps[ticker], industry=industry
@@ -1377,7 +1412,16 @@ def execute_two_stage_run(
             industry=industry,
             base_detail_text=base_contexts[ticker],
         )
-        errors = tuple(dict.fromkeys((*ownership.errors, *legacy.errors, *rendered.validation.errors)))
+        errors = tuple(
+            dict.fromkeys(
+                (
+                    *ownership.errors,
+                    *financial_semantics.errors,
+                    *legacy.errors,
+                    *rendered.validation.errors,
+                )
+            )
+        )
         rows.append(
             {
                 "ticker": ticker,
@@ -1387,6 +1431,7 @@ def execute_two_stage_run(
                 "timing": timing.model_dump(mode="json"),
                 "composed": composed.candidate.model_dump(mode="json"),
                 "ownership": ownership.model_dump(mode="json"),
+                "financial_semantics": financial_semantics.model_dump(mode="json"),
                 "directional_core_domains": sorted(
                     {
                         owned[ticker].domain_by_ref[ref].value

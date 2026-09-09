@@ -20,6 +20,11 @@ from app.services.directional_balance_service import (
     DirectionalBalance,
     decision_from_directional_balance,
 )
+from app.services.directional_financial_context_service import (
+    FinancialDecisionContext,
+    build_financial_decision_context,
+    normalize_sector_framework,
+)
 from app.services.structured_autonomy_alias_service import (
     EvidenceAliasCatalog,
     build_evidence_alias_catalog,
@@ -140,6 +145,7 @@ class OwnedEvidencePacket(FrozenModel):
     contract: str = CONTRACT_VERSION
     source_packet: DecisionEvidencePacket
     evidence: tuple[OwnedEvidenceRef, ...]
+    sector_framework: str = "unspecified"
 
     @property
     def domain_by_ref(self) -> dict[str, EvidenceDomain]:
@@ -318,6 +324,17 @@ class OwnershipValidation(FrozenModel):
     price_only_holder_reduce: int
 
 
+class DirectionalCoreOwnershipValidation(FrozenModel):
+    contract: str = VALIDATOR_CONTRACT
+    valid: bool
+    errors: tuple[str, ...]
+    directional_core_price_technical_refs: int
+    directional_core_supply_refs: int
+    directional_core_unknown_refs: int
+    buy_without_nonprice_material_anchor: int
+    sell_without_nonprice_material_anchor: int
+
+
 def canonical_sha256(value: object) -> str:
     return hashlib.sha256(
         json.dumps(
@@ -430,15 +447,53 @@ def build_owned_evidence_packet(
     )
     if len(rows) != len(packet.evidence):
         raise ValueError("evidence_domain_registry_incomplete")
-    return OwnedEvidencePacket(source_packet=packet, evidence=rows)
+    source_sufficiency = stock.get("source_sufficiency")
+    source_sufficiency = (
+        source_sufficiency if isinstance(source_sufficiency, Mapping) else {}
+    )
+    framework = (
+        stock.get("analysis_framework")
+        or stock.get("sector_framework")
+        or source_sufficiency.get("framework")
+    )
+    return OwnedEvidencePacket(
+        source_packet=packet,
+        evidence=rows,
+        sector_framework=normalize_sector_framework(framework),
+    )
+
+
+def financial_decision_context_for_owned(
+    owned: OwnedEvidencePacket,
+) -> FinancialDecisionContext | None:
+    return build_financial_decision_context(
+        tuple(row.ref for row in owned.evidence if row.domain in CORE_DOMAINS),
+        sector_framework=owned.sector_framework,
+    )
 
 
 def stage_alias_catalogs(
     owned: OwnedEvidencePacket,
 ) -> tuple[EvidenceAliasCatalog, EvidenceAliasCatalog]:
     packet = owned.source_packet
+    financial_context = financial_decision_context_for_owned(owned)
+    selected_financial_refs = (
+        {item.evidence_id for item in financial_context.evidence_items}
+        if financial_context is not None
+        else set()
+    )
     core_packet = packet.model_copy(
-        update={"evidence": tuple(row.ref for row in owned.evidence if row.domain in CORE_DOMAINS)}
+        update={
+            "evidence": tuple(
+                row.ref
+                for row in owned.evidence
+                if row.domain in CORE_DOMAINS
+                and (
+                    row.ref.financial_context is None
+                    or row.ref.ref_id in selected_financial_refs
+                )
+            )
+        }
     )
     timing_packet = packet.model_copy(
         update={"evidence": tuple(row.ref for row in owned.evidence if row.domain in TIMING_DOMAINS)}
@@ -716,6 +771,60 @@ def validate_ownership(
         sell_without_nonprice_material_anchor=sell_missing,
         price_timing_new_buyer_upgrade=upgrade,
         price_only_holder_reduce=reduce,
+    )
+
+
+def validate_directional_core_ownership(
+    owned: OwnedEvidencePacket,
+    core: DirectionalCoreCandidate,
+    *,
+    allowed_core_ref_ids: Sequence[str] | None = None,
+) -> DirectionalCoreOwnershipValidation:
+    errors: list[str] = []
+    domains = owned.domain_by_ref
+    core_refs = _claim_refs(core.model_dump(mode="json"))
+    allowed = set(allowed_core_ref_ids or owned.core_refs)
+    price_refs = sorted(
+        ref
+        for ref in core_refs
+        if domains.get(ref) in TIMING_DOMAINS
+        and domains.get(ref) != EvidenceDomain.SUPPLY_POSITIONING
+    )
+    supply_refs = sorted(
+        ref for ref in core_refs if domains.get(ref) == EvidenceDomain.SUPPLY_POSITIONING
+    )
+    unknown_refs = sorted(ref for ref in core_refs if ref not in allowed)
+    unsupported_core = sorted(
+        ref for ref in core_refs if domains.get(ref) not in CORE_DOMAINS
+    )
+    if price_refs:
+        errors.append("directional_core_contains_price_or_technical_ref")
+    if supply_refs:
+        errors.append("directional_core_contains_supply_ref")
+    if unknown_refs:
+        errors.append("directional_core_ref_not_supplied_to_stage")
+    if unsupported_core:
+        errors.append("directional_core_ref_outside_domain_registry")
+
+    material_anchors = {
+        ref
+        for ref in core.material_directional_anchor_basis
+        if domains.get(ref) in MATERIAL_DIRECTIONAL_DOMAINS and ref in allowed
+    }
+    buy_missing = int(core.overall_direction == "BUY" and not material_anchors)
+    sell_missing = int(core.overall_direction == "SELL" and not material_anchors)
+    if buy_missing:
+        errors.append("buy_without_nonprice_material_anchor")
+    if sell_missing:
+        errors.append("sell_without_nonprice_material_anchor")
+    return DirectionalCoreOwnershipValidation(
+        valid=not errors,
+        errors=tuple(dict.fromkeys(errors)),
+        directional_core_price_technical_refs=len(price_refs),
+        directional_core_supply_refs=len(supply_refs),
+        directional_core_unknown_refs=len(unknown_refs),
+        buy_without_nonprice_material_anchor=buy_missing,
+        sell_without_nonprice_material_anchor=sell_missing,
     )
 
 
