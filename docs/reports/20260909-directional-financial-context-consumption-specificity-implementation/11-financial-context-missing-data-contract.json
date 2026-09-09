@@ -1,0 +1,21 @@
+{
+  "absent_variant_financial_context": null,
+  "legacy_financial_absence_directional_penalty": 0,
+  "missing_context": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 0,
+    "evidence_items": [],
+    "limitations": [
+      "typed_context_without_structured_value"
+    ],
+    "sector_framework": "standard_operating_company",
+    "selected_input_count": 0,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 1,
+    "unavailable_or_not_applicable": [
+      "FINANCIAL_VALUE_UNAVAILABLE"
+    ]
+  },
+  "missing_is_negative": false,
+  "status": "PASS"
+}

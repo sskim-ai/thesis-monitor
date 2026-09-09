@@ -1,0 +1,18 @@
+{
+  "contract": "m12-prompt-no-change-audit-v1",
+  "directional_prompt_changed": true,
+  "functions": {
+    "_core_prompt": {
+      "after_sha256": "f50b5a6aac4017f232927c3ffba98759f7dca0f5b6f4fe50b7f3b35937260251",
+      "before_sha256": "280b9df969de5b965e46623728ce3ecdbfb01e5a044f52058861fe3b7dc334ff",
+      "changed": true
+    },
+    "_timing_prompt": {
+      "after_sha256": "9f59c816c2f467ba0e98e73cdd3667da5eab0bae7aa13a49fd1415d0dd8815c7",
+      "before_sha256": "9f59c816c2f467ba0e98e73cdd3667da5eab0bae7aa13a49fd1415d0dd8815c7",
+      "changed": false
+    }
+  },
+  "price_timing_prompt_changed": false,
+  "status": "PASS"
+}

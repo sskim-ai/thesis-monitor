@@ -1,0 +1,111 @@
+{
+  "contract": "m12-context-before-after-audit-v1",
+  "existing_nonfinancial_evidence_drop_count": 0,
+  "financial_context_input_changed_count": 8,
+  "financial_context_input_fixture_count": 8,
+  "financial_context_price_ref_count": 0,
+  "financial_context_selected_item_cap": 8,
+  "financial_context_supply_ref_count": 0,
+  "financial_context_technical_ref_count": 0,
+  "max_selected_item_count": 3,
+  "rows": [
+    {
+      "after_chars": 4351,
+      "after_token_estimate": 1088,
+      "before_chars": 2784,
+      "before_token_estimate": 696,
+      "changed": true,
+      "financial_context_contribution_chars": 1567,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 3,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after_chars": 4469,
+      "after_token_estimate": 1118,
+      "before_chars": 3007,
+      "before_token_estimate": 752,
+      "changed": true,
+      "financial_context_contribution_chars": 1462,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 3,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after_chars": 3031,
+      "after_token_estimate": 758,
+      "before_chars": 2220,
+      "before_token_estimate": 555,
+      "changed": true,
+      "financial_context_contribution_chars": 811,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 2,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after_chars": 4577,
+      "after_token_estimate": 1145,
+      "before_chars": 3003,
+      "before_token_estimate": 751,
+      "changed": true,
+      "financial_context_contribution_chars": 1574,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 3,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after_chars": 3313,
+      "after_token_estimate": 829,
+      "before_chars": 2254,
+      "before_token_estimate": 564,
+      "changed": true,
+      "financial_context_contribution_chars": 1059,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 2,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after_chars": 3652,
+      "after_token_estimate": 913,
+      "before_chars": 2678,
+      "before_token_estimate": 670,
+      "changed": true,
+      "financial_context_contribution_chars": 974,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 2,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after_chars": 2206,
+      "after_token_estimate": 552,
+      "before_chars": 2018,
+      "before_token_estimate": 505,
+      "changed": true,
+      "financial_context_contribution_chars": 188,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 0,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after_chars": 2230,
+      "after_token_estimate": 558,
+      "before_chars": 2467,
+      "before_token_estimate": 617,
+      "changed": true,
+      "financial_context_contribution_chars": 0,
+      "nonfinancial_after_count": 7,
+      "nonfinancial_before_count": 7,
+      "selected_financial_item_count": 0,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS",
+  "truncation_count": 0
+}

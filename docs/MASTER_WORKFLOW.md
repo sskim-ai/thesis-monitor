@@ -1,10 +1,10 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-09 / m11-non-operating-financial-income-effects-v1
+**버전:** 2026-09-09 / m12-directional-financial-context-canary-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M11 완료 — 6개 금융 evidence domain mapping 완료, Directional financial_context 소비가 다음 범위`
+**현재 위치:** `M12 deterministic 구현 완료 / fictional canary validator false reject로 fail-closed 중단`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M11은 official income-statement occurrence에서 financial income/cost와 구분 가능한 non-operating component를 direct canonical fact로 보존하고, 호환되는 aggregate finance income/cost만 net financial effect로 파생한다. normalized earnings, compact AI input, prompt, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
+**M12는 typed financial context를 sector-aware bounded context로 선택해 Directional Core에만 공급하는 deterministic 구현을 완료했다. Phase A는 전부 PASS했지만 첫 fictional context의 실제 QTD/YTD 설명을 frozen validator가 `누적` 표현 때문에 거부해 1/6에서 중단했다. Price-Timing, renderer, source sufficiency, Daily Delta, warning, 발송, production readiness는 변경하지 않았다.**
 
 ---
 
@@ -538,7 +538,7 @@ Master 갱신 때마다 기록:
 5. 최신 운영 관측 시각과 운영 변경 유무.
 6. 후속 phase의 진입 조건.
 
-이 문서의 M0~M11 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
+이 문서의 M0~M12 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
 
 ---
 
@@ -580,7 +580,21 @@ M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 s
 
 ---
 
-## 12. 이번 마스터 변경 이력
+## 12. M12 결과와 다음 한 작업
+
+M12 구현 커밋 `72c28172949939b268806f5cb347ae4761a0d7f0`은 `directional-financial-decision-context-v1` selector, Directional Core 전용 compact context, cited-alias financial semantic validator를 추가했다. 최대 8개 입력 중 실제 fixture 선택은 최대 3개였고, 8/8 compact context가 의도적으로 변했으나 기존 non-financial evidence drop은 0이었다. financial block의 price/technical/supply ref는 모두 0이며 Price-Timing prompt hash는 이전과 동일하다.
+
+Phase A는 focused `561 passed`, full `3014 passed`, Ruff와 `git diff --check`를 포함해 전 항목 PASS했다. M11 bundle SHA와 53개 payload 무결성도 PASS했다. source lock은 `0da54da972b6cf6874486d9f47d461a72d11a3055152c6d9f35a0f19c2e7c40d`다.
+
+Fictional canary는 첫 context 4개 결과를 schema 4/4, transport 1/1로 받았다. invalid reference, FCF 오표현, prior-year-end YoY 오표현, debt completeness, normalized earnings, fixed score, price/technical/supply 침범은 모두 0이었다. FIC-FIN-03은 QTD 흑자와 YTD 손실 두 fact를 모두 인용하고 “분기”와 “누적”을 명시했으나 frozen case validator가 YTD 한국어 표현으로 `누계`만 인식해 `qtd_ytd_conflict_not_explicit` false reject를 냈다. 결과·validator·prompt를 수정하거나 선택 재실행하지 않고 1/6에서 fail-closed 중단했다.
+
+따라서 현재 상태는 `M12_DETERMINISTIC_COMPLETE_CANARY_BLOCKED`, fresh real proof와 production readiness는 `NOT_READY`다. 다음 한 작업은 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`: ticker 예외나 threshold 변경 없이 generic QTD/YTD 의미 validator가 `누계`와 `누적` 같은 정상 누적 표현을 동등하게 처리하도록 수리하고, 새 generation에서 fictional 6-context canary 전체를 다시 검증한다. 실 issuer proof는 그 뒤에만 진행한다.
+
+운영 변경은 0이다. 승인된 Codex 4개 automation은 PAUSED, launchd 4개 경로는 DISABLED이며 자동 재개하지 않았다. provider fetch, production DB/assessment/warning/notification/send, main merge, deploy도 모두 0이다.
+
+---
+
+## 13. 이번 마스터 변경 이력
 
 | 이전 표현/흐름 | 이번 정리 |
 |---|---|

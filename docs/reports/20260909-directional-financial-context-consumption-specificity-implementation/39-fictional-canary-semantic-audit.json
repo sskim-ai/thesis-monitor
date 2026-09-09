@@ -1,0 +1,48 @@
+{
+  "contract": "m12-fictional-canary-semantic-audit-v1",
+  "generation_id": "20260909-m12-fictional-20260909T031350Z-72c281729499",
+  "attempted_context_count": 1,
+  "attempted_subject_count": 4,
+  "schema_pass_count": 4,
+  "actual_financial_semantic_violation_count": 0,
+  "case_semantic_error_count": 1,
+  "validator_false_reject_count": 1,
+  "failure": {
+    "ticker": "FIC-FIN-03",
+    "reported_error": "qtd_ytd_conflict_not_explicit",
+    "root_cause": "VALIDATOR",
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "used_financial_refs": [
+      "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+    ],
+    "model_semantics": {
+      "qtd_explicit": true,
+      "ytd_explicit_as_korean_cumulative_wording": true,
+      "qtd_ytd_conflict_explained": true
+    },
+    "frozen_validator_behavior": {
+      "recognized_ytd_tokens": ["ytd", "누계"],
+      "unrecognized_valid_token": "누적"
+    },
+    "result_modified": false,
+    "validator_hotfix_applied": false,
+    "selective_rerun_count": 0
+  },
+  "hard_gate_counts": {
+    "invalid_financial_reference_count": 0,
+    "price_technical_supply_directional_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "year_end_as_yoy_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "normalized_earnings_claim_violation_count": 0,
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "ai_imperative_primary_action_count": 0
+  },
+  "stop_reason": "M12_MODEL_CANARY_FAIL",
+  "status": "FAIL"
+}

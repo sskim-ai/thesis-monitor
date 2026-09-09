@@ -1,0 +1,11 @@
+{
+  "correlated_statement_lines_are_not_independent_anchors": true,
+  "parent_precedence": [
+    "net_debt_over_components",
+    "interest_bearing_debt_total_over_components",
+    "inventory_over_inventory_component",
+    "trade_receivables_over_broad_receivables",
+    "net_financial_effect_over_finance_income_cost"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,12 @@
+{
+  "actual_sha256": "0d1c45dea755076649b2d564b3da948def7509993c681d5030dfe1e3008a7173",
+  "artifact_hash_mismatch_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "checksum_match": true,
+  "contract": "m12-latest-result-integrity-v1",
+  "expected_sha256": "0d1c45dea755076649b2d564b3da948def7509993c681d5030dfe1e3008a7173",
+  "indexed_payload_count": 0,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-non-operating-financial-income-effects-financial-domain-mapping-implementation-report.zip",
+  "status": "PASS",
+  "zip_test_errors": []
+}

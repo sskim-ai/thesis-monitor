@@ -1,0 +1,9 @@
+{
+  "contract": "m12-fictional-canary-not-run-v1",
+  "generation_id": "20260909-m12-fictional-20260909T031350Z-72c281729499",
+  "repetition": 3,
+  "context": 2,
+  "model_call_count": 0,
+  "reason": "FAIL_CLOSED_AFTER_RUN_1_CONTEXT_01",
+  "status": "NOT_RUN"
+}

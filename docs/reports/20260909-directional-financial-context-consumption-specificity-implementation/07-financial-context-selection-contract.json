@@ -1,0 +1,591 @@
+{
+  "selected": {
+    "FIC-FIN-01": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 5,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 91,
+              "end": "2025-06-30",
+              "start": "2025-04-01",
+              "type": "QTD"
+            },
+            "comparison_value": "70",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+              "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": "ocf_less_ppe_capex",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current.input"
+          ],
+          "evidence_id": "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "growth_vs_maintenance_capex_unknown",
+            "ppe_only_not_management_defined_fcf"
+          ],
+          "metric": "ocf_less_ppe_capex",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "CASH_CONVERSION",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+          "unit_scale": 1000000,
+          "value": "130"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 91,
+              "end": "2025-06-30",
+              "start": "2025-04-01",
+              "type": "QTD"
+            },
+            "comparison_value": "110",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+              "stock.fact_catalog.fictional:FIC-FIN-01:ocf-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-01:ocf-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "operating_cash_flow",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "CASH_CONVERSION",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+          "unit_scale": 1000000,
+          "value": "180"
+        },
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": "net_debt",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-01:net-debt.input"
+          ],
+          "evidence_id": "canonical:fictional:FIC-FIN-01:net-debt",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "restricted_cash_not_netted"
+          ],
+          "metric": "net_debt",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:net-debt",
+          "unit_scale": 1000000,
+          "value": "-200"
+        }
+      ],
+      "limitations": [
+        "growth_vs_maintenance_capex_unknown",
+        "ppe_only_not_management_defined_fcf",
+        "restricted_cash_not_netted"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 3,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 2,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-02": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 6,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 181,
+              "end": "2025-06-30",
+              "start": "2025-01-01",
+              "type": "YTD"
+            },
+            "comparison_value": "55",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+              "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": "ocf_less_ppe_capex",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current.input"
+          ],
+          "evidence_id": "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "ppe_only_not_management_defined_fcf"
+          ],
+          "metric": "ocf_less_ppe_capex",
+          "period": {
+            "duration_days": 181,
+            "end": "2026-06-30",
+            "start": "2026-01-01",
+            "type": "YTD"
+          },
+          "quality": "verified",
+          "semantic_category": "CASH_CONVERSION",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+          "unit_scale": 1000000,
+          "value": "-20"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 181,
+              "end": "2025-06-30",
+              "start": "2025-01-01",
+              "type": "YTD"
+            },
+            "comparison_value": "100",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+              "stock.fact_catalog.fictional:FIC-FIN-02:ocf-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-02:ocf-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "operating_cash_flow",
+          "period": {
+            "duration_days": 181,
+            "end": "2026-06-30",
+            "start": "2026-01-01",
+            "type": "YTD"
+          },
+          "quality": "verified",
+          "semantic_category": "CASH_CONVERSION",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+          "unit_scale": 1000000,
+          "value": "40"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "150",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+              "stock.fact_catalog.fictional:FIC-FIN-02:inventory-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-02:inventory-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "inventory",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+          "unit_scale": 1000000,
+          "value": "240"
+        }
+      ],
+      "limitations": [
+        "ppe_only_not_management_defined_fcf"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 3,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 3,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-03": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 2,
+      "evidence_items": [
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "operating_income",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "PERFORMANCE_TREND",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-qtd",
+          "unit_scale": 1000000,
+          "value": "30"
+        },
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "operating_income",
+          "period": {
+            "duration_days": 181,
+            "end": "2026-06-30",
+            "start": "2026-01-01",
+            "type": "YTD"
+          },
+          "quality": "verified",
+          "semantic_category": "PERFORMANCE_TREND",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-ytd",
+          "unit_scale": 1000000,
+          "value": "-10"
+        }
+      ],
+      "limitations": [],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 0,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-04": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 6,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 91,
+              "end": "2025-06-30",
+              "start": "2025-04-01",
+              "type": "QTD"
+            },
+            "comparison_value": "45",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+              "stock.fact_catalog.fictional:FIC-FIN-04:net-income-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-04:net-income-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "net_income",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "PERFORMANCE_TREND",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+          "unit_scale": 1000000,
+          "value": "90"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 91,
+              "end": "2025-06-30",
+              "start": "2025-04-01",
+              "type": "QTD"
+            },
+            "comparison_value": "50",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+              "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-04:operating-profit-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "operating_income",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "PERFORMANCE_TREND",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+          "unit_scale": 1000000,
+          "value": "52"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": 91,
+              "end": "2025-06-30",
+              "start": "2025-04-01",
+              "type": "QTD"
+            },
+            "comparison_value": "4",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+              "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-prior"
+            ],
+            "kind": "prior_year_comparable"
+          },
+          "currency": "USD",
+          "derivation_formula": "net_financial_income_effect",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current.input"
+          ],
+          "evidence_id": "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "recurrence_not_determined",
+            "not_normalized_earnings"
+          ],
+          "metric": "net_financial_income_effect",
+          "period": {
+            "duration_days": 91,
+            "end": "2026-06-30",
+            "start": "2026-04-01",
+            "type": "QTD"
+          },
+          "quality": "verified",
+          "semantic_category": "NON_OPERATING_EFFECT",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+          "unit_scale": 1000000,
+          "value": "38"
+        }
+      ],
+      "limitations": [
+        "recurrence_not_determined",
+        "not_normalized_earnings"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 3,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 3,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-05": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 2,
+      "evidence_items": [
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt.input"
+          ],
+          "evidence_id": "canonical:fictional:FIC-FIN-05:complete-debt",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt",
+          "unit_scale": 1000000,
+          "value": "900"
+        },
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-05:cash",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [
+            "cash_basis_cash_and_cash_equivalents_only"
+          ],
+          "metric": "cash_and_cash_equivalents",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:cash",
+          "unit_scale": 1000000,
+          "value": "40"
+        }
+      ],
+      "limitations": [
+        "lease_liabilities_excluded_from_debt_scope",
+        "cash_basis_cash_and_cash_equivalents_only"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 0,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-06": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 4,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "180",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-06:inventory-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "inventory",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+          "unit_scale": 1000000,
+          "value": "300"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "150",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "trade_accounts_receivable",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+          "unit_scale": 1000000,
+          "value": "260"
+        }
+      ],
+      "limitations": [],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 2,
+      "unavailable_or_not_applicable": []
+    },
+    "FIC-FIN-07": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 0,
+      "evidence_items": [],
+      "limitations": [
+        "typed_context_without_structured_value"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 0,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 1,
+      "unavailable_or_not_applicable": [
+        "FINANCIAL_VALUE_UNAVAILABLE"
+      ]
+    },
+    "FIC-FIN-08": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 3,
+      "evidence_items": [],
+      "limitations": [
+        "generic_industrial_financial_context_disabled"
+      ],
+      "sector_framework": "bank_or_insurer",
+      "selected_input_count": 0,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 3,
+      "unavailable_or_not_applicable": [
+        "SECTOR_FRAMEWORK_REQUIRED"
+      ]
+    }
+  },
+  "selection": "semantic_domain_period_completeness_non_overlap",
+  "selection_direction_bias_count": 0,
+  "status": "PASS",
+  "value_or_polarity_ranked": false
+}

@@ -1,0 +1,12 @@
+{
+  "financial_domain_readiness": "READY_WITH_KNOWN_OPTIONAL_GAPS",
+  "latest_result_integrity": "PASS",
+  "m10": "COMPLETE",
+  "m11": "COMPLETE",
+  "m5": "COMPLETE",
+  "m6": "COMPLETE",
+  "m7": "COMPLETE",
+  "m8": "COMPLETE",
+  "m9": "COMPLETE",
+  "status": "PASS"
+}

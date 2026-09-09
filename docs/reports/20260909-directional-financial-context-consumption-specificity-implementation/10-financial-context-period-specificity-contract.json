@@ -1,0 +1,15 @@
+{
+  "preserved_period_types": [
+    "QTD",
+    "YTD",
+    "FY",
+    "TTM",
+    "POINT_IN_TIME"
+  ],
+  "prior_year_comparable_distinct_from_prior_year_end": true,
+  "qtd_ytd_conflict_selected": [
+    "QTD",
+    "YTD"
+  ],
+  "status": "PASS"
+}

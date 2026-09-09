@@ -1,0 +1,18 @@
+{
+  "changed_paths": [
+    "app/services/direction_timing_ownership_service.py",
+    "app/services/directional_financial_context_service.py",
+    "scripts/directional_core_price_timing_holdout.py",
+    "scripts/directional_financial_context_m12.py",
+    "tests/test_direction_timing_ownership_service.py",
+    "tests/test_directional_financial_context_m12.py",
+    "tests/test_directional_financial_context_service.py"
+  ],
+  "modules": [
+    "app/services/directional_financial_context_service.py",
+    "app/services/direction_timing_ownership_service.py",
+    "scripts/directional_core_price_timing_holdout.py"
+  ],
+  "status": "PASS",
+  "unexpected_paths": []
+}
