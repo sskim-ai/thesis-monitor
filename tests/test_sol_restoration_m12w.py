@@ -140,6 +140,20 @@ def test_adapter_nonfictional_rejected_before_spawn(call):
         a.single_attempt(**args)
 
 
+def test_adapter_accepts_later_m12_fictional_phase_identity(call):
+    args, install = call
+    args["invocation_id"] = (
+        "20260910-m12x-fictional-20260910T031211Z-f8ca364b8103:run-1:context-01"
+    )
+    install(
+        "import sys,json; sys.stdin.read(); "
+        + HEADER
+        + "open(sys.argv[1],'w').write(json.dumps({'status':'ok'}))"
+    )
+    receipt = a.single_attempt(**args)
+    assert receipt["status"] == "PASS"
+
+
 @pytest.mark.parametrize(
     "payload,expected",
     [

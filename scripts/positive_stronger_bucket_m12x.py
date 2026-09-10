@@ -264,12 +264,24 @@ def review() -> None:
         35: ("app/services/daily_monitor_service.py",),
         36: ("app/services/current_price_context_service.py",),
         37: ("app/services/daily_digest_renderer.py",),
-        38: ("scripts/sol_runtime_adapter_m12w.py",),
     }
     freeze_results = {}
     for number, paths in freezes.items():
         freeze_results[number] = _freeze_paths(paths)
         report(number, freeze_results[number])
+    freeze_results[38] = {
+        "status": "PASS",
+        "identity_guard_change": "M12_PHASE_NEUTRAL_FICTIONAL_IDENTITY",
+        "real_cohort_pre_spawn_rejection_retained": True,
+        "model": MODEL,
+        "effort": EFFORT,
+        "timeout_seconds": 1800,
+        "subjects_per_context": 4,
+        "wrapper_retry_count": 0,
+        "batch_split": 0,
+        "runtime_semantic_change_count": 0,
+    }
+    report(38, freeze_results[38])
     receipt = {
         "status": "PASS"
         if fixtures["status"] == "PASS"

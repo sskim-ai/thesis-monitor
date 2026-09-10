@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
+import re
 import subprocess
 
 from app.services.codex_transport_lifecycle_service import (
@@ -15,6 +16,9 @@ from app.services.codex_transport_lifecycle_service import (
 from scripts import financial_exclusion_expectation_m12u as u
 
 ROOT = Path("docs/architecture/M12W_SOL_RESTORATION.json")
+_FICTIONAL_INVOCATION_ID = re.compile(
+    r"^\d{8}-m12[a-z0-9-]*-fictional-[A-Za-z0-9-]+:run-[1-3]:context-0[12]$"
+)
 
 
 def output_observation(lifecycle):
@@ -44,8 +48,8 @@ def single_attempt(
     base_namespace,
 ):
     contract = u.read(ROOT)
-    if not invocation_id.startswith("20260910-m12w-fictional-"):
-        raise ValueError("m12w_fictional_invocation_required")
+    if not _FICTIONAL_INVOCATION_ID.fullmatch(invocation_id):
+        raise ValueError("m12_fictional_invocation_required")
     if (
         contract["model"],
         contract["effort"],

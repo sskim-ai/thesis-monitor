@@ -6,7 +6,8 @@
       "base_sha256": "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
       "current_sha256": "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
       "path": "app/services/daily_monitor_service.py",
-      "unchanged": true
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
     }
   ],
   "status": "PASS"

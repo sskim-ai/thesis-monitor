@@ -7,7 +7,8 @@
       "base_sha256": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
       "current_sha256": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
       "path": "app/services/directional_balance_service.py",
-      "unchanged": true
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
     }
   ],
   "status": "PASS"

@@ -6,13 +6,15 @@
       "base_sha256": "06a97ae8dc918120e1dba1a2a6c60297515a80972ac79e0d7939ea6d44d57903",
       "current_sha256": "06a97ae8dc918120e1dba1a2a6c60297515a80972ac79e0d7939ea6d44d57903",
       "path": "app/services/financial_framework_claim_service.py",
-      "unchanged": true
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
     },
     {
       "base_sha256": "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0",
       "current_sha256": "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0",
       "path": "tests/test_financial_exclusion_expectation_m12u.py",
-      "unchanged": true
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
     }
   ],
   "status": "PASS"
