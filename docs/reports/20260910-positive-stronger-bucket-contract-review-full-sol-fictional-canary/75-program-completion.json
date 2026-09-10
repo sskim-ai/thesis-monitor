@@ -31,7 +31,7 @@
   "fictional_repetition_count": 3,
   "fictional_schema_pass_count": 8,
   "fictional_subject_count": 8,
-  "final_head_sha": "PENDING_FINAL_COMMIT",
+  "final_head_sha": "RESOLVED_FROM_GIT_AT_BUNDLE_EXPORT",
   "financial_context_selection_change_count": 0,
   "financial_exclusion_validator_semantic_change_count": 0,
   "financial_semantic_change_count": 0,
@@ -138,7 +138,7 @@
   "provider_source_fetches": 0,
   "qtd_ytd_validator_semantic_change_count": 0,
   "real_issuer_model_exposure_count": 0,
-  "report_commit": "PENDING_FINAL_COMMIT",
+  "report_commit": "ee0d30900ff643804596c27c88f34c358ae0bf8f",
   "ruff_result": {
     "command": [
       "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/ruff",

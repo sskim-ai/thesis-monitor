@@ -9,6 +9,7 @@ Date: 2026-09-10 KST
 - Work instruction: `239b799a1361b8ad8168aef2310f03eaf8fc641e`
 - Root-cause freeze: `6aa35700448539cde45e440f7082f329a78d9e68`
 - Implementation/runtime identity: `7b1407eab18182defc3bafc261064008a65e20c1`
+- Report commit: `ee0d30900ff643804596c27c88f34c358ae0bf8f`
 - Production merge/deploy: `0/0`
 
 ## Contract Decision
