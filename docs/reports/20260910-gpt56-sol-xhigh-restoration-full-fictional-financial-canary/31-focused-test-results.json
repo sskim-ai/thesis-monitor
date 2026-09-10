@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_adaptive_renderer_selector.py",
+    "tests/test_astra_runtime_m12v.py",
+    "tests/test_codex_network_transport_service.py",
+    "tests/test_codex_runtime_state_service.py",
+    "tests/test_codex_transport_lifecycle_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+    "tests/test_price_structure_v3_renderer_service.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_sol_restoration_m12w.py"
+  ],
+  "finished_at": "2026-09-10T01:57:35.258709+00:00",
+  "output_path": "artifacts/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/validation/focused.txt",
+  "output_sha256": "d9c1cac8fdfe78f70a276d0dc2ca33bdaf682d599f083c4c4e99efa4522e2137",
+  "returncode": 0,
+  "started_at": "2026-09-10T01:57:27.765309+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

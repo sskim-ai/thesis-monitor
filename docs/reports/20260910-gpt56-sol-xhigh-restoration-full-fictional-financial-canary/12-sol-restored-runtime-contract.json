@@ -1,0 +1,67 @@
+{
+  "astra": {
+    "automatic_return": false,
+    "future_scope": "MODEL_COMPATIBILITY_OR_QUALITY_EXPERIMENT",
+    "model_calls_in_m12w": 0,
+    "proof_critical_status": "SUSPENDED_FROM_PROOF_CRITICAL_PATH"
+  },
+  "authoring": {
+    "effort": "xhigh",
+    "model": "gpt-5.6-sol",
+    "observed_at": "2026-09-10T01:39:36.046Z",
+    "source": "current Codex rollout turn_context",
+    "status": "PASS"
+  },
+  "batch_split": 0,
+  "context_count": 2,
+  "contract": "m12w-sol-proof-critical-restoration-v1",
+  "decision": "RESTORE_GPT56_SOL_XHIGH",
+  "effort": "xhigh",
+  "model": "gpt-5.6-sol",
+  "previous_astra_timeout_seconds": 2400,
+  "repetition_count": 3,
+  "runtime_instrumentation": {
+    "backend_progress_heartbeat": false,
+    "contract": "codex-transport-lifecycle-v1",
+    "first_last_local_byte_timing": true,
+    "process_group_cleanup": true,
+    "semantic_change_count": 0,
+    "status": "RETAIN_MODEL_NEUTRAL",
+    "unique_runtime_namespace": true,
+    "unique_working_directory": true
+  },
+  "selected_timeout_seconds": 1800,
+  "semantic_freeze": {
+    "baseline": "M12U",
+    "directional_increment": 0.5,
+    "directional_semantic_change_count": 0,
+    "directional_threshold": 6.0,
+    "economic_independence": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+    "fictional_case_change_count": 0,
+    "financial_semantic_change_count": 0,
+    "historical_sol_labels_are_targets": false,
+    "hold_lean": {
+      "4.5:5.5": "SELL_LEAN",
+      "5.0:5.0": "NEUTRAL",
+      "5.5:4.5": "BUY_LEAN"
+    },
+    "source_mapping_change_count": 0,
+    "target_buys": {
+      "FIC-FIN-01": 6.0,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5.0,
+      "FIC-FIN-05": 4.5
+    }
+  },
+  "single_authoritative_watchdog": true,
+  "stop_policy": {
+    "fallback_model": null,
+    "generation_stitching": false,
+    "selective_retry": false,
+    "timeout_increase_after_start": false,
+    "whole_generation_stop": true
+  },
+  "subjects_per_context": 4,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "wrapper_retry_count": 0
+}

@@ -1,5 +1,28 @@
 # Next Session Prompt
 
+## 2026-09-10 M12W Nonproduction Closeout
+
+Start with `docs/reports/20260910-m12w-completion.md` and the M12W report directory.
+M12W restored the proof-critical runner to `gpt-5.6-sol / xhigh`, 1800 seconds and four
+subjects/context while preserving the M12U source/prompt/schema/semantic contract.
+Frozen implementation: `538cb761e1c10754cd74dd66b22d3e2f803561ac`.
+Generation: `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`.
+Source lock: `ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa`.
+
+The first context returned normally in 407.720583s: Sol/xhigh identity and schema 4/4 PASS,
+with timeout/capacity/internal retry/wrapper retry/orphan all zero. It then failed the frozen
+FIC-FIN-01 ordinal target because observed BUY was 6.5 versus expected 6.0. Whole-generation
+stop was applied; the remaining five contexts are NOT_RUN. Full 8x3 stability is NOT_MEASURED.
+
+Next bounded scope: `BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`. Diagnose the general contract
+boundary for the FIC-FIN-01 source pattern without ticker-specific exceptions, threshold
+relaxation, candidate rewriting or reuse of this generation. Do not resume/selectively rerun it,
+start a real issuer proof, return automatically to Astra, merge, deploy or resume schedules.
+Fresh real and production remain NOT_READY. Eight schedules stay PAUSED. Local focused/full
+260/3255 PASS; hosted CI retains five historical portability failures and zero new M12W failures.
+
+All older next-session directives below are historical, not current execution authorization.
+
 ## 2026-09-10 M12V Nonproduction Closeout
 
 Start with `docs/reports/20260910-m12v-completion.md` and the M12V report directory.

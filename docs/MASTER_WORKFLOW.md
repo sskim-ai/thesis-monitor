@@ -1,16 +1,38 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12v-runtime-architecture-timeout-closeout-v1
+**버전:** 2026-09-10 / m12w-sol-restoration-semantic-stop-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12V runtime architecture review 완료 / 새 첫 호출 2,400초 timeout / 출력 0 / 추가 호출 중단 / fresh real NOT_READY`
+**현재 위치:** `M12W Sol/xhigh transport 회복 관측 / 첫 context target 불일치 / 추가 호출 중단 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12F는 명시적 금융업 비적용 문장과 실제 산업재 금융지표 적용을 구분하는 validator만 수리했다. Directional prompt는 변경하지 않았다. 현재 Astra 계약상 FIC-FIN-05의 HOLD SELL_LEAN 5.5는 타당하며, 과거 Sol SELL을 필수 정답으로 취급하지 않는다. 새 canary는 첫 context 4/4 PASS 후 두 번째 context가 출력 없이 1,800초 MODEL_TIMEOUT으로 중단됐다. 전체 반복 안정성과 새 FIC-FIN-05/08 관측은 미측정이다. 원본 출력·FAIL·receipt는 보존하고 재호출·hotfix·main merge·운영 변경은 0이다.**
+**M12W는 M12U 의미 계약과 source/prompt/schema를 그대로 두고 proof-critical 모델만 GPT-5.6 Sol/xhigh로 복원했다. 새 첫 context는 407.7초에 transport/schema 4/4를 반환했지만 FIC-FIN-01 BUY가 frozen 6.0 대신 6.5여서 전체 generation을 중단했다. 나머지 5개 context는 NOT_RUN이며 반복 안정성은 미측정이다. 재호출·hotfix·main merge·운영 변경은 0이다.**
 
 ---
 
 ## 1. 지금 프로젝트가 달성하려는 것
 
-### 최신 M12V 결과
+### 최신 M12W 결과
+
+지시서 `e8441e0`, 구현 `538cb76` 순서로 동결했다. GPT-6 Astra는 proof-critical
+경로에서 중단하고 `gpt-5.6-sol / xhigh`, 1,800초, 4종목/context, wrapper retry 0을
+적용했다. M12U 금융 의미, target, fictional source, prompt, schema, selector와 운영 코드는
+변경하지 않았다. 로컬 focused/full은 260/3255 PASS, Ruff/diff PASS다. Hosted CI는
+3250 PASS/기존 portability 5 FAIL이며 M12W 신규 실패는 0이다.
+
+새 generation `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`의 첫 호출은
+407.720583초에 Sol/xhigh identity, parsed output, schema 4/4를 반환했다. Timeout, capacity,
+CLI 내부 retry, wrapper retry, orphan은 모두 0이다. 그러나 FIC-FIN-01 BUY가 frozen target
+6.0 대신 6.5여서 `frozen_ordinal_contract_inconsistent`가 발생했고 whole-generation stop을
+적용했다. FIC-FIN-02/03/04는 해당 호출에서 PASS, 나머지 5개 context는 NOT_RUN이다.
+
+따라서 Sol transport 회복은 한 context에서 관측됐지만 full 8x3 stability는 입증되지 않았다.
+Fresh real과 production은 NOT_READY다. 다음 범위는
+`BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`; threshold 자동 변경, 현 generation 재개,
+selective rerun, 모델 fallback은 금지한다. 예약 8개는 PAUSED 상태를 유지한다.
+결과 근거: `docs/reports/20260910-m12w-completion.md`와 M12W reports 53/59/63/69.
+
+아래 M12V 및 이전 단계는 역사적 결과이며 M12W 재실행 또는 운영 재개 승인이 아니다.
+
+### 이전 M12V 결과
 
 지시서 `f1da357`, architecture 결정 `2e50558`, 구현 `46ec85c` 순서로 동결했다.
 선택한 단일 실험 계약은 `INCREASED_FINITE_ABSOLUTE_WATCHDOG`: 1,800초에서 2,400초로

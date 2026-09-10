@@ -1,5 +1,29 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-10 M12W Nonproduction Closeout
+
+M12W: M12W_CANARY_FAIL. Read `docs/reports/20260910-m12w-completion.md` and
+`docs/reports/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/69-program-completion.json`.
+Work instruction `e8441e0543054534566e99c19fbdcd6c0722462c`; frozen implementation
+`538cb761e1c10754cd74dd66b22d3e2f803561ac`. The proof-critical runtime was restored to
+`gpt-5.6-sol / xhigh`, 1800 seconds, four subjects/context, no wrapper retry or fallback.
+M12U semantics, targets, fictional source, prompt and schema stayed frozen.
+
+Generation `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`, source lock
+`ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa`, stopped after
+the first context. Transport returned a parsed 4-row output in 407.720583s with Sol/xhigh
+identity and timeout/capacity/internal retry/wrapper retry/orphan all zero. FIC-FIN-01 failed the
+frozen ordinal target: expected BUY 6.0, observed 6.5. FIC-FIN-02/03/04 passed; five later
+contexts are NOT_RUN. Do not resume, selectively rerun, stitch, hotfix or change thresholds in
+this generation. Full core/formal/stance/delta stability remains NOT_MEASURED.
+
+Local focused/full 260/3255 PASS, Ruff/diff PASS. Hosted CI is 3250 PASS with the same five
+historical portability failures and zero new M12W failures. Eight schedules remain PAUSED;
+real/judge/provider calls, sends, persistence, merge and deployment are zero. Fresh real and
+production remain NOT_READY. Next scope: `BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`.
+
+The M12V and older sections below are historical and are not execution authorization.
+
 ## 2026-09-10 M12V Nonproduction Closeout
 
 M12V: M12V_RUNTIME_PROOF_FAIL. Read `docs/reports/20260910-m12v-completion.md` and

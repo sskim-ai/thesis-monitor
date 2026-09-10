@@ -1,0 +1,457 @@
+{
+  "astra_m12v": {
+    "runtime": {
+      "backend_progress_state": "NOT_MEASURED",
+      "cli_internal_retry_event_count": 0,
+      "effort": "xhigh",
+      "elapsed_seconds": 2404.422353,
+      "failure_type": "MODEL_TIMEOUT",
+      "model": "gpt-6-astra",
+      "orphan_process_count": 0,
+      "output_bytes": 0,
+      "receipt_sha256": "9f546531216c59293cfc4b88befc3a27facfa1ae66cb8ba64fc188c4d2d4c810",
+      "status": "FAIL",
+      "timeout_seconds": 2400,
+      "wrapper_retry_count": 0
+    },
+    "semantic_contract": "M12U_FROZEN",
+    "semantic_output": "NOT_MEASURED"
+  },
+  "combined_stability_rate": "NOT_COMPUTED",
+  "current_sol_m12w": {
+    "core_rows": [
+      {
+        "buy": 6.5,
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "repetition": 1,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "hold_lean": "SELL_LEAN",
+        "repetition": 1,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "repetition": 1,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "repetition": 1,
+        "ticker": "FIC-FIN-04"
+      }
+    ],
+    "receipts": [
+      {
+        "backend_model_attestation": "NOT_MEASURED",
+        "backend_progress_state": "NOT_MEASURED",
+        "backend_sampling_request_count": "NOT_MEASURED",
+        "batch_split": 0,
+        "cli_advertised_runtime": {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol"
+        },
+        "cli_internal_retry_event_count": 0,
+        "cli_internal_retry_events": [],
+        "cli_version": "OpenAI Codex v0.153.4",
+        "combined_log_order": "STDERR_THEN_STDOUT_NOT_CHRONOLOGICAL",
+        "contract": "m12w-single-attempt-receipt-v1",
+        "elapsed_seconds": 407.720583,
+        "failure_type": null,
+        "finished_at": "2026-09-10T02:10:08.403430+00:00",
+        "invocation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a:run-1:context-01",
+        "lifecycle": {
+          "batch_id": "run-1:context-01",
+          "child_cleanup_status": "NOT_NEEDED",
+          "cleanup_margin_seconds": 5,
+          "cli_binary_identity": {
+            "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+            "sha256": "c147aa90d34139599711fb568102ceefc6319ca1ac5cb6f4056ca46a1834edd9"
+          },
+          "cli_version": "codex-cli 0.153.4",
+          "completed_at": "2026-09-10T02:10:08.403430+00:00",
+          "configured_timeout_seconds": 1800,
+          "contract": "codex-transport-lifecycle-v1",
+          "duplicate_timeout_receipt_count": 0,
+          "elapsed_to_exit_seconds": 407.718801,
+          "elapsed_to_first_output_seconds": 1.18736,
+          "elapsed_to_first_stderr_seconds": 1.18736,
+          "elapsed_to_first_stdout_seconds": 407.572231,
+          "elapsed_to_parse_seconds": 407.719746,
+          "exit_code": 0,
+          "first_stderr_byte_monotonic": 557231.605715208,
+          "first_stdout_byte_monotonic": 557637.990586166,
+          "generation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a",
+          "input_bytes": 29190,
+          "input_payload_sha256": "8bf67c23b828c2a73dd16b296acaf5d0535709086d66905753ba12743c788720",
+          "invocation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a:run-1:context-01",
+          "invocation_start_monotonic": 557230.418355458,
+          "last_stderr_byte_monotonic": 557637.990505875,
+          "last_stdout_byte_monotonic": 557637.990586166,
+          "model": "gpt-5.6-sol",
+          "orphan_model_process_count": 0,
+          "outer_watchdog_deadline": null,
+          "output_bytes": 15199,
+          "output_parse_complete_monotonic": 557638.138101833,
+          "output_parsed": true,
+          "parse_error": null,
+          "process_exit_monotonic": 557638.1371565,
+          "process_group_detected_after_leader_exit": false,
+          "process_spawn_monotonic": 557230.499028541,
+          "process_spawn_requested_monotonic": 557230.497046166,
+          "prompt_sha256": "8bf67c23b828c2a73dd16b296acaf5d0535709086d66905753ba12743c788720",
+          "reasoning_effort": "xhigh",
+          "request_accepted_observability": "UNAVAILABLE",
+          "schema_sha256": "bcbba6c3fa53d904eeb421a09e0b8b72700335b7228c9bd96353f8dd28bf7007",
+          "secret_exposure_count": 0,
+          "stage": "FULL_FICTIONAL",
+          "started_at": "2026-09-10T02:03:20.682847+00:00",
+          "status": "PASS",
+          "stderr_bytes": 95942,
+          "stdin_complete_monotonic": 557230.499243791,
+          "stdin_writer_error": null,
+          "stdout_bytes": 15200,
+          "stream_collection_complete_monotonic": 557638.137344916,
+          "subject_count": 4,
+          "termination_initiator": "NONE",
+          "termination_signal": null,
+          "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+          "timeout_owner_count": 1,
+          "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+          "transport_metadata": {
+            "runtime_contract_sha256": "7d6e39f28eac3ad16b17717bb0787efad42bf544ab608985efee8a43d509bb3d"
+          },
+          "working_directory_identity": "264e4cad5e8b7d6dd5330b28fae5f9e6102a09abb38597890f6a394965b567ba"
+        },
+        "lifecycle_receipt_sha256": "c930be85c23ffbae414fec39d4e5e5b632fcf2551228eef9f256eabc02db527a",
+        "local_output_observation": "FINAL_OUTPUT_COMPLETE",
+        "log_sha256": "1e00b711fea7b5f5f30305f197efd6cdf33bd63ef0c37bba9c2a8b22baf5859b",
+        "model": "gpt-5.6-sol",
+        "model_process_spawned": true,
+        "network_readiness": {
+          "attempts": 1,
+          "contract": "codex-network-readiness-v1",
+          "failure_history": [],
+          "failure_type": null,
+          "host": "chatgpt.com",
+          "port": 443,
+          "ready": true,
+          "resolved_address_count": 4
+        },
+        "network_readiness_end": "2026-09-10T02:03:20.674002+00:00",
+        "network_readiness_start": "2026-09-10T02:03:20.648137+00:00",
+        "observed_effort": "xhigh",
+        "observed_model": "gpt-5.6-sol",
+        "observed_runtime": {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol"
+        },
+        "orphan_process_count": 0,
+        "output_bytes": 15199,
+        "output_exists": true,
+        "output_sha256": "82ffe09d54e4261e50da45b3f60bb94980deca2af5583888be2536046993a06c",
+        "output_size": 15199,
+        "prompt_bytes": 29190,
+        "prompt_sha256": "8bf67c23b828c2a73dd16b296acaf5d0535709086d66905753ba12743c788720",
+        "reasoning_effort": "xhigh",
+        "request_id": null,
+        "response_id": null,
+        "returncode": 0,
+        "runtime_isolation": {
+          "base_namespace_hash": "3f4507c3354e3fa6ef52fe08",
+          "contract": "codex-model-context-runtime-isolation-v1",
+          "execution_isolation_valid": true,
+          "invocation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a:run-1:context-01",
+          "invocation_identity_unique": true,
+          "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+          "runtime_state_namespace_hash": "fca6a41764cb9782383f0426",
+          "runtime_state_namespace_unique": true,
+          "working_directory_identity": "264e4cad5e8b7d6dd5330b28fae5f9e6102a09abb38597890f6a394965b567ba",
+          "working_directory_unique": true
+        },
+        "runtime_state": {
+          "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-gpt56-sol-restoration-m12w/artifacts/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/runtime-state/fca6a41764cb9782383f0426/home",
+          "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+          "contract": "codex-runtime-state-v1",
+          "mode": "0700",
+          "namespace_hash": "fca6a41764cb9782383f0426",
+          "ownership": "uid:501",
+          "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+          "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-gpt56-sol-restoration-m12w/artifacts/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/runtime-state/fca6a41764cb9782383f0426/sqlite",
+          "sqlite_wal_probe": "PASS"
+        },
+        "schema_bytes": 44296,
+        "schema_sha256": "bcbba6c3fa53d904eeb421a09e0b8b72700335b7228c9bd96353f8dd28bf7007",
+        "session_id": "01a0890e-2978-7eb3-889c-98a3ade0bdf9",
+        "single_authoritative_watchdog": true,
+        "started_at": "2026-09-10T02:03:20.682847+00:00",
+        "status": "PASS",
+        "timed_out": false,
+        "timeout": false,
+        "timeout_count": 0,
+        "timeout_seconds": 1800,
+        "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+        "transport_attempt_count": 1,
+        "wrapper_retry_count": 0
+      }
+    ],
+    "row_count": 4,
+    "semantic_contract": "M12U_FROZEN"
+  },
+  "historical_sol_m12d": {
+    "core_rows": [
+      {
+        "buy": 6.5,
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "buy": 4.0,
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "buy": 4.0,
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "buy": 5.5,
+        "direction": "HOLD",
+        "hold_lean": "BUY_LEAN",
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-08"
+      },
+      {
+        "buy": 6.0,
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "hold_lean": "SELL_LEAN",
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "buy": 4.0,
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "buy": 5.5,
+        "direction": "HOLD",
+        "hold_lean": "BUY_LEAN",
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-08"
+      },
+      {
+        "buy": 6.5,
+        "direction": "BUY",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "buy": 4.0,
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "buy": 5.5,
+        "direction": "HOLD",
+        "hold_lean": "BUY_LEAN",
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "buy": 4.0,
+        "direction": "SELL",
+        "hold_lean": "NOT_HOLD",
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "buy": 5.5,
+        "direction": "HOLD",
+        "hold_lean": "BUY_LEAN",
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "hold_lean": "NEUTRAL",
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "row_count": 24,
+    "runtime": {
+      "historical_completed_context_count": 38,
+      "historical_timeout_count": 0,
+      "m12d_completed_context_count": 6,
+      "m12d_integrity": {
+        "duplicate_member_count": 0,
+        "extra": [],
+        "hash_mismatches": [],
+        "indexed_payload_count": 127,
+        "missing": [],
+        "sha256": "b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3",
+        "size_mismatches": [],
+        "status": "PASS"
+      },
+      "m12d_policy": "SAME_MODEL_DIFFERENT_CONTRACT_HISTORICAL",
+      "m12d_receipts": [
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-1/context-01/receipt.json",
+          "receipt_sha256": "9ec0a37af8a64f64e3267859aa02415a14b11a83bfec4b48e9db839c8e62a9c4",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        },
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-1/context-02/receipt.json",
+          "receipt_sha256": "5d3f5193fb43480acdb16a3bdd3d7c84e66da50b2840db2f32b623028370a699",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        },
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-2/context-01/receipt.json",
+          "receipt_sha256": "037a03516f82c3cf5fb95d217c5a7217228724246f3bba01a16858f0e064536d",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        },
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-2/context-02/receipt.json",
+          "receipt_sha256": "c804f2192b904e2c8547d9acd7c8e462a48af985572c9b0d46ad98232b25d150",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        },
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-3/context-01/receipt.json",
+          "receipt_sha256": "8d19eea4c1a887f36bd9802f59a534ac31a45a4fe85412ef0f41aefc64ddf202",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        },
+        {
+          "effort": "xhigh",
+          "model": "gpt-5.6-sol",
+          "orphan_process_count": 0,
+          "path": "experiment/model-calls/run-3/context-02/receipt.json",
+          "receipt_sha256": "4cf00a37d888db231d47cc30bc8cd774c33b639cd5d3754e8db59c27153c1293",
+          "status": "PASS",
+          "timeout_seconds": 1800,
+          "wrapper_retry_count": 0
+        }
+      ],
+      "m12d_timeout_count": 0,
+      "real_32_context_summary": {
+        "evidence_class": "REPOSITORY_PRESERVED_COMPLETION_REPORT",
+        "path": "docs/reports/20260908-runtime-namespace-isolation-repair-fresh-holdout-proof/67-program-completion.md",
+        "recorded_attempted_contexts": 32,
+        "recorded_effort": "xhigh",
+        "recorded_model": "gpt-5.6-sol",
+        "recorded_orphan_count": 0,
+        "recorded_successful_contexts": 32,
+        "recorded_timeout_count": 0,
+        "recorded_wrapper_retry_count": 0,
+        "sha256": "865d7d9ea8879c1f728ec8750760b19b8962f0804502a9c8168b8fd4125452e3"
+      },
+      "status": "PASS"
+    },
+    "semantic_contract": "EARLIER_THAN_M12U"
+  },
+  "model_intelligence_score": "NOT_COMPUTED",
+  "policy": [
+    "SAME_MODEL_DIFFERENT_CONTRACT_HISTORICAL",
+    "CROSS_MODEL_DESCRIPTIVE_ONLY",
+    "CURRENT_AUTHORITATIVE_PROOF"
+  ]
+}

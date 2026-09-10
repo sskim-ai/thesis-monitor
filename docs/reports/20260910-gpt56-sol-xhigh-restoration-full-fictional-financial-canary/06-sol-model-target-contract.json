@@ -1,0 +1,11 @@
+{
+  "context_count": 2,
+  "effort": "xhigh",
+  "model": "gpt-5.6-sol",
+  "repetition_count": 3,
+  "selected_timeout_seconds": 1800,
+  "single_authoritative_watchdog": true,
+  "subjects_per_context": 4,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "wrapper_retry_count": 0
+}

@@ -1,0 +1,92 @@
+{
+  "historical_completed_context_count": 38,
+  "historical_timeout_count": 0,
+  "m12d_completed_context_count": 6,
+  "m12d_integrity": {
+    "duplicate_member_count": 0,
+    "extra": [],
+    "hash_mismatches": [],
+    "indexed_payload_count": 127,
+    "missing": [],
+    "sha256": "b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3",
+    "size_mismatches": [],
+    "status": "PASS"
+  },
+  "m12d_policy": "SAME_MODEL_DIFFERENT_CONTRACT_HISTORICAL",
+  "m12d_receipts": [
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-1/context-01/receipt.json",
+      "receipt_sha256": "9ec0a37af8a64f64e3267859aa02415a14b11a83bfec4b48e9db839c8e62a9c4",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    },
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-1/context-02/receipt.json",
+      "receipt_sha256": "5d3f5193fb43480acdb16a3bdd3d7c84e66da50b2840db2f32b623028370a699",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    },
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-2/context-01/receipt.json",
+      "receipt_sha256": "037a03516f82c3cf5fb95d217c5a7217228724246f3bba01a16858f0e064536d",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    },
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-2/context-02/receipt.json",
+      "receipt_sha256": "c804f2192b904e2c8547d9acd7c8e462a48af985572c9b0d46ad98232b25d150",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    },
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-3/context-01/receipt.json",
+      "receipt_sha256": "8d19eea4c1a887f36bd9802f59a534ac31a45a4fe85412ef0f41aefc64ddf202",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    },
+    {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol",
+      "orphan_process_count": 0,
+      "path": "experiment/model-calls/run-3/context-02/receipt.json",
+      "receipt_sha256": "4cf00a37d888db231d47cc30bc8cd774c33b639cd5d3754e8db59c27153c1293",
+      "status": "PASS",
+      "timeout_seconds": 1800,
+      "wrapper_retry_count": 0
+    }
+  ],
+  "m12d_timeout_count": 0,
+  "real_32_context_summary": {
+    "evidence_class": "REPOSITORY_PRESERVED_COMPLETION_REPORT",
+    "path": "docs/reports/20260908-runtime-namespace-isolation-repair-fresh-holdout-proof/67-program-completion.md",
+    "recorded_attempted_contexts": 32,
+    "recorded_effort": "xhigh",
+    "recorded_model": "gpt-5.6-sol",
+    "recorded_orphan_count": 0,
+    "recorded_successful_contexts": 32,
+    "recorded_timeout_count": 0,
+    "recorded_wrapper_retry_count": 0,
+    "sha256": "865d7d9ea8879c1f728ec8750760b19b8962f0804502a9c8168b8fd4125452e3"
+  },
+  "status": "PASS"
+}

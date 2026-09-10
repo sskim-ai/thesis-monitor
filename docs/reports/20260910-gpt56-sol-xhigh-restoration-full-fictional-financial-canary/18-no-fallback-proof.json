@@ -1,0 +1,7 @@
+{
+  "fallback_model": null,
+  "generation_stitching": false,
+  "selective_retry": false,
+  "timeout_increase_after_start": false,
+  "whole_generation_stop": true
+}
