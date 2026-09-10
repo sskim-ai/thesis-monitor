@@ -115,7 +115,7 @@
   "fictional_repetition_count": 3,
   "fictional_schema_pass_count": 24,
   "fictional_subject_count": 8,
-  "final_head_sha": "PENDING_FINAL_COMMIT",
+  "final_head_sha": "RESOLVED_FROM_GIT_AT_BUNDLE_EXPORT",
   "financial_context_selection_change_count": 0,
   "financial_framework_exclusion_false_reject_count": 0,
   "financial_framework_false_accept_count": 0,
@@ -222,7 +222,7 @@
   "provider_source_fetches": 0,
   "qtd_ytd_validator_semantic_change_count": 0,
   "real_issuer_model_exposure_count": 0,
-  "report_commit": "PENDING_FINAL_COMMIT",
+  "report_commit": "20182366f704d0ad178d22e8b5816462679c138a",
   "ruff_result": {
     "command": [
       "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/ruff",
