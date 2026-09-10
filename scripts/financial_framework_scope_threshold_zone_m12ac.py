@@ -661,6 +661,7 @@ def prepare() -> None:
         threshold_zone_enabled=True,
     )
     write(OUTPUT / "model-call-gate.json", gate)
+    write(OUTPUT / "phase-a-receipt.json", gate)
     report(
         31,
         {

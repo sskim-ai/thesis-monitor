@@ -328,7 +328,7 @@
     "scripts/financial_context_output_grounding_m12a.py": "e5c409234ec6b5d6beea774af9dd97bafc15472bfb569d5f4a58ac89f5e4f8af",
     "scripts/financial_exclusion_expectation_m12u.py": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
     "scripts/financial_exclusion_leverage_m12f.py": "69d1603fb95b86b8daf8bb5df46865d7320ddedb4194775f9b1f630b07a279d8",
-    "scripts/financial_framework_scope_threshold_zone_m12ac.py": "02b4864bcd9e8c6b0674fec66e8f94f8efb66672d545192839cbe11e2bcc61ba",
+    "scripts/financial_framework_scope_threshold_zone_m12ac.py": "cf8ff68ad383915277343a16b7f8a29631e352ac50a73c71a6daa349a4b24f9e",
     "scripts/financial_lineage_kr_period_projection_evidence.py": "0044744f0c2134bf145053dd24fad60975d2df602ab4b2137886ef72c5e4ca79",
     "scripts/first_class_typed_financial_evidence_m12b.py": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
     "scripts/four_track_daily_review_replay.py": "014ec9311c6842aeb19a917385d8f6ec41806429acced68c561f04a658163572",
@@ -710,11 +710,11 @@
         "--check",
         "f22c3cef615c665150fe5e92b45e185345782d1c"
       ],
-      "finished_at": "2026-09-10T11:28:39.347001+00:00",
+      "finished_at": "2026-09-10T11:35:50.122484+00:00",
       "output_path": "artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/validation/diff.txt",
       "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "returncode": 0,
-      "started_at": "2026-09-10T11:28:39.329621+00:00",
+      "started_at": "2026-09-10T11:35:50.100753+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -738,11 +738,11 @@
         "tests/test_first_class_typed_financial_evidence_m12b.py",
         "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
       ],
-      "finished_at": "2026-09-10T11:27:21.035985+00:00",
+      "finished_at": "2026-09-10T11:34:32.560050+00:00",
       "output_path": "artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/validation/focused.txt",
-      "output_sha256": "72cf1b89cee26855024b4c2733a4ceec5e69af012ce62f37f159043135c7a496",
+      "output_sha256": "a05c316ea1d4092bd8322fe846ab0c9d5b87a876648c47be312a552877b1f9b9",
       "returncode": 0,
-      "started_at": "2026-09-10T11:27:18.667621+00:00",
+      "started_at": "2026-09-10T11:34:30.012434+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -753,11 +753,11 @@
         "pytest",
         "-q"
       ],
-      "finished_at": "2026-09-10T11:28:39.312137+00:00",
+      "finished_at": "2026-09-10T11:35:50.086056+00:00",
       "output_path": "artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/validation/full.txt",
-      "output_sha256": "b36cae2e8a0f9a2c45362cf28ee7a4e3902520b2a286ef931406ca3e4657491e",
+      "output_sha256": "039cab25ac23dacf87f3faa2ae1948f4d2fd8ecd5090c4d3a853f235c5010a90",
       "returncode": 0,
-      "started_at": "2026-09-10T11:27:21.036083+00:00",
+      "started_at": "2026-09-10T11:34:32.560141+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -769,11 +769,11 @@
         "scripts",
         "tests"
       ],
-      "finished_at": "2026-09-10T11:28:39.329537+00:00",
+      "finished_at": "2026-09-10T11:35:50.100687+00:00",
       "output_path": "artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/validation/ruff.txt",
       "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
       "returncode": 0,
-      "started_at": "2026-09-10T11:28:39.312246+00:00",
+      "started_at": "2026-09-10T11:35:50.086141+00:00",
       "status": "PASS",
       "timed_out": false
     }
