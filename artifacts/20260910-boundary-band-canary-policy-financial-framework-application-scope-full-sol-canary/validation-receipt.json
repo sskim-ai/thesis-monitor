@@ -289,7 +289,7 @@
     "scripts/audit_kr_financial_lineage.py": "1a529a99e2a07120891e20817d4e653804ba92328a3895a777fb6ccef8276301",
     "scripts/authoritative_result_identity_reconciliation_us_source_expansion_proof_resume.py": "1715ecc0551d506686ac756ba9a727b7edf8de3687b8d6b3b4ee508895c80367",
     "scripts/backfill_valuation_frameworks.py": "35be6b8556d131fd2a6c0fc6333d8a138fa04cc1bbe0e151369075c076a14f5a",
-    "scripts/boundary_band_application_scope_m12aa.py": "34cd601cba507fae4c8bfa14da09c8dc7e79323cff841367ea55bebd8b145f58",
+    "scripts/boundary_band_application_scope_m12aa.py": "59553703d2663004e1280093e1a02f94d2469e4cd4f9d1400aa78e82b8762ffe",
     "scripts/bounded_directional_financial_context_stability_m12s.py": "a74f911765ca62cfb88f9adc188667e3f1ff8faad9d8c3621e48625bf51ee163",
     "scripts/bounded_fictional_websocket_reconnect_diagnostic.py": "068e9498a42f6b2064eb4dc5a2cd679a1e42a22d2239bce895bc6d42ac895514",
     "scripts/bounded_us_source_coverage_remediation_holdout_resume.py": "f6ba0029d0ebc105612e0865b038620b8d97e4c4b0409560cd59b51ce5f719f5",
@@ -487,7 +487,7 @@
     "tests/test_astra_runtime_m12v.py": "d49d247761162663b4d43b3e2bf58b7be558a55fe566644222140a3cb464aa38",
     "tests/test_astra_transport_m12t.py": "5c0531018850e271ef4eaace6ec5e3c74ae461eb26e9a6c0f13c4b0ad4b7a024",
     "tests/test_authoritative_security_identity.py": "23167ae9b052983cbfc3be01a46749c1fd451be28ec486686d8896c986d485ca",
-    "tests/test_boundary_band_application_scope_m12aa.py": "3e18437398d75b294dba72733d63470b281c5abcf27b23d64629abf2c3f256c4",
+    "tests/test_boundary_band_application_scope_m12aa.py": "3977f92451ee832630cdc3cc90f4859a10e814dacb0ad906e6f6b0e938d4bff6",
     "tests/test_bounded_directional_financial_context_stability_m12s.py": "57616fbc29cd453a8a264bb07753e6216ae48deaa8cb51c7688d650be34a3e46",
     "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py": "88c0312116f53c795f1b4a49099a521e16be65331d0c14388e9bbe44fb7261bf",
     "tests/test_bounded_message_quality.py": "85fc70ea319508c7d89a955bddf52b9cdc346d0e5245c6c86279bdd463d51ec6",
@@ -701,11 +701,11 @@
         "--check",
         "e6e4cea878d4af93f44f299ff58791b651cc4afe"
       ],
-      "finished_at": "2026-09-10T06:44:34.571145+00:00",
+      "finished_at": "2026-09-10T06:52:54.641366+00:00",
       "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/diff.txt",
       "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "returncode": 0,
-      "started_at": "2026-09-10T06:44:34.549049+00:00",
+      "started_at": "2026-09-10T06:52:54.609972+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -728,11 +728,11 @@
         "tests/test_first_class_typed_financial_evidence_m12b.py",
         "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
       ],
-      "finished_at": "2026-09-10T06:43:16.716276+00:00",
+      "finished_at": "2026-09-10T06:51:37.431657+00:00",
       "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/focused.txt",
-      "output_sha256": "b1f76ebbad9d1d35a6c7019138ca9494693396c8586e9e81f9faba12b3bb05ad",
+      "output_sha256": "a3490a9396c0afce49a634c0e4536b47468e072e932c15fff7e39b6ffdc6ab47",
       "returncode": 0,
-      "started_at": "2026-09-10T06:43:14.464202+00:00",
+      "started_at": "2026-09-10T06:51:35.198498+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -743,11 +743,11 @@
         "pytest",
         "-q"
       ],
-      "finished_at": "2026-09-10T06:44:34.502609+00:00",
+      "finished_at": "2026-09-10T06:52:54.574054+00:00",
       "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/full.txt",
-      "output_sha256": "6c21df3479bf7f6ae3321a02f756e7db3391ffef88bd02839a6f1c00d4e5cbff",
+      "output_sha256": "3b7a9825d5bd239a850df66caa18f4969c72e50b79dda8e67a187a006c0d4f7e",
       "returncode": 0,
-      "started_at": "2026-09-10T06:43:16.716439+00:00",
+      "started_at": "2026-09-10T06:51:37.431738+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -759,11 +759,11 @@
         "scripts",
         "tests"
       ],
-      "finished_at": "2026-09-10T06:44:34.548943+00:00",
+      "finished_at": "2026-09-10T06:52:54.609897+00:00",
       "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/ruff.txt",
       "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
       "returncode": 0,
-      "started_at": "2026-09-10T06:44:34.502681+00:00",
+      "started_at": "2026-09-10T06:52:54.574122+00:00",
       "status": "PASS",
       "timed_out": false
     }

@@ -74,6 +74,19 @@ HARD_ROLES = {
     FrameworkReferenceRole.CONTRADICTORY_MIXED_USE,
     FrameworkReferenceRole.UNRESOLVED,
 }
+BASE_FILE_SHA256 = {
+    "app/services/directional_balance_service.py": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+    "app/services/coldstart_source_assembly_service.py": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+    "app/services/current_price_context_service.py": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+    "app/services/daily_digest_renderer.py": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
+    "app/services/daily_monitor_service.py": "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+    "scripts/financial_exclusion_expectation_m12u.py": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+    "scripts/first_class_typed_financial_evidence_m12b.py": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
+    "scripts/materiality_scoped_working_capital_grounding_m12c.py": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+    "scripts/qtd_ytd_plain_korean_period_validator_m12d.py": "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0",
+    "scripts/sol_runtime_adapter_m12w.py": "bff087fc514ca765a7a2cfb6108c72198eb37ced62c5595bdefe04f90894f615",
+}
 
 
 def report(number: int, value: object) -> None:
@@ -81,7 +94,17 @@ def report(number: int, value: object) -> None:
 
 
 def _base_hash(path: str) -> str:
-    return sha(subprocess.check_output(["git", "show", f"{BASE}:{path}"]))
+    try:
+        return sha(
+            subprocess.check_output(
+                ["git", "show", f"{BASE}:{path}"],
+                stderr=subprocess.DEVNULL,
+            )
+        )
+    except subprocess.CalledProcessError:
+        if path not in BASE_FILE_SHA256:
+            raise
+        return BASE_FILE_SHA256[path]
 
 
 def _freeze_paths(
