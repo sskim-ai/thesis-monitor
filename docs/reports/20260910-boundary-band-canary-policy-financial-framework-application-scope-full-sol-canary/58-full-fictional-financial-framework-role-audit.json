@@ -1,0 +1,508 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-01:net-debt"
+          ],
+          "field_path": "buy_drivers[2].text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "안전하게 산출된 순부채 잔액이 재무 회복력을 뒷받침합니다"
+        }
+      ],
+      "hard_application_count": 1,
+      "repetition": 1,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 수 있으나 그 원인과 되돌림 가능성은 공급된 근거로 확정되지 않습니다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[2].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 가능성이 있습니다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "unknown_treatments[0].summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "운전자본 사용의 원인과 가역성은 후속 확인이 필요합니다"
+        }
+      ],
+      "hard_application_count": 3,
+      "repetition": 1,
+      "roles": [
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "매출과 영업이익 성장은 사업 논거를 강화하지만 운전자본의 질은 아직 확인이 필요하다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:valuation-limit",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "field_path": "uncertainty_limit.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "가치평가와 운전자본의 수요·회수 품질이 없어 최소 매수 방향을 정당화할 독립 보강이 부족하다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "영업 성장은 보유 근거를 지지하지만 운전자본 전환을 확인해야 한다"
+        }
+      ],
+      "hard_application_count": 3,
+      "repetition": 1,
+      "roles": [
+        "ASSERTED_STATE"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "보험사이므로 인수 규율과 규제자본을 적용하며 산업회사식 순부채·운전자본 틀은 배제한다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "보험사이므로 인수 규율과 규제자본을 적용하며 산업회사식 순부채·운전자본 틀은 배제한다"
+        }
+      ],
+      "hard_application_count": 0,
+      "repetition": 1,
+      "roles": [
+        "EXPLICIT_NON_APPLICATION"
+      ],
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-01:net-debt"
+          ],
+          "field_path": "buy_drivers[2].text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "공급된 순부채 지표가 재무 여력을 뒷받침한다"
+        }
+      ],
+      "hard_application_count": 1,
+      "repetition": 2,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 가능성이 있으나 그 원인과 가역성은 아직 공급되지 않았다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[3].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 가능성이 있다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:remaining-unknown",
+            "fictional:FIC-FIN-02:valuation-limit"
+          ],
+          "field_path": "uncertainty_limit.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "운전자본 사용의 원인과 가역성, 안전한 현재 가치평가가 모두 미확인이다"
+        }
+      ],
+      "hard_application_count": 3,
+      "repetition": 2,
+      "roles": [
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "최근 비교기간의 매출과 영업이익 증가는 사업 개선을 보여주지만 운전자본의 질은 아직 확인이 필요하다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "영업 성장 근거가 있어 보유 가능하지만 운전자본 전환을 점검해야 한다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:market-expectation",
+            "fictional:FIC-FIN-06:remaining-unknown",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_reevaluation_up[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "매출 성장과 늘어난 운전자본 잔액이 청구 수요 및 현금 회수로 전환됨이 확인되면 긍정 방향을 재평가한다"
+        }
+      ],
+      "hard_application_count": 3,
+      "repetition": 2,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK",
+        "ASSERTED_STATE"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "보험사이므로 산업회사식 순부채와 운전자본 대신 인수 규율과 규제자본 기준을 적용한다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "보험사이므로 산업회사식 순부채와 운전자본 대신 인수 규율과 규제자본 기준을 적용한다"
+        }
+      ],
+      "hard_application_count": 0,
+      "repetition": 2,
+      "roles": [
+        "CONTRASTIVE_REPLACEMENT"
+      ],
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 수 있으나 원인과 가역성은 확인되지 않았다"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "fictional:FIC-FIN-02:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "일반 영업회사의 현금 전환 틀을 적용하되 재고 잔액 증가만으로 전체 운전자본 악화를 단정하지 않았다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[1].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "운전자본 흡수가 지속될 가능성이 있다"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:inventory-current"
+          ],
+          "field_path": "sell_drivers[2].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "재고 잔액이 전년 말보다 늘었지만 이것만으로 전체 운전자본 악화를 확정할 수는 없다"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "fictional:FIC-FIN-02:structural-risk",
+            "canonical:fictional:FIC-FIN-02:ocf-current"
+          ],
+          "field_path": "fundamental_holder.business_invalidation_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "현금 전환 약화가 지속되고 운전자본 사용이 구조적 자금 부담으로 확인되는 경우다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "business_reevaluation_down[1].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "운전자본 흡수가 지속적이고 비가역적인 것으로 확인되면 부정 방향이 강화된다"
+        }
+      ],
+      "hard_application_count": 6,
+      "repetition": 3,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK",
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "최근 비교 기간의 매출과 영업이익 증가로 성장 논지는 강화됐지만 운전자본 품질 확인이 필요하다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_new_buyer.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "성장 근거는 있으나 운전자본의 질과 가치평가가 미확인이라 기다림이 적절하다"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:market-expectation",
+            "fictional:FIC-FIN-06:remaining-unknown",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_reevaluation_up[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "늘어난 운전자본 잔액이 청구 수요와 현금 회수로 전환된다고 확인되면 성장의 질을 상향 재평가한다"
+        }
+      ],
+      "hard_application_count": 3,
+      "repetition": 3,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK",
+        "ASSERTED_STATE"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "claims": [],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "보험 인수 규율과 규제자본 체계를 적용하며 산업기업식 부채·운전자본 틀은 배제한다"
+        }
+      ],
+      "hard_application_count": 0,
+      "repetition": 3,
+      "roles": [
+        "EXPLICIT_NON_APPLICATION"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS"
+}

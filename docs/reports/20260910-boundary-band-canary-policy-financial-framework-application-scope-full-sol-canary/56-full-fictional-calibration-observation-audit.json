@@ -1,0 +1,262 @@
+{
+  "calibration_observation_count": 12,
+  "calibration_out_of_band_count": 2,
+  "rows": [
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 6.5,
+        "observed": {
+          "buy": 6.5,
+          "direction": "BUY",
+          "lean": "NOT_HOLD",
+          "sell": 3.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 4.5,
+        "observed": {
+          "buy": 4.5,
+          "direction": "HOLD",
+          "lean": "SELL_LEAN",
+          "sell": 5.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 5.0,
+        "observed": {
+          "buy": 5.0,
+          "direction": "HOLD",
+          "lean": "NEUTRAL",
+          "sell": 5.0
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "audit": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 4.0,
+          "direction": "SELL",
+          "lean": "NOT_HOLD",
+          "sell": 6.0
+        },
+        "outcome": "OUT_OF_BAND_OTHER",
+        "status": "OBSERVATION",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 6.5,
+        "observed": {
+          "buy": 6.5,
+          "direction": "BUY",
+          "lean": "NOT_HOLD",
+          "sell": 3.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 2,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 4.5,
+        "observed": {
+          "buy": 4.5,
+          "direction": "HOLD",
+          "lean": "SELL_LEAN",
+          "sell": 5.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 2,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 5.0,
+        "observed": {
+          "buy": 5.0,
+          "direction": "HOLD",
+          "lean": "NEUTRAL",
+          "sell": 5.0
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 2,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "audit": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 4.5,
+          "direction": "HOLD",
+          "lean": "SELL_LEAN",
+          "sell": 5.5
+        },
+        "outcome": "IN_BAND_HOLD_SELL_LEAN",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 2,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 6.5,
+        "observed": {
+          "buy": 6.5,
+          "direction": "BUY",
+          "lean": "NOT_HOLD",
+          "sell": 3.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 3,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 4.5,
+        "observed": {
+          "buy": 4.5,
+          "direction": "HOLD",
+          "lean": "SELL_LEAN",
+          "sell": 5.5
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 3,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "contract": "m12aa-reference-target-observation-v1",
+        "expected_buy": 5.0,
+        "observed": {
+          "buy": 5.0,
+          "direction": "HOLD",
+          "lean": "NEUTRAL",
+          "sell": 5.0
+        },
+        "outcome": "REFERENCE_MATCH",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 3,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "audit": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 4.0,
+          "direction": "SELL",
+          "lean": "NOT_HOLD",
+          "sell": 6.0
+        },
+        "outcome": "OUT_OF_BAND_OTHER",
+        "status": "OBSERVATION",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "repetition": 3,
+      "ticker": "FIC-FIN-05"
+    }
+  ],
+  "status": "MEASURED"
+}

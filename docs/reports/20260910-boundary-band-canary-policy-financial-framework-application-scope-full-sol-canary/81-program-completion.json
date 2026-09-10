@@ -1,0 +1,259 @@
+{
+  "artifact_count": "PENDING_EXPORT",
+  "artifact_hash_mismatch_count": "PENDING_EXPORT",
+  "artifact_secret_scan_failure_count": "PENDING_EXPORT",
+  "artifact_size_mismatch_count": "PENDING_EXPORT",
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "base_sha": "e6e4cea878d4af93f44f299ff58791b651cc4afe",
+  "branch": "codex/20260910-boundary-band-canary-m12aa",
+  "business_delta_alias_resolution_failure_count": 0,
+  "business_delta_alias_resolution_status": "PASS",
+  "business_delta_false_accept_count": 0,
+  "business_delta_false_reject_count": 0,
+  "business_delta_prompt_change_count": 0,
+  "business_delta_variance_subject_count": 0,
+  "calibration_deviation_stops_generation": false,
+  "calibration_observation_class_count": 1,
+  "calibration_observation_count": 12,
+  "calibration_out_of_band_count": 2,
+  "calibration_tiebreak_direction_changed": false,
+  "canary_stop_policy_version": "m12aa-canary-stop-policy-v1",
+  "capacity_failure_count": 0,
+  "cli_internal_retry_event_count": 0,
+  "confidence_observation_count": 1,
+  "confidence_variance_stops_generation": false,
+  "deployments": 0,
+  "directional_confidence_variance_subject_count": 1,
+  "directional_increment_changed": false,
+  "directional_prompt_change_count": 0,
+  "directional_threshold_changed": false,
+  "evidence_count_bucket_rule_count": 0,
+  "fic_fin_01_directional_balance_values": [
+    {
+      "buy": 6.5,
+      "sell": 3.5
+    },
+    {
+      "buy": 6.5,
+      "sell": 3.5
+    },
+    {
+      "buy": 6.5,
+      "sell": 3.5
+    }
+  ],
+  "fic_fin_02_directional_balance_values": [
+    {
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    {
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    {
+      "buy": 4.5,
+      "sell": 5.5
+    }
+  ],
+  "fic_fin_04_directional_balance_values": [
+    {
+      "buy": 5.0,
+      "sell": 5.0
+    },
+    {
+      "buy": 5.0,
+      "sell": 5.0
+    },
+    {
+      "buy": 5.0,
+      "sell": 5.0
+    }
+  ],
+  "fic_fin_05_allowed_band": [
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "lean": "SELL_LEAN",
+      "sell": 5.5
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "lean": null,
+      "sell": 6.0
+    }
+  ],
+  "fic_fin_05_band_change_type": "CANARY_EXPECTATION_CHANGE",
+  "fic_fin_05_directional_balance_values": [
+    {
+      "buy": 4.0,
+      "sell": 6.0
+    },
+    {
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    {
+      "buy": 4.0,
+      "sell": 6.0
+    }
+  ],
+  "fic_fin_05_in_band_hold_sell_lean_count": 1,
+  "fic_fin_05_in_band_minimum_sell_count": 0,
+  "fic_fin_05_out_of_band_count": 2,
+  "fic_fin_05_previous_exact_target": {
+    "buy": 4.0,
+    "direction": "SELL",
+    "sell": 6.0
+  },
+  "fic_fin_05_stable_preference": "OUT_OF_BAND",
+  "fictional_context_count": 2,
+  "fictional_generation_id": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+  "fictional_output_row_count": 24,
+  "fictional_repetition_count": 3,
+  "fictional_schema_pass_count": 24,
+  "fictional_subject_count": 8,
+  "final_head_sha": "PENDING_FINAL_COMMIT",
+  "financial_context_selection_change_count": 0,
+  "financial_framework_exclusion_false_reject_count": 0,
+  "financial_framework_false_accept_count": 0,
+  "financial_framework_role_classifier_status": "PASS",
+  "financial_sector_true_misuse_count": 0,
+  "first_class_projection_change_count": 0,
+  "fixed_score_rule_count": 0,
+  "focused_test_result": {
+    "command": [
+      "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_boundary_band_application_scope_m12aa.py",
+      "tests/test_business_delta_alias_balance_confidence_m12z.py",
+      "tests/test_financial_exclusion_m12f.py",
+      "tests/test_financial_exclusion_leverage_m12f.py",
+      "tests/test_financial_exclusion_expectation_m12u.py",
+      "tests/test_sol_leverage_target_delta_m12y.py",
+      "tests/test_positive_stronger_bucket_m12x.py",
+      "tests/test_directional_financial_context_service.py",
+      "tests/test_directional_balance_ordinal_calibration.py",
+      "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+      "tests/test_first_class_typed_financial_evidence_m12b.py",
+      "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
+    ],
+    "finished_at": "2026-09-10T06:51:37.431657+00:00",
+    "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/focused.txt",
+    "output_sha256": "a3490a9396c0afce49a634c0e4536b47468e072e932c15fff7e39b6ffdc6ab47",
+    "returncode": 0,
+    "started_at": "2026-09-10T06:51:35.198498+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "formal_boundary_uncertainty_count": 1,
+  "formal_stable_count": 6,
+  "formal_unstable_count": 1,
+  "fresh_real_proof_readiness": "NOT_READY",
+  "full_test_result": {
+    "command": [
+      "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "finished_at": "2026-09-10T06:52:54.574054+00:00",
+    "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/full.txt",
+    "output_sha256": "3b7a9825d5bd239a850df66caa18f4969c72e50b79dda8e67a187a006c0d4f7e",
+    "returncode": 0,
+    "started_at": "2026-09-10T06:51:37.431738+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "git_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "e6e4cea878d4af93f44f299ff58791b651cc4afe"
+    ],
+    "finished_at": "2026-09-10T06:52:54.641366+00:00",
+    "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/diff.txt",
+    "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "returncode": 0,
+    "started_at": "2026-09-10T06:52:54.609972+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "grounding_failure_count": 0,
+  "hard_failure_class_count": 2,
+  "hold_lean_contract_changed": false,
+  "holder_stance_variance_subject_count": 2,
+  "hosted_ci_failure_count": 5,
+  "hosted_ci_status": "FAIL_HISTORICAL_PORTABILITY_ONLY",
+  "implementation_commit": "d29b96a21ff2146bb1a446a2a60ce8e076f5fce9",
+  "invalid_financial_reference_count": 0,
+  "investment_judgment_model_target": "gpt-5.6-sol",
+  "investment_judgment_reasoning_effort": "xhigh",
+  "latest_result_integrity": "PASS",
+  "latest_result_zip_sha256": "6c6c6c02dcc9b6b144af43c3903e328bbc185a6bf4a4edbf78932500bfdd0c39",
+  "m12aa_status": "M12AA_COMPLETE",
+  "m12z_status": "M12Z_PARTIAL_STOPPED",
+  "main_merges": 0,
+  "market_expectation_contract_change_count": 0,
+  "model_calls_fictional": 6,
+  "model_calls_judge": 0,
+  "model_calls_real": 0,
+  "model_context_failure_count": 0,
+  "model_context_success_count": 6,
+  "model_target_fallback_count": 0,
+  "monitoring_registrations": 0,
+  "net_debt_true_assertion_violation_count": 0,
+  "new_buyer_stance_variance_subject_count": 1,
+  "new_hosted_ci_failure_count": 0,
+  "next_scope": "BOUNDED_NEW_BUYER_STANCE_CALIBRATION_REPAIR_GPT56_SOL",
+  "notification_queue_writes": 0,
+  "objective_semantic_hard_failure_count": 0,
+  "observed_paused_schedule_count": 8,
+  "opposite_direction_reversal_count": 0,
+  "orphan_process_count": 0,
+  "production_db_mutations": 0,
+  "production_readiness": "NOT_READY",
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "qtd_ytd_validator_semantic_change_count": 0,
+  "real_issuer_model_exposure_count": 0,
+  "report_commit": "PENDING_FINAL_COMMIT",
+  "ruff_result": {
+    "command": [
+      "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/ruff",
+      "check",
+      "app",
+      "scripts",
+      "tests"
+    ],
+    "finished_at": "2026-09-10T06:52:54.609897+00:00",
+    "output_path": "artifacts/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/validation/ruff.txt",
+    "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "returncode": 0,
+    "started_at": "2026-09-10T06:52:54.574122+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "runner_model_target_match": true,
+  "runtime_hard_failure_count": 0,
+  "runtime_max_elapsed_seconds": 540.919253,
+  "runtime_median_elapsed_seconds": 455.061229,
+  "scheduler_mutation_count": 0,
+  "schema_hard_failure_count": 0,
+  "sol_runtime_real_holdout_suitability": "READY",
+  "stance_observation_count": 3,
+  "stance_variance_stops_generation": false,
+  "status": "PASS",
+  "stop_reason": null,
+  "timeout_count": 0,
+  "unsupported_absolute_state_to_delta_count": 0,
+  "warning_mutations": 0,
+  "work_instruction_commit": "6f783fe63a6dc727ffc19fa8d53e7cfcf84b8998",
+  "working_capital_validator_semantic_change_count": 0,
+  "wrapper_retry_count": 0
+}

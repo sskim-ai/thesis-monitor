@@ -1,0 +1,179 @@
+{
+  "assessment_date": "2026-09-09",
+  "company_name": "Fictional Financial Case 03",
+  "evidence": [
+    {
+      "alias": "E01",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": null,
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "operating_income",
+        "period_type": "QTD",
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND"
+      },
+      "label": "operating_income",
+      "metric_refs": [],
+      "statement": "Reported operating income for QTD ending 2026-06-30.",
+      "unit": null,
+      "value": "30"
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-09-09",
+      "category": "risks",
+      "domain": "STRUCTURAL_RISK",
+      "label": "structural-risk",
+      "metric_refs": [],
+      "statement": "A single profitable quarter may not establish durable recovery.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "category": "thesis",
+      "domain": "BUSINESS_CURRENT",
+      "label": "business-thesis",
+      "metric_refs": [],
+      "statement": "A recent operating rebound is visible, but cumulative recovery is incomplete.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-09-09",
+      "category": "valuation",
+      "domain": "VALUATION_SAFE",
+      "label": "valuation-limit",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "category": "expectations",
+      "domain": "MARKET_EXPECTATIONS",
+      "label": "market-expectation",
+      "metric_refs": [],
+      "statement": "Expectations require the quarterly rebound to persist.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-09-09",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "label": "operating-evidence",
+      "metric_refs": [],
+      "statement": "The latest quarter is profitable while the year-to-date result remains a loss.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-09-09",
+      "category": "earnings_quality",
+      "domain": "SECTOR_OPERATING_CURRENT",
+      "label": "sector-context",
+      "metric_refs": [],
+      "statement": "Period-specific operating evidence is the primary framework.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E08",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": null,
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "operating_income",
+        "period_type": "YTD",
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND"
+      },
+      "label": "operating_income",
+      "metric_refs": [],
+      "statement": "Reported operating income for YTD ending 2026-06-30.",
+      "unit": null,
+      "value": "-10"
+    },
+    {
+      "alias": "E09",
+      "as_of": "2026-09-09",
+      "category": "unknown",
+      "domain": "DATA_QUALITY_LIMIT",
+      "label": "remaining-unknown",
+      "metric_refs": [],
+      "statement": "Whether the rebound persists into the next quarter is unknown.",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "financial_decision_context": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 2,
+    "evidence_items": [
+      {
+        "comparison": null,
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E01",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_income",
+        "period": {
+          "duration_days": 91,
+          "end": "2026-06-30",
+          "start": "2026-04-01",
+          "type": "QTD"
+        },
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-qtd",
+        "unit_scale": 1000000,
+        "value": "30"
+      },
+      {
+        "comparison": null,
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E08",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_income",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-ytd",
+        "unit_scale": 1000000,
+        "value": "-10"
+      }
+    ],
+    "limitations": [],
+    "sector_framework": "standard_operating_company",
+    "selected_input_count": 2,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 0,
+    "unavailable_or_not_applicable": []
+  },
+  "market": "us",
+  "ticker": "FIC-FIN-03"
+}

@@ -1126,6 +1126,38 @@ NOT_MEASURED다. 재호출, selective rerun, 중간 hotfix는 없었다.
 [M12X completion](reports/20260910-m12x-completion.md)과
 [program completion](reports/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/75-program-completion.json)에 있다.
 
+## 2026-09-10 M12AA Boundary-Band and Financial-Framework Application Scope
+
+M12AA는 canary 중단 조건을 runtime/schema/objective-semantic hard failure와 calibration,
+stance, confidence observation으로 분리했다. 같은 shared role classifier가 net-debt와
+financial-sector validation을 소유하며, 산업회사식 틀의 실제 적용과 명시적 비적용 또는
+대체 프레임 적용을 구분한다. M12Z의 FIC-FIN-08 보험 문장은 contrastive replacement로
+통과했고 실제 mixed application과 unresolved material use는 계속 fail-closed한다.
+
+새 generation `20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4`는 source lock
+`bc882f77f32f2fe9a2448d71cf7ad30147a49bcfb2588a81d4013d35d7a2e37a` 아래
+`gpt-5.6-sol / xhigh` 6/6 context와 24/24 schema row를 완료했다. timeout, retry,
+capacity, orphan, runtime/schema/objective-semantic hard failure, invalid reference, grounding,
+financial-sector false reject/accept, business-delta failure는 모두 0이다. production prompt,
+threshold, increment, lean, tie-break, source selection, Daily Delta, Price-Timing, renderer와
+운영 동작은 변경하지 않았다.
+
+FIC-FIN-05는 `SELL 4.0:6.0`, `HOLD 4.5:5.5 SELL_LEAN`, `SELL 4.0:6.0`으로
+변동했다. frozen minimum-SELL tuple의 `lean=null`과 schema 출력의 `NOT_HOLD`가 달라 두
+SELL row는 exact comparator에서 `OUT_OF_BAND_OTHER`로 남는다. output 후 band/target을
+바꾸거나 PASS로 재해석하지 않았다. FIC-FIN-08은 balance가 5:5로 유지됐지만 holder
+stance가 REVIEW/HOLDABLE로 변했다. 최종 분류는 stable 6, boundary uncertainty 1,
+unstable 1이며 opposite-direction reversal은 0이다.
+
+따라서 `M12AA_COMPLETE`지만 `fresh_real_proof_readiness=NOT_READY`와
+`production_readiness=NOT_READY`다. P0는 0이고 P1은 frozen band shape mismatch와
+material stance instability 두 건이다. 다음 scope는
+`BOUNDED_NEW_BUYER_STANCE_CALIBRATION_REPAIR_GPT56_SOL`이며 새 모델 호출은 별도 승인이
+필요하다. 실종목/provider/judge 호출, production mutation/send, merge/deploy, scheduler
+변경과 자동 재개는 모두 0이고 예약 8개는 PAUSED 상태를 유지했다. 상세 결과는
+[M12AA completion](reports/20260910-m12aa-completion.md)과
+[program completion](reports/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/81-program-completion.json)에 있다.
+
 ## 부록 A. 핵심 증거 위치
 
 모두 S1 ZIP 내부 상대 경로다.

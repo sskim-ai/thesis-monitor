@@ -1,0 +1,253 @@
+{
+  "rows": [
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 6.5,
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "sell": 3.5
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "NOT_HOLD",
+        "NOT_HOLD",
+        "NOT_HOLD"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "BUY",
+        "BUY",
+        "BUY"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "SELL_LEAN",
+        "SELL_LEAN",
+        "SELL_LEAN"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "BUY_LEAN",
+        "BUY_LEAN",
+        "BUY_LEAN"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "directional_balance_unique_count": 2,
+      "directional_balance_values": [
+        {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        {
+          "buy": 4.0,
+          "sell": 6.0
+        }
+      ],
+      "hold_lean_unique_count": 2,
+      "hold_lean_values": [
+        "NOT_HOLD",
+        "SELL_LEAN",
+        "NOT_HOLD"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 2,
+      "overall_direction_values": [
+        "SELL",
+        "HOLD",
+        "SELL"
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "BUY_LEAN",
+        "BUY_LEAN",
+        "BUY_LEAN"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "directional_balance_unique_count": 1,
+      "directional_balance_values": [
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "sell": 5.0
+        }
+      ],
+      "hold_lean_unique_count": 1,
+      "hold_lean_values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "observed_count": 3,
+      "overall_direction_unique_count": 1,
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "FAIL"
+}
