@@ -17,6 +17,7 @@ Date: 2026-09-11 KST
 - Work-instruction commit: `ee61646c5c0e7516bbf318d2c75232bb9f2c60bf`
 - Architecture commit: `d09894116a05ce9043f19d9cc0e79f5bd9f9670c`
 - Frozen model-call implementation: `c52b852c515e08c5123534810fd33c4768f67060`
+- Report commit: `689fc9181bfeee8f5fd404d45954dfb6bef8790b`
 - M12AC bundle SHA-256: `2b5dd84efcaf207e31e5fec15521c0879022fdb9fb411fb0b7cd2cedd80801fe`
 - M12AC bundle integrity: `PASS`
 
