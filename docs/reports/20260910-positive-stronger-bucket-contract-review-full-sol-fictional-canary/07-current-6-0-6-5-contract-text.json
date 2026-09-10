@@ -1,0 +1,19 @@
+{
+  "status": "FROZEN",
+  "source": "app/services/directional_balance_service.py",
+  "source_sha256": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
+  "contract_version": "directional-balance-ordinal-calibration-v1",
+  "minimum_buy": {
+    "bucket": "6.0:4.0",
+    "rule": "A positive issuer-level material anchor plus sufficiently current or independent corroboration."
+  },
+  "stronger_buy": {
+    "bucket": "6.5:3.5",
+    "rule": "Evidence beyond minimum direction that materially strengthens corroboration, persistence, quality, visibility, or valuation support."
+  },
+  "adjacent_tie_break": "Use 6.0 only when a material unresolved confirmation leaves both 6.0 and 6.5 reasonably supportable.",
+  "missing_domain_rule": "Missing one particular domain is not an automatic cap when distinct stronger support is established.",
+  "symmetry": "The same ordinal meanings apply to BUY and SELL strength.",
+  "scorecard": false,
+  "evidence_count_rule": false
+}

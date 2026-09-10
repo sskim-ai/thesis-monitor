@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "unknown": "No safe current valuation multiple is supplied.",
+  "classification": "CONFIDENCE_LIMIT",
+  "generic_rule": "Valuation absence is not negative evidence and is not a universal cap on 6.5 when distinct stronger support is established.",
+  "fic_fin_01_effect": "The case cannot claim cheapness or valuation support and should not advance beyond its current supported strength on valuation grounds.",
+  "automatic_6_0_cap": false,
+  "invented_valuation": false,
+  "negative_evidence": false
+}

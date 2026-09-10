@@ -1,0 +1,32 @@
+{
+  "status": "FROZEN",
+  "ticker": "FIC-FIN-01",
+  "source_file": "scripts/directional_financial_context_m12.py",
+  "source_file_sha256": "158f962cc2592df25160215bbf113dc2ed2e8fda79fd90d0df5260f378908b85",
+  "positive_axes": [
+    {
+      "axis": "OPERATING_BUSINESS_IMPROVEMENT",
+      "evidence": "Comparable-period revenue and operating profit both improved."
+    },
+    {
+      "axis": "CASH_CONVERSION_IMPROVEMENT",
+      "evidence": "QTD operating cash flow improved from 110 to 180 versus the prior-year comparable period."
+    },
+    {
+      "axis": "BALANCE_SHEET_RESILIENCE",
+      "evidence": "Safely derived net debt is -200, indicating a net-cash condition."
+    }
+  ],
+  "overlapping_context": {
+    "metric": "ocf_less_ppe_capex",
+    "independent_axis": false,
+    "reason": "It shares operating-cash-flow economics with the OCF evidence and cannot be double-counted."
+  },
+  "limitations": [
+    "no safe current valuation multiple",
+    "durability beyond the current reporting cycle unproven",
+    "competition could narrow pricing power",
+    "market expects continued profitable growth"
+  ],
+  "source_case_changed": false
+}

@@ -1,0 +1,23 @@
+{
+  "status": "FROZEN",
+  "phase": "M12X",
+  "authorized_scope": [
+    "offline positive 6.0-vs-6.5 contract consistency review",
+    "derived fictional target correction if the exact target is over-constrained",
+    "model-free positive and negative ordinal fixtures",
+    "one new full GPT-5.6 Sol/xhigh fictional canary after deterministic gates pass"
+  ],
+  "prohibited_scope": [
+    "real issuer model calls",
+    "judge calls",
+    "provider fetches",
+    "production mutation or sends",
+    "scheduler resume",
+    "Astra fallback",
+    "selective retry or generation stitching"
+  ],
+  "financial_semantic_change_count": 0,
+  "directional_prompt_change_authorized_before_root_cause": false,
+  "fictional_case_value_change_authorized": false,
+  "runtime_change_authorized": false
+}

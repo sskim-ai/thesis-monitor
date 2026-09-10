@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observed_at": "2026-09-10T02:33:18Z",
+  "branch": "codex/20260910-positive-stronger-bucket-m12x",
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "work_instruction_commit": "239b799a1361b8ad8168aef2310f03eaf8fc641e",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "work_instruction_sha256": "2c72fd4ab5c6fae6be80a7ebfd856b3aa366eba60bdf277a2acd274350d0422e",
+  "baseline_drift": {
+    "directional_prompt": false,
+    "fictional_source_packet": false,
+    "financial_validators": false,
+    "sol_runtime_contract": false
+  }
+}

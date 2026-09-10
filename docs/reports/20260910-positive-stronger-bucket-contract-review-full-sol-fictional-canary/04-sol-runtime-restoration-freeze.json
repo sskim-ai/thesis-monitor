@@ -1,0 +1,24 @@
+{
+  "status": "FROZEN_PASS",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "timeout_seconds": 1800,
+  "subjects_per_context": 4,
+  "context_count": 2,
+  "repetition_count": 3,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "wrapper_retry_count": 0,
+  "batch_split": 0,
+  "fallback_model": null,
+  "m12w_first_context": {
+    "status": "PASS",
+    "elapsed_seconds": 407.718801,
+    "schema_pass_count": 4,
+    "timeout_count": 0,
+    "capacity_failure_count": 0,
+    "orphan_process_count": 0,
+    "cli_internal_retry_event_count": 0,
+    "wrapper_retry_count": 0
+  },
+  "runtime_repair_required": false
+}
