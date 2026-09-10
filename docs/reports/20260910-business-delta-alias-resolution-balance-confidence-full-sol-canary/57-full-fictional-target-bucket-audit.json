@@ -1,0 +1,84 @@
+{
+  "rows": [
+    {
+      "audit": {
+        "basis": "M12Z frozen generic ordinal contract; audit only",
+        "contract_sha256": "279c8a8868d9dd8cab5bdc80d6bbc52a275f98ddf74eb683b3a2bc5b1fe6ccde",
+        "expected_buy": 6.5,
+        "observed_buy": 6.5,
+        "status": "PASS"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "basis": "M12Z frozen generic ordinal contract; audit only",
+        "contract_sha256": "279c8a8868d9dd8cab5bdc80d6bbc52a275f98ddf74eb683b3a2bc5b1fe6ccde",
+        "expected_buy": 4.5,
+        "observed_buy": 4.5,
+        "status": "PASS"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "status": "NOT_TARGETED"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "audit": {
+        "basis": "M12Z frozen generic ordinal contract; audit only",
+        "contract_sha256": "279c8a8868d9dd8cab5bdc80d6bbc52a275f98ddf74eb683b3a2bc5b1fe6ccde",
+        "expected_buy": 5.0,
+        "observed_buy": 5.0,
+        "status": "PASS"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "audit": {
+        "basis": "M12Z frozen generic ordinal contract; audit only",
+        "contract_sha256": "279c8a8868d9dd8cab5bdc80d6bbc52a275f98ddf74eb683b3a2bc5b1fe6ccde",
+        "expected_buy": 4.0,
+        "observed_buy": 4.5,
+        "status": "FAIL"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "audit": {
+        "status": "NOT_TARGETED"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "audit": {
+        "status": "NOT_TARGETED"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "audit": {
+        "status": "NOT_TARGETED"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "FAIL",
+  "target_bucket_contract_violation_count": 1,
+  "targets": {
+    "FIC-FIN-01": 6.5,
+    "FIC-FIN-02": 4.5,
+    "FIC-FIN-04": 5.0,
+    "FIC-FIN-05": 4.0
+  }
+}
