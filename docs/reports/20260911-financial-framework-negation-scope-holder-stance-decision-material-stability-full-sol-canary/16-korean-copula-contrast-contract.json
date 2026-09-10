@@ -1,0 +1,179 @@
+{
+  "adnominal_contrast": true,
+  "instrumental_particles": [
+    "euro",
+    "ro"
+  ],
+  "judgment_predicates": [
+    "bonda",
+    "applies",
+    "evaluates",
+    "judges"
+  ],
+  "rows": [
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "\uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc21c\ubd80\ucc44 \ud2c0\uc774 \uc544\ub2cc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "\uc21c\ubd80\ucc44 \ud2c0\uc774 \uc544\ub2cc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud55c\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc21c\ubd80\ucc44\ubcf4\ub2e4\ub294 \uaddc\uc81c\uc790\ubcf8\uc744 \ubcf8\ub2e4"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "\uc21c\ubd80\ucc44\ubcf4\ub2e4\ub294 \uaddc\uc81c\uc790\ubcf8\uc744 \ubcf8\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "not industrial net debt but regulatory capital"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "not industrial net debt but regulatory capital",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "use regulatory capital rather than industrial net debt"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "use regulatory capital rather than industrial net debt",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

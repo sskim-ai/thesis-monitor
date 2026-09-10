@@ -66,13 +66,14 @@ _EN_SUFFIX = re.compile(
 _EN_PREFIX = re.compile(r"(?:\b(?:do|does)\s+not\s+(?:apply|use|evaluate)|\bexclude)\s*$", re.I)
 _EN_OBJECT_END = re.compile(_EN_FRAMEWORK + _EN_SECTOR + r"\s*$", re.I)
 _KO_CONTRASTIVE_MARKER = re.compile(
-    _NOMINAL_BRIDGE + r"(?P<marker>대신|보다(?:는)?|아니라)\s+"
+    _NOMINAL_BRIDGE + r"(?P<marker>대신|보다(?:는)?|아닌|아니라)\s+"
 )
 _KO_REPLACEMENT_APPLICATION = re.compile(
     r"(?:(?!하지만|그러나|반면).)+?"
-    r"(?:을|를|이|가)?\s*"
+    r"(?:을|를|이|가|으로|로)?\s*"
     r"(?:본다|봅니다|사용한다|사용합니다|적용한다|적용합니다|적용된다|적용됩니다|"
     r"적용해야\s*(?:한다|합니다)|평가한다|평가합니다|평가해야\s*(?:한다|합니다)|"
+    r"판단한다|판단합니다|"
     r"적절한\s*(?:평가틀|틀|기준|프레임워크)(?:이다|입니다))\s*$"
 )
 _SECTOR_VALID_REPLACEMENT = re.compile(

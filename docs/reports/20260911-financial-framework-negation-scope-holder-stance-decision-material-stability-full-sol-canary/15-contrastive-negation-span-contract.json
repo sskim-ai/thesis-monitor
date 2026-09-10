@@ -1,0 +1,14 @@
+{
+  "contract": "bounded-contrastive-copular-span-v1",
+  "cross_field_immunity": false,
+  "left": "excluded industrial framework cluster",
+  "markers": [
+    "i/ga anira",
+    "i/ga anin",
+    "bodaneun",
+    "rather than",
+    "not but"
+  ],
+  "right": "sector-valid replacement plus bounded application predicate",
+  "status": "PASS"
+}

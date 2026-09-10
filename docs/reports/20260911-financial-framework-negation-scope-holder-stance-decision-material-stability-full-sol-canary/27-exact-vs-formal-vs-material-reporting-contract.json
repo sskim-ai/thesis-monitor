@@ -1,0 +1,10 @@
+{
+  "exact_tuple_mislabeled_as_formal": false,
+  "status": "PASS",
+  "views": [
+    "EXACT_RAW_STATE_STABILITY",
+    "LEGACY_FORMAL_STABILITY",
+    "DECISION_MATERIAL_STABILITY",
+    "THRESHOLD_ZONE_OBSERVATION"
+  ]
+}

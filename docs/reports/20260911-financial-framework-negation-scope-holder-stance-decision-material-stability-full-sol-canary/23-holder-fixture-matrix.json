@@ -1,0 +1,107 @@
+{
+  "contract": "fundamental-holder-stance-v1",
+  "fic_fin_05_target": "REVIEW",
+  "rows": [
+    {
+      "expected": "HOLDABLE",
+      "id": "HOLD-01",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "no_material_confirmed_fundamental_reconsideration_basis",
+        "stance": "HOLDABLE"
+      },
+      "profile": {
+        "material_confirmed_fundamental_risk": false
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "REVIEW",
+      "id": "HOLD-02",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "material_risk_confirmed_but_reduction_not_uniquely_justified",
+        "stance": "REVIEW"
+      },
+      "profile": {
+        "critical_severity_persistence_or_reversibility_unknown": true,
+        "material_confirmed_fundamental_risk": true,
+        "material_counterevidence": true
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "REDUCE",
+      "id": "HOLD-03",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "confirmed_severe_or_structural_downside_overrides_holding_case",
+        "stance": "REDUCE"
+      },
+      "profile": {
+        "confirmed_structural_impairment_or_severe_financial_stress": true,
+        "material_confirmed_fundamental_risk": true
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "HOLDABLE",
+      "id": "HOLD-04",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "price_or_technical_only_cannot_create_fundamental_reduction",
+        "stance": "HOLDABLE"
+      },
+      "profile": {
+        "material_confirmed_fundamental_risk": false,
+        "price_or_technical_only": true
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "HOLDABLE",
+      "id": "HOLD-05",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "price_or_technical_only_cannot_create_fundamental_reduction",
+        "stance": "HOLDABLE"
+      },
+      "profile": {
+        "material_confirmed_fundamental_risk": false,
+        "price_or_technical_only": true
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "REVIEW",
+      "id": "HOLD-06",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "material_risk_confirmed_but_reduction_not_uniquely_justified",
+        "stance": "REVIEW"
+      },
+      "profile": {
+        "critical_severity_persistence_or_reversibility_unknown": true,
+        "material_confirmed_fundamental_risk": true
+      },
+      "status": "PASS"
+    },
+    {
+      "expected": "REVIEW",
+      "id": "FIC-FIN-05",
+      "observed": {
+        "contract": "fundamental-holder-stance-v1",
+        "reason": "material_risk_confirmed_but_reduction_not_uniquely_justified",
+        "stance": "REVIEW"
+      },
+      "profile": {
+        "confirmed_structural_impairment_or_severe_financial_stress": false,
+        "critical_severity_persistence_or_reversibility_unknown": true,
+        "material_confirmed_fundamental_risk": true,
+        "material_counterevidence": true
+      },
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
