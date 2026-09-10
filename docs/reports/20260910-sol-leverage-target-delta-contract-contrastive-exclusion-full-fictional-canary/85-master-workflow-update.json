@@ -1,0 +1,7 @@
+{
+  "m12y_status": "M12Y_PARTIAL_STOPPED",
+  "next_scope": "M12Y_DELTA_AUDIT_ALIAS_RESOLUTION_AND_POSITIVE_BUCKET_STABILITY_REPAIR",
+  "status": "DOCUMENTED",
+  "stop_summary": "Run 1 context 1 stopped the generation: one real frozen-target miss and three validator false rejects caused by canonical-ref versus alias-keyed-context comparison.",
+  "new_model_call_authorized": false
+}

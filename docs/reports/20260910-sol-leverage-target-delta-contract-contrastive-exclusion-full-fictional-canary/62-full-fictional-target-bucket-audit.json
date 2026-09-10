@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "audit": {
+        "basis": "M12Y generic-derived fictional target; audit only, never a label override",
+        "contract_sha256": "0ef963c20ff2546fac1b65939aaeccb3952c854c19445266de1da1962364c196",
+        "expected_buy": 6.5,
+        "observed_buy": 6.0,
+        "status": "FAIL"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "basis": "M12Y generic-derived fictional target; audit only, never a label override",
+        "contract_sha256": "0ef963c20ff2546fac1b65939aaeccb3952c854c19445266de1da1962364c196",
+        "expected_buy": 4.5,
+        "observed_buy": 4.5,
+        "status": "PASS"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "status": "NOT_TARGETED"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "audit": {
+        "basis": "M12Y generic-derived fictional target; audit only, never a label override",
+        "contract_sha256": "0ef963c20ff2546fac1b65939aaeccb3952c854c19445266de1da1962364c196",
+        "expected_buy": 5.0,
+        "observed_buy": 5.0,
+        "status": "PASS"
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    }
+  ],
+  "status": "FAIL",
+  "target_bucket_contract_violation_count": 1,
+  "targets": {
+    "FIC-FIN-01": 6.5,
+    "FIC-FIN-02": 4.5,
+    "FIC-FIN-04": 5.0,
+    "FIC-FIN-05": 4.0
+  }
+}

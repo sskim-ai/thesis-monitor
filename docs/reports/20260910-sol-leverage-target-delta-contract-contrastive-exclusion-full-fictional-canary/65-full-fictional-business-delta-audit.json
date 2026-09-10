@@ -1,0 +1,64 @@
+{
+  "audit_ref_space": "CANONICAL_REFS_COMPARED_TO_ALIAS_KEYED_CONTEXT",
+  "failure_classification": "VALIDATOR_FALSE_REJECT_ALIAS_RESOLUTION_GAP",
+  "model_semantic_violation_count_after_raw_alias_replay": 0,
+  "raw_alias_replay": {
+    "FIC-FIN-01": "STRENGTHENED supported by E04/E08 comparable improvement",
+    "FIC-FIN-02": "WEAKENED supported by E08 lower comparable OCF",
+    "FIC-FIN-03": "STRENGTHENED supported by E03 recent operating rebound",
+    "FIC-FIN-04": "UNCHANGED supported by absolute stable/flat state"
+  },
+  "rows": [
+    {
+      "audit": {
+        "frozen_target": null,
+        "linked_evidence": [],
+        "observed": "STRENGTHENED",
+        "status": "FAIL",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta": true
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "audit": {
+        "frozen_target": null,
+        "linked_evidence": [],
+        "observed": "WEAKENED",
+        "status": "FAIL",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta": true
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "audit": {
+        "frozen_target": null,
+        "linked_evidence": [],
+        "observed": "STRENGTHENED",
+        "status": "FAIL",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta": true
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "audit": {
+        "frozen_target": null,
+        "linked_evidence": [],
+        "observed": "UNCHANGED",
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta": false
+      },
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    }
+  ],
+  "status": "FAIL",
+  "unsupported_absolute_state_to_delta_count": 3,
+  "validator_false_reject_count": 3
+}
