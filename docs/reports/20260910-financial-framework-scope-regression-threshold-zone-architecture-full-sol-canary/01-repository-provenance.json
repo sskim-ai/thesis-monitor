@@ -1,0 +1,13 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "actual_branch": "codex/20260910-financial-framework-threshold-zone-m12ac",
+  "actual_head": "b44dd2c4b81b6145a2f26b231a72d11312d70a27",
+  "base_sha": "f22c3cef615c665150fe5e92b45e185345782d1c",
+  "work_instruction_commit": "b44dd2c4b81b6145a2f26b231a72d11312d70a27",
+  "remote_predecessor_sha": "f22c3cef615c665150fe5e92b45e185345782d1c",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "origin_main_is_predecessor_descendant": false,
+  "baseline_drift": "NONE_IN_RELEVANT_SURFACES"
+}

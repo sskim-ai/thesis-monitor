@@ -1,0 +1,12 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "left_side": "산업회사식 순부채와 운전자본",
+  "marker": "대신",
+  "right_side": "보험 인수 규율과 규제자본 기준을 적용해야 한다",
+  "existing_supported_predicate_family": "DIRECT_APPLICATION_DECLARATIVE",
+  "missing_predicate_family": "NORMATIVE_APPLICATION",
+  "root_cause": "RIGHT_SIDE_NORMATIVE_APPLICATION_PREDICATE_NOT_RECOGNIZED",
+  "required_fix": "BOUNDED_LEFT_RIGHT_CONTRASTIVE_SPAN_WITH_RIGHT_REPLACEMENT_PREDICATE"
+}

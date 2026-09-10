@@ -1,0 +1,15 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260910-leverage-hold-sell-boundary-resolution-architecture-full-sol-canary-report.zip",
+  "expected_sha256": "2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926",
+  "actual_sha256": "2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926",
+  "indexed_payload_count": 192,
+  "missing_count": 0,
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "size_mismatch_count": 0,
+  "duplicate_member_count": 0,
+  "integrity": "PASS"
+}

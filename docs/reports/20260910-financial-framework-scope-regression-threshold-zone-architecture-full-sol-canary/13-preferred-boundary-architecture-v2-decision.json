@@ -1,0 +1,17 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "decision": "REPLACE_OPTION_F_WITH_DETERMINISTIC_THRESHOLD_ZONE",
+  "selected_architecture": "DETERMINISTIC_THRESHOLD_ZONE",
+  "reason": [
+    "Option F missed the known FIC-FIN-05 threshold boundary",
+    "Option F altered the model-facing prompt and output schema",
+    "threshold zone is a mechanical description of an already validated raw ordinal state",
+    "threshold zone preserves raw direction balance and lean without hidden scoring"
+  ],
+  "option_f_model_facing_disabled_for_new_canary": true,
+  "threshold_zone_renderer_enabled": false,
+  "production_readiness": "NOT_READY",
+  "model_calls_before_decision": 0
+}

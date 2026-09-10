@@ -1,0 +1,13 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "pre_m12ab_fic_fin_03": "HOLD 5.5:4.5 BUY_LEAN x3",
+  "m12ab_first_fic_fin_03_raw": "HOLD 5.0:5.0 NEUTRAL",
+  "m12ab_model_facing_prompt_change_count": 1,
+  "m12ab_output_schema_change_count": 1,
+  "classification": "CONTRACT_CHANGED_NOT_DIRECT_REGRESSION",
+  "causal_claim": "NOT_ESTABLISHED",
+  "interference_risk": "UNCONTROLLED",
+  "decision": "REMOVE_OPTION_F_FROM_NEW_MODEL_FACING_CONTRACT"
+}
