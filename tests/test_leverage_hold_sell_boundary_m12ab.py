@@ -98,3 +98,10 @@ def test_stance_variance_report_preserves_both_audiences() -> None:
     assert audit["status"] == "MEASURED"
     assert audit["new_buyer"] == new_buyer
     assert audit["holder"] == holder
+
+
+def test_side_effect_firewall_requires_nonempty_zero_integer_counters() -> None:
+    assert m12ab._firewall_passes({"production_sends": 0, "db_mutations": 0})
+    assert not m12ab._firewall_passes({})
+    assert not m12ab._firewall_passes({"production_sends": 1})
+    assert not m12ab._firewall_passes({"production_sends": False})

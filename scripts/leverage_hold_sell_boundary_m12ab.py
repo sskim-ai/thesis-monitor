@@ -107,6 +107,13 @@ def report(number: int, value: object) -> None:
     write(REPORTS / f"{number:02d}-{SLUGS[number]}.json", value)
 
 
+def _firewall_passes(receipt: Mapping[str, object]) -> bool:
+    return bool(receipt) and all(
+        isinstance(value, int) and not isinstance(value, bool) and value == 0
+        for value in receipt.values()
+    )
+
+
 def canonical_boundary_state(core: dict[str, object]) -> dict[str, object]:
     balance = core["directional_balance"]
     if not isinstance(balance, dict):
@@ -906,7 +913,7 @@ def prepare() -> None:
         "hosted_ci_new_failures_zero": ci["new_m12ab_failure_count"] == 0
         and ci["head_sha"] == git("rev-parse", "HEAD"),
         "schedules_paused": schedule_start["status"] == "PASS",
-        "production_side_effect_firewall": aa.u.firewall()["status"] == "PASS",
+        "production_side_effect_firewall": _firewall_passes(aa.u.firewall()),
         **{
             f"validation_{key}": value["returncode"] == 0
             for key, value in validation_receipt["results"].items()
