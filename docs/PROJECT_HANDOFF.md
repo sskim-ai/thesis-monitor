@@ -1,5 +1,25 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-10 M12V Nonproduction Closeout
+
+M12V: M12V_RUNTIME_PROOF_FAIL. Read `docs/reports/20260910-m12v-completion.md` and
+`docs/reports/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/86-program-completion.json`.
+Instruction f1da357, architecture 2e50558, implementation 46ec85c were committed before execution.
+The single selected experiment increased the finite watchdog from 1800 to 2400 seconds,
+reusing the existing lifecycle observer in an archive-only adapter. No existing app/runtime
+file or M12U semantic/source/prompt/schema contract changed. Wrapper retry 0, four subjects/context.
+Generation `20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8` stopped after its first call:
+2400.062226s to watchdog exit, no stdout/final output, logged CLI retry 0, wrapper retry 0,
+orphan 0. Five later contexts NOT_RUN. All 679 frozen code/contract hashes remain unchanged.
+Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. Do not retry or resume this generation.
+Local focused/full 243/3238 PASS; implementation hosted CI 3233 PASS/5 old portability FAIL,
+new M12V failures 0. Eight schedules remain PAUSED; production/main/deployment changes 0.
+Fresh real and production NOT_READY. Next scope: ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW.
+The failed sufficiency hypothesis is finite 2400-second tail tolerance, not a proven backend cause.
+Further execution, timeout increases, retries, context splitting or real issuers require a new task scope.
+
+The M12U and older sections below are historical; their next actions are not current authorization.
+
 ## 2026-09-10 M12U Nonproduction Closeout
 
 M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.

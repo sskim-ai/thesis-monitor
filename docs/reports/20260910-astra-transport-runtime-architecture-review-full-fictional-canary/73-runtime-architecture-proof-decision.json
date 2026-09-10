@@ -1,0 +1,15 @@
+{
+  "runtime": {
+    "capacity_failure_count": 0,
+    "cli_internal_retry_event_count": 0,
+    "model_calls_fictional": 1,
+    "model_context_failure_count": 1,
+    "model_context_success_count": 0,
+    "orphan_process_count": 0,
+    "runtime_max_elapsed_seconds": 2404.422353,
+    "runtime_median_elapsed_seconds": 2404.422353,
+    "timeout_count": 1,
+    "wrapper_retry_count": 0
+  },
+  "status": "NOT_FULLY_PROVEN"
+}

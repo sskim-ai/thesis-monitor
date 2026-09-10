@@ -1,0 +1,6 @@
+{
+  "id": "C",
+  "reason": "No reliable recurring backend-progress signal. JSONL exists but not sufficient for idle-deadline extension.",
+  "selected": false,
+  "status": "UNSUPPORTED"
+}

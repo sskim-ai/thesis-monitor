@@ -1,0 +1,18 @@
+{
+  "failed": 5,
+  "failures": [
+    "tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text",
+    "tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history",
+    "tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged",
+    "tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded"
+  ],
+  "head_sha": "46ec85c62f37ff3a81aed356d3b1265d74ee5511",
+  "lint": "SKIPPED_AFTER_TEST_FAILURE",
+  "log_sha256": "3d848e8caee401fb29835d121108c1a174e90c2d60c78aa266b77aaff75126e5",
+  "new_m12v_failure_count": 0,
+  "passed": 3233,
+  "run_id": 34421150460,
+  "status": "FAIL_KNOWN_HISTORICAL_PORTABILITY",
+  "url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34421150460"
+}

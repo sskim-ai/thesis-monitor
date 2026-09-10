@@ -1,0 +1,63 @@
+{
+  "criteria": "Qualitative only; no weighted score",
+  "options": [
+    {
+      "auth": "STRONG",
+      "cleanup": "ACCEPTABLE",
+      "complexity": "STRONG",
+      "failure_detection": "STRONG",
+      "id": "A",
+      "identity": "ACCEPTABLE",
+      "integrity": "STRONG",
+      "observability": "WEAK",
+      "real_holdout": "WEAK",
+      "reason": "Known successful, but observed 2/7 historical timeouts; unchanged selection would explicitly retain that risk.",
+      "reliability": "WEAK",
+      "selected": false,
+      "semantics": "STRONG",
+      "status": "ACCEPTABLE",
+      "tail_tolerance": "WEAK"
+    },
+    {
+      "auth": "STRONG",
+      "cleanup": "STRONG",
+      "complexity": "ACCEPTABLE",
+      "failure_detection": "STRONG",
+      "id": "B",
+      "identity": "ACCEPTABLE",
+      "integrity": "STRONG",
+      "observability": "ACCEPTABLE",
+      "real_holdout": "WEAK",
+      "reason": "Finite measured-tail budget plus existing lifecycle observability; reliability improvement unproven until new proof.",
+      "reliability": "WEAK",
+      "selected": true,
+      "semantics": "STRONG",
+      "status": "ACCEPTABLE",
+      "tail_tolerance": "ACCEPTABLE"
+    },
+    {
+      "id": "C",
+      "reason": "No reliable recurring backend-progress signal. JSONL exists but not sufficient for idle-deadline extension.",
+      "selected": false,
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "D",
+      "reason": "No existing same-account supported direct Astra transport; API-key narrative route is not equivalent.",
+      "selected": false,
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "E",
+      "reason": "Changes coupling semantics; successful and failed histories already share topology, no size-causality evidence.",
+      "selected": false,
+      "status": "BLOCKING"
+    },
+    {
+      "id": "F",
+      "reason": "Generation retry cannot repair unseen real cohort exposure; selective retry forbidden.",
+      "selected": false,
+      "status": "BLOCKING"
+    }
+  ]
+}

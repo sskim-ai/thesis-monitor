@@ -1,0 +1,9 @@
+{
+  "limits": "2 timeouts are censored at 1800; this sample cannot estimate a completion percentile or prove size/CPU causality.",
+  "root_cause": "INTERMITTENT_NO_FINAL_OUTPUT_WITH_UNRESOLVED_REMOTE_OR_TRANSPORT_CAUSE",
+  "same_cli": [
+    "OpenAI Codex v0.153.4"
+  ],
+  "successful_contexts": 5,
+  "timeout_contexts": 2
+}

@@ -1,0 +1,9 @@
+{
+  "actual_branch": "codex/20260910-astra-runtime-architecture-m12v",
+  "actual_head": "2e50558714df03bba3d6c53512a958631997ffe9",
+  "base_sha": "b3bd63ac734047d624d94e08f558d47ce6b679f7",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "remote_base_branch_sha": "b3bd63ac734047d624d94e08f558d47ce6b679f7",
+  "work_instruction_commit": "f1da357ff8553b0b3d8503b532433d508255af8f",
+  "working_tree_state": "?? artifacts/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/\n?? docs/reports/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/\n?? scripts/astra_runtime_adapter_m12v.py\n?? scripts/astra_runtime_m12v.py\n?? tests/test_astra_runtime_m12v.py"
+}

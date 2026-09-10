@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_adaptive_renderer_selector.py",
+    "tests/test_astra_runtime_m12v.py",
+    "tests/test_codex_network_transport_service.py",
+    "tests/test_codex_runtime_state_service.py",
+    "tests/test_codex_transport_lifecycle_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+    "tests/test_price_structure_v3_renderer_service.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py"
+  ],
+  "finished_at": "2026-09-10T00:23:20.116872+00:00",
+  "output_path": "artifacts/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/validation/focused.txt",
+  "output_sha256": "48d4466afdd4687c3431fe1408fa97a56f87ec5c920cf7bdc24f2a2105c5cb0c",
+  "returncode": 0,
+  "started_at": "2026-09-10T00:23:14.461534+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

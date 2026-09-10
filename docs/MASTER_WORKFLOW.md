@@ -1,8 +1,8 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12u-exclusion-expectation-timeout-closeout-v1
+**버전:** 2026-09-10 / m12v-runtime-architecture-timeout-closeout-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12U semantic repair offline PASS / 첫 호출 1,800초 timeout / 출력 0 / 다음은 Astra transport runtime architecture review / fresh real NOT_READY`
+**현재 위치:** `M12V runtime architecture review 완료 / 새 첫 호출 2,400초 timeout / 출력 0 / 추가 호출 중단 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
 **M12F는 명시적 금융업 비적용 문장과 실제 산업재 금융지표 적용을 구분하는 validator만 수리했다. Directional prompt는 변경하지 않았다. 현재 Astra 계약상 FIC-FIN-05의 HOLD SELL_LEAN 5.5는 타당하며, 과거 Sol SELL을 필수 정답으로 취급하지 않는다. 새 canary는 첫 context 4/4 PASS 후 두 번째 context가 출력 없이 1,800초 MODEL_TIMEOUT으로 중단됐다. 전체 반복 안정성과 새 FIC-FIN-05/08 관측은 미측정이다. 원본 출력·FAIL·receipt는 보존하고 재호출·hotfix·main merge·운영 변경은 0이다.**
 
@@ -10,7 +10,32 @@
 
 ## 1. 지금 프로젝트가 달성하려는 것
 
-### 최신 M12U 결과
+### 최신 M12V 결과
+
+지시서 `f1da357`, architecture 결정 `2e50558`, 구현 `46ec85c` 순서로 동결했다.
+선택한 단일 실험 계약은 `INCREASED_FINITE_ABSOLUTE_WATCHDOG`: 1,800초에서 2,400초로
+한도를 늘리고 기존 lifecycle 관측기를 archive-only adapter에서 재사용했다. Wrapper retry 0,
+4종목/context를 유지했으며 기존 app/runtime 파일과 M12U 금융 의미·prompt·schema는 변경하지 않았다.
+
+새 generation `20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8`은 첫 context에서
+2,400.062226초에 MODEL_TIMEOUT으로 종료됐다. 시작 09:29:20 KST, 종료 receipt 10:09:24 KST.
+stdout/최종 출력 0, CLI에 기록된 내부 retry 0, wrapper retry 0, orphan 0이다.
+나머지 5개 context는 NOT_RUN. 679개 동결 코드/계약 파일은 실행 후에도 동일하다.
+금융 semantic/core/formal/stance/delta 안정성은 NOT_MEASURED이며 PASS로 승격하지 않는다.
+
+40분 finite tail tolerance로 충분하다는 가설은 이번 호출에서 입증되지 않았다.
+백엔드가 요청을 받았는지, 추론 중이었는지, 전송이 멈췄는지는 현재 관측으로 확정할 수 없다.
+다음 범위는 `ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW`이며 새 실행 승인은 별도다.
+현재 generation 재개, 자동 timeout 증가, 재시도, context 분할, 실종목 실험은 금지한다.
+
+집중 243/full local 3238 PASS, Ruff/diff PASS. 구현 hosted CI는 3233 PASS/기존 portability
+5 FAIL이며 M12V 신규 실패 0이다. P0 0/P1 2(runtime proof 실패, 기존 hosted CI backlog).
+예약 8개 PAUSED 유지, main merge/deploy/운영 변경 0. Fresh real 및 production NOT_READY.
+결과 근거: `docs/reports/20260910-m12v-completion.md`와 M12V reports 56/70/72/86.
+
+아래 M12U 및 이전 단계는 역사적 결과이며 M12V 재실행 또는 운영 재개 승인이 아니다.
+
+### 이전 M12U 결과
 
 지시서 `459af10`, 오프라인 계약 검토 `f73ce3a`, 구현 `551f98f` 순서로 동결했다.
 명시적 비적용의 명사 보어 표현을 generic classifier에서 허용하되 실제 적용/모순/산업재 anchor는 차단한다.

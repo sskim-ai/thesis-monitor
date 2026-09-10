@@ -1,0 +1,15 @@
+{
+  "rationale": {
+    "evidence_limit": "No completed observation beyond 1800 exists. Increasing tolerance cannot cure a hung backend; another timeout rejects this runtime hypothesis.",
+    "expected_failure": "Single absolute monotonic deadline; SIGTERM then existing bounded cleanup grace/SIGKILL; no activity reset or wrapper retry.",
+    "inference": "A bounded experimental tolerance budget, not an empirical completion percentile or proof that 1800-second censored attempts would recover.",
+    "measured_successful_tail_seconds": 1133.479393,
+    "normal_success_range_seconds": [
+      321.7,
+      371.5
+    ],
+    "retry_reason": "Protect generation integrity and avoid cherry-picking; retire any exposed real cohort in a later task.",
+    "rule": "Two measured recovered-tail windows (2266.96 seconds), rounded upward to the next 600-second operational boundary: 2400, below the authorized 3600 ceiling."
+  },
+  "selected": "INCREASED_FINITE_ABSOLUTE_WATCHDOG"
+}

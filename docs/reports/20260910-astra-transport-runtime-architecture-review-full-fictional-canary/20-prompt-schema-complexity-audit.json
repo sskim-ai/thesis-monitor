@@ -1,0 +1,314 @@
+{
+  "calls": [
+    {
+      "elapsed_seconds": 371.474332,
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "timeout": false
+    },
+    {
+      "elapsed_seconds": 329.525223,
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "timeout": false
+    },
+    {
+      "elapsed_seconds": 1133.479393,
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "timeout": false
+    },
+    {
+      "elapsed_seconds": 1800.009935,
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "timeout": true
+    },
+    {
+      "elapsed_seconds": 321.69846,
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "timeout": false
+    },
+    {
+      "elapsed_seconds": 331.906627,
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "timeout": false
+    },
+    {
+      "elapsed_seconds": 1800.068784,
+      "prompt_bytes": 29190,
+      "schema_bytes": 44296,
+      "timeout": true
+    }
+  ],
+  "known_M12U_prompt_delta": "one frozen calibration paragraph",
+  "no_accidental_duplication": "M12U inputs must compare byte-identical modulo generation in model-call gate",
+  "per_subject_counts": {
+    "M12E": [
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "M12F": [
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "M12T": [
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "M12U": [
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "evidence_row_count": 10,
+        "selected_typed_financial_item_count": 3,
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "evidence_row_count": 9,
+        "selected_typed_financial_item_count": 2,
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "evidence_row_count": 7,
+        "selected_typed_financial_item_count": 0,
+        "ticker": "FIC-FIN-08"
+      }
+    ]
+  },
+  "postfreeze_note": "Read-only counts from immutable prior contexts; no source, prompt, schema or experiment code/config changed.",
+  "size_causality": "NOT_ESTABLISHED: identical M12E/F inputs differ in latency and outcome",
+  "structural_counts": [
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 39,
+      "generation": "M12E",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-01/schema.json",
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 11
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 32,
+      "generation": "M12E",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-02/schema.json",
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 4
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 39,
+      "generation": "M12F",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-01/schema.json",
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 11
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 32,
+      "generation": "M12F",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-02/schema.json",
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 4
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 39,
+      "generation": "M12T",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-01/schema.json",
+      "prompt_bytes": 28025,
+      "schema_bytes": 44296,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 11
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 32,
+      "generation": "M12T",
+      "paragraph_count": 15,
+      "path": "experiment/model-calls/run-1/context-02/schema.json",
+      "prompt_bytes": 19420,
+      "schema_bytes": 44191,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 4
+    },
+    {
+      "duplicate_exact_paragraph_count": 0,
+      "evidence_row_count": 39,
+      "generation": "M12U",
+      "paragraph_count": 16,
+      "path": "experiment/model-calls/run-1/context-01/schema.json",
+      "prompt_bytes": 29190,
+      "schema_bytes": 44296,
+      "schema_object_nodes": 287,
+      "schema_property_count": 171,
+      "schema_required_entries": 171,
+      "typed_financial_row_count": 11
+    }
+  ],
+  "subject_count": 4
+}

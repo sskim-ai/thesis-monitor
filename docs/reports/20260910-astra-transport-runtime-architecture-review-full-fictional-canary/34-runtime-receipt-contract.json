@@ -1,0 +1,16 @@
+{
+  "compatibility": "receipt.json",
+  "owner": {
+    "combined_log": "stderr then stdout compatibility view, NOT chronological; authoritative raw streams remain separate",
+    "header_provenance": "CLI-advertised model/effort, not backend attestation",
+    "owner": "app/services/codex_transport_lifecycle_service.py",
+    "separate_streams": true,
+    "unmeasured": [
+      "backend request accepted time",
+      "backend response ID",
+      "backend sampling progress",
+      "per-retry exact timestamp when stderr omitted timestamps"
+    ]
+  },
+  "raw": "lifecycle-receipt.json"
+}

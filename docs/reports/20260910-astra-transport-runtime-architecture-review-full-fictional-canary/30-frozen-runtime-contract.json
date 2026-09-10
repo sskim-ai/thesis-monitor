@@ -1,0 +1,152 @@
+{
+  "authoring": {
+    "effort": "xhigh",
+    "model": "gpt-6-astra",
+    "source": "current session turn_context",
+    "timestamp": "2026-09-10T00:08:27.560Z"
+  },
+  "base_sha": "b3bd63ac734047d624d94e08f558d47ce6b679f7",
+  "cli_upgrade": false,
+  "cli_version": "0.153.4",
+  "contract": "m12v-runtime-architecture-v1",
+  "direct_transport": {
+    "reason": "Existing InvestmentNarrativeGenerator uses API-key Responses HTTP, low effort and narrative fallback, not the same signed-in account/entitlement/schema path. No supported direct Astra/xhigh saved-account transport is established. No credentials copied or API integration added.",
+    "status": "UNSUPPORTED"
+  },
+  "effort": "xhigh",
+  "event_capability": {
+    "backend_progress_heartbeat": false,
+    "cli_events": [
+      "thread.started",
+      "turn.started",
+      "turn.completed",
+      "turn.failed",
+      "item.*",
+      "error"
+    ],
+    "first_last_local_bytes": true,
+    "jsonl_supported": true,
+    "request_response_ids": "NOT_MEASURED",
+    "source": "https://learn.chatgpt.com/docs/non-interactive-mode",
+    "why_no_event_aware": "CLI lifecycle notifications are not a documented recurring backend sampling heartbeat; local preamble/liveness cannot reset a deadline."
+  },
+  "instrumentation": {
+    "combined_log": "stderr then stdout compatibility view, NOT chronological; authoritative raw streams remain separate",
+    "header_provenance": "CLI-advertised model/effort, not backend attestation",
+    "owner": "app/services/codex_transport_lifecycle_service.py",
+    "separate_streams": true,
+    "unmeasured": [
+      "backend request accepted time",
+      "backend response ID",
+      "backend sampling progress",
+      "per-retry exact timestamp when stderr omitted timestamps"
+    ]
+  },
+  "json_stream_selected": false,
+  "judge_calls_allowed": 0,
+  "model": "gpt-6-astra",
+  "old_timeout_seconds": 1800,
+  "options": [
+    {
+      "auth": "STRONG",
+      "cleanup": "ACCEPTABLE",
+      "complexity": "STRONG",
+      "failure_detection": "STRONG",
+      "id": "A",
+      "identity": "ACCEPTABLE",
+      "integrity": "STRONG",
+      "observability": "WEAK",
+      "real_holdout": "WEAK",
+      "reason": "Known successful, but observed 2/7 historical timeouts; unchanged selection would explicitly retain that risk.",
+      "reliability": "WEAK",
+      "selected": false,
+      "semantics": "STRONG",
+      "status": "ACCEPTABLE",
+      "tail_tolerance": "WEAK"
+    },
+    {
+      "auth": "STRONG",
+      "cleanup": "STRONG",
+      "complexity": "ACCEPTABLE",
+      "failure_detection": "STRONG",
+      "id": "B",
+      "identity": "ACCEPTABLE",
+      "integrity": "STRONG",
+      "observability": "ACCEPTABLE",
+      "real_holdout": "WEAK",
+      "reason": "Finite measured-tail budget plus existing lifecycle observability; reliability improvement unproven until new proof.",
+      "reliability": "WEAK",
+      "selected": true,
+      "semantics": "STRONG",
+      "status": "ACCEPTABLE",
+      "tail_tolerance": "ACCEPTABLE"
+    },
+    {
+      "id": "C",
+      "reason": "No reliable recurring backend-progress signal. JSONL exists but not sufficient for idle-deadline extension.",
+      "selected": false,
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "D",
+      "reason": "No existing same-account supported direct Astra transport; API-key narrative route is not equivalent.",
+      "selected": false,
+      "status": "UNSUPPORTED"
+    },
+    {
+      "id": "E",
+      "reason": "Changes coupling semantics; successful and failed histories already share topology, no size-causality evidence.",
+      "selected": false,
+      "status": "BLOCKING"
+    },
+    {
+      "id": "F",
+      "reason": "Generation retry cannot repair unseen real cohort exposure; selective retry forbidden.",
+      "selected": false,
+      "status": "BLOCKING"
+    }
+  ],
+  "preferred_runtime_architecture": "INCREASED_FINITE_ABSOLUTE_WATCHDOG",
+  "production_mutation_allowed": false,
+  "production_readiness": "NOT_READY",
+  "real_model_calls_allowed": 0,
+  "repetitions": 3,
+  "root_cause": "INTERMITTENT_NO_FINAL_OUTPUT_WITH_UNRESOLVED_REMOTE_OR_TRANSPORT_CAUSE",
+  "schedule_resume_allowed": false,
+  "selected_timeout_seconds": 2400,
+  "semantic_freeze": {
+    "baseline": "M12U",
+    "directional": 0,
+    "expectation": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+    "fictional_case": 0,
+    "financial": 0,
+    "target_buys": {
+      "FIC-FIN-01": 6,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5,
+      "FIC-FIN-05": 4.5
+    },
+    "thresholds": "BUY/SELL >=6; half-steps; tie-break toward5 unchanged"
+  },
+  "subjects_per_context": 4,
+  "timeout_rationale": {
+    "evidence_limit": "No completed observation beyond 1800 exists. Increasing tolerance cannot cure a hung backend; another timeout rejects this runtime hypothesis.",
+    "expected_failure": "Single absolute monotonic deadline; SIGTERM then existing bounded cleanup grace/SIGKILL; no activity reset or wrapper retry.",
+    "inference": "A bounded experimental tolerance budget, not an empirical completion percentile or proof that 1800-second censored attempts would recover.",
+    "measured_successful_tail_seconds": 1133.479393,
+    "normal_success_range_seconds": [
+      321.7,
+      371.5
+    ],
+    "retry_reason": "Protect generation integrity and avoid cherry-picking; retire any exposed real cohort in a later task.",
+    "rule": "Two measured recovered-tail windows (2266.96 seconds), rounded upward to the next 600-second operational boundary: 2400, below the authorized 3600 ceiling."
+  },
+  "topology": {
+    "evidence": "Identical 4-subject contexts succeeded in ~5-6 minutes and timed out; context-02 is smaller yet timed out in M12F. No causal size signal supports splitting.",
+    "source_change_count": 0,
+    "status": "KEEP_4_SUBJECT_COUPLING"
+  },
+  "transport": "Existing codex-transport-lifecycle-v1 invoked by archive-only M12V adapter; saved signed-in CLI authentication and existing isolated runtime-state path.",
+  "work_instruction_commit": "f1da357ff8553b0b3d8503b532433d508255af8f",
+  "wrapper_retry_count": 0
+}

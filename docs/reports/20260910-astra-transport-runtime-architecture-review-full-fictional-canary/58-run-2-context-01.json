@@ -1,0 +1,10 @@
+{
+  "reason": {
+    "failed_invocation": "20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8:run-1:context-01",
+    "model_calls_completed": 1,
+    "status": "FAIL",
+    "stop_reason": "M12B_RUNTIME_FAILURE",
+    "wrapper_retry_count": 0
+  },
+  "status": "NOT_RUN"
+}

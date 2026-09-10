@@ -1,0 +1,17 @@
+{
+  "auth": "STRONG",
+  "cleanup": "ACCEPTABLE",
+  "complexity": "STRONG",
+  "failure_detection": "STRONG",
+  "id": "A",
+  "identity": "ACCEPTABLE",
+  "integrity": "STRONG",
+  "observability": "WEAK",
+  "real_holdout": "WEAK",
+  "reason": "Known successful, but observed 2/7 historical timeouts; unchanged selection would explicitly retain that risk.",
+  "reliability": "WEAK",
+  "selected": false,
+  "semantics": "STRONG",
+  "status": "ACCEPTABLE",
+  "tail_tolerance": "WEAK"
+}

@@ -1,0 +1,10 @@
+{
+  "cache_advertised": true,
+  "fallback_count": 0,
+  "implementation_executor_effort_receipt": "NOT_MEASURED",
+  "implementation_executor_model_receipt": "NOT_MEASURED",
+  "invocation_accepted": "NOT_MEASURED",
+  "reasoning_effort": "xhigh",
+  "requested_model": "gpt-6-astra",
+  "status": "PASS"
+}

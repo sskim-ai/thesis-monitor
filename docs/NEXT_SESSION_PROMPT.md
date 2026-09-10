@@ -1,5 +1,25 @@
 # Next Session Prompt
 
+## 2026-09-10 M12V Nonproduction Closeout
+
+Start with `docs/reports/20260910-m12v-completion.md` and the M12V report directory.
+M12V_RUNTIME_PROOF_FAIL: the new first fictional Astra/xhigh context hit the frozen 2400s
+watchdog without final output. One attempt, zero outputs, five contexts NOT_RUN, no retry,
+no orphan. Immutable implementation: 46ec85c62f37ff3a81aed356d3b1265d74ee5511.
+Generation: 20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8.
+Source lock: 98b38c1b63b147269b25953a1770cd97c4eb8eb354fa3102ddc797d81b433577.
+All financial semantics and 679 frozen code/contract files remain unchanged after execution.
+Next bounded review: ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW.
+Explain why longer finite tolerance was insufficient for the observed request; do not infer
+backend acceptance/progress/model identity from a local CLI header or silent process.
+Do not resume this generation, increase the timeout, split context, call another model, or
+expose a real issuer without a new authorized scope. Financial canary stability remains
+NOT_MEASURED. Eight schedules stay PAUSED. No automatic monitoring resume, merge or deployment.
+Fresh real and production NOT_READY. Local focused/full 243/3238 PASS; hosted CI retains five
+historical portability failures, new M12V failures 0. P0 0/P1 2 (runtime proof and CI backlog).
+
+All older next-session directives below are historical, not current execution authorization.
+
 ## 2026-09-10 M12U Nonproduction Closeout
 
 M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.
