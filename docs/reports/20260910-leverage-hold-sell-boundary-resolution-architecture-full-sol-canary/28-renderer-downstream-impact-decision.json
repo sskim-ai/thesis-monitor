@@ -1,0 +1,10 @@
+{
+  "daily_delta_change": false,
+  "experimental_canary_only": true,
+  "monitoring_lifecycle_change": false,
+  "raw_state_preserved": true,
+  "renderer_change": false,
+  "resolved_state_preserved": true,
+  "status": "PASS",
+  "valuation_or_price_ownership_change": false
+}

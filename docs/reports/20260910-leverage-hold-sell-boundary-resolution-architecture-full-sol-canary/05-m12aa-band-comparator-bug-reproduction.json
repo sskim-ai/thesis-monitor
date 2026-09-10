@@ -1,0 +1,103 @@
+{
+  "bug": "non-HOLD allowed-band null compared literally with normalized NOT_HOLD",
+  "historical_report": {
+    "rows": [
+      {
+        "audit": {
+          "allowed_band": [
+            {
+              "buy": 4.5,
+              "direction": "HOLD",
+              "lean": "SELL_LEAN",
+              "sell": 5.5
+            },
+            {
+              "buy": 4.0,
+              "direction": "SELL",
+              "lean": null,
+              "sell": 6.0
+            }
+          ],
+          "contract": "m12aa-fic-fin-05-boundary-band-v1",
+          "observed": {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": "NOT_HOLD",
+            "sell": 6.0
+          },
+          "outcome": "OUT_OF_BAND_OTHER",
+          "status": "OBSERVATION",
+          "stop_generation": false,
+          "validation_class": "CALIBRATION_OBSERVATION"
+        },
+        "repetition": 1,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "audit": {
+          "allowed_band": [
+            {
+              "buy": 4.5,
+              "direction": "HOLD",
+              "lean": "SELL_LEAN",
+              "sell": 5.5
+            },
+            {
+              "buy": 4.0,
+              "direction": "SELL",
+              "lean": null,
+              "sell": 6.0
+            }
+          ],
+          "contract": "m12aa-fic-fin-05-boundary-band-v1",
+          "observed": {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          "outcome": "IN_BAND_HOLD_SELL_LEAN",
+          "status": "PASS",
+          "stop_generation": false,
+          "validation_class": "CALIBRATION_OBSERVATION"
+        },
+        "repetition": 2,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "audit": {
+          "allowed_band": [
+            {
+              "buy": 4.5,
+              "direction": "HOLD",
+              "lean": "SELL_LEAN",
+              "sell": 5.5
+            },
+            {
+              "buy": 4.0,
+              "direction": "SELL",
+              "lean": null,
+              "sell": 6.0
+            }
+          ],
+          "contract": "m12aa-fic-fin-05-boundary-band-v1",
+          "observed": {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": "NOT_HOLD",
+            "sell": 6.0
+          },
+          "outcome": "OUT_OF_BAND_OTHER",
+          "status": "OBSERVATION",
+          "stop_generation": false,
+          "validation_class": "CALIBRATION_OBSERVATION"
+        },
+        "repetition": 3,
+        "ticker": "FIC-FIN-05"
+      }
+    ],
+    "stable_preference": "OUT_OF_BAND",
+    "status": "MEASURED"
+  },
+  "status": "REPRODUCED"
+}

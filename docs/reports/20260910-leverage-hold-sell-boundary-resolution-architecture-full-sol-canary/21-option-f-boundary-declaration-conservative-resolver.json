@@ -1,0 +1,19 @@
+{
+  "complexity": "MEDIUM",
+  "conservative_tiebreak_compatibility": "HIGH",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "SELECTED",
+  "deterministic_numeric_semantics": "HIGH",
+  "faithfulness_to_ai_economic_judgment": "HIGH",
+  "hidden_scorecard_risk": "LOW",
+  "holdout_proof_integrity": "PRESERVED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "BOUNDARY_DECLARATION_CONSERVATIVE_RESOLVER",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "F",
+  "output_schema_impact": "ADDITIVE_OPTIONAL_EXPERIMENTAL",
+  "reason": "It preserves AI interpretation and applies only the frozen mechanical tie-break.",
+  "renderer_impact": "NONE_WHILE_SHADOW",
+  "single_call_stability": "HIGH_IF_DECLARATION_STABLE",
+  "valuation_price_ownership_impact": "NONE"
+}

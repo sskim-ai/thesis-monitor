@@ -1,0 +1,18 @@
+{
+  "mechanical_mapping_added": false,
+  "pairs": [
+    {
+      "core": "SELL",
+      "holder": "REVIEW"
+    },
+    {
+      "core": "HOLD",
+      "holder": "REVIEW"
+    },
+    {
+      "core": "SELL",
+      "holder": "REDUCE"
+    }
+  ],
+  "status": "PARTLY_COUPLED_AND_UNRESOLVED"
+}

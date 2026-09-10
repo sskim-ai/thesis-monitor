@@ -1,0 +1,25 @@
+{
+  "opposite_polarity_reversal_count": 0,
+  "raw_states": [
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "lean": "NOT_HOLD",
+      "sell": 6.0
+    },
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "lean": "SELL_LEAN",
+      "sell": 5.5
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "lean": "NOT_HOLD",
+      "sell": 6.0
+    }
+  ],
+  "root_cause": "GENUINE_ADJACENT_ORDINAL_BOUNDARY",
+  "status": "PASS"
+}

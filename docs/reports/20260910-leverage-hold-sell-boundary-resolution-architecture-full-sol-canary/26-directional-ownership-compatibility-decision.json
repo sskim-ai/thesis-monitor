@@ -1,0 +1,20 @@
+{
+  "coherent": true,
+  "ownership": {
+    "ai": [
+      "economic interpretation",
+      "raw directional balance",
+      "whether an adjacent boundary is genuinely supportable",
+      "boundary reason and evidence references"
+    ],
+    "balance_averaging": false,
+    "deterministic_core": [
+      "boundary declaration validation",
+      "mechanical selection of the adjacent balance closer to 5.0",
+      "derivation of resolved direction and HOLD lean"
+    ],
+    "hidden_scorecard": false,
+    "majority_vote": false
+  },
+  "status": "PASS"
+}

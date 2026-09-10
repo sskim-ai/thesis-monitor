@@ -1,0 +1,19 @@
+{
+  "complexity": "MEDIUM",
+  "conservative_tiebreak_compatibility": "LOW_OR_NONE",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "REJECTED",
+  "deterministic_numeric_semantics": "HIGH",
+  "faithfulness_to_ai_economic_judgment": "HIGH",
+  "hidden_scorecard_risk": "LOW",
+  "holdout_proof_integrity": "PRESERVED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "NEW_BOUNDARY_DIRECTION_STATE",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "H",
+  "output_schema_impact": "BREAKING",
+  "reason": "It changes the frozen BUY/HOLD/SELL public and lifecycle surface.",
+  "renderer_impact": "HIGH",
+  "single_call_stability": "HIGH",
+  "valuation_price_ownership_impact": "NONE"
+}

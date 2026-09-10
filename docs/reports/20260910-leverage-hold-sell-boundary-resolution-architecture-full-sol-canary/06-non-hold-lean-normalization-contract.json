@@ -1,0 +1,33 @@
+{
+  "canonical_non_hold_state": "NOT_HOLD",
+  "rows": [
+    {
+      "direction": "SELL",
+      "equal": true,
+      "left": null,
+      "left_normalized": "NOT_HOLD",
+      "right": "NOT_HOLD",
+      "right_normalized": "NOT_HOLD",
+      "status": "PASS"
+    },
+    {
+      "direction": "BUY",
+      "equal": true,
+      "left": "not-applicable",
+      "left_normalized": "NOT_HOLD",
+      "right": "NOT_HOLD",
+      "right_normalized": "NOT_HOLD",
+      "status": "PASS"
+    },
+    {
+      "direction": "HOLD",
+      "equal": false,
+      "left": "SELL_LEAN",
+      "left_normalized": "SELL_LEAN",
+      "right": "NEUTRAL",
+      "right_normalized": "NEUTRAL",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}
