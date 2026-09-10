@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN",
+  "frozen_at": "2026-09-10T05:04:57Z",
+  "primary_root_cause": "PERSISTENCE_LIMIT_PRIORITY_UNDERSPECIFIED",
+  "secondary_mechanism": "BALANCE_CONFIDENCE_SEMANTIC_ENTANGLEMENT",
+  "selected_branch": "BRANCH_A_BOUNDED_GENERIC_DIRECTIONAL_CLARIFICATION",
+  "reason": "The current prompt says missing domains are not automatic caps, but it does not explicitly distinguish absence of future durability proof from supplied evidence that directly challenges the current improvement before applying the adjacent-bucket tie-break. M12Y therefore could treat a MEDIUM-confidence limitation as a 6.0 balance cap.",
+  "fic_fin_01_frozen_target": {"direction": "BUY", "buy": 6.5, "sell": 3.5},
+  "target_frozen_before_new_output": true,
+  "directional_prompt_change_authorized": true,
+  "directional_prompt_change_limit": 1,
+  "fixture_target_change_authorized": false,
+  "source_case_change_authorized": false,
+  "threshold_change_authorized": false,
+  "tie_break_direction_change_authorized": false,
+  "model_calls_used_for_root_cause_decision": 0
+}

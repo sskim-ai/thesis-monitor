@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "case_a": {
+    "definition": "future durability merely not yet proven",
+    "effect": "may lower directional confidence without automatically lowering current evidence balance",
+    "fic_fin_01_applies": true
+  },
+  "case_b": {
+    "definition": "supplied evidence directly challenges causality, persistence, or reversibility of the current improvement",
+    "effect": "may make 6.0 and 6.5 genuinely adjacent and invoke the conservative tie-break",
+    "fic_fin_01_applies": false
+  },
+  "valuation_missing_automatic_cap": false,
+  "tie_break_applies_before_case_classification": false
+}

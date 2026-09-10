@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "directional_balance_support": [
+    "comparable-period revenue and operating-profit improvement",
+    "prior-year-comparable QTD operating-cash-flow improvement",
+    "net-cash financial resilience"
+  ],
+  "confidence_limits": [
+    "future durability not yet proven",
+    "safe current valuation unavailable",
+    "competition risk",
+    "elevated execution expectations"
+  ],
+  "current_anchor_directly_undermined": false,
+  "m12y_reasoning_pattern": "MEDIUM confidence limits were allowed to cap directional balance at 6.0",
+  "contract_gap": "directional_balance strength and epistemic directional_confidence are not explicitly separated before the adjacent-bucket tie-break"
+}

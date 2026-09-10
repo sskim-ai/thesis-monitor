@@ -1,0 +1,12 @@
+{
+  "status": "FROZEN",
+  "root_cause": "CANONICAL_REFS_COMPARED_TO_ALIAS_KEYED_CONTEXT",
+  "failure_classification": "VALIDATOR_FALSE_REJECT_ALIAS_RESOLUTION_GAP",
+  "validator_false_reject_count": 3,
+  "validator_false_accept_count": 0,
+  "model_semantic_violation_count_after_raw_alias_replay": 0,
+  "repair_boundary": "audit-only exact per-ticker alias/canonical identity resolution",
+  "fuzzy_matching_allowed": false,
+  "cross_ticker_lookup_allowed": false,
+  "prompt_change_authorized": false
+}

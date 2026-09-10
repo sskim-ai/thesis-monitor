@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "historical_output_rewritten": false,
+  "rows": [
+    {"ticker": "FIC-FIN-01", "observed": "STRENGTHENED", "supporting_aliases": ["E04", "E08"], "reason": "comparable-period operating and OCF improvement", "status": "PASS"},
+    {"ticker": "FIC-FIN-02", "observed": "WEAKENED", "supporting_aliases": ["E08"], "reason": "lower prior-year-comparable operating cash flow", "status": "PASS"},
+    {"ticker": "FIC-FIN-03", "observed": "STRENGTHENED", "supporting_aliases": ["E03"], "reason": "explicit recent operating rebound", "status": "PASS"},
+    {"ticker": "FIC-FIN-04", "observed": "UNCHANGED", "supporting_aliases": ["E09", "E10"], "reason": "stable or broadly flat operating state", "status": "PASS"}
+  ],
+  "validator_false_reject_count_after_identity_resolution": 0,
+  "validator_false_accept_count_after_identity_resolution": 0,
+  "model_semantic_violation_count": 0
+}

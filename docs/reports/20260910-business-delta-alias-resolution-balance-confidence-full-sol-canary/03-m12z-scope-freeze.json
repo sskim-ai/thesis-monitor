@@ -1,0 +1,20 @@
+{
+  "status": "FROZEN",
+  "scope": [
+    "business-delta audit alias resolution",
+    "directional balance versus confidence separation",
+    "full fictional Sol canary if deterministic gate passes"
+  ],
+  "out_of_scope": [
+    "historical CI portability cleanup",
+    "real issuers",
+    "provider fetches",
+    "production changes",
+    "schedule resume",
+    "Astra calls",
+    "stance repair"
+  ],
+  "whole_generation_stop": true,
+  "selective_retry": false,
+  "generation_stitching": false
+}

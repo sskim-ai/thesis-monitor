@@ -1,0 +1,47 @@
+{
+  "contract": "m12z-business-delta-alias-balance-confidence-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "base_sha": "89bee202be8a4ae2f0eac7ce2fdca1a095c7818e",
+  "work_instruction_commit": "55bb3e9",
+  "frozen_at": "2026-09-10T05:04:57Z",
+  "delta_alias_resolution": {
+    "root_cause": "CANONICAL_REFS_COMPARED_TO_ALIAS_KEYED_CONTEXT",
+    "failure_classification": "VALIDATOR_FALSE_REJECT_ALIAS_RESOLUTION_GAP",
+    "selected_repair": "AUDIT_ONLY_PER_TICKER_ALIAS_TO_CANONICAL_RESOLUTION",
+    "model_semantic_violation_count": 0,
+    "prompt_change_authorized": false
+  },
+  "positive_bucket": {
+    "primary_root_cause": "PERSISTENCE_LIMIT_PRIORITY_UNDERSPECIFIED",
+    "secondary_mechanism": "BALANCE_CONFIDENCE_SEMANTIC_ENTANGLEMENT",
+    "selected_branch": "BRANCH_A_BOUNDED_GENERIC_DIRECTIONAL_CLARIFICATION",
+    "fic_fin_01_frozen_target": {"direction": "BUY", "buy": 6.5, "sell": 3.5},
+    "allowed_prompt_change_count": 1,
+    "allowed_topics": [
+      "directional balance strength versus epistemic confidence",
+      "future durability not yet proven versus direct persistence challenge",
+      "tie-break ordering after that separation"
+    ]
+  },
+  "frozen_contracts": {
+    "fic_fin_05_target": {"direction": "SELL", "buy": 4.0, "sell": 6.0},
+    "fic_fin_05_business_delta": "UNCHANGED",
+    "fic_fin_08_contrastive_exclusion": "PRESERVE",
+    "buy_threshold": 6.0,
+    "sell_threshold": 6.0,
+    "increment": 0.5,
+    "tie_break": "toward 5.0 after balance-confidence separation",
+    "fixed_score_rule_count": 0,
+    "evidence_count_bucket_rule_count": 0
+  },
+  "runtime": {
+    "model": "gpt-5.6-sol",
+    "effort": "xhigh",
+    "mode": "MODEL_CONTEXT_COUPLED",
+    "subjects_per_context": 4,
+    "timeout_seconds": 1800,
+    "wrapper_retry_count": 0,
+    "batch_split": 0,
+    "fallback_model": null
+  }
+}
