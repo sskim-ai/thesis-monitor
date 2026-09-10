@@ -9,7 +9,7 @@ Date: 2026-09-10 KST
 - Work instruction: `55bb3e92e7f40455ff547340c7e876b36292e88b`
 - Root-cause freeze: `9bcba40e4ef67fa025ff72d9badcbc0bf92da7a7`
 - Implementation/runtime identity: `ca63b25894b53f17c4b89f2ecb3dfff79227448c`
-- Report commit: `PENDING_FINAL_COMMIT`
+- Report commit: `e54d75eec5761f3e1616caceef950a96ed25920d`
 - Production merge/deploy: `0/0`
 
 ## Offline Contract Result
