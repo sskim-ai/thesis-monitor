@@ -1,0 +1,14 @@
+{
+  "hard_rejections": [
+    "inactive boundary with metadata",
+    "missing endpoints, reason, or evidence refs",
+    "invalid balance sum or increment",
+    "identical or non-adjacent endpoints",
+    "endpoint ordering not toward 5.0",
+    "cross-polarity endpoints",
+    "raw balance outside declared boundary",
+    "invalid evidence refs"
+  ],
+  "status": "PASS",
+  "ticker_specific_rules": 0
+}

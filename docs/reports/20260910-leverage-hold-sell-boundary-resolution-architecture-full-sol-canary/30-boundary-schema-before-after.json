@@ -1,0 +1,7 @@
+{
+  "after_schema_sha256": "cca8b796615a47ef13d9b74d1f4b0e203d5b03aa744d59be1229110207d76c2d",
+  "before_schema_sha256": "bd450c75e124a5334d68df3402dd7da60c97c1b1d943993eb37aa8e56646e669",
+  "change": "ADDITIVE_BOUNDARY_METADATA_IN_NEW_EXPERIMENTAL_CONTRACT",
+  "production_schema_changed": false,
+  "status": "PASS"
+}
