@@ -41,6 +41,21 @@ stability = aa.stability
 
 
 BASE = "95addf0a6a484e7ea307a7b8cb63c175e71332e2"
+BASE_FILE_SHA256 = {
+    "app/services/direction_timing_ownership_service.py": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+    "app/services/directional_balance_service.py": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+    "app/services/daily_monitor_service.py": "5f3b94ec2e6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
+    "app/services/daily_digest_renderer.py": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
+    "scripts/first_class_typed_financial_evidence_m12b.py": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
+    "scripts/materiality_scoped_working_capital_grounding_m12c.py": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+    "scripts/qtd_ytd_plain_korean_period_validator_m12d.py": "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0",
+    "app/services/financial_framework_claim_service.py": "1c62a769e2aae19942d9981c611bca36b23661564545db063b3677b37d1edd61",
+    "scripts/financial_exclusion_expectation_m12u.py": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+    "app/services/coldstart_source_assembly_service.py": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+    "app/services/current_price_context_service.py": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+}
 INSTRUCTION_COMMIT = "96377fedd6f575f10b97a30db564fa71cde8e766"
 MODEL = "gpt-5.6-sol"
 EFFORT = "xhigh"
@@ -351,7 +366,17 @@ def _file_sha(path: Path) -> str:
 
 
 def _base_sha(path: str) -> str:
-    return sha256(subprocess.check_output(["git", "show", f"{BASE}:{path}"]))
+    try:
+        return sha256(
+            subprocess.check_output(
+                ["git", "show", f"{BASE}:{path}"],
+                stderr=subprocess.DEVNULL,
+            )
+        )
+    except subprocess.CalledProcessError:
+        if path not in BASE_FILE_SHA256:
+            raise
+        return BASE_FILE_SHA256[path]
 
 
 def _freeze_paths(paths: Sequence[str]) -> dict[str, object]:
