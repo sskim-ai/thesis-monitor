@@ -1,7 +1,7 @@
 {
   "application_scope_false_accept_count": 0,
   "application_scope_false_reject_count": 2,
-  "artifact_count": 170,
+  "artifact_count": 163,
   "artifact_hash_mismatch_count": 0,
   "artifact_secret_scan_failure_count": 0,
   "artifact_size_mismatch_count": 0,

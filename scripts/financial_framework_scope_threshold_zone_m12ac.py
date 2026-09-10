@@ -1165,7 +1165,10 @@ def bundle() -> None:
         (path, Path(path))
         for path in git("diff", "--name-only", BASE).splitlines()
         if Path(path).is_file() and not path.startswith("docs/reports/")
+        and not path.startswith(f"artifacts/{NAME}/")
     ]
+    completion_summary = Path("docs/reports/20260910-m12ac-completion.md")
+    rows.append((str(completion_summary), completion_summary))
     rows = list(dict(rows).items())
     completion_path = REPORTS / f"66-{SLUGS[66]}.json"
     completion = read(completion_path)
