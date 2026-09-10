@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T04:19:42.522673+00:00",
+  "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/full.txt",
+  "output_sha256": "58691dc0184483820b6dfb0442c5df5bc2e1058e9179a576f624ed2bfa58ae16",
+  "returncode": 0,
+  "started_at": "2026-09-10T04:18:25.179191+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

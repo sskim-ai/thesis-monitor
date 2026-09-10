@@ -1,0 +1,109 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "순부채 대신 규제자본을 보지만 순부채가 높아 SELL 근거다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "순부채 대신 규제자본을 보지만 순부채가 높아 SELL 근거다"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "순부채 대신 규제자본을 보지만 순부채가 높아 SELL 근거다.",
+      "validator_valid": false
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "산업회사 틀은 적용하지 않지만 운전자본 악화가 핵심 투자 리스크다"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "산업회사 틀은 적용하지 않지만 운전자본 악화가 핵심 투자 리스크다.",
+      "validator_valid": false
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채 대신 규제자본을 본다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "운전자본 악화가 핵심 투자 리스크다"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "순부채 대신 규제자본을 본다. 운전자본 악화가 핵심 투자 리스크다.",
+      "validator_valid": false
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "text": "If net debt rather than regulatory capital applies, be cautious"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "If net debt rather than regulatory capital applies, be cautious.",
+      "validator_valid": false
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "not not industrial net debt but regulatory capital"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "not not industrial net debt but regulatory capital.",
+      "validator_valid": false
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "text": "순부채보다 규제자본이 중요하지 않지 않다"
+        }
+      ],
+      "expected_exclusion": false,
+      "status": "PASS",
+      "text": "순부채보다 규제자본이 중요하지 않지 않다.",
+      "validator_valid": false
+    }
+  ],
+  "status": "PASS"
+}

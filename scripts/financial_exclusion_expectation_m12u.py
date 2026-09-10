@@ -49,9 +49,12 @@ def scope_audit():
     allowed = {
         HELPER,
         BALANCE,
+        "scripts/directional_core_price_timing_holdout.py",
         TEST_MIGRATION,
+        "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py",
         "tests/test_financial_exclusion_leverage_m12f.py",
         "tests/test_first_class_typed_financial_evidence_m12b.py",
+        "tests/test_partial_output_forensics_transport_stall_review.py",
     }
     unexpected = [
         p
@@ -65,7 +68,18 @@ def scope_audit():
     prompt_ok = new_prompt.startswith(old_prompt + "\n\n") and "\n\n" not in addition
     helper_before = ast.parse(baseline["approved_module_before"][HELPER])
     helper_after = ast.parse(Path(HELPER).read_text())
-    allowed_nodes = {"_NOMINAL_BRIDGE", "_KO_EXCLUSION", "_EN_SUFFIX", "financial_framework_claims"}
+    allowed_nodes = {
+        "_NOMINAL_BRIDGE",
+        "_KO_EXCLUSION",
+        "_EN_SUFFIX",
+        "_KO_CONTRASTIVE_SUFFIX",
+        "_EN_INSTEAD_OF_PREFIX",
+        "_EN_RATHER_THAN_PREFIX",
+        "_EN_REPLACEMENT_SUFFIX",
+        "_EN_NOT_BUT_SUFFIX",
+        "_contrastive_replacement_exclusion",
+        "financial_framework_claims",
+    }
 
     def residual(tree):
         return ast.dump(

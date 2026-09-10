@@ -1,0 +1,14 @@
+{
+  "expected_buy": 4,
+  "expected_direction": "SELL",
+  "expected_sell": 6,
+  "facts": [
+    "complete high debt",
+    "thin cash",
+    "stable operating profit"
+  ],
+  "id": "LEV-SOL-01",
+  "limitation": "refinancing severity unknown and expectation conditional on the same unresolved risk",
+  "rationale": "Current complete leverage evidence establishes minimum negative direction; unresolved refinancing detail caps stronger severity.",
+  "status": "PASS"
+}

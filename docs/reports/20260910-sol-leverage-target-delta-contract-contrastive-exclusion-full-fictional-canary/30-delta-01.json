@@ -1,0 +1,9 @@
+{
+  "baseline_change": false,
+  "expected": "UNCHANGED",
+  "facts": [
+    "high debt and thin cash current state"
+  ],
+  "id": "DELTA-01",
+  "status": "PASS"
+}

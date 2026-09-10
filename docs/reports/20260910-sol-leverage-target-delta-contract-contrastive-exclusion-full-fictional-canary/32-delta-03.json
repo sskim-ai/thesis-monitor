@@ -1,0 +1,9 @@
+{
+  "baseline_change": false,
+  "expected": "UNCHANGED",
+  "facts": [
+    "strong current margins"
+  ],
+  "id": "DELTA-03",
+  "status": "PASS"
+}

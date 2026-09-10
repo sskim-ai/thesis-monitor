@@ -1,5 +1,19 @@
 {
-  "status": "FROZEN_UNCHANGED",
-  "contract_change_count": 0,
-  "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK"
+  "base_sha": "0651fe2387049c27b81e273260b99e8cfe7e9b5d",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
+      "current_sha256": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
+      "path": "app/services/directional_balance_service.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0",
+      "current_sha256": "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0",
+      "path": "tests/test_financial_exclusion_expectation_m12u.py",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
 }

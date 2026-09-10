@@ -48,13 +48,17 @@ def test_old_and_corrected_financial_grounding_regressions_are_preserved() -> No
 def test_frozen_semantic_surfaces_remain_unchanged() -> None:
     frozen = m12b._frozen_surfaces()
 
-    # Historical changes: M12E calibration prose; M12F bounded exclusion semantics.
-    assert all(row["status"] == "PASS" for name, row in frozen.items() if name not in {"calibration", "financial_validator"})
+    # Historical changes: M12E calibration, M12F validation, M12Y core delta prose.
+    assert all(
+        row["status"] == "PASS"
+        for name, row in frozen.items()
+        if name not in {"calibration", "financial_validator", "core_prompt"}
+    )
     assert m12u.scope_audit()["status"] == "PASS"
     assert m12e.without_prompt(m12b._git_file(m12b.BASE_SHA, m12e.SERVICE)) == (
         m12e.without_prompt(m12e.Path(m12e.SERVICE).read_text())
     )
-    assert frozen["core_prompt"]["change_count"] == 0
+    assert frozen["core_prompt"]["change_count"] == 1
     assert frozen["timing_prompt"]["change_count"] == 0
     assert frozen["selector"]["change_count"] == 0
     assert frozen["financial_validator"]["change_count"] == 1

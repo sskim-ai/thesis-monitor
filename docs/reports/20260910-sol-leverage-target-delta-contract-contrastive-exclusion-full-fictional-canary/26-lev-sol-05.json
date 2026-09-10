@@ -1,0 +1,9 @@
+{
+  "expected": "INDUSTRIAL_LEVERAGE_NOT_APPLICABLE",
+  "facts": [
+    "financial sector"
+  ],
+  "id": "LEV-SOL-05",
+  "limitation": "industrial leverage framework not applicable",
+  "status": "PASS"
+}

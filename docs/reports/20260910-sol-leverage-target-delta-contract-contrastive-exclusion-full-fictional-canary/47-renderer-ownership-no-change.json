@@ -1,0 +1,13 @@
+{
+  "base_sha": "0651fe2387049c27b81e273260b99e8cfe7e9b5d",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
+      "current_sha256": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
+      "path": "app/services/daily_digest_renderer.py",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

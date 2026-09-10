@@ -56,10 +56,19 @@ def test_probe_precommit_is_fictional_same_namespace_and_sized(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    # Preserve the historical 15-20 KB comparison; do not relax the transport size gate.
+    # Preserve the historical pre-M12Y 15-20 KB prompt; do not relax the size gate.
     prior = Path("fixtures/pre_m12e_ordinal_calibration_prompt.txt").read_text().strip()
+    current_core_prompt = review.frozen._core_prompt
     monkeypatch.setattr(
         review.frozen, "directional_balance_ordinal_calibration_prompt", lambda: prior
+    )
+    monkeypatch.setattr(
+        review.frozen,
+        "_core_prompt",
+        lambda **kwargs: current_core_prompt(**kwargs).replace(
+            "\n\n" + review.frozen.BUSINESS_THESIS_CHANGE_PROMPT + "\n\n",
+            "\n\n",
+        ),
     )
     rows, namespace = review.build_probe_inputs(tmp_path, "fictional-generation")
 

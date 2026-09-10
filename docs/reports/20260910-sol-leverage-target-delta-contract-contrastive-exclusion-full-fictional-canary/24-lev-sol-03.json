@@ -1,0 +1,11 @@
+{
+  "expected": "NO_MECHANICAL_SELL",
+  "facts": [
+    "high debt",
+    "strong cash and liquidity",
+    "stable operating profit"
+  ],
+  "id": "LEV-SOL-03",
+  "limitation": "refinancing detail unavailable",
+  "status": "PASS"
+}

@@ -51,6 +51,24 @@ _EN_SUFFIX = re.compile(
 )
 _EN_PREFIX = re.compile(r"(?:\b(?:do|does)\s+not\s+(?:apply|use|evaluate)|\bexclude)\s*$", re.I)
 _EN_OBJECT_END = re.compile(_EN_FRAMEWORK + _EN_SECTOR + r"\s*$", re.I)
+_KO_CONTRASTIVE_SUFFIX = re.compile(
+    _NOMINAL_BRIDGE
+    + r"(?:대신|보다(?:는)?|아니라)\s+"
+    + r"(?:(?!하지만|그러나|반면).)+?"
+    + r"(?:을|를|이|가)?\s*"
+    + r"(?:본다|봅니다|사용한다|사용합니다|적용한다|적용합니다|평가한다|평가합니다|"
+    + r"적절한\s*(?:평가틀|틀|기준|프레임워크)(?:이다|입니다))\s*$"
+)
+_EN_INSTEAD_OF_PREFIX = re.compile(
+    r"(?:use|evaluate|apply|prefer|consider)\s+.+\s+(?:instead\s+of|rather\s+than)\s*$",
+    re.I,
+)
+_EN_RATHER_THAN_PREFIX = re.compile(r"(?:rather\s+than|not)\s*$", re.I)
+_EN_REPLACEMENT_SUFFIX = re.compile(
+    r"\s*,?\s*(?:use|evaluate|apply|prefer|consider)\s+.+\s*$",
+    re.I,
+)
+_EN_NOT_BUT_SUFFIX = re.compile(r"\s*but\s+\S.+\s*$", re.I)
 _AMBIGUITY = re.compile(r"않|아니|배제|\b(?:not|never|unless|exclude|excluded)\b", re.I)
 _CONDITIONAL = re.compile(r"경우|라면|한다면|\b(?:if|unless)\b", re.I)
 _TEXT_FIELDS = {
@@ -59,6 +77,21 @@ _TEXT_FIELDS = {
     "confirmation_business_condition",
     "business_invalidation_condition",
 }
+
+
+def _contrastive_replacement_exclusion(*, prefix: str, suffix: str, clause: str) -> bool:
+    if _CONDITIONAL.search(clause):
+        return False
+    if _KO_CONTRASTIVE_SUFFIX.fullmatch(suffix):
+        return _CLUSTER.search(suffix) is None
+    if _EN_INSTEAD_OF_PREFIX.fullmatch(prefix):
+        return not suffix and _CLUSTER.search(prefix) is None
+    if _EN_RATHER_THAN_PREFIX.fullmatch(prefix):
+        replacement = _EN_NOT_BUT_SUFFIX.fullmatch(suffix)
+        if prefix.casefold() != "not":
+            replacement = _EN_REPLACEMENT_SUFFIX.fullmatch(suffix)
+        return replacement is not None and _CLUSTER.search(suffix) is None
+    return False
 
 
 def financial_framework_claims(text: str) -> tuple[FrameworkClaim, ...]:
@@ -72,13 +105,20 @@ def financial_framework_claims(text: str) -> tuple[FrameworkClaim, ...]:
             suffix = clause[cluster.end() :].strip()
             exclusion_prefix = _EN_PREFIX.search(prefix)
             preceding = prefix[: exclusion_prefix.start()] if exclusion_prefix else prefix
-            excluded = (
-                not _CONDITIONAL.search(clause)
-                and not _AMBIGUITY.search(preceding)
-                and (
-                    _KO_EXCLUSION.fullmatch(suffix)
-                    or _EN_SUFFIX.fullmatch(suffix)
-                    or (_EN_PREFIX.search(prefix) and _EN_OBJECT_END.fullmatch(suffix))
+            contrastive_exclusion = _contrastive_replacement_exclusion(
+                prefix=prefix,
+                suffix=suffix,
+                clause=clause,
+            )
+            excluded = not _CONDITIONAL.search(clause) and (
+                contrastive_exclusion
+                or (
+                    not _AMBIGUITY.search(preceding)
+                    and (
+                        _KO_EXCLUSION.fullmatch(suffix)
+                        or _EN_SUFFIX.fullmatch(suffix)
+                        or (_EN_PREFIX.search(prefix) and _EN_OBJECT_END.fullmatch(suffix))
+                    )
                 )
             )
             kind = (

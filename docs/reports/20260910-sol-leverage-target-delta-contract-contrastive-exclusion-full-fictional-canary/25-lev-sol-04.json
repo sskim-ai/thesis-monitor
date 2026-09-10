@@ -1,0 +1,9 @@
+{
+  "expected": "NO_COMPLETE_DEBT_OR_NET_DEBT_CONCLUSION",
+  "facts": [
+    "partial debt components only"
+  ],
+  "id": "LEV-SOL-04",
+  "limitation": "complete interest-bearing debt not supplied",
+  "status": "PASS"
+}

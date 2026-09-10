@@ -90,6 +90,14 @@ SOURCE_LOCK_SHA256 = (
 )
 MODEL = "gpt-5.6-sol"
 EFFORT = "xhigh"
+BUSINESS_THESIS_CHANGE_PROMPT = (
+    "business_thesis_change is a change assessment, not an absolute quality label. "
+    "Use STRENGTHENED or WEAKENED only when supplied evidence establishes a meaningful "
+    "change relative to a prior or baseline state. A positive or negative current "
+    "condition alone does not establish change; when no supplied fact establishes a "
+    "directional baseline change, use UNCHANGED. Keep this separate from the absolute "
+    "BUY, HOLD, or SELL direction."
+)
 SELECTION_SALT = "directional-core-price-timing-ownership-new-holdout-v1"
 TARGET_COUNT = 16
 PREFERRED_PER_MARKET = 8
@@ -348,7 +356,10 @@ Return one candidate per ticker in input order. directional_balance buy and sell
 
 """
         + directional_balance_ordinal_calibration_prompt()
+        + "\n\n"
+        + BUSINESS_THESIS_CHANGE_PROMPT
         + """
+
 
 Every claim and condition must cite only aliases supplied for that ticker. BUY or SELL requires material_directional_anchor_basis with at least one same-direction issuer-level business, earnings, cash-flow, capital, valuation, expectations, or structural-risk anchor. Macro alone is insufficient. Unknown evidence may limit confidence but is not automatically negative. Use directional_negative_basis only for DIRECTIONAL_NEGATIVE and cite a supplied confirmed negative fact there; keep it empty for CONFIDENCE_LIMIT and CONFIRMATION_REQUIRED, while contextual historical facts remain in evidence_refs. The fundamental new-buyer and holder stances are pre-timing views. Business invalidation and reevaluation conditions must be issuer-specific and non-price. Keep all prose concise and natural Korean. Do not put exact numbers in prose. Never state unsupported FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, or runway months.
 
