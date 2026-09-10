@@ -1,6 +1,6 @@
 {
   "master_workflow_path": "docs/MASTER_WORKFLOW.md",
-  "next_scope": "LEVERAGE_HOLD_SELL_BOUNDARY_RESOLUTION_REPAIR_GPT56_SOL",
+  "next_scope": "FINANCIAL_SECTOR_EXCLUSION_VALIDATOR_REGRESSION_REPAIR_GPT56_SOL",
   "phase": "M12AB",
   "status": "DOCUMENTED"
 }

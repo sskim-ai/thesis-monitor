@@ -7,7 +7,7 @@ Date: 2026-09-10 KST
 - Phase status: `M12AB_PARTIAL`
 - Fresh real proof readiness: `NOT_READY`
 - Production readiness: `NOT_READY`
-- Next scope: `LEVERAGE_HOLD_SELL_BOUNDARY_RESOLUTION_REPAIR_GPT56_SOL`
+- Next scope: `FINANCIAL_SECTOR_EXCLUSION_VALIDATOR_REGRESSION_REPAIR_GPT56_SOL`
 - Selective rerun or hotfix after generation start: `0`
 
 ## Repository
@@ -55,14 +55,18 @@ Generation: `20260910-m12ab-fictional-20260910T092640Z-741ca9a40148`
 - Observed schema failures: `0`
 - Rows not run after the mandatory stop: `16`
 
-Run 1 context 1 passed 4/4. Run 1 context 2 returned a complete, schema-valid model output but failed
-semantic validation for FIC-FIN-08:
+Run 1 context 1 passed 4/4. Run 1 context 2 returned a complete, schema-valid model output. Its
+FIC-FIN-08 sector sentence explicitly said to use underwriting discipline and regulatory capital
+*instead of* industrial-company net debt and working-capital frameworks. The existing validator
+misclassified that legitimate exclusion as two hard failures:
 
 - `net_debt_claim_without_complete_net_debt_evidence`
 - `financial_sector_generic_reasoning`
 
-This was an objective-semantic hard failure, not a transport or schema failure. The canary stopped
-immediately. No selective rerun, prompt adjustment, validator change, or new generation followed.
+These are validator false rejects, not model financial-sector misuse and not transport or schema
+failures. The current runner nevertheless classifies them as objective-semantic hard failures, so the
+canary stopped immediately. No selective rerun, prompt adjustment, validator change, or new generation
+followed.
 
 ## Boundary Observation
 
@@ -81,4 +85,5 @@ not invent a boundary.
 - Paused schedules at start/end: `8/8`
 
 The experimental architecture remains non-production and is not eligible for real-issuer proof until
-the insurance exclusion semantic failure is repaired in a separately approved, newly frozen generation.
+the financial-sector legitimate-exclusion validator regression is repaired and a separately approved,
+newly frozen generation completes the boundary proof.
