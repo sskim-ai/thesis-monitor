@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T03:00:22.277191+00:00",
+  "output_path": "artifacts/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/validation/full.txt",
+  "output_sha256": "36bbea4072cd09e03589135db36cdeeec441d8d02ad9b0b6560a7a1d9dc58082",
+  "returncode": 0,
+  "started_at": "2026-09-10T02:59:04.066586+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

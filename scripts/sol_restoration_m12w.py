@@ -135,6 +135,7 @@ def _portable_freeze():
 
 def freeze():
     changed, hashes = [], {}
+    nonsemantic_state = {"docs/project-state.json"}
     try:
         payload = subprocess.check_output(["git", "archive", BASE], stderr=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
@@ -142,7 +143,7 @@ def freeze():
     with tarfile.open(fileobj=io.BytesIO(payload)) as archive:
         for member in archive:
             path = member.name
-            if not member.isfile() or not (
+            if path in nonsemantic_state or not member.isfile() or not (
                 path.endswith((".py", ".toml", ".yaml", ".yml", ".json"))
                 or path.startswith("fixtures/")
             ):

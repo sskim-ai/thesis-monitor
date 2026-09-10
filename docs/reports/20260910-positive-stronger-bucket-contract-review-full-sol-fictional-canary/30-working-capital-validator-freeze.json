@@ -1,0 +1,19 @@
+{
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+      "current_sha256": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+      "path": "scripts/materiality_scoped_working_capital_grounding_m12c.py",
+      "unchanged": true
+    },
+    {
+      "base_sha256": "f94539507d037976c2aab05341e6f07086f38fa4c8bacc467a88ecd3678a9bb9",
+      "current_sha256": "f94539507d037976c2aab05341e6f07086f38fa4c8bacc467a88ecd3678a9bb9",
+      "path": "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+{
+  "expected_buy": 6.0,
+  "expected_direction": "BUY",
+  "expected_sell": 4.0,
+  "id": "POS-ORD-01",
+  "pattern": "A positive issuer-level anchor and one current or economically independent corroborating fact establish direction, while material limitations leave no broader stronger support.",
+  "reason": "This is minimum directional support.",
+  "side": "POSITIVE",
+  "status": "PASS"
+}

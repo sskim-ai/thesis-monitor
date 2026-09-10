@@ -1,0 +1,10 @@
+{
+  "expected_buy": 6.5,
+  "expected_direction": "BUY",
+  "expected_sell": 3.5,
+  "id": "POS-ORD-02",
+  "pattern": "Distinct current operating improvement, cash-conversion improvement, and balance-sheet resilience materially strengthen breadth and quality; limitations remain but do not make adjacent buckets genuinely ambiguous.",
+  "reason": "This is stronger current support beyond minimum BUY.",
+  "side": "POSITIVE",
+  "status": "PASS"
+}

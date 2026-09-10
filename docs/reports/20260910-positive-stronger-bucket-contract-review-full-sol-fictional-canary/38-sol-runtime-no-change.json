@@ -1,0 +1,13 @@
+{
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "67c493bd816519042e1e08d5c34143e5715f17d4823da21160e54f2cf6cc3f5a",
+      "current_sha256": "67c493bd816519042e1e08d5c34143e5715f17d4823da21160e54f2cf6cc3f5a",
+      "path": "scripts/sol_runtime_adapter_m12w.py",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

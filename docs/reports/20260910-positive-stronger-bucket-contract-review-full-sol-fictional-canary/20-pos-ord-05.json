@@ -1,0 +1,10 @@
+{
+  "expected_buy": 6.5,
+  "expected_direction": "BUY",
+  "expected_sell": 3.5,
+  "id": "POS-ORD-05",
+  "pattern": "Strong distinct current fundamental support is established and expectations are elevated, but the expectation evidence does not establish current deterioration or a valuation conclusion.",
+  "reason": "Elevated expectations are a caution whose economic force is evaluated in context, not an automatic downgrade.",
+  "side": "POSITIVE",
+  "status": "PASS"
+}

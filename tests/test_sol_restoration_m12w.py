@@ -216,6 +216,12 @@ def test_existing_semantic_files_are_unchanged_from_m12v_base():
     assert result["fictional_case_change_count"] == 0
 
 
+def test_mutable_project_state_is_not_classified_as_financial_semantics():
+    result = v.freeze()
+    assert "docs/project-state.json" not in result["existing_file_sha256"]
+    assert "docs/project-state.json" not in result["changed_existing_paths"]
+
+
 def test_authoring_provenance_matches_requested_target():
     root = v.read(v.ROOT)
     assert root["authoring"]["status"] == "PASS"

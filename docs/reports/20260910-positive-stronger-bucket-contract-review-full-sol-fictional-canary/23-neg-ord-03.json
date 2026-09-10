@@ -1,0 +1,10 @@
+{
+  "expected_buy": 4.0,
+  "expected_direction": "SELL",
+  "expected_sell": 6.0,
+  "id": "NEG-ORD-03",
+  "pattern": "Multiple negative economic axes exist, but an unresolved causal or persistence issue directly leaves minimum and stronger SELL buckets genuinely adjacent.",
+  "reason": "The existing adjacent-bucket tie-break selects the less directional bucket.",
+  "side": "NEGATIVE",
+  "status": "PASS"
+}
