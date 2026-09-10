@@ -17,11 +17,11 @@
     "tests/test_first_class_typed_financial_evidence_m12b.py",
     "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
   ],
-  "finished_at": "2026-09-10T05:20:53.834051+00:00",
+  "finished_at": "2026-09-10T05:27:28.483240+00:00",
   "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/focused.txt",
-  "output_sha256": "7de9f37e6a384ebdfbccc0b05e4d541072670c8cf04e551196ac43253e8fb04a",
+  "output_sha256": "bbe649e562f82e1f5a0ebed3aef1a39899a8b2fc0b58dbf83e9151593a4556ac",
   "returncode": 0,
-  "started_at": "2026-09-10T05:20:49.210710+00:00",
+  "started_at": "2026-09-10T05:27:23.899161+00:00",
   "status": "PASS",
   "timed_out": false
 }

@@ -172,9 +172,9 @@ def test_only_one_business_delta_prompt_clarification_was_added():
     )
     assert after.count(marker) == 1
     current = Path("app/services/directional_balance_service.py").read_text()
-    assert z.without_m12z_prompt(current).encode() == y._base_bytes(
+    assert z.sha(z.without_m12z_prompt(current).encode()) == y.BASE_FILE_SHA256[
         "app/services/directional_balance_service.py"
-    )
+    ]
 
 
 def test_base_hash_has_shallow_checkout_fallback(monkeypatch):

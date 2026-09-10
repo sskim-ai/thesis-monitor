@@ -625,7 +625,7 @@
     "tests/test_phase9_1a_evidence.py": "526004c646f05bb07da13759c61fc64488be42ae408fed33ebc5f6bd3f048e36",
     "tests/test_phase9_1b_evidence.py": "85667da69aa06be67e99a791d4adca414d7649adb3b4fdd621693704e7c8f952",
     "tests/test_phase9_1c_evidence.py": "7f6ab37d787aa980d38327d241ceeb3d903cf026cc4f3109055f00c68e089427",
-    "tests/test_positive_stronger_bucket_m12x.py": "59bdf6ef4a4fd0e032490aabaaf891719e902084de052656fa335720d0da1ed4",
+    "tests/test_positive_stronger_bucket_m12x.py": "de49c475b2e0795713109d3f8da7897831760461df73eeebc95804c1d7408c2c",
     "tests/test_preconfirmation_asymmetry_v2_reports.py": "79f20f1173e41eea133922b5275faf70b6f7540fd77a821023fa95190ae213c3",
     "tests/test_preconfirmation_asymmetry_v2_script.py": "8bdccd50914882cb23014a153a7a93e3e338abf619f109206a113efe6ba7b800",
     "tests/test_preconfirmation_decision_v2_service.py": "10b7057642e74ae135bd52dcf60a5adc16a4295e735ddde6374be10f2172379a",
@@ -654,7 +654,7 @@
     "tests/test_security_identity_service.py": "01f16a696d0285407370cbbba10522db18fb01f333195b02bef954dabea0b1ef",
     "tests/test_semantic_decision_hardening.py": "a72a91c5e0117dd875ea3d2a4c3fa528d989056cca2e3e4fabc6e8e47a4cc689",
     "tests/test_shadow_investor_flow_numeric_registry.py": "db604e82a5b133e2ed48473a7e6b3587e0837877bca5b756067dc9cbc9443353",
-    "tests/test_sol_leverage_target_delta_m12y.py": "a3d16fa143b8baf134e0e62ba9eea6c04f57873cabf0d5d423b66abfd8f23ffb",
+    "tests/test_sol_leverage_target_delta_m12y.py": "b9db1c3b0c374d7d8fd241602a8821ed8847d85477b0576c2bd0232aada57bf8",
     "tests/test_sol_restoration_m12w.py": "ad98094d65cb94189a1cb84c392c52948d52debb177c99383d449dc94d8b3e2f",
     "tests/test_source_class_financial_mapping_service.py": "d70324605ee1fbde0a126ed64685004c9e5e80f7648cc04d7884b39055abe1b8",
     "tests/test_source_domain_enrichment_design_review.py": "e4bff5eccfe56595291e170dfb005fab8e26b7c9a39fb61b93c8ddeb4f8d5c85",
@@ -698,11 +698,11 @@
         "--check",
         "89bee202be8a4ae2f0eac7ce2fdca1a095c7818e"
       ],
-      "finished_at": "2026-09-10T05:22:11.667950+00:00",
+      "finished_at": "2026-09-10T05:28:46.162708+00:00",
       "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/diff.txt",
       "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "returncode": 0,
-      "started_at": "2026-09-10T05:22:11.646297+00:00",
+      "started_at": "2026-09-10T05:28:46.143301+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -725,11 +725,11 @@
         "tests/test_first_class_typed_financial_evidence_m12b.py",
         "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
       ],
-      "finished_at": "2026-09-10T05:20:53.834051+00:00",
+      "finished_at": "2026-09-10T05:27:28.483240+00:00",
       "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/focused.txt",
-      "output_sha256": "7de9f37e6a384ebdfbccc0b05e4d541072670c8cf04e551196ac43253e8fb04a",
+      "output_sha256": "bbe649e562f82e1f5a0ebed3aef1a39899a8b2fc0b58dbf83e9151593a4556ac",
       "returncode": 0,
-      "started_at": "2026-09-10T05:20:49.210710+00:00",
+      "started_at": "2026-09-10T05:27:23.899161+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -740,11 +740,11 @@
         "pytest",
         "-q"
       ],
-      "finished_at": "2026-09-10T05:22:11.610400+00:00",
+      "finished_at": "2026-09-10T05:28:46.130114+00:00",
       "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/full.txt",
-      "output_sha256": "51e284eef436ef8675034567df29e95e8343557393be7236e53e170d88a5dbad",
+      "output_sha256": "e1107845742fc306b57d039ef8a4cb0aadbae60d66ab7f4cf49dbc0ab55bcdf6",
       "returncode": 0,
-      "started_at": "2026-09-10T05:20:53.834154+00:00",
+      "started_at": "2026-09-10T05:27:28.483323+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -756,11 +756,11 @@
         "scripts",
         "tests"
       ],
-      "finished_at": "2026-09-10T05:22:11.646200+00:00",
+      "finished_at": "2026-09-10T05:28:46.143198+00:00",
       "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/ruff.txt",
       "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
       "returncode": 0,
-      "started_at": "2026-09-10T05:22:11.610479+00:00",
+      "started_at": "2026-09-10T05:28:46.130191+00:00",
       "status": "PASS",
       "timed_out": false
     }

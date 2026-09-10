@@ -48,9 +48,9 @@ def test_directional_prompt_and_fictional_source_case_are_unchanged():
     from scripts import business_delta_alias_balance_confidence_m12z as z
 
     current = Path("app/services/directional_balance_service.py").read_text()
-    assert z.without_m12z_prompt(current).encode() == x._base_bytes(
+    assert z.sha(z.without_m12z_prompt(current).encode()) == z.BASE_FILE_SHA256[
         "app/services/directional_balance_service.py"
-    )
+    ]
     assert x._freeze_paths(("scripts/directional_financial_context_m12.py",))["status"] == "PASS"
 
 
