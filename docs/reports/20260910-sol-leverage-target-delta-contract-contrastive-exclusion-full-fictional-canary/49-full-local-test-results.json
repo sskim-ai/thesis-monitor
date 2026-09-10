@@ -5,11 +5,11 @@
     "pytest",
     "-q"
   ],
-  "finished_at": "2026-09-10T04:19:42.522673+00:00",
+  "finished_at": "2026-09-10T04:27:07.817773+00:00",
   "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/full.txt",
-  "output_sha256": "58691dc0184483820b6dfb0442c5df5bc2e1058e9179a576f624ed2bfa58ae16",
+  "output_sha256": "96cb3f96043315ab35efaf659bb768c135edf47adb7d8c091ebdcca04d3c09c0",
   "returncode": 0,
-  "started_at": "2026-09-10T04:18:25.179191+00:00",
+  "started_at": "2026-09-10T04:25:50.543277+00:00",
   "status": "PASS",
   "timed_out": false
 }

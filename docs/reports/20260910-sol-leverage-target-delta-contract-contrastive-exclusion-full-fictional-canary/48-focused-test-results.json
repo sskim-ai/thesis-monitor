@@ -16,11 +16,11 @@
     "tests/test_first_class_typed_financial_evidence_m12b.py",
     "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
   ],
-  "finished_at": "2026-09-10T04:18:25.179095+00:00",
+  "finished_at": "2026-09-10T04:25:50.543195+00:00",
   "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/focused.txt",
-  "output_sha256": "0d1f49f2bec44035ae6867044222a2682f84783b4f2c1f5d62691e0ca73151dd",
+  "output_sha256": "5d0dfdc8f149aac5eea2a6c7accbe2f824e10ebb4c42a83f0c7e1344e9a29944",
   "returncode": 0,
-  "started_at": "2026-09-10T04:18:20.584101+00:00",
+  "started_at": "2026-09-10T04:25:45.988211+00:00",
   "status": "PASS",
   "timed_out": false
 }

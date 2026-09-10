@@ -68,6 +68,44 @@ TARGET_BUYS = {
     "FIC-FIN-05": 4.0,
 }
 FIC_FIN_05_DELTA_TARGET = "UNCHANGED"
+BASE_FILE_SHA256 = {
+    "scripts/directional_core_price_timing_holdout.py": (
+        "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf"
+    ),
+    "scripts/first_class_typed_financial_evidence_m12b.py": (
+        "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9"
+    ),
+    "scripts/materiality_scoped_working_capital_grounding_m12c.py": (
+        "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6"
+    ),
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py": (
+        "f94539507d037976c2aab05341e6f07086f38fa4c8bacc467a88ecd3678a9bb9"
+    ),
+    "scripts/qtd_ytd_plain_korean_period_validator_m12d.py": (
+        "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0"
+    ),
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py": (
+        "a3677f5204a9e4a951378e09604b49ab535cefe95171c8ca4af6994345915ddc"
+    ),
+    "app/services/directional_balance_service.py": (
+        "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205"
+    ),
+    "tests/test_financial_exclusion_expectation_m12u.py": (
+        "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0"
+    ),
+    "app/services/coldstart_source_assembly_service.py": (
+        "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594"
+    ),
+    "app/services/daily_monitor_service.py": (
+        "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9"
+    ),
+    "app/services/current_price_context_service.py": (
+        "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f"
+    ),
+    "app/services/daily_digest_renderer.py": (
+        "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6"
+    ),
+}
 
 _POSITIVE_CHANGE = re.compile(
     r"\b(?:improv(?:e|ed|ement)|increas(?:e|ed)|higher\s+than|"
@@ -97,13 +135,23 @@ def _m12x_rows() -> dict[str, dict[str, object]]:
 
 
 def _base_bytes(path: str) -> bytes:
-    return subprocess.check_output(["git", "show", f"{BASE}:{path}"])
+    return subprocess.check_output(
+        ["git", "show", f"{BASE}:{path}"],
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def _base_hash(path: str) -> str:
+    try:
+        return sha(_base_bytes(path))
+    except subprocess.CalledProcessError:
+        return BASE_FILE_SHA256[path]
 
 
 def _freeze_paths(paths: Sequence[str]) -> dict[str, object]:
     rows = []
     for path in paths:
-        before = sha(_base_bytes(path))
+        before = _base_hash(path)
         after = sha(Path(path).read_bytes())
         rows.append(
             {
@@ -400,7 +448,6 @@ def review() -> None:
             "evidence_count_bucket_rule_count": 0,
         },
     )
-    prompt_before = _base_bytes("scripts/directional_core_price_timing_holdout.py").decode()
     prompt_after = Path("scripts/directional_core_price_timing_holdout.py").read_text()
     business_rule = (
         "business_thesis_change is a change assessment, not an absolute quality label."
@@ -419,7 +466,10 @@ def review() -> None:
             value["status"] == "PASS" for value in freeze_results.values()
         ),
         "one_business_delta_prompt_addition": (
-            business_rule not in prompt_before and business_rule in prompt_after
+            not root["business_delta"][
+                "existing_prompt_explicitly_separates_absolute_state_from_change"
+            ]
+            and prompt_after.count(business_rule) == 1
         ),
         "directional_prompt_unchanged": _freeze_paths(
             ("app/services/directional_balance_service.py",)

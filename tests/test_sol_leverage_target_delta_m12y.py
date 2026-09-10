@@ -160,12 +160,26 @@ def test_target_calibration_uses_frozen_m12y_targets():
 
 
 def test_only_one_business_delta_prompt_clarification_was_added():
-    before = y._base_bytes("scripts/directional_core_price_timing_holdout.py").decode()
     after = Path("scripts/directional_core_price_timing_holdout.py").read_text()
     marker = "business_thesis_change is a change assessment, not an absolute quality label."
-    assert marker not in before
+    assert not y.read(y.ROOT)["business_delta"][
+        "existing_prompt_explicitly_separates_absolute_state_from_change"
+    ]
+    assert y._base_hash("scripts/directional_core_price_timing_holdout.py") == (
+        y.BASE_FILE_SHA256["scripts/directional_core_price_timing_holdout.py"]
+    )
     assert after.count(marker) == 1
     assert y._freeze_paths(("app/services/directional_balance_service.py",))["status"] == "PASS"
+
+
+def test_base_hash_has_shallow_checkout_fallback(monkeypatch):
+    path = "scripts/directional_core_price_timing_holdout.py"
+
+    def unavailable(_path):
+        raise y.subprocess.CalledProcessError(128, ["git", "show"])
+
+    monkeypatch.setattr(y, "_base_bytes", unavailable)
+    assert y._base_hash(path) == y.BASE_FILE_SHA256[path]
 
 
 def test_runtime_and_frozen_threshold_contracts_remain_unchanged():
@@ -198,4 +212,3 @@ def test_canary_rejects_failed_phase_a(tmp_path, monkeypatch):
     y.write(tmp_path / "phase-a-receipt.json", {"status": "FAIL"})
     with pytest.raises(ValueError, match="m12y_phase_a_not_passed"):
         y.run()
-

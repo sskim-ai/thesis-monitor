@@ -434,7 +434,7 @@
     "scripts/scheduled_monitoring_pause_capacity_closeout.py": "a518cb0e3272bb2ff3793e4a2bdf3ace612905198a1ac0072a6839919c98efcb",
     "scripts/seed_financial_snapshot.py": "6b76b4fecac0bb4c5b2172805fb6b9be9cbfdc95b3ea8d3d0a2cd6a755939f4c",
     "scripts/setup_kakao_oauth.py": "7db9defa71b9d61785484812253214336681038349c7dd1119c76fefa59d7625",
-    "scripts/sol_leverage_target_delta_m12y.py": "25b88acc8d384143e8cb59a6a790365571202591aaded2e8f25d1f781cb9a210",
+    "scripts/sol_leverage_target_delta_m12y.py": "8ffdd9b7606ceb6b4346f20aa53b0be30241637f3bdb796b9adec566b91563b5",
     "scripts/sol_restoration_m12w.py": "9ac8669a5738b5d75020057ecc1132583c36b614ca5aedcec02e031172f91bf3",
     "scripts/sol_runtime_adapter_m12w.py": "bff087fc514ca765a7a2cfb6108c72198eb37ced62c5595bdefe04f90894f615",
     "scripts/source_class_financial_mapping_evidence.py": "a4875293cdae610dec4693859ec2519336de8835000c804288fb4bb182074190",
@@ -651,8 +651,8 @@
     "tests/test_security_identity_service.py": "01f16a696d0285407370cbbba10522db18fb01f333195b02bef954dabea0b1ef",
     "tests/test_semantic_decision_hardening.py": "a72a91c5e0117dd875ea3d2a4c3fa528d989056cca2e3e4fabc6e8e47a4cc689",
     "tests/test_shadow_investor_flow_numeric_registry.py": "db604e82a5b133e2ed48473a7e6b3587e0837877bca5b756067dc9cbc9443353",
-    "tests/test_sol_leverage_target_delta_m12y.py": "4b412afe5d0b8cfdc8e3104aac453bc251cc6a465095bd4892bcec3c39239a64",
-    "tests/test_sol_restoration_m12w.py": "b9fe3584f19244f4b7ddd81379d8dbaf6c070cac9e611d62037eb8d62fe34a52",
+    "tests/test_sol_leverage_target_delta_m12y.py": "c99d6026d31ace04bbb9eca1a3fc252b9c72ab0e0eb87c51f8e5381d8d368d21",
+    "tests/test_sol_restoration_m12w.py": "12ac04b43b07434787e19ed15f93d868b4840618edb4f9f09d5e95c55340517d",
     "tests/test_source_class_financial_mapping_service.py": "d70324605ee1fbde0a126ed64685004c9e5e80f7648cc04d7884b39055abe1b8",
     "tests/test_source_domain_enrichment_design_review.py": "e4bff5eccfe56595291e170dfb005fab8e26b7c9a39fb61b93c8ddeb4f8d5c85",
     "tests/test_structured_autonomy_alias_service.py": "a8c6becf6dbab4afbcf4bcaa44ae366971a9beb095557f62abc0df8278542fa3",
@@ -695,11 +695,11 @@
         "--check",
         "0651fe2387049c27b81e273260b99e8cfe7e9b5d"
       ],
-      "finished_at": "2026-09-10T04:19:42.567540+00:00",
+      "finished_at": "2026-09-10T04:27:07.853266+00:00",
       "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/diff.txt",
       "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "returncode": 0,
-      "started_at": "2026-09-10T04:19:42.547989+00:00",
+      "started_at": "2026-09-10T04:27:07.831750+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -721,11 +721,11 @@
         "tests/test_first_class_typed_financial_evidence_m12b.py",
         "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
       ],
-      "finished_at": "2026-09-10T04:18:25.179095+00:00",
+      "finished_at": "2026-09-10T04:25:50.543195+00:00",
       "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/focused.txt",
-      "output_sha256": "0d1f49f2bec44035ae6867044222a2682f84783b4f2c1f5d62691e0ca73151dd",
+      "output_sha256": "5d0dfdc8f149aac5eea2a6c7accbe2f824e10ebb4c42a83f0c7e1344e9a29944",
       "returncode": 0,
-      "started_at": "2026-09-10T04:18:20.584101+00:00",
+      "started_at": "2026-09-10T04:25:45.988211+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -736,11 +736,11 @@
         "pytest",
         "-q"
       ],
-      "finished_at": "2026-09-10T04:19:42.522673+00:00",
+      "finished_at": "2026-09-10T04:27:07.817773+00:00",
       "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/full.txt",
-      "output_sha256": "58691dc0184483820b6dfb0442c5df5bc2e1058e9179a576f624ed2bfa58ae16",
+      "output_sha256": "96cb3f96043315ab35efaf659bb768c135edf47adb7d8c091ebdcca04d3c09c0",
       "returncode": 0,
-      "started_at": "2026-09-10T04:18:25.179191+00:00",
+      "started_at": "2026-09-10T04:25:50.543277+00:00",
       "status": "PASS",
       "timed_out": false
     },
@@ -752,11 +752,11 @@
         "scripts",
         "tests"
       ],
-      "finished_at": "2026-09-10T04:19:42.547924+00:00",
+      "finished_at": "2026-09-10T04:27:07.831686+00:00",
       "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/ruff.txt",
       "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
       "returncode": 0,
-      "started_at": "2026-09-10T04:19:42.522752+00:00",
+      "started_at": "2026-09-10T04:27:07.817841+00:00",
       "status": "PASS",
       "timed_out": false
     }

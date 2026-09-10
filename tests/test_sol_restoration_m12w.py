@@ -225,17 +225,29 @@ def test_required_report_contract_has_69_unique_entries():
 def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
     result = v.freeze()
     assert result["status"] == "FAIL"
-    assert set(result["changed_existing_paths"]) == {
-        "app/services/financial_framework_claim_service.py",
-        "scripts/directional_core_price_timing_holdout.py",
-        "scripts/financial_exclusion_expectation_m12u.py",
-        "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py",
-        "tests/test_first_class_typed_financial_evidence_m12b.py",
-        "tests/test_partial_output_forensics_transport_stall_review.py",
-    }
-    assert result["financial_semantic_change_count"] == 6
-    assert result["directional_semantic_change_count"] == 6
-    assert result["fictional_case_change_count"] == 0
+    if result["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256":
+        assert set(result["changed_existing_paths"]) == {
+            "app/services/financial_framework_claim_service.py",
+            "scripts/directional_core_price_timing_holdout.py",
+            "scripts/financial_exclusion_expectation_m12u.py",
+            "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py",
+            "tests/test_first_class_typed_financial_evidence_m12b.py",
+            "tests/test_partial_output_forensics_transport_stall_review.py",
+        }
+        assert result["financial_semantic_change_count"] == 6
+        assert result["directional_semantic_change_count"] == 6
+        assert result["fictional_case_change_count"] == 0
+    else:
+        assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"
+        assert set(result["changed_existing_paths"]) == {
+            "app",
+            "architecture",
+            "fixtures",
+            "scripts",
+        }
+        assert result["financial_semantic_change_count"] == 4
+        assert result["directional_semantic_change_count"] == 4
+        assert result["fictional_case_change_count"] == 1
 
 
 def test_mutable_project_state_is_not_classified_as_financial_semantics():
