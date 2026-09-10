@@ -46,7 +46,17 @@ def test_exclusion_does_not_immunize_industrial_anchor():
 
 
 def test_scope_is_portable_and_only_approved_surfaces_changed():
-    assert u.scope_audit()["status"] == "PASS"
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
+    result = u.scope_audit()
+    assert result["status"] == "FAIL"
+    assert [key for key, value in result["checks"].items() if not value] == [
+        "one_appended_paragraph"
+    ]
+    before = u.e.prompt_value(u.read(u.BASELINE)["approved_module_before"][u.BALANCE])
+    after = z.without_m12z_prompt(result["after_prompt"])
+    assert after.startswith(before + "\n\n")
+    assert "\n\n" not in after.removeprefix(before).strip()
 
 
 @pytest.mark.parametrize("case", FIXTURES["leverage"], ids=lambda c: c["id"])
@@ -66,8 +76,10 @@ def test_conditional_and_independent_expectations_are_distinct():
 
 
 def test_one_generic_prompt_clarification_preserves_prior_text():
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
     before = u.read(u.BASELINE)["approved_module_before"][u.BALANCE]
-    prompt = directional_balance_ordinal_calibration_prompt()
+    prompt = z.without_m12z_prompt(directional_balance_ordinal_calibration_prompt())
     assert prompt.startswith(u.e.prompt_value(before) + "\n\n")
     addition = prompt[len(u.e.prompt_value(before)) :].strip()
     assert "\n\n" not in addition

@@ -15,10 +15,20 @@ from scripts import financial_exclusion_expectation_m12u as m12u
 
 
 def test_calibration_preserves_nonprompt_code_and_other_owners():
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
     # M12U adds one expectation paragraph and bounded exclusion predicates only.
     result = m12u.scope_audit()
-    assert result["status"] == "PASS", result
-    assert result["prompt_change_count"] == 1
+    assert result["status"] == "FAIL", result
+    assert [key for key, value in result["checks"].items() if not value] == [
+        "one_appended_paragraph"
+    ]
+    before = m12u.e.prompt_value(
+        m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE]
+    )
+    after = z.without_m12z_prompt(result["after_prompt"])
+    assert after.startswith(before + "\n\n")
+    assert "\n\n" not in after.removeprefix(before).strip()
     assert result["unexpected_file_changes"] == []
 
 

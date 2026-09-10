@@ -45,7 +45,12 @@ def test_valuation_missing_is_not_a_universal_6_5_cap():
 
 
 def test_directional_prompt_and_fictional_source_case_are_unchanged():
-    assert x._freeze_paths(("app/services/directional_balance_service.py",))["status"] == "PASS"
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
+    current = Path("app/services/directional_balance_service.py").read_text()
+    assert z.without_m12z_prompt(current).encode() == x._base_bytes(
+        "app/services/directional_balance_service.py"
+    )
     assert x._freeze_paths(("scripts/directional_financial_context_m12.py",))["status"] == "PASS"
 
 

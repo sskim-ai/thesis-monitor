@@ -1,0 +1,11 @@
+{
+  "confidence": "HIGH",
+  "current_support": "MINIMUM",
+  "direction": "BUY",
+  "expected_buy": 6.0,
+  "id": "POS-STAB-04",
+  "observed_buy": 6.0,
+  "persistence_limit": "NONE",
+  "status": "PASS",
+  "valuation": "AVAILABLE"
+}

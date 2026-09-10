@@ -1,0 +1,11 @@
+{
+  "confidence": "MEDIUM",
+  "current_support": "STRONGER",
+  "direction": "BUY",
+  "expected_buy": 6.0,
+  "id": "POS-STAB-02",
+  "observed_buy": 6.0,
+  "persistence_limit": "CURRENT_IMPROVEMENT_DIRECTLY_CHALLENGED",
+  "status": "PASS",
+  "valuation": "AVAILABLE"
+}

@@ -3,6 +3,7 @@
   "status": "FROZEN_BEFORE_IMPLEMENTATION",
   "base_sha": "89bee202be8a4ae2f0eac7ce2fdca1a095c7818e",
   "work_instruction_commit": "55bb3e9",
+  "root_cause_commit": "9bcba40e4ef67fa025ff72d9badcbc0bf92da7a7",
   "frozen_at": "2026-09-10T05:04:57Z",
   "delta_alias_resolution": {
     "root_cause": "CANONICAL_REFS_COMPARED_TO_ALIAS_KEYED_CONTEXT",

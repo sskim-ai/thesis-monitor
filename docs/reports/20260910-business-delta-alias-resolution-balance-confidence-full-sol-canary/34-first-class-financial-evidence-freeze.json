@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "base_sha256": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
+      "changed": false,
+      "current_sha256": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
+      "expected_changed": false,
+      "path": "scripts/first_class_typed_financial_evidence_m12b.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

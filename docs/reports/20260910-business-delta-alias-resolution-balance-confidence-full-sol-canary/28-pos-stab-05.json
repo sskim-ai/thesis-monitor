@@ -1,0 +1,11 @@
+{
+  "confidence": "LOW",
+  "current_support": "STRONGER",
+  "direction": "BUY",
+  "expected_buy": 6.5,
+  "id": "POS-STAB-05",
+  "observed_buy": 6.5,
+  "persistence_limit": "UNRELATED_COMPLETENESS_GAP",
+  "status": "PASS",
+  "valuation": "AVAILABLE"
+}

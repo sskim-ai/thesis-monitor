@@ -1,0 +1,204 @@
+{
+  "contract": "m12z-business-delta-alias-balance-confidence-fixtures-v1",
+  "delta_positive": [
+    {
+      "id": "DELTA-POS-01",
+      "ticker": "FIX-POS-01",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:operating-improvement",
+      "alias": "E01",
+      "statement": "Comparable-period operating performance improved.",
+      "expected": "PASS"
+    },
+    {
+      "id": "DELTA-POS-02",
+      "ticker": "FIX-POS-02",
+      "observed": "WEAKENED",
+      "candidate_ref": "canonical:fix:ocf-deterioration",
+      "alias": "E01",
+      "statement": "Operating cash flow is lower than the prior-year comparable period.",
+      "expected": "PASS"
+    },
+    {
+      "id": "DELTA-POS-03",
+      "ticker": "FIX-POS-03",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:recent-rebound",
+      "alias": "E01",
+      "statement": "A recent operating rebound is visible versus the prior state.",
+      "expected": "PASS"
+    },
+    {
+      "id": "DELTA-POS-04",
+      "ticker": "FIX-POS-04",
+      "observed": "UNCHANGED",
+      "candidate_ref": "canonical:fix:flat-state",
+      "alias": "E01",
+      "statement": "Current operating performance is broadly flat.",
+      "expected": "PASS"
+    }
+  ],
+  "delta_negative": [
+    {
+      "id": "DELTA-NEG-01",
+      "ticker": "FIX-NEG-01",
+      "observed": "WEAKENED",
+      "candidate_ref": "canonical:fix:high-debt",
+      "alias": "E01",
+      "statement": "Current interest-bearing debt is high.",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-02",
+      "ticker": "FIX-NEG-02",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:high-margin",
+      "alias": "E01",
+      "statement": "Current operating margin is high.",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-03",
+      "ticker": "FIX-NEG-03",
+      "observed": "WEAKENED",
+      "candidate_ref": "canonical:fix:refinancing-unknown",
+      "alias": "E01",
+      "statement": "Refinancing terms remain unknown.",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-04",
+      "ticker": "FIX-NEG-04",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "E99",
+      "alias": "E01",
+      "catalog_canonical_ref": "canonical:fix:selected",
+      "statement": "Comparable-period operating performance improved.",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-05",
+      "ticker": "FIX-NEG-05",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "E01",
+      "alias": "E01",
+      "statement": "Comparable-period operating performance improved.",
+      "catalog_ticker": "FIX-OTHER",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-06",
+      "ticker": "FIX-NEG-06",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:collision",
+      "alias": "E01",
+      "statement": "Comparable-period operating performance improved.",
+      "collision_alias": "E02",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-07",
+      "ticker": "FIX-NEG-07",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:not-selected",
+      "alias": "E01",
+      "catalog_canonical_ref": "canonical:fix:selected",
+      "statement": "Comparable-period operating performance improved.",
+      "expected": "FAIL"
+    },
+    {
+      "id": "DELTA-NEG-08",
+      "ticker": "FIX-NEG-08",
+      "observed": "STRENGTHENED",
+      "candidate_ref": "canonical:fix:current-state",
+      "alias": "E01",
+      "statement": "Current demand and margins are strong.",
+      "expected": "FAIL"
+    }
+  ],
+  "positive_strength": [
+    {
+      "id": "POS-STAB-01",
+      "direction": "BUY",
+      "current_support": "STRONGER",
+      "persistence_limit": "FUTURE_DURABILITY_NOT_YET_PROVEN",
+      "valuation": "MISSING",
+      "confidence": "MEDIUM",
+      "expected_buy": 6.5
+    },
+    {
+      "id": "POS-STAB-02",
+      "direction": "BUY",
+      "current_support": "STRONGER",
+      "persistence_limit": "CURRENT_IMPROVEMENT_DIRECTLY_CHALLENGED",
+      "valuation": "AVAILABLE",
+      "confidence": "MEDIUM",
+      "expected_buy": 6.0
+    },
+    {
+      "id": "POS-STAB-03",
+      "direction": "BUY",
+      "current_support": "STRONGER",
+      "persistence_limit": "NONE",
+      "valuation": "MISSING",
+      "confidence": "MEDIUM",
+      "expected_buy": 6.5
+    },
+    {
+      "id": "POS-STAB-04",
+      "direction": "BUY",
+      "current_support": "MINIMUM",
+      "persistence_limit": "NONE",
+      "valuation": "AVAILABLE",
+      "confidence": "HIGH",
+      "expected_buy": 6.0
+    },
+    {
+      "id": "POS-STAB-05",
+      "direction": "BUY",
+      "current_support": "STRONGER",
+      "persistence_limit": "UNRELATED_COMPLETENESS_GAP",
+      "valuation": "AVAILABLE",
+      "confidence": "LOW",
+      "expected_buy": 6.5
+    }
+  ],
+  "negative_strength": [
+    {
+      "id": "NEG-STAB-01",
+      "direction": "SELL",
+      "current_support": "STRONGER",
+      "persistence_limit": "FUTURE_DURABILITY_NOT_YET_PROVEN",
+      "valuation": "MISSING",
+      "confidence": "MEDIUM",
+      "expected_buy": 3.5
+    },
+    {
+      "id": "NEG-STAB-02",
+      "direction": "SELL",
+      "current_support": "STRONGER",
+      "persistence_limit": "CURRENT_IMPROVEMENT_DIRECTLY_CHALLENGED",
+      "valuation": "AVAILABLE",
+      "confidence": "MEDIUM",
+      "expected_buy": 4.0
+    },
+    {
+      "id": "NEG-STAB-03",
+      "direction": "SELL",
+      "current_support": "STRONGER",
+      "persistence_limit": "NONE",
+      "valuation": "MISSING",
+      "confidence": "MEDIUM",
+      "expected_buy": 3.5
+    },
+    {
+      "id": "NEG-STAB-04",
+      "direction": "SELL",
+      "current_support": "MINIMUM",
+      "persistence_limit": "NONE",
+      "valuation": "AVAILABLE",
+      "confidence": "HIGH",
+      "expected_buy": 4.0
+    }
+  ]
+}

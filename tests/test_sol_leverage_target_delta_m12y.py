@@ -160,6 +160,8 @@ def test_target_calibration_uses_frozen_m12y_targets():
 
 
 def test_only_one_business_delta_prompt_clarification_was_added():
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
     after = Path("scripts/directional_core_price_timing_holdout.py").read_text()
     marker = "business_thesis_change is a change assessment, not an absolute quality label."
     assert not y.read(y.ROOT)["business_delta"][
@@ -169,7 +171,10 @@ def test_only_one_business_delta_prompt_clarification_was_added():
         y.BASE_FILE_SHA256["scripts/directional_core_price_timing_holdout.py"]
     )
     assert after.count(marker) == 1
-    assert y._freeze_paths(("app/services/directional_balance_service.py",))["status"] == "PASS"
+    current = Path("app/services/directional_balance_service.py").read_text()
+    assert z.without_m12z_prompt(current).encode() == y._base_bytes(
+        "app/services/directional_balance_service.py"
+    )
 
 
 def test_base_hash_has_shallow_checkout_fallback(monkeypatch):

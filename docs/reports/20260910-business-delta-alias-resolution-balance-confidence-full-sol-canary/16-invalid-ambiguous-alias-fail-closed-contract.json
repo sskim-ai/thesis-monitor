@@ -1,0 +1,6 @@
+{
+  "ambiguous_many_to_one": "FAIL_CLOSED",
+  "cross_ticker": "FAIL_CLOSED",
+  "failure": "INVALID_OR_UNRESOLVED_EVIDENCE_REF",
+  "status": "PASS"
+}

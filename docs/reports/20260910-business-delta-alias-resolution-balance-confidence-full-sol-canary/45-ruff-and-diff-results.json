@@ -1,0 +1,33 @@
+{
+  "diff": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "89bee202be8a4ae2f0eac7ce2fdca1a095c7818e"
+    ],
+    "finished_at": "2026-09-10T05:22:11.667950+00:00",
+    "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/diff.txt",
+    "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "returncode": 0,
+    "started_at": "2026-09-10T05:22:11.646297+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "ruff": {
+    "command": [
+      "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/ruff",
+      "check",
+      "app",
+      "scripts",
+      "tests"
+    ],
+    "finished_at": "2026-09-10T05:22:11.646200+00:00",
+    "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/ruff.txt",
+    "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "returncode": 0,
+    "started_at": "2026-09-10T05:22:11.610479+00:00",
+    "status": "PASS",
+    "timed_out": false
+  }
+}

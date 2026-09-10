@@ -1,0 +1,10 @@
+{
+  "frozen_before_new_output": true,
+  "status": "FROZEN",
+  "target": {
+    "buy": 6.5,
+    "direction": "BUY",
+    "sell": 3.5
+  },
+  "ticker": "FIC-FIN-01"
+}

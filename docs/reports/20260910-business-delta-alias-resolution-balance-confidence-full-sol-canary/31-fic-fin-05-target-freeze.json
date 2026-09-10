@@ -1,0 +1,10 @@
+{
+  "change_count": 0,
+  "status": "FROZEN",
+  "target": {
+    "buy": 4.0,
+    "direction": "SELL",
+    "sell": 6.0
+  },
+  "ticker": "FIC-FIN-05"
+}

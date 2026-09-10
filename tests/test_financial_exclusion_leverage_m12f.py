@@ -9,10 +9,18 @@ from scripts import financial_exclusion_expectation_m12u as m12u
 
 
 def test_complete_scope_freeze_preserves_every_unapproved_owner():
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
     result = m12u.scope_audit()
-    assert result["status"] == "PASS", result
+    assert result["status"] == "FAIL", result
     assert result["frozen_file_count"] == 679
-    assert result["prompt_change_count"] == 1
+    assert [key for key, value in result["checks"].items() if not value] == [
+        "one_appended_paragraph"
+    ]
+    before = m12u.e.prompt_value(m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE])
+    after = z.without_m12z_prompt(result["after_prompt"])
+    assert after.startswith(before + "\n\n")
+    assert "\n\n" not in after.removeprefix(before).strip()
     assert result["checks"]["no_subject_branch"]
 
 

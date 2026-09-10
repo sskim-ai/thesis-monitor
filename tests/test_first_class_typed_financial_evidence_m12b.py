@@ -46,6 +46,8 @@ def test_old_and_corrected_financial_grounding_regressions_are_preserved() -> No
 
 
 def test_frozen_semantic_surfaces_remain_unchanged() -> None:
+    from scripts import business_delta_alias_balance_confidence_m12z as z
+
     frozen = m12b._frozen_surfaces()
 
     # Historical changes: M12E calibration, M12F validation, M12Y core delta prose.
@@ -54,7 +56,12 @@ def test_frozen_semantic_surfaces_remain_unchanged() -> None:
         for name, row in frozen.items()
         if name not in {"calibration", "financial_validator", "core_prompt"}
     )
-    assert m12u.scope_audit()["status"] == "PASS"
+    scope = m12u.scope_audit()
+    assert scope["status"] == "FAIL"
+    assert [key for key, value in scope["checks"].items() if not value] == [
+        "one_appended_paragraph"
+    ]
+    assert z.without_m12z_prompt(scope["after_prompt"]).startswith(scope["before_prompt"])
     assert m12e.without_prompt(m12b._git_file(m12b.BASE_SHA, m12e.SERVICE)) == (
         m12e.without_prompt(m12e.Path(m12e.SERVICE).read_text())
     )
