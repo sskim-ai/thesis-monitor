@@ -1,0 +1,13 @@
+{
+  "decision_material_fields": [
+    "overall_direction",
+    "business_thesis_change",
+    "fundamental_new_buyer.stance",
+    "fundamental_holder.stance"
+  ],
+  "exact_tuple_is_not_authoritative_material_classifier": true,
+  "exact_variable_subjects": [
+    "FIC-FIN-03"
+  ],
+  "status": "MEASURED"
+}

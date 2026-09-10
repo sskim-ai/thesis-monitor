@@ -1,0 +1,11 @@
+{
+  "consumers": [
+    "net_debt_completeness_validator",
+    "financial_sector_generic_framework_validator",
+    "working_capital_sector_validator"
+  ],
+  "downstream_override_allowed": false,
+  "shared_application_predicate": "framework_reference_is_application",
+  "shared_classifier": "candidate_financial_framework_claims",
+  "status": "PASS"
+}

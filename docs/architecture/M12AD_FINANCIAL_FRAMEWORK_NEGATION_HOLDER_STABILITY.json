@@ -1,0 +1,49 @@
+{
+  "contract": "m12ad-financial-framework-negation-holder-stability-v1",
+  "phase": "M12AD",
+  "status": "ARCHITECTURE_FROZEN",
+  "base_sha": "6fc68f6bb8a7f88b375338cefc357670f617d575",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "financial_framework_negation": {
+    "repair_scope": "bounded Korean contrastive-copular replacement particle support",
+    "supported_structure": "excluded framework X + copular contrast + sector-valid replacement Y + application predicate",
+    "flat_phrase_allowlist": false,
+    "cross_field_exclusion_immunity": false,
+    "shared_application_role_consumer": true
+  },
+  "holder_contract": {
+    "holdable": "no material confirmed fundamental reason to reconsider the holding",
+    "review": "material confirmed fundamental risk exists but a critical severity, persistence, or reversibility question remains unresolved, so exposure reduction is not uniquely justified",
+    "reduce": "confirmed fundamental downside is sufficiently severe or persistent that maintaining the same exposure is no longer justified",
+    "sell_mechanically_forces_reduce": false,
+    "unchanged_mechanically_forces_review": false,
+    "fic_fin_05_target": "REVIEW"
+  },
+  "decision_material_stability": {
+    "contract": "directional-decision-material-stability-v1",
+    "material_fields": [
+      "overall_direction",
+      "business_thesis_change",
+      "fundamental_new_buyer.stance",
+      "fundamental_holder.stance"
+    ],
+    "calibration_fields": [
+      "directional_balance",
+      "hold_lean",
+      "directional_confidence",
+      "decision_threshold_zone"
+    ],
+    "same_direction_half_point_variance_blocks_readiness": false,
+    "raw_output_mutation": false,
+    "majority_vote": false,
+    "balance_averaging": false
+  },
+  "threshold_zone": {
+    "status": "SHADOW_DESCRIPTIVE",
+    "readiness_gate_enabled": false,
+    "renderer_enabled": false,
+    "raw_direction_rewrite": false
+  },
+  "production_side_effects": false
+}

@@ -1,0 +1,7 @@
+{
+  "missing_surface": "replacement instrument particle euro/ro",
+  "phrase_allowlist_required": false,
+  "root_cause": "KOREAN_INSTRUMENTAL_PARTICLE_BEFORE_APPLICATION_PREDICATE_NOT_RECOGNIZED",
+  "status": "ROOT_CAUSE_FROZEN",
+  "structure": "X framework + i/ga anira + Y replacement + euro/ro + judgment predicate"
+}

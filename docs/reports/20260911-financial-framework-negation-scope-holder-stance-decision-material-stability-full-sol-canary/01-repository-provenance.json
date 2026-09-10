@@ -1,0 +1,8 @@
+{
+  "actual_head": "ee61646c5c0e7516bbf318d2c75232bb9f2c60bf",
+  "base_sha": "6fc68f6bb8a7f88b375338cefc357670f617d575",
+  "branch": "codex/20260911-financial-framework-negation-holder-stability-m12ad",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "working_tree": "?? docs/architecture/M12AD_FINANCIAL_FRAMEWORK_NEGATION_HOLDER_STABILITY.json\n?? scripts/financial_framework_negation_holder_stability_m12ad.py"
+}

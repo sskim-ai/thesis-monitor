@@ -1,0 +1,40 @@
+{
+  "errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "repetition": 3,
+  "roles_before": {
+    "application_count": 2,
+    "claims": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "field_path": "sector_interpretation.text",
+        "framework": "net_debt",
+        "kind": "UNCERTAIN_OR_AMBIGUOUS",
+        "role": "UNRESOLVED",
+        "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+      },
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "field_path": "sector_interpretation.text",
+        "framework": "working_capital",
+        "kind": "UNCERTAIN_OR_AMBIGUOUS",
+        "role": "UNRESOLVED",
+        "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+      }
+    ],
+    "roles": [
+      "UNRESOLVED"
+    ]
+  },
+  "status": "REPRODUCED",
+  "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4.",
+  "ticker": "FIC-FIN-08"
+}
