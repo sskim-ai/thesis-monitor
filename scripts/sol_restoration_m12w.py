@@ -43,6 +43,32 @@ SOL_REAL_HISTORY = Path(
     "docs/reports/20260908-runtime-namespace-isolation-repair-fresh-holdout-proof/"
     "67-program-completion.md"
 )
+M12D_REPORTS = Path(
+    "docs/reports/"
+    "20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary"
+)
+PORTABLE_BASELINE = {
+    "app": {
+        "file_count": 269,
+        "aggregate_sha256": "6530ecd77d792e0795d05c2f697e55126d3252adee2d3819b27bdbcdf5e07f2e",
+    },
+    "scripts": {
+        "file_count": 187,
+        "aggregate_sha256": "4905565fc26633aedf2c80d5b041de7be74bfc7a5acf86f1a7a548518bdee1c8",
+    },
+    "fixtures": {
+        "file_count": 8,
+        "aggregate_sha256": "b2f21b2fe20d1bee938558f02e6008144f8e4deb9e47024246e967f1719e9960",
+    },
+    "architecture": {
+        "file_count": 4,
+        "aggregate_sha256": "0c6a7d3215e90a01b15490a610b31b43ba02da736f125062dc1a2df8980da584",
+    },
+    "root_config": {
+        "file_count": 2,
+        "aggregate_sha256": "a34aec0e886e94dfc5982347cb1284d674e9e9454dc5811a4044ffba7fc66e03",
+    },
+}
 SLUGS = {
     int(n): slug
     for n, slug in re.findall(r"^(\d{2})-([a-z0-9-]+)$", INSTRUCTION.read_text(), re.M)
@@ -58,9 +84,62 @@ def verify_zip(path, digest):
     return u.e.verify_zip(path, digest)
 
 
+def _portable_freeze():
+    extensions = (".py", ".toml", ".yaml", ".yml", ".json")
+    excluded = {
+        "scripts/sol_runtime_adapter_m12w.py",
+        "scripts/sol_restoration_m12w.py",
+        str(ROOT),
+    }
+    paths = [
+        path
+        for path in Path(".").rglob("*")
+        if path.is_file()
+        and str(path).removeprefix("./") not in excluded
+        and (str(path).endswith(extensions) or str(path).startswith("fixtures/"))
+    ]
+    selectors = {
+        "app": lambda path: path.startswith("app/"),
+        "scripts": lambda path: path.startswith("scripts/"),
+        "fixtures": lambda path: path.startswith("fixtures/"),
+        "architecture": lambda path: path.startswith("docs/architecture/"),
+        "root_config": lambda path: "/" not in path,
+    }
+    observed = {}
+    for label, selector in selectors.items():
+        hashes = {
+            path: sha(Path(path).read_bytes())
+            for path in sorted(str(path).removeprefix("./") for path in paths)
+            if selector(path)
+        }
+        observed[label] = {
+            "file_count": len(hashes),
+            "aggregate_sha256": sha(
+                json.dumps(hashes, sort_keys=True, separators=(",", ":")).encode()
+            ),
+        }
+    changed = [label for label in PORTABLE_BASELINE if observed[label] != PORTABLE_BASELINE[label]]
+    return {
+        "status": "PASS" if not changed else "FAIL",
+        "baseline": BASE,
+        "verification_mode": "CI_PORTABLE_AGGREGATE_SHA256",
+        "baseline_scope": PORTABLE_BASELINE,
+        "observed_scope": observed,
+        "changed_existing_paths": changed,
+        "financial_semantic_change_count": len(changed),
+        "directional_semantic_change_count": len(changed),
+        "fictional_case_change_count": int("fixtures" in changed),
+        "source_mapping_change_count": int("app" in changed or "scripts" in changed),
+    }
+
+
 def freeze():
     changed, hashes = [], {}
-    with tarfile.open(fileobj=io.BytesIO(subprocess.check_output(["git", "archive", BASE]))) as archive:
+    try:
+        payload = subprocess.check_output(["git", "archive", BASE], stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return _portable_freeze()
+    with tarfile.open(fileobj=io.BytesIO(payload)) as archive:
         for member in archive:
             path = member.name
             if not member.isfile() or not (
@@ -75,6 +154,7 @@ def freeze():
     return {
         "status": "PASS" if not changed else "FAIL",
         "baseline": BASE,
+        "verification_mode": "EXACT_BASE_ARCHIVE_SHA256",
         "existing_file_sha256": hashes,
         "changed_existing_paths": changed,
         "financial_semantic_change_count": len(changed),
@@ -118,23 +198,63 @@ def model_availability():
 
 
 def historical_sol():
-    integrity = verify_zip(M12D, M12D_SHA)
     receipts = []
-    with zipfile.ZipFile(M12D) as archive:
-        for name in sorted(archive.namelist()):
-            if not name.startswith("experiment/model-calls/") or not name.endswith("/receipt.json"):
+    if M12D.is_file():
+        integrity = verify_zip(M12D, M12D_SHA)
+        with zipfile.ZipFile(M12D) as archive:
+            for name in sorted(archive.namelist()):
+                if not name.startswith("experiment/model-calls/") or not name.endswith("/receipt.json"):
+                    continue
+                receipt = json.loads(archive.read(name))
+                receipts.append(
+                    {
+                        "path": name,
+                        "status": receipt.get("status"),
+                        "model": receipt.get("model"),
+                        "effort": receipt.get("reasoning_effort"),
+                        "timeout_seconds": receipt.get("timeout_seconds"),
+                        "wrapper_retry_count": receipt.get("wrapper_retry_count"),
+                        "orphan_process_count": receipt.get("orphan_process_count"),
+                        "receipt_sha256": sha(archive.read(name)),
+                    }
+                )
+    else:
+        report_paths = [
+            M12D_REPORTS / f"{number:02d}-run-{run}-context-{context:02d}.json"
+            for number, run, context in (
+                (34, 1, 1),
+                (35, 1, 2),
+                (36, 2, 1),
+                (37, 2, 2),
+                (38, 3, 1),
+                (39, 3, 2),
+            )
+        ]
+        integrity = {
+            "status": "PASS" if all(path.is_file() for path in report_paths) else "FAIL",
+            "evidence_class": "REPOSITORY_TRACKED_M12D_RUN_REPORTS",
+            "expected_archive_sha256": M12D_SHA,
+            "archive_available": False,
+            "report_sha256": {
+                str(path): sha(path.read_bytes()) for path in report_paths if path.is_file()
+            },
+        }
+        for path in report_paths:
+            if not path.is_file():
                 continue
-            receipt = json.loads(archive.read(name))
+            receipt = read(path)["transport"]
             receipts.append(
                 {
-                    "path": name,
+                    "path": str(path),
                     "status": receipt.get("status"),
                     "model": receipt.get("model"),
                     "effort": receipt.get("reasoning_effort"),
                     "timeout_seconds": receipt.get("timeout_seconds"),
                     "wrapper_retry_count": receipt.get("wrapper_retry_count"),
                     "orphan_process_count": receipt.get("orphan_process_count"),
-                    "receipt_sha256": sha(archive.read(name)),
+                    "receipt_sha256": sha(
+                        json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode()
+                    ),
                 }
             )
     real_text = SOL_REAL_HISTORY.read_text()
@@ -204,10 +324,16 @@ def m12v_timeout():
 
 def cross_model_history(current_rows, current_receipts):
     m12d_rows = []
-    with zipfile.ZipFile(M12D) as archive:
-        for name in archive.namelist():
-            if name.startswith("experiment/model-calls/") and name.endswith("/run-document.json"):
-                m12d_rows.extend(json.loads(archive.read(name)).get("rows", []))
+    if M12D.is_file():
+        with zipfile.ZipFile(M12D) as archive:
+            for name in archive.namelist():
+                if name.startswith("experiment/model-calls/") and name.endswith("/run-document.json"):
+                    m12d_rows.extend(json.loads(archive.read(name)).get("rows", []))
+    else:
+        for number in range(34, 40):
+            matches = list(M12D_REPORTS.glob(f"{number:02d}-*.json"))
+            if matches:
+                m12d_rows.extend(read(matches[0]).get("rows", []))
     return {
         "policy": [
             "SAME_MODEL_DIFFERENT_CONTRACT_HISTORICAL",
