@@ -1,0 +1,7 @@
+{
+  "failed_invocation": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752:run-3:context-02",
+  "model_calls_completed": 6,
+  "status": "FAIL",
+  "stop_reason": "M12B_MODEL_CANARY_FAIL",
+  "wrapper_retry_count": 0
+}

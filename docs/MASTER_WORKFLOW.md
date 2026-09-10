@@ -1,14 +1,45 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12w-sol-restoration-semantic-stop-closeout-v1
+**버전:** 2026-09-10 / m12ac-financial-framework-threshold-zone-partial-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12W Sol/xhigh transport 회복 관측 / 첫 context target 불일치 / 추가 호출 중단 / fresh real NOT_READY`
+**현재 위치:** `M12AC 6/6 transport·24/24 schema 완료 / 금융업 대조 배제 false reject / threshold-zone 7/8 안정 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12W는 M12U 의미 계약과 source/prompt/schema를 그대로 두고 proof-critical 모델만 GPT-5.6 Sol/xhigh로 복원했다. 새 첫 context는 407.7초에 transport/schema 4/4를 반환했지만 FIC-FIN-01 BUY가 frozen 6.0 대신 6.5여서 전체 generation을 중단했다. 나머지 5개 context는 NOT_RUN이며 반복 안정성은 미측정이다. 재호출·hotfix·main merge·운영 변경은 0이다.**
+**M12AC는 deterministic threshold zone과 금융업 대조 배제 classifier를 검증했다. Sol/xhigh 6개 호출과 24개 schema output은 모두 완료됐으나, FIC-FIN-08의 세 번째 자연어 변형이 false reject됐고 FIC-FIN-03이 NEUTRAL과 POSITIVE_THRESHOLD_ZONE을 오갔다. M12AC_PARTIAL이며 새 model call 없이 bounded repair가 필요하다.**
 
 ---
 
 ## 1. 지금 프로젝트가 달성하려는 것
+
+### 최신 M12AC 결과
+
+M12AB 결과 ZIP SHA `2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926`와
+192개 index 무결성을 재검산했다. 지시서 `b44dd2c`, architecture `29d0aeb`, 모델 호출 전
+구현 `6d4f8cf`를 동결했다. Option F는 model-facing prompt/schema에서 제거했고 raw 방향,
+balance, lean은 보존한 채 deterministic threshold zone만 후처리했다.
+
+새 generation `20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752`, source lock
+`fc6d6e1943063f4437693913dabda32fa94a4942fcca0eb438674a159bd00b7e`로
+`gpt-5.6-sol / xhigh` 6/6 transport와 24/24 schema output을 완료했다. timeout, capacity,
+retry, orphan, invalid reference, grounding, business-delta failure는 모두 0이다.
+
+FIC-FIN-08은 1·2회차에서 산업회사식 순부채·운전자본 배제를 정상 인식했으나, 3회차의
+"산업회사식 순부채·운전자본 틀이 아니라 인수 규율과 규제자본으로 판단" 문장을 parser가
+대조 배제로 인식하지 못했다. 실제 금융업 오용은 0이지만 framework별 false reject 2건과
+objective-semantic hard error 2건이 발생했다. 결과를 본 뒤 validator를 바꾸거나 재호출하지 않았다.
+
+FIC-FIN-05는 세 번 모두 `SELL 4.0:6.0`, `NEGATIVE_THRESHOLD_ZONE`으로 안정적이었다.
+반면 FIC-FIN-03은 `5.0:5.0` 1회와 `5.5:4.5 BUY_LEAN` 2회로 변해 zone도 `NEUTRAL`과
+`POSITIVE_THRESHOLD_ZONE`을 오갔다. 전체 raw/zone 안정성은 각각 7/8이다. New-buyer stance는
+8/8 안정적이지만 FIC-FIN-05 holder stance와 FIC-FIN-06 confidence는 각각 변동했다.
+
+따라서 `M12AC_PARTIAL`, `fresh_real_proof_readiness=NOT_READY_OTHER`,
+`production_readiness=NOT_READY`다. 다음 범위는
+`BOUNDED_M12AC_HARD_FAILURE_REPAIR`: 금융업 대조문의 bounded 명사 경계 처리와
+NEUTRAL↔POSITIVE threshold 경계 정책을 분리 검토한다. 실종목/provider/judge 호출,
+production send/mutation, merge/deploy, scheduler 변경은 모두 0이며 예약 8개는 PAUSED다.
+상세 결과는 `docs/reports/20260910-m12ac-completion.md`와 M12AC report 39/40/44/46/66을 따른다.
+
+아래 M12W 및 이전 단계는 역사적 결과이며 M12AC 재실행 또는 운영 재개 승인이 아니다.
 
 ### 최신 M12W 결과
 

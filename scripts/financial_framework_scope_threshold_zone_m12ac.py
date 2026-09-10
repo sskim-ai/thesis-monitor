@@ -951,9 +951,10 @@ def finalize() -> None:
         for error in hard_errors
     )
     true_misuse = sum(
-        row.get("application_count", 0)
+        role in {"APPLIED_DECISION_FRAMEWORK", "ASSERTED_STATE"}
         for row in framework_rows
         if row["ticker"] == "FIC-FIN-08"
+        for role in row.get("roles", [])
     )
     delta_failures = sum(row.get("status") != "PASS" for row in delta_rows)
     fic05_zones = [
@@ -1043,7 +1044,11 @@ def finalize() -> None:
         "latest_result_integrity": "PASS",
         "m12ab_status": "M12AB_PARTIAL",
         "m12ac_status": "M12AC_COMPLETE" if hard_pass and scope_pass and zone_pass else "M12AC_PARTIAL",
-        "financial_framework_scope_root_cause": "RIGHT_SIDE_NORMATIVE_APPLICATION_PREDICATE_NOT_RECOGNIZED",
+        "financial_framework_scope_root_cause": (
+            "RIGHT_SIDE_NORMATIVE_APPLICATION_PREDICATE_NOT_RECOGNIZED"
+            if scope_pass
+            else "KOREAN_BOUNDARY_NOUN_BEFORE_CONTRAST_MARKER_NOT_RECOGNIZED"
+        ),
         "financial_framework_scope_repair_status": "PASS" if scope_pass else "FAIL",
         "application_scope_false_reject_count": false_rejects,
         "application_scope_false_accept_count": 0,
@@ -1091,7 +1096,9 @@ def finalize() -> None:
         "financial_framework_exclusion_false_reject_count": false_rejects,
         **{f"fic_fin_{index:02d}_raw_balance_values": balance_values(f"FIC-FIN-{index:02d}") for index in range(1, 9)},
         "fic_fin_05_threshold_zone_values": fic05_zones,
-        "fic_fin_05_raw_balance_unique_count": len({(row["directional_balance"]["buy"], row["directional_balance"]["sell"]) for row in balance_values("FIC-FIN-05")}) if len(fic05) == 3 else "NOT_MEASURED",
+        "fic_fin_05_raw_balance_unique_count": len(
+            {(row["buy"], row["sell"]) for row in balance_values("FIC-FIN-05")}
+        ) if len(fic05) == 3 else "NOT_MEASURED",
         "fic_fin_05_threshold_zone_unique_count": len(set(fic05_zones)) if len(fic05) == 3 else "NOT_MEASURED",
         "raw_formal_stable_count": raw_counts["STABLE"] if complete else "NOT_MEASURED",
         "raw_formal_boundary_uncertainty_count": int(summary.get("stability", {}).get("fictional_boundary_uncertainty_count", 0)) if complete else "NOT_MEASURED",
@@ -1129,7 +1136,11 @@ def finalize() -> None:
         "fresh_real_proof_readiness": fresh_ready,
         "production_readiness": "NOT_READY",
         "status": "PASS" if hard_pass and scope_pass and zone_pass else "FAIL",
-        "stop_reason": stop.get("stop_reason"),
+        "stop_reason": (
+            "OBJECTIVE_SEMANTIC_HARD_FAILURE"
+            if hard_errors
+            else stop.get("stop_reason")
+        ),
         "next_scope": next_scope,
     }
     report(66, completion)
@@ -1156,6 +1167,10 @@ def bundle() -> None:
         if Path(path).is_file() and not path.startswith("docs/reports/")
     ]
     rows = list(dict(rows).items())
+    completion_path = REPORTS / f"66-{SLUGS[66]}.json"
+    completion = read(completion_path)
+    completion["artifact_count"] = len(rows)
+    write(completion_path, completion)
     scan = aa.f.artifact_secret_scan(rows)
     if scan["failures"]:
         raise ValueError(f"secret_scan_failed:{scan['failures']}")

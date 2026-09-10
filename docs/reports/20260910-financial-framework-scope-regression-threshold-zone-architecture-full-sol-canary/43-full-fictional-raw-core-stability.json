@@ -1,0 +1,205 @@
+{
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        }
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 2,
+      "values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 4.0,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "SELL",
+          "sell": 6.0
+        },
+        {
+          "buy": 4.0,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "SELL",
+          "sell": 6.0
+        },
+        {
+          "buy": 4.0,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "SELL",
+          "sell": 6.0
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ]
+    }
+  ],
+  "status": "MEASURED"
+}

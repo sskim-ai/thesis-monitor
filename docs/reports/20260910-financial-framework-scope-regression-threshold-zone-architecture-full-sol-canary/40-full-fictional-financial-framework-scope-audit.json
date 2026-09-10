@@ -1,0 +1,567 @@
+{
+  "false_reject_count": 2,
+  "rows": [
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "application_count": 4,
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc601\uc5c5\ud604\uae08\ud750\ub984 \uc57d\ud654\uac00 \ud655\uc778\ub410\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc9c0\uc18d \uac00\ub2a5\uc131\uc774 \uc81c\uae30\ub418\uc9c0\ub9cc \uc6d0\uc778\uacfc \uac00\uc5ed\uc131\uc740 \ubbf8\ud655\uc778\uc774\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc77c\ubc18 \uc601\uc5c5\uae30\uc5c5\uc758 \ud604\uae08\uc804\ud658 \ud2c0\uc744 \uc801\uc6a9\ud558\ub418 \uac1c\ubcc4 \uc6b4\uc804\uc790\ubcf8 \ud56d\ubaa9\ub9cc\uc73c\ub85c \uc804\uccb4 \uc545\ud654\ub97c \ub2e8\uc815\ud558\uc9c0 \uc54a\ub294\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[1].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uac00 \uc9c0\uc18d\ub420 \uac00\ub2a5\uc131\uc774 \uc81c\uc2dc\ub410\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:business-thesis",
+            "fictional:FIC-FIN-02:operating-evidence",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "fundamental_new_buyer.confirmation_business_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc218\uc694\uc640 \uc774\uc775 \uc131\uc7a5\uc774 \uc601\uc5c5\ud604\uae08\ud750\ub984 \ud68c\ubcf5\uc73c\ub85c \uc804\ud658\ub418\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc6d0\uc778\uc774 \ud655\uc778\ub418\ub294 \uacbd\uc6b0"
+        }
+      ],
+      "repetition": 1,
+      "roles": [
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "application_count": 2,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub85c \uc131\uc7a5 \uadfc\uac70\uac00 \uac15\ud654\ub410\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \ud488\uc9c8 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc131\uc7a5\uc740 \uc720\uc9c0\ub418\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \uc804\ud658 \ud655\uc778 \uc804\uc5d0\ub294 \uc81c\ud55c\uc801\uc778 \uae0d\uc815 \uad00\uc810\uc774 \uc801\uc808\ud558\ub2e4"
+        }
+      ],
+      "repetition": 1,
+      "roles": [
+        "ASSERTED_STATE"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 1,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "application_count": 0,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uad00\uc810\uc774 \uc801\uc6a9\ub418\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uad00\uc810\uc774 \uc801\uc6a9\ub418\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+        }
+      ],
+      "repetition": 1,
+      "roles": [
+        "EXPLICIT_NON_APPLICATION"
+      ],
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "application_count": 1,
+      "claims": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-01:net-debt"
+          ],
+          "field_path": "buy_drivers[2].text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "\uc548\uc804\ud558\uac8c \uc0b0\ucd9c\ub41c \uc74c\uc758 \uc21c\ubd80\ucc44\uac00 \uc7ac\ubb34 \uc644\ucda9\ub825\uc744 \ub4b7\ubc1b\uce68\ud55c\ub2e4"
+        }
+      ],
+      "repetition": 2,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "application_count": 5,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uc758 \uc9c0\uc18d \uac00\ub2a5\uc131\uc774 \uc704\ud5d8\uc774\uc9c0\ub9cc \uc7ac\uace0 \uc99d\uac00\ub294 \uc804\ub144 \ub9d0 \ub300\ube44 \uc0ac\uc2e4\uc77c \ubfd0 \uc804\uccb4 \uc6b4\uc804\uc790\ubcf8 \uc545\ud654\ub97c \ub2e8\ub3c5\uc73c\ub85c \uc785\uc99d\ud558\uc9c0 \uc54a\ub294\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uc758 \uc9c0\uc18d \uac00\ub2a5\uc131\uc774 \uc704\ud5d8\uc774\uc9c0\ub9cc \uc7ac\uace0 \uc99d\uac00\ub294 \uc804\ub144 \ub9d0 \ub300\ube44 \uc0ac\uc2e4\uc77c \ubfd0 \uc804\uccb4 \uc6b4\uc804\uc790\ubcf8 \uc545\ud654\ub97c \ub2e8\ub3c5\uc73c\ub85c \uc785\uc99d\ud558\uc9c0 \uc54a\ub294\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[1].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uac00 \uc9c0\uc18d\ub420 \uac00\ub2a5\uc131\uc774 \uc788\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "unknown_treatments[1].summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc804\ub144 \ub9d0 \ub300\ube44 \uc7ac\uace0 \uc99d\uac00\ub294 \ud655\uc778\ub410\uc9c0\ub9cc \uc6d0\uc778\uacfc \uc804\uccb4 \uc6b4\uc804\uc790\ubcf8 \uc601\ud5a5\uc740 \ubbf8\ud655\uc778\uc774\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:operating-evidence",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "fundamental_new_buyer.confirmation_business_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ub9e4\ucd9c\uacfc \uc774\uc775\uc758 \uc131\uc7a5\uc774 \ubcf4\uace0 \uc601\uc5c5\ud604\uae08\ud750\ub984 \ud68c\ubcf5\uc73c\ub85c \uc774\uc5b4\uc9c0\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uac00\uc5ed\uc131\uc774 \ud655\uc778\ub418\ub294 \uacbd\uc6b0\ub2e4"
+        }
+      ],
+      "repetition": 2,
+      "roles": [
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "application_count": 2,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub85c \uc0ac\uc5c5 \ud750\ub984\uc740 \uac1c\uc120\ub410\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8\uc758 \uc9c8\uc740 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc601\uc5c5 \uc131\uc7a5 \uadfc\uac70\ub294 \uc720\ud6a8\ud558\ub418 \uc6b4\uc804\uc790\ubcf8\uc758 \uc9c8\uc744 \ud655\uc778\ud558\uba70 \ubcf4\uc720\ud560 \uc218 \uc788\ub2e4"
+        }
+      ],
+      "repetition": 2,
+      "roles": [
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 2,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "application_count": 0,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc744 \uc801\uc6a9\ud558\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc744 \uc801\uc6a9\ud558\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+        }
+      ],
+      "repetition": 2,
+      "roles": [
+        "EXPLICIT_NON_APPLICATION"
+      ],
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "application_count": 9,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:market-expectation",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "market_expectation_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc2dc\uc7a5\uc740 \ucd94\uac00 \uc790\uae08 \ubd80\ub2f4 \uc5c6\ub294 \uc131\uc7a5\uc744 \uc804\uc81c\ud558\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc6d0\uc778\uacfc \uac00\uc5ed\uc131\uc740 \ud655\uc778\ub418\uc9c0 \uc54a\uc558\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:market-expectation",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uac00 \uc9c0\uc18d\ub420 \uc218 \uc788\uc73c\ub098 \uc6d0\uc778\uacfc \uac00\uc5ed\uc131, \uc2e4\uc81c \uc790\uae08 \ubd80\ub2f4\uc740 \uc544\uc9c1 \ud655\uc815\ub418\uc9c0 \uc54a\uc558\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "field_path": "sell_drivers[1].text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uac00 \uc9c0\uc18d\ub420 \uac00\ub2a5\uc131\uc774 \uc788\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "unknown_treatments[0].summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc6d0\uc778\uacfc \uac00\uc5ed\uc131 \ubd80\uc7ac\ub294 \ud604\uae08\uc804\ud658 \uc57d\ud654\uc758 \uac15\ub3c4\ub97c \uc81c\ud55c\ud558\ub294 \ud655\uc778 \uacfc\uc81c\ub2e4"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_new_buyer.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc131\uc7a5\ubcf4\ub2e4 \ud604\uae08\uc804\ud658 \ud68c\ubcf5\uacfc \uc6b4\uc804\uc790\ubcf8 \uc6d0\uc778 \uaddc\uba85\uc774 \uba3c\uc800 \ud544\uc694\ud55c \uc0c1\ud0dc\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:business-thesis",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown",
+            "fictional:FIC-FIN-02:operating-evidence"
+          ],
+          "field_path": "fundamental_new_buyer.confirmation_business_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ub9e4\ucd9c\u00b7\uc774\uc775 \uc131\uc7a5\uc774 \uc774\uc5b4\uc9c0\ub294 \uac00\uc6b4\ub370 \ud604\uae08\uc804\ud658\uc774 \ud68c\ubcf5\ub418\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc6d0\uc778\uacfc \uac00\uc5ed\uc131\uc774 \ud655\uc778\ub3fc\uc57c \ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "fictional:FIC-FIN-02:market-expectation",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "fundamental_holder.business_invalidation_condition",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ud604\uae08\uc804\ud658 \uc57d\ud654\uc640 \uc6b4\uc804\uc790\ubcf8 \ud761\uc218\uac00 \uc9c0\uc18d\ub418\uba74\uc11c \uc131\uc7a5\uc5d0 \ub354 \ud070 \uc790\uae08 \ubd80\ub2f4\uc774 \ub098\ud0c0\ub098\ub294 \uacbd\uc6b0 \uc0ac\uc5c5 \ub17c\ub9ac\ub97c \uc7ac\uac80\ud1a0\ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:business-thesis",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "business_reevaluation_up[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "\uac74\uac15\ud55c \uc218\uc694\uac00 \uc720\uc9c0\ub418\ub294 \uac00\uc6b4\ub370 \ud604\uae08\uc804\ud658\uc774 \ud68c\ubcf5\ub418\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \uc6d0\uc778\uc774 \ud574\uc18c\ub418\uba74 \ud310\ub2e8\uc744 \uc0c1\ud5a5\ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "field_path": "business_reevaluation_down[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "\ud604\uae08\uc804\ud658 \uc57d\ud654\uac00 \uc9c0\uc18d\ub418\uace0 \uc6b4\uc804\uc790\ubcf8 \uc0ac\uc6a9\uc758 \ube44\uac00\uc5ed\uc131\uc774 \ud655\uc778\ub418\uba74 \uc0ac\uc5c5 \ud310\ub2e8\uc744 \ud558\ud5a5\ud55c\ub2e4"
+        }
+      ],
+      "repetition": 3,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK",
+        "ASSERTED_STATE",
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "application_count": 4,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "field_path": "business_thesis_context.text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\ucd5c\uadfc \ube44\uad50\uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub85c \uc0ac\uc5c5 \ud750\ub984\uc740 \uac1c\uc120\ub410\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8\uc758 \uc9c8\uc740 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+            "canonical:fictional:FIC-FIN-06:inventory-current",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "field_path": "sell_drivers[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c \uc99d\uac00\ub85c \uc6b4\uc804\uc790\ubcf8\uc758 \uc9c8\uacfc \ud68c\uc218 \uc2dc\uc810 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_new_buyer.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc601\uc5c5 \uac1c\uc120\uc740 \uae0d\uc815\uc801\uc774\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8\uc758 \uc9c8\uc774 \uac80\uc99d\ub418\uae30 \uc804\uc5d0\ub294 \ud655\uc778\uc774 \ub354 \ud544\uc694\ud558\ub2e4"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "fundamental_holder.summary",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "\uc601\uc5c5 \uac1c\uc120\uc740 \ubcf4\uc720\ub97c \uc9c0\uc9c0\ud558\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \uc804\ud658\uc758 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+        }
+      ],
+      "repetition": 3,
+      "roles": [
+        "APPLIED_DECISION_FRAMEWORK",
+        "ASSERTED_STATE"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "application_count": 0,
+      "claims": [],
+      "repetition": 3,
+      "roles": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "application_count": 2,
+      "claims": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "\ubcf4\ud5d8\uc0ac\uc774\ubbc0\ub85c \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc774 \uc544\ub2c8\ub77c \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc73c\ub85c \ud310\ub2e8\ud55c\ub2e4"
+        }
+      ],
+      "repetition": 3,
+      "roles": [
+        "UNRESOLVED"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "FAIL",
+  "true_misuse_count": 0
+}

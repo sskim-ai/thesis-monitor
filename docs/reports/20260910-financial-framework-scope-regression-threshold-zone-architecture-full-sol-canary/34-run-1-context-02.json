@@ -1,0 +1,2224 @@
+{
+  "alias_audit": {
+    "FIC-FIN-05": [
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "business_reevaluation_down[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "business_reevaluation_down[0].evidence_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "business_reevaluation_up[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "business_reevaluation_up[0].evidence_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:operating-evidence",
+        "content_sha256": "1386ce8aaf17e222ee9c92114c1fcd62d4586e4e8c676202a18572933e7864d6",
+        "path": "business_thesis_context.evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "business_thesis_context.evidence_refs[1]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:business-thesis",
+        "content_sha256": "eb227f3a808c7efdf6bc1eeb79567adba9a94c1bb9e84653267e37f47692e7a9",
+        "path": "business_thesis_context.evidence_refs[2]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:operating-evidence",
+        "content_sha256": "1386ce8aaf17e222ee9c92114c1fcd62d4586e4e8c676202a18572933e7864d6",
+        "path": "buy_drivers[0].evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+        "content_sha256": "ac0dbd0c6fe50c19e1f90b6359924cda73fdc9201ab527d61c4c81b82b009bf6",
+        "path": "core_investment_judgment.evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+        "content_sha256": "d483c885aa79f3fcbfbc14ae80a37c88da3f3eeecd7562ae805a1fb6c85f2b02",
+        "path": "core_investment_judgment.evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:market-expectation",
+        "content_sha256": "da9c69689a54450010824588b0ec7a57a79196ec070f762b409502a65e989a93",
+        "path": "core_investment_judgment.evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+        "content_sha256": "ac0dbd0c6fe50c19e1f90b6359924cda73fdc9201ab527d61c4c81b82b009bf6",
+        "path": "dominant_evidence.evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+        "content_sha256": "d483c885aa79f3fcbfbc14ae80a37c88da3f3eeecd7562ae805a1fb6c85f2b02",
+        "path": "dominant_evidence.evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:operating-evidence",
+        "content_sha256": "1386ce8aaf17e222ee9c92114c1fcd62d4586e4e8c676202a18572933e7864d6",
+        "path": "earnings_estimate_context.evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:market-expectation",
+        "content_sha256": "da9c69689a54450010824588b0ec7a57a79196ec070f762b409502a65e989a93",
+        "path": "market_expectation_context.evidence_refs[0]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+        "content_sha256": "ac0dbd0c6fe50c19e1f90b6359924cda73fdc9201ab527d61c4c81b82b009bf6",
+        "path": "material_directional_anchor_basis[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+        "content_sha256": "d483c885aa79f3fcbfbc14ae80a37c88da3f3eeecd7562ae805a1fb6c85f2b02",
+        "path": "material_directional_anchor_basis[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+        "content_sha256": "3461e708e80dc0a418dfd365ee28fda0759bea2001297689a2ea1daf530d9964",
+        "path": "risk_context.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "risk_context.evidence_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:sector-context",
+        "content_sha256": "786ab5632accb527a14376a282f07f17ebaa9cbe367362772ba0f8d71a86efd8",
+        "path": "sector_interpretation.evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+        "content_sha256": "ac0dbd0c6fe50c19e1f90b6359924cda73fdc9201ab527d61c4c81b82b009bf6",
+        "path": "sell_drivers[0].evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+        "content_sha256": "d483c885aa79f3fcbfbc14ae80a37c88da3f3eeecd7562ae805a1fb6c85f2b02",
+        "path": "sell_drivers[0].evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:market-expectation",
+        "content_sha256": "da9c69689a54450010824588b0ec7a57a79196ec070f762b409502a65e989a93",
+        "path": "sell_drivers[1].evidence_refs[0]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:valuation-limit",
+        "content_sha256": "2ce5364bf77a32290256d5249088c34c522d7e3b1a33f2c18aef147d794cf582",
+        "path": "uncertainty_limit.evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "uncertainty_limit.evidence_refs[1]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+        "content_sha256": "e323e1ad64eb1b7a36cf13c40d927a4780147c13555a3b2c084589bbb8c1e8da",
+        "path": "unknown_treatments[0].evidence_refs[0]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:valuation-limit",
+        "content_sha256": "2ce5364bf77a32290256d5249088c34c522d7e3b1a33f2c18aef147d794cf582",
+        "path": "unknown_treatments[1].evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-05:valuation-limit",
+        "content_sha256": "2ce5364bf77a32290256d5249088c34c522d7e3b1a33f2c18aef147d794cf582",
+        "path": "valuation_context.evidence_refs[0]",
+        "selected_alias": "E02"
+      }
+    ],
+    "FIC-FIN-06": [
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "business_reevaluation_down[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "business_reevaluation_down[0].evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "business_reevaluation_down[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "business_reevaluation_up[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "business_reevaluation_up[0].evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "business_reevaluation_up[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:business-thesis",
+        "content_sha256": "9f22f0b201e9d193f3901596896f7937fafacc512b042d22768c240cb804f958",
+        "path": "business_thesis_context.evidence_refs[0]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+        "content_sha256": "b6b112db1b144e06234e71f538d543ea31aa300285a332877dfec9235a95f9a0",
+        "path": "business_thesis_context.evidence_refs[1]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+        "content_sha256": "b6b112db1b144e06234e71f538d543ea31aa300285a332877dfec9235a95f9a0",
+        "path": "buy_drivers[0].evidence_refs[0]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "core_investment_judgment.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "core_investment_judgment.evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+        "content_sha256": "b6b112db1b144e06234e71f538d543ea31aa300285a332877dfec9235a95f9a0",
+        "path": "core_investment_judgment.evidence_refs[2]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+        "content_sha256": "b6b112db1b144e06234e71f538d543ea31aa300285a332877dfec9235a95f9a0",
+        "path": "dominant_evidence.evidence_refs[0]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+        "content_sha256": "b6b112db1b144e06234e71f538d543ea31aa300285a332877dfec9235a95f9a0",
+        "path": "earnings_estimate_context.evidence_refs[0]",
+        "selected_alias": "E09"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "fundamental_holder.business_invalidation_condition_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:market-expectation",
+        "content_sha256": "68321354050983191e5535bc47a67ffb05687585d16c62c84b30f29cf1ee4331",
+        "path": "market_expectation_context.evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "market_expectation_context.evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "risk_context.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "risk_context.evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "risk_context.evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:sector-context",
+        "content_sha256": "b549bca6c1bb7c4c1a33fc4ea06c917e65621beeef13e56eabbe855bab687b3a",
+        "path": "sector_interpretation.evidence_refs[0]",
+        "selected_alias": "E08"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "sell_drivers[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "sell_drivers[0].evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "sell_drivers[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:valuation-limit",
+        "content_sha256": "95f656be07b910014f9dd721a9f7fb1f5f4e1ec24c8fcb79ae7e53122d9c14bb",
+        "path": "uncertainty_limit.evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "uncertainty_limit.evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "content_sha256": "70262e59aad6e56fc111e6b0184724cbdd70611c898e03109e327fe16eb01dc6",
+        "path": "unknown_treatments[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+        "content_sha256": "7eca2f1f59f9165b5cf03317830842e2c3447128a5584100ed2dbe2df63525fc",
+        "path": "unknown_treatments[0].evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+        "content_sha256": "ac162d9c4f1ef652cefdd7a53b6646d4ae3c9bf663f2d4cc1f2228dd6b2d1f59",
+        "path": "unknown_treatments[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:valuation-limit",
+        "content_sha256": "95f656be07b910014f9dd721a9f7fb1f5f4e1ec24c8fcb79ae7e53122d9c14bb",
+        "path": "unknown_treatments[1].evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-06:valuation-limit",
+        "content_sha256": "95f656be07b910014f9dd721a9f7fb1f5f4e1ec24c8fcb79ae7e53122d9c14bb",
+        "path": "valuation_context.evidence_refs[0]",
+        "selected_alias": "E05"
+      }
+    ],
+    "FIC-FIN-07": [
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+        "content_sha256": "210bbdae28f9a0d5d8a4162e2744ad4b12b6e967218f2e9eae2818a359364788",
+        "path": "business_reevaluation_down[0].evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "business_reevaluation_down[0].evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+        "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+        "path": "business_reevaluation_up[0].evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "business_reevaluation_up[0].evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+        "content_sha256": "2c5dc9085c47add60e6c2e173bf42b44b75438b3abcd5c5fd585ce1c3e5e81be",
+        "path": "business_thesis_context.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "business_thesis_context.evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+        "content_sha256": "2c5dc9085c47add60e6c2e173bf42b44b75438b3abcd5c5fd585ce1c3e5e81be",
+        "path": "buy_drivers[0].evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "buy_drivers[0].evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+        "content_sha256": "2c5dc9085c47add60e6c2e173bf42b44b75438b3abcd5c5fd585ce1c3e5e81be",
+        "path": "core_investment_judgment.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+        "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+        "path": "core_investment_judgment.evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "core_investment_judgment.evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+        "content_sha256": "2c5dc9085c47add60e6c2e173bf42b44b75438b3abcd5c5fd585ce1c3e5e81be",
+        "path": "dominant_evidence.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+        "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+        "path": "dominant_evidence.evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "dominant_evidence.evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "earnings_estimate_context.evidence_refs[0]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+        "content_sha256": "210bbdae28f9a0d5d8a4162e2744ad4b12b6e967218f2e9eae2818a359364788",
+        "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+        "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+        "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+        "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+        "path": "market_expectation_context.evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+        "content_sha256": "210bbdae28f9a0d5d8a4162e2744ad4b12b6e967218f2e9eae2818a359364788",
+        "path": "risk_context.evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:sector-context",
+        "content_sha256": "8d2a7e3d51e4e85315fca9f41e277583ea4a3d7da3ef332aa371b91a9e11eb0a",
+        "path": "sector_interpretation.evidence_refs[0]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+        "content_sha256": "210bbdae28f9a0d5d8a4162e2744ad4b12b6e967218f2e9eae2818a359364788",
+        "path": "sell_drivers[0].evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:valuation-limit",
+        "content_sha256": "254ca72b4c6524f1cd9e5d0273d2e95d6a77e2ab615129fdf4ce9a28e26cf5e9",
+        "path": "uncertainty_limit.evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:remaining-unknown",
+        "content_sha256": "99fb28e5a22e54ee37f6b6869cc4f5f0c3482b8ea6231c768564de8a7881c863",
+        "path": "uncertainty_limit.evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:remaining-unknown",
+        "content_sha256": "99fb28e5a22e54ee37f6b6869cc4f5f0c3482b8ea6231c768564de8a7881c863",
+        "path": "unknown_treatments[0].evidence_refs[0]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:valuation-limit",
+        "content_sha256": "254ca72b4c6524f1cd9e5d0273d2e95d6a77e2ab615129fdf4ce9a28e26cf5e9",
+        "path": "unknown_treatments[1].evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-07:valuation-limit",
+        "content_sha256": "254ca72b4c6524f1cd9e5d0273d2e95d6a77e2ab615129fdf4ce9a28e26cf5e9",
+        "path": "valuation_context.evidence_refs[0]",
+        "selected_alias": "E02"
+      }
+    ],
+    "FIC-FIN-08": [
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "business_reevaluation_down[0].evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+        "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+        "path": "business_reevaluation_down[0].evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "business_reevaluation_down[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:market-expectation",
+        "content_sha256": "2f8ba5c2991e2e9ef2fc86c1f506d868d20198e0fc85567856c1031850f38acf",
+        "path": "business_reevaluation_up[0].evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "business_reevaluation_up[0].evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "business_reevaluation_up[0].evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:business-thesis",
+        "content_sha256": "85a2834f302e757ff2348cd39420119e9bf59f989e44e405e6b296e5435ec92c",
+        "path": "business_thesis_context.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "business_thesis_context.evidence_refs[1]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "buy_drivers[0].evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "core_investment_judgment.evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+        "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+        "path": "core_investment_judgment.evidence_refs[1]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "core_investment_judgment.evidence_refs[2]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "dominant_evidence.evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "dominant_evidence.evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "earnings_estimate_context.evidence_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+        "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+        "path": "fundamental_holder.business_invalidation_condition_refs[0]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "fundamental_holder.business_invalidation_condition_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+        "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[0]",
+        "selected_alias": "E04"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "fundamental_new_buyer.confirmation_business_condition_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:market-expectation",
+        "content_sha256": "2f8ba5c2991e2e9ef2fc86c1f506d868d20198e0fc85567856c1031850f38acf",
+        "path": "market_expectation_context.evidence_refs[0]",
+        "selected_alias": "E02"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+        "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+        "path": "risk_context.evidence_refs[0]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:business-thesis",
+        "content_sha256": "85a2834f302e757ff2348cd39420119e9bf59f989e44e405e6b296e5435ec92c",
+        "path": "sector_interpretation.evidence_refs[0]",
+        "selected_alias": "E03"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:sector-context",
+        "content_sha256": "be185c8d48b560412d34c415cfd173c939ca7dad649a6e5e8d67c6792d37c611",
+        "path": "sector_interpretation.evidence_refs[1]",
+        "selected_alias": "E05"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+        "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+        "path": "sell_drivers[0].evidence_refs[0]",
+        "selected_alias": "E06"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:valuation-limit",
+        "content_sha256": "0a4c81f1d554fea115dda810da6378ce8d99f6aa5f0a3c6f1e3f8a04e03d880e",
+        "path": "uncertainty_limit.evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "uncertainty_limit.evidence_refs[1]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+        "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+        "path": "unknown_treatments[0].evidence_refs[0]",
+        "selected_alias": "E07"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:valuation-limit",
+        "content_sha256": "0a4c81f1d554fea115dda810da6378ce8d99f6aa5f0a3c6f1e3f8a04e03d880e",
+        "path": "unknown_treatments[1].evidence_refs[0]",
+        "selected_alias": "E01"
+      },
+      {
+        "canonical_ref": "fictional:FIC-FIN-08:valuation-limit",
+        "content_sha256": "0a4c81f1d554fea115dda810da6378ce8d99f6aa5f0a3c6f1e3f8a04e03d880e",
+        "path": "valuation_context.evidence_refs[0]",
+        "selected_alias": "E01"
+      }
+    ]
+  },
+  "audit": {
+    "ai_imperative_primary_action_count": 0,
+    "case_semantic_error_count": 0,
+    "directional_core_price_technical_refs": 0,
+    "directional_core_supply_refs": 0,
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "hard_error_count": 0,
+    "invalid_financial_reference_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "m12ac_objective_semantic_hard_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "narrative_substitution_failure_count": 0,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "pass_count": 4,
+    "qtd_ytd_conflict_pass_count": 0,
+    "qtd_ytd_conflict_required_count": 0,
+    "qtd_ytd_conflict_violation_count": 0,
+    "row_count": 4,
+    "schema_pass_count": 4,
+    "selected_financial_ref_count": 4,
+    "status": "PASS",
+    "used_financial_ref_count": 4,
+    "working_capital_grounding_failure_count": 0,
+    "year_end_as_yoy_count": 0
+  },
+  "context": 2,
+  "contract": "m12b-fictional-canary-context-run-v1",
+  "financial_grounding_audit": {
+    "complete_sample": false,
+    "contract": "m12g-full-fictional-canary-financial-grounding-audit-v1",
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "narrative_substitution_failure_count": 0,
+    "rows": [
+      {
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounding_status": "PASS",
+        "material_financial_anchor_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ],
+        "narrative_only_duplicate_refs": [
+          "fictional:FIC-FIN-05:business-thesis",
+          "fictional:FIC-FIN-05:operating-evidence",
+          "fictional:FIC-FIN-05:sector-context",
+          "fictional:FIC-FIN-05:structural-risk"
+        ],
+        "selected_financial_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ],
+        "ticker": "FIC-FIN-05",
+        "used_financial_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ]
+      },
+      {
+        "errors": [],
+        "financial_checkpoint_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "grounding_status": "PASS",
+        "material_financial_anchor_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "narrative_only_duplicate_refs": [
+          "fictional:FIC-FIN-06:business-thesis",
+          "fictional:FIC-FIN-06:operating-evidence",
+          "fictional:FIC-FIN-06:sector-context"
+        ],
+        "selected_financial_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "ticker": "FIC-FIN-06",
+        "used_financial_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ]
+      },
+      {
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounding_status": "PASS",
+        "material_financial_anchor_refs": [],
+        "narrative_only_duplicate_refs": [],
+        "selected_financial_refs": [],
+        "ticker": "FIC-FIN-07",
+        "used_financial_refs": []
+      },
+      {
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounding_status": "PASS",
+        "material_financial_anchor_refs": [],
+        "narrative_only_duplicate_refs": [],
+        "selected_financial_refs": [],
+        "ticker": "FIC-FIN-08",
+        "used_financial_refs": []
+      }
+    ],
+    "selected_financial_ref_count": 4,
+    "status": "PASS",
+    "used_financial_ref_count": 4,
+    "working_capital_grounding_failure_count": 0
+  },
+  "generation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752",
+  "model": "gpt-5.6-sol",
+  "output_sha256": "20120819432cc62971c2e854e1e90410d26fca9fccf9a726944b1084ed55298f",
+  "prompt_sha256": "5565df6c162b5bbdfd45c03fc8d8dc7efbf827d160b8f03f731fc8a12ed7a279",
+  "reasoning_effort": "xhigh",
+  "receipt_sha256": "ddb75f70d7e844b3f05d3d258f20d3b4fe9653dd7ed614e0e733726d4ad29282",
+  "repetition": 1,
+  "rows": [
+    {
+      "ai_imperative_primary_action_count": 0,
+      "core": {
+        "business_reevaluation_down": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:structural-risk",
+              "fictional:FIC-FIN-05:remaining-unknown"
+            ],
+            "text": "\ucc28\ud658 \uc870\uac74\uc774 \ubd88\ub9ac\ud558\uac70\ub098 \ub9cc\uae30 \uc9d1\uc911\ub3c4\uac00 \ub192\uc544 \uc7ac\ubb34 \ud0c4\ub825\uc131\uc774 \ub354 \uc57d\ud574\uc9c0\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_reevaluation_up": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:structural-risk",
+              "fictional:FIC-FIN-05:remaining-unknown"
+            ],
+            "text": "\ucc28\ud658 \ubd80\ub2f4\uc774 \ud1b5\uc81c\ub418\uace0 \ub9cc\uae30 \uad6c\uc870\uac00 \ubd84\uc0b0\ub418\uc5b4 \uc7ac\ubb34 \ud0c4\ub825\uc131\uc774 \ud655\uc778\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_thesis_change": "UNCHANGED",
+        "business_thesis_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:operating-evidence",
+            "fictional:FIC-FIN-05:structural-risk",
+            "fictional:FIC-FIN-05:business-thesis"
+          ],
+          "text": "\uc601\uc5c5\uc774\uc775\uc740 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \ub192\uc740 \ubd80\ucc44\uc640 \uc587\uc740 \ud604\uae08 \uc644\ucda9\ub825\uc774 \uc120\ud0dd\uc9c0\ub97c \uc81c\uc57d\ud55c\ub2e4."
+        },
+        "buy_drivers": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:operating-evidence"
+            ],
+            "text": "\ud604\uc7ac \uc601\uc5c5\uc774\uc775\uc774 \ud751\uc790\uc774\uace0 \ub300\uccb4\ub85c \uc548\uc815\uc801\uc774\ub2e4."
+          }
+        ],
+        "core_investment_judgment": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash",
+            "fictional:FIC-FIN-05:market-expectation"
+          ],
+          "text": "\ub192\uc740 \ucc28\uc785 \ubd80\ub2f4\uacfc \uc81c\ud55c\uc801\uc778 \ud604\uae08 \uc644\ucda9\ub825\uc774 \ud575\uc2ec\uc774\uba70, \uc2dc\uc7a5 \uae30\ub300\uac00 \uc7a5\uae30 \ucc28\ud658 \ubd80\ub2f4\uc744 \ucda9\ubd84\ud788 \ubc18\uc601\ud558\uc9c0 \uc54a\uc740 \uac83\uc73c\ub85c \ubcf4\uc5ec \ubd80\uc815 \ubc29\ud5a5\uc774 \uc6b0\uc138\ud558\ub2e4."
+        },
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "directional_confidence": "MEDIUM",
+        "dominant_evidence": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash"
+          ],
+          "text": "\ub192\uc740 \uc774\uc790\ubd80\ucc44\uc640 \uc587\uc740 \ud604\uae08 \uc644\ucda9\ub825\uc774 \uc7ac\ubb34 \ud68c\ubcf5\ub825\uc744 \uc81c\ud55c\ud55c\ub2e4."
+        },
+        "earnings_estimate_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:operating-evidence"
+          ],
+          "text": "\uc601\uc5c5\uc774\uc775\uc740 \ud751\uc790\uc774\uba70 \ub300\uccb4\ub85c \uc548\uc815\uc801\uc774\ub2e4."
+        },
+        "fundamental_holder": {
+          "business_invalidation_condition": "\ucc28\ud658 \uc870\uac74\uacfc \ub9cc\uae30 \ubd84\uc0b0\uc774 \ud655\uc778\ub418\uc5b4 \uc7ac\ubb34 \ud0c4\ub825\uc131 \uc81c\uc57d\uc774 \uc2e4\uc9c8\uc801\uc73c\ub85c \uc644\ud654\ub418\ub294 \uacbd\uc6b0",
+          "business_invalidation_condition_refs": [
+            "fictional:FIC-FIN-05:structural-risk",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "stance": "REDUCE",
+          "summary": "\uc601\uc5c5 \uc548\uc815\uc131\ubcf4\ub2e4 \uc7ac\ubb34 \ud0c4\ub825\uc131 \uc81c\uc57d\uc774 \ub354 \uc911\uc694\ud55c \ubcf4\uc720 \ud310\ub2e8 \uc694\uc778\uc774\ub2e4."
+        },
+        "fundamental_new_buyer": {
+          "confirmation_business_condition": "\ucc28\ud658 \ubd80\ub2f4\uacfc \ub9cc\uae30 \uc9d1\uc911\ub3c4\uac00 \ud1b5\uc81c \uac00\ub2a5\ud558\ub2e4\ub294 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+          "confirmation_business_condition_refs": [
+            "fictional:FIC-FIN-05:structural-risk",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "stance": "AVOID",
+          "summary": "\ud604\uc7ac \uc218\uc775\uc131\uc740 \uc720\uc9c0\ub418\uc9c0\ub9cc \uc7ac\ubb34 \uad6c\uc870\uc640 \uae30\ub300 \uac04 \uac04\uadf9\uc774 \uc2e0\uaddc \uc9c4\uc785\uc744 \uc81c\uc57d\ud55c\ub2e4."
+        },
+        "hold_lean": "NOT_HOLD",
+        "market_expectation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:market-expectation"
+          ],
+          "text": "\uc2dc\uc7a5 \uae30\ub300\ub294 \uc7a5\uae30\ud654\ub41c \ucc28\ud658 \ubd80\ub2f4\uc744 \ucda9\ubd84\ud788 \ud5c8\uc6a9\ud558\uc9c0 \uc54a\ub294 \uac83\uc73c\ub85c \ubcf4\uc778\ub2e4."
+        },
+        "material_directional_anchor_basis": [
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "overall_direction": "SELL",
+        "risk_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:structural-risk",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "text": "\ucc28\ud658 \uc870\uac74\uacfc \ub9cc\uae30 \uc9d1\uc911\ub3c4\uac00 \ud655\uc778\ub418\uc9c0 \uc54a\uc544 \ubd80\uc815 \uac15\ub3c4\uc758 \ucd94\uac00 \ud655\ub300\uc5d0\ub294 \ud55c\uacc4\uac00 \uc788\ub2e4."
+        },
+        "sector_interpretation": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:sector-context"
+          ],
+          "text": "\uc77c\ubc18 \uc601\uc5c5\ud68c\uc0ac\uc5d0 \ub9de\ub294 \ubd80\ucc44\u00b7\uc720\ub3d9\uc131 \uad00\uc810\uc774 \uc801\uc6a9\ub41c\ub2e4."
+        },
+        "sell_drivers": [
+          {
+            "classification": "STRUCTURAL_RISK",
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-05:complete-debt",
+              "canonical:fictional:FIC-FIN-05:cash"
+            ],
+            "text": "\ub192\uc740 \uc774\uc790\ubd80\ucc44\uc640 \uc587\uc740 \ud604\uae08 \uc644\ucda9\ub825\uc774 \uc7ac\ubb34 \ud68c\ubcf5\ub825\uc744 \ub0ae\ucd98\ub2e4."
+          },
+          {
+            "classification": "OTHER_EVIDENCE",
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:market-expectation"
+            ],
+            "text": "\uc7a5\uae30 \ucc28\ud658 \ubd80\ub2f4\uc774 \uc9c0\uc18d\ub418\uba74 \ud604\uc7ac \uae30\ub300\uc640\uc758 \uad34\ub9ac\uac00 \ub4dc\ub7ec\ub0a0 \uc218 \uc788\ub2e4."
+          }
+        ],
+        "ticker": "FIC-FIN-05",
+        "uncertainty_limit": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:valuation-limit",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00\uc640 \ucc28\ud658 \uc870\uac74\u00b7\ub9cc\uae30 \uc9d1\uc911\ub3c4\uac00 \uc5c6\uc5b4 \ubd80\uc815 \ud310\ub2e8\uc758 \uac15\ub3c4\ub97c \uc81c\ud55c\ud55c\ub2e4."
+        },
+        "unknown_treatments": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:remaining-unknown"
+            ],
+            "summary": "\ucc28\ud658 \uc870\uac74\uacfc \ub9cc\uae30 \uc9d1\uc911\ub3c4\ub294 \ucd94\uac00 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-05:valuation-limit"
+            ],
+            "summary": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubd80\uc7ac\ub294 \ud655\uc2e0\uc758 \ud55c\uacc4\ub2e4.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "valuation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:valuation-limit"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubc30\uc218\uac00 \uc5c6\uc5b4 \uac00\uce58\ud3c9\uac00 \ud310\ub2e8\uc740 \uc720\ubcf4\ud55c\ub2e4."
+        }
+      },
+      "errors": [],
+      "financial_anchor_count": 2,
+      "financial_grounding": {
+        "contract": "directional-financial-anchor-grounding-audit-v1",
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounded_claim_count": 2,
+        "grounded_working_capital_checkpoint_count": 0,
+        "irrelevant_financial_ref_grounding_failure_count": 0,
+        "material_financial_anchor_grounding_failure_count": 0,
+        "material_financial_anchor_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ],
+        "material_grounding_required": true,
+        "narrative_only_duplicate_refs": [
+          "fictional:FIC-FIN-05:business-thesis",
+          "fictional:FIC-FIN-05:operating-evidence",
+          "fictional:FIC-FIN-05:sector-context",
+          "fictional:FIC-FIN-05:structural-risk"
+        ],
+        "narrative_substitution_failure_count": 0,
+        "relevant_claim_count": 4,
+        "selected_financial_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ],
+        "status": "PASS",
+        "used_financial_refs": [
+          "canonical:fictional:FIC-FIN-05:cash",
+          "canonical:fictional:FIC-FIN-05:complete-debt"
+        ],
+        "valid": true,
+        "working_capital_checkpoint_count": 0,
+        "working_capital_grounding_failure_count": 0,
+        "working_capital_grounding_required": false
+      },
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "first_class_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "m12ac_business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": "UNCHANGED",
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "fictional:FIC-FIN-05:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-05:operating-evidence",
+            "statement": "Current operating profit is positive and broadly stable.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E03",
+            "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+            "selected_ref": "fictional:FIC-FIN-05:structural-risk",
+            "statement": "A high complete debt balance and thin cash buffer reduce resilience.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E09",
+            "canonical_ref": "fictional:FIC-FIN-05:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-05:business-thesis",
+            "statement": "The business remains profitable, but balance-sheet resilience constrains optionality.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "fictional:FIC-FIN-05:operating-evidence",
+          "fictional:FIC-FIN-05:structural-risk",
+          "fictional:FIC-FIN-05:business-thesis"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "m12ac_framework_roles": {
+        "application_count": 0,
+        "claims": [],
+        "roles": []
+      },
+      "m12ac_threshold_zone": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEGATIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "hold_lean": "NOT_HOLD",
+        "overall_direction": "SELL"
+      },
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "narrative_duplicate_refs": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "ownership": {
+        "buy_without_nonprice_material_anchor": 0,
+        "contract": "direction-timing-ownership-validator-v1",
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_core_unknown_refs": 0,
+        "errors": [],
+        "sell_without_nonprice_material_anchor": 0,
+        "valid": true
+      },
+      "qtd_ytd_semantics": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      },
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "selected_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "status": "PASS",
+      "ticker": "FIC-FIN-05",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "used_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ]
+    },
+    {
+      "ai_imperative_primary_action_count": 0,
+      "core": {
+        "business_reevaluation_down": [
+          {
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "fictional:FIC-FIN-06:remaining-unknown"
+            ],
+            "text": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c \uc99d\uac00\uac00 \uc218\uc694 \ubd80\uc9c4\uc774\ub098 \ud68c\uc218 \uc9c0\uc5f0\uc73c\ub85c \ud655\uc778\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_reevaluation_up": [
+          {
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "fictional:FIC-FIN-06:remaining-unknown"
+            ],
+            "text": "\uc99d\uac00\ud55c \uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c\uc774 \uc2e4\uc81c \uccad\uad6c \uc218\uc694\uc640 \ud604\uae08 \ud68c\uc218\ub85c \uc804\ud658\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_thesis_change": "STRENGTHENED",
+        "business_thesis_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:business-thesis",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub85c \uc131\uc7a5 \uadfc\uac70\uac00 \uac15\ud654\ub410\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \ud488\uc9c8 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4."
+        },
+        "buy_drivers": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-06:operating-evidence"
+            ],
+            "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc5d0 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775\uc774 \ud568\uaed8 \uc99d\uac00\ud588\ub2e4."
+          }
+        ],
+        "core_investment_judgment": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+            "canonical:fictional:FIC-FIN-06:inventory-current",
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "\ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub294 \uae0d\uc815\uc801\uc774\uc9c0\ub9cc \ub298\uc5b4\ub09c \uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c\uc758 \uc804\ud658 \ud655\uc778\uc774 \uc5c6\uc5b4 \uae0d\uc815 \ubc29\ud5a5\uae4c\uc9c0\ub294 \ubd80\uc871\ud558\ub2e4."
+        },
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "directional_confidence": "LOW",
+        "dominant_evidence": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \ub3d9\ubc18 \uc99d\uac00\uac00 \uae0d\uc815\uc801 issuer-level \uae30\uc900\uc810\uc774\ub2e4."
+        },
+        "earnings_estimate_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:operating-evidence"
+          ],
+          "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc5d0 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775\uc774 \uc99d\uac00\ud588\ub2e4."
+        },
+        "fundamental_holder": {
+          "business_invalidation_condition": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c \uc99d\uac00\uac00 \uc218\uc694 \ubd80\uc9c4 \ub610\ub294 \ud68c\uc218 \uc9c0\uc5f0\uc73c\ub85c \ud655\uc778\ub418\uc5b4 \uc131\uc7a5\uc758 \uc9c8\uc774 \uc57d\ud654\ub418\ub294 \uacbd\uc6b0",
+          "business_invalidation_condition_refs": [
+            "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+            "canonical:fictional:FIC-FIN-06:inventory-current",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "stance": "HOLDABLE",
+          "summary": "\uc131\uc7a5\uc740 \uc720\uc9c0\ub418\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \uc804\ud658 \ud655\uc778 \uc804\uc5d0\ub294 \uc81c\ud55c\uc801\uc778 \uae0d\uc815 \uad00\uc810\uc774 \uc801\uc808\ud558\ub2e4."
+        },
+        "fundamental_new_buyer": {
+          "confirmation_business_condition": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c \uc99d\uac00\uac00 \uc2e4\uc81c \uccad\uad6c \uc218\uc694\uc640 \ud604\uae08 \ud68c\uc218\ub85c \uc774\uc5b4\uc9c4\ub2e4\ub294 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+          "confirmation_business_condition_refs": [
+            "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+            "canonical:fictional:FIC-FIN-06:inventory-current",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "stance": "WAIT",
+          "summary": "\uc601\uc5c5 \uc131\uc7a5\uc740 \uae0d\uc815\uc801\uc774\ub098 \uc218\uc694 \ud488\uc9c8\uacfc \ud68c\uc218 \uc2dc\uc810 \ud655\uc778\uc774 \uc120\ud589\ub3fc\uc57c \ud55c\ub2e4."
+        },
+        "hold_lean": "BUY_LEAN",
+        "market_expectation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:market-expectation",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "text": "\uae30\ub300\ub294 \uc794\uc561 \uc99d\uac00\uac00 \uccad\uad6c \uc218\uc694\uc640 \ud604\uae08\uc73c\ub85c \uc804\ud658\ub41c\ub2e4\ub294 \uc804\uc81c\uc5d0 \uc758\uc874\ud55c\ub2e4."
+        },
+        "material_directional_anchor_basis": [],
+        "overall_direction": "HOLD",
+        "risk_context": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+            "canonical:fictional:FIC-FIN-06:inventory-current",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "text": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c \uc99d\uac00\ub294 \ud655\uc778 \ud56d\ubaa9\uc774\uba70 \uc794\uc561\ub9cc\uc73c\ub85c \uc545\ud654\ub97c \ub2e8\uc815\ud560 \uc218 \uc5c6\ub2e4."
+        },
+        "sector_interpretation": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:sector-context"
+          ],
+          "text": "\uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c\uc740 \uc790\ub3d9\uc801\uc778 \ubd80\uc815 \uc2e0\ud638\uac00 \uc544\ub2c8\ub77c \uc0ac\uc5c5 \ud488\uc9c8 \ud655\uc778 \uc9c0\uc810\uc774\ub2e4."
+        },
+        "sell_drivers": [
+          {
+            "classification": "OTHER_EVIDENCE",
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "fictional:FIC-FIN-06:remaining-unknown"
+            ],
+            "text": "\uc5f0\ub9d0 \uc774\ud6c4 \uc99d\uac00\ud55c \uc7ac\uace0\uc640 \ub9e4\ucd9c\ucc44\uad8c\uc758 \uc218\uc694 \ud488\uc9c8\uacfc \ud68c\uc218 \uc2dc\uc810\uc774 \ud655\uc778\ub418\uc9c0 \uc54a\uc558\ub2e4."
+          }
+        ],
+        "ticker": "FIC-FIN-06",
+        "uncertainty_limit": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:valuation-limit",
+            "fictional:FIC-FIN-06:remaining-unknown"
+          ],
+          "text": "\ud604\uae08 \uc804\ud658\uacfc \uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00\uac00 \ud655\uc778\ub418\uc9c0 \uc54a\uc544 \uae0d\uc815 \ud310\ub2e8\uc758 \uac15\ub3c4\ub97c \uc81c\ud55c\ud55c\ub2e4."
+        },
+        "unknown_treatments": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+              "canonical:fictional:FIC-FIN-06:inventory-current",
+              "fictional:FIC-FIN-06:remaining-unknown"
+            ],
+            "summary": "\uc794\uc561 \uc99d\uac00\uc758 \uc218\uc694 \ud488\uc9c8\uacfc \ud68c\uc218 \uc2dc\uc810\uc740 \ucd94\uac00 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-06:valuation-limit"
+            ],
+            "summary": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubd80\uc7ac\ub294 \ud655\uc2e0\uc744 \ub0ae\ucd98\ub2e4.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "valuation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-06:valuation-limit"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubc30\uc218\uac00 \uc5c6\uc5b4 \uac00\uce58\ud3c9\uac00 \ud310\ub2e8\uc740 \uc720\ubcf4\ud55c\ub2e4."
+        }
+      },
+      "errors": [],
+      "financial_anchor_count": 2,
+      "financial_grounding": {
+        "contract": "directional-financial-anchor-grounding-audit-v1",
+        "errors": [],
+        "financial_checkpoint_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "grounded_claim_count": 7,
+        "grounded_working_capital_checkpoint_count": 7,
+        "irrelevant_financial_ref_grounding_failure_count": 0,
+        "material_financial_anchor_grounding_failure_count": 0,
+        "material_financial_anchor_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "material_grounding_required": true,
+        "narrative_only_duplicate_refs": [
+          "fictional:FIC-FIN-06:business-thesis",
+          "fictional:FIC-FIN-06:operating-evidence",
+          "fictional:FIC-FIN-06:sector-context"
+        ],
+        "narrative_substitution_failure_count": 0,
+        "relevant_claim_count": 9,
+        "selected_financial_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "status": "PASS",
+        "used_financial_refs": [
+          "canonical:fictional:FIC-FIN-06:inventory-current",
+          "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+        ],
+        "valid": true,
+        "working_capital_checkpoint_count": 7,
+        "working_capital_grounding_failure_count": 0,
+        "working_capital_grounding_required": true
+      },
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "first_class_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+        "canonical:fictional:FIC-FIN-06:inventory-current"
+      ],
+      "m12ac_business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E06",
+            "canonical_ref": "fictional:FIC-FIN-06:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-06:business-thesis",
+            "statement": "Sales growth is intact, with working-capital quality needing confirmation.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E09",
+            "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-06:operating-evidence",
+            "statement": "Sales and operating profit increased in the latest comparable period.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "fictional:FIC-FIN-06:business-thesis",
+          "fictional:FIC-FIN-06:operating-evidence"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "m12ac_framework_roles": {
+        "application_count": 2,
+        "claims": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-06:business-thesis",
+              "fictional:FIC-FIN-06:operating-evidence"
+            ],
+            "field_path": "business_thesis_context.text",
+            "framework": "working_capital",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "role": "ASSERTED_STATE",
+            "text": "\ucd5c\uadfc \ube44\uad50 \uae30\uac04\uc758 \ub9e4\ucd9c\uacfc \uc601\uc5c5\uc774\uc775 \uc99d\uac00\ub85c \uc131\uc7a5 \uadfc\uac70\uac00 \uac15\ud654\ub410\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \ud488\uc9c8 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "fundamental_holder.summary",
+            "framework": "working_capital",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "role": "ASSERTED_STATE",
+            "text": "\uc131\uc7a5\uc740 \uc720\uc9c0\ub418\uc9c0\ub9cc \uc6b4\uc804\uc790\ubcf8 \uc804\ud658 \ud655\uc778 \uc804\uc5d0\ub294 \uc81c\ud55c\uc801\uc778 \uae0d\uc815 \uad00\uc810\uc774 \uc801\uc808\ud558\ub2e4"
+          }
+        ],
+        "roles": [
+          "ASSERTED_STATE"
+        ]
+      },
+      "m12ac_threshold_zone": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "POSITIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "hold_lean": "BUY_LEAN",
+        "overall_direction": "HOLD"
+      },
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "narrative_duplicate_refs": [
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "ownership": {
+        "buy_without_nonprice_material_anchor": 0,
+        "contract": "direction-timing-ownership-validator-v1",
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_core_unknown_refs": 0,
+        "errors": [],
+        "sell_without_nonprice_material_anchor": 0,
+        "valid": true
+      },
+      "qtd_ytd_semantics": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      },
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "selected_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "status": "PASS",
+      "ticker": "FIC-FIN-06",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "used_typed_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ]
+    },
+    {
+      "ai_imperative_primary_action_count": 0,
+      "core": {
+        "business_reevaluation_down": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:structural-risk",
+              "fictional:FIC-FIN-07:operating-evidence"
+            ],
+            "text": "\uc2e4\ud589 \ucc28\uc9c8\uacfc \uc601\uc5c5 \ub454\ud654\uac00 \ud568\uaed8 \ud655\uc778\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_reevaluation_up": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:market-expectation",
+              "fictional:FIC-FIN-07:operating-evidence"
+            ],
+            "text": "\uc548\uc815\uc801 \uc601\uc5c5\uc774 \ub69c\ub837\ud55c \uc9c4\uc804\uc73c\ub85c \uc804\ud658\ub418\uc5b4 \uae30\ub300\ub97c \uc0c1\ud68c\ud558\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_thesis_change": "UNCHANGED",
+        "business_thesis_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:business-thesis",
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "text": "\uc0ac\uc5c5 \uadfc\uac70\uc640 \uc601\uc5c5 \ud750\ub984\uc740 \uc548\uc815\uc801\uc774\uba70 \uae30\uc874 \ub17c\uc9c0\ub294 \uc720\uc9c0\ub41c\ub2e4."
+        },
+        "buy_drivers": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:business-thesis",
+              "fictional:FIC-FIN-07:operating-evidence"
+            ],
+            "text": "\uc0ac\uc5c5 \ub17c\uc9c0\uac00 \uc720\uc9c0\ub418\uace0 \uc601\uc5c5 \uc99d\uac70\ub3c4 \uc548\uc815\uc801\uc774\ub2e4."
+          }
+        ],
+        "core_investment_judgment": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:business-thesis",
+            "fictional:FIC-FIN-07:market-expectation",
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "text": "\uc0ac\uc5c5\uacfc \uc601\uc5c5 \uc99d\uac70\ub294 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \uac00\uc18d\uc774\ub098 \ud558\ub77d \uc5b4\ub290 \ucabd\ub3c4 \uacb0\uc815\uc801\uc774\uc9c0 \uc54a\uc544 \ubc29\ud5a5\uc740 \uc911\ub9bd\uc774\ub2e4."
+        },
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "directional_confidence": "MEDIUM",
+        "dominant_evidence": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:business-thesis",
+            "fictional:FIC-FIN-07:market-expectation",
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "text": "\uc548\uc815\uc801 \uc601\uc5c5\uacfc \uc2dc\uc7a5 \uae30\ub300\uac00 \ub300\uccb4\ub85c \uade0\ud615\uc744 \uc774\ub8ec\ub2e4."
+        },
+        "earnings_estimate_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "text": "\uc601\uc5c5 \uc99d\uac70\ub294 \uc548\uc815\uc801\uc774\uba70 \uacb0\uc815\uc801\uc778 \uac00\uc18d\uc774\ub098 \ub454\ud654\ub294 \uc5c6\ub2e4."
+        },
+        "fundamental_holder": {
+          "business_invalidation_condition": "\uc2e4\ud589 \ucc28\uc9c8\uc774 \uc601\uc5c5 \ub454\ud654\ub85c \uc5f0\uacb0\ub418\uc5b4 \ud604\uc7ac\uc758 \uc548\uc815\uc131\uc774 \ud6fc\uc190\ub418\ub294 \uacbd\uc6b0",
+          "business_invalidation_condition_refs": [
+            "fictional:FIC-FIN-07:structural-risk",
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "stance": "HOLDABLE",
+          "summary": "\ud604\uc7ac \uc0ac\uc5c5 \ub17c\uc9c0\uac00 \uc720\uc9c0\ub418\uace0 \ubc29\ud5a5\uc131 \uc99d\uac70\uac00 \uade0\ud615\uc801\uc774\ub2e4."
+        },
+        "fundamental_new_buyer": {
+          "confirmation_business_condition": "\uc548\uc815\uc801 \uc601\uc5c5\uc774 \uae30\ub300\ub97c \uc6c3\ub3c4\ub294 \uc9c0\uc18d\uc801 \uc9c4\uc804\uc73c\ub85c \uc804\ud658\ub418\ub294 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+          "confirmation_business_condition_refs": [
+            "fictional:FIC-FIN-07:market-expectation",
+            "fictional:FIC-FIN-07:operating-evidence"
+          ],
+          "stance": "WAIT",
+          "summary": "\uacb0\uc815\uc801\uc778 \uc0ac\uc5c5 \uac00\uc18d \uadfc\uac70\uc640 \uc548\uc804\ud55c \uac00\uce58\ud3c9\uac00\uac00 \uc5c6\uc5b4 \uad00\ub9dd\uc774 \uc801\uc808\ud558\ub2e4."
+        },
+        "hold_lean": "NEUTRAL",
+        "market_expectation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:market-expectation"
+          ],
+          "text": "\uc2dc\uc7a5 \uae30\ub300\uc640 \uc785\uc99d\ub41c \uc9c4\uc804\uc740 \ub300\uccb4\ub85c \uade0\ud615\uc801\uc774\ub2e4."
+        },
+        "material_directional_anchor_basis": [],
+        "overall_direction": "HOLD",
+        "risk_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:structural-risk"
+          ],
+          "text": "\uc2e4\ud589\uc774 \uc8fc\uc694 \ube44\uc7ac\ubb34 \uc704\ud5d8\uc774\ub2e4."
+        },
+        "sector_interpretation": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:sector-context"
+          ],
+          "text": "\ud604\uc7ac \uc808\ub300 \ud310\ub2e8\uc5d0\ub294 \ucd94\uac00 \uc120\ud0dd\uc801 \uc7ac\ubb34 \uc601\uc5ed\uc774 \ud544\uc218\uc801\uc774\uc9c0 \uc54a\ub2e4."
+        },
+        "sell_drivers": [
+          {
+            "classification": "OTHER_EVIDENCE",
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:structural-risk"
+            ],
+            "text": "\uc2e4\ud589 \uc704\ud5d8\uc774 \ub0a8\uc544 \uc788\ub2e4."
+          }
+        ],
+        "ticker": "FIC-FIN-07",
+        "uncertainty_limit": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:valuation-limit",
+            "fictional:FIC-FIN-07:remaining-unknown"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00\uc640 \uc120\ud0dd\uc801 \ud604\uae08\uc804\ud658 \ub9e5\ub77d \ubd80\uc7ac\uac00 \ud310\ub2e8\uc758 \uad6c\uccb4\uc131\uc744 \uc81c\ud55c\ud55c\ub2e4."
+        },
+        "unknown_treatments": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:remaining-unknown"
+            ],
+            "summary": "\uc120\ud0dd\uc801 \ud604\uae08\uc804\ud658 \ub9e5\ub77d \ubd80\uc7ac\ub294 \uad6c\uccb4\uc131\uc758 \ud55c\uacc4\uc77c \ubfd0 \ubc29\ud5a5\uc131 \ubd80\uc815\uc740 \uc544\ub2c8\ub2e4.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-07:valuation-limit"
+            ],
+            "summary": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubd80\uc7ac\ub294 \ud655\uc2e0\uc758 \ud55c\uacc4\ub2e4.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "valuation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-07:valuation-limit"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubc30\uc218\uac00 \uc5c6\uc5b4 \uac00\uce58\ud3c9\uac00 \ud310\ub2e8\uc740 \uc720\ubcf4\ud55c\ub2e4."
+        }
+      },
+      "errors": [],
+      "financial_anchor_count": 0,
+      "financial_grounding": {
+        "contract": "directional-financial-anchor-grounding-audit-v1",
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounded_claim_count": 0,
+        "grounded_working_capital_checkpoint_count": 0,
+        "irrelevant_financial_ref_grounding_failure_count": 0,
+        "material_financial_anchor_grounding_failure_count": 0,
+        "material_financial_anchor_refs": [],
+        "material_grounding_required": false,
+        "narrative_only_duplicate_refs": [],
+        "narrative_substitution_failure_count": 0,
+        "relevant_claim_count": 0,
+        "selected_financial_refs": [],
+        "status": "PASS",
+        "used_financial_refs": [],
+        "valid": true,
+        "working_capital_checkpoint_count": 0,
+        "working_capital_grounding_failure_count": 0,
+        "working_capital_grounding_required": false
+      },
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "first_class_typed_financial_refs": [],
+      "m12ac_business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E03",
+            "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-07:business-thesis",
+            "statement": "The business evidence is balanced and the thesis remains intact.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E07",
+            "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-07:operating-evidence",
+            "statement": "Operating evidence is stable without a decisive acceleration or decline.",
+            "supported_directions": [
+              "STRENGTHENED",
+              "WEAKENED"
+            ]
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "fictional:FIC-FIN-07:business-thesis",
+          "fictional:FIC-FIN-07:operating-evidence"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED",
+          "WEAKENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "m12ac_framework_roles": {
+        "application_count": 0,
+        "claims": [],
+        "roles": []
+      },
+      "m12ac_threshold_zone": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEUTRAL",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "hold_lean": "NEUTRAL",
+        "overall_direction": "HOLD"
+      },
+      "material_financial_anchor_refs": [],
+      "narrative_duplicate_refs": [],
+      "ownership": {
+        "buy_without_nonprice_material_anchor": 0,
+        "contract": "direction-timing-ownership-validator-v1",
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_core_unknown_refs": 0,
+        "errors": [],
+        "sell_without_nonprice_material_anchor": 0,
+        "valid": true
+      },
+      "qtd_ytd_semantics": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      },
+      "selected_financial_refs": [],
+      "selected_typed_financial_refs": [],
+      "status": "PASS",
+      "ticker": "FIC-FIN-07",
+      "used_financial_refs": [],
+      "used_typed_financial_refs": []
+    },
+    {
+      "ai_imperative_primary_action_count": 0,
+      "core": {
+        "business_reevaluation_down": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:operating-evidence",
+              "fictional:FIC-FIN-08:structural-risk",
+              "fictional:FIC-FIN-08:remaining-unknown"
+            ],
+            "text": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uac00 \ud604\uc2e4\ud654\ub418\uace0 \uaddc\uc81c\uc790\ubcf8 \uc801\uc815\uc131\uc774 \uc57d\ud654\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_reevaluation_up": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:market-expectation",
+              "fictional:FIC-FIN-08:operating-evidence",
+              "fictional:FIC-FIN-08:remaining-unknown"
+            ],
+            "text": "\uc548\uc815\uc801 \uc778\uc218 \uc131\uacfc\uc640 \ucda9\ubd84\ud55c \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138\uac00 \ud568\uaed8 \ud655\uc778\ub418\ub294 \uacbd\uc6b0"
+          }
+        ],
+        "business_thesis_change": "UNCHANGED",
+        "business_thesis_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "\uc778\uc218 \uc131\uacfc\ub294 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc774 \uc911\uc694\ud558\uba70 \ubcf4\ud5d8\uc0ac \uace0\uc720\uc758 \uc790\ubcf8 \uaddc\uc728\uc774 \ud575\uc2ec\uc774\ub2e4."
+        },
+        "buy_drivers": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:operating-evidence"
+            ],
+            "text": "\uc778\uc218 \uc131\uacfc\uac00 \uc548\uc815\uc801\uc774\ub2e4."
+          }
+        ],
+        "core_investment_judgment": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "\uc548\uc815\uc801 \uc778\uc218 \uc131\uacfc\uac00 \uc788\uc73c\ub098 \ubcf4\ud5d8\uae08 \uc704\ud5d8\uc740 \uc870\uac74\ubd80\uc774\uace0 \uc790\ubcf8 \uc801\uc815\uc131 \ucd94\uc138\ub3c4 \uc5c6\uc5b4 \uc5b4\ub290 \ubc29\ud5a5\ub3c4 \ucda9\ubd84\ud788 \ub4b7\ubc1b\uce68\ub418\uc9c0 \uc54a\ub294\ub2e4."
+        },
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "directional_confidence": "LOW",
+        "dominant_evidence": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "\ud604\uc7ac \uc778\uc218 \uc131\uacfc\ub294 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138 \ubd80\uc7ac\ub85c \uacb0\uc815\uc801 \ubc29\ud5a5\uc740 \ud615\uc131\ub418\uc9c0 \uc54a\ub294\ub2e4."
+        },
+        "earnings_estimate_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "\uc778\uc218 \uc131\uacfc\ub294 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc740 \uc5ec\uc804\ud788 \uc911\uc694\ud558\ub2e4."
+        },
+        "fundamental_holder": {
+          "business_invalidation_condition": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uc640 \uaddc\uc81c\uc790\ubcf8 \uc57d\ud654\uac00 \ud655\uc778\ub418\uc5b4 \ubcf4\ud5d8\uc0ac \uace0\uc720 \uacbd\uc81c\uc131\uc774 \ud6fc\uc190\ub418\ub294 \uacbd\uc6b0",
+          "business_invalidation_condition_refs": [
+            "fictional:FIC-FIN-08:structural-risk",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "stance": "REVIEW",
+          "summary": "\ud604\uc7ac \uc778\uc218 \uc131\uacfc\ub294 \uc548\uc815\uc801\uc774\ub098 \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uacfc \uc790\ubcf8 \uc801\uc815\uc131 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4."
+        },
+        "fundamental_new_buyer": {
+          "confirmation_business_condition": "\ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc774 \ud1b5\uc81c\ub418\uace0 \uaddc\uc81c\uc790\ubcf8 \uc801\uc815\uc131\uc774 \ucda9\ubd84\ud558\ub2e4\ub294 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+          "confirmation_business_condition_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "stance": "WAIT",
+          "summary": "\ubcf4\ud5d8\uc0ac \uace0\uc720\uc758 \uc790\ubcf8\u00b7\ubcf4\ud5d8\uae08 \ud655\uc778 \uc5c6\uc774 \ubc29\ud5a5\uc131\uc744 \uc815\ud558\uae30 \uc5b4\ub835\ub2e4."
+        },
+        "hold_lean": "NEUTRAL",
+        "market_expectation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:market-expectation"
+          ],
+          "text": "\uc2dc\uc7a5 \uae30\ub300\ub294 \uac00\uaca9 \uaddc\uc728\uacfc \ucda9\ubd84\ud55c \uaddc\uc81c\uc790\ubcf8\uc744 \uc694\uad6c\ud55c\ub2e4."
+        },
+        "material_directional_anchor_basis": [],
+        "overall_direction": "HOLD",
+        "risk_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:structural-risk"
+          ],
+          "text": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uac00 \ubc1c\uc0dd\ud558\uba74 \ubcf4\ud5d8\uc0ac \uace0\uc720 \uacbd\uc81c\uc131\uc774 \uc57d\ud654\ub420 \uc218 \uc788\ub2e4."
+        },
+        "sector_interpretation": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:sector-context"
+          ],
+          "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uad00\uc810\uc774 \uc801\uc6a9\ub418\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4."
+        },
+        "sell_drivers": [
+          {
+            "classification": "STRUCTURAL_RISK",
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:structural-risk"
+            ],
+            "text": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\ub294 \ubcf4\ud5d8\uc0ac \uace0\uc720 \uacbd\uc81c\uc131\uc744 \uc57d\ud654\uc2dc\ud0ac \uc218 \uc788\ub2e4."
+          }
+        ],
+        "ticker": "FIC-FIN-08",
+        "uncertainty_limit": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:valuation-limit",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00\uc640 \uaddc\uc81c\uc790\ubcf8 \uc801\uc815\uc131 \ucd94\uc138\uac00 \uc5c6\uc5b4 \ubc29\ud5a5\uc131 \ud655\uc2e0\uc774 \ub0ae\ub2e4."
+        },
+        "unknown_treatments": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:remaining-unknown"
+            ],
+            "summary": "\uaddc\uc81c\uc790\ubcf8 \uc801\uc815\uc131 \ucd94\uc138\ub294 \ucd94\uac00 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:valuation-limit"
+            ],
+            "summary": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubd80\uc7ac\ub294 \ud655\uc2e0\uc758 \ud55c\uacc4\ub2e4.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "valuation_context": {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:valuation-limit"
+          ],
+          "text": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubc30\uc218\uac00 \uc5c6\uc5b4 \uac00\uce58\ud3c9\uac00 \ud310\ub2e8\uc740 \uc720\ubcf4\ud55c\ub2e4."
+        }
+      },
+      "errors": [],
+      "financial_anchor_count": 0,
+      "financial_grounding": {
+        "contract": "directional-financial-anchor-grounding-audit-v1",
+        "errors": [],
+        "financial_checkpoint_refs": [],
+        "grounded_claim_count": 0,
+        "grounded_working_capital_checkpoint_count": 0,
+        "irrelevant_financial_ref_grounding_failure_count": 0,
+        "material_financial_anchor_grounding_failure_count": 0,
+        "material_financial_anchor_refs": [],
+        "material_grounding_required": false,
+        "narrative_only_duplicate_refs": [],
+        "narrative_substitution_failure_count": 0,
+        "relevant_claim_count": 0,
+        "selected_financial_refs": [],
+        "status": "PASS",
+        "used_financial_refs": [],
+        "valid": true,
+        "working_capital_checkpoint_count": 0,
+        "working_capital_grounding_failure_count": 0,
+        "working_capital_grounding_required": false
+      },
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "first_class_typed_financial_refs": [],
+      "m12ac_business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E03",
+            "canonical_ref": "fictional:FIC-FIN-08:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-08:business-thesis",
+            "statement": "Underwriting discipline and regulatory capital are the applicable business framework.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E04",
+            "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-08:operating-evidence",
+            "statement": "Underwriting result is stable while claims volatility remains material.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "m12ac_framework_roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:business-thesis",
+              "fictional:FIC-FIN-08:sector-context"
+            ],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "EXPLICIT_NON_APPLICATION",
+            "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uad00\uc810\uc774 \uc801\uc6a9\ub418\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+          },
+          {
+            "evidence_refs": [
+              "fictional:FIC-FIN-08:business-thesis",
+              "fictional:FIC-FIN-08:sector-context"
+            ],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "EXPLICIT_NON_APPLICATION",
+            "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uad00\uc810\uc774 \uc801\uc6a9\ub418\uba70 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\u00b7\uc6b4\uc804\uc790\ubcf8 \ud2c0\uc740 \ubc30\uc81c\ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "EXPLICIT_NON_APPLICATION"
+        ]
+      },
+      "m12ac_threshold_zone": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEUTRAL",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "hold_lean": "NEUTRAL",
+        "overall_direction": "HOLD"
+      },
+      "material_financial_anchor_refs": [],
+      "narrative_duplicate_refs": [],
+      "ownership": {
+        "buy_without_nonprice_material_anchor": 0,
+        "contract": "direction-timing-ownership-validator-v1",
+        "directional_core_price_technical_refs": 0,
+        "directional_core_supply_refs": 0,
+        "directional_core_unknown_refs": 0,
+        "errors": [],
+        "sell_without_nonprice_material_anchor": 0,
+        "valid": true
+      },
+      "qtd_ytd_semantics": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      },
+      "selected_financial_refs": [],
+      "selected_typed_financial_refs": [],
+      "status": "PASS",
+      "ticker": "FIC-FIN-08",
+      "used_financial_refs": [],
+      "used_typed_financial_refs": []
+    }
+  ],
+  "schema_sha256": "5ced6619276928233b3e5ed0e7e478c0ccdffa81400c19acce1be4442e9ce757",
+  "source_lock_sha256": "fc6d6e1943063f4437693913dabda32fa94a4942fcca0eb438674a159bd00b7e",
+  "status": "PASS",
+  "tickers": [
+    "FIC-FIN-05",
+    "FIC-FIN-06",
+    "FIC-FIN-07",
+    "FIC-FIN-08"
+  ],
+  "transport": {
+    "backend_model_attestation": "NOT_MEASURED",
+    "backend_progress_state": "NOT_MEASURED",
+    "backend_sampling_request_count": "NOT_MEASURED",
+    "batch_split": 0,
+    "cli_advertised_runtime": {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol"
+    },
+    "cli_internal_retry_event_count": 0,
+    "cli_internal_retry_events": [],
+    "cli_version": "OpenAI Codex v0.153.4",
+    "combined_log_order": "STDERR_THEN_STDOUT_NOT_CHRONOLOGICAL",
+    "contract": "m12w-single-attempt-receipt-v1",
+    "elapsed_seconds": 319.729413,
+    "failure_type": null,
+    "finished_at": "2026-09-10T11:58:22.341283+00:00",
+    "invocation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752:run-1:context-02",
+    "lifecycle": {
+      "batch_id": "run-1:context-02",
+      "child_cleanup_status": "NOT_NEEDED",
+      "cleanup_margin_seconds": 5,
+      "cli_binary_identity": {
+        "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+        "sha256": "c147aa90d34139599711fb568102ceefc6319ca1ac5cb6f4056ca46a1834edd9"
+      },
+      "cli_version": "codex-cli 0.153.4",
+      "completed_at": "2026-09-10T11:58:22.341283+00:00",
+      "configured_timeout_seconds": 1800,
+      "contract": "codex-transport-lifecycle-v1",
+      "duplicate_timeout_receipt_count": 0,
+      "elapsed_to_exit_seconds": 319.746288,
+      "elapsed_to_first_output_seconds": 1.48658,
+      "elapsed_to_first_stderr_seconds": 1.48658,
+      "elapsed_to_first_stdout_seconds": 319.578245,
+      "elapsed_to_parse_seconds": 319.747406,
+      "exit_code": 0,
+      "first_stderr_byte_monotonic": 592615.775955458,
+      "first_stdout_byte_monotonic": 592933.867620625,
+      "generation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752",
+      "input_bytes": 21761,
+      "input_payload_sha256": "5565df6c162b5bbdfd45c03fc8d8dc7efbf827d160b8f03f731fc8a12ed7a279",
+      "invocation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752:run-1:context-02",
+      "invocation_start_monotonic": 592614.289375291,
+      "last_stderr_byte_monotonic": 592933.867559875,
+      "last_stdout_byte_monotonic": 592933.867620625,
+      "model": "gpt-5.6-sol",
+      "orphan_model_process_count": 0,
+      "outer_watchdog_deadline": null,
+      "output_bytes": 13686,
+      "output_parse_complete_monotonic": 592934.036781333,
+      "output_parsed": true,
+      "parse_error": null,
+      "process_exit_monotonic": 592934.035662875,
+      "process_group_detected_after_leader_exit": false,
+      "process_spawn_monotonic": 592614.3726985,
+      "process_spawn_requested_monotonic": 592614.37065275,
+      "prompt_sha256": "5565df6c162b5bbdfd45c03fc8d8dc7efbf827d160b8f03f731fc8a12ed7a279",
+      "reasoning_effort": "xhigh",
+      "request_accepted_observability": "UNAVAILABLE",
+      "schema_sha256": "5ced6619276928233b3e5ed0e7e478c0ccdffa81400c19acce1be4442e9ce757",
+      "secret_exposure_count": 0,
+      "stage": "FULL_FICTIONAL",
+      "started_at": "2026-09-10T11:53:02.611870+00:00",
+      "status": "PASS",
+      "stderr_bytes": 49716,
+      "stdin_complete_monotonic": 592614.3728605,
+      "stdin_writer_error": null,
+      "stdout_bytes": 13687,
+      "stream_collection_complete_monotonic": 592934.035818416,
+      "subject_count": 4,
+      "termination_initiator": "NONE",
+      "termination_signal": null,
+      "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+      "timeout_owner_count": 1,
+      "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+      "transport_metadata": {
+        "runtime_contract_sha256": "7d6e39f28eac3ad16b17717bb0787efad42bf544ab608985efee8a43d509bb3d"
+      },
+      "working_directory_identity": "398e439978a3de486c18c2e21d025b4bd4e97fa5c370f0a9177aa738f36137bb"
+    },
+    "lifecycle_receipt_sha256": "d38749a9406b76900d97c7b50101b517ea6d48fac0def5e29c7eb6902f478866",
+    "local_output_observation": "FINAL_OUTPUT_COMPLETE",
+    "log_sha256": "7bd2fc60f530ea66f359b40f9b10940958cbb331845ba3d9a9061128b55c0eed",
+    "model": "gpt-5.6-sol",
+    "model_process_spawned": true,
+    "network_readiness": {
+      "attempts": 1,
+      "contract": "codex-network-readiness-v1",
+      "failure_history": [],
+      "failure_type": null,
+      "host": "chatgpt.com",
+      "port": 443,
+      "ready": true,
+      "resolved_address_count": 4
+    },
+    "network_readiness_end": "2026-09-10T11:53:02.602543+00:00",
+    "network_readiness_start": "2026-09-10T11:53:02.573154+00:00",
+    "observed_effort": "xhigh",
+    "observed_model": "gpt-5.6-sol",
+    "observed_runtime": {
+      "effort": "xhigh",
+      "model": "gpt-5.6-sol"
+    },
+    "orphan_process_count": 0,
+    "output_bytes": 13686,
+    "output_exists": true,
+    "output_sha256": "20120819432cc62971c2e854e1e90410d26fca9fccf9a726944b1084ed55298f",
+    "output_size": 13686,
+    "prompt_bytes": 21761,
+    "prompt_sha256": "5565df6c162b5bbdfd45c03fc8d8dc7efbf827d160b8f03f731fc8a12ed7a279",
+    "reasoning_effort": "xhigh",
+    "request_id": null,
+    "response_id": null,
+    "returncode": 0,
+    "runtime_isolation": {
+      "base_namespace_hash": "868138c59b117442ba202a77",
+      "contract": "codex-model-context-runtime-isolation-v1",
+      "execution_isolation_valid": true,
+      "invocation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752:run-1:context-02",
+      "invocation_identity_unique": true,
+      "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+      "runtime_state_namespace_hash": "95a8b51fd1ab0087b1030147",
+      "runtime_state_namespace_unique": true,
+      "working_directory_identity": "398e439978a3de486c18c2e21d025b4bd4e97fa5c370f0a9177aa738f36137bb",
+      "working_directory_unique": true
+    },
+    "runtime_state": {
+      "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-financial-framework-threshold-zone-m12ac/artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/runtime-state/95a8b51fd1ab0087b1030147/home",
+      "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+      "contract": "codex-runtime-state-v1",
+      "mode": "0700",
+      "namespace_hash": "95a8b51fd1ab0087b1030147",
+      "ownership": "uid:501",
+      "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+      "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-financial-framework-threshold-zone-m12ac/artifacts/20260910-financial-framework-scope-regression-threshold-zone-architecture-full-sol-canary/runtime-state/95a8b51fd1ab0087b1030147/sqlite",
+      "sqlite_wal_probe": "PASS"
+    },
+    "schema_bytes": 44192,
+    "schema_sha256": "5ced6619276928233b3e5ed0e7e478c0ccdffa81400c19acce1be4442e9ce757",
+    "session_id": "01a08b2a-0d4a-78c3-8fb3-d6b44c1fcba6",
+    "single_authoritative_watchdog": true,
+    "started_at": "2026-09-10T11:53:02.611870+00:00",
+    "status": "PASS",
+    "timed_out": false,
+    "timeout": false,
+    "timeout_count": 0,
+    "timeout_seconds": 1800,
+    "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+    "transport_attempt_count": 1,
+    "wrapper_retry_count": 0
+  }
+}
