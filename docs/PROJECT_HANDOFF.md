@@ -2636,3 +2636,25 @@ Observe the next ordinary KR and US cycles read-only. Do not replay Run-57, manu
 Scheduled Task, resend production, expose recipient values, or treat TEST evidence as natural
 proof. Structured Autonomy may resume as a separate shadow/promotion program; production mutation
 remains zero and Production Assist remains OFF.
+
+## 2026-09-10 M12X Positive Stronger-Bucket Handoff
+
+Start with `docs/reports/20260910-m12x-completion.md`, then read reports 46, 47, 53, 54, 60,
+69, 73, and 75 in the M12X report directory. The exact work-instruction commit is
+`239b799a1361b8ad8168aef2310f03eaf8fc641e`; implementation/runtime identity commit is
+`7b1407eab18182defc3bafc261064008a65e20c1`.
+
+The contract review closed FIC-FIN-01 at `BUY 6.5`: the previous exact 6.0 fixture target was
+over-constrained. Production Directional semantics, prompt, thresholds, tie-breaks, evidence
+selection, and financial validators were not changed. In the new frozen Sol/xhigh generation,
+run-1 context-01 passed 4/4 and FIC-FIN-01 reproduced 6.5. Run-1 context-02 returned a complete,
+transport-valid output but failed at FIC-FIN-05 (`BUY 4.0` versus frozen 4.5) and FIC-FIN-08
+(insurance exclusion wording flagged as net-debt/generic-financial reasoning). The runner stopped
+after 2/6 calls; four contexts were never attempted. No rerun or hotfix occurred.
+
+Status is `M12X_PARTIAL_STOPPED`; full stability and stance variance are `NOT_MEASURED`, fresh real
+proof is `NOT_READY`, and the next bounded scope is `SOL_RUNTIME_REGRESSION_REVIEW`. Review the
+preserved outputs first. Do not reopen FIC-FIN-01, alter code/config from this generation based on
+its outputs, selectively rerun failed subjects, call a new model, or start real issuer proof without
+a separate instruction. Eight approved schedules remain PAUSED and must not be resumed implicitly.
+Production calls, sends, persistence, merges, and deployments are zero.

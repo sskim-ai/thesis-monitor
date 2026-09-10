@@ -1131,3 +1131,15 @@ claim-scoped Codex state preflight, model reach, V2 candidate/accepted/explicit 
 daily-review quality receipt, KRX night `BAS_DD` mapping, fallback route, and exactly-once delivery.
 Do not manually run a Scheduled Task, resend a completed packet, expose recipient values, or treat
 the `22/22` dedicated-sink proof as natural LIVE_PASS. Production Assist remains OFF.
+
+The latest nonproduction experiment is M12X. Start with
+`docs/reports/20260910-m12x-completion.md` and the M12X program-completion JSON. The FIC-FIN-01
+positive stronger-bucket contract is closed at `BUY 6.5`; do not change that target or the frozen
+Directional/financial semantics.
+
+Next action: `SOL_RUNTIME_REGRESSION_REVIEW`, limited to preserved-output analysis of two failures:
+FIC-FIN-05 observed `BUY 4.0` versus frozen 4.5, and FIC-FIN-08 explicit insurance exclusion
+language flagged by the net-debt/financial-sector validator. Determine whether each is a model
+variance, over-constrained exact target, or validator exclusion-language false positive. Do not
+invoke a model, rerun a context, change a candidate, relax a threshold, or resume monitoring during
+that review. Any later canary requires a separate approval and an entirely new generation.

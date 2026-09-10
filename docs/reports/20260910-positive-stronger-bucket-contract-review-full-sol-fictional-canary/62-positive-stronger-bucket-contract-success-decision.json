@@ -1,0 +1,9 @@
+{
+  "frozen_target": {
+    "buy": 6.5,
+    "direction": "BUY",
+    "sell": 3.5
+  },
+  "root_cause": "EXACT_FIXTURE_TARGET_OVERCONSTRAINED",
+  "status": "FAIL"
+}

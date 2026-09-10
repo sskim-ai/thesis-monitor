@@ -1,0 +1,100 @@
+{
+  "assessment_date": "2026-09-09",
+  "company_name": "Fictional Financial Case 07",
+  "evidence": [
+    {
+      "alias": "E01",
+      "as_of": "2026-09-09",
+      "category": "risks",
+      "domain": "STRUCTURAL_RISK",
+      "label": "structural-risk",
+      "metric_refs": [],
+      "statement": "Execution remains the principal non-financial risk.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-09-09",
+      "category": "valuation",
+      "domain": "VALUATION_SAFE",
+      "label": "valuation-limit",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "category": "thesis",
+      "domain": "BUSINESS_CURRENT",
+      "label": "business-thesis",
+      "metric_refs": [],
+      "statement": "The business evidence is balanced and the thesis remains intact.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-09-09",
+      "category": "expectations",
+      "domain": "MARKET_EXPECTATIONS",
+      "label": "market-expectation",
+      "metric_refs": [],
+      "statement": "Market expectations and demonstrated progress are broadly balanced.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "category": "earnings_quality",
+      "domain": "SECTOR_OPERATING_CURRENT",
+      "label": "sector-context",
+      "metric_refs": [],
+      "statement": "No optional financial domain is required for the current absolute judgment.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-09-09",
+      "category": "unknown",
+      "domain": "DATA_QUALITY_LIMIT",
+      "label": "remaining-unknown",
+      "metric_refs": [],
+      "statement": "Optional cash-conversion context is unavailable and limits specificity only.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-09-09",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "label": "operating-evidence",
+      "metric_refs": [],
+      "statement": "Operating evidence is stable without a decisive acceleration or decline.",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "financial_decision_context": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 0,
+    "evidence_items": [],
+    "limitations": [
+      "typed_context_without_structured_value"
+    ],
+    "sector_framework": "standard_operating_company",
+    "selected_input_count": 0,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 1,
+    "unavailable_or_not_applicable": [
+      "FINANCIAL_VALUE_UNAVAILABLE"
+    ]
+  },
+  "market": "us",
+  "ticker": "FIC-FIN-07"
+}

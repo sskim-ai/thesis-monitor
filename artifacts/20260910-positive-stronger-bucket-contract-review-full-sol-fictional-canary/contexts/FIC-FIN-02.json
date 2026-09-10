@@ -1,0 +1,265 @@
+{
+  "assessment_date": "2026-09-09",
+  "company_name": "Fictional Financial Case 02",
+  "evidence": [
+    {
+      "alias": "E01",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_comparable",
+        "evidence_status": "DERIVED_SAFE",
+        "metric": "ocf_less_ppe_capex",
+        "period_type": "YTD",
+        "quality": "verified",
+        "semantic_category": "CASH_CONVERSION"
+      },
+      "label": "ocf_less_ppe_capex",
+      "metric_refs": [],
+      "statement": "Safely derived OCF less PPE acquisition cash outflow for YTD ending 2026-06-30 is lower than the prior-year comparable period.",
+      "unit": null,
+      "value": "-20"
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-09-09",
+      "category": "risks",
+      "domain": "STRUCTURAL_RISK",
+      "label": "structural-risk",
+      "metric_refs": [],
+      "statement": "Working-capital absorption could persist.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "category": "valuation",
+      "domain": "VALUATION_SAFE",
+      "label": "valuation-limit",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-06-30",
+      "category": "earnings_quality",
+      "domain": "SECTOR_OPERATING_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_end",
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "inventory",
+        "period_type": "POINT_IN_TIME",
+        "quality": "verified",
+        "semantic_category": "WORKING_CAPITAL"
+      },
+      "label": "inventory",
+      "metric_refs": [],
+      "statement": "Reported inventory balance as of 2026-06-30 is higher than the prior year-end balance.",
+      "unit": null,
+      "value": "240"
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "category": "earnings_quality",
+      "domain": "SECTOR_OPERATING_CURRENT",
+      "label": "sector-context",
+      "metric_refs": [],
+      "statement": "A standard operating-company cash-conversion framework applies.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-09-09",
+      "category": "thesis",
+      "domain": "BUSINESS_CURRENT",
+      "label": "business-thesis",
+      "metric_refs": [],
+      "statement": "Demand remains healthy, but conversion of growth into cash needs confirmation.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-09-09",
+      "category": "expectations",
+      "domain": "MARKET_EXPECTATIONS",
+      "label": "market-expectation",
+      "metric_refs": [],
+      "statement": "Expectations assume growth continues without a larger funding burden.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E08",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_comparable",
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "operating_cash_flow",
+        "period_type": "YTD",
+        "quality": "verified",
+        "semantic_category": "CASH_CONVERSION"
+      },
+      "label": "operating_cash_flow",
+      "metric_refs": [],
+      "statement": "Reported operating cash flow for YTD ending 2026-06-30 is lower than the prior-year comparable period.",
+      "unit": null,
+      "value": "40"
+    },
+    {
+      "alias": "E09",
+      "as_of": "2026-09-09",
+      "category": "unknown",
+      "domain": "DATA_QUALITY_LIMIT",
+      "label": "remaining-unknown",
+      "metric_refs": [],
+      "statement": "The cause and reversibility of working-capital use are not supplied.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E10",
+      "as_of": "2026-09-09",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "label": "operating-evidence",
+      "metric_refs": [],
+      "statement": "Comparable-period sales and accounting profit improved.",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "financial_decision_context": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 6,
+    "evidence_items": [
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": 181,
+            "end": "2025-06-30",
+            "start": "2025-01-01",
+            "type": "YTD"
+          },
+          "comparison_value": "55",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+            "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation_formula": "ocf_less_ppe_capex",
+        "derivation_input_source_refs": [
+          "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current.input"
+        ],
+        "evidence_id": "E01",
+        "evidence_status": "DERIVED_SAFE",
+        "limitations": [
+          "ppe_only_not_management_defined_fcf"
+        ],
+        "metric": "ocf_less_ppe_capex",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "semantic_category": "CASH_CONVERSION",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+        "unit_scale": 1000000,
+        "value": "-20"
+      },
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": 181,
+            "end": "2025-06-30",
+            "start": "2025-01-01",
+            "type": "YTD"
+          },
+          "comparison_value": "100",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+            "stock.fact_catalog.fictional:FIC-FIN-02:ocf-prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E08",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_cash_flow",
+        "period": {
+          "duration_days": 181,
+          "end": "2026-06-30",
+          "start": "2026-01-01",
+          "type": "YTD"
+        },
+        "quality": "verified",
+        "semantic_category": "CASH_CONVERSION",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+        "unit_scale": 1000000,
+        "value": "40"
+      },
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": null,
+            "end": "2025-12-31",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "comparison_value": "150",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+            "stock.fact_catalog.fictional:FIC-FIN-02:inventory-prior"
+          ],
+          "kind": "prior_year_end"
+        },
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E04",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "inventory",
+        "period": {
+          "duration_days": null,
+          "end": "2026-06-30",
+          "start": null,
+          "type": "POINT_IN_TIME"
+        },
+        "quality": "verified",
+        "semantic_category": "WORKING_CAPITAL",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+        "unit_scale": 1000000,
+        "value": "240"
+      }
+    ],
+    "limitations": [
+      "ppe_only_not_management_defined_fcf"
+    ],
+    "sector_framework": "standard_operating_company",
+    "selected_input_count": 3,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 3,
+    "unavailable_or_not_applicable": []
+  },
+  "market": "us",
+  "ticker": "FIC-FIN-02"
+}

@@ -1,0 +1,15 @@
+{
+  "context": 1,
+  "contract": "m12b-fictional-canary-context-run-v1",
+  "error": "m12w_fictional_invocation_required",
+  "generation_id": "20260910-m12x-fictional-20260910T031211Z-f8ca364b8103",
+  "receipt": null,
+  "repetition": 1,
+  "status": "FAIL",
+  "tickers": [
+    "FIC-FIN-01",
+    "FIC-FIN-02",
+    "FIC-FIN-03",
+    "FIC-FIN-04"
+  ]
+}

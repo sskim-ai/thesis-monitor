@@ -1101,6 +1101,31 @@ historical Git object 부재 3건, 로컬 전용 ZIP 부재 2건이며 새 M12F 
 
 ---
 
+## 2026-09-10 M12X Positive Stronger-Bucket Contract Review
+
+M12W의 FIC-FIN-01 `BUY 6.0` exact target은 generic contract보다 좁은 fixture 제약이었다.
+M12X는 production Directional prompt, threshold, increment, HOLD lean, tie-break, 금융 의미론,
+source packet을 바꾸지 않고 목표만 `BUY 6.5`로 바로잡았다. 영업 개선, reported QTD OCF 및
+현금전환 개선, 순현금 회복력은 서로 다른 지지 축이며 가치평가와 지속성 Unknown은 확신의
+한계이지 보편적인 6.5 상한이 아니다. 점수표나 evidence-count 규칙은 도입하지 않았다.
+
+새 generation `20260910-m12x-fictional-20260910T031958Z-a6c5d77c56d5`는 source lock
+`9b66dd9ac8eca70fc7cb9e7912f575d9014b3430fb725917269837f17136c2a8`로 동결했다.
+Sol/xhigh run-1 context-01은 4/4 PASS했고 FIC-FIN-01은 `BUY 6.5:3.5`로 새 계약과 일치했다.
+context-02는 transport 자체는 PASS했지만 FIC-FIN-05가 frozen `BUY 4.5` 대신 `4.0`,
+FIC-FIN-08이 보험 exclusion 문장에 대해 net-debt/financial-sector generic reasoning 오류를
+받아 FAIL했다. 전체 중단 규칙에 따라 run-2/3 네 context는 NOT_RUN이며 안정성은
+NOT_MEASURED다. 재호출, selective rerun, 중간 hotfix는 없었다.
+
+따라서 `M12X_PARTIAL_STOPPED`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`, 다음 scope는 `SOL_RUNTIME_REGRESSION_REVIEW`다. 다음 검토는
+보존 출력만으로 FIC-FIN-05 exact target의 정당성과 FIC-FIN-08의 명시적 exclusion 언어
+오탐 가능성을 분리해야 한다. 새 model call은 별도 승인과 새 generation 전까지 금지한다.
+실종목/model judge/provider/production send 및 모든 운영 mutation은 0이고, 시작과 종료 시
+예약 8개는 모두 PAUSED였다. 상세 결과는
+[M12X completion](reports/20260910-m12x-completion.md)과
+[program completion](reports/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/75-program-completion.json)에 있다.
+
 ## 부록 A. 핵심 증거 위치
 
 모두 S1 ZIP 내부 상대 경로다.

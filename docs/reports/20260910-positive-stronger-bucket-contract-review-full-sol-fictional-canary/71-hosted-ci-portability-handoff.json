@@ -1,0 +1,6 @@
+{
+  "known_historical_portability_failure_count": 5,
+  "new_m12x_failure_count": 0,
+  "next_scope": "HOSTED_CI_HISTORICAL_ARTIFACT_PORTABILITY_REPAIR",
+  "status": "KNOWN_HISTORICAL_PORTABILITY_FAILURES_ONLY"
+}
