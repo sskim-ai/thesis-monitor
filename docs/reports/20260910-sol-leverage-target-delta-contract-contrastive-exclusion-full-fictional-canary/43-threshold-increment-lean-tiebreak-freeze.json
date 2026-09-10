@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN",
+  "threshold": 6,
+  "increment": 0.5,
+  "hold_lean": {
+    "5.5:4.5": "BUY_LEAN",
+    "5.0:5.0": "NEUTRAL",
+    "4.5:5.5": "SELL_LEAN"
+  },
+  "tie_break": "toward 5.0",
+  "fixed_score_rule_count": 0,
+  "evidence_count_bucket_rule_count": 0
+}

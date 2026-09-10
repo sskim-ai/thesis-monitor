@@ -1,0 +1,6 @@
+{
+  "status": "FROZEN",
+  "sell_5_5": "Negative issuer-level material anchor exists, but missing corroboration/currentness/persistence/valuation/critical KPI support prevents full direction.",
+  "sell_6_0": "Minimum SELL requires a negative issuer-level material anchor plus sufficiently current or independent corroboration; unresolved counterevidence must not keep the case at lean-only.",
+  "tiebreak": "toward 5.0 only when adjacent buckets are genuinely supportable"
+}

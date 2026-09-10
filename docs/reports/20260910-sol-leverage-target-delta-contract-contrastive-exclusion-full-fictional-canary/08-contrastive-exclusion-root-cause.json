@@ -1,0 +1,6 @@
+{
+  "status": "FROZEN",
+  "root_cause": "CONTRASTIVE_REPLACEMENT_EXCLUSION_NOT_RECOGNIZED",
+  "evidence": "The shared classifier recognizes suffix/prefix non-application but not bounded X-instead-of-Y or rather-than-X replacement clauses.",
+  "alternative_scanner_bypass": false
+}

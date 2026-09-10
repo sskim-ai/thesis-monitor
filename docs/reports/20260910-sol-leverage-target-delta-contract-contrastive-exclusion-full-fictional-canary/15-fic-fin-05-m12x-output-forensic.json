@@ -1,0 +1,171 @@
+{
+  "status": "FROZEN",
+  "candidate": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "E03",
+          "E05",
+          "E06"
+        ],
+        "text": "차환 부담이 실제로 커지고 현금 완충력이 더 제약되면 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "E03",
+          "E08"
+        ],
+        "text": "차환 조건과 만기 분산이 양호해 재무 회복력이 확인되면 상향 재평가한다."
+      }
+    ],
+    "business_thesis_change": "WEAKENED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "E09",
+        "E03"
+      ],
+      "text": "수익성은 유지되지만 높은 부채와 얇은 현금 완충력이 사업 선택권을 제약한다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "E01"
+        ],
+        "text": "영업이익은 흑자이며 대체로 안정적이다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "E03",
+        "E05",
+        "E06"
+      ],
+      "text": "확인된 높은 부채와 얇은 현금 완충력이 안정적 영업수익보다 방향 판단에 더 중요하다."
+    },
+    "directional_balance": {
+      "buy": 4,
+      "sell": 6
+    },
+    "directional_confidence": "MEDIUM",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "E03",
+        "E05",
+        "E06"
+      ],
+      "text": "완전 범위의 높은 이자부채와 제한적인 현금이 재무 회복력을 낮춘다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "E01"
+      ],
+      "text": "현재 영업수익은 안정적이어서 즉각적인 영업 훼손은 확인되지 않는다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "차환 조건과 만기 분산이 양호하고 현금 완충력이 개선돼 재무 제약이 해소되는 경우다.",
+      "business_invalidation_condition_refs": [
+        "E03",
+        "E06",
+        "E08"
+      ],
+      "stance": "REDUCE",
+      "summary": "영업 흑자는 유지되지만 재무 회복력 제약을 재검토할 필요가 있다."
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "차환 조건과 만기 집중도가 감내 가능하며 현금 완충력이 충분하다는 확인이 필요하다.",
+      "confirmation_business_condition_refs": [
+        "E03",
+        "E06",
+        "E08"
+      ],
+      "stance": "AVOID",
+      "summary": "재무 부담의 지속성과 차환 조건이 확인되기 전에는 신규 판단 근거가 약하다."
+    },
+    "hold_lean": "NOT_HOLD",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "E07",
+        "E03"
+      ],
+      "text": "기대는 장기 차환 부담을 충분히 반영하지 않은 것으로 보인다."
+    },
+    "material_directional_anchor_basis": [
+      "E03",
+      "E05",
+      "E06"
+    ],
+    "overall_direction": "SELL",
+    "risk_context": {
+      "evidence_refs": [
+        "E03",
+        "E08"
+      ],
+      "text": "차환 조건과 만기 집중도 부재가 위험 강도 판단을 제한한다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "E04"
+      ],
+      "text": "일반 영업회사 기준의 부채와 유동성 해석이 적용된다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "STRUCTURAL_RISK",
+        "evidence_refs": [
+          "E03",
+          "E05",
+          "E06"
+        ],
+        "text": "높은 완전 범위 이자부채와 얇은 현금 완충력이 회복력을 낮춘다."
+      },
+      {
+        "classification": "OTHER_EVIDENCE",
+        "evidence_refs": [
+          "E07",
+          "E03"
+        ],
+        "text": "시장 기대가 장기 차환 부담을 충분히 허용하지 않는 듯하다."
+      }
+    ],
+    "ticker": "FIC-FIN-05",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "E08"
+      ],
+      "text": "차환 조건과 만기 집중도가 없어 부정 방향의 추가 강화는 어렵다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "E02"
+        ],
+        "summary": "안전한 현재 가치평가 배수 부재는 확신을 제한한다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "E08"
+        ],
+        "summary": "차환 조건과 만기 집중도는 추가 확인이 필요하다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "E02"
+      ],
+      "text": "안전한 현재 가치평가 배수가 없어 가치평가 지지는 판단할 수 없다."
+    }
+  },
+  "observed_target": {
+    "direction": "SELL",
+    "buy": 4,
+    "sell": 6
+  },
+  "target_mismatch_against_m12x": true,
+  "business_delta_mismatch": true
+}

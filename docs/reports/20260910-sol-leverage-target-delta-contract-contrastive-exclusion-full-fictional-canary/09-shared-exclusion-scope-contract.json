@@ -1,0 +1,10 @@
+{
+  "status": "FROZEN",
+  "selected_repair": "BOUNDED_SHARED_CONTRASTIVE_REPLACEMENT_EXCLUSION",
+  "applies_to": [
+    "net_debt",
+    "working_capital",
+    "financial_sector_generic_framework"
+  ],
+  "rule": "Only the directly governed X clause is excluded when X is contrastively replaced by Y; other clauses, fields, material anchors, contradictions, conditionals and ambiguity remain independently fail-closed."
+}

@@ -1,0 +1,17 @@
+{
+  "status": "FROZEN",
+  "root_contract": "m12y-leverage-target-delta-contrastive-exclusion-v1",
+  "allowed": [
+    "contrastive exclusion validator repair",
+    "FIC-FIN-05 fixture target correction",
+    "one generic business-delta prompt clarification"
+  ],
+  "forbidden": [
+    "market-expectation prompt change",
+    "financial schema expansion",
+    "source-provider work",
+    "renderer change",
+    "price-timing change",
+    "scorecard"
+  ]
+}

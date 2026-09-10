@@ -1,0 +1,11 @@
+{
+  "status": "CORRECTED",
+  "m12x_reported_next_scope": "SOL_RUNTIME_REGRESSION_REVIEW",
+  "supported_by_runtime_receipts": false,
+  "actual_blockers": [
+    "FIC-FIN-08 contrastive exclusion false reject",
+    "FIC-FIN-05 exact target over-constraint",
+    "FIC-FIN-05 absolute-state to delta error"
+  ],
+  "corrected_scope": "BOUNDED_SEMANTIC_CONTRACT_REPAIR"
+}

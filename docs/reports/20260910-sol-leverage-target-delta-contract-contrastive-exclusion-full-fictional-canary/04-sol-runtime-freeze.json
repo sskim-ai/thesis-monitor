@@ -1,0 +1,21 @@
+{
+  "status": "FROZEN_PASS",
+  "model": "gpt-5.6-sol",
+  "effort": "xhigh",
+  "timeout_seconds": 1800,
+  "subjects_per_context": 4,
+  "context_count": 2,
+  "repetition_count": 3,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "wrapper_retry_count": 0,
+  "batch_split": 0,
+  "m12x_context_elapsed_seconds": [
+    389.976433,
+    313.492384
+  ],
+  "timeout_count": 0,
+  "capacity_failure_count": 0,
+  "orphan_process_count": 0,
+  "runner_model_target_match": true,
+  "fallback_count": 0
+}

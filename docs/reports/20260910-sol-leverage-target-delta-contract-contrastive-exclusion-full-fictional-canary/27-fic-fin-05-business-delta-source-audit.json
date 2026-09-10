@@ -1,0 +1,12 @@
+{
+  "status": "FROZEN",
+  "current_absolute_evidence": [
+    "E01",
+    "E03",
+    "E05",
+    "E06",
+    "E09"
+  ],
+  "explicit_prior_or_baseline_deterioration_refs": [],
+  "source_supplies_deterioration": false
+}
