@@ -1,0 +1,8 @@
+{
+  "exit_code": 4,
+  "hard_stop": false,
+  "model_calls_completed": 6,
+  "reason": "legacy runner stability is advisory to M12AD material classifier",
+  "runner_final_status": "NOT_READY",
+  "status": "FULL_GENERATION_COMPLETED"
+}

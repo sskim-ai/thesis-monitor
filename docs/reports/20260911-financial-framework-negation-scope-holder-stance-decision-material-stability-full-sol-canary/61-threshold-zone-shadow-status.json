@@ -1,0 +1,7 @@
+{
+  "mapper_status": "PASS",
+  "readiness_gate_enabled": false,
+  "renderer_enabled": false,
+  "status": "SHADOW_DESCRIPTIVE",
+  "variance_subject_count": 1
+}

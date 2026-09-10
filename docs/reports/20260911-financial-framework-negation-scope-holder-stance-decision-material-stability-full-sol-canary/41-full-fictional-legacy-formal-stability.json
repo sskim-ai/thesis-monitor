@@ -1,0 +1,265 @@
+{
+  "classifier_changed": false,
+  "contract": "frozen-formal-semantics-projection",
+  "counts": {
+    "BOUNDARY_UNCERTAINTY": 2,
+    "STABLE": 6,
+    "UNSTABLE": 0
+  },
+  "rows": [
+    {
+      "buy_balance_sequence": [
+        6.5,
+        6.5,
+        6.5
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NOT_HOLD",
+        "NOT_HOLD",
+        "NOT_HOLD"
+      ],
+      "holder_sequence": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "label_sequence": [
+        "BUY",
+        "BUY",
+        "BUY"
+      ],
+      "new_buyer_sequence": [
+        "ATTRACTIVE",
+        "ATTRACTIVE",
+        "ATTRACTIVE"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "buy_balance_sequence": [
+        4.5,
+        4.5,
+        4.5
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "SELL_LEAN",
+        "SELL_LEAN",
+        "SELL_LEAN"
+      ],
+      "holder_sequence": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "buy_balance_sequence": [
+        5.0,
+        5.5,
+        5.0
+      ],
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NEUTRAL",
+        "BUY_LEAN",
+        "NEUTRAL"
+      ],
+      "holder_sequence": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [
+        "HOLD_LEAN_BOUNDARY_VARIANCE"
+      ],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "buy_balance_sequence": [
+        5.0,
+        5.0,
+        5.0
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "holder_sequence": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "buy_balance_sequence": [
+        4.0,
+        4.5,
+        4.5
+      ],
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NOT_HOLD",
+        "SELL_LEAN",
+        "SELL_LEAN"
+      ],
+      "holder_sequence": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "label_sequence": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [
+        "LABEL_THRESHOLD_VARIANCE",
+        "HOLD_LEAN_BOUNDARY_VARIANCE"
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "buy_balance_sequence": [
+        5.5,
+        5.5,
+        5.5
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "BUY_LEAN",
+        "BUY_LEAN",
+        "BUY_LEAN"
+      ],
+      "holder_sequence": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "buy_balance_sequence": [
+        5.0,
+        5.0,
+        5.0
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "holder_sequence": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "buy_balance_sequence": [
+        5.0,
+        5.0,
+        5.0
+      ],
+      "classification": "STABLE",
+      "contract": "directional-core-legacy-formal-stability-view-v1",
+      "hold_lean_sequence": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ],
+      "holder_sequence": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "label_sequence": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "new_buyer_sequence": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "reasons": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "MEASURED"
+}

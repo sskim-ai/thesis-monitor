@@ -1,16 +1,55 @@
 # Thesis Monitor — 마스터 워크플로우
 
-**버전:** 2026-09-10 / m12ac-financial-framework-threshold-zone-partial-v1
+**버전:** 2026-09-11 / m12ad-financial-framework-negation-holder-stability-partial-v1
 **문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
-**현재 위치:** `M12AC 6/6 transport·24/24 schema 완료 / 금융업 대조 배제 false reject / threshold-zone 7/8 안정 / fresh real NOT_READY`
+**현재 위치:** `M12AD 6/6 transport·24/24 schema 완료 / 금융업 대조 배제 및 holder REVIEW 안정 / FIC-FIN-05 primary direction 불안정 / fresh real NOT_READY`
 **운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
-**M12AC는 deterministic threshold zone과 금융업 대조 배제 classifier를 검증했다. Sol/xhigh 6개 호출과 24개 schema output은 모두 완료됐으나, FIC-FIN-08의 세 번째 자연어 변형이 false reject됐고 FIC-FIN-03이 NEUTRAL과 POSITIVE_THRESHOLD_ZONE을 오갔다. M12AC_PARTIAL이며 새 model call 없이 bounded repair가 필요하다.**
+**M12AD는 금융업 대조 배제 false reject를 0으로 닫고 FIC-FIN-05 holder stance를 REVIEW 3/3으로 안정화했다. Sol/xhigh 6개 호출과 24개 schema output은 모두 완료됐고 hard semantic·grounding·business-delta 오류도 0이다. 다만 FIC-FIN-05 primary direction이 SELL/HOLD/HOLD로 변해 M12AD_PARTIAL이며, 새 model call 없이 방향 경계의 bounded review가 필요하다.**
 
 ---
 
 ## 1. 지금 프로젝트가 달성하려는 것
 
-### 최신 M12AC 결과
+### 최신 M12AD 결과
+
+M12AC 결과 ZIP SHA `2b5dd84efcaf207e31e5fec15521c0879022fdb9fb411fb0b7cd2cedd80801fe`와
+내부 index 무결성을 재검산했다. 작업지시서 `ee61646`, architecture `d098941`, 모델 호출 전
+구현 `c52b852`를 순서대로 동결했다. 금융업 대조 배제 parser는 replacement predicate
+`판단한다/판단합니다`, adnominal negation `아닌`, 조사 `으로/로`를 bounded하게 인식하도록
+수리했다. FIC-FIN-08 M12AC 3회차 원문은 false reject 없이 통과했고 실제 산업회사식
+framework 적용과 모순 사례는 계속 fail-closed한다.
+
+FIC-FIN-05 holder 기준은 모델 출력을 보기 전에 `REVIEW`로 동결했다. 확인된 높은 부채와
+얇은 현금은 review가 필요한 material risk지만, 만기·재융자 severity와 persistence가 확인되지
+않았고 안정적 영업이익이 반대 근거이므로 active `REDUCE`를 유일한 결론으로 강제하지 않는다.
+새 holder 계약은 7/7 offline fixture를 통과했다.
+
+새 generation `20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5`, source lock
+`67f46e42cd933584af58f590f6a012d842dbd4ca276f29be28dcc9264cf08328` 아래
+`gpt-5.6-sol / xhigh` 6/6 호출과 24/24 schema output을 완료했다. timeout, capacity,
+CLI/wrapper retry, orphan, invalid reference, grounding, business-delta failure, 금융업 false
+reject/accept와 true misuse는 모두 0이다. FIC-FIN-05 holder는 `REVIEW` 3/3, new-buyer와
+business delta도 각각 `WAIT`와 `UNCHANGED`로 안정됐다.
+
+Decision-material classifier는 raw exact diagnostics와 legacy formal projection을 그대로 보존하면서
+같은 HOLD 방향의 0.5 balance 차이는 calibration variance로 분리한다. FIC-FIN-03은
+`HOLD 5.0:5.0`, `HOLD 5.5:4.5`, `HOLD 5.0:5.0`이지만 모두 HOLD/WAIT/REVIEW여서
+`CALIBRATION_VARIANCE_SAME_DIRECTION`이며 readiness blocker가 아니다. 반면 FIC-FIN-05는
+`SELL 4.0:6.0`, `HOLD 4.5:5.5`, `HOLD 4.5:5.5`로 primary direction이 바뀌어
+`PRIMARY_DIRECTION_UNSTABLE`이다. 결과 확인 후 prompt, validator, threshold, source 또는
+candidate를 수정하거나 재호출하지 않았다.
+
+따라서 `M12AD_PARTIAL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. P0는 0이고 P1은 FIC-FIN-05 primary-direction boundary
+stability 1건이다. 다음 범위는 `PRIMARY_DIRECTION_BOUNDARY_STABILITY_REVIEW_GPT56_SOL`이며,
+새 호출 전에 보존된 세 출력을 이용해 SELL/HOLD 경계가 evidence-severity ambiguity인지 계약
+불충분인지 분리한다. 실종목/provider/judge 호출, production send/mutation, merge/deploy,
+scheduler 변경은 모두 0이고 예약 8개는 PAUSED다. 상세 결과는
+`docs/reports/20260911-m12ad-completion.md`와 M12AD reports 42/45/50/51/54/60/67을 따른다.
+
+아래 M12AC 및 이전 단계는 역사적 결과이며 M12AD 재실행 또는 운영 재개 승인이 아니다.
+
+### 이전 M12AC 결과
 
 M12AB 결과 ZIP SHA `2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926`와
 192개 index 무결성을 재검산했다. 지시서 `b44dd2c`, architecture `29d0aeb`, 모델 호출 전

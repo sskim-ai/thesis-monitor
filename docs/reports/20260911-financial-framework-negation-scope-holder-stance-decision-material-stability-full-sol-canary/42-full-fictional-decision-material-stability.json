@@ -1,0 +1,448 @@
+{
+  "counts": {
+    "BUSINESS_DELTA_UNSTABLE": 0,
+    "CALIBRATION_VARIANCE_SAME_DIRECTION": 1,
+    "DECISION_STABLE": 6,
+    "HOLDER_STANCE_UNSTABLE": 0,
+    "MULTI_FIELD_MATERIAL_UNSTABLE": 0,
+    "NEW_BUYER_STANCE_UNSTABLE": 0,
+    "PRIMARY_DIRECTION_UNSTABLE": 1
+  },
+  "rows": [
+    {
+      "business_delta_values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        },
+        {
+          "buy": 6.5,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY",
+          "sell": 3.5
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "ATTRACTIVE",
+        "ATTRACTIVE",
+        "ATTRACTIVE"
+      ],
+      "overall_direction_values": [
+        "BUY",
+        "BUY",
+        "BUY"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "business_delta_values": [
+        "WEAKENED",
+        "WEAKENED",
+        "WEAKENED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "business_delta_values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ],
+      "classification": "CALIBRATION_VARIANCE_SAME_DIRECTION",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ],
+      "exact_raw_state_variance": true,
+      "holder_values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "business_delta_values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "business_delta_values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "PRIMARY_DIRECTION_UNSTABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 4.0,
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "SELL",
+          "sell": 6.0
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 5.5
+        }
+      ],
+      "exact_raw_state_variance": true,
+      "holder_values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "material_variance_fields": [
+        "overall_direction"
+      ],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": true,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "business_delta_values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD",
+          "sell": 4.5
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "business_delta_values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "business_delta_values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "DECISION_STABLE",
+      "confidence_variance_advisory": false,
+      "contract": "directional-decision-material-stability-v1",
+      "directional_confidence_values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ],
+      "exact_raw_state_values": [
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        },
+        {
+          "buy": 5.0,
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD",
+          "sell": 5.0
+        }
+      ],
+      "exact_raw_state_variance": false,
+      "holder_values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "material_variance_fields": [],
+      "new_buyer_values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "overall_direction_values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "readiness_blocking": false,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "FAIL"
+}

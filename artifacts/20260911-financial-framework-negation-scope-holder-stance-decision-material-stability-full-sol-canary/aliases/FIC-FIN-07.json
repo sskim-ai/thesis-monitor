@@ -1,0 +1,101 @@
+{
+  "alias_map_sha256": "706b11a73d3c50087fbe0218421de8bc7348ab939715bd47532cb6d0b73d4d7c",
+  "contract": "structured-autonomy-evidence-alias-v1",
+  "entries": [
+    {
+      "alias": "E01",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+      "category": "risks",
+      "content_sha256": "210bbdae28f9a0d5d8a4162e2744ad4b12b6e967218f2e9eae2818a359364788",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "structural-risk",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Execution remains the principal non-financial risk.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:valuation-limit",
+      "category": "valuation",
+      "content_sha256": "254ca72b4c6524f1cd9e5d0273d2e95d6a77e2ab615129fdf4ce9a28e26cf5e9",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "valuation-limit",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+      "category": "thesis",
+      "content_sha256": "2c5dc9085c47add60e6c2e173bf42b44b75438b3abcd5c5fd585ce1c3e5e81be",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "business-thesis",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "The business evidence is balanced and the thesis remains intact.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+      "category": "expectations",
+      "content_sha256": "686ffa5bfefff07a6a42ee572ee6151790dde789f5c77c7bccee8b0b42e9887f",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "market-expectation",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Market expectations and demonstrated progress are broadly balanced.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:sector-context",
+      "category": "earnings_quality",
+      "content_sha256": "8d2a7e3d51e4e85315fca9f41e277583ea4a3d7da3ef332aa371b91a9e11eb0a",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "sector-context",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "No optional financial domain is required for the current absolute judgment.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:remaining-unknown",
+      "category": "unknown",
+      "content_sha256": "99fb28e5a22e54ee37f6b6869cc4f5f0c3482b8ea6231c768564de8a7881c863",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "remaining-unknown",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Optional cash-conversion context is unavailable and limits specificity only.",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+      "category": "earnings",
+      "content_sha256": "ca1ce362b58c3317158fe9d39f33709db6127c16608a5ad0c38243961a6977cf",
+      "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+      "label": "operating-evidence",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Operating evidence is stable without a decisive acceleration or decline.",
+      "ticker": "FIC-FIN-07"
+    }
+  ],
+  "evidence_fingerprint": "0059f79fbd3e1222f2bfb9c90954f9262c807ff6723d5e92d603bdd18b99e6d9",
+  "generation": "20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5",
+  "market": "us",
+  "ticker": "FIC-FIN-07"
+}
