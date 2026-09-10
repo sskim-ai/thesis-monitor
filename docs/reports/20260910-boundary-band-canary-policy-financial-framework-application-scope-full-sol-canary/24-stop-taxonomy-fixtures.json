@@ -1,0 +1,50 @@
+{
+  "rows": [
+    {
+      "class": "RUNTIME_OR_SCHEMA_HARD_FAILURE",
+      "condition": "invalid_evidence_ref",
+      "id": "STOP-01",
+      "observed": {
+        "classification": "RUNTIME_OR_SCHEMA_HARD_FAILURE",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [
+          "invalid_evidence_ref"
+        ],
+        "stop_generation": true
+      },
+      "status": "PASS",
+      "stop": true
+    },
+    {
+      "class": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+      "condition": "partial_ppe_called_fcf",
+      "id": "STOP-02",
+      "observed": {
+        "classification": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+        "objective_semantic_errors": [
+          "partial_ppe_called_fcf"
+        ],
+        "runtime_or_schema_errors": [],
+        "stop_generation": true
+      },
+      "status": "PASS",
+      "stop": true
+    },
+    {
+      "class": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+      "condition": "insurer_industrial_net_debt_application",
+      "id": "STOP-03",
+      "observed": {
+        "classification": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+        "objective_semantic_errors": [
+          "insurer_industrial_net_debt_application"
+        ],
+        "runtime_or_schema_errors": [],
+        "stop_generation": true
+      },
+      "status": "PASS",
+      "stop": true
+    }
+  ],
+  "status": "PASS"
+}

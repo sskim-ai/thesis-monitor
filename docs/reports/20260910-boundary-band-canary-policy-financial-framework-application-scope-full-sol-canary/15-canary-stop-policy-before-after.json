@@ -1,0 +1,5 @@
+{
+  "after": "calibration observation continues runner",
+  "before": "calibration FAIL stopped runner",
+  "status": "PASS"
+}

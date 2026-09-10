@@ -1,0 +1,9 @@
+{
+  "net_debt_application_roles": [
+    "APPLIED_DECISION_FRAMEWORK",
+    "ASSERTED_STATE",
+    "CONTRADICTORY_MIXED_USE",
+    "UNRESOLVED"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "batch_split": 0,
+  "effort": "xhigh",
+  "fallback_model": null,
+  "mode": "MODEL_CONTEXT_COUPLED",
+  "model": "gpt-5.6-sol",
+  "status": "FROZEN",
+  "subjects_per_context": 4,
+  "timeout_seconds": 1800,
+  "wrapper_retry_count": 0
+}

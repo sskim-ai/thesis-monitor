@@ -19,9 +19,8 @@ from app.services.cross_market_decision_engine_service import (
     FrozenModel,
 )
 from app.services.financial_framework_claim_service import (
-    FrameworkClaimKind,
+    FrameworkReferenceRole,
     candidate_financial_framework_claims,
-    financial_framework_claims,
 )
 
 
@@ -629,10 +628,10 @@ def first_class_financial_evidence_projection(
     return rows
 
 
-def _claim_rows(value: object) -> list[tuple[str, tuple[str, ...]]]:
-    rows: list[tuple[str, tuple[str, ...]]] = []
+def _claim_rows(value: object) -> list[tuple[str, str, tuple[str, ...]]]:
+    rows: list[tuple[str, str, tuple[str, ...]]] = []
 
-    def collect(item: object) -> None:
+    def collect(item: object, path: str = "") -> None:
         if isinstance(item, Mapping):
             refs = item.get("evidence_refs")
             refs_tuple = (
@@ -643,12 +642,14 @@ def _claim_rows(value: object) -> list[tuple[str, tuple[str, ...]]]:
             for key in ("text", "summary"):
                 text = item.get(key)
                 if isinstance(text, str) and text.strip():
-                    rows.append((text, refs_tuple))
-            for child in item.values():
-                collect(child)
+                    field_path = f"{path}.{key}" if path else key
+                    rows.append((field_path, text, refs_tuple))
+            for key, child in item.items():
+                child_path = f"{path}.{key}" if path else str(key)
+                collect(child, child_path)
         elif isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
-            for child in item:
-                collect(child)
+            for index, child in enumerate(item):
+                collect(child, f"{path}[{index}]")
 
     collect(value)
     return rows
@@ -823,7 +824,20 @@ def validate_directional_financial_semantics(
         "fixed_financial_score_rule_count": 0,
     }
     financial_sector = sector_requires_specialized_financial_framework(sector_framework)
-    for text, refs in _claim_rows(payload):
+    framework_claims = candidate_financial_framework_claims(
+        payload,
+        metric_by_ref={ref: context.metric for ref, context in financial.items()},
+    )
+    claims_by_path: dict[str, list[object]] = {}
+    for claim in framework_claims:
+        claims_by_path.setdefault(claim.field_path, []).append(claim)
+    application_roles = {
+        FrameworkReferenceRole.ASSERTED_STATE,
+        FrameworkReferenceRole.APPLIED_DECISION_FRAMEWORK,
+        FrameworkReferenceRole.CONTRADICTORY_MIXED_USE,
+        FrameworkReferenceRole.UNRESOLVED,
+    }
+    for field_path, text, refs in _claim_rows(payload):
         invalid = [ref for ref in refs if ref not in allowed]
         if invalid:
             counts["invalid_financial_reference_count"] += len(invalid)
@@ -857,8 +871,8 @@ def validate_directional_financial_semantics(
             errors.append("prior_year_end_described_as_yoy")
 
         net_debt_language = any(
-            claim.framework == "net_debt" and claim.kind != FrameworkClaimKind.EXPLICIT_EXCLUSION
-            for claim in financial_framework_claims(text)
+            claim.framework == "net_debt" and claim.role in application_roles
+            for claim in claims_by_path.get(field_path, ())
         )
         total_debt_language = any(
             token in folded for token in ("total debt", "총부채", "전체 부채")
@@ -907,8 +921,9 @@ def validate_directional_financial_semantics(
 
     if financial_sector:
         applications = [
-            claim for claim in candidate_financial_framework_claims(payload)
-            if claim.kind != FrameworkClaimKind.EXPLICIT_EXCLUSION
+            claim
+            for claim in framework_claims
+            if claim.role in application_roles
         ]
         if applications:
             counts["financial_sector_generic_financial_context_leak_count"] += len(applications)

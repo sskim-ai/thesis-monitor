@@ -1,0 +1,149 @@
+{
+  "rows": [
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "expected": "IN_BAND_HOLD_SELL_LEAN",
+      "id": "BAND-01",
+      "lean": "SELL_LEAN",
+      "observed": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 4.5,
+          "direction": "HOLD",
+          "lean": "SELL_LEAN",
+          "sell": 5.5
+        },
+        "outcome": "IN_BAND_HOLD_SELL_LEAN",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "sell": 5.5,
+      "status": "PASS"
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "expected": "IN_BAND_MINIMUM_SELL",
+      "id": "BAND-02",
+      "lean": null,
+      "observed": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 4.0,
+          "direction": "SELL",
+          "lean": null,
+          "sell": 6.0
+        },
+        "outcome": "IN_BAND_MINIMUM_SELL",
+        "status": "PASS",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "sell": 6.0,
+      "status": "PASS"
+    },
+    {
+      "buy": 5.0,
+      "direction": "HOLD",
+      "expected": "OUT_OF_BAND_MORE_POSITIVE",
+      "id": "BAND-03",
+      "lean": "NEUTRAL",
+      "observed": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 5.0,
+          "direction": "HOLD",
+          "lean": "NEUTRAL",
+          "sell": 5.0
+        },
+        "outcome": "OUT_OF_BAND_MORE_POSITIVE",
+        "status": "OBSERVATION",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "sell": 5.0,
+      "status": "PASS"
+    },
+    {
+      "buy": 3.5,
+      "direction": "SELL",
+      "expected": "OUT_OF_BAND_MORE_NEGATIVE",
+      "id": "BAND-04",
+      "lean": null,
+      "observed": {
+        "allowed_band": [
+          {
+            "buy": 4.5,
+            "direction": "HOLD",
+            "lean": "SELL_LEAN",
+            "sell": 5.5
+          },
+          {
+            "buy": 4.0,
+            "direction": "SELL",
+            "lean": null,
+            "sell": 6.0
+          }
+        ],
+        "contract": "m12aa-fic-fin-05-boundary-band-v1",
+        "observed": {
+          "buy": 3.5,
+          "direction": "SELL",
+          "lean": null,
+          "sell": 6.5
+        },
+        "outcome": "OUT_OF_BAND_MORE_NEGATIVE",
+        "status": "OBSERVATION",
+        "stop_generation": false,
+        "validation_class": "CALIBRATION_OBSERVATION"
+      },
+      "sell": 6.5,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

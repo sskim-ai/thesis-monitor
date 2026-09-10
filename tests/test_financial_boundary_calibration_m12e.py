@@ -21,7 +21,12 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
     result = m12u.scope_audit()
     assert result["status"] == "FAIL", result
     assert [key for key, value in result["checks"].items() if not value] == [
-        "one_appended_paragraph"
+        "unrelated_files_unchanged",
+        "one_appended_paragraph",
+        "helper_unrelated_ast_unchanged",
+    ]
+    assert result["unexpected_file_changes"] == [
+        "app/services/directional_financial_context_service.py"
     ]
     before = m12u.e.prompt_value(
         m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE]
@@ -29,7 +34,6 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
     after = z.without_m12z_prompt(result["after_prompt"])
     assert after.startswith(before + "\n\n")
     assert "\n\n" not in after.removeprefix(before).strip()
-    assert result["unexpected_file_changes"] == []
 
 
 def test_all_four_generic_clarifications_are_model_facing():

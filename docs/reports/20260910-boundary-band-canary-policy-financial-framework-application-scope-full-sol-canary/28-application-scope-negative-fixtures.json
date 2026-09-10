@@ -1,0 +1,176 @@
+{
+  "false_accept_count": 0,
+  "false_reject_count": 0,
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "risk_context.text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "ASSERTED_STATE",
+          "text": "보험사의 순부채가 높아 재무 부담이 크다"
+        }
+      ],
+      "expected_role": "ASSERTED_STATE",
+      "field": "risk_context",
+      "id": "APP-04",
+      "status": "PASS",
+      "text": "보험사의 순부채가 높아 재무 부담이 크다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 1,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sell_drivers[0].text",
+          "framework": "working_capital",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "산업회사식 운전자본 악화를 보험사 SELL 근거로 사용한다"
+        }
+      ],
+      "expected_role": "APPLIED_DECISION_FRAMEWORK",
+      "field": "sell_drivers",
+      "id": "APP-05",
+      "status": "PASS",
+      "text": "산업회사식 운전자본 악화를 보험사 SELL 근거로 사용한다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 1,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRADICTORY_MIXED_USE",
+          "text": "순부채 틀 대신 규제자본을 본다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "sell_drivers[0].text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "CONTRADICTORY_MIXED_USE",
+          "text": "하지만 순부채가 높아서 SELL이다"
+        }
+      ],
+      "expected_role": "CONTRADICTORY_MIXED_USE",
+      "extra_field": "sell_drivers",
+      "extra_text": "하지만 순부채가 높아서 SELL이다.",
+      "field": "sector_interpretation",
+      "id": "APP-06",
+      "status": "PASS",
+      "text": "순부채 틀 대신 규제자본을 본다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 2,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 2,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "material_directional_anchor_basis.text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "APPLIED_DECISION_FRAMEWORK",
+          "text": "순부채가 높다"
+        }
+      ],
+      "expected_role": "APPLIED_DECISION_FRAMEWORK",
+      "field": "material_directional_anchor_basis",
+      "id": "APP-N07",
+      "status": "PASS",
+      "text": "순부채가 높다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 1,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "core_investment_judgment.text",
+          "framework": "net_debt",
+          "kind": "UNCERTAIN_OR_AMBIGUOUS",
+          "role": "UNRESOLVED",
+          "text": "순부채가 부담일 수 있다"
+        }
+      ],
+      "expected_role": "UNRESOLVED",
+      "field": "core_investment_judgment",
+      "id": "APP-N08",
+      "status": "PASS",
+      "text": "순부채가 부담일 수 있다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 1,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

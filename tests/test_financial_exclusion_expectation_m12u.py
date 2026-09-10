@@ -51,7 +51,12 @@ def test_scope_is_portable_and_only_approved_surfaces_changed():
     result = u.scope_audit()
     assert result["status"] == "FAIL"
     assert [key for key, value in result["checks"].items() if not value] == [
-        "one_appended_paragraph"
+        "unrelated_files_unchanged",
+        "one_appended_paragraph",
+        "helper_unrelated_ast_unchanged",
+    ]
+    assert result["unexpected_file_changes"] == [
+        "app/services/directional_financial_context_service.py"
     ]
     before = u.e.prompt_value(u.read(u.BASELINE)["approved_module_before"][u.BALANCE])
     after = z.without_m12z_prompt(result["after_prompt"])

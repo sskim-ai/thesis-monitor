@@ -1,0 +1,9 @@
+{
+  "actual_branch": "codex/20260910-boundary-band-canary-m12aa",
+  "actual_head": "689624d03c2440d9f6603f2b9e140974b517ea01",
+  "base_sha": "e6e4cea878d4af93f44f299ff58791b651cc4afe",
+  "remote_branch_sha": "e6e4cea878d4af93f44f299ff58791b651cc4afe",
+  "root_cause_commit": "689624d03c2440d9f6603f2b9e140974b517ea01",
+  "work_instruction_commit": "6f783fe63a6dc727ffc19fa8d53e7cfcf84b8998",
+  "working_tree_state": "M app/services/directional_financial_context_service.py\n M app/services/financial_framework_claim_service.py\n M tests/test_financial_boundary_calibration_m12e.py\n M tests/test_financial_exclusion_expectation_m12u.py\n M tests/test_financial_exclusion_leverage_m12f.py\n M tests/test_first_class_typed_financial_evidence_m12b.py\n M tests/test_sol_restoration_m12w.py\n?? scripts/boundary_band_application_scope_m12aa.py\n?? tests/test_boundary_band_application_scope_m12aa.py"
+}

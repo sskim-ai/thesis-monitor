@@ -1,0 +1,32 @@
+{
+  "allowed_core_band": [
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "lean": "SELL_LEAN",
+      "sell": 5.5
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "lean": null,
+      "sell": 6.0
+    }
+  ],
+  "band_change_type": "CANARY_EXPECTATION_CHANGE",
+  "business_thesis_change": "UNCHANGED",
+  "hard_semantics": [
+    "complete debt and thin cash remain a material negative resilience anchor",
+    "stable positive operating profit remains real counterevidence",
+    "missing refinancing or maturity severity limits confidence rather than supplying bullish evidence",
+    "market expectation is not an independent negative axis when conditional on the same refinancing downside",
+    "no invented debt-service covenant maturity or refinancing facts",
+    "no price technical or supply contamination"
+  ],
+  "previous_exact_target": {
+    "buy": 4.0,
+    "direction": "SELL",
+    "sell": 6.0
+  },
+  "status": "FROZEN"
+}

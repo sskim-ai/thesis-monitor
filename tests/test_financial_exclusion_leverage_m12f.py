@@ -15,7 +15,12 @@ def test_complete_scope_freeze_preserves_every_unapproved_owner():
     assert result["status"] == "FAIL", result
     assert result["frozen_file_count"] == 679
     assert [key for key, value in result["checks"].items() if not value] == [
-        "one_appended_paragraph"
+        "unrelated_files_unchanged",
+        "one_appended_paragraph",
+        "helper_unrelated_ast_unchanged",
+    ]
+    assert result["unexpected_file_changes"] == [
+        "app/services/directional_financial_context_service.py"
     ]
     before = m12u.e.prompt_value(m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE])
     after = z.without_m12z_prompt(result["after_prompt"])

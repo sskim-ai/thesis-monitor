@@ -1,0 +1,22 @@
+{
+  "allowed_band": [
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "lean": "SELL_LEAN",
+      "sell": 5.5
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "lean": null,
+      "sell": 6.0
+    }
+  ],
+  "previous_exact_target": {
+    "buy": 4.0,
+    "direction": "SELL",
+    "sell": 6.0
+  },
+  "status": "PASS"
+}

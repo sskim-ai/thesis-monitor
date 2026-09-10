@@ -59,7 +59,12 @@ def test_frozen_semantic_surfaces_remain_unchanged() -> None:
     scope = m12u.scope_audit()
     assert scope["status"] == "FAIL"
     assert [key for key, value in scope["checks"].items() if not value] == [
-        "one_appended_paragraph"
+        "unrelated_files_unchanged",
+        "one_appended_paragraph",
+        "helper_unrelated_ast_unchanged",
+    ]
+    assert scope["unexpected_file_changes"] == [
+        "app/services/directional_financial_context_service.py"
     ]
     assert z.without_m12z_prompt(scope["after_prompt"]).startswith(scope["before_prompt"])
     assert m12e.without_prompt(m12b._git_file(m12b.BASE_SHA, m12e.SERVICE)) == (
