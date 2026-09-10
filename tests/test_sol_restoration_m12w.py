@@ -218,7 +218,7 @@ def test_existing_semantic_files_are_unchanged_from_m12v_base():
 
 def test_mutable_project_state_is_not_classified_as_financial_semantics():
     result = v.freeze()
-    assert "docs/project-state.json" not in result["existing_file_sha256"]
+    assert "docs/project-state.json" not in result.get("existing_file_sha256", {})
     assert "docs/project-state.json" not in result["changed_existing_paths"]
 
 

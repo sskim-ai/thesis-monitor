@@ -89,6 +89,9 @@ def _portable_freeze():
     excluded = {
         "scripts/sol_runtime_adapter_m12w.py",
         "scripts/sol_restoration_m12w.py",
+        "scripts/positive_stronger_bucket_m12x.py",
+        "fixtures/positive_stronger_bucket_contract_m12x.json",
+        "docs/architecture/M12X_POSITIVE_STRONGER_BUCKET_REVIEW.json",
         str(ROOT),
     }
     paths = [

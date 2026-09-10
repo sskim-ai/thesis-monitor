@@ -14,11 +14,11 @@
     "tests/test_first_class_typed_financial_evidence_m12b.py",
     "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
   ],
-  "finished_at": "2026-09-10T02:59:04.066500+00:00",
+  "finished_at": "2026-09-10T03:06:23.757514+00:00",
   "output_path": "artifacts/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/validation/focused.txt",
-  "output_sha256": "25993e8b97d6f8311957dc4b5b309ac08a2a5c3d466c7360be8206288727a73e",
+  "output_sha256": "ed4560410a53a04de38cb5ca9fdb2419c80eda89572c13fd7d02d2b862b0cbca",
   "returncode": 0,
-  "started_at": "2026-09-10T02:58:59.373220+00:00",
+  "started_at": "2026-09-10T03:06:19.303653+00:00",
   "status": "PASS",
   "timed_out": false
 }

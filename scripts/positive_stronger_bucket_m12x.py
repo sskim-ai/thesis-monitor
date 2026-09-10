@@ -47,6 +47,24 @@ SLUGS.update(
         26: "directional-prompt-no-change-proof",
     }
 )
+FROZEN_BASE_SHA256 = {
+    "app/services/coldstart_source_assembly_service.py": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+    "app/services/current_price_context_service.py": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+    "app/services/daily_digest_renderer.py": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
+    "app/services/daily_monitor_service.py": "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
+    "app/services/directional_balance_service.py": "f9da0979f1c614d079fdbce2470d3eed36524eb3674a617ba4691e0cf2620205",
+    "app/services/financial_framework_claim_service.py": "06a97ae8dc918120e1dba1a2a6c60297515a80972ac79e0d7939ea6d44d57903",
+    "scripts/directional_financial_context_m12.py": "158f962cc2592df25160215bbf113dc2ed2e8fda79fd90d0df5260f378908b85",
+    "scripts/first_class_typed_financial_evidence_m12b.py": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
+    "scripts/materiality_scoped_working_capital_grounding_m12c.py": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+    "scripts/qtd_ytd_plain_korean_period_validator_m12d.py": "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0",
+    "scripts/sol_runtime_adapter_m12w.py": "67c493bd816519042e1e08d5c34143e5715f17d4823da21160e54f2cf6cc3f5a",
+    "tests/test_directional_balance_ordinal_calibration.py": "709ec845b9811dab964a49125cff8f4b99ca559f140b6abc1542f91b697c8a5c",
+    "tests/test_financial_exclusion_expectation_m12u.py": "f4679939238998fafc87082df40c7883ab615f9803a769981e7a40085268a8b0",
+    "tests/test_first_class_typed_financial_evidence_m12b.py": "35620d9176f93c5736e9011ed0fc2d3f5cb0439b15575efbd9b84fe078ad538c",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py": "f94539507d037976c2aab05341e6f07086f38fa4c8bacc467a88ecd3678a9bb9",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py": "a3677f5204a9e4a951378e09604b49ab535cefe95171c8ca4af6994345915ddc",
+}
 
 
 def report(number: int, value: object) -> None:
@@ -73,7 +91,12 @@ def _base_bytes(path: str) -> bytes:
 def _freeze_paths(paths: tuple[str, ...]) -> dict[str, object]:
     rows = []
     for path in paths:
-        before = sha(_base_bytes(path))
+        try:
+            before = sha(_base_bytes(path))
+            verification_mode = "EXACT_BASE_GIT_OBJECT"
+        except subprocess.CalledProcessError:
+            before = FROZEN_BASE_SHA256[path]
+            verification_mode = "FROZEN_BASE_SHA256"
         after = sha(Path(path).read_bytes())
         rows.append(
             {
@@ -81,6 +104,7 @@ def _freeze_paths(paths: tuple[str, ...]) -> dict[str, object]:
                 "base_sha256": before,
                 "current_sha256": after,
                 "unchanged": before == after,
+                "verification_mode": verification_mode,
             }
         )
     return {
