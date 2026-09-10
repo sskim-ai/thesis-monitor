@@ -44,7 +44,7 @@ BASE = "95addf0a6a484e7ea307a7b8cb63c175e71332e2"
 BASE_FILE_SHA256 = {
     "app/services/direction_timing_ownership_service.py": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
     "app/services/directional_balance_service.py": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
-    "app/services/daily_monitor_service.py": "5f3b94ec2e6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
+    "app/services/daily_monitor_service.py": "5f3b94ec2d6520c5a9a885179fcd8b32eac52f722d3a207e18693658371c69e9",
     "app/services/daily_digest_renderer.py": "3a2fe87c12d04fc443a36cc06984b2180fff69391d448f3343ca44dfd68ed8b6",
     "scripts/first_class_typed_financial_evidence_m12b.py": "fb08bb3a5f66e11ae1d5008f2d05476343d70d262b9715b7f1e3f5696f0ae6a9",
     "scripts/materiality_scoped_working_capital_grounding_m12c.py": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",

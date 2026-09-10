@@ -86,3 +86,4 @@ def test_legacy_production_surfaces_remain_frozen() -> None:
         "app/services/daily_digest_renderer.py",
     ):
         assert m12ab._freeze_paths((path,))["status"] == "PASS"
+        assert m12ab.BASE_FILE_SHA256[path] == m12ab._file_sha(m12ab.Path(path))
