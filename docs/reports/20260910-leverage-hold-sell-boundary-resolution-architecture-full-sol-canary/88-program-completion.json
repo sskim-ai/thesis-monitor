@@ -61,7 +61,7 @@
   "raw_core_stability": "NOT_MEASURED",
   "real_issuer_model_exposure_count": 0,
   "reasoning_effort": "xhigh",
-  "report_commit": "RESOLVED_FROM_GIT_AFTER_REPORT_COMMIT",
+  "report_commit": "337e54495e24989da3afc2280743753649cd5489",
   "resolved_core_stability": "NOT_MEASURED",
   "runtime_hard_failure_count": 0,
   "runtime_max_elapsed_seconds": 414.861583,
