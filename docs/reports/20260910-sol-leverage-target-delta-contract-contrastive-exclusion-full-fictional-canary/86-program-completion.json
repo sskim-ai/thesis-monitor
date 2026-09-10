@@ -42,7 +42,7 @@
   "fictional_repetition_count": 3,
   "fictional_schema_pass_count": 4,
   "fictional_subject_count": 8,
-  "final_head_sha": "PENDING_FINAL_COMMIT",
+  "final_head_sha": "RESOLVED_FROM_GIT_AT_BUNDLE_EXPORT",
   "financial_context_selection_change_count": 0,
   "first_class_projection_change_count": 0,
   "fixed_score_rule_count": 0,
@@ -301,7 +301,7 @@
       "wrapper_retry_count": 0
     }
   ],
-  "report_commit": "PENDING_FINAL_COMMIT",
+  "report_commit": "3d7c946799a06d82d6a06f28c968da1d9a236b32",
   "root_cause_commit": "8295f0db873148c74383e8137964673d9e204fbc",
   "ruff_result": {
     "command": [
