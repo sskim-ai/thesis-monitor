@@ -1158,6 +1158,38 @@ material stance instability 두 건이다. 다음 scope는
 [M12AA completion](reports/20260910-m12aa-completion.md)과
 [program completion](reports/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/81-program-completion.json)에 있다.
 
+## 2026-09-10 M12AB Leverage HOLD/SELL Boundary Resolution Architecture
+
+M12AB는 M12AA comparator의 non-HOLD `lean=null`, `NOT_HOLD`, not-applicable 표현을 같은
+canonical 상태로 정규화했다. 이에 따라 FIC-FIN-05의 M12AA 관측은 minimum SELL 2회,
+HOLD 4.5:5.5 SELL_LEAN 1회, out-of-band 0회이며 stable preference는
+`MIXED_BOUNDARY`로 정정됐다. M12AA 원본 ZIP은 변경하지 않았다.
+
+Options A-H 검토에서는 Option F를 유일하게 선택했다. AI가 raw core와 인접 경계 선언을
+소유하고, 별도 versioned experimental resolver가 선언된 두 인접 bucket 중 5.0에 가까운
+덜 방향적인 endpoint만 기계적으로 선택한다. raw와 resolved core를 모두 보존하며 majority
+vote, 평균, 고정 점수, evidence-count bucket, ticker-specific 규칙은 도입하지 않았다.
+production schema와 prompt, threshold, increment, tie-break, source semantics도 그대로다.
+
+새 generation `20260910-m12ab-fictional-20260910T092640Z-741ca9a40148`는 source lock
+`1018dd3213e9514f2ebe38f2b0223a3e3a88d096bbef31e2edf90d30edbe0adb` 아래
+`gpt-5.6-sol / xhigh`로 시작했다. run-1 context-01은 4/4 PASS했다. context-02는 transport,
+parse, schema 4/4는 PASS했지만 FIC-FIN-08 보험 문맥에서
+`net_debt_claim_without_complete_net_debt_evidence`와 `financial_sector_generic_reasoning`
+두 objective-semantic hard error가 발생했다. 규칙대로 2/6 calls, 8/24 rows에서 즉시
+중단했고 selective rerun, 중간 hotfix, 새 generation은 없었다. 미실행 16 rows는
+schema failure가 아니라 `NOT_RUN`이다.
+
+FIC-FIN-05의 유일한 관측은 raw/resolved 모두 `HOLD 4.5:5.5 SELL_LEAN`이었지만 boundary
+declaration은 없었다. 요구된 3회 boundary declaration 및 안정성은 측정 불가다. 따라서
+`M12AB_PARTIAL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`이며 다음 scope는
+`LEVERAGE_HOLD_SELL_BOUNDARY_RESOLUTION_REPAIR_GPT56_SOL`이다. 실종목/provider/judge 호출,
+production send/mutation, merge/deploy, scheduler 변경은 모두 0이고 시작과 종료 시 예약
+8개는 모두 PAUSED였다. 상세 결과는
+[M12AB completion](reports/20260910-m12ab-completion.md)과
+[program completion](reports/20260910-leverage-hold-sell-boundary-resolution-architecture-full-sol-canary/88-program-completion.json)에 있다.
+
 ## 부록 A. 핵심 증거 위치
 
 모두 S1 ZIP 내부 상대 경로다.

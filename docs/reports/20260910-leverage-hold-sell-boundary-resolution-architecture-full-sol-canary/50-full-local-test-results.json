@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T09:22:15.028557+00:00",
+  "output_path": "artifacts/20260910-leverage-hold-sell-boundary-resolution-architecture-full-sol-canary/validation/full.txt",
+  "output_sha256": "54c19c772a281a03541750200fd71390ede80c0ce291e5f9e7b2fbddd1e783b9",
+  "returncode": 0,
+  "started_at": "2026-09-10T09:20:58.405554+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

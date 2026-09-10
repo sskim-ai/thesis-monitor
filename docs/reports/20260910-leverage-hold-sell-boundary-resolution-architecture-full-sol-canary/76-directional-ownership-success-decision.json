@@ -1,0 +1,6 @@
+{
+  "ai_owns_raw_and_boundary_declaration": true,
+  "deterministic_core_owns_mechanical_resolution": true,
+  "hidden_scorecard": false,
+  "status": "PASS"
+}

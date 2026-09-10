@@ -1,0 +1,9 @@
+{
+  "corrected_counts": {
+    "hold_sell_lean": 1,
+    "minimum_sell": 2,
+    "out_of_band": 0
+  },
+  "stable_preference": "MIXED_BOUNDARY",
+  "status": "PASS"
+}

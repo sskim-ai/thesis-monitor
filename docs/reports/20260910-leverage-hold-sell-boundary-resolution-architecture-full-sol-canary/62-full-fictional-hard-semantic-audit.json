@@ -1,0 +1,8 @@
+{
+  "errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "objective_semantic_hard_failure_count": 2,
+  "status": "FAIL"
+}
