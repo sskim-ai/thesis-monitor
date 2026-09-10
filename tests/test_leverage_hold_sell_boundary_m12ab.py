@@ -87,3 +87,14 @@ def test_legacy_production_surfaces_remain_frozen() -> None:
     ):
         assert m12ab._freeze_paths((path,))["status"] == "PASS"
         assert m12ab.BASE_FILE_SHA256[path] == m12ab._file_sha(m12ab.Path(path))
+
+
+def test_stance_variance_report_preserves_both_audiences() -> None:
+    new_buyer = {"status": "MEASURED", "variance_subject_count": 1}
+    holder = {"status": "MEASURED", "variance_subject_count": 2}
+
+    audit = m12ab._stance_variance_audit(new_buyer, holder)
+
+    assert audit["status"] == "MEASURED"
+    assert audit["new_buyer"] == new_buyer
+    assert audit["holder"] == holder

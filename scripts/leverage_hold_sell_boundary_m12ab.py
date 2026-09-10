@@ -1184,6 +1184,19 @@ def _field_variance(
     }
 
 
+def _stance_variance_audit(
+    new_buyer: Mapping[str, object],
+    holder: Mapping[str, object],
+) -> dict[str, object]:
+    return {
+        "status": "MEASURED"
+        if new_buyer.get("status") == holder.get("status") == "MEASURED"
+        else "NOT_MEASURED",
+        "new_buyer": dict(new_buyer),
+        "holder": dict(holder),
+    }
+
+
 def finalize() -> None:
     gate = read(OUTPUT / "phase-a-receipt.json")
     documents = [
@@ -1312,7 +1325,7 @@ def finalize() -> None:
     report(67, {"status": "PASS" if complete and all(row.get("status") == "PASS" for row in business_delta_rows) else "FAIL", "rows": business_delta_rows})
     report(68, {"status": "PASS" if complete and not any(row.get("hard_application_count") for row in framework_rows if row["ticker"] == "FIC-FIN-08") else "FAIL", "rows": framework_rows})
     report(69, grounding_summary)
-    report(70, new_buyer)
+    report(70, _stance_variance_audit(new_buyer, holder))
     report(71, confidence)
     report(72, runtime)
     report(73, summary.get("specificity", {"status": "NOT_MEASURED"}))
