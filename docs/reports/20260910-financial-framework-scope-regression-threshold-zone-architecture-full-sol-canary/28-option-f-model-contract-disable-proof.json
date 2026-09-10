@@ -1,0 +1,9 @@
+{
+  "contract": "directional-core-output-v1",
+  "option_f_model_facing_disabled": true,
+  "prompt_has_adjacent_boundary": false,
+  "prompt_sha256": "13b2988652d5d23061c93c3334c3d0c7e8579c7de58c810a645fc66186958758",
+  "schema_has_adjacent_boundary": false,
+  "schema_sha256": "5d63d02c823b8be411ec0b7f294e0d6befb17baeb97c6532c0b8930a40f61d52",
+  "status": "PASS"
+}

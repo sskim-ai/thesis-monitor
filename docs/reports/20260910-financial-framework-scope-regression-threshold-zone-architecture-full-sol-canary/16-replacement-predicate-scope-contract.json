@@ -1,0 +1,8 @@
+{
+  "conditional_contrast": false,
+  "declarative_application": true,
+  "forbidden_framework_on_right": false,
+  "normative_application": true,
+  "predicate_scope": "RIGHT_REPLACEMENT_ONLY",
+  "status": "PASS"
+}

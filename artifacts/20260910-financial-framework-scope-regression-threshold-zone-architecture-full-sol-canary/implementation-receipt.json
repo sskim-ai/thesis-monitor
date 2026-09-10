@@ -1,0 +1,27 @@
+{
+  "application_scope_false_accept_count": 0,
+  "application_scope_false_reject_count": 0,
+  "model_calls": 0,
+  "option_f_model_facing_disabled": true,
+  "reports": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "status": "PASS",
+  "threshold_zone_enabled": true
+}

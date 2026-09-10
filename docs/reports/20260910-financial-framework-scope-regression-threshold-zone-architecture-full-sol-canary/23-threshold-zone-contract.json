@@ -1,0 +1,8 @@
+{
+  "contract": "directional-threshold-zone-v1",
+  "model_self_declaration": false,
+  "raw_state_mutation": false,
+  "renderer_enabled": false,
+  "source": "validated raw direction balance and hold lean",
+  "status": "PASS"
+}

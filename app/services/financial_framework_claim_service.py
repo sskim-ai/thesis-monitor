@@ -42,7 +42,7 @@ _FRAMEWORKS = {
 }
 _TERM = "(?:" + "|".join(_FRAMEWORKS.values()) + ")"
 _CLUSTER = re.compile(
-    _TERM + r"(?:\s*(?:[·,/]|및|와|과|나|이나|and)\s*" + _TERM + r")*",
+    _TERM + r"(?:\s*(?:[·,/]|및|와|과|나|이나|and|or)\s*" + _TERM + r")*",
     re.I,
 )
 _NOMINAL_BRIDGE = (
@@ -65,14 +65,22 @@ _EN_SUFFIX = re.compile(
 )
 _EN_PREFIX = re.compile(r"(?:\b(?:do|does)\s+not\s+(?:apply|use|evaluate)|\bexclude)\s*$", re.I)
 _EN_OBJECT_END = re.compile(_EN_FRAMEWORK + _EN_SECTOR + r"\s*$", re.I)
-_KO_CONTRASTIVE_SUFFIX = re.compile(
-    _NOMINAL_BRIDGE
-    + r"(?:대신|보다(?:는)?|아니라)\s+"
-    + r"(?:(?!하지만|그러나|반면).)+?"
-    + r"(?:을|를|이|가)?\s*"
-    + r"(?:본다|봅니다|사용한다|사용합니다|적용한다|적용합니다|적용된다|적용됩니다|"
-    + r"평가한다|평가합니다|"
-    + r"적절한\s*(?:평가틀|틀|기준|프레임워크)(?:이다|입니다))\s*$"
+_KO_CONTRASTIVE_MARKER = re.compile(
+    _NOMINAL_BRIDGE + r"(?P<marker>대신|보다(?:는)?|아니라)\s+"
+)
+_KO_REPLACEMENT_APPLICATION = re.compile(
+    r"(?:(?!하지만|그러나|반면).)+?"
+    r"(?:을|를|이|가)?\s*"
+    r"(?:본다|봅니다|사용한다|사용합니다|적용한다|적용합니다|적용된다|적용됩니다|"
+    r"적용해야\s*(?:한다|합니다)|평가한다|평가합니다|평가해야\s*(?:한다|합니다)|"
+    r"적절한\s*(?:평가틀|틀|기준|프레임워크)(?:이다|입니다))\s*$"
+)
+_SECTOR_VALID_REPLACEMENT = re.compile(
+    r"보험\s*인수|인수\s*규율|언더라이팅|규제\s*자본|지급\s*여력|"
+    r"자본\s*적정성|건전성|유동성|자산\s*건전성|"
+    r"\bunderwriting\b|\bregulatory\s+capital\b|\bsolvency\b|"
+    r"\bcapital\s+adequacy\b|\bliquidity\b|\basset\s+quality\b",
+    re.I,
 )
 _EN_INSTEAD_OF_PREFIX = re.compile(
     r"(?:use|evaluate|apply|prefer|consider)\s+.+\s+(?:instead\s+of|rather\s+than)\s*$",
@@ -134,19 +142,56 @@ _METRIC_FRAMEWORK = {
 }
 
 
+def _ko_contrastive_replacement(suffix: str) -> bool:
+    marker = _KO_CONTRASTIVE_MARKER.match(suffix)
+    if marker is None:
+        return False
+    replacement = suffix[marker.end() :].strip()
+    return bool(
+        replacement
+        and _SECTOR_VALID_REPLACEMENT.search(replacement)
+        and _KO_REPLACEMENT_APPLICATION.fullmatch(replacement)
+        and _CLUSTER.search(replacement) is None
+    )
+
+
 def _contrastive_replacement_exclusion(*, prefix: str, suffix: str, clause: str) -> bool:
     if _CONDITIONAL.search(clause):
         return False
-    if _KO_CONTRASTIVE_SUFFIX.fullmatch(suffix):
-        return _CLUSTER.search(suffix) is None
+    if _ko_contrastive_replacement(suffix):
+        return True
     if _EN_INSTEAD_OF_PREFIX.fullmatch(prefix):
-        return not suffix and _CLUSTER.search(prefix) is None
+        return (
+            not suffix
+            and _CLUSTER.search(prefix) is None
+            and _SECTOR_VALID_REPLACEMENT.search(prefix) is not None
+        )
     if _EN_RATHER_THAN_PREFIX.fullmatch(prefix):
         replacement = _EN_NOT_BUT_SUFFIX.fullmatch(suffix)
         if prefix.casefold() != "not":
             replacement = _EN_REPLACEMENT_SUFFIX.fullmatch(suffix)
-        return replacement is not None and _CLUSTER.search(suffix) is None
+        return (
+            replacement is not None
+            and _CLUSTER.search(suffix) is None
+            and _SECTOR_VALID_REPLACEMENT.search(suffix) is not None
+        )
     return False
+
+
+_APPLICATION_ROLES = frozenset(
+    {
+        FrameworkReferenceRole.ASSERTED_STATE,
+        FrameworkReferenceRole.APPLIED_DECISION_FRAMEWORK,
+        FrameworkReferenceRole.CONTRADICTORY_MIXED_USE,
+        FrameworkReferenceRole.UNRESOLVED,
+    }
+)
+
+
+def framework_reference_is_application(claim: FrameworkClaim) -> bool:
+    """Return the shared fail-closed application decision for hard validators."""
+
+    return claim.role in _APPLICATION_ROLES
 
 
 def financial_framework_claims(text: str) -> tuple[FrameworkClaim, ...]:

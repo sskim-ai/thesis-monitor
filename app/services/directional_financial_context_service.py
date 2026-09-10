@@ -19,8 +19,8 @@ from app.services.cross_market_decision_engine_service import (
     FrozenModel,
 )
 from app.services.financial_framework_claim_service import (
-    FrameworkReferenceRole,
     candidate_financial_framework_claims,
+    framework_reference_is_application,
 )
 
 
@@ -831,12 +831,6 @@ def validate_directional_financial_semantics(
     claims_by_path: dict[str, list[object]] = {}
     for claim in framework_claims:
         claims_by_path.setdefault(claim.field_path, []).append(claim)
-    application_roles = {
-        FrameworkReferenceRole.ASSERTED_STATE,
-        FrameworkReferenceRole.APPLIED_DECISION_FRAMEWORK,
-        FrameworkReferenceRole.CONTRADICTORY_MIXED_USE,
-        FrameworkReferenceRole.UNRESOLVED,
-    }
     for field_path, text, refs in _claim_rows(payload):
         invalid = [ref for ref in refs if ref not in allowed]
         if invalid:
@@ -871,7 +865,7 @@ def validate_directional_financial_semantics(
             errors.append("prior_year_end_described_as_yoy")
 
         net_debt_language = any(
-            claim.framework == "net_debt" and claim.role in application_roles
+            claim.framework == "net_debt" and framework_reference_is_application(claim)
             for claim in claims_by_path.get(field_path, ())
         )
         total_debt_language = any(
@@ -923,7 +917,7 @@ def validate_directional_financial_semantics(
         applications = [
             claim
             for claim in framework_claims
-            if claim.role in application_roles
+            if framework_reference_is_application(claim)
         ]
         if applications:
             counts["financial_sector_generic_financial_context_leak_count"] += len(applications)

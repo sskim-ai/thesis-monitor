@@ -1,0 +1,51 @@
+{
+  "application_scope_positive": [
+    {
+      "id": "SCOPE-P01",
+      "text": "보험사에는 산업회사식 순부채와 운전자본 대신 보험 인수 규율과 규제자본 기준을 적용해야 한다.",
+      "frameworks": ["net_debt", "working_capital"],
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "SCOPE-P02",
+      "text": "순부채나 운전자본 대신 지급여력과 보험 인수 규율을 평가해야 한다.",
+      "frameworks": ["net_debt", "working_capital"],
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "SCOPE-P03",
+      "text": "Use regulatory capital and underwriting discipline instead of net debt and working capital.",
+      "frameworks": ["net_debt", "working_capital"],
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "SCOPE-P04",
+      "text": "Rather than net debt or working capital, apply regulatory capital and underwriting discipline.",
+      "frameworks": ["net_debt", "working_capital"],
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    }
+  ],
+  "application_scope_negative": [
+    {
+      "id": "SCOPE-N01",
+      "text": "순부채 대신 규제자본을 보지만 순부채가 높아 SELL이다."
+    },
+    {
+      "id": "SCOPE-N02",
+      "text": "보험사에는 운전자본 악화를 SELL 근거로 적용해야 한다."
+    },
+    {
+      "id": "SCOPE-N03",
+      "text": "If net debt is replaced by regulatory capital, net debt may still be the risk framework."
+    }
+  ],
+  "threshold_zones": [
+    {"id": "ZONE-01", "direction": "BUY", "buy": 6.5, "sell": 3.5, "lean": "NOT_HOLD", "zone": "OUTSIDE_THRESHOLD_ZONE_POSITIVE"},
+    {"id": "ZONE-02", "direction": "BUY", "buy": 6.0, "sell": 4.0, "lean": "NOT_HOLD", "zone": "POSITIVE_THRESHOLD_ZONE"},
+    {"id": "ZONE-03", "direction": "HOLD", "buy": 5.5, "sell": 4.5, "lean": "BUY_LEAN", "zone": "POSITIVE_THRESHOLD_ZONE"},
+    {"id": "ZONE-04", "direction": "HOLD", "buy": 5.0, "sell": 5.0, "lean": "NEUTRAL", "zone": "NEUTRAL"},
+    {"id": "ZONE-05", "direction": "HOLD", "buy": 4.5, "sell": 5.5, "lean": "SELL_LEAN", "zone": "NEGATIVE_THRESHOLD_ZONE"},
+    {"id": "ZONE-06", "direction": "SELL", "buy": 4.0, "sell": 6.0, "lean": "NOT_HOLD", "zone": "NEGATIVE_THRESHOLD_ZONE"},
+    {"id": "ZONE-07", "direction": "SELL", "buy": 3.5, "sell": 6.5, "lean": "NOT_HOLD", "zone": "OUTSIDE_THRESHOLD_ZONE_NEGATIVE"}
+  ]
+}

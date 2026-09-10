@@ -1,0 +1,123 @@
+{
+  "cross_field_exclusion_immunity": false,
+  "rows": [
+    {
+      "roles": {
+        "application_count": 2,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "role": "ASSERTED_STATE",
+            "text": "\uc21c\ubd80\ucc44 \ub300\uc2e0 \uaddc\uc81c\uc790\ubcf8\uc744 \ubcf4\uc9c0\ub9cc \uc21c\ubd80\ucc44\uac00 \ub192\uc544 SELL\uc774\ub2e4"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "role": "ASSERTED_STATE",
+            "text": "\uc21c\ubd80\ucc44 \ub300\uc2e0 \uaddc\uc81c\uc790\ubcf8\uc744 \ubcf4\uc9c0\ub9cc \uc21c\ubd80\ucc44\uac00 \ub192\uc544 SELL\uc774\ub2e4"
+          }
+        ],
+        "roles": [
+          "ASSERTED_STATE"
+        ]
+      },
+      "text": "\uc21c\ubd80\ucc44 \ub300\uc2e0 \uaddc\uc81c\uc790\ubcf8\uc744 \ubcf4\uc9c0\ub9cc \uc21c\ubd80\ucc44\uac00 \ub192\uc544 SELL\uc774\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 2,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 1,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "role": "ASSERTED_STATE",
+            "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc6b4\uc804\uc790\ubcf8 \uc545\ud654\ub97c SELL \uadfc\uac70\ub85c \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "ASSERTED_STATE"
+        ]
+      },
+      "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc6b4\uc804\uc790\ubcf8 \uc545\ud654\ub97c SELL \uadfc\uac70\ub85c \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 1,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 2,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "role": "UNRESOLVED",
+            "text": "If net debt is replaced by regulatory capital, net debt may still be the risk framework"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "role": "UNRESOLVED",
+            "text": "If net debt is replaced by regulatory capital, net debt may still be the risk framework"
+          }
+        ],
+        "roles": [
+          "UNRESOLVED"
+        ]
+      },
+      "text": "If net debt is replaced by regulatory capital, net debt may still be the risk framework.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 2,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

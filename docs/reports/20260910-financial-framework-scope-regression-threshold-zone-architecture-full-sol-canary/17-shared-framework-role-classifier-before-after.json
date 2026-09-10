@@ -1,0 +1,19 @@
+{
+  "after": {
+    "errors": [],
+    "roles": [
+      "CONTRASTIVE_REPLACEMENT"
+    ]
+  },
+  "before": {
+    "errors": [
+      "net_debt_claim_without_complete_net_debt_evidence",
+      "financial_sector_generic_reasoning"
+    ],
+    "roles": [
+      "ASSERTED_STATE"
+    ]
+  },
+  "shared_classifier": "candidate_financial_framework_claims",
+  "status": "PASS"
+}

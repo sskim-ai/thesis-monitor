@@ -1,0 +1,7 @@
+{
+  "consumer": "working_capital_sector_validator",
+  "contrastive_replacement_applied": false,
+  "shared_role_predicate": "framework_reference_is_application",
+  "status": "PASS",
+  "true_misuse_still_hard": true
+}
