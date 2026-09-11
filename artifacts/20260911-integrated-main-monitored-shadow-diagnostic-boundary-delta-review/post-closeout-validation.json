@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-09-11T02:06:24Z",
+  "contract": "m12af-post-hard-stop-closeout-validation-v1",
+  "diff_check": {
+    "command": "git diff --check",
+    "status": "PASS"
+  },
+  "focused": {
+    "command": "/Users/sskim/Codex/thesis-monitor/.venv/bin/pytest -q tests/test_integrated_main_monitored_shadow_diagnostic_m12af.py tests/test_two_stage_directional_service.py",
+    "passed": 18,
+    "status": "PASS"
+  },
+  "focused_invocation_note": {
+    "effect": "NONE",
+    "first_attempt": "Referenced a nonexistent test filename and collected no tests.",
+    "model_calls": 0,
+    "provider_calls": 0,
+    "second_attempt": "Corrected to the existing two-stage service test file and passed.",
+    "status": "RECORDED"
+  },
+  "full": {
+    "command": "/Users/sskim/Codex/thesis-monitor/.venv/bin/pytest -q",
+    "passed": 3406,
+    "status": "PASS",
+    "warnings": 1
+  },
+  "json_reports": {
+    "count": 49,
+    "parse_status": "PASS"
+  },
+  "ruff": {
+    "command": "/Users/sskim/Codex/thesis-monitor/.venv/bin/ruff check app scripts tests",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

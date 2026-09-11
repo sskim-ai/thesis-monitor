@@ -1,0 +1,8 @@
+{
+  "completed_model_calls": 1,
+  "detail": "shadow_monolithic_semantic_failure:20260911-m12af-shadow-20260911T015002Z-251b6e0ae38e:context-01:monolithic",
+  "production_side_effects": 0,
+  "status": "FAIL",
+  "stop_reason": "RuntimeError",
+  "wrapper_retry_count": 0
+}

@@ -1,0 +1,10 @@
+{
+  "comparison_complete_ticker_count": 0,
+  "denominator_reconstruction": 0,
+  "generation_id": "20260911-m12af-shadow-20260911T015002Z-251b6e0ae38e",
+  "provider_multiple_backsolving": 0,
+  "reason": "The first frozen monolithic context produced four schema-valid rows, but three rows failed objective semantic validation. The generation therefore stopped before Stage 1 and Stage 2, with no retry.",
+  "security_basis_failure_count": "NOT_MEASURED",
+  "status": "NOT_MEASURED_HARD_STOP",
+  "ticker": "SKHY"
+}

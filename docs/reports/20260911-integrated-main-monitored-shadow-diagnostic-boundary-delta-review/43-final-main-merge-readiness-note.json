@@ -1,0 +1,6 @@
+{
+  "final_main_merge_readiness": "NOT_READY",
+  "main_merges": 0,
+  "reason": "The monitored comparison is incomplete and fresh unseen proof did not occur.",
+  "status": "NOT_READY"
+}

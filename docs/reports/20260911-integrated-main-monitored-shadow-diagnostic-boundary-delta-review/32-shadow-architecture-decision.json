@@ -1,0 +1,7 @@
+{
+  "diagnostic_only": true,
+  "fresh_real_proof_implication": "NONE",
+  "rationale": "The frozen monolithic control failed objective semantics in the first context, so the two-stage path was never called and no architecture comparison can be inferred.",
+  "status": "CLASSIFIED_INCOMPLETE",
+  "two_stage_shadow_compatibility_classification": "TWO_STAGE_COMPATIBILITY_INCOMPLETE"
+}

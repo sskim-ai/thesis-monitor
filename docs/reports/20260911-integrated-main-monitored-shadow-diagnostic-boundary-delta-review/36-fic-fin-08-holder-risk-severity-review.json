@@ -1,0 +1,10 @@
+{
+  "frozen_observation": [
+    "HOLDABLE",
+    "HOLDABLE",
+    "REVIEW"
+  ],
+  "prompt_or_contract_change": 0,
+  "recommended_follow_up": "BUSINESS_THESIS_DELTA_SEMANTICS_REVIEW_ON_INTEGRATED_MAIN",
+  "status": "NOT_MEASURED_HARD_STOP"
+}

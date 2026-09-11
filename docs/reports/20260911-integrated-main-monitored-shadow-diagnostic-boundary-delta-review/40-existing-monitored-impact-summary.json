@@ -1,0 +1,9 @@
+{
+  "attempted_ticker_count": 4,
+  "comparison_complete_ticker_count": 0,
+  "compatibility_cohort_not_unseen": true,
+  "monolithic_semantic_fail_ticker_count": 3,
+  "monolithic_semantic_pass_ticker_count": 1,
+  "production_persistence": 0,
+  "status": "INCOMPLETE_HARD_STOP"
+}

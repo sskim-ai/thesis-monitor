@@ -1,0 +1,8 @@
+{
+  "analog_tickers": [],
+  "balance_averaging": 0,
+  "classification": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "majority_vote": 0,
+  "rationale": "No same-packet monolithic/two-stage monitored comparison completed.",
+  "status": "INCOMPLETE"
+}

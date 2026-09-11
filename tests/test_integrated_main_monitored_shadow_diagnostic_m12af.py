@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from scripts import integrated_main_monitored_shadow_failure_closeout_m12af as closeout
 from scripts import integrated_main_monitored_shadow_diagnostic_m12af as m12af
 
 
@@ -88,3 +89,39 @@ def test_review_resolution_sets_are_frozen() -> None:
 def test_fresh_real_and_production_are_not_next_scope_options() -> None:
     assert all("FRESH_REAL" not in scope for scope in m12af.NEXT_SCOPES)
     assert all("PRODUCTION" not in scope for scope in m12af.NEXT_SCOPES)
+
+
+def test_failure_closeout_keeps_partial_rows_distinct_from_comparisons() -> None:
+    rows = closeout._partial_rows(
+        {
+            "rows": [
+                {
+                    "ticker": "TEST",
+                    "status": "FAIL",
+                    "errors": ["OBJECTIVE_ERROR"],
+                    "core": {
+                        "overall_direction": "HOLD",
+                        "business_thesis_change": "UNCHANGED",
+                        "fundamental_new_buyer": {"stance": "WAIT"},
+                        "fundamental_holder": {"stance": "HOLDABLE"},
+                    },
+                    "business_delta": {"status": "PASS"},
+                    "financial_semantics": {"valid": False},
+                }
+            ]
+        }
+    )
+
+    assert rows == [
+        {
+            "ticker": "TEST",
+            "status": "FAIL",
+            "errors": ["OBJECTIVE_ERROR"],
+            "overall_direction": "HOLD",
+            "business_thesis_change": "UNCHANGED",
+            "new_buyer_stance": "WAIT",
+            "holder_stance": "HOLDABLE",
+            "business_delta": {"status": "PASS"},
+            "financial_semantics": {"valid": False},
+        }
+    ]

@@ -1,0 +1,11 @@
+{
+  "frozen_observation": [
+    "STRENGTHENED",
+    "STRENGTHENED",
+    "UNCHANGED"
+  ],
+  "monitored_signal": "003690 asserted STRENGTHENED and 005930 asserted UNRESOLVED without evidence supporting those business-thesis deltas.",
+  "prompt_or_contract_change": 0,
+  "recommended_follow_up": "BUSINESS_THESIS_DELTA_SEMANTICS_REVIEW_ON_INTEGRATED_MAIN",
+  "status": "INCOMPLETE_WITH_DIRECT_MONITORED_SIGNAL"
+}

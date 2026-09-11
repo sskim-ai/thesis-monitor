@@ -1,0 +1,8 @@
+{
+  "analog_tickers": [
+    "003690"
+  ],
+  "classification": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "rationale": "The real financial-sector name failed the monolithic business-delta gate before Stage 2 holder comparison.",
+  "status": "INCOMPLETE"
+}

@@ -1,0 +1,9 @@
+{
+  "analog_tickers": [
+    "003690",
+    "005930"
+  ],
+  "classification": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "rationale": "Related business-delta failures were observed, but no two-stage comparison completed, so they are signals rather than valid analog proofs.",
+  "status": "INCOMPLETE"
+}

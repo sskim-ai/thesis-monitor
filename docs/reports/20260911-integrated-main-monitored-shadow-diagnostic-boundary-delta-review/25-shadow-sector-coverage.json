@@ -1,0 +1,77 @@
+{
+  "attempted_kr_count": 4,
+  "attempted_sector_coverage_count": 4,
+  "attempted_sectors": [
+    "Communications Equipment",
+    "Insurance and Reinsurance",
+    "Semiconductors",
+    "Steel Manufacturing"
+  ],
+  "attempted_ticker_count": 4,
+  "attempted_us_count": 0,
+  "comparison_complete_ticker_count": 0,
+  "rows": [
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "SK\ud558\uc774\ub2c9\uc2a4",
+      "exchange": "KRX",
+      "industry": "Semiconductors",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "000660",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\ucf54\ub9ac\uc548\ub9ac",
+      "exchange": "KRX",
+      "industry": "Insurance and Reinsurance",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "003690",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "POSCO\ud640\ub529\uc2a4",
+      "exchange": "KRX",
+      "industry": "Steel Manufacturing",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Materials",
+      "ticker": "005490",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\uc0bc\uc131\uc804\uc790",
+      "exchange": "KRX",
+      "industry": "Communications Equipment",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "005930",
+      "underlying_currency": null
+    }
+  ],
+  "status": "INCOMPLETE_HARD_STOP",
+  "task_start_active_count": 22
+}

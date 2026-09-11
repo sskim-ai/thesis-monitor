@@ -1,0 +1,6 @@
+{
+  "fresh_real_proof_readiness": "NOT_READY",
+  "model_calls_real_fresh_unseen": 0,
+  "reason": "M12AF stopped on an objective semantic hard failure.",
+  "status": "NOT_READY"
+}

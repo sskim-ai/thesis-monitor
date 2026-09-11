@@ -1,0 +1,616 @@
+{
+  "artifact_count": 121,
+  "contract": "m12af-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "rows": [
+    {
+      "path": "app/services/two_stage_directional_service.py",
+      "sha256": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+      "size": 6116
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/deterministic-validation.json",
+      "sha256": "1281837a96dd0bb20a7efe1e0b887a9071fab1c7e3862a190af21b9456033ceb",
+      "size": 465
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/failure-closeout-reporter.py",
+      "sha256": "04fa4f4961e0421dc29a8e7c327dc4a4edb73a2ad193ac16e60f397717856403",
+      "size": 22414
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/post-closeout-validation.json",
+      "sha256": "724fcef9e34594d5b9d82c2f7d816ecaa86b02f6475bd4bd4524600bdd8e8194",
+      "size": 1097
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/preflight-invocation-note.json",
+      "sha256": "b619448612477eb8850e2bb89a0950db95e96f5cb6cdbbcc7c13949bb9da69b7",
+      "size": 540
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/program-completion.json",
+      "sha256": "8eab90e89090e02ca7e2867f13cdb5ae803a60a8c6f86797eac61ee1e98ac69e",
+      "size": 4339
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow-model-call-gate.json",
+      "sha256": "b8162727d6ead04e38de39cddbab8f9be4021cb034ca93591410e017226797d0",
+      "size": 2262
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/failure-closeout.json",
+      "sha256": "d186965c938d1c6b45fadd790a37916f0ae18bf13f7855e66d53eecc89ffce30",
+      "size": 12522
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-prompt.txt",
+      "sha256": "5bbd1684741a985cafff946b3a8b1442e7c3bfe0da2cb5a01f9fdaf4dedf8207",
+      "size": 69771
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-schema.json",
+      "sha256": "148f05cabadca8afa939402357ca1911a77bb5b56a6c8221f75b66d2608b01e2",
+      "size": 45838
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-prompt.txt",
+      "sha256": "a98858d5a55cc0803bc7f1b337e51c57377424a4bebfa39d27b90359b928a4d6",
+      "size": 69077
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-schema.json",
+      "sha256": "fdc0c90c30fc8e8d564b1a9b46f1c3163911826c8d88ac243827b718d4b8aa71",
+      "size": 36155
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage2-schema.json",
+      "sha256": "7521f7fd38c60271a88a2ba443d73ae876fae590c7785ea12a68fc6d802a0ee1",
+      "size": 15100
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-prompt.txt",
+      "sha256": "fe66cae3f0148f24c39d5216fdf5b38309bd0e04a0a7d9b3df853e52ae976764",
+      "size": 70299
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-schema.json",
+      "sha256": "649e4d30de1644aba89c936223eea241c04447c277caa93d4976ccd2dd7662c7",
+      "size": 45943
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-prompt.txt",
+      "sha256": "abc92272c277ede64b89b315472df9f2243da6ea4a5a2f32d8a6bb0ed49cf54b",
+      "size": 69605
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-schema.json",
+      "sha256": "1531877ce31bec12aeb8ec7c27093f03b39fb677b5374a11720342cf5f652c53",
+      "size": 36260
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage2-schema.json",
+      "sha256": "cbdb86ca68090b891b6ad0ae8e5984eb94d70a535ea9684f87eddc3d7af7067d",
+      "size": 15205
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-prompt.txt",
+      "sha256": "b85faa11da8e85ed40824159ee7b8f2af49eccc0ea4aa4edf8769229b5ede458",
+      "size": 75675
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-schema.json",
+      "sha256": "d21b00b1d683cacb37f5df6429831d6dc73a206a1ab3d071e48775e3c210c2e5",
+      "size": 45876
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-prompt.txt",
+      "sha256": "e8d8dea766e3b8e977557eb880da4852816fcb622195e2f9454c3afa724b73eb",
+      "size": 74981
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-schema.json",
+      "sha256": "83598b0706249f440384427e46726c663e03c478d757d8040e4c25da4ae06041",
+      "size": 36193
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage2-schema.json",
+      "sha256": "e8768f39ec34d7717db24a7d2f81d330cc6ed84240cffeb648e2c088fa36a2a7",
+      "size": 15138
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-prompt.txt",
+      "sha256": "8d3410f00e90ce3410d6f9f52773252f7d678cc7a0d8b01c28366a80aad054ca",
+      "size": 79726
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-schema.json",
+      "sha256": "82ab6ae8a5a6cfa4e1ff380d47d392df40c1319aa255ffa846cf8a7aa8a0afae",
+      "size": 45991
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-prompt.txt",
+      "sha256": "3765921639b2118e76c96ca3b3301decf77531a17a005d8832d8056f3a3470b6",
+      "size": 79032
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-schema.json",
+      "sha256": "5a757d61da6d049430beeae5faed86890a4ee1c213fb9d77ab59ce316446b824",
+      "size": 36308
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage2-schema.json",
+      "sha256": "580705a237df4d9393dc243455205f5daf7c851711c86c53202a170e36ee0aee",
+      "size": 15253
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-prompt.txt",
+      "sha256": "2c2cb2cb4fea5b2a3e21aa7df767195821901e2338efaa8f5a0f688db91a15c7",
+      "size": 74280
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-schema.json",
+      "sha256": "ebe65a2670055d8d261d420d3a014616a4ad81fc6b4d5a87b48f7d3f2b335242",
+      "size": 45889
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-prompt.txt",
+      "sha256": "6feb4e5297d55959ffdb2a8cac7cb3cbcedc42ea26d3b638208c4bb58144eb02",
+      "size": 73586
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-schema.json",
+      "sha256": "cc13dde7c5a96b35f140f05a8b8462844f97c25640cc72107b44ca751292633f",
+      "size": 36206
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage2-schema.json",
+      "sha256": "ee8c58d8ac27e1eddb1a0a338c41ef47291db5b353a6d678aaac90a5871578b4",
+      "size": 15151
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-prompt.txt",
+      "sha256": "b82c98c1d42f0aa2c97492c28d5d77e2df94acc969b984979d66df3a4ba8a428",
+      "size": 38597
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-schema.json",
+      "sha256": "d0100f02d9de6cf35069aadd0a2594a30ffd3193e8b1287e8952a5b27ea3bdf9",
+      "size": 23135
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-prompt.txt",
+      "sha256": "fe7e6d353cd65913ed92de74f841f3a89fe9fccdfd890f36216ce091d033a2fc",
+      "size": 37903
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-schema.json",
+      "sha256": "83b11b4905a25ae0bd60a4d0101fd7e59c0ca324974164c4f598d0234e97b7d8",
+      "size": 18298
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage2-schema.json",
+      "sha256": "96da9d47e2d068565883629e87d0cb16f2dea0c917815ef862effe19170fb909",
+      "size": 7767
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/000660.json",
+      "sha256": "b394fd7ac9ad5964b002ee0f0d75f6fdca6be8c45c9e184dfa9ea9365b482b98",
+      "size": 2468612
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/003690.json",
+      "sha256": "aef3578f6e37ca51dd11c6262c9792ba76831b1e1253f07d9d22ee70213e11f8",
+      "size": 2258564
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/005490.json",
+      "sha256": "0045a2d91946d6269ee03180f91d84f491d4f4c089f757bfb9e93548d712b0ce",
+      "size": 2429287
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/005930.json",
+      "sha256": "befd71534fd942f24b98d9330b94837b706064f9272b01c7a160967547d963e4",
+      "size": 2410510
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/010120.json",
+      "sha256": "78d4c5871ef257f2e8effa965c13373818a45feb70746b2b052a9a19af9418a4",
+      "size": 2278512
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/012450.json",
+      "sha256": "7fef1499a3020093c6e34f5394543fbf823473d38bed8cd3150897e9ecfb488d",
+      "size": 2265924
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/047810.json",
+      "sha256": "1844c5765a04fac49dc00cf7b2f30ee3fdfde5f237dafe8b965d1eaaf59d950e",
+      "size": 2258987
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/086280.json",
+      "sha256": "07ca70a2fc461287cdc6305a9981dfdeff362ee9249dcd841021f42ceb2bd95a",
+      "size": 2407613
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CORZ.json",
+      "sha256": "9ac2b7108df9575517076003712bb85f95a7e0598c8cd663d7f57bc8d23c42ce",
+      "size": 840926
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CPNG.json",
+      "sha256": "9c53e7cab274c8e915d5d654d22cb59624971fefc7737dab2dfc17868220b23f",
+      "size": 983161
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CRCL.json",
+      "sha256": "1bb834e30da0d750a2f597e267c8eeedc4da0504f8de743007f4bc9143a29d88",
+      "size": 697655
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/GOOGL.json",
+      "sha256": "488429f62811a89173f5fe9db8ef898409dfbfc1bfc0b4d93c05e36dafdd8f5d",
+      "size": 1028257
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/HUT.json",
+      "sha256": "a0f0e9a7107ca6086c0f8cf97e7eb99bb3cccc1f142471a5714614fd571e9d64",
+      "size": 915043
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/IBM.json",
+      "sha256": "38edb3fdb2f06e1b9fbd8df56d4c1b3593caedd660c9021c9a1845f8052ac670",
+      "size": 1035393
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/MU.json",
+      "sha256": "57b9471b235132040c1c6936b7c65b303499cbf8baf7088ffbc534f9697c4bb6",
+      "size": 1013199
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/RXRX.json",
+      "sha256": "2414416b32c76e13e74d4e8693f64b72fe92ac585d3b5c82aec17e5c7115e136",
+      "size": 865604
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/SKHY.json",
+      "sha256": "6cb4d342264c89a2c9568fce7eee68caae3c4697e21fc9d218aa72e12d212015",
+      "size": 604375
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/SNDK.json",
+      "sha256": "e666c4caeb3318eb9a6ef394bff90ff41d0e509b390841da693229f2fc5c4da0",
+      "size": 802898
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/TSLA.json",
+      "sha256": "2f29a8d04295b34f13f96039cbea4d3f4047c66df49f4a129b8451e93d678693",
+      "size": 985850
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/TSM.json",
+      "sha256": "8b73a33b8bc31f87576aecc43a44f80e144525ac72255652c397673d5f9562b5",
+      "size": 926220
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/WRD.json",
+      "sha256": "b2d138d4d3033bb4539a0ace18efa8d522fdf6e33182a22c5741533342c50524",
+      "size": 779636
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/WULF.json",
+      "sha256": "ba14220dec26375d73933689ae5ed5261462128e0c3e6aba01cbb69dc5ddd13e",
+      "size": 938680
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/output.raw.json",
+      "sha256": "5ada59e4fd369c3c2fa23d47fc0e16197e7b11b86da87acd4aa48563e7449d08",
+      "size": 18176
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/prompt.txt",
+      "sha256": "5bbd1684741a985cafff946b3a8b1442e7c3bfe0da2cb5a01f9fdaf4dedf8207",
+      "size": 69771
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/receipt.json",
+      "sha256": "4fe7e6cd681b099f9ab30e526d4abef922f3186ba9f47e5141308312b3d5be1e",
+      "size": 2628
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/run-document.json",
+      "sha256": "32b071cb00a4a6721510c0d0cca5c2d5a3911e245ae43dd298676b264dbe14a9",
+      "size": 112177
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/schema.json",
+      "sha256": "148f05cabadca8afa939402357ca1911a77bb5b56a6c8221f75b66d2608b01e2",
+      "size": 45838
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/model-calls/context-01/monolithic/transport.log",
+      "sha256": "062bbb80c9ad5063ed3cbb5d88c30be6bec7ec08791ba4b5ca447c3f5e72a1b3",
+      "size": 150237
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/program-state.json",
+      "sha256": "0975019dbd70d1cf648b0257b0301d51693c38cfb2a5ee79d84773757ee42434",
+      "size": 36468
+    },
+    {
+      "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/stop.json",
+      "sha256": "e2b6b93cb662f89f6da85b44361449d622a0869fcd4e37780ce7047851d5af3d",
+      "size": 270
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/01-repository-provenance.json",
+      "sha256": "18b52ad3c4f7982d3d1c496b09cdf535aff9fc5e533b7d8904ad749bf9cf5bc1",
+      "size": 414
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/02-latest-result-integrity.json",
+      "sha256": "1bfb6d40f46e10f25d18f162b96e939510b9eaf0ef75e89285bdd0fc7e63b8ce",
+      "size": 614
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/03-m12af-scope-freeze.json",
+      "sha256": "29794eee95749638e443102af9181834d9473bc5d1f20b984cf0d79751fe19e9",
+      "size": 272
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/04-integrated-main-baseline-reuse-proof.json",
+      "sha256": "af60099f9c68118936710f7806eda409d5d4f0aeb29293663c9a3581ef4ac003",
+      "size": 529
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/05-two-stage-architecture-freeze-proof.json",
+      "sha256": "30b779136c0e6a7a6625ab4d856d1dc637f7ea65612069f3ddfff829c3a620e6",
+      "size": 1042
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/06-monolithic-control-freeze-proof.json",
+      "sha256": "aca8e8e19ca97c3e3e1be75e0493c5e7dfbd1973feee545a01046cfd0af9c87b",
+      "size": 328
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/07-fictional-hard-semantic-reuse-proof.json",
+      "sha256": "1d1a911de64082be89eb5e398d7478c444e10f9de962e47994d8b55bbfad96db",
+      "size": 295
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/08-fictional-blocker-reclassification.json",
+      "sha256": "65794336167df8220695d7683a8a8c75c8f56babfdd499a0969d06b320097ead",
+      "size": 1620
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/09-task-start-active-monitored-universe.json",
+      "sha256": "d0947c28137fec5be97356afd42e52ea35724f535f41135ffc391c7b2c41eb55",
+      "size": 10071
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/10-reference-vs-task-start-universe-diff.json",
+      "sha256": "23c8771d15cb6a551f612fbcb231e49103b1e35c97460234917cfd67837c6b45",
+      "size": 146
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/11-shadow-packet-source-contract.json",
+      "sha256": "2d5abb5fe79ced019f6f98cdac9e8ae493b9dcf67d385883ac9c43c206d7d267",
+      "size": 280
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/12-shadow-packet-inventory.json",
+      "sha256": "7c4bea63d538fcf875111de6c3e005b392fdde1cba75bab0e3e1b90efee40810",
+      "size": 6010
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/13-shadow-packet-hash-manifest.json",
+      "sha256": "44b6b5fb2cf48446a4eee514dcbd3a64b8728b2f15c9eb04caa1d2760e5369a4",
+      "size": 1925
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/14-shadow-batching-manifest.json",
+      "sha256": "b1dd8e8645808aca7b360f3632c4ff6e4ae4ba4f2f290cc097fb11223aff9de8",
+      "size": 12343
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/15-shadow-model-call-gate.json",
+      "sha256": "b8162727d6ead04e38de39cddbab8f9be4021cb034ca93591410e017226797d0",
+      "size": 2262
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/16-shadow-per-ticker-comparison-table.json",
+      "sha256": "899592f202676e40e7c6f505f5705255924528cbb2962271c8bcc308ace3792c",
+      "size": 12272
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/17-shadow-core-direction-differences.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/18-shadow-business-delta-differences.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/19-shadow-new-buyer-differences.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/20-shadow-holder-differences.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/21-shadow-same-direction-calibration-differences.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/22-shadow-expected-contract-corrections.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/23-shadow-potential-architecture-regressions.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/24-shadow-unresolved-review-required.json",
+      "sha256": "92fc937605eb959d64dfeb3402d3267faa7f0b8e8c665825b1ba4715fdff3997",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/25-shadow-sector-coverage.json",
+      "sha256": "e0bc9ed5af901bda193bbf9e9f59d6b98a2835a3900946fdcdc26217248f93f9",
+      "size": 2127
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/26-shadow-financial-sector-audit.json",
+      "sha256": "0e59c3416371a8bcdaf509693e91647c62ceaf400826313ae8538233a86a1e39",
+      "size": 3010
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/27-shadow-adr-security-basis-audit.json",
+      "sha256": "091d27d0a347d9c87efbfc814ce20ecfc56df07b78a834f3f4baa032ae9ff4fc",
+      "size": 512
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/28-shadow-cyclical-valuation-framework-audit.json",
+      "sha256": "7f1f622e58b5513b1fd8cc7af0af39a5d8b7180b20c216f092760d5557a6b22f",
+      "size": 9199
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/29-shadow-core-immutability-audit.json",
+      "sha256": "761ef54950ce234ad297fe859bf9c0185117fc943f5d844bd2dd6ef0a2acbafd",
+      "size": 464
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/30-shadow-runtime-audit.json",
+      "sha256": "9b3b0f614fe088294bc3b0dc584aded63ea64a7a51f01a711a5a29326c19e66a",
+      "size": 3490
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/31-shadow-aggregate-summary.json",
+      "sha256": "651db7f1924669c12d4d4fef92d58388366436de4d0f717f68a81f9fd675814b",
+      "size": 12430
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/32-shadow-architecture-decision.json",
+      "sha256": "a62d1c7f1eb7b559fda1af11c84ad2fe7e71a9bdac88900caeb1489f5a12e97f",
+      "size": 382
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/33-fic-fin-05-boundary-vs-monitored-leverage-analogs.json",
+      "sha256": "43b0de7b1a37e9f7d5ecf918f832c43ae7b9455ffa768b62e2c4449bc03ce834",
+      "size": 244
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/34-fic-fin-06-operating-signal-vs-thesis-delta-review.json",
+      "sha256": "d5ef895a02edc2a2a406d5bd2e844f6037fdeacc818c82eb8fff22b9acea30e2",
+      "size": 410
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/35-fic-fin-06-vs-monitored-growth-quality-analogs.json",
+      "sha256": "9554c933bdddea34997512858d84267a348f2d97ed6672934eab4311481485bd",
+      "size": 297
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/36-fic-fin-08-holder-risk-severity-review.json",
+      "sha256": "e4ac311fb9beb5307754546c863f3740b7c840c731b5ce52e55d5f0648759c11",
+      "size": 239
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/37-fic-fin-08-vs-monitored-financial-sector-analogs.json",
+      "sha256": "f93a190ecc8f237df40da40d44fb2d1430cfbe2a603f389e72a57e2672379518",
+      "size": 251
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/38-combined-fictional-monitored-root-cause-summary.json",
+      "sha256": "52d3aec7029c9eb2d10029bbf216170073cf5e694948cce23d74b1605e4b1c85",
+      "size": 628
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/39-next-bounded-repair-decision.json",
+      "sha256": "15182180e6461aeb07cc23db83d44b40dbb7d77b5a3b5263ebd189756dc8d527",
+      "size": 453
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/40-existing-monitored-impact-summary.json",
+      "sha256": "0980bb1532f9b12ee30a95da436fd967a1b280d11ab7cbce17a2d0b055afe354",
+      "size": 277
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/41-two-stage-shadow-compatibility-readiness.json",
+      "sha256": "800af775f32fbadc0b7098a4eb087156a23300d42637f90066b5c0da50d6ec10",
+      "size": 221
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/42-fresh-real-proof-readiness-decision.json",
+      "sha256": "1f3e5cc9ddfb67dd1eb367b91ff7a59a154f3f2bcd0aa2eb5f06bcdfdd04b712",
+      "size": 179
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/43-final-main-merge-readiness-note.json",
+      "sha256": "8dc7fa03669293d58c15bb5be8a6b04f5098d2b2c944c61481c3faec71f78cd9",
+      "size": 185
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/44-production-no-change.json",
+      "sha256": "d258b96aa089501740fd6d8eb6fd1ba41c5b8462d97d54cebfc89c80d150e040",
+      "size": 416
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/45-schedule-pause-observation.json",
+      "sha256": "3c4e7a18518fe72ed4248b87114848661fd74280ffcedab99ecb947dfce52d98",
+      "size": 2641
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/46-hosted-ci-portability-handoff.json",
+      "sha256": "9fda0b2a0273f5b1fac69cee23df5d3a37cb2950951a30aa3e44496259ec73a8",
+      "size": 166
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/47-astra-future-experiment-handoff.json",
+      "sha256": "c5485b3693e8d81e7b8d71dd8258ee987bd27b62ad5afa0b162738fe2640eb1a",
+      "size": 156
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/48-master-workflow-update.json",
+      "sha256": "4a1e705358a3967c2c15cbd9e984cf31e5b599ed8977f6b61d366555a08d08e3",
+      "size": 362
+    },
+    {
+      "path": "docs/reports/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/49-program-completion.json",
+      "sha256": "8eab90e89090e02ca7e2867f13cdb5ae803a60a8c6f86797eac61ee1e98ac69e",
+      "size": 4339
+    },
+    {
+      "path": "docs/work-instructions/20260911-integrated-main-monitored-shadow-diagnostic-and-boundary-delta-review.md",
+      "sha256": "6334b7bc2b8ef7d53f491e69980489d36acecb9ac5dba252a4a11b07e6905d9c",
+      "size": 33730
+    },
+    {
+      "path": "scripts/integrated_main_monitored_shadow_diagnostic_m12af.py",
+      "sha256": "d5e877b81cff78d933a51085b84c8fb6d19dbb3beba6956c3a5fc6b2c350072b",
+      "size": 72536
+    },
+    {
+      "path": "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py",
+      "sha256": "3195cb6afcbf7d374f89cf96b8053a0c191df14a6af0e1828525e064fe965f2d",
+      "size": 122764
+    },
+    {
+      "path": "tests/test_integrated_main_monitored_shadow_diagnostic_m12af.py",
+      "sha256": "aa399a2ab149a82730ef412cbccf548e6ad8c61c929ff53b7f7b091ba00ac2f4",
+      "size": 4121
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "secret_scan_failures": [],
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

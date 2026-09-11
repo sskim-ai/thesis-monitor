@@ -1,0 +1,26 @@
+{
+  "architecture": "TWO_STAGE_COMPATIBILITY_INCOMPLETE",
+  "fic_fin_05": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "fic_fin_06": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "fic_fin_08": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "root_causes": [
+    {
+      "count": 2,
+      "error": "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA",
+      "tickers": [
+        "003690",
+        "005930"
+      ]
+    },
+    {
+      "count": 1,
+      "error": "net_debt_claim_without_complete_net_debt_evidence",
+      "tickers": [
+        "005490"
+      ]
+    }
+  ],
+  "schema_failure_count": 0,
+  "status": "INCOMPLETE_HARD_STOP",
+  "transport_failure_count": 0
+}

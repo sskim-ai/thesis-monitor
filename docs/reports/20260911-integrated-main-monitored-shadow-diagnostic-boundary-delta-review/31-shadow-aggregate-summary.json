@@ -1,0 +1,243 @@
+{
+  "active_monitored_count": 22,
+  "attempted_context_count": 1,
+  "business_delta_violation_count": 2,
+  "comparison_complete_ticker_count": 0,
+  "completed_comparison_context_count": 0,
+  "completed_model_call_count": 1,
+  "monolithic_output_ticker_count": 4,
+  "monolithic_semantic_fail_ticker_count": 3,
+  "monolithic_semantic_pass_ticker_count": 1,
+  "packet_available_count": 22,
+  "packet_unavailable_count": 0,
+  "partial_debt_total_claim_count": 1,
+  "planned_context_count": 6,
+  "planned_model_call_count": 18,
+  "rows": [
+    {
+      "business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E02",
+            "canonical_ref": "canonical:monitoring:confirmation_transition",
+            "selected_ref": "canonical:monitoring:confirmation_transition",
+            "statement": "{\"current_state\": \"holding_above\", \"previous_state\": \"holding_above\", \"transition\": \"holding_above_to_holding_above\"}",
+            "supported_directions": []
+          },
+          {
+            "alias": "E06",
+            "canonical_ref": "decision-evidence:6b6165e2d38d67a5ff00",
+            "selected_ref": "decision-evidence:6b6165e2d38d67a5ff00",
+            "statement": "HBM4\uc640 AI \uc11c\ubc84\uc6a9 \uace0\ubd80\uac00 \uba54\ubaa8\ub9ac \uc218\uc694\uac00 \ub192\uc740 \uc218\uc775\uc131\uc744 \uc9c0\uc9c0\ud55c\ub2e4. \ub2e4\ub9cc \ud53c\ud06c \uc774\uc775\uc758 \ub0ae\uc740 PER\ubcf4\ub2e4 mid-cycle \uc218\uc775\uc131, PBR, FCF\uc640 ROIC\ub97c \uc6b0\uc120\ud55c\ub2e4. HBM4 \uc218\uc728\u00b7ASP\u00b7\uc7a5\uae30\uacc4\uc57d\uc774 \ub298\uc5b4\ub098\ub294 CAPEX\ub97c \uc0c1\uc1c4\ud574 \uc8fc\ub2f9\uac00\uce58\uc640 \ud604\uae08\ucc3d\ucd9c\uc744 \ub192\uc774\ub294\uc9c0\uac00 \uc7ac\ud3c9\uac00\uc758 \ud575\uc2ec\uc774\ub2e4.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "canonical:monitoring:confirmation_transition",
+          "decision-evidence:6b6165e2d38d67a5ff00"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "business_thesis_change": "UNCHANGED",
+      "errors": [],
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "holder_stance": "HOLDABLE",
+      "new_buyer_stance": "WAIT",
+      "overall_direction": "HOLD",
+      "status": "PASS",
+      "ticker": "000660"
+    },
+    {
+      "business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [
+          "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+        ],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E19",
+            "canonical_ref": "canonical:monitoring:confirmation_transition",
+            "selected_ref": "canonical:monitoring:confirmation_transition",
+            "statement": "{\"current_state\": \"retest_held\", \"previous_state\": \"retest_in_progress\", \"transition\": \"retest_in_progress_to_retest_held\"}",
+            "supported_directions": []
+          },
+          {
+            "alias": "E20",
+            "canonical_ref": "decision-evidence:52af705a4279a23fba6c",
+            "selected_ref": "decision-evidence:52af705a4279a23fba6c",
+            "statement": "\uc7ac\ubcf4\ud5d8 \uac31\uc2e0\uc694\uc728\uacfc \uc190\ud574\uc728 \uad00\ub9ac\uac00 \uc548\uc815\uc801\uc778 \uc5b8\ub354\ub77c\uc774\ud305 \uc774\uc775\uc744 \ub9cc\ub4e4\uace0 \ud22c\uc790\uc218\uc775\uacfc \uc790\ubcf8\uc801\uc815\uc131\uc774 ROE\u00b7\ubc30\ub2f9\uc5ec\ub825\uc744 \ub192\uc774\ub294\uc9c0\uac00 \ud575\uc2ec\uc774\ub2e4. 2026\ub144 \uc790\uc0ac\uc8fc \uc804\ub7c9 \uc18c\uac01\uc740 \uc8fc\ub2f9\uac00\uce58\uc640 \uc790\ubcf8\ubc30\ubd84 \uce21\uba74\uc758 \uae0d\uc815 \uc2e0\ud638\uc9c0\ub9cc, \uc7a5\uae30 \uc7ac\ud3c9\uac00\ub294 \ud569\uc0b0\ube44\uc728\u00b7\ub300\ud615\uc7ac\ud574 \uc190\uc2e4\u00b7\ud22c\uc790\uc218\uc775\ub960\uacfc \uc790\ubcf8\uc801\uc815\uc131\uc774 \uc9c0\uc18d\uc801\uc73c\ub85c \ub4b7\ubc1b\uce68\ud574\uc57c \ud55c\ub2e4. \uac00\uaca9\u00b7\uc218\uae09\uc740 \uc9c4\uc785 \ubcf4\uc870\uc815\ubcf4\ub85c\ub9cc \ubcf8\ub2e4.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "canonical:monitoring:confirmation_transition",
+          "decision-evidence:52af705a4279a23fba6c"
+        ],
+        "status": "FAIL",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 1
+      },
+      "business_thesis_change": "STRENGTHENED",
+      "errors": [
+        "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+      ],
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "holder_stance": "HOLDABLE",
+      "new_buyer_stance": "ATTRACTIVE",
+      "overall_direction": "BUY",
+      "status": "FAIL",
+      "ticker": "003690"
+    },
+    {
+      "business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E15",
+            "canonical_ref": "decision-evidence:d11144dcad43e1cb5b64",
+            "selected_ref": "decision-evidence:d11144dcad43e1cb5b64",
+            "statement": "POSCO\ud640\ub529\uc2a4\uc758 \uc7ac\ud3c9\uac00 \uc870\uac74\uc740 \ucca0\uac15 \ubcf8\uc5c5\uc758 \uc2a4\ud504\ub808\ub4dc\u00b7\uc218\uc775\uc131 \ud68c\ubcf5\uacfc \ub9ac\ud2ac\u00b7\uc774\ucc28\uc804\uc9c0 \uc18c\uc7ac\uc758 \ud751\uc790 \uc9c0\uc18d\uc774 \ub3d9\uc2dc\uc5d0 \ub098\ud0c0\ub098\uace0, \uadf8 \uc131\uc7a5\uc774 FCF\uc640 ROIC \uac1c\uc120\uc73c\ub85c \uc5f0\uacb0\ub418\ub294 \uac83\uc774\ub2e4. \ub300\uaddc\ubaa8 CAPEX\uc640 \uc804\ud658\u00b7\ud76c\uc11d \uac00\ub2a5\uc131\uc774 \uc874\uc7ac\ud558\ubbc0\ub85c \uc5f0\uacb0 \uc601\uc5c5\uc774\uc775 \uac1c\uc120\ub9cc\uc73c\ub85c\ub294 \ucda9\ubd84\ud558\uc9c0 \uc54a\uc73c\uba70 \uc644\uc804\ud76c\uc11d \uae30\uc900 \uc8fc\ub2f9\uac00\uce58\uac00 \uc99d\uac00\ud558\ub294\uc9c0\ub97c \ubcf8\ub2e4. \uc18c\uc7ac \uc0ac\uc5c5\uc774 \ud14c\ub9c8\uac00 \uc544\ub2c8\ub77c \ubc18\ubcf5 \uac00\ub2a5\ud55c \uc774\uc775\uacfc \ud604\uae08\ud750\ub984\uc73c\ub85c \uc804\ud658\ub420\uc218\ub85d \ucca0\uac15\uc8fc \ud560\uc778 \ucd95\uc18c \uac00\ub2a5\uc131\uc774 \ucee4\uc9c4\ub2e4.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E33",
+            "canonical_ref": "canonical:monitoring:confirmation_transition",
+            "selected_ref": "canonical:monitoring:confirmation_transition",
+            "statement": "{\"current_state\": \"not_reached\", \"previous_state\": \"not_reached\", \"transition\": \"not_reached_to_not_reached\"}",
+            "supported_directions": []
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "decision-evidence:d11144dcad43e1cb5b64",
+          "canonical:monitoring:confirmation_transition"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "business_thesis_change": "UNCHANGED",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence"
+        ],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 1,
+        "valid": false,
+        "year_end_as_yoy_count": 0
+      },
+      "holder_stance": "HOLDABLE",
+      "new_buyer_stance": "WAIT",
+      "overall_direction": "HOLD",
+      "status": "FAIL",
+      "ticker": "005490"
+    },
+    {
+      "business_delta": {
+        "alias_resolution_failure_count": 0,
+        "errors": [
+          "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+        ],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "canonical:monitoring:confirmation_transition",
+            "selected_ref": "canonical:monitoring:confirmation_transition",
+            "statement": "{\"current_state\": \"holding_above\", \"previous_state\": \"crossed\", \"transition\": \"crossed_to_holding_above\"}",
+            "supported_directions": []
+          },
+          {
+            "alias": "E19",
+            "canonical_ref": "decision-evidence:5d0604cb4c5205408584",
+            "selected_ref": "decision-evidence:5d0604cb4c5205408584",
+            "statement": "\uc0bc\uc131\uc804\uc790\uc758 \uc7ac\ud3c9\uac00 \ud575\uc2ec\uc740 HBM4\u00b7HBM4E \uace0\uac1d \ucc44\ud0dd\uacfc \uc11c\ubc84 \uba54\ubaa8\ub9ac \uac15\uc138\uac00 DS \uc774\uc775\ub960\uacfc \uc804\uc0ac \ud604\uae08\ucc3d\ucd9c\ub825 \uac1c\uc120\uc73c\ub85c \uc5f0\uacb0\ub418\uba74\uc11c HBM \uacbd\uc7c1\ub825 \ud560\uc778\uae4c\uc9c0 \ucd95\uc18c\ub418\ub294 \uac83\uc774\ub2e4. \uba54\ubaa8\ub9ac ASP \uc0c1\uc2b9\ub9cc\uc73c\ub85c\ub294 \ucda9\ubd84\ud558\uc9c0 \uc54a\uace0, HBM \ucd9c\ud558\u00b7DS \ub9c8\uc9c4\u00b7\uc601\uc5c5\ud604\uae08\ud750\ub984\uc774 \ud568\uaed8 \uac1c\uc120\ub418\uc5b4\uc57c \ud55c\ub2e4. \ub3d9\uc2dc\uc5d0 \ub300\uaddc\ubaa8 CAPEX\uc758 \ud6a8\uc728\uacfc DX \ub4f1 \ube44\uba54\ubaa8\ub9ac \uc0ac\uc5c5\uc774 \uc804\uc0ac \uc774\uc775\uc744 \uc5bc\ub9c8\ub098 \uc0c1\uc1c4\ud558\ub294\uc9c0\uae4c\uc9c0 \ubcf4\uba70, \uacb0\uad6d \ud22c\uc790 \ud655\ub300\uac00 ROIC\uc640 FCF\ub85c \ud68c\uc218\ub418\ub294\uc9c0\ub97c \ud575\uc2ec \uac80\uc99d\ucd95\uc73c\ub85c \ub454\ub2e4.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E36",
+            "canonical_ref": "canonical:monitoring:risk_reward_transition",
+            "selected_ref": "canonical:monitoring:risk_reward_transition",
+            "statement": "{\"change_state\": \"deteriorated\", \"current_ratio\": 0.225714, \"previous_ratio\": 0.649983}",
+            "supported_directions": [
+              "WEAKENED"
+            ]
+          }
+        ],
+        "observed": "UNRESOLVED",
+        "selected_refs": [
+          "canonical:monitoring:confirmation_transition",
+          "decision-evidence:5d0604cb4c5205408584",
+          "canonical:monitoring:risk_reward_transition"
+        ],
+        "status": "FAIL",
+        "supported_change_directions": [
+          "WEAKENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 1
+      },
+      "business_thesis_change": "UNRESOLVED",
+      "errors": [
+        "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+      ],
+      "financial_semantics": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      },
+      "holder_stance": "HOLDABLE",
+      "new_buyer_stance": "WAIT",
+      "overall_direction": "HOLD",
+      "status": "FAIL",
+      "ticker": "005930"
+    }
+  ],
+  "status": "INCOMPLETE_HARD_STOP"
+}
