@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import zipfile
 
 from scripts import main_integration_two_stage_directional_m12ae_r2_runtime as r
@@ -471,12 +472,14 @@ def _scan(path: Path) -> list[str]:
         return []
     folded = path.read_text(encoding="utf-8", errors="replace").casefold()
     indicators = {
-        "openai_api_key": "sk-",
-        "telegram_bot_token": "bot_token=",
-        "authorization_bearer": "authorization: bearer ",
-        "private_key": "-----begin private key-----",
+        "openai_api_key": r"\bsk-[A-Za-z0-9_-]{20,}",
+        "telegram_bot_token": r"\b\d{6,12}:[A-Za-z0-9_-]{30,}\b",
+        "authorization_bearer": (
+            r"authorization:\s*bearer\s+[A-Za-z0-9._-]{20,}"
+        ),
+        "private_key": r"-----begin (?:rsa |ec )?private key-----",
     }
-    return [name for name, token in indicators.items() if token in folded]
+    return [name for name, pattern in indicators.items() if re.search(pattern, folded)]
 
 
 def bundle(output_zip: Path) -> None:
