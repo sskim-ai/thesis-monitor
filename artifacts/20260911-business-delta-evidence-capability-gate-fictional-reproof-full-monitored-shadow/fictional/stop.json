@@ -1,0 +1,8 @@
+{
+  "completed_model_calls": 1,
+  "detail": "FICTIONAL_STAGE1_HARD_SEMANTIC_FAILURE:20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4:run-1:stage1:context-01",
+  "monitored_shadow_model_calls": 0,
+  "status": "FAIL",
+  "stop_reason": "RuntimeError",
+  "wrapper_retry_count": 0
+}

@@ -1,0 +1,10 @@
+{
+  "base_integration_head_sha": "a296ed2d353d5f811eaf70748c3f6cb90fdcca30",
+  "branch": "codex/20260911-business-delta-evidence-capability-m12ai",
+  "implementation_head_sha": "13b86bf41eaf56da86a8213efb2b99449c4dd1bf",
+  "main_fetch_or_merge": 0,
+  "previous_final_sha": "4703632087ea1d8818c6cb471fd8290f7d99a4b3",
+  "repository": "sskim-ai/thesis-monitor",
+  "status": "PASS",
+  "work_instruction_commit": "b5b1029d788426e42cefaf9236b9ddc86b7ceba5"
+}

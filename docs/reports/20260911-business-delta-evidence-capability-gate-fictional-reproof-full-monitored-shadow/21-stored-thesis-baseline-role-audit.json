@@ -1,0 +1,3472 @@
+{
+  "eligible_count": 0,
+  "row_count": 385,
+  "rows": [
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:2f9c52beb624deab15d0",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:6b6165e2d38d67a5ff00",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:497fa9eb64e232b6b17a",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:9152a60a51075de9e979",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:8e40ea29aff53eebb43d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:8b53a9f7450aad10afd3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:b4616e0ec381fe152d07",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:3fe64cfcebe6084249f6",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:98d2996718a0efb76056",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E38",
+      "canonical_ref": "decision-evidence:e69aab50953f46aec513",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E39",
+      "canonical_ref": "decision-evidence:cbc64e2b6442e7fe5397",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:4f60e9255e79d4eeaf5e",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:21ddf2dc43fc2951402b",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:e3a74d88f4a9e45a8247",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:d7f65cbd991a34b5a64f",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:b070c24aa5450d9bf543",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:06b7f50ebb7ed7843c6d",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:012ae32ef5adca812565",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:2e5b0cdb077072e34b15",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:52af705a4279a23fba6c",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:c4f804172911eec66544",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:30eb7b45f4a7dacf1700",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:685d36bf29d8d6514ca3",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:ecad16c5eed63ceaa54d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:1c04143a79ea2443a784",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:cfc90990a93562bc6bda",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:c43ded70ccb477631e52",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:d11144dcad43e1cb5b64",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:d50880e2b89369b1c380",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:120e5e8a3ca67f7ceb2f",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:94be39ae695cc6dc42e4",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:14d712e19c3796718378",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:97e9a8a1a41d690cb617",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:19a60ba704e4a95c9e0c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:9e28762c8480fabf046e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:663bc955d1475ab17b1a",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:c0703efb51b207666566",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:9d4b172daa3f79473c38",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:e8be1661a856f1f1ba8c",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:18dfe4a154ecc2809a09",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:abed876ba50ad4ba2680",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:cbc17715825321d622ec",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:c61197f6df81130ddf44",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:41715b63ce8185b81fc4",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:9a9c496c75903de70eff",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:0cbeff3e598f042118ac",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:6a29157a96a61da8e190",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:ace9ead067c5d563f792",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:5d0604cb4c5205408584",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:0c46003fb1a3502a8789",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:27e6842f07cb0e200d67",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:98b67b08d58fe9b5656e",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:48ae6c535d28ac0c7bfb",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:878a6c52687647f6e13a",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:d2cc3045a6dfa23f53cf",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:31c3f96ce5d02382d441",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:043e66f308e46ff53bd2",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:35e7e78f369d9390f50d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:48aecc6d8534add68a45",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:8c619918b4fc57e796d8",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:f3369e2d19ebb67502d3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E40",
+      "canonical_ref": "decision-evidence:fb5aaa3fc2608a1659b1",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:d339342b5a1a45ed98be",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:e3e0e73c7b80428e5459",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:6587bd35e21954e0b989",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:67e5798e627ad7156f27",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:e4297275c34f2ec33f34",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:ef1a041a2b14d6f0cfed",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:b323df7b06a23406fcb3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:fe01a327c411fcd97818",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:00742ebb0c0328cffa0c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:07bd40f3db4654398d69",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:8de51310ea51ac9cba46",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:96167e308b2a56a175bd",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:96d8da63d08054f940f1",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:c1e92c00aee5f2e76668",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:ebe72087294749c8f31b",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:36b11e3f42d80ce72340",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:80126c333b4593e47b0f",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:10f8a26bd72807305140",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:63d391a34d2dad45acc2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:f52df7e1fe0ef7c88af2",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:d301fa78465237a214e2",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:0788d740c3b816055c8c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:e87003d3fa1ebea5acb2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:280ef767c3ae012c2a81",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:13f82856194ec741d524",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:de85dd44c31a5a49c91e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:7903584e4cd122656e19",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:7a9b700c1c43c2cf5e66",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:e3b3377c6fe7404a03c5",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:153423f6668cb8d95156",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:5a2b83d8dad0d8de8e69",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:4ee09d7109052199a77e",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:5c5abaf2125d13700364",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:0308e79765a08c9e605d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:fc61c6ce5aa6a1fdbbce",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:78eb8779eb5b7d08582d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E37",
+      "canonical_ref": "decision-evidence:a1e304f095b68482fd60",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E39",
+      "canonical_ref": "decision-evidence:7f3904077a5434759cc2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:e9c5e80d57ab887587ef",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:c4b11388ce70f4d55d97",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:e65b5eb1076c5c66dd6e",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:257db315f2377b4d9072",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:4443c1de0d2e5c094ff4",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:75aa487e9079bfd132dc",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:0cbdc9e564c1ff8086c0",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:b1580cbecd63d31a8b5e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:df6e4a0c3faa62be9366",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:47a6d53b9552be10276f",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:d0bc43551c0850b3f1b6",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:1d9b4bb69cb1f135aa3e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:fe2ff0beede47d984863",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:ba1a7ae734bedf7b42c4",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:b6dbf7c8c8b310890664",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:1fecf60e218f20969a50",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:40ca929fa5eb18ef5b49",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:0a5b8adc601e0481e3cd",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:b963ed0884db1bde19e7",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E37",
+      "canonical_ref": "decision-evidence:80e166bcdadd1090d583",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:8eca1bb884fd8f709a5a",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:5979d204f48a93a7626e",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:b478647c84aa3dee9e14",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:5befd6dfce7e27fae0e4",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:c1cf909ab62eb592d1d8",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:28d1cff5b27c18030fca",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:155f1b543ba355440123",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:6c531ea890f0ec18cb83",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:a8be713e3a59c8d0c78f",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:620681097ffebbfa7287",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:485b0ab5ebfb5606a96d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:2126cf3d977d3189ade5",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:bc43a040bfbde0a74b29",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:2faafb9528e0aecc47b0",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:23e75f1e06b30ebd33c0",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:7a021b902278f0655bc6",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:7ef1cbecfc4b2fc8d799",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:32c9de4fb98ce0f35993",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:ab5920556adde1e2fb17",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:192202f2ad376ac36e38",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:464fa6687c0246031611",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:35d4bb9f5d7d5501418f",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:36090e913951b40587f1",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:cc2821e2af21b4635a68",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:91376d7a4ff3b5f1d384",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:0f836ab7e80714aed726",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:bdcb05961a2df7455d93",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:359d3801bde7f3625d6c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:f988e9a6083fdac84102",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:7a474a7f597f9a91c998",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:06164bafce7057b20b52",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:d9ef83e7a574c9185b09",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:9cd49978be5160e54a03",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:fb3e833eaecedb42e2ae",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:99640891872560592d7a",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:acea5134d19f8ded2449",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:02b2ecf8c9efa8dce70a",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:8906a34193399a6c5d0a",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:f4a5b684431292d9085f",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:d45d3f5246d3564c410b",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:0ef84cb409ca7f82f5e9",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:a335519fd9d606b5650d",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:34eafd21d6a6a7d2d96d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:08143ddd35542b9ad4de",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:79028dcbfa11c8846d7b",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:1a001f061b284baba978",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:e5bce0d51af127ce30ec",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:a633f218afcc829f241d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:1a88821e3293abdd188d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:c6b338c45aaae1f1cb71",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:97a7d8b1bd340c7e8023",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:0d741ce1e9c5866c6512",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:bcbf72893206019a5836",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:f4c0cea0d38305985210",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:84ee46b805c2bfef0109",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:e71c5614d7ffd54ea5f1",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:37b7453bd0e4734c7bce",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:82221216c165c5760cba",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:eeab8dc77c2d489924c0",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:66f1b3375c8da97d27d3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:0f037107ecd5d22b0468",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:305a91dd774b63e72a70",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:e35ff3fd6aad2793aa06",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:2fc3dcbc87507a0909fd",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:beee0feed84acc8fe672",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:65dab49dc52c42ea2eb0",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:50a8854112f9b0152dae",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:99f1d5354d0479b1afed",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:ce096eec7439591c0246",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:52b3b639e2122ecd51bd",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:568b87f1490205922073",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:f9389a85c4423a03dbee",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:f97a9d471eb72b218274",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:194457c71ac726c17374",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:18af2d7ae4cdf41c4e4b",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:e91745bd16fef5ba4649",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:f99b2da186a81fc1c21d",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:e557bc193349d6c5e071",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:cb38387d41d10294e871",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:119eb75d8acc25305dc3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:3d5f5063af522b75f15d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:4bf92758d97dfea9009c",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:2b6d4fb027ec96785224",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:55c968b74bb8bf591006",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:1eab5946cbdbeae961f6",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:43391517a24316b82ddb",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:da18106c96f53ecfd7b8",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:e3d2493f5eba998dc6c6",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:9a44445c9140d82dae68",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E37",
+      "canonical_ref": "decision-evidence:47e26c6f53f6504d798d",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:0750ded5723b45b38bd9",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:9ed7b225e958e4548c58",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:b939d70a17422e43c177",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:8fea96b768334f56d13c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:7f12a241fbf8249e9ea5",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:17fcdc3c479c97b92d8a",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:5540a963a80231f49a70",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:1ab32a7d65e4aa419957",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:f4bed9ae5b76b311f6ff",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:98b0b0b4186ae9136ab0",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:457d43794a37d4fc9955",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:8b040f8545884d2f40f7",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:1b0709720f50a6bda8e2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:fe783c093a24882e06a6",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:4cfce0c1d1d7f61e130c",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:4c28d1cc7a794cc4171c",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:e12752508a662d6e988d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:6a3bc11a62cd73678d22",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:a9a5a806fa52791bb318",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:85cc2f47424078a0d841",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:e9b769462b74d97c8dbc",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:972c4c6634d9dcdfd155",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:daada1e8e154d258cf46",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:a4e33fdbb619e8a75ec6",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:5c0befb68cfb7c63e938",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:f99ba7d4957627781057",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:54f61a882c928f99e40b",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:d746b38e4f88e9088509",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:cfe5dab36abc0cc9e946",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:e5705361ce4c4132cde7",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:f5f5d02d68353ae33d2d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:ed03d8f73e419de39113",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:1e35c6622a824b5fbe74",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:6ffdd7cb79ccf27ac957",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E38",
+      "canonical_ref": "decision-evidence:a68244a9f6772590082d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:beeedb93a3d123acbe7b",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:b19318d37863cd366850",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:e7b80cece0f60bb16c47",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:6ce38081e8f272ad68a3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:7d84dda8918aa8dbcf26",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:0fbd11a351ed9cd9ad17",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:76ac8d9e50fd630777ff",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:2c7de5970a1beda446d7",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:8101aa12a05f32d84593",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:fc21b074ee6020ea8322",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:a28e6663801fec8ab611",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:00cb0b2759fcf17f5a54",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:cc362633dd4b99be7455",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:980ac3e0c2a92843886d",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:7ff0b78ca4a7e0e86f81",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:31b3afdedc39a02d46b5",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:a3ecd96de1e2ab92ea19",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:472cc5c042bf61014917",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E40",
+      "canonical_ref": "decision-evidence:b4450f1f4ffd534fe72c",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:b7dbcfcc7a8af1559f33",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:b49e4b9b18f4c58e3f68",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:cf625978558ad8aee418",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:cb8ca0214f6312e64b75",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:a46a61d055249bee0708",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:76019cf1946660a50862",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:5c119a38e114ea930b42",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:d0c40c9de69b5ecd366a",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:89c4eda6b0a5385fecf8",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:4f0bc47466e1016adb48",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:cff20610893f66f3069a",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:00b417dd6fd4fc571834",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:b1d79226f524ced701e5",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:bb19872705545d1af04f",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "decision-evidence:774e2e7f46d2025d7257",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:49f131c127e173452c39",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:d5166789b23ccac34611",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:7182bfe7297ce4ab39d6",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:21b5d954a474cea0f4aa",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:d2f6c30fdb85a421401f",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:41dfa075e4353b22e62d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:ca3b9c4c10a3eed64161",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:8b7febdf06f514f5954d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:f298d7c0d8736a7ff594",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:f2e01b3b63d7b1477309",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:c0b7de949ffba7459112",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:a219444a8d8f3754b144",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:3a2545110fbde506b813",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:0ed690872e22b916098a",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:84563b2bc741359a15fe",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:c7c64228106e41b1702e",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:b38fb4fbcc492ed87011",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:c4833b5a90bed3522f43",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:39b48eb6fa509ca4efc2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:329c162763d982913954",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:c78bf1321a16a218b60c",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:eaef4247b3e9e73a8809",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E03",
+      "canonical_ref": "decision-evidence:995d5eeddc1f86a7abbc",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:7b77065ca464cb8c985a",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:b0ce66b3cc72228ef84f",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "decision-evidence:06e6f847342760f52d96",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:62f535796ee847c2d0cd",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:6a7d8f2de9200a7e4de7",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:5e161a2debd99027a0d2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:d65aeb74f985b5796a75",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:687af24c7385d2caf4a4",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:1a43e68befc2686f2759",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:e7f88110afad8a0a90bc",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:22fd47f88eeb7afea07f",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "decision-evidence:fb61100929e38148b8ed",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:0b9fa704d15bffb77dac",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:86645d2f1e1d8c65d8d6",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:b99b830cf03964463742",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:a399508186fff1c1fd00",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:e957c495fab59949643f",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:0abcb8c49983dd5b5021",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:68d7b8d95dabce0a9620",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:31cc4350366b95a54e12",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:01253b856674f1f9fabd",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:e428bd6acf3d1503e2eb",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:0cbb33d247bc3d3facec",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:03b5853364f073ce37ea",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:78738239503d582a1819",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "decision-evidence:bd7317649d95840d757e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:5087b5626d6f4b0214c1",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "decision-evidence:14d67efcafb67911e795",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:07cbedff4c2b25a7f0cc",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "decision-evidence:01fa8f7aaa1f70a9fddc",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:abbc3ad63a1afebfe270",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:a82017fe9cb283a18521",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:beb13ef1dcffeb355bad",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "decision-evidence:488571d04949915641a6",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:bb752104ea3bc100c4ab",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:7c00c14a9a62e4cde1df",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:08a1db369b9003e5047d",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:ba6b3b6ef4c2f66a7952",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:6f4e42c1f2c48790d2a1",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:6a454b19944a355a5ebf",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:154bfac696d5e730161e",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:458e8e468a343d877025",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:b21475d9a36d91c1124d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:1887c6577a65ceec3a44",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E28",
+      "canonical_ref": "decision-evidence:15ff6435a01a9eaaec20",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E30",
+      "canonical_ref": "decision-evidence:752b64bdc2bef3de9afc",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:c1b4eea017821045c953",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:859b844c4492dbd5a2ef",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:fb5b2ba311cf06c9cb4f",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:b6654e5fc384c0d33bda",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "decision-evidence:112f654571f1b88b463d",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:30c083a28e4735f5aadc",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:992c955815b329a31eb6",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "decision-evidence:92481a1db730eb298a24",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:5ba1286806d9b069c093",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "decision-evidence:22ed06ef71d5731d8d49",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "decision-evidence:fd5a30fd35fe9a912c84",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "decision-evidence:8b7f93a5f707ad6158af",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:02cfce79aef9fea67345",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "decision-evidence:2719c49ada648bd2940e",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "decision-evidence:e0d708a0ce64006b8bd5",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:3ac5a1a0a9faff90d400",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "decision-evidence:de936e1f44097f49e0b7",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "decision-evidence:7c0a4f93f99c8eba6f8f",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "decision-evidence:ac42471a86f5aaa6e0fa",
+      "domain": "MARKET_EXPECTATIONS",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.market_expectations",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "decision-evidence:d563a82838a3c73b73d3",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "decision-evidence:76c6f85f248d815d8aa2",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "decision-evidence:e611a54545bfcc019fb3",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "decision-evidence:6244eae6914bf8e92be8",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "decision-evidence:d2e313f2c1c9f94c3e8f",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "decision-evidence:fdb7d94c84ce4d4e2d86",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "decision-evidence:907f40aa087d5eaa718c",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "decision-evidence:98e532edddad4ffd7f34",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "decision-evidence:4e1a4fbf129b9478c0c8",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "decision-evidence:6da7072fa34cbf240485",
+      "domain": "MACRO_TRANSMISSION",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.macro_exposures",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "decision-evidence:866626b17b737cd1fc94",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.core_thesis",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E23",
+      "canonical_ref": "decision-evidence:07364f280f1b5d129a26",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "decision-evidence:ede656d249779160185b",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "decision-evidence:bcbc6fa35d4518f7f217",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "decision-evidence:1a3adac8a9993eb06c19",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "decision-evidence:2dcc661f5df22aa2765f",
+      "domain": "BUSINESS_CURRENT",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.strengthen_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E37",
+      "canonical_ref": "decision-evidence:233199fe9a178e3d9222",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.weaken_signals",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E38",
+      "canonical_ref": "decision-evidence:25605f390a39836dfe90",
+      "domain": "STRUCTURAL_RISK",
+      "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+      "role": "THESIS_BASELINE_CONTEXT",
+      "source_ref": "stock.thesis.invalidation_signals",
+      "ticker": "WULF"
+    }
+  ],
+  "status": "PASS"
+}

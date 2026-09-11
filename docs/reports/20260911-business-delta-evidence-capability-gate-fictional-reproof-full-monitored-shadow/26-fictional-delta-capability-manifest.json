@@ -1,0 +1,136 @@
+{
+  "ai_judgment_count": 4,
+  "contract": "business-delta-evidence-capability-v1",
+  "input_ambiguous_count": 0,
+  "rows": [
+    {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E01"
+      ],
+      "capability": "AI_JUDGMENT",
+      "eligible_change_refs": [
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "eligible_change_refs": [
+        "E01",
+        "E04",
+        "E08",
+        "E10"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_change_refs": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E10"
+      ],
+      "capability": "AI_JUDGMENT",
+      "eligible_change_refs": [
+        "E02",
+        "E06",
+        "E07",
+        "E09"
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E09"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_change_refs": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "eligible_change_refs": [
+        "E03",
+        "E04",
+        "E09"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_change_refs": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_change_refs": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS",
+  "subject_count": 8,
+  "unchanged_only_count": 4
+}

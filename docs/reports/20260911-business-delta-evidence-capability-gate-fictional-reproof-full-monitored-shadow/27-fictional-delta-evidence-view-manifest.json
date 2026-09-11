@@ -1,0 +1,369 @@
+{
+  "model_view_contract": "business-delta-evidence-view-v1",
+  "monolithic_stage1_semantic_equality": "PASS",
+  "status": "PASS",
+  "views": {
+    "FIC-FIN-01": {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "baseline_context_refs": [
+        "E01"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {
+        "E04": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "excluded_change_ref_count": 6,
+      "excluded_change_refs": [
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E02"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E03"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E06"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E07"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E10"
+        }
+      ]
+    },
+    "FIC-FIN-02": {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {
+        "E10": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E01",
+        "E04",
+        "E08",
+        "E10"
+      ],
+      "excluded_change_ref_count": 5,
+      "excluded_change_refs": [
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E02"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E03"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E07"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E09"
+        }
+      ]
+    },
+    "FIC-FIN-03": {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "excluded_change_ref_count": 8,
+      "excluded_change_refs": [
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E02"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E04"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E05"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E06"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E07"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E08"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E09"
+        }
+      ]
+    },
+    "FIC-FIN-04": {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "baseline_context_refs": [
+        "E10"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {
+        "E09": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E02",
+        "E06",
+        "E07",
+        "E09"
+      ],
+      "excluded_change_ref_count": 5,
+      "excluded_change_refs": [
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E03"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E04"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E08"
+        }
+      ]
+    },
+    "FIC-FIN-05": {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "baseline_context_refs": [
+        "E09"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "excluded_change_ref_count": 8,
+      "excluded_change_refs": [
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E02"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E03"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E04"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E05"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E06"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E07"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E08"
+        }
+      ]
+    },
+    "FIC-FIN-06": {
+      "allowed_business_thesis_changes": [
+        "STRENGTHENED",
+        "UNCHANGED",
+        "WEAKENED",
+        "UNRESOLVED"
+      ],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {
+        "E09": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E03",
+        "E04",
+        "E09"
+      ],
+      "excluded_change_ref_count": 5,
+      "excluded_change_refs": [
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E02"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E07"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E08"
+        }
+      ]
+    },
+    "FIC-FIN-07": {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "excluded_change_ref_count": 6,
+      "excluded_change_refs": [
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E02"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E04"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E06"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E07"
+        }
+      ]
+    },
+    "FIC-FIN-08": {
+      "allowed_business_thesis_changes": [
+        "UNCHANGED"
+      ],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-view-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "excluded_change_ref_count": 6,
+      "excluded_change_refs": [
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "ref": "E01"
+        },
+        {
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "ref": "E02"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E04"
+        },
+        {
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "ref": "E05"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "ref": "E06"
+        },
+        {
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "ref": "E07"
+        }
+      ]
+    }
+  }
+}

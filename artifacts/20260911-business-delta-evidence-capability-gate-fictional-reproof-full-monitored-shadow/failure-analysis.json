@@ -1,0 +1,28 @@
+{
+  "candidate_mutations_after_generation_start": 0,
+  "contract": "m12ai-fictional-failure-analysis-v1",
+  "failing_contract": "BUSINESS_DELTA_ELIGIBLE_DIRECTION_HINT_PROPAGATION",
+  "failing_invocation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4:run-1:stage1:context-01",
+  "failing_ticker": "FIC-FIN-02",
+  "failure": "BUSINESS_DELTA_DIRECTION_CONTRADICTS_EVIDENCE",
+  "generation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4",
+  "model_call_count": 1,
+  "model_output_sha256": "c63788c148a3465bf1d2872e5895efb8b5b992603c14e3605062c055e09e5ef9",
+  "model_output_status": "PASS",
+  "model_selected_change": "WEAKENED",
+  "model_selected_refs": [
+    "E06",
+    "E01",
+    "E10"
+  ],
+  "post_model_override_count": 0,
+  "root_cause": "ELIGIBLE_TYPED_CASH_CONVERSION_COMPARISON_DIRECTION_HINT_NOT_PROPAGATED_TO_CAPABILITY_VIEW",
+  "schema_pass_count": 4,
+  "semantic_pass_count": 3,
+  "semantic_row_count": 4,
+  "selective_rerun_count": 0,
+  "shadow_model_call_count": 0,
+  "status": "BLOCKED",
+  "transport_status": "PASS",
+  "wrapper_retry_count": 0
+}

@@ -1,0 +1,9 @@
+{
+  "ai_judgment_unresolved_requires": [
+    "conflicting eligible observed changes",
+    "eligible transition with genuinely unpolarized direction"
+  ],
+  "no_evidence_is_unresolved": false,
+  "status": "PASS",
+  "unchanged_only_unresolved": "FORBIDDEN"
+}

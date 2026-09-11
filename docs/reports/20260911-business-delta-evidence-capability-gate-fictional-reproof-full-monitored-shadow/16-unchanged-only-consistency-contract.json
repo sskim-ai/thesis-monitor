@@ -1,0 +1,6 @@
+{
+  "changed_language_without_eligible_delta": "REJECT",
+  "configured_condition_fulfilled_without_event": "REJECT",
+  "status": "PASS",
+  "unchanged_only_context_may_use_baseline": true
+}

@@ -1,0 +1,40 @@
+{
+  "baseline_context_refs": [
+    "E03",
+    "E05",
+    "E08",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E17",
+    "E19",
+    "E23"
+  ],
+  "capability": "UNCHANGED_ONLY",
+  "dynamic_enum": [
+    "UNCHANGED"
+  ],
+  "eligible_delta_refs": [],
+  "historical_invalid_candidate_reaudit": {
+    "business_delta_capability_violation_count": 1,
+    "capability": "UNCHANGED_ONLY",
+    "contract": "business-delta-evidence-capability-v1",
+    "errors": [
+      "BUSINESS_DELTA_CAPABILITY_VALUE_VIOLATION",
+      "BUSINESS_DELTA_CHANGED_WITHOUT_ELIGIBLE_REF",
+      "BUSINESS_DELTA_UNCHANGED_CONTEXT_ASSERTS_CHANGE"
+    ],
+    "invalid_refs": [],
+    "observed": "STRENGTHENED",
+    "selected_eligible_refs": [],
+    "selected_refs": [
+      "decision-evidence:52af705a4279a23fba6c"
+    ],
+    "status": "FAIL",
+    "ticker": "003690"
+  },
+  "historical_output_rewritten": false,
+  "status": "PASS",
+  "ticker": "003690"
+}

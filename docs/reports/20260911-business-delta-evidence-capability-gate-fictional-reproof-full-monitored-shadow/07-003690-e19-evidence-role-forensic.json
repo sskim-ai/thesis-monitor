@@ -1,0 +1,11 @@
+{
+  "absolute_core_context_available": true,
+  "alias": "E19",
+  "canonical_ref": "decision-evidence:52af705a4279a23fba6c",
+  "eligible_business_delta_ref": false,
+  "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+  "role": "THESIS_BASELINE_CONTEXT",
+  "source_ref": "stock.thesis.core_thesis",
+  "status": "PASS",
+  "ticker": "003690"
+}

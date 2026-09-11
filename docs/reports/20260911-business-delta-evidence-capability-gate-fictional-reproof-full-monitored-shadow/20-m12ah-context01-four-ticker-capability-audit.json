@@ -1,0 +1,99 @@
+{
+  "rows": [
+    {
+      "ambiguous_refs": [],
+      "baseline_context_refs": [
+        "E01",
+        "E05",
+        "E10",
+        "E13",
+        "E16",
+        "E19",
+        "E22",
+        "E27",
+        "E30",
+        "E38",
+        "E39"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_delta_refs": [],
+      "ticker": "000660"
+    },
+    {
+      "ambiguous_refs": [],
+      "baseline_context_refs": [
+        "E03",
+        "E05",
+        "E08",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E17",
+        "E19",
+        "E23"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_delta_refs": [],
+      "ticker": "003690"
+    },
+    {
+      "ambiguous_refs": [],
+      "baseline_context_refs": [
+        "E01",
+        "E03",
+        "E06",
+        "E08",
+        "E09",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E24",
+        "E25",
+        "E26",
+        "E29",
+        "E31",
+        "E32"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_delta_refs": [],
+      "ticker": "005490"
+    },
+    {
+      "ambiguous_refs": [],
+      "baseline_context_refs": [
+        "E01",
+        "E03",
+        "E04",
+        "E07",
+        "E09",
+        "E11",
+        "E12",
+        "E18",
+        "E20",
+        "E21",
+        "E22",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "E27",
+        "E29",
+        "E33",
+        "E34",
+        "E36",
+        "E40"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "eligible_delta_refs": [],
+      "ticker": "005930"
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+{
+  "baseline_ref_may_supplement": true,
+  "changed_states": [
+    "STRENGTHENED",
+    "WEAKENED"
+  ],
+  "direction_contradiction": "REJECT",
+  "eligible_change_ref_required": true,
+  "status": "PASS"
+}

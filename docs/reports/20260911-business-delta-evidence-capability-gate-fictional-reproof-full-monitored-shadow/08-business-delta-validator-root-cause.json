@@ -1,0 +1,7 @@
+{
+  "legacy_validator_error": "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA",
+  "legacy_validator_status": "FAIL",
+  "legacy_validator_weakened": false,
+  "root_cause": "the broad Core catalog exposed a stored thesis baseline as though it could establish observed business change",
+  "status": "CLOSED"
+}

@@ -1,0 +1,1038 @@
+{
+  "batch_split": 0,
+  "capability_manifest": {
+    "ai_judgment_count": 4,
+    "contract": "business-delta-evidence-capability-v1",
+    "input_ambiguous_count": 0,
+    "rows": [
+      {
+        "allowed_business_thesis_changes": [
+          "STRENGTHENED",
+          "UNCHANGED",
+          "WEAKENED",
+          "UNRESOLVED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E01"
+        ],
+        "capability": "AI_JUDGMENT",
+        "eligible_change_refs": [
+          "E04",
+          "E08",
+          "E09"
+        ],
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "STRENGTHENED",
+          "UNCHANGED",
+          "WEAKENED",
+          "UNRESOLVED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E06"
+        ],
+        "capability": "AI_JUDGMENT",
+        "eligible_change_refs": [
+          "E01",
+          "E04",
+          "E08",
+          "E10"
+        ],
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "UNCHANGED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E03"
+        ],
+        "capability": "UNCHANGED_ONLY",
+        "eligible_change_refs": [],
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "STRENGTHENED",
+          "UNCHANGED",
+          "WEAKENED",
+          "UNRESOLVED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E10"
+        ],
+        "capability": "AI_JUDGMENT",
+        "eligible_change_refs": [
+          "E02",
+          "E06",
+          "E07",
+          "E09"
+        ],
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "UNCHANGED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E09"
+        ],
+        "capability": "UNCHANGED_ONLY",
+        "eligible_change_refs": [],
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "STRENGTHENED",
+          "UNCHANGED",
+          "WEAKENED",
+          "UNRESOLVED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E06"
+        ],
+        "capability": "AI_JUDGMENT",
+        "eligible_change_refs": [
+          "E03",
+          "E04",
+          "E09"
+        ],
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "UNCHANGED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E03"
+        ],
+        "capability": "UNCHANGED_ONLY",
+        "eligible_change_refs": [],
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "allowed_business_thesis_changes": [
+          "UNCHANGED"
+        ],
+        "ambiguous_change_refs": [],
+        "baseline_context_refs": [
+          "E03"
+        ],
+        "capability": "UNCHANGED_ONLY",
+        "eligible_change_refs": [],
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "status": "PASS",
+    "subject_count": 8,
+    "unchanged_only_count": 4
+  },
+  "code_hashes": {
+    "app/services/business_delta_evidence_service.py": "b527055919ca3789c63ffea9d2b5d6db4b531436dcac13d596c9604b975b280a",
+    "app/services/direction_timing_ownership_service.py": "f0b3a60ccd061ce2e8e1b7de0bbeb00f720cc56edf9c1ebf63f14eab5d3e8da0",
+    "app/services/directional_financial_context_service.py": "f9945e28cad64e5cf368ece0939a7c05f2875e8d49c416d682b188d85e38998b",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/two_stage_directional_service.py": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "43e49660c779ac5fffc0af85e97eb5c80d520b429f8c21bc38cd44169d331610",
+    "scripts/business_delta_evidence_capability_m12ai.py": "d0a54cb82109bf07cc8cc7fb05e34eee16001d0fbed6a5dab6d5f3f261488f8d",
+    "scripts/directional_core_price_timing_holdout.py": "3ff975fab9188171566258f0105453230b4279754eccb3836335158296ea092c",
+    "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py": "8880fcb20cceffc47dfa90a2297bfa6b77dc0ed09c79f7df7820d2650dc91e46"
+  },
+  "frozen_contexts": [
+    {
+      "business_delta_view_sha256": "b7aeb3b45dbe0688575608e4fb20569ee652cde9698c6f8cd65c0b097e86e75a",
+      "context": 1,
+      "stage1_prompt": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-prompt.txt",
+      "stage1_prompt_sha256": "00c7c10bd10e0c084607ede2ebcc86582a208a803443b3b7e580dbfb51cb6ca1",
+      "stage1_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-schema.json",
+      "stage1_schema_sha256": "00f2e5a7452595357be08656948a84f7d657cc0804ac9a96428a553afcb0a228",
+      "stage2_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage2-schema.json",
+      "stage2_schema_sha256": "74f2776c3cb5606d452c1ffbfb8e235b5e0548e4c433a9e01b134e15a5065d76",
+      "tickers": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ]
+    },
+    {
+      "business_delta_view_sha256": "7660eb6d1bae8b62226a809f221442fe39ce312357dbc5adc434beeaf598e377",
+      "context": 2,
+      "stage1_prompt": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-prompt.txt",
+      "stage1_prompt_sha256": "cda2de8d1b204fd353001110f986d34f71096de1d72fc8919565f728d3beb8d0",
+      "stage1_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-schema.json",
+      "stage1_schema_sha256": "31eb5922e417166eedf0a4cb525743386b4b5253616c464e3c76ad2a1ac8ece3",
+      "stage2_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage2-schema.json",
+      "stage2_schema_sha256": "c5597bb7790bee720302af583d2de388f83cd3eff68e3071c438767133163359",
+      "tickers": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ]
+    }
+  ],
+  "generation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4",
+  "implementation_head_sha": "13b86bf41eaf56da86a8213efb2b99449c4dd1bf",
+  "model": "gpt-5.6-sol",
+  "planned_model_calls": 12,
+  "planned_output_count": 24,
+  "planned_stage1_calls": 6,
+  "planned_stage2_calls": 6,
+  "prepared_at": "2026-09-11T05:23:02.732609+00:00",
+  "reasoning_effort": "xhigh",
+  "repetitions": 3,
+  "source_lock": {
+    "alias_sha256": {
+      "FIC-FIN-01": "bb7cb8ef6ea186f012c01d39131957c7e7f6a1e9912acd5552205e7c41f32a21",
+      "FIC-FIN-02": "8f6cb71c558eaad1409ff79973cdca9bca141bc479dc2127f656ee3b6d27f345",
+      "FIC-FIN-03": "f44571440b61ce8e31a086554016f6640dbdcfa21ae81c135c0ee73bc7ba5a8e",
+      "FIC-FIN-04": "c8670ea170e5ce73194f5086965ea313d6c51c774434e7a6bdc753f9bd12a590",
+      "FIC-FIN-05": "be925e57f1c383d35dfcfb118dc42f950735267f2b4d2398114f5f073fa50c69",
+      "FIC-FIN-06": "21d8abb11b1f7f6a43625e35b672e5afe39efce2a25229ac39bb84aec0a6b58c",
+      "FIC-FIN-07": "18a5a05bb813f09a4ee64eb3a1726ced2fd333843edfdce6699543c0cb7de34b",
+      "FIC-FIN-08": "17369a0dbee3296fd006dc962c26020b925b93f3994933809488fe77d7a308a1"
+    },
+    "batch_split": 0,
+    "context_sha256": {
+      "FIC-FIN-01": "242ef2169c882c1c7cfa6c48b1d91230f13ca997151bac738bae7623e1bf3bbf",
+      "FIC-FIN-02": "df2511bdf97ee1fbf8ff0ada4d999c1928073853bb85da8b0eb3f546986138d0",
+      "FIC-FIN-03": "bca000b81efa2d5330c11ddbc21eb446609b010796e6e884ea083da3cc3ec6f3",
+      "FIC-FIN-04": "fc3ebac9fd933a96028c665807a70ba18bb2494b5bd822489b86ac5d1c4fb5c0",
+      "FIC-FIN-05": "49aab3c926b1a84c6ff0371ade3ad77b2431414a5555027aff6172bffa7a5356",
+      "FIC-FIN-06": "68366fbaf2fa672a89bd3da083b8e1cc02d2099b5dfb4002903f1592ac4a53da",
+      "FIC-FIN-07": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+      "FIC-FIN-08": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd"
+    },
+    "contract": "m12-fictional-source-lock-v1",
+    "generation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4",
+    "model": "gpt-5.6-sol",
+    "owned_sha256": {
+      "FIC-FIN-01": "fd1cf76048aeb2e27f8d050ceb21644a4f32b3a72a721c23790277e998f1898a",
+      "FIC-FIN-02": "ec5a966e3b1b9b86fa18b48dbb35f90d271db0a2f9cebfe5524c6985ec1dd446",
+      "FIC-FIN-03": "09dbb9eda5961cf60a43bab86e5fb2876b3ef1d432efba588a032b95d7c5281e",
+      "FIC-FIN-04": "b57f0213c955fd332d7521416deaa38e69e857eb4cdd36d50e137dcfce1812a5",
+      "FIC-FIN-05": "0fc61012464feaee68a461137839bf04ae38c6f8ecc1b6e3ea0eee5b02ea587d",
+      "FIC-FIN-06": "48c8a41cccacb91795105d5b5d8905f88b67ea0077ebb4af061a7b0d217b3776",
+      "FIC-FIN-07": "26153786f5a19c911f60405cfa9e548c9e750e002a6f18645164e3d1d0f84fb4",
+      "FIC-FIN-08": "12ebb7d02a17fd33e67141de33b17fa2701ae2330fc7d51319fbd1cdfb55f56f"
+    },
+    "packet_sha256": {
+      "FIC-FIN-01": "ee38b7d1d9db14d02b141a563317194a9bdbf317e4e2da4cae29677cbcabb686",
+      "FIC-FIN-02": "c46ba8d3cad79a6bef5e4682217f13763fc036d3fa2c0f82702b56e32184a46d",
+      "FIC-FIN-03": "2e8f291bce4a4242614b04f745d3988c07f4e8fbbe1dbf796a4dc05cf9dcd47e",
+      "FIC-FIN-04": "41c5edca64e7a30fab572fb530aa844caf63d2476674159a7f1248924030edef",
+      "FIC-FIN-05": "f6d758de187c26047eb231a7d57123f93ef3b9e505ed2272ef0af263c24586a5",
+      "FIC-FIN-06": "9bb3137b01b18a57d8425e9df3802d5f3598dc41bbd10a6474a6dbbc2ff523ab",
+      "FIC-FIN-07": "5ee979353a943a628bb56ad07d5b33bb9bc2a5f76e8b4ddae0036a77c532d773",
+      "FIC-FIN-08": "865beca1edde485c06fc53d57a11387743b8c2fe440ac8d7620ae10e346cd7ed"
+    },
+    "provider_source_fetches": 0,
+    "real_issuer_model_exposure_count": 0,
+    "reasoning_effort": "xhigh",
+    "runtime_mode": "MODEL_CONTEXT_COUPLED",
+    "source_lock_sha256": "3ec6e2cd9e3410b9f9181cc7ad5406baf60a2798f08a48da6b57343711e128a2",
+    "subjects_per_shared_context": 4,
+    "timeout_seconds": 1800,
+    "wrapper_auto_retry": 0
+  },
+  "status": "FROZEN",
+  "timeout_seconds": 1800,
+  "views": {
+    "FIC-FIN-01": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E01"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {
+        "E04": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-01:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-01.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-01:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-01.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "canonical:fictional:FIC-FIN-01:net-debt",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:net-debt",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-01:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CONTROL_FIXTURE_EXPLICIT_OBSERVED_CHANGE",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "fictional.FIC-FIN-01.operating-evidence",
+          "supported_change_directions": [
+            "STRENGTHENED"
+          ]
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-01:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-01.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-01:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-01.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-01:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-01.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "canonical:fictional:FIC-FIN-01:ocf-current",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:ocf-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-01:cash-conversion-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E10",
+          "canonical_ref": "fictional:FIC-FIN-01:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-01.sector-context",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    "FIC-FIN-02": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {
+        "E10": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E01",
+        "E04",
+        "E08",
+        "E10"
+      ],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:cash-conversion-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-02:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-02.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-02:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-02.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "canonical:fictional:FIC-FIN-02:inventory-current",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:inventory-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-02:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-02.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-02:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-02.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-02:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-02.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "canonical:fictional:FIC-FIN-02:ocf-current",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-02:ocf-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "fictional:FIC-FIN-02:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-02.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E10",
+          "canonical_ref": "fictional:FIC-FIN-02:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CONTROL_FIXTURE_EXPLICIT_OBSERVED_CHANGE",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "fictional.FIC-FIN-02.operating-evidence",
+          "supported_change_directions": [
+            "STRENGTHENED"
+          ]
+        }
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    "FIC-FIN-03": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-qtd",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-03:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-03.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-03:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-03.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-03:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-03.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-03:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-03.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-03:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-03.operating-evidence",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-03:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-03.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-03:operating-profit-ytd",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "fictional:FIC-FIN-03:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-03.remaining-unknown",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-03"
+    },
+    "FIC-FIN-04": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E10"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {
+        "E09": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E02",
+        "E06",
+        "E07",
+        "E09"
+      ],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-04:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-04.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "canonical:fictional:FIC-FIN-04:net-income-current",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-04:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-04.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-04:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-04.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-04:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-04.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "canonical:fictional:FIC-FIN-04:operating-profit-current",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "fictional:FIC-FIN-04:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-04.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "fictional:FIC-FIN-04:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CONTROL_FIXTURE_EXPLICIT_OBSERVED_CHANGE",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "fictional.FIC-FIN-04.operating-evidence",
+          "supported_change_directions": [
+            "STRENGTHENED"
+          ]
+        },
+        {
+          "alias": "E10",
+          "canonical_ref": "fictional:FIC-FIN-04:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-04.business-thesis",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    "FIC-FIN-05": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E09"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-05:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-05.operating-evidence",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-05:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-05.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-05:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-05.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-05:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-05.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+          "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:cash",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-05:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-05.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "fictional:FIC-FIN-05:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-05.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "fictional:FIC-FIN-05:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-05.business-thesis",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    "FIC-FIN-06": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E06"
+      ],
+      "capability": "AI_JUDGMENT",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {
+        "E09": [
+          "STRENGTHENED"
+        ]
+      },
+      "eligible_change_refs": [
+        "E03",
+        "E04",
+        "E09"
+      ],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-06:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-06.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-06:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-06.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "VERIFIED_TYPED_FINANCIAL_COMPARISON",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-06:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-06.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-06:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-06.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-06:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-06.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E08",
+          "canonical_ref": "fictional:FIC-FIN-06:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-06.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E09",
+          "canonical_ref": "fictional:FIC-FIN-06:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CONTROL_FIXTURE_EXPLICIT_OBSERVED_CHANGE",
+          "role": "ELIGIBLE_OBSERVED_CHANGE",
+          "source_ref": "fictional.FIC-FIN-06.operating-evidence",
+          "supported_change_directions": [
+            "STRENGTHENED"
+          ]
+        }
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    "FIC-FIN-07": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-07:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-07.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-07:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-07.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-07:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-07.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-07:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-07.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-07:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-07.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-07:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-07.remaining-unknown",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-07:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-07.operating-evidence",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-07"
+    },
+    "FIC-FIN-08": {
+      "ambiguous_change_refs": [],
+      "baseline_context_refs": [
+        "E03"
+      ],
+      "capability": "UNCHANGED_ONLY",
+      "contract": "business-delta-evidence-capability-v1",
+      "eligible_change_direction_hints": {},
+      "eligible_change_refs": [],
+      "items": [
+        {
+          "alias": "E01",
+          "canonical_ref": "fictional:FIC-FIN-08:valuation-limit",
+          "domain": "VALUATION_SAFE",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:VALUATION_SAFE",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-08.valuation-limit",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E02",
+          "canonical_ref": "fictional:FIC-FIN-08:market-expectation",
+          "domain": "MARKET_EXPECTATIONS",
+          "reason": "NON_BUSINESS_DELTA_DOMAIN:MARKET_EXPECTATIONS",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-08.market-expectation",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E03",
+          "canonical_ref": "fictional:FIC-FIN-08:business-thesis",
+          "domain": "BUSINESS_CURRENT",
+          "reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_BASELINE_ONLY",
+          "role": "THESIS_BASELINE_CONTEXT",
+          "source_ref": "fictional.FIC-FIN-08.business-thesis",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E04",
+          "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+          "domain": "EARNINGS_FINANCIAL_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-08.operating-evidence",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E05",
+          "canonical_ref": "fictional:FIC-FIN-08:sector-context",
+          "domain": "SECTOR_OPERATING_CURRENT",
+          "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+          "role": "CURRENT_CONTEXT_ONLY",
+          "source_ref": "fictional.FIC-FIN-08.sector-context",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E06",
+          "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+          "domain": "STRUCTURAL_RISK",
+          "reason": "NON_CHANGE_CONTEXT:STRUCTURAL_RISK",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-08.structural-risk",
+          "supported_change_directions": []
+        },
+        {
+          "alias": "E07",
+          "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+          "domain": "DATA_QUALITY_LIMIT",
+          "reason": "NON_CHANGE_CONTEXT:DATA_QUALITY_LIMIT",
+          "role": "EXCLUDED_NON_BUSINESS_DELTA",
+          "source_ref": "fictional.FIC-FIN-08.remaining-unknown",
+          "supported_change_directions": []
+        }
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  },
+  "wrapper_auto_retry": 0
+}

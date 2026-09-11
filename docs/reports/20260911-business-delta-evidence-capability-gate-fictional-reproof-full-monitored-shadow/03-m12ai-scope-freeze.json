@@ -1,0 +1,16 @@
+{
+  "ownership_semantics": "FROZEN_M12AG",
+  "post_model_override_count": 0,
+  "production_side_effects": 0,
+  "provider_source_fetches": 0,
+  "scope": [
+    "pre-model business-delta capability",
+    "shared monolithic and Stage 1 evidence view",
+    "per-ticker dynamic business_thesis_change enum",
+    "full fictional two-stage reproof",
+    "full monitored same-packet shadow"
+  ],
+  "status": "FROZEN",
+  "temporal_scope_semantics": "FROZEN_M12AH",
+  "ticker_specific_exception_count": 0
+}

@@ -1,0 +1,10 @@
+{
+  "capabilities": [
+    "UNCHANGED_ONLY",
+    "AI_JUDGMENT",
+    "INPUT_AMBIGUOUS"
+  ],
+  "contract": "business-delta-evidence-capability-v1",
+  "input_ambiguous_policy": "PRE_MODEL_HARD_STOP",
+  "status": "PASS"
+}

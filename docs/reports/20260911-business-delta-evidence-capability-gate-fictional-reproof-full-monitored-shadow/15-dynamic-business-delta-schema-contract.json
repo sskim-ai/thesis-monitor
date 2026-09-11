@@ -1,0 +1,14 @@
+{
+  "ai_judgment_enum": [
+    "STRENGTHENED",
+    "UNCHANGED",
+    "WEAKENED",
+    "UNRESOLVED"
+  ],
+  "input_ambiguous_invocation": "FORBIDDEN",
+  "monolithic_stage1_same_enum": true,
+  "status": "PASS",
+  "unchanged_only_enum": [
+    "UNCHANGED"
+  ]
+}

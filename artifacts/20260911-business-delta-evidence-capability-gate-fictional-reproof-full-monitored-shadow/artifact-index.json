@@ -1,0 +1,581 @@
+{
+  "artifact_count": 114,
+  "contract": "m12ai-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "rows": [
+    {
+      "path": "app/services/business_delta_evidence_service.py",
+      "sha256": "b527055919ca3789c63ffea9d2b5d6db4b531436dcac13d596c9604b975b280a",
+      "size": 21638
+    },
+    {
+      "path": "app/services/structured_autonomy_alias_service.py",
+      "sha256": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+      "size": 13670
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/COMPLETION-REPORT.md",
+      "sha256": "3451d65f4987d890c7a1f415d4a4124b60f59a912900ac72f4eeb199e1194f0a",
+      "size": 2667
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/failure-analysis.json",
+      "sha256": "ab6edec04f394714877e62098f9aa899ebf624c3719908a7e7b4a932120ecbd5",
+      "size": 1087
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional-model-call-gate.json",
+      "sha256": "a285bcbca8a0e2e00e93b09c21982173fbbe297bfeb545cacd3f41e100d58bcf",
+      "size": 644
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-prompt.txt",
+      "sha256": "00c7c10bd10e0c084607ede2ebcc86582a208a803443b3b7e580dbfb51cb6ca1",
+      "size": 33810
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-schema.json",
+      "sha256": "00f2e5a7452595357be08656948a84f7d657cc0804ac9a96428a553afcb0a228",
+      "size": 34518
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage2-schema.json",
+      "sha256": "74f2776c3cb5606d452c1ffbfb8e235b5e0548e4c433a9e01b134e15a5065d76",
+      "size": 13559
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-prompt.txt",
+      "sha256": "cda2de8d1b204fd353001110f986d34f71096de1d72fc8919565f728d3beb8d0",
+      "size": 25113
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-schema.json",
+      "sha256": "31eb5922e417166eedf0a4cb525743386b4b5253616c464e3c76ad2a1ac8ece3",
+      "size": 34221
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage2-schema.json",
+      "sha256": "c5597bb7790bee720302af583d2de388f83cd3eff68e3071c438767133163359",
+      "size": 13454
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/output.raw.json",
+      "sha256": "c63788c148a3465bf1d2872e5895efb8b5b992603c14e3605062c055e09e5ef9",
+      "size": 11192
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/prompt.txt",
+      "sha256": "00c7c10bd10e0c084607ede2ebcc86582a208a803443b3b7e580dbfb51cb6ca1",
+      "size": 33810
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/receipt.json",
+      "sha256": "7822043a5f077782086934636af98264f81adeff9753a071c744192123d7ef60",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/run-document.json",
+      "sha256": "6520269c80b244c61e0ad137191ca2d93442cdc5774b512a3adff0bd8b3ec104",
+      "size": 109014
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/schema.json",
+      "sha256": "00f2e5a7452595357be08656948a84f7d657cc0804ac9a96428a553afcb0a228",
+      "size": 34518
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/model-calls/run-1/stage1-context-01/transport.log",
+      "sha256": "599a025cdc326e70d44e4d047d5f7ce8432372726e868841c5c103de210dd9ef",
+      "size": 80416
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/pre-model-failures/dns-sandbox-preflight/stage1-context-01/prompt.txt",
+      "sha256": "00c7c10bd10e0c084607ede2ebcc86582a208a803443b3b7e580dbfb51cb6ca1",
+      "size": 33810
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/pre-model-failures/dns-sandbox-preflight/stage1-context-01/receipt.json",
+      "sha256": "f1450d7dc7ca846b67ac0c705d579e28c54da0db5473bc31053c1991211fabf5",
+      "size": 2263
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/pre-model-failures/dns-sandbox-preflight/stage1-context-01/schema.json",
+      "sha256": "00f2e5a7452595357be08656948a84f7d657cc0804ac9a96428a553afcb0a228",
+      "size": 34518
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/pre-model-failures/dns-sandbox-preflight/stop.json",
+      "sha256": "2d5fee669ef316577897ce72c31d2a0e3ed0a62775a9e37464d6375d7714324e",
+      "size": 274
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/program-state.json",
+      "sha256": "959f50e3ef49eda2a307a48d151b9275fbea4551d24b94a3853d472652db3994",
+      "size": 41361
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/stop.json",
+      "sha256": "28f257f8e941da80059ac51c8a14e9b14ed23c57a8b3a0e868af984bcdb5c707",
+      "size": 284
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/preflight.json",
+      "sha256": "3de039e345383593a1762e68523d7d9948700f834b0b24a32448e080e683c118",
+      "size": 572
+    },
+    {
+      "path": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/program-completion.json",
+      "sha256": "0fba1a3bd66256d7cdd94998016071679b3248e9239c2d487a2d06b086d9c21e",
+      "size": 5100
+    },
+    {
+      "path": "docs/architecture/BUSINESS_DELTA_EVIDENCE_CAPABILITY.md",
+      "sha256": "d01001d416667ebf21c295a491174e116b6b38eb110f9e92157c227b15b99116",
+      "size": 1919
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/01-repository-provenance.json",
+      "sha256": "2e294629df70eacc1aae280895decbf14eaf47ece8fd7b5e92bf079b68c9e062",
+      "size": 454
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/02-latest-result-integrity.json",
+      "sha256": "4075a59acfe97c6dfafeb75f914880828dbc550ce647f7e4624d4f11b577defe",
+      "size": 637
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/03-m12ai-scope-freeze.json",
+      "sha256": "9ee23d8a676abfcd5558c1ffb0e28bc91da295c2e10dee74b64c0d40466cd277",
+      "size": 496
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/04-integrated-main-lineage-freeze.json",
+      "sha256": "d1f85807c37fdc7c8086426266d931a45f1076a9a546ae6bd78ca1ab2d2e5cf5",
+      "size": 201
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/05-m12ah-003690-failure-reproduction.json",
+      "sha256": "ae0cf1dad6d7945a54cf11296d15f79c6e3413f57d54830571e0c11137532fee",
+      "size": 334
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/06-monolithic-vs-stage1-delta-prompt-equivalence-proof.json",
+      "sha256": "dd28c27bfa32c5e1219d9133258ab5b0ed39b9c46d820ad6b586f0a28b0bfacd",
+      "size": 1910
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/07-003690-e19-evidence-role-forensic.json",
+      "sha256": "ebe360246d365caedb22f01d30774f0126b19178ec2499e3ac82de3182ae849c",
+      "size": 352
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/08-business-delta-validator-root-cause.json",
+      "sha256": "2ad16048d8b2f97e90dc8ba07a41bc2d4f6bab4af3d5545fabd8b7f9fa4e4948",
+      "size": 296
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/09-business-delta-pre-model-architecture-options.json",
+      "sha256": "531a7762a519f7102764b3b64ef605691fdc141425634847d42bbff43ecee444",
+      "size": 227
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/10-business-delta-capability-architecture-decision.json",
+      "sha256": "f5748f492e69af9cd64581c6f51dd1b89114d62d0f2b5792e538d5133eea034d",
+      "size": 271
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/11-business-delta-evidence-capability-contract.json",
+      "sha256": "054c0aba081693088760627d382a19cc838f62b2da471437a2895ef9c22e6e8a",
+      "size": 217
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/12-eligible-observed-delta-evidence-contract.json",
+      "sha256": "b5991d74f8397497682591f425909702677a2fb1b923ba2461128ea96df36d60",
+      "size": 321
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/13-baseline-context-only-evidence-contract.json",
+      "sha256": "121f452dfdd0339b5733e5537160bdbaf1221e337d482cda2571954e577aa833",
+      "size": 278
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/14-business-delta-evidence-view-contract.json",
+      "sha256": "688189b7dced7de51797971664c307285cc8ef79ec6dabe2a1ac94d13bb2b6ee",
+      "size": 390
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/15-dynamic-business-delta-schema-contract.json",
+      "sha256": "06fa7a2704042be0d83156236586c1708f34e25aba61a28a8140f3a995a99149",
+      "size": 254
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/16-unchanged-only-consistency-contract.json",
+      "sha256": "eb0a6232efff2081a6895717e066c5c481369bda84f0178c767044ea71a351a9",
+      "size": 189
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/17-ai-judgment-changed-delta-grounding-contract.json",
+      "sha256": "5eb1f64c129a29db78adeb5e968256885536cd8b06aeb2a4a5cc560ee76cf0f5",
+      "size": 203
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/18-unresolved-delta-evidence-contract.json",
+      "sha256": "4ce3c5d5af01259ce1f35b0c7fe3af5e1ccfdd03947e39067f47611e75c38be0",
+      "size": 257
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/19-m12ah-003690-capability-replay.json",
+      "sha256": "dc835147927425093028fda6d6e234faf085663e5324ad932d39eb3a0196213f",
+      "size": 921
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/20-m12ah-context01-four-ticker-capability-audit.json",
+      "sha256": "c290a3d961ea4ea80e890e8f8b42194a571ec1e6c9b9b002b74c0fb9b07deea3",
+      "size": 1681
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/21-stored-thesis-baseline-role-audit.json",
+      "sha256": "264c567eceb977b60d06391ab26a37f74869c9aaffcd6de566fa8a4440fe1a8b",
+      "size": 124071
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/22-current-single-point-financial-delta-audit.json",
+      "sha256": "d5b2da10e19ea1d40d5f4c279924450b6f90e77c4916b3cfc49cff1e04a89516",
+      "size": 30977
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/23-market-expectation-delta-exclusion-audit.json",
+      "sha256": "53aa55eb80c74385d294186cabf3362a8029976a8789ad5ddf561a72433788c1",
+      "size": 97
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/24-price-timing-supply-delta-exclusion-audit.json",
+      "sha256": "afb59278fc0258c69087a148bce9e429670f3540ed74573a4386b3f2758ebdf9",
+      "size": 105
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/25-capital-allocation-event-delta-eligibility-controls.json",
+      "sha256": "036719f2cda48575a6bc3cbb6a0a9df501de07a73e3233b38fb9ad80e0aaf8d0",
+      "size": 321
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/26-fictional-delta-capability-manifest.json",
+      "sha256": "4569f9976758cf6b6178c6d31ab12020f62c62ba05e373f0c83d56c363f06a13",
+      "size": 2903
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/27-fictional-delta-evidence-view-manifest.json",
+      "sha256": "b3688f2ffca8353e5e06e1db61f1f8cc15e76ce3b7cc66fa7b9a0014c8732d5a",
+      "size": 9415
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/28-fictional-generation-manifest.json",
+      "sha256": "04b32594264182ed576996c4915ecb68909f31d8b603286ad5a306b100cd863c",
+      "size": 3800
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/29-stage1-run1-context01.json",
+      "sha256": "6520269c80b244c61e0ad137191ca2d93442cdc5774b512a3adff0bd8b3ec104",
+      "size": 109014
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/30-stage1-run1-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/31-stage2-run1-context01.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/32-stage2-run1-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/33-stage1-run2-context01.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/34-stage1-run2-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/35-stage2-run2-context01.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/36-stage2-run2-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/37-stage1-run3-context01.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/38-stage1-run3-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/39-stage2-run3-context01.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/40-stage2-run3-context02.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/41-fictional-hard-semantic-audit.json",
+      "sha256": "88b18b4fc48acd502ea08feea290674e7202050bef66435af420e68ebab2c133",
+      "size": 558
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/42-fictional-business-delta-capability-audit.json",
+      "sha256": "b80718890d305bd509bdc68aa8854bc88f2225ce4adcc21f23815dab6543e7bd",
+      "size": 861
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/43-fictional-business-delta-materiality-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/44-fictional-primary-direction-stability.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/45-fictional-new-buyer-stability.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/46-fictional-holder-stability.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/47-fictional-core-immutability-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/48-fictional-runtime-audit.json",
+      "sha256": "d05fcdcef5276fe720d91fbabf7d489b35072e9367fd3f9ea0fb735b7e8c13f8",
+      "size": 367
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/49-fictional-shadow-gate-decision.json",
+      "sha256": "33bfb53a07d8bc245dc44a27073684c1b4c57aa6d52fa08898dbf7731c1545bd",
+      "size": 382
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/50-task-start-active-monitored-universe.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/51-shadow-packet-inventory.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/52-shadow-packet-hash-manifest.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/53-shadow-business-delta-capability-manifest.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/54-shadow-business-delta-evidence-view-manifest.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/55-shadow-batching-manifest.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/56-shadow-model-call-gate.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/57-shadow-monolithic-model-artifacts.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/58-shadow-stage1-model-artifacts.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/59-shadow-stage2-model-artifacts.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/60-shadow-final-composition-artifacts.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/61-shadow-per-ticker-comparison.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/62-shadow-business-delta-capability-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/63-shadow-core-direction-differences.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/64-shadow-business-delta-differences.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/65-shadow-new-buyer-differences.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/66-shadow-holder-differences.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/67-shadow-same-direction-calibration-differences.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/68-shadow-expected-contract-corrections.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/69-shadow-potential-architecture-regressions.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/70-shadow-unresolved-review-required.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/71-shadow-financial-sector-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/72-shadow-adr-security-basis-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/73-shadow-cyclical-valuation-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/74-shadow-core-immutability-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/75-shadow-runtime-audit.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/76-shadow-aggregate-summary.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/77-shadow-architecture-decision.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/78-fic-fin-05-vs-monitored-primary-boundary-analogs.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/79-fic-fin-06-vs-monitored-delta-materiality-analogs.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/80-fic-fin-08-vs-monitored-holder-analogs.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/81-real-business-delta-materiality-lessons.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/82-combined-fictional-monitored-root-cause-summary.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/83-next-bounded-policy-decision.json",
+      "sha256": "d31b1cfc07a1bbb120cbe03b7d26bdea33e9492c42a7c9545c753ba188ff7359",
+      "size": 348
+    },
+    {
+      "path": "docs/work-instructions/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow.md",
+      "sha256": "e3f9961591d036604a93edab238debcf3e88ca1aa0a851f5fed4abba15b83c82",
+      "size": 37999
+    },
+    {
+      "path": "scripts/business_delta_evidence_capability_m12ai.py",
+      "sha256": "d0a54cb82109bf07cc8cc7fb05e34eee16001d0fbed6a5dab6d5f3f261488f8d",
+      "size": 126827
+    },
+    {
+      "path": "tests/fixtures/business_delta_evidence_capability_m12ai.json",
+      "sha256": "d9a799ecfa31e37cabe53828f64d29f00395d1880b0d6cc8a4001c927d138c74",
+      "size": 961
+    },
+    {
+      "path": "tests/test_business_delta_evidence_capability_m12ai.py",
+      "sha256": "49acf620b97cc78a2728ecce684a697d374763f68bc8a7a91ee30cd3ac6b75d8",
+      "size": 5012
+    },
+    {
+      "path": "tests/test_business_delta_evidence_service.py",
+      "sha256": "550d9ce3bbdb0fe01f4f2e6e0f3407631307c9239e7bb324cbcfeb8f3dd8ca0e",
+      "size": 13375
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "secret_scan_failures": [],
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

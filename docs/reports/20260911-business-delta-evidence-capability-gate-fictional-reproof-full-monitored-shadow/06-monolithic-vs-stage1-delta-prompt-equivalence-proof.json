@@ -1,0 +1,59 @@
+{
+  "business_delta_view_semantic_equality": "PASS",
+  "generic_prompt_contract": "BUSINESS_DELTA_EVIDENCE_VIEW is the authoritative evidence-capability surface for business_thesis_change. Respect allowed_business_thesis_changes exactly. Only eligible_change_refs can establish STRENGTHENED or WEAKENED; baseline_context_refs may explain the thesis but do not prove a change. UNCHANGED remains valid when an eligible change is not material. UNRESOLVED requires conflicting or genuinely ambiguous eligible observed changes.",
+  "rows": [
+    {
+      "monolithic_enum": [
+        "UNCHANGED"
+      ],
+      "stage1_enum": [
+        "UNCHANGED"
+      ],
+      "status": "PASS",
+      "ticker": "000660",
+      "view_in_monolithic_prompt": true,
+      "view_in_stage1_prompt": true,
+      "view_sha256": "98f31a122f603854ad6775c9053057c31d780a9c08ebeab5c016c04c8faed49d"
+    },
+    {
+      "monolithic_enum": [
+        "UNCHANGED"
+      ],
+      "stage1_enum": [
+        "UNCHANGED"
+      ],
+      "status": "PASS",
+      "ticker": "003690",
+      "view_in_monolithic_prompt": true,
+      "view_in_stage1_prompt": true,
+      "view_sha256": "8c0f7d92b73402095f12eb384a40e99023bd0f08d1b2d935fbf40b63ba98c03e"
+    },
+    {
+      "monolithic_enum": [
+        "UNCHANGED"
+      ],
+      "stage1_enum": [
+        "UNCHANGED"
+      ],
+      "status": "PASS",
+      "ticker": "005490",
+      "view_in_monolithic_prompt": true,
+      "view_in_stage1_prompt": true,
+      "view_sha256": "f22fc1e66c0d4ac30582c7d9c455c04053048991564ffef296429c3ed5c9be9e"
+    },
+    {
+      "monolithic_enum": [
+        "UNCHANGED"
+      ],
+      "stage1_enum": [
+        "UNCHANGED"
+      ],
+      "status": "PASS",
+      "ticker": "005930",
+      "view_in_monolithic_prompt": true,
+      "view_in_stage1_prompt": true,
+      "view_sha256": "36b29eef8161393803ad7807ffb0fe53e66df0c7bac77fab155fcb7240b45cbd"
+    }
+  ],
+  "status": "PASS"
+}

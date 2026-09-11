@@ -1,0 +1,16 @@
+{
+  "excluded_ref_limit": 8,
+  "fields": [
+    "contract",
+    "capability",
+    "allowed_business_thesis_changes",
+    "baseline_context_refs",
+    "eligible_change_refs",
+    "eligible_change_direction_hints",
+    "excluded_change_refs",
+    "excluded_change_ref_count"
+  ],
+  "model_view_contract": "business-delta-evidence-view-v1",
+  "raw_catalog_removed": false,
+  "status": "PASS"
+}

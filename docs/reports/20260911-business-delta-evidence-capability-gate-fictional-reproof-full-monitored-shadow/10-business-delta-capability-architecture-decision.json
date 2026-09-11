@@ -1,0 +1,8 @@
+{
+  "architecture": "BUSINESS_DELTA_CAPABILITY_DYNAMIC_SCHEMA",
+  "classification_source": "complete pre-model Core catalog",
+  "contract": "business-delta-evidence-capability-v1",
+  "post_model_override_count": 0,
+  "status": "SELECTED",
+  "ticker_hard_code_count": 0
+}

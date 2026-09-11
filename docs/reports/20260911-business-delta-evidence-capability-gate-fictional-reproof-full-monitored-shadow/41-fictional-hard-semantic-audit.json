@@ -1,0 +1,16 @@
+{
+  "business_delta_gate_violation_count": 1,
+  "financial_semantic_failure_count": 0,
+  "first_failure": {
+    "error": "BUSINESS_DELTA_DIRECTION_CONTRADICTS_EVIDENCE",
+    "invocation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4:run-1:stage1:context-01",
+    "ticker": "FIC-FIN-02"
+  },
+  "hard_failure_count": 1,
+  "invalid_evidence_identity_count": 0,
+  "price_technical_supply_core_contamination_count": 0,
+  "schema_failure_count": 0,
+  "stage2_core_mutation_count": "NOT_MEASURED",
+  "status": "FAIL",
+  "transport_failure_count": 0
+}

@@ -1,0 +1,14 @@
+{
+  "dated_event_fixture": {
+    "expected": "AI_JUDGMENT",
+    "id": "DELTA-CAP-05",
+    "kind": "dated_issuer_event"
+  },
+  "status": "PASS",
+  "stored_thesis_control": {
+    "expected": "UNCHANGED_ONLY",
+    "id": "DELTA-CAP-01",
+    "kind": "stored_thesis"
+  },
+  "ticker_specific_capital_allocation_rule_count": 0
+}

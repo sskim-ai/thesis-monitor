@@ -1,0 +1,11 @@
+{
+  "actual_model_call_count": 1,
+  "decision": "BLOCKED",
+  "fictional_hard_failure_count": 1,
+  "monitored_shadow_authorized": false,
+  "monitored_shadow_model_call_count": 0,
+  "planned_fictional_model_call_count": 12,
+  "reason": "FICTIONAL_STAGE1_HARD_SEMANTIC_FAILURE",
+  "smallest_failing_contract": "BUSINESS_DELTA_ELIGIBLE_DIRECTION_HINT_PROPAGATION",
+  "status": "FAIL"
+}

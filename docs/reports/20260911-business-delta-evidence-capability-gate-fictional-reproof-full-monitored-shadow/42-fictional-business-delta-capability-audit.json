@@ -1,0 +1,33 @@
+{
+  "business_delta_capability_violation_count": 1,
+  "candidate_row_count": 4,
+  "failing_rows": [
+    {
+      "capability": "AI_JUDGMENT",
+      "eligible_change_refs": [
+        "E01",
+        "E04",
+        "E08",
+        "E10"
+      ],
+      "error": "BUSINESS_DELTA_DIRECTION_CONTRADICTS_EVIDENCE",
+      "model_facing_direction_hints": {
+        "E10": [
+          "STRENGTHENED"
+        ]
+      },
+      "observed_business_thesis_change": "WEAKENED",
+      "selected_business_thesis_context_refs": [
+        "E06",
+        "E01",
+        "E10"
+      ],
+      "ticker": "FIC-FIN-02"
+    }
+  ],
+  "generation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4",
+  "passing_row_count": 3,
+  "root_cause": "ELIGIBLE_TYPED_CASH_CONVERSION_COMPARISON_DIRECTION_HINT_NOT_PROPAGATED_TO_CAPABILITY_VIEW",
+  "schema_pass_count": 4,
+  "status": "FAIL"
+}

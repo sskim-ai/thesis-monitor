@@ -1,0 +1,6 @@
+{
+  "detail": "FICTIONAL_STAGE1_HARD_SEMANTIC_FAILURE:20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4:run-1:stage1:context-01",
+  "status": "NOT_RUN_AFTER_HARD_STOP",
+  "stop_reason": "RuntimeError",
+  "stop_receipt": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/stop.json"
+}

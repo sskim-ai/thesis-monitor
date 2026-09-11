@@ -1,0 +1,14 @@
+{
+  "actual_model_call_count": 1,
+  "model": "gpt-5.6-sol",
+  "model_process_spawn_count": 1,
+  "network_ready_model_call_count": 1,
+  "orphan_process_count": 0,
+  "pre_model_dns_failure_count": 1,
+  "reasoning_effort": "xhigh",
+  "runtime_isolation_valid": true,
+  "status": "PASS",
+  "timeout_count": 0,
+  "transport_attempt_count": 1,
+  "wrapper_retry_count": 0
+}

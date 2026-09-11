@@ -1,0 +1,8 @@
+{
+  "completed_model_calls": 0,
+  "detail": "m12_network_preflight_failed:20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4:run-1:stage1:context-01",
+  "monitored_shadow_model_calls": 0,
+  "status": "FAIL",
+  "stop_reason": "RuntimeError",
+  "wrapper_retry_count": 0
+}

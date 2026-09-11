@@ -1,0 +1,13 @@
+{
+  "errors": [
+    "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+  ],
+  "historical_output_rewritten": false,
+  "observed": "STRENGTHENED",
+  "selected_refs": [
+    "decision-evidence:52af705a4279a23fba6c"
+  ],
+  "source_generation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74",
+  "status": "REPRODUCED",
+  "ticker": "003690"
+}

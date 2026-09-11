@@ -1,0 +1,59 @@
+{
+  "code_hashes": {
+    "app/services/business_delta_evidence_service.py": "b527055919ca3789c63ffea9d2b5d6db4b531436dcac13d596c9604b975b280a",
+    "app/services/direction_timing_ownership_service.py": "f0b3a60ccd061ce2e8e1b7de0bbeb00f720cc56edf9c1ebf63f14eab5d3e8da0",
+    "app/services/directional_financial_context_service.py": "f9945e28cad64e5cf368ece0939a7c05f2875e8d49c416d682b188d85e38998b",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/two_stage_directional_service.py": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "43e49660c779ac5fffc0af85e97eb5c80d520b429f8c21bc38cd44169d331610",
+    "scripts/business_delta_evidence_capability_m12ai.py": "d0a54cb82109bf07cc8cc7fb05e34eee16001d0fbed6a5dab6d5f3f261488f8d",
+    "scripts/directional_core_price_timing_holdout.py": "3ff975fab9188171566258f0105453230b4279754eccb3836335158296ea092c",
+    "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py": "8880fcb20cceffc47dfa90a2297bfa6b77dc0ed09c79f7df7820d2650dc91e46"
+  },
+  "frozen_contexts": [
+    {
+      "business_delta_view_sha256": "b7aeb3b45dbe0688575608e4fb20569ee652cde9698c6f8cd65c0b097e86e75a",
+      "context": 1,
+      "stage1_prompt": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-prompt.txt",
+      "stage1_prompt_sha256": "00c7c10bd10e0c084607ede2ebcc86582a208a803443b3b7e580dbfb51cb6ca1",
+      "stage1_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage1-schema.json",
+      "stage1_schema_sha256": "00f2e5a7452595357be08656948a84f7d657cc0804ac9a96428a553afcb0a228",
+      "stage2_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-01/stage2-schema.json",
+      "stage2_schema_sha256": "74f2776c3cb5606d452c1ffbfb8e235b5e0548e4c433a9e01b134e15a5065d76",
+      "tickers": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ]
+    },
+    {
+      "business_delta_view_sha256": "7660eb6d1bae8b62226a809f221442fe39ce312357dbc5adc434beeaf598e377",
+      "context": 2,
+      "stage1_prompt": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-prompt.txt",
+      "stage1_prompt_sha256": "cda2de8d1b204fd353001110f986d34f71096de1d72fc8919565f728d3beb8d0",
+      "stage1_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage1-schema.json",
+      "stage1_schema_sha256": "31eb5922e417166eedf0a4cb525743386b4b5253616c464e3c76ad2a1ac8ece3",
+      "stage2_schema": "artifacts/20260911-business-delta-evidence-capability-gate-fictional-reproof-full-monitored-shadow/fictional/frozen-contexts/context-02/stage2-schema.json",
+      "stage2_schema_sha256": "c5597bb7790bee720302af583d2de388f83cd3eff68e3071c438767133163359",
+      "tickers": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ]
+    }
+  ],
+  "generation_id": "20260911-m12ai-fictional-20260911T052302Z-d8c24c42e4b4",
+  "model": "gpt-5.6-sol",
+  "model_calls_total": 12,
+  "output_count": 24,
+  "reasoning_effort": "xhigh",
+  "repetition_count": 3,
+  "source_lock_sha256": "3ec6e2cd9e3410b9f9181cc7ad5406baf60a2798f08a48da6b57343711e128a2",
+  "stage1_model_calls": 6,
+  "stage2_model_calls": 6,
+  "status": "FROZEN",
+  "subject_count": 8,
+  "timeout_seconds": 1800
+}

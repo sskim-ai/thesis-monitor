@@ -1,0 +1,817 @@
+{
+  "row_count": 90,
+  "rows": [
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E04",
+      "canonical_ref": "canonical:valuation:modeled_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:modeled_forward_earnings",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "000660"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "canonical:valuation:modeled_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:modeled_forward_earnings",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "003690"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "005490"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "005930"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "010120"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "012450"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "047810"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "canonical:valuation:modeled_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:modeled_forward_earnings",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E13",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "086280"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:cashflow:1b8f3742f33dd3b66f8f7673",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:1b8f3742f33dd3b66f8f7673",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "canonical:cashflow-reported:457320a0f7cbb2f263cdd04a",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:457320a0f7cbb2f263cdd04a",
+      "ticker": "CORZ"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "CPNG"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:earnings:2026-03-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-03-31",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "canonical:financial_quality:2026-03-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-03-31",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "canonical:cashflow:402041c63553616360d17391",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:402041c63553616360d17391",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "canonical:cashflow-reported:9c63f15c0cc9d7846eacb167",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:9c63f15c0cc9d7846eacb167",
+      "ticker": "CRCL"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E10",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:cashflow:ddb47708bf7d36a4c0b0c7d2",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:ddb47708bf7d36a4c0b0c7d2",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E26",
+      "canonical_ref": "canonical:cashflow-reported:764df7bd96547d0f4db5f965",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:764df7bd96547d0f4db5f965",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "GOOGL"
+    },
+    {
+      "alias": "E01",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "canonical:financial_quality:2026-03-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-03-31",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "canonical:earnings:2026-03-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-03-31",
+      "ticker": "HUT"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E12",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E17",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E19",
+      "canonical_ref": "canonical:cashflow:a158304539a9269c66f6d2cb",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:a158304539a9269c66f6d2cb",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "canonical:cashflow-reported:f132b335d1d8e29e1a93b9f1",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:f132b335d1d8e29e1a93b9f1",
+      "ticker": "IBM"
+    },
+    {
+      "alias": "E11",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E21",
+      "canonical_ref": "canonical:financial_quality:2026-05-28",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-05-28",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E22",
+      "canonical_ref": "canonical:cashflow-reported:413266fe8659a8b24e238de2",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:413266fe8659a8b24e238de2",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:cashflow:96e9c3b873f3678d4dec0ff3",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:96e9c3b873f3678d4dec0ff3",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "canonical:earnings:2026-05-28",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-05-28",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E39",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "MU"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:cashflow:498c289d4304c0822d861ec3",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:498c289d4304c0822d861ec3",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "canonical:cashflow-reported:e800ea93257bd3aa237b1233",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:e800ea93257bd3aa237b1233",
+      "ticker": "RXRX"
+    },
+    {
+      "alias": "E05",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "canonical:financial_quality:latest",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:latest",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E29",
+      "canonical_ref": "canonical:earnings:latest",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:latest",
+      "ticker": "SKHY"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "canonical:cashflow-reported:6127458ed6d1edddb0a927d1",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:6127458ed6d1edddb0a927d1",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E20",
+      "canonical_ref": "canonical:earnings:2026-07-03",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-07-03",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E24",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E31",
+      "canonical_ref": "canonical:cashflow:1b8db0b46c63ae9369231151",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:1b8db0b46c63ae9369231151",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E34",
+      "canonical_ref": "canonical:financial_quality:2026-07-03",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-07-03",
+      "ticker": "SNDK"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E08",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E09",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E18",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E27",
+      "canonical_ref": "canonical:cashflow-reported:9d3bf8b7dc198173af97abb1",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:9d3bf8b7dc198173af97abb1",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E35",
+      "canonical_ref": "canonical:cashflow:68666c261434dab50ab88a8d",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:68666c261434dab50ab88a8d",
+      "ticker": "TSLA"
+    },
+    {
+      "alias": "E02",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E14",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E16",
+      "canonical_ref": "canonical:valuation:consensus_forward_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:consensus_forward_earnings",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E32",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "TSM"
+    },
+    {
+      "alias": "E06",
+      "canonical_ref": "canonical:financial_quality:2024-12-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2024-12-31",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:earnings:2024-12-31",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2024-12-31",
+      "ticker": "WRD"
+    },
+    {
+      "alias": "E07",
+      "canonical_ref": "canonical:financial_quality:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.financial_quality:2026-06-30",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E15",
+      "canonical_ref": "canonical:valuation:trailing_earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.valuation:trailing_earnings",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E25",
+      "canonical_ref": "canonical:cashflow:6fd003ea029e4d7b03f681f3",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow:6fd003ea029e4d7b03f681f3",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E33",
+      "canonical_ref": "canonical:cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.cashflow-reported:d69bf61d7f9e8f3db830f2b4",
+      "ticker": "WULF"
+    },
+    {
+      "alias": "E36",
+      "canonical_ref": "canonical:earnings:2026-06-30",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "reason": "CURRENT_SINGLE_POINT_WITHOUT_BASELINE_CHANGE",
+      "role": "CURRENT_CONTEXT_ONLY",
+      "source_ref": "stock.fact_catalog.earnings:2026-06-30",
+      "ticker": "WULF"
+    }
+  ],
+  "single_point_is_delta": false,
+  "status": "PASS"
+}

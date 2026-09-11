@@ -1,0 +1,18 @@
+{
+  "actual_sha256": "8bf0c08091100e1ade31a4e8a467368f67c2b0a44cc208ebef3d25abe265a690",
+  "expected_sha256": "8bf0c08091100e1ade31a4e8a467368f67c2b0a44cc208ebef3d25abe265a690",
+  "extra": [],
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "hash_mismatches": [],
+  "indexed_payload_count": 147,
+  "missing": [],
+  "missing_count": 0,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun-report.zip",
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0,
+  "size_mismatches": [],
+  "status": "PASS",
+  "zip_entry_count": 148,
+  "zip_integrity": "PASS"
+}
