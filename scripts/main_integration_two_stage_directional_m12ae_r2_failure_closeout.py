@@ -477,7 +477,9 @@ def _scan(path: Path) -> list[str]:
         "authorization_bearer": (
             r"authorization:\s*bearer\s+[A-Za-z0-9._-]{20,}"
         ),
-        "private_key": r"-----begin (?:rsa |ec )?private key-----",
+        "private_key": (
+            r"-----begin (?:rsa |ec )?private key-----\s+[A-Za-z0-9+/]{40,}"
+        ),
     }
     return [name for name, pattern in indicators.items() if re.search(pattern, folded)]
 
