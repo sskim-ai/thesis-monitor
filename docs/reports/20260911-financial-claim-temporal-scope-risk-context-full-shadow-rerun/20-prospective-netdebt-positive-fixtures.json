@@ -1,0 +1,78 @@
+{
+  "prospective_false_reject_count": 0,
+  "rows": [
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P01",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P02",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P03",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "FUTURE_REEVALUATION_CONDITION"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P04",
+      "errors": [],
+      "expected_role": "FUTURE_REEVALUATION_CONDITION",
+      "expected_valid": true,
+      "language": "en",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P05",
+      "errors": [],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "FUTURE_REEVALUATION_CONDITION"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P06",
+      "errors": [],
+      "expected_role": "FUTURE_REEVALUATION_CONDITION",
+      "expected_valid": true,
+      "language": "en",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

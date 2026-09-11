@@ -1,0 +1,9 @@
+{
+  "base_integration_head_sha": "a296ed2d353d5f811eaf70748c3f6cb90fdcca30",
+  "main_fetch_or_merge": 0,
+  "repository": "sskim-ai/thesis-monitor",
+  "status": "PASS",
+  "task_branch": "codex/20260911-financial-claim-temporal-scope-risk-context-shadow-rerun",
+  "task_head_sha": "a7478b290d67eca116f60b95b0fec6e4e2baff2f",
+  "work_instruction_commit": "f8c82f2bc2cbfbf6a86254297c4a3cf0de9e1ecd"
+}

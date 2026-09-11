@@ -1,0 +1,12 @@
+{
+  "actual_roles": [
+    "CURRENT_DIRECTIONAL_BASIS"
+  ],
+  "actual_valid": true,
+  "case_id": "TEMP-P05",
+  "errors": [],
+  "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+  "expected_valid": true,
+  "language": "ko",
+  "status": "PASS"
+}

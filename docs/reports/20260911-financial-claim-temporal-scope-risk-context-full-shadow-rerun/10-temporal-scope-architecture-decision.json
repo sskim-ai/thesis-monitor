@@ -1,0 +1,7 @@
+{
+  "decision": "three-input generic temporal role classifier",
+  "prompt_change_required": false,
+  "provenance_only_classification": false,
+  "status": "CLOSED",
+  "word_only_classification": false
+}

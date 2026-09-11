@@ -1,0 +1,235 @@
+{
+  "context_count": 6,
+  "contexts": [
+    {
+      "context": 1,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/monolithic-prompt.txt",
+          "sha256": "9e19674c11a0a281e2b1dd248d07237bd17a67079f22703cacdc681ae91a58f4"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/monolithic-schema.json",
+          "sha256": "48ff31e74e553ea6dee38ea69ca6eb7b532f79f661e81559b7a132836fc68600"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage1-prompt.txt",
+          "sha256": "e7b7836c20e047e50b02d065c62d115d6438517c0e2af2cda49a098d0740513f"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage1-schema.json",
+          "sha256": "a17de2de888ff68104f6ac7a58b746418a930da7c85c0338a37af043fe5d46a6"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage2-schema.json",
+          "sha256": "18fdbe61d3289c419141993814740f1408e17ae3acf6835da92e20242c173eff"
+        }
+      },
+      "packet_set_sha256": "ebea4e21994e0a17bca4510013e9ab38f27f90b1134da35b0cc56a8bc7a2e3cc",
+      "packet_sha256": {
+        "000660": "d1fe72cd957c051e3605ce8d5ff7aa1f4cec873b0bf13e3ee30f21048e23cc84",
+        "003690": "b27638f9e34f89c661c819497e9bc3400d87c22dc8c3681b684a9de2cf3f744c",
+        "005490": "2afca7df09073e9f6fe8f89a2a06261ac0b3993d9dc9886c8d7f0bfc37534bef",
+        "005930": "d1ba173ef47a10b30e3a58df1117e75e4961325a0a8812712fe426e8fdb2f6ce"
+      },
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    },
+    {
+      "context": 2,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/monolithic-prompt.txt",
+          "sha256": "7756e947690c4ea3cb485f8ae2d374435e1725736249e6d9a31a407b62c25835"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/monolithic-schema.json",
+          "sha256": "2b0533e002d81dff101127cf834084ffd7628b60c1a2e3d32f2b01c54daebe37"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage1-prompt.txt",
+          "sha256": "722b9a95fc94cbfe8643427dfdbe8664603f42d8b7cd42156d1bab582fb5a4e9"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage1-schema.json",
+          "sha256": "ed35814f301a3d507ab858d0b7e5d89b45d9a4b6113cd7e771641b2e1e24fbec"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage2-schema.json",
+          "sha256": "56e1f0c69673b7c292331d4af4f561228239c100919ffa18b7c1753590509727"
+        }
+      },
+      "packet_set_sha256": "0d6eae3ec5109e9d3288f1b17d8547e747de30fa50cc83e1aab13f5b65c1f511",
+      "packet_sha256": {
+        "010120": "f923fd14decbbcb3e8ae4eef8d747d8b5e4a9d2cf60d4d1c3ca074d2068e6a69",
+        "012450": "6c5b39bb54f14b15750a7ba47cb49a4abc4bcba3a2355377e7d798f64b3037a3",
+        "047810": "df7035b68533bfe544d7003805666b0512fe31d5943f2fd62b85243437beaeba",
+        "086280": "a1ce3c11eb5b44126756c57c18478131ea320b0863f293f31cca837084f6a05f"
+      },
+      "tickers": [
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ]
+    },
+    {
+      "context": 3,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/monolithic-prompt.txt",
+          "sha256": "3f752ad8f83801783f0bb523861cffdd4d129ff429c10f738ece1387e70c26fe"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/monolithic-schema.json",
+          "sha256": "6e1be2de824731a79107e8737178db759cd3ff61c17f95a83af58f496fb1f06e"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage1-prompt.txt",
+          "sha256": "92586e9cd3e39f3e1a312258d84482377661dbbc9a0bb5999854e518cb1c7247"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage1-schema.json",
+          "sha256": "217f0c17018c3391d254bb5a60e4d568380d5a6456ceb2131dc442c8c8fc7494"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage2-schema.json",
+          "sha256": "bbcc6300427c30368446a3d1a02a4cf983dc80e2397ff7a13d3b204288301ed0"
+        }
+      },
+      "packet_set_sha256": "e8a3177f21361a1a1d262b4d9bf7c25f7f89b3f1d7e445613f72ec622c7fa4f6",
+      "packet_sha256": {
+        "CORZ": "aeee6ed3989cafd575a4c1a8463db36d6eb0f8c1e19d70dce914c6462ce4c5b0",
+        "CPNG": "a13c05465c22e772bf3155f6058748e71b130e435c0216147be6fa366da703c0",
+        "CRCL": "32812e89a3c46146ccddfc215c0c499f28a34d6ea20c87a32e462d4e9e898f0b",
+        "GOOGL": "d3ffe7b0cc6c662da0788dcd9f21a8f37f3662386ce6ffd9e5f1a054bad00101"
+      },
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL"
+      ]
+    },
+    {
+      "context": 4,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/monolithic-prompt.txt",
+          "sha256": "ac92e5e86a0bb7371b127d6c76b9173ed7a695361681393beddd8f50555969fe"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/monolithic-schema.json",
+          "sha256": "c0e01dd2f792ab137e3145d47cd557fe9a2ef5901cd978a4296c9fed0d207f51"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage1-prompt.txt",
+          "sha256": "3f8536b5538bfe3d066e50044d94abb6050ef2d2d46ecf26a981d4cba7736316"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage1-schema.json",
+          "sha256": "ada3a874cf3390eaa81ea38d37f9176cd681f0eda77a23c3d292af3a17d49f64"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage2-schema.json",
+          "sha256": "5938c003ec344b728e871334cbbe8f48a3f4821d667852fe23d2b56b458abf20"
+        }
+      },
+      "packet_set_sha256": "fd692108c742ca75f2452d541d20f078e6f540c9c584cef2857c2c89ac07b504",
+      "packet_sha256": {
+        "HUT": "cfa3ebff2e470d840f28a9fb2c573f0a5cbfc475047e9e8e047e1d1711110ec2",
+        "IBM": "87103b0cf4aa9239ad8561e78130567eda978307d17d6d1831b3cfd5397a5e49",
+        "MU": "dfae0b2d9cd168bad84409d82713103a8d09354b2d2bf3b19d5506ecb29537ba",
+        "RXRX": "65111d96631fa79c0df9ed82449b4aee75f12abfa96f881bb8f8cd2acec89b55"
+      },
+      "tickers": [
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX"
+      ]
+    },
+    {
+      "context": 5,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/monolithic-prompt.txt",
+          "sha256": "b6787091057b8d422f6401e1dcebe0eb249b0f2b84a011225ab9b75cde188d84"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/monolithic-schema.json",
+          "sha256": "dc1b7ff8319c9a0068223a379f6931f3aaf2ce7c80bb25823ce409caae67c1de"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage1-prompt.txt",
+          "sha256": "b438847e48b1289c9c3b0653be38aed4019a11a760742fd12f0d01f436b63243"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage1-schema.json",
+          "sha256": "be045a0ab138e974446451b3d86c62abb192d68f92704d22081e3b495719eb88"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage2-schema.json",
+          "sha256": "0f30028e3fdd0da005b6a6d59c22f25d1361dbd39eb37442d0689c12d826e71d"
+        }
+      },
+      "packet_set_sha256": "544fd4d982f4295bd03ad7269772fdcb229d40e6d2ccc497521691c474a1dd6c",
+      "packet_sha256": {
+        "SKHY": "39997621bf3ac754c8f100502011c7523587de49a96d12314fb3d15ce87dcf20",
+        "SNDK": "7378c27effea9c4563e17ca537c4c6c4432a13b072fe7c15cb899ee583e47548",
+        "TSLA": "443ba3b158aa1d6ccbb2e974a29af4da5e942ed38ae57dc13dfe905531997011",
+        "TSM": "da6fb72fa5d0d893abd5c55344cec9c186e2ca33ebecf95cff95b7297f8d5073"
+      },
+      "tickers": [
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM"
+      ]
+    },
+    {
+      "context": 6,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/monolithic-prompt.txt",
+          "sha256": "15a86285827b990a461bf7d0c1b2786f970bfb86410669feeae415b847a5562a"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/monolithic-schema.json",
+          "sha256": "b00f0867b4e646de074dd42ef1fb9af153fb1d1c915291e227cb983f407a4025"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage1-prompt.txt",
+          "sha256": "4ce818f3f1bc1a3a196d31c250a014c015cba1997947705b4c09cf93f45cc6e9"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage1-schema.json",
+          "sha256": "b9e94556dd954184e252cf3336b3667db0fcfc5d185bd95c86e1e7608559bf21"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage2-schema.json",
+          "sha256": "c9921d1b734dd6f5aa41b37e28d97f7edb1aec27293a2b2dd73d83f9c422c034"
+        }
+      },
+      "packet_set_sha256": "d0c5f4de37a104b66a582dad3a2c83f7e1f22303d381426e383fbeceedc16dc2",
+      "packet_sha256": {
+        "WRD": "843db8dcca5c599f372db6ee6dc1576abada16a3ec42f666ce4ec77d273b3128",
+        "WULF": "f595029326a02ea680905752148711e5feb2e654ad12ba4bd960880de74c113b"
+      },
+      "tickers": [
+        "WRD",
+        "WULF"
+      ]
+    }
+  ],
+  "planned_monolithic_calls": 6,
+  "planned_stage1_calls": 6,
+  "planned_stage2_calls": 6,
+  "planned_total_calls": 18,
+  "status": "FROZEN",
+  "subjects_per_context": 4
+}

@@ -1,0 +1,62 @@
+{
+  "batch_split": 0,
+  "contract": "m12-single-attempt-model-receipt-v1",
+  "failure_type": null,
+  "finished_at": "2026-09-11T04:18:27.254763+00:00",
+  "invocation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74:context-01:monolithic",
+  "log_sha256": "55ff59205e3c1067eb3401d7c28db82cb5398ca25747759ad42f7431792999c9",
+  "model": "gpt-5.6-sol",
+  "model_process_spawned": true,
+  "network_readiness": {
+    "attempts": 1,
+    "contract": "codex-network-readiness-v1",
+    "failure_type": null,
+    "ready": true,
+    "resolved_address_count": 4
+  },
+  "observed_runtime": {
+    "effort": "xhigh",
+    "model": "gpt-5.6-sol"
+  },
+  "orphan_process_count": 0,
+  "output_exists": true,
+  "output_sha256": "926f2935671ed673ebe52e2f0e2ac71bb4e9590bd8c0941d6102577cdff16b0f",
+  "output_size": 15508,
+  "prompt_sha256": "9e19674c11a0a281e2b1dd248d07237bd17a67079f22703cacdc681ae91a58f4",
+  "raw_diagnostic_token": null,
+  "reasoning_effort": "xhigh",
+  "returncode": 0,
+  "runtime_isolation": {
+    "base_namespace_hash": "4eadf7d6c8e18a9d6cc28ed6",
+    "contract": "codex-model-context-runtime-isolation-v1",
+    "execution_isolation_valid": true,
+    "invocation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74:context-01:monolithic",
+    "invocation_identity_unique": true,
+    "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+    "runtime_state_namespace_hash": "c348c0a9c6203cdb4b3650a8",
+    "runtime_state_namespace_unique": true,
+    "working_directory_identity": "26c1c1cfc26955cc79053534a5f65c38bd323f202b129b2fdce5152e101d5f21",
+    "working_directory_unique": true
+  },
+  "runtime_state": {
+    "codex_home": "/private/tmp/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/runtime-state/c348c0a9c6203cdb4b3650a8/home",
+    "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+    "contract": "codex-runtime-state-v1",
+    "mode": "0700",
+    "namespace_hash": "c348c0a9c6203cdb4b3650a8",
+    "ownership": "uid:501",
+    "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+    "sqlite_home": "/private/tmp/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/runtime-state/c348c0a9c6203cdb4b3650a8/sqlite",
+    "sqlite_wal_probe": "PASS"
+  },
+  "schema_sha256": "48ff31e74e553ea6dee38ea69ca6eb7b532f79f661e81559b7a132836fc68600",
+  "single_authoritative_watchdog": true,
+  "started_at": "2026-09-11T04:14:38.174497+00:00",
+  "status": "PASS",
+  "timed_out": false,
+  "timeout_count": 0,
+  "timeout_seconds": 1800,
+  "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+  "transport_attempt_count": 1,
+  "wrapper_retry_count": 0
+}

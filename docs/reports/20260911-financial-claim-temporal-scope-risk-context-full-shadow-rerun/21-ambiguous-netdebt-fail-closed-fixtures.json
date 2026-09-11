@@ -1,0 +1,48 @@
+{
+  "ambiguous_fail_closed_count": 3,
+  "rows": [
+    {
+      "actual_roles": [
+        "UNKNOWN_OR_AMBIGUOUS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-A01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "UNKNOWN_OR_AMBIGUOUS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "UNKNOWN_OR_AMBIGUOUS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-A02",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "UNKNOWN_OR_AMBIGUOUS",
+      "expected_valid": false,
+      "language": "en",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "UNKNOWN_OR_AMBIGUOUS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-C01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "UNKNOWN_OR_AMBIGUOUS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

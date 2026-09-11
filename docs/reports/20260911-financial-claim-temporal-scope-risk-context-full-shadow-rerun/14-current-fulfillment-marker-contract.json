@@ -1,0 +1,20 @@
+{
+  "configured_source_can_override_explicit_current": false,
+  "english": [
+    "currently",
+    "already",
+    "has increased",
+    "is high",
+    "is weighing"
+  ],
+  "korean": [
+    "\ud604\uc7ac",
+    "\uc774\ubbf8",
+    "\uc9c0\uae08",
+    "\uc99d\uac00\ud588\ub2e4",
+    "\uc545\ud654\ub410\ub2e4",
+    "\ub192\uc740 \uc21c\ubd80\ucc44",
+    "\ud604\uc7ac \uc778\uacfc \uacb0\uacfc"
+  ],
+  "status": "PASS"
+}

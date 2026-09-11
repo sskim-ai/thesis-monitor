@@ -1,0 +1,18 @@
+{
+  "contexts": [
+    {
+      "context": 1,
+      "invocation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74:context-01:monolithic",
+      "output_sha256": "926f2935671ed673ebe52e2f0e2ac71bb4e9590bd8c0941d6102577cdff16b0f",
+      "status": "PASS",
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    }
+  ],
+  "remaining_contexts_not_run": 5,
+  "status": "PASS"
+}

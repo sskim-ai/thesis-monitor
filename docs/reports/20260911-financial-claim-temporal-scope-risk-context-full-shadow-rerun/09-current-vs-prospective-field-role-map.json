@@ -1,0 +1,18 @@
+{
+  "always_current": [
+    "buy_drivers",
+    "sell_drivers",
+    "dominant_evidence",
+    "core_investment_judgment",
+    "material_directional_anchor_basis"
+  ],
+  "explicit_future": [
+    "business_reevaluation_up",
+    "business_reevaluation_down",
+    "business_invalidation_condition"
+  ],
+  "mixed": [
+    "risk_context"
+  ],
+  "status": "FROZEN"
+}

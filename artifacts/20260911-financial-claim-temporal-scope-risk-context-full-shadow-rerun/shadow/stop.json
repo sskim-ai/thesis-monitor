@@ -1,0 +1,8 @@
+{
+  "completed_model_calls": 2,
+  "detail": "shadow_stage1_semantic_failure:20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74:context-01:stage1",
+  "production_side_effects": 0,
+  "status": "FAIL",
+  "stop_reason": "RuntimeError",
+  "wrapper_retry_count": 0
+}

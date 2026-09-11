@@ -1,0 +1,12 @@
+{
+  "contract_after": "financial-claim-temporal-role-v2",
+  "contract_before": "financial-claim-role-v1",
+  "inputs": [
+    "field semantic",
+    "evidence provenance",
+    "linguistic fulfillment markers"
+  ],
+  "new_role": "PROSPECTIVE_RISK_SCENARIO",
+  "status": "CLOSED",
+  "ticker_specific_exception_count": 0
+}

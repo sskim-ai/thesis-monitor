@@ -1,0 +1,7 @@
+{
+  "ambiguous_policy": "FAIL_CLOSED",
+  "blanket_current": false,
+  "current_fulfillment_requires_current_evidence": true,
+  "prospective_requires_configured_provenance": true,
+  "status": "PASS"
+}

@@ -1,0 +1,92 @@
+{
+  "business_delta_failure_count": 1,
+  "lesson": "The repaired prospective risk-context role passed 005490; the generation stopped on an independent Stage 1 business-delta ownership violation.",
+  "rows": [
+    {
+      "errors": [],
+      "phase": "monolithic",
+      "roles": [],
+      "ticker": "000660"
+    },
+    {
+      "errors": [],
+      "phase": "monolithic",
+      "roles": [],
+      "ticker": "003690"
+    },
+    {
+      "errors": [],
+      "phase": "monolithic",
+      "roles": [
+        {
+          "evidence_refs": [
+            "decision-evidence:30eb7b45f4a7dacf1700",
+            "decision-evidence:94be39ae695cc6dc42e4",
+            "decision-evidence:c0703efb51b207666566"
+          ],
+          "field_path": "business_reevaluation_down[0].text",
+          "framework": "net_debt",
+          "role": "FUTURE_REEVALUATION_CONDITION",
+          "text": "\ud604\uae08\ucc3d\ucd9c \uac10\uc18c\uc640 \uc21c\ubd80\ucc44 \uc99d\uac00, \uc790\ubcf8\ud6a8\uc728 \ud558\ub77d \ub610\ub294 \uc758\ubbf8 \uc788\ub294 \ud76c\uc11d\uc774 \ud655\uc778\ub418\uba74 \ub17c\ub9ac\uac00 \uc57d\ud574\uc9c4\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:30eb7b45f4a7dacf1700",
+            "decision-evidence:94be39ae695cc6dc42e4",
+            "decision-evidence:c0703efb51b207666566"
+          ],
+          "field_path": "risk_context.text",
+          "framework": "net_debt",
+          "role": "PROSPECTIVE_RISK_SCENARIO",
+          "text": "\uc124\ube44\ud22c\uc790 \ubd80\ub2f4, \uc790\ubcf8\ud6a8\uc728 \ud558\ub77d, \uc21c\ubd80\ucc44 \uc99d\uac00\uc640 \ud76c\uc11d \uac00\ub2a5\uc131\uc774 \ud655\uc778\ud574\uc57c \ud560 \ud575\uc2ec \uc704\ud5d8\uc774\ub2e4"
+        },
+        {
+          "evidence_refs": [
+            "decision-evidence:30eb7b45f4a7dacf1700",
+            "decision-evidence:94be39ae695cc6dc42e4",
+            "decision-evidence:c0703efb51b207666566"
+          ],
+          "field_path": "sell_drivers[0].text",
+          "framework": "net_debt",
+          "role": "CONFIGURED_CONDITIONAL_CHECK",
+          "text": "\ud604\uae08\ucc3d\ucd9c\u00b7\uc21c\ubd80\ucc44\u00b7\uc790\ubcf8\ud6a8\uc728\uacfc \ud76c\uc11d \uc704\ud5d8\uc774 \ud604\uc2e4\ud654\ub418\uba74 \ud22c\uc790 \ud68c\uc218 \ub17c\ub9ac\uac00 \uc57d\ud574\uc9c8 \uc218 \uc788\ub2e4"
+        }
+      ],
+      "ticker": "005490"
+    },
+    {
+      "errors": [],
+      "phase": "monolithic",
+      "roles": [],
+      "ticker": "005930"
+    },
+    {
+      "errors": [],
+      "phase": "stage1",
+      "roles": [],
+      "ticker": "000660"
+    },
+    {
+      "errors": [
+        "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+      ],
+      "phase": "stage1",
+      "roles": [],
+      "ticker": "003690"
+    },
+    {
+      "errors": [],
+      "phase": "stage1",
+      "roles": [],
+      "ticker": "005490"
+    },
+    {
+      "errors": [],
+      "phase": "stage1",
+      "roles": [],
+      "ticker": "005930"
+    }
+  ],
+  "status": "PARTIAL_DIAGNOSTIC_COMPLETE",
+  "temporal_scope_failure_count": 0
+}

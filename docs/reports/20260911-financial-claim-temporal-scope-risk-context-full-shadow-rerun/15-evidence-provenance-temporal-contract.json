@@ -1,0 +1,10 @@
+{
+  "all_supporting_refs_must_be_configured": true,
+  "configured_source_with_financial_context_is_prospective": false,
+  "configured_sources": [
+    "stock.thesis.strengthen_signals",
+    "stock.thesis.weaken_signals",
+    "stock.thesis.invalidation_signals"
+  ],
+  "status": "PASS"
+}

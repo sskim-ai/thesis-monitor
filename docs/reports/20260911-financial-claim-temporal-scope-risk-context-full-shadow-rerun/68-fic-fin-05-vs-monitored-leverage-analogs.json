@@ -1,0 +1,8 @@
+{
+  "classification": "INSUFFICIENT_REAL_ANALOG_COVERAGE",
+  "generation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74",
+  "pattern": "leverage",
+  "reason": "Stage 1 context-01 failed the frozen business-delta semantic gate.",
+  "rows": [],
+  "status": "NOT_MEASURED_HARD_STOP"
+}

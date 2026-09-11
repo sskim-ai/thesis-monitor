@@ -1,0 +1,8 @@
+{
+  "failing_ticker": "005490",
+  "failure": "net_debt_claim_without_complete_net_debt_evidence",
+  "historical_output_rewritten": false,
+  "source_generation_id": "20260911-m12ag-shadow-20260911T033054Z-e964784ae190",
+  "source_status": "STOPPED_OBJECTIVE_SEMANTIC_HARD_FAILURE",
+  "status": "REPRODUCED"
+}

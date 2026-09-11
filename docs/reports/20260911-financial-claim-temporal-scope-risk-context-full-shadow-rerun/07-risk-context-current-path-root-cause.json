@@ -1,0 +1,6 @@
+{
+  "repair": "risk_context is classified as a mixed field using temporal language and evidence provenance",
+  "risk_context_blanket_current_path_removed": true,
+  "root_cause": "risk_context was in a blanket current-direction path list",
+  "status": "CLOSED"
+}

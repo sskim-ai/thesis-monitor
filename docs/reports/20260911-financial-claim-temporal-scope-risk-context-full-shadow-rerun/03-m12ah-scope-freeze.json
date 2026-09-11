@@ -1,0 +1,15 @@
+{
+  "business_delta_change_count": 0,
+  "ownership_change_count": 0,
+  "production_side_effects": 0,
+  "prompt_change_count": 0,
+  "provider_refresh": 0,
+  "schema_change_count": 0,
+  "scope": [
+    "generic financial claim temporal role",
+    "risk_context mixed-field semantics",
+    "offline fictional re-audit",
+    "new 22-name monitored shadow"
+  ],
+  "status": "FROZEN"
+}

@@ -1,0 +1,12 @@
+{
+  "actual_roles": [
+    "FUTURE_REEVALUATION_CONDITION"
+  ],
+  "actual_valid": true,
+  "case_id": "TEMP-P06",
+  "errors": [],
+  "expected_role": "FUTURE_REEVALUATION_CONDITION",
+  "expected_valid": true,
+  "language": "en",
+  "status": "PASS"
+}

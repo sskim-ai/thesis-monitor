@@ -1,0 +1,76 @@
+{
+  "directional_prompt_change_count": 0,
+  "protected_architecture_change_count": 0,
+  "rows": [
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 1,
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 2,
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 3,
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 4,
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 5,
+      "status": "PASS"
+    },
+    {
+      "checks": {
+        "monolithic-prompt.txt": true,
+        "monolithic-schema.json": true,
+        "stage1-prompt.txt": true,
+        "stage1-schema.json": true,
+        "stage2-schema.json": true
+      },
+      "context": 6,
+      "status": "PASS"
+    }
+  ],
+  "schema_change_count": 0,
+  "stage1_prompt_change_count": 0,
+  "stage2_prompt_change_count": 0,
+  "status": "PASS"
+}

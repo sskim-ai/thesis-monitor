@@ -1,0 +1,746 @@
+{
+  "artifact_count": 147,
+  "contract": "m12ah-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "rows": [
+    {
+      "path": "app/services/directional_financial_context_service.py",
+      "sha256": "f9945e28cad64e5cf368ece0939a7c05f2875e8d49c416d682b188d85e38998b",
+      "size": 39970
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/COMPLETION-REPORT.md",
+      "sha256": "228abc77d5dcfa1e20a594817cd75b556441ddefe68157b89f8d068561c4136e",
+      "size": 546
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/program-completion.json",
+      "sha256": "44a79c4158da1db3aff04a7616d5da4eb6ac90f107e69cc0689a7051d9b2e9dc",
+      "size": 5173
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow-model-call-gate.json",
+      "sha256": "4714fa1c392c3754bc37fe59b072f39764b7e64a6a4b7d363fd2724efd7431de",
+      "size": 2534
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/failure-closeout.json",
+      "sha256": "73ad26c2020f451f964117c8cf9664571ff42a0be6c2c553d79768d799615a17",
+      "size": 33269
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/monolithic-prompt.txt",
+      "sha256": "9e19674c11a0a281e2b1dd248d07237bd17a67079f22703cacdc681ae91a58f4",
+      "size": 67626
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/monolithic-schema.json",
+      "sha256": "48ff31e74e553ea6dee38ea69ca6eb7b532f79f661e81559b7a132836fc68600",
+      "size": 45733
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage1-prompt.txt",
+      "sha256": "e7b7836c20e047e50b02d065c62d115d6438517c0e2af2cda49a098d0740513f",
+      "size": 66932
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage1-schema.json",
+      "sha256": "a17de2de888ff68104f6ac7a58b746418a930da7c85c0338a37af043fe5d46a6",
+      "size": 36050
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-01/stage2-schema.json",
+      "sha256": "18fdbe61d3289c419141993814740f1408e17ae3acf6835da92e20242c173eff",
+      "size": 14995
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/monolithic-prompt.txt",
+      "sha256": "7756e947690c4ea3cb485f8ae2d374435e1725736249e6d9a31a407b62c25835",
+      "size": 68137
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/monolithic-schema.json",
+      "sha256": "2b0533e002d81dff101127cf834084ffd7628b60c1a2e3d32f2b01c54daebe37",
+      "size": 45838
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage1-prompt.txt",
+      "sha256": "722b9a95fc94cbfe8643427dfdbe8664603f42d8b7cd42156d1bab582fb5a4e9",
+      "size": 67443
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage1-schema.json",
+      "sha256": "ed35814f301a3d507ab858d0b7e5d89b45d9a4b6113cd7e771641b2e1e24fbec",
+      "size": 36155
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-02/stage2-schema.json",
+      "sha256": "56e1f0c69673b7c292331d4af4f561228239c100919ffa18b7c1753590509727",
+      "size": 15100
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/monolithic-prompt.txt",
+      "sha256": "3f752ad8f83801783f0bb523861cffdd4d129ff429c10f738ece1387e70c26fe",
+      "size": 73833
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/monolithic-schema.json",
+      "sha256": "6e1be2de824731a79107e8737178db759cd3ff61c17f95a83af58f496fb1f06e",
+      "size": 45786
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage1-prompt.txt",
+      "sha256": "92586e9cd3e39f3e1a312258d84482377661dbbc9a0bb5999854e518cb1c7247",
+      "size": 73139
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage1-schema.json",
+      "sha256": "217f0c17018c3391d254bb5a60e4d568380d5a6456ceb2131dc442c8c8fc7494",
+      "size": 36103
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-03/stage2-schema.json",
+      "sha256": "bbcc6300427c30368446a3d1a02a4cf983dc80e2397ff7a13d3b204288301ed0",
+      "size": 15048
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/monolithic-prompt.txt",
+      "sha256": "ac92e5e86a0bb7371b127d6c76b9173ed7a695361681393beddd8f50555969fe",
+      "size": 77294
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/monolithic-schema.json",
+      "sha256": "c0e01dd2f792ab137e3145d47cd557fe9a2ef5901cd978a4296c9fed0d207f51",
+      "size": 45871
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage1-prompt.txt",
+      "sha256": "3f8536b5538bfe3d066e50044d94abb6050ef2d2d46ecf26a981d4cba7736316",
+      "size": 76600
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage1-schema.json",
+      "sha256": "ada3a874cf3390eaa81ea38d37f9176cd681f0eda77a23c3d292af3a17d49f64",
+      "size": 36188
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-04/stage2-schema.json",
+      "sha256": "5938c003ec344b728e871334cbbe8f48a3f4821d667852fe23d2b56b458abf20",
+      "size": 15133
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/monolithic-prompt.txt",
+      "sha256": "b6787091057b8d422f6401e1dcebe0eb249b0f2b84a011225ab9b75cde188d84",
+      "size": 72422
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/monolithic-schema.json",
+      "sha256": "dc1b7ff8319c9a0068223a379f6931f3aaf2ce7c80bb25823ce409caae67c1de",
+      "size": 45799
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage1-prompt.txt",
+      "sha256": "b438847e48b1289c9c3b0653be38aed4019a11a760742fd12f0d01f436b63243",
+      "size": 71728
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage1-schema.json",
+      "sha256": "be045a0ab138e974446451b3d86c62abb192d68f92704d22081e3b495719eb88",
+      "size": 36116
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-05/stage2-schema.json",
+      "sha256": "0f30028e3fdd0da005b6a6d59c22f25d1361dbd39eb37442d0689c12d826e71d",
+      "size": 15061
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/monolithic-prompt.txt",
+      "sha256": "15a86285827b990a461bf7d0c1b2786f970bfb86410669feeae415b847a5562a",
+      "size": 37393
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/monolithic-schema.json",
+      "sha256": "b00f0867b4e646de074dd42ef1fb9af153fb1d1c915291e227cb983f407a4025",
+      "size": 23075
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage1-prompt.txt",
+      "sha256": "4ce818f3f1bc1a3a196d31c250a014c015cba1997947705b4c09cf93f45cc6e9",
+      "size": 36699
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage1-schema.json",
+      "sha256": "b9e94556dd954184e252cf3336b3667db0fcfc5d185bd95c86e1e7608559bf21",
+      "size": 18238
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-contexts/context-06/stage2-schema.json",
+      "sha256": "c9921d1b734dd6f5aa41b37e28d97f7edb1aec27293a2b2dd73d83f9c422c034",
+      "size": 7707
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/000660.json",
+      "sha256": "b394fd7ac9ad5964b002ee0f0d75f6fdca6be8c45c9e184dfa9ea9365b482b98",
+      "size": 2468612
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/003690.json",
+      "sha256": "aef3578f6e37ca51dd11c6262c9792ba76831b1e1253f07d9d22ee70213e11f8",
+      "size": 2258564
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/005490.json",
+      "sha256": "0045a2d91946d6269ee03180f91d84f491d4f4c089f757bfb9e93548d712b0ce",
+      "size": 2429287
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/005930.json",
+      "sha256": "befd71534fd942f24b98d9330b94837b706064f9272b01c7a160967547d963e4",
+      "size": 2410510
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/010120.json",
+      "sha256": "78d4c5871ef257f2e8effa965c13373818a45feb70746b2b052a9a19af9418a4",
+      "size": 2278512
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/012450.json",
+      "sha256": "7fef1499a3020093c6e34f5394543fbf823473d38bed8cd3150897e9ecfb488d",
+      "size": 2265924
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/047810.json",
+      "sha256": "1844c5765a04fac49dc00cf7b2f30ee3fdfde5f237dafe8b965d1eaaf59d950e",
+      "size": 2258987
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/086280.json",
+      "sha256": "07ca70a2fc461287cdc6305a9981dfdeff362ee9249dcd841021f42ceb2bd95a",
+      "size": 2407613
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/CORZ.json",
+      "sha256": "9ac2b7108df9575517076003712bb85f95a7e0598c8cd663d7f57bc8d23c42ce",
+      "size": 840926
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/CPNG.json",
+      "sha256": "9c53e7cab274c8e915d5d654d22cb59624971fefc7737dab2dfc17868220b23f",
+      "size": 983161
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/CRCL.json",
+      "sha256": "1bb834e30da0d750a2f597e267c8eeedc4da0504f8de743007f4bc9143a29d88",
+      "size": 697655
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/GOOGL.json",
+      "sha256": "488429f62811a89173f5fe9db8ef898409dfbfc1bfc0b4d93c05e36dafdd8f5d",
+      "size": 1028257
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/HUT.json",
+      "sha256": "a0f0e9a7107ca6086c0f8cf97e7eb99bb3cccc1f142471a5714614fd571e9d64",
+      "size": 915043
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/IBM.json",
+      "sha256": "38edb3fdb2f06e1b9fbd8df56d4c1b3593caedd660c9021c9a1845f8052ac670",
+      "size": 1035393
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/MU.json",
+      "sha256": "57b9471b235132040c1c6936b7c65b303499cbf8baf7088ffbc534f9697c4bb6",
+      "size": 1013199
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/RXRX.json",
+      "sha256": "2414416b32c76e13e74d4e8693f64b72fe92ac585d3b5c82aec17e5c7115e136",
+      "size": 865604
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/SKHY.json",
+      "sha256": "6cb4d342264c89a2c9568fce7eee68caae3c4697e21fc9d218aa72e12d212015",
+      "size": 604375
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/SNDK.json",
+      "sha256": "e666c4caeb3318eb9a6ef394bff90ff41d0e509b390841da693229f2fc5c4da0",
+      "size": 802898
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/TSLA.json",
+      "sha256": "2f29a8d04295b34f13f96039cbea4d3f4047c66df49f4a129b8451e93d678693",
+      "size": 985850
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/TSM.json",
+      "sha256": "8b73a33b8bc31f87576aecc43a44f80e144525ac72255652c397673d5f9562b5",
+      "size": 926220
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/WRD.json",
+      "sha256": "b2d138d4d3033bb4539a0ace18efa8d522fdf6e33182a22c5741533342c50524",
+      "size": 779636
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/frozen-packets/WULF.json",
+      "sha256": "ba14220dec26375d73933689ae5ed5261462128e0c3e6aba01cbb69dc5ddd13e",
+      "size": 938680
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/output.raw.json",
+      "sha256": "926f2935671ed673ebe52e2f0e2ac71bb4e9590bd8c0941d6102577cdff16b0f",
+      "size": 15508
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/prompt.txt",
+      "sha256": "9e19674c11a0a281e2b1dd248d07237bd17a67079f22703cacdc681ae91a58f4",
+      "size": 67626
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/receipt.json",
+      "sha256": "66cacb9a54378a9da2ba18c61b23147093e6dc814f9721c438eaaf6c98d9f774",
+      "size": 2620
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/run-document.json",
+      "sha256": "bd2ddbae0c2382ac982505e317afc89c939514a68c4233d84ee5cdfd27c6f3c6",
+      "size": 111984
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/schema.json",
+      "sha256": "48ff31e74e553ea6dee38ea69ca6eb7b532f79f661e81559b7a132836fc68600",
+      "size": 45733
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/monolithic/transport.log",
+      "sha256": "55ff59205e3c1067eb3401d7c28db82cb5398ca25747759ad42f7431792999c9",
+      "size": 150296
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/output.raw.json",
+      "sha256": "a894eda203d8cb5f8e1234cbd2f28932e4f1d9636fc5d192cde23a722fb3aacb",
+      "size": 14633
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/prompt.txt",
+      "sha256": "e7b7836c20e047e50b02d065c62d115d6438517c0e2af2cda49a098d0740513f",
+      "size": 66932
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/receipt.json",
+      "sha256": "6e8c11c00e70fa39c8f5b3adcaf9539dd6b92032161195fe9a3c1155ca1a9541",
+      "size": 2612
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/run-document.json",
+      "sha256": "208607beb31a914c529ac485c02da19d0982bf4963eb739677b94d200d6f4d53",
+      "size": 129266
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/schema.json",
+      "sha256": "a17de2de888ff68104f6ac7a58b746418a930da7c85c0338a37af043fe5d46a6",
+      "size": 36050
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/model-calls/context-01/stage1/transport.log",
+      "sha256": "2e693dff26d5c5ceb91b76ae6b2480c3376d03653b2591b451d75d35590b91ed",
+      "size": 139195
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/program-state.json",
+      "sha256": "09f433817af3b0da2fa88fbbeab5850bc930688b3c9e7402a0d7d6c10a1a9e9f",
+      "size": 48607
+    },
+    {
+      "path": "artifacts/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/shadow/stop.json",
+      "sha256": "4470740a9e7999f327ce8eb9091b824fcb303431b6942d5140f49f4d821d4667",
+      "size": 262
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/01-repository-provenance.json",
+      "sha256": "e4c3455a6d5f4ab75d2fea11229e18117fb3d5cc9d83c9ee720fd43fdd8ad9a0",
+      "size": 397
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/02-latest-result-integrity.json",
+      "sha256": "b2620d92153d905f117ffab7f3cf262f447e37e79fb81135c56e3b76bfc5ac22",
+      "size": 617
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/03-m12ah-scope-freeze.json",
+      "sha256": "c7b7cfad364ba653d9b5cda383ef2ea7768b166396d1ad3b67fa93e5763de5df",
+      "size": 379
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/04-integrated-main-lineage-freeze.json",
+      "sha256": "4d426ec1e91c9cb9552826ff049abc253ce2015e48768481e644434fa260a6c9",
+      "size": 232
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/05-m12ag-005490-failure-reproduction.json",
+      "sha256": "a489e060d3fa3ac340de1bae04c8ed269adcbc905e41609d2cbd47d8a5e6b876",
+      "size": 308
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/06-current-financial-claim-role-code-audit.json",
+      "sha256": "47b1682e7f5c3b7ee872fb130a761eccbfabe183600d49475195ec559634b928",
+      "size": 317
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/07-risk-context-current-path-root-cause.json",
+      "sha256": "e0cdbc1b218f322c4a6598cdfca53bfd0de34a23215854917091c6e327e2049b",
+      "size": 262
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/08-005490-evidence-provenance-audit.json",
+      "sha256": "7440a0e648af0c110f221503d7a6ffa9fc36f09aed6ac770d19772cc8af5059c",
+      "size": 1251
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/09-current-vs-prospective-field-role-map.json",
+      "sha256": "c793274dec1356cad5d392e67df9266219cf1e5c7393693dc529f407d78377d6",
+      "size": 357
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/10-temporal-scope-architecture-decision.json",
+      "sha256": "4689796e7507953372f7218b11323f856776535aaa86e932bd531d03e2c368a0",
+      "size": 202
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/11-financial-claim-temporal-role-contract-v2.json",
+      "sha256": "c267c4f1e5ecbe4245f8a6a32370078a3b691ed922b9593453d6727cd645ff95",
+      "size": 385
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/12-prospective-risk-scenario-contract.json",
+      "sha256": "542457896a6ab46cc33eb39fd527846d32fb0f4c952aa2a21b56ac6afff344ce",
+      "size": 223
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/13-risk-context-mixed-field-contract.json",
+      "sha256": "31148c145736eeda41b5997790c9ea0c0a81a191f8f28a6d824f4dd72cf56e2c",
+      "size": 199
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/14-current-fulfillment-marker-contract.json",
+      "sha256": "fa183b5e596f6b202e31abadb62fb03fca230db999a948087c6c40317ccc1092",
+      "size": 416
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/15-evidence-provenance-temporal-contract.json",
+      "sha256": "54a49d53b965227676e49222e280c8993a29d161836738bb309c9c20e3a329b6",
+      "size": 286
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/16-mixed-current-prospective-claim-policy.json",
+      "sha256": "c95121cf79efbc3d1175c05b83ff6b29120b02d9a61f90bafcfb71c3987fa28f",
+      "size": 425
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/17-korean-temporal-scope-fixtures.json",
+      "sha256": "c20fb3c6ddfdea579811b44cb79dbbc5da087b9dd4c2e674b0b0209f0d763edb",
+      "size": 4423
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/18-english-temporal-scope-fixtures.json",
+      "sha256": "169e9a15c08c9bbecab8502a9f95be520476dac8f56dbe1eae376d4d423e8eb9",
+      "size": 1623
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/19-current-netdebt-hard-negative-fixtures.json",
+      "sha256": "d710fa480857faa23738ea3701694a817adef98a1ec7d4cd6802ffb878fe7a64",
+      "size": 2267
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/20-prospective-netdebt-positive-fixtures.json",
+      "sha256": "0366092334d0ed46652ebba8b23294ca7c29782cded178be34136c61d8976171",
+      "size": 1822
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/21-ambiguous-netdebt-fail-closed-fixtures.json",
+      "sha256": "02fe04fe6ac69b4be4a6e96f27afb43f428786e78f9dd0b7e6bfd1797f052c1e",
+      "size": 1116
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/22-configured-source-current-rewrite-negative-control.json",
+      "sha256": "8275eb028a607532240c9a9f5433b6a4eb4404006a52419189f20194f0ef8cc7",
+      "size": 300
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/23-current-complete-netdebt-positive-control.json",
+      "sha256": "6221c1caf63d383923bdf1726a90a7bc8ef85e362957aefd2bd989b4cbc456c8",
+      "size": 239
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/24-conditional-numeric-threshold-control.json",
+      "sha256": "07d137e7679906806cb4d253908687522b9ffaf1fddede6f61ab8a3f85a0e3e3",
+      "size": 247
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/25-cross-field-current-override-control.json",
+      "sha256": "9f17d4f8d875d79d1206a13a351bfcd78e08d4893ba46abaa77348c4b43a4fef",
+      "size": 335
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/26-m12ag-005490-exact-output-replay.json",
+      "sha256": "634130c8f25a2dd81c3c3b4ccbd450049d4449e7110aa901e7fd23a949d10bd9",
+      "size": 1324
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/27-m12ag-context01-four-row-reaudit.json",
+      "sha256": "d10826282b01d4acafc85fcfa92482799c4bb6041ed6c29e14536e0ad0e56a92",
+      "size": 10088
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/28-m12ag-explicit-conditional-regression.json",
+      "sha256": "e91974ec71b6e5a73afd4dd2b43a879ca4d8f18121bda4ea6da0ae0a693c0d69",
+      "size": 559
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/29-m12af-historical-005490-replay.json",
+      "sha256": "f9f9d7692bde2c4e7be9803776be429cb808570ab60214a6cfd6ec9f028ae04d",
+      "size": 3499
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/30-prior-netdebt-safety-corpus-reaudit.json",
+      "sha256": "bf972f8de8be716cc22def5051eb5b3fd81966ea1bb6794ae8eb471ac08f3237",
+      "size": 703
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/31-business-delta-no-change-proof.json",
+      "sha256": "1625c3eb853827d1583fe39784cae00fd613989c5f8b416df16049a3bb80ca35",
+      "size": 106
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/32-price-timing-ownership-no-change-proof.json",
+      "sha256": "706b1e286f6d29b9b1c4762b73d1555aa8ed11ac4b70369f2f84088cb266f6f6",
+      "size": 11072
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/33-two-stage-architecture-no-change-proof.json",
+      "sha256": "9ea0f3135f5e79746364eb5175993bf636ca9a453774dcb4c285a85b7c9052d6",
+      "size": 161
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/34-model-prompt-schema-no-change-proof.json",
+      "sha256": "f56ddb09f14ca67c5b71f23d1e37b3758e437ff0db170f4caa0ce6be4149e338",
+      "size": 1829
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/35-fictional-input-hash-nonimpact-proof.json",
+      "sha256": "061930beb75fa8c9248414d0796c36119e6bd4c3d12220cd5f1ce944ecf92380",
+      "size": 1999
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/36-fictional-24-output-temporal-reaudit.json",
+      "sha256": "07cea428b73a5508cce6e65de4bb7df7bf652778c7902c79bc2059ebb3546821",
+      "size": 7293
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/37-focused-test-results.json",
+      "sha256": "0e7b6a0d7e809796555f7ddfad63fd523d7153b39bcf13ce87da4c7d498fd316",
+      "size": 893
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/38-full-local-test-results.json",
+      "sha256": "f09cfe27ed0fed8b46a8f85c18b21a9493b552df8cd0098d4f6db9c792153d70",
+      "size": 4662
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/39-ruff-and-diff-results.json",
+      "sha256": "429db227e03a0131a1796a93465805321ffecd4c1e1676622aa8ea4ba3302dad",
+      "size": 703
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/40-hosted-ci-portability-observation.json",
+      "sha256": "a510dfdb9396d3b435eb40b46a9d7c523c4b3c21d78d7c2bcd5ab9540cab1911",
+      "size": 126
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/41-shadow-model-call-gate.json",
+      "sha256": "4714fa1c392c3754bc37fe59b072f39764b7e64a6a4b7d363fd2724efd7431de",
+      "size": 2534
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/42-shadow-generation-manifest.json",
+      "sha256": "75b8189a29341d3e7573b6a07d4e34dffee30a29b8e1d837a9c6cfe242b3b66b",
+      "size": 286
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/43-task-start-active-monitored-universe.json",
+      "sha256": "2017e5bbdb40ef88af63e8a9822e60697ad500ca159898264501976d8d795735",
+      "size": 9912
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/44-shadow-packet-inventory.json",
+      "sha256": "4967ac04b17115d1b402328750de419706ebef4e22f497e9c12d7264109b2552",
+      "size": 324
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/45-shadow-packet-hash-manifest.json",
+      "sha256": "2bd20e499d48c5dcbe43429eb6e5979f902162c96b4d20259288e71bef354444",
+      "size": 3726
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/46-shadow-batching-manifest.json",
+      "sha256": "61f5df3d4c631e92940ddc0b1bc19099e619678aecfc8728b6372f14cba204ba",
+      "size": 12200
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/47-shadow-monolithic-model-artifacts.json",
+      "sha256": "878f4673d0deebeb4cfe01a94531622abf38474f1f8a2fc84acdd159479fc978",
+      "size": 424
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/48-shadow-stage1-model-artifacts.json",
+      "sha256": "db0fb537945920450e814c2c552836617ef2cabfc87e48c66547b47c8bb00575",
+      "size": 491
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/49-shadow-stage2-model-artifacts.json",
+      "sha256": "629127cb65d51aab5b53f788ccf3a55a5379362519800ffde9944c787dab4e4f",
+      "size": 231
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/50-shadow-final-composition-artifacts.json",
+      "sha256": "e5108f6e7fbcce26444f0734ea3a7f489a02cb6baf2010f0e8a49705fbb5cb70",
+      "size": 283
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/51-shadow-per-ticker-comparison.json",
+      "sha256": "a48ddf0872b77f7a8c776515f94eecd7f5b14e028c00b237cb93a7f568c2f750",
+      "size": 32836
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/52-shadow-core-direction-differences.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/53-shadow-business-delta-differences.json",
+      "sha256": "5883037dca29ccb802fd80152a084abec837e0c7ca2f3ffa6c63ff1e29f11ba8",
+      "size": 3183
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/54-shadow-new-buyer-differences.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/55-shadow-holder-differences.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/56-shadow-same-direction-calibration-differences.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/57-shadow-expected-contract-corrections.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/58-shadow-potential-architecture-regressions.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/59-shadow-unresolved-review-required.json",
+      "sha256": "9daf0f62ac525625ad5461d3eaf80390d2d6eb626b6f531a76c7eeaf36bcebc6",
+      "size": 238
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/60-shadow-financial-temporal-scope-audit.json",
+      "sha256": "290a7b6062580352ce7de128611e48e986b8d28835a0079384828a2c62cdba86",
+      "size": 3019
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/61-shadow-financial-sector-audit.json",
+      "sha256": "96181ae2c9937ffbd7573ea82d5aaea6a72407c0d94eb4cddd68e8c7459b61fd",
+      "size": 2995
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/62-shadow-adr-security-basis-audit.json",
+      "sha256": "5aa421352e6027d0dfd3e8ff750f6b6f36a61ca83443348f642638644a307188",
+      "size": 302
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/63-shadow-cyclical-valuation-audit.json",
+      "sha256": "538c9ad3178dd4b5a2e73771482dfd5c8f15c31235a8d8c33bc1352f5c184fe5",
+      "size": 16474
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/64-shadow-core-immutability-audit.json",
+      "sha256": "f36817c13dc456bffb04b0a33edf035cbb70e2304ae88cdddd2ded39538fa998",
+      "size": 292
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/65-shadow-runtime-audit.json",
+      "sha256": "d504425e22590a45f8807bf6b33c0c73b83e29d94902cb5208f9799c692a62df",
+      "size": 6438
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/66-shadow-aggregate-summary.json",
+      "sha256": "2bb1554bef5550b13ce5ee4810782bdeb46aa9baf24e04c1a4ea65b9f7175055",
+      "size": 296
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/67-shadow-architecture-decision.json",
+      "sha256": "a6bb6ef9801b795078ae3e2891873873fbb69615f77bb9c6126d58eb0c6c2c0d",
+      "size": 368
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/68-fic-fin-05-vs-monitored-leverage-analogs.json",
+      "sha256": "c67f2d33cf58d123b7e5bfa3db18a464445184cd574ce49e6db8b79a6add8dce",
+      "size": 293
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/69-fic-fin-06-vs-monitored-fundamental-delta-analogs.json",
+      "sha256": "184a4d041d04ec4847fb39455642def799dc4d500c3ae69bc931ac65699ec750",
+      "size": 3218
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/70-fic-fin-08-vs-monitored-holder-analogs.json",
+      "sha256": "3a7d784458e52ddd1fa89c5ba95bfb81d0c1dd32b5ee0b0835d8e03602196e46",
+      "size": 291
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/71-real-monitoring-temporal-scope-lessons.json",
+      "sha256": "a86b018c28895b072d8162c7c708459171d722c7697b60024dbbb6aa825af6c2",
+      "size": 3023
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/72-combined-fictional-monitored-root-cause-summary.json",
+      "sha256": "23417beacf9ad5fab205fc748735b5f25d9ed50a52e18abebc6283b20f354a86",
+      "size": 286
+    },
+    {
+      "path": "docs/reports/20260911-financial-claim-temporal-scope-risk-context-full-shadow-rerun/73-next-bounded-repair-decision.json",
+      "sha256": "10bc2fc45b3820c8588618cd7d7ce1586b71078c9999f74853b69472d7364482",
+      "size": 316
+    },
+    {
+      "path": "docs/work-instructions/20260911-financial-claim-temporal-scope-risk-context-role-and-full-shadow-rerun.md",
+      "sha256": "38c8e854274cbb492d214715f9c48856a459501db4d1b4d37e89dd91f66b1d20",
+      "size": 35059
+    },
+    {
+      "path": "scripts/financial_claim_temporal_scope_risk_context_m12ah.py",
+      "sha256": "e90a8defed58fee8da425922bf5acc02c8e9deb8780a2efd8fc482167348aa61",
+      "size": 64173
+    },
+    {
+      "path": "tests/test_financial_claim_temporal_scope_m12ah.py",
+      "sha256": "5bc179d9f0d750274eba7aad5943c97f55163783ce48808ea3d4fd7edccd4e71",
+      "size": 10120
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "secret_scan_failures": [],
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

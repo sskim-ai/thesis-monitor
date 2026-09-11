@@ -1,0 +1,15 @@
+{
+  "conditional_before_numeric": true,
+  "contract": "financial-claim-temporal-role-v2",
+  "roles": [
+    "CURRENT_STATE_ASSERTION",
+    "CURRENT_DIRECTIONAL_BASIS",
+    "CURRENT_NUMERIC_CLAIM",
+    "CONFIGURED_CONDITIONAL_CHECK",
+    "FUTURE_REEVALUATION_CONDITION",
+    "INVALIDATION_CONDITION",
+    "PROSPECTIVE_RISK_SCENARIO",
+    "UNKNOWN_OR_AMBIGUOUS"
+  ],
+  "status": "PASS"
+}

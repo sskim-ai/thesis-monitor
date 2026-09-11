@@ -1,0 +1,351 @@
+{
+  "price_confirmation_core_leak_count": 0,
+  "price_risk_reward_core_leak_count": 0,
+  "rows": [
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "000660",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "000660",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "003690",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "005490",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "005490",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "005930",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "005930",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "010120",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "010120",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "012450",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "012450",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "047810",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "047810",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "086280",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "CORZ",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "CPNG",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "CPNG",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "CRCL",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "GOOGL",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "GOOGL",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "HUT",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "HUT",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "IBM",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "IBM",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "MU",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "MU",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "RXRX",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "RXRX",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "SKHY",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "SNDK",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "SNDK",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "TSLA",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "TSM",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "TSM",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "WRD",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "WRD",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:confirmation_transition",
+      "core_after": false,
+      "domain_after": "TECHNICAL_STATE",
+      "source_class": "price_confirmation",
+      "ticker": "WULF",
+      "timing_after": true
+    },
+    {
+      "canonical_fact_retained": true,
+      "canonical_ref": "canonical:monitoring:risk_reward_transition",
+      "core_after": false,
+      "domain_after": "RISK_REWARD_PRICE",
+      "source_class": "price_risk_reward",
+      "ticker": "WULF",
+      "timing_after": true
+    }
+  ],
+  "status": "PASS",
+  "supply_core_leak_count": 0,
+  "timing_fact_loss_count": 0
+}

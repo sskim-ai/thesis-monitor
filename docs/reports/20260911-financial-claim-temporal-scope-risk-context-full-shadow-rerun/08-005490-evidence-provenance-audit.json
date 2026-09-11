@@ -1,0 +1,34 @@
+{
+  "configured_prospective_count": 3,
+  "current_financial_evidence_count": 0,
+  "rows": [
+    {
+      "category": "risks",
+      "financial_context": null,
+      "label": "\ub17c\ub9ac \uc57d\ud654 \uc870\uac74",
+      "logical_severity": "WEAKENING",
+      "ref_id": "decision-evidence:30eb7b45f4a7dacf1700",
+      "source_ref": "stock.thesis.weaken_signals",
+      "statement": "FCF \uac10\uc18c\uc640 \uc21c\ubd80\ucc44 \uc99d\uac00\uac00 \ub3d9\ubc18"
+    },
+    {
+      "category": "risks",
+      "financial_context": null,
+      "label": "\ub17c\ub9ac \uc57d\ud654 \uc870\uac74",
+      "logical_severity": "WEAKENING",
+      "ref_id": "decision-evidence:94be39ae695cc6dc42e4",
+      "source_ref": "stock.thesis.weaken_signals",
+      "statement": "CAPEX \uc99d\uac00\uc5d0\ub3c4 ROIC\uac00 \ud558\ub77d"
+    },
+    {
+      "category": "risks",
+      "financial_context": null,
+      "label": "\ub17c\ub9ac \uc57d\ud654 \uc870\uac74",
+      "logical_severity": "WEAKENING",
+      "ref_id": "decision-evidence:c0703efb51b207666566",
+      "source_ref": "stock.thesis.weaken_signals",
+      "statement": "\uc804\ud658\u00b7\ud76c\uc11d \uac00\ub2a5 \uc8fc\uc2dd\uc218\uac00 \uc758\ubbf8 \uc788\uac8c \uc99d\uac00"
+    }
+  ],
+  "status": "PASS"
+}

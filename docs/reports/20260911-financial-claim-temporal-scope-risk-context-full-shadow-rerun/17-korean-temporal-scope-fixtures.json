@@ -1,0 +1,180 @@
+{
+  "rows": [
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N02",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N03",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO",
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N04",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "MIXED_WITH_CURRENT_OVERRIDE",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N05",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-N06",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P01",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P02",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "PROSPECTIVE_RISK_SCENARIO"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P03",
+      "errors": [],
+      "expected_role": "PROSPECTIVE_RISK_SCENARIO",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": true,
+      "case_id": "TEMP-P05",
+      "errors": [],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": true,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "UNKNOWN_OR_AMBIGUOUS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-A01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "UNKNOWN_OR_AMBIGUOUS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "UNKNOWN_OR_AMBIGUOUS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-C01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "UNKNOWN_OR_AMBIGUOUS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    },
+    {
+      "actual_roles": [
+        "CURRENT_DIRECTIONAL_BASIS"
+      ],
+      "actual_valid": false,
+      "case_id": "TEMP-M01",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+      "expected_valid": false,
+      "language": "ko",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

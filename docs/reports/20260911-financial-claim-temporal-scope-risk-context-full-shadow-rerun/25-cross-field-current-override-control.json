@@ -1,0 +1,15 @@
+{
+  "actual_roles": [
+    "PROSPECTIVE_RISK_SCENARIO",
+    "CURRENT_DIRECTIONAL_BASIS"
+  ],
+  "actual_valid": false,
+  "case_id": "TEMP-N04",
+  "errors": [
+    "net_debt_claim_without_complete_net_debt_evidence"
+  ],
+  "expected_role": "MIXED_WITH_CURRENT_OVERRIDE",
+  "expected_valid": false,
+  "language": "ko",
+  "status": "PASS"
+}

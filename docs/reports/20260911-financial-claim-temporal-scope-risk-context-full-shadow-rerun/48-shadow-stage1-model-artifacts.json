@@ -1,0 +1,21 @@
+{
+  "contexts": [
+    {
+      "context": 1,
+      "failed_tickers": [
+        "003690"
+      ],
+      "invocation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74:context-01:stage1",
+      "output_sha256": "a894eda203d8cb5f8e1234cbd2f28932e4f1d9636fc5d192cde23a722fb3aacb",
+      "status": "FAIL",
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    }
+  ],
+  "remaining_contexts_not_run": 5,
+  "status": "FAIL_OBJECTIVE_SEMANTIC"
+}

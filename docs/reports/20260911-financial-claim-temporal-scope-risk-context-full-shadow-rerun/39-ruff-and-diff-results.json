@@ -1,0 +1,30 @@
+{
+  "git_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "a296ed2d353d5f811eaf70748c3f6cb90fdcca30..HEAD"
+    ],
+    "elapsed_seconds": 0.015,
+    "exit_code": 0,
+    "output": "",
+    "status": "PASS"
+  },
+  "ruff": {
+    "command": [
+      "/Users/sskim/Codex/thesis-monitor/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "app/services/directional_financial_context_service.py",
+      "scripts/financial_claim_temporal_scope_risk_context_m12ah.py",
+      "tests/test_financial_claim_temporal_scope_m12ah.py"
+    ],
+    "elapsed_seconds": 0.051,
+    "exit_code": 0,
+    "output": "All checks passed!",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

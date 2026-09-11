@@ -1,0 +1,11 @@
+{
+  "attempted_ticker_count": 4,
+  "business_delta_failure_count": 1,
+  "completed_model_calls": 2,
+  "completed_ticker_count": 0,
+  "model_calls_not_run": 16,
+  "planned_model_calls": 18,
+  "status": "INCOMPLETE_HARD_STOP",
+  "task_start_active_count": 22,
+  "temporal_scope_failure_count": 0
+}

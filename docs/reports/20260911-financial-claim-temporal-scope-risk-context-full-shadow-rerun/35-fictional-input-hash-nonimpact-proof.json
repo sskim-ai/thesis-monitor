@@ -1,0 +1,104 @@
+{
+  "context_rows": [
+    {
+      "context": 1,
+      "stage1_prompt_byte_match": true,
+      "stage1_schema_semantic_match": true,
+      "tickers": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ]
+    },
+    {
+      "context": 2,
+      "stage1_prompt_byte_match": true,
+      "stage1_schema_semantic_match": true,
+      "tickers": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ]
+    }
+  ],
+  "fictional_model_calls_in_m12ag": 0,
+  "fictional_stage1_input_drift_count": 0,
+  "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+  "status": "PASS",
+  "subject_rows": [
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "checks": {
+        "alias": true,
+        "context": true,
+        "owned": true,
+        "packet": true
+      },
+      "ticker": "FIC-FIN-08"
+    }
+  ]
+}

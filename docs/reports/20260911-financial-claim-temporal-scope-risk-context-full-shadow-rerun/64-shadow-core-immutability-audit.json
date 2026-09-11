@@ -1,0 +1,8 @@
+{
+  "core_mutation_after_stance_count": "NOT_MEASURED",
+  "generation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74",
+  "reason": "Stage 1 context-01 failed the frozen business-delta semantic gate.",
+  "rows": [],
+  "stage2_model_calls": 0,
+  "status": "NOT_MEASURED_HARD_STOP"
+}

@@ -1,0 +1,8 @@
+{
+  "establishes_business_delta": false,
+  "establishes_current_anchor": false,
+  "marks_warning_fulfilled": false,
+  "requires_current_complete_net_debt": false,
+  "role": "PROSPECTIVE_RISK_SCENARIO",
+  "status": "PASS"
+}

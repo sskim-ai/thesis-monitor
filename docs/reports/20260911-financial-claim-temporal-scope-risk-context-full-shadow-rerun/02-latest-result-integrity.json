@@ -1,0 +1,17 @@
+{
+  "actual_sha256": "ab4fbdb9c58d8b6e329ef4e8ee8ca4d5cc9f6d34e38ed7cd5ef68cd384870fb3",
+  "expected_sha256": "ab4fbdb9c58d8b6e329ef4e8ee8ca4d5cc9f6d34e38ed7cd5ef68cd384870fb3",
+  "extra": [],
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "hash_mismatches": [],
+  "indexed_payload_count": 144,
+  "missing": [],
+  "missing_count": 0,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260911-monitoring-transition-ownership-conditional-netdebt-scope-full-shadow-rerun-report.zip",
+  "size_mismatch_count": 0,
+  "size_mismatches": [],
+  "status": "PASS",
+  "zip_entry_count": 145,
+  "zip_integrity": "PASS"
+}

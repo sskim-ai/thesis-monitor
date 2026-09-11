@@ -1,0 +1,273 @@
+{
+  "fictional_model_calls_in_m12ah": 0,
+  "fictional_output_count": 24,
+  "fictional_output_reaudit_failure_count": 0,
+  "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+  "rows": [
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 1,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 2,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "context": 1,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "context": 2,
+      "final_errors": [],
+      "final_temporal_reaudit": "PASS",
+      "historical_output_rewritten": false,
+      "run": 3,
+      "source_stage1_status": "PASS",
+      "stage1_errors": [],
+      "stage1_temporal_reaudit": "PASS",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS"
+}

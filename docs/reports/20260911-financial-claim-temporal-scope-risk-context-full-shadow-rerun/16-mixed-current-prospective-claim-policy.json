@@ -1,0 +1,19 @@
+{
+  "component_parser_added": false,
+  "fixture": {
+    "actual_roles": [
+      "CURRENT_DIRECTIONAL_BASIS"
+    ],
+    "actual_valid": false,
+    "case_id": "TEMP-M01",
+    "errors": [
+      "net_debt_claim_without_complete_net_debt_evidence"
+    ],
+    "expected_role": "CURRENT_DIRECTIONAL_BASIS",
+    "expected_valid": false,
+    "language": "ko",
+    "status": "PASS"
+  },
+  "policy": "FAIL_CLOSED",
+  "status": "PASS"
+}

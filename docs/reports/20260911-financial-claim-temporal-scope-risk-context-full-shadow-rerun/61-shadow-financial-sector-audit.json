@@ -1,0 +1,63 @@
+{
+  "business_delta_unsupported_change_violation_count": 1,
+  "generic_industrial_framework_failure_count": 0,
+  "partial_stage1_row": {
+    "business_delta": {
+      "alias_resolution_failure_count": 0,
+      "errors": [
+        "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+      ],
+      "frozen_target": null,
+      "ineligible_selected_evidence_count": 1,
+      "linked_evidence": [
+        {
+          "alias": "E19",
+          "canonical_ref": "decision-evidence:52af705a4279a23fba6c",
+          "delta_evidence_eligibility_reason": "STORED_THESIS_OR_CONFIGURED_SIGNAL_NOT_OBSERVED_DELTA",
+          "delta_evidence_eligible": false,
+          "selected_ref": "decision-evidence:52af705a4279a23fba6c",
+          "statement": "\uc7ac\ubcf4\ud5d8 \uac31\uc2e0\uc694\uc728\uacfc \uc190\ud574\uc728 \uad00\ub9ac\uac00 \uc548\uc815\uc801\uc778 \uc5b8\ub354\ub77c\uc774\ud305 \uc774\uc775\uc744 \ub9cc\ub4e4\uace0 \ud22c\uc790\uc218\uc775\uacfc \uc790\ubcf8\uc801\uc815\uc131\uc774 ROE\u00b7\ubc30\ub2f9\uc5ec\ub825\uc744 \ub192\uc774\ub294\uc9c0\uac00 \ud575\uc2ec\uc774\ub2e4. 2026\ub144 \uc790\uc0ac\uc8fc \uc804\ub7c9 \uc18c\uac01\uc740 \uc8fc\ub2f9\uac00\uce58\uc640 \uc790\ubcf8\ubc30\ubd84 \uce21\uba74\uc758 \uae0d\uc815 \uc2e0\ud638\uc9c0\ub9cc, \uc7a5\uae30 \uc7ac\ud3c9\uac00\ub294 \ud569\uc0b0\ube44\uc728\u00b7\ub300\ud615\uc7ac\ud574 \uc190\uc2e4\u00b7\ud22c\uc790\uc218\uc775\ub960\uacfc \uc790\ubcf8\uc801\uc815\uc131\uc774 \uc9c0\uc18d\uc801\uc73c\ub85c \ub4b7\ubc1b\uce68\ud574\uc57c \ud55c\ub2e4. \uac00\uaca9\u00b7\uc218\uae09\uc740 \uc9c4\uc785 \ubcf4\uc870\uc815\ubcf4\ub85c\ub9cc \ubcf8\ub2e4.",
+          "supported_directions": []
+        }
+      ],
+      "observed": "STRENGTHENED",
+      "selected_refs": [
+        "decision-evidence:52af705a4279a23fba6c"
+      ],
+      "status": "FAIL",
+      "supported_change_directions": [],
+      "unsupported_absolute_state_to_delta_count": 1
+    },
+    "business_thesis_change": "STRENGTHENED",
+    "errors": [
+      "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA"
+    ],
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 0,
+      "valid": true,
+      "year_end_as_yoy_count": 0
+    },
+    "overall_direction": "BUY",
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "status": "FAIL",
+    "ticker": "003690"
+  },
+  "status": "INCOMPLETE_HARD_STOP",
+  "ticker": "003690"
+}

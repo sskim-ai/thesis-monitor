@@ -1,0 +1,11 @@
+{
+  "context_count": 6,
+  "generation_id": "20260911-m12ah-shadow-20260911T041251Z-568a26e1ce74",
+  "model": "gpt-5.6-sol",
+  "phase": "M12AH",
+  "planned_model_calls": 18,
+  "provider_source_fetches": 0,
+  "reasoning_effort": "xhigh",
+  "status": "FROZEN",
+  "timeout_seconds": 1800
+}

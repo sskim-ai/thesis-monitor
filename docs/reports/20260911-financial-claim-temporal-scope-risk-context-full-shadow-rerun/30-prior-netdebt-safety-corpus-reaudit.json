@@ -1,0 +1,18 @@
+{
+  "current_unsupported_false_accept_count": 0,
+  "status": "PASS",
+  "test_command": [
+    "/Users/sskim/Codex/thesis-monitor/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_financial_claim_temporal_scope_m12ah.py",
+    "tests/test_monitoring_transition_ownership_netdebt_m12ag.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_financial_context_output_grounding_m12a.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_business_delta_alias_balance_confidence_m12z.py",
+    "tests/test_integrated_main_monitored_shadow_diagnostic_m12af.py"
+  ]
+}

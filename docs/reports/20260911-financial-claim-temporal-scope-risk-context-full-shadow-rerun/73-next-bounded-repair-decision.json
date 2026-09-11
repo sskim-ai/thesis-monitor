@@ -1,0 +1,7 @@
+{
+  "fresh_unseen_calls_authorized": false,
+  "main_merge_authorized": false,
+  "next_scope": "TWO_STAGE_MONITORED_COMPATIBILITY_REGRESSION_REVIEW",
+  "rationale": "Review Stage 1 business-delta compatibility on integrated main without weakening the validator or retrying this generation.",
+  "status": "SELECTED"
+}

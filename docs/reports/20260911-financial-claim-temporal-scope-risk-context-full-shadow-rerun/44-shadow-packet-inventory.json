@@ -1,0 +1,14 @@
+{
+  "available_count": 22,
+  "source_inventory": [
+    {
+      "packet_count": 22,
+      "provider_refresh": 0,
+      "source": "M12AG_FROZEN_LOCAL_PACKET_SET",
+      "source_generation_id": "20260911-m12ag-shadow-20260911T033054Z-e964784ae190"
+    }
+  ],
+  "status": "PASS",
+  "unavailable": [],
+  "unavailable_count": 0
+}
