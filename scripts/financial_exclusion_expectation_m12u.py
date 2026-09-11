@@ -55,6 +55,8 @@ def scope_audit():
         "tests/test_financial_exclusion_leverage_m12f.py",
         "tests/test_first_class_typed_financial_evidence_m12b.py",
         "tests/test_partial_output_forensics_transport_stall_review.py",
+        # M12AG intentionally changes only transition source ownership here.
+        "app/services/direction_timing_ownership_service.py",
     }
     unexpected = [
         p

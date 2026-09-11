@@ -227,6 +227,7 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
     assert result["status"] == "FAIL"
     if result["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256":
         assert set(result["changed_existing_paths"]) == {
+            "app/services/direction_timing_ownership_service.py",
             "app/services/directional_balance_service.py",
             "app/services/directional_financial_context_service.py",
             "app/services/financial_framework_claim_service.py",
@@ -239,8 +240,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_first_class_typed_financial_evidence_m12b.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
         }
-        assert result["financial_semantic_change_count"] == 11
-        assert result["directional_semantic_change_count"] == 11
+        assert result["financial_semantic_change_count"] == 12
+        assert result["directional_semantic_change_count"] == 12
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"

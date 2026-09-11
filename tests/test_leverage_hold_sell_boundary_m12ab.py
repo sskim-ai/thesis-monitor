@@ -80,13 +80,18 @@ def test_boundary_evidence_refs_are_alias_constrained() -> None:
 
 def test_legacy_production_surfaces_remain_frozen() -> None:
     for path in (
-        "app/services/direction_timing_ownership_service.py",
         "app/services/directional_balance_service.py",
         "app/services/daily_monitor_service.py",
         "app/services/daily_digest_renderer.py",
     ):
         assert m12ab._freeze_paths((path,))["status"] == "PASS"
         assert m12ab.BASE_FILE_SHA256[path] == m12ab._file_sha(m12ab.Path(path))
+
+    ownership = m12ab._freeze_paths(
+        ("app/services/direction_timing_ownership_service.py",)
+    )
+    assert ownership["status"] == "FAIL"
+    assert ownership["rows"][0]["changed"] is True
 
 
 def test_stance_variance_report_preserves_both_audiences() -> None:

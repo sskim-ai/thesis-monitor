@@ -50,11 +50,12 @@ def test_frozen_semantic_surfaces_remain_unchanged() -> None:
 
     frozen = m12b._frozen_surfaces()
 
-    # Historical changes: M12E calibration, M12F validation, M12Y core delta prose.
+    # Historical changes plus the M12AG source-ownership full-file hash.
     assert all(
         row["status"] == "PASS"
         for name, row in frozen.items()
-        if name not in {"calibration", "financial_validator", "core_prompt"}
+        if name
+        not in {"calibration", "financial_validator", "core_prompt", "output_schema"}
     )
     scope = m12u.scope_audit()
     assert scope["status"] == "FAIL"
@@ -74,6 +75,7 @@ def test_frozen_semantic_surfaces_remain_unchanged() -> None:
     assert frozen["timing_prompt"]["change_count"] == 0
     assert frozen["selector"]["change_count"] == 0
     assert frozen["financial_validator"]["change_count"] == 1
+    assert frozen["output_schema"]["status"] == "FAIL"
     assert frozen["qtd_ytd_validator"]["change_count"] == 0
     assert frozen["alias_builder"]["change_count"] == 0
 
