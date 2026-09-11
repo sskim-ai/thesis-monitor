@@ -1,0 +1,163 @@
+{
+  "active_monitored_count": 22,
+  "packet_available_count": 22,
+  "packet_metadata": {
+    "000660": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "003690": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "005490": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "005930": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "010120": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "012450": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "047810": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "086280": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CORZ": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CPNG": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CRCL": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "GOOGL": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "HUT": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "IBM": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "MU": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "RXRX": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "SKHY": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "SNDK": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "TSLA": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "TSM": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "WRD": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "WULF": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    }
+  },
+  "packet_unavailable_count": 0,
+  "source_files": [
+    {
+      "file_sha256": "7db0bb6e5178240c88e21d7a1a0a486fb5382e51e7a098fc7185b87e9395a40a",
+      "generated_at": "2026-09-07T07:20:04.746542+00:00",
+      "market": "kr",
+      "packet_age_days": 3,
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "path": "/Users/sskim/Codex/thesis-monitor/data/ai_review/inbox/2026-09-07-kr-run-60-3cde4b2fcb02.json",
+      "provider_refresh": 0,
+      "required_ticker_count": 8
+    },
+    {
+      "file_sha256": "17a4e8020cd680e492d28e11366a8cf7b84941d396067cc16cfc226645f2eea7",
+      "generated_at": "2026-09-06T23:06:46.266093+00:00",
+      "market": "us",
+      "packet_age_days": 4,
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "path": "/Users/sskim/Codex/thesis-monitor/data/ai_review/inbox/2026-09-07-us-run-59-e3b54b0a74c0.json",
+      "provider_refresh": 0,
+      "required_ticker_count": 14
+    }
+  ],
+  "status": "PASS",
+  "unavailable": []
+}

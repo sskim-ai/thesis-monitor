@@ -1,0 +1,10 @@
+{
+  "fresh_unseen_model_calls": 0,
+  "main_merge": 0,
+  "phase": "M12AF",
+  "production_side_effects": 0,
+  "prompt_schema_threshold_contract_changes": 0,
+  "provider_refresh": 0,
+  "scope": "EXISTING_MONITORED_SAME_PACKET_ARCHITECTURE_DIAGNOSTIC",
+  "status": "FROZEN"
+}

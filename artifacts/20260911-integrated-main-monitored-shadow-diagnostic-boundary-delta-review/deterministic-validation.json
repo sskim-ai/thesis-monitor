@@ -1,0 +1,21 @@
+{
+  "diff_check": "PASS",
+  "focused": {
+    "passed": 17,
+    "status": "PASS",
+    "tests": [
+      "tests/test_integrated_main_monitored_shadow_diagnostic_m12af.py",
+      "tests/test_two_stage_directional_service.py"
+    ]
+  },
+  "full": {
+    "passed": 3405,
+    "status": "PASS",
+    "warnings": 1
+  },
+  "model_calls": 0,
+  "provider_source_fetches": 0,
+  "ruff": "PASS",
+  "status": "PASS",
+  "tested_head_sha": "d5d1b4fb406bf534964cbc1a10d451543c69194a"
+}

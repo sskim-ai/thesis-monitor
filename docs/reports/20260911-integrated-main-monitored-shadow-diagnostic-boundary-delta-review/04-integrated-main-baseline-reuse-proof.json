@@ -1,0 +1,14 @@
+{
+  "base_integration_head_sha": "b7d36b76fc938ca7cb7103b28606fdaa66498710",
+  "base_is_ancestor": true,
+  "focused_baseline": "452 passed",
+  "full_baseline": "3388 passed; 2 warnings",
+  "git_diff_check": "PASS",
+  "integration_merge_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "m12ad_source_head_sha": "69661d6754b0555e4c11caba8a53bd55a1fe7140",
+  "main_frozen_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "newer_main_fetch_or_merge": 0,
+  "ruff": "PASS",
+  "runtime_config_smoke": "PASS",
+  "status": "PASS"
+}

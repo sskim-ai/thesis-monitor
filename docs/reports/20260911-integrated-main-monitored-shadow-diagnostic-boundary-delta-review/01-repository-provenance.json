@@ -1,0 +1,10 @@
+{
+  "base_integration_head_sha": "b7d36b76fc938ca7cb7103b28606fdaa66498710",
+  "main_branch_mutations": 0,
+  "main_fetch_or_merge": 0,
+  "repository": "sskim-ai/thesis-monitor",
+  "status": "PASS",
+  "task_branch": "codex/20260911-integrated-main-monitored-shadow-diagnostic",
+  "task_head_sha": "d5d1b4fb406bf534964cbc1a10d451543c69194a",
+  "work_instruction_commit": "377a5e3eed110ee71e563bd70cfa918dd7d1437d"
+}

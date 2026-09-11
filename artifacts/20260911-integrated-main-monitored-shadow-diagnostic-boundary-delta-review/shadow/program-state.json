@@ -1,0 +1,887 @@
+{
+  "all_active_tickers": [
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "047810",
+    "086280",
+    "CORZ",
+    "CPNG",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF"
+  ],
+  "base_integration_head_sha": "b7d36b76fc938ca7cb7103b28606fdaa66498710",
+  "code_hashes": {
+    "app/services/direction_timing_ownership_service.py": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+    "app/services/directional_financial_context_service.py": "6da99476274243fcd2d542fec11b04c3ffb3e7a8af270a274963423e0b71037b",
+    "app/services/fundamental_holder_stance_service.py": "c5df907e8b73b393bbf155c9183147cfad91ae993274f57726e82755b461cc00",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/two_stage_directional_service.py": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+    "scripts/directional_core_price_timing_holdout.py": "3ff975fab9188171566258f0105453230b4279754eccb3836335158296ea092c",
+    "scripts/directional_financial_context_m12.py": "158f962cc2592df25160215bbf113dc2ed2e8fda79fd90d0df5260f378908b85",
+    "scripts/directional_financial_context_m12g.py": "bd0f11c411e76467e9c392773284ccaf582253ccf590fef77e1ec71aa157af61",
+    "scripts/financial_framework_negation_holder_stability_m12ad.py": "3098819c750702f800bc6cf4da609e6bbfd78205812f1d4b08ff7a53b1825206",
+    "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py": "3195cb6afcbf7d374f89cf96b8053a0c191df14a6af0e1828525e064fe965f2d"
+  },
+  "context_count": 6,
+  "contexts": [
+    {
+      "context": 1,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-prompt.txt",
+          "sha256": "5bbd1684741a985cafff946b3a8b1442e7c3bfe0da2cb5a01f9fdaf4dedf8207"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-schema.json",
+          "sha256": "148f05cabadca8afa939402357ca1911a77bb5b56a6c8221f75b66d2608b01e2"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-prompt.txt",
+          "sha256": "a98858d5a55cc0803bc7f1b337e51c57377424a4bebfa39d27b90359b928a4d6"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-schema.json",
+          "sha256": "fdc0c90c30fc8e8d564b1a9b46f1c3163911826c8d88ac243827b718d4b8aa71"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage2-schema.json",
+          "sha256": "7521f7fd38c60271a88a2ba443d73ae876fae590c7785ea12a68fc6d802a0ee1"
+        }
+      },
+      "packet_set_sha256": "ebea4e21994e0a17bca4510013e9ab38f27f90b1134da35b0cc56a8bc7a2e3cc",
+      "packet_sha256": {
+        "000660": "d1fe72cd957c051e3605ce8d5ff7aa1f4cec873b0bf13e3ee30f21048e23cc84",
+        "003690": "b27638f9e34f89c661c819497e9bc3400d87c22dc8c3681b684a9de2cf3f744c",
+        "005490": "2afca7df09073e9f6fe8f89a2a06261ac0b3993d9dc9886c8d7f0bfc37534bef",
+        "005930": "d1ba173ef47a10b30e3a58df1117e75e4961325a0a8812712fe426e8fdb2f6ce"
+      },
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    },
+    {
+      "context": 2,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-prompt.txt",
+          "sha256": "fe66cae3f0148f24c39d5216fdf5b38309bd0e04a0a7d9b3df853e52ae976764"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-schema.json",
+          "sha256": "649e4d30de1644aba89c936223eea241c04447c277caa93d4976ccd2dd7662c7"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-prompt.txt",
+          "sha256": "abc92272c277ede64b89b315472df9f2243da6ea4a5a2f32d8a6bb0ed49cf54b"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-schema.json",
+          "sha256": "1531877ce31bec12aeb8ec7c27093f03b39fb677b5374a11720342cf5f652c53"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage2-schema.json",
+          "sha256": "cbdb86ca68090b891b6ad0ae8e5984eb94d70a535ea9684f87eddc3d7af7067d"
+        }
+      },
+      "packet_set_sha256": "0d6eae3ec5109e9d3288f1b17d8547e747de30fa50cc83e1aab13f5b65c1f511",
+      "packet_sha256": {
+        "010120": "f923fd14decbbcb3e8ae4eef8d747d8b5e4a9d2cf60d4d1c3ca074d2068e6a69",
+        "012450": "6c5b39bb54f14b15750a7ba47cb49a4abc4bcba3a2355377e7d798f64b3037a3",
+        "047810": "df7035b68533bfe544d7003805666b0512fe31d5943f2fd62b85243437beaeba",
+        "086280": "a1ce3c11eb5b44126756c57c18478131ea320b0863f293f31cca837084f6a05f"
+      },
+      "tickers": [
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ]
+    },
+    {
+      "context": 3,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-prompt.txt",
+          "sha256": "b85faa11da8e85ed40824159ee7b8f2af49eccc0ea4aa4edf8769229b5ede458"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-schema.json",
+          "sha256": "d21b00b1d683cacb37f5df6429831d6dc73a206a1ab3d071e48775e3c210c2e5"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-prompt.txt",
+          "sha256": "e8d8dea766e3b8e977557eb880da4852816fcb622195e2f9454c3afa724b73eb"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-schema.json",
+          "sha256": "83598b0706249f440384427e46726c663e03c478d757d8040e4c25da4ae06041"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage2-schema.json",
+          "sha256": "e8768f39ec34d7717db24a7d2f81d330cc6ed84240cffeb648e2c088fa36a2a7"
+        }
+      },
+      "packet_set_sha256": "e8a3177f21361a1a1d262b4d9bf7c25f7f89b3f1d7e445613f72ec622c7fa4f6",
+      "packet_sha256": {
+        "CORZ": "aeee6ed3989cafd575a4c1a8463db36d6eb0f8c1e19d70dce914c6462ce4c5b0",
+        "CPNG": "a13c05465c22e772bf3155f6058748e71b130e435c0216147be6fa366da703c0",
+        "CRCL": "32812e89a3c46146ccddfc215c0c499f28a34d6ea20c87a32e462d4e9e898f0b",
+        "GOOGL": "d3ffe7b0cc6c662da0788dcd9f21a8f37f3662386ce6ffd9e5f1a054bad00101"
+      },
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL"
+      ]
+    },
+    {
+      "context": 4,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-prompt.txt",
+          "sha256": "8d3410f00e90ce3410d6f9f52773252f7d678cc7a0d8b01c28366a80aad054ca"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-schema.json",
+          "sha256": "82ab6ae8a5a6cfa4e1ff380d47d392df40c1319aa255ffa846cf8a7aa8a0afae"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-prompt.txt",
+          "sha256": "3765921639b2118e76c96ca3b3301decf77531a17a005d8832d8056f3a3470b6"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-schema.json",
+          "sha256": "5a757d61da6d049430beeae5faed86890a4ee1c213fb9d77ab59ce316446b824"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage2-schema.json",
+          "sha256": "580705a237df4d9393dc243455205f5daf7c851711c86c53202a170e36ee0aee"
+        }
+      },
+      "packet_set_sha256": "fd692108c742ca75f2452d541d20f078e6f540c9c584cef2857c2c89ac07b504",
+      "packet_sha256": {
+        "HUT": "cfa3ebff2e470d840f28a9fb2c573f0a5cbfc475047e9e8e047e1d1711110ec2",
+        "IBM": "87103b0cf4aa9239ad8561e78130567eda978307d17d6d1831b3cfd5397a5e49",
+        "MU": "dfae0b2d9cd168bad84409d82713103a8d09354b2d2bf3b19d5506ecb29537ba",
+        "RXRX": "65111d96631fa79c0df9ed82449b4aee75f12abfa96f881bb8f8cd2acec89b55"
+      },
+      "tickers": [
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX"
+      ]
+    },
+    {
+      "context": 5,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-prompt.txt",
+          "sha256": "2c2cb2cb4fea5b2a3e21aa7df767195821901e2338efaa8f5a0f688db91a15c7"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-schema.json",
+          "sha256": "ebe65a2670055d8d261d420d3a014616a4ad81fc6b4d5a87b48f7d3f2b335242"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-prompt.txt",
+          "sha256": "6feb4e5297d55959ffdb2a8cac7cb3cbcedc42ea26d3b638208c4bb58144eb02"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-schema.json",
+          "sha256": "cc13dde7c5a96b35f140f05a8b8462844f97c25640cc72107b44ca751292633f"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage2-schema.json",
+          "sha256": "ee8c58d8ac27e1eddb1a0a338c41ef47291db5b353a6d678aaac90a5871578b4"
+        }
+      },
+      "packet_set_sha256": "544fd4d982f4295bd03ad7269772fdcb229d40e6d2ccc497521691c474a1dd6c",
+      "packet_sha256": {
+        "SKHY": "39997621bf3ac754c8f100502011c7523587de49a96d12314fb3d15ce87dcf20",
+        "SNDK": "7378c27effea9c4563e17ca537c4c6c4432a13b072fe7c15cb899ee583e47548",
+        "TSLA": "443ba3b158aa1d6ccbb2e974a29af4da5e942ed38ae57dc13dfe905531997011",
+        "TSM": "da6fb72fa5d0d893abd5c55344cec9c186e2ca33ebecf95cff95b7297f8d5073"
+      },
+      "tickers": [
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM"
+      ]
+    },
+    {
+      "context": 6,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-prompt.txt",
+          "sha256": "b82c98c1d42f0aa2c97492c28d5d77e2df94acc969b984979d66df3a4ba8a428"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-schema.json",
+          "sha256": "d0100f02d9de6cf35069aadd0a2594a30ffd3193e8b1287e8952a5b27ea3bdf9"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-prompt.txt",
+          "sha256": "fe7e6d353cd65913ed92de74f841f3a89fe9fccdfd890f36216ce091d033a2fc"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-schema.json",
+          "sha256": "83b11b4905a25ae0bd60a4d0101fd7e59c0ca324974164c4f598d0234e97b7d8"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage2-schema.json",
+          "sha256": "96da9d47e2d068565883629e87d0cb16f2dea0c917815ef862effe19170fb909"
+        }
+      },
+      "packet_set_sha256": "d0c5f4de37a104b66a582dad3a2c83f7e1f22303d381426e383fbeceedc16dc2",
+      "packet_sha256": {
+        "WRD": "843db8dcca5c599f372db6ee6dc1576abada16a3ec42f666ce4ec77d273b3128",
+        "WULF": "f595029326a02ea680905752148711e5feb2e654ad12ba4bd960880de74c113b"
+      },
+      "tickers": [
+        "WRD",
+        "WULF"
+      ]
+    }
+  ],
+  "diagnostic_gate_reclassification": "FICTIONAL_DECISION_STABILITY_DOES_NOT_BLOCK_EXISTING_MONITORED_DIAGNOSTIC",
+  "fictional_core_mutation_count": 0,
+  "fictional_objective_semantic_failure_count": 0,
+  "fictional_two_stage_readiness": "NOT_READY",
+  "generation_id": "20260911-m12af-shadow-20260911T015002Z-251b6e0ae38e",
+  "integration_branch": "codex/20260911-integrated-main-monitored-shadow-diagnostic",
+  "m12af_runner_sha256": "d5e877b81cff78d933a51085b84c8fb6d19dbb3beba6956c3a5fc6b2c350072b",
+  "packet_hashes": {
+    "000660": "d1fe72cd957c051e3605ce8d5ff7aa1f4cec873b0bf13e3ee30f21048e23cc84",
+    "003690": "b27638f9e34f89c661c819497e9bc3400d87c22dc8c3681b684a9de2cf3f744c",
+    "005490": "2afca7df09073e9f6fe8f89a2a06261ac0b3993d9dc9886c8d7f0bfc37534bef",
+    "005930": "d1ba173ef47a10b30e3a58df1117e75e4961325a0a8812712fe426e8fdb2f6ce",
+    "010120": "f923fd14decbbcb3e8ae4eef8d747d8b5e4a9d2cf60d4d1c3ca074d2068e6a69",
+    "012450": "6c5b39bb54f14b15750a7ba47cb49a4abc4bcba3a2355377e7d798f64b3037a3",
+    "047810": "df7035b68533bfe544d7003805666b0512fe31d5943f2fd62b85243437beaeba",
+    "086280": "a1ce3c11eb5b44126756c57c18478131ea320b0863f293f31cca837084f6a05f",
+    "CORZ": "aeee6ed3989cafd575a4c1a8463db36d6eb0f8c1e19d70dce914c6462ce4c5b0",
+    "CPNG": "a13c05465c22e772bf3155f6058748e71b130e435c0216147be6fa366da703c0",
+    "CRCL": "32812e89a3c46146ccddfc215c0c499f28a34d6ea20c87a32e462d4e9e898f0b",
+    "GOOGL": "d3ffe7b0cc6c662da0788dcd9f21a8f37f3662386ce6ffd9e5f1a054bad00101",
+    "HUT": "cfa3ebff2e470d840f28a9fb2c573f0a5cbfc475047e9e8e047e1d1711110ec2",
+    "IBM": "87103b0cf4aa9239ad8561e78130567eda978307d17d6d1831b3cfd5397a5e49",
+    "MU": "dfae0b2d9cd168bad84409d82713103a8d09354b2d2bf3b19d5506ecb29537ba",
+    "RXRX": "65111d96631fa79c0df9ed82449b4aee75f12abfa96f881bb8f8cd2acec89b55",
+    "SKHY": "39997621bf3ac754c8f100502011c7523587de49a96d12314fb3d15ce87dcf20",
+    "SNDK": "7378c27effea9c4563e17ca537c4c6c4432a13b072fe7c15cb899ee583e47548",
+    "TSLA": "443ba3b158aa1d6ccbb2e974a29af4da5e942ed38ae57dc13dfe905531997011",
+    "TSM": "da6fb72fa5d0d893abd5c55344cec9c186e2ca33ebecf95cff95b7297f8d5073",
+    "WRD": "843db8dcca5c599f372db6ee6dc1576abada16a3ec42f666ce4ec77d273b3128",
+    "WULF": "f595029326a02ea680905752148711e5feb2e654ad12ba4bd960880de74c113b"
+  },
+  "packet_metadata": {
+    "000660": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "003690": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "005490": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "005930": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "010120": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "012450": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "047810": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "086280": {
+      "packet_age_days": 3,
+      "packet_as_of_date": "2026-09-07T07:20:04.746542+00:00",
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CORZ": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CPNG": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "CRCL": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "GOOGL": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "HUT": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "IBM": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "MU": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "RXRX": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "SKHY": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "SNDK": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "TSLA": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "TSM": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "WRD": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    },
+    "WULF": {
+      "packet_age_days": 4,
+      "packet_as_of_date": "2026-09-06T23:06:46.266093+00:00",
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY"
+    }
+  },
+  "packet_paths": {
+    "000660": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/000660.json",
+    "003690": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/003690.json",
+    "005490": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/005490.json",
+    "005930": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/005930.json",
+    "010120": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/010120.json",
+    "012450": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/012450.json",
+    "047810": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/047810.json",
+    "086280": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/086280.json",
+    "CORZ": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CORZ.json",
+    "CPNG": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CPNG.json",
+    "CRCL": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/CRCL.json",
+    "GOOGL": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/GOOGL.json",
+    "HUT": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/HUT.json",
+    "IBM": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/IBM.json",
+    "MU": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/MU.json",
+    "RXRX": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/RXRX.json",
+    "SKHY": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/SKHY.json",
+    "SNDK": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/SNDK.json",
+    "TSLA": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/TSLA.json",
+    "TSM": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/TSM.json",
+    "WRD": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/WRD.json",
+    "WULF": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-packets/WULF.json"
+  },
+  "phase": "M12AF",
+  "planned_model_calls": 18,
+  "preparation_head_sha": "d5d1b4fb406bf534964cbc1a10d451543c69194a",
+  "prepared_at": "2026-09-11T01:50:02.796579+00:00",
+  "provider_source_fetches": 0,
+  "schedule_start": {
+    "automatic_monitoring_resume": 0,
+    "contract": "m12-schedule-pause-observation-v1",
+    "observed_at": "2026-09-11T01:50:07.663210+00:00",
+    "observed_paused_schedule_count": 4,
+    "rows": [
+      {
+        "id": "thesis-monitor-ai-review-us-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-us-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.daily",
+        "status": "NOT_CONFIRMED_PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.kr-close",
+        "status": "NOT_CONFIRMED_PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "status": "NOT_CONFIRMED_PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "status": "NOT_CONFIRMED_PAUSED"
+      }
+    ],
+    "scheduler_mutation_count": 0,
+    "status": "REVIEW"
+  },
+  "source_inventory": [
+    {
+      "file_sha256": "7db0bb6e5178240c88e21d7a1a0a486fb5382e51e7a098fc7185b87e9395a40a",
+      "generated_at": "2026-09-07T07:20:04.746542+00:00",
+      "market": "kr",
+      "packet_age_days": 3,
+      "packet_id": "2026-09-07-kr-run-60-3cde4b2fcb02",
+      "path": "/Users/sskim/Codex/thesis-monitor/data/ai_review/inbox/2026-09-07-kr-run-60-3cde4b2fcb02.json",
+      "provider_refresh": 0,
+      "required_ticker_count": 8
+    },
+    {
+      "file_sha256": "17a4e8020cd680e492d28e11366a8cf7b84941d396067cc16cfc226645f2eea7",
+      "generated_at": "2026-09-06T23:06:46.266093+00:00",
+      "market": "us",
+      "packet_age_days": 4,
+      "packet_id": "2026-09-07-us-run-59-e3b54b0a74c0",
+      "path": "/Users/sskim/Codex/thesis-monitor/data/ai_review/inbox/2026-09-07-us-run-59-e3b54b0a74c0.json",
+      "provider_refresh": 0,
+      "required_ticker_count": 14
+    }
+  ],
+  "status": "FROZEN",
+  "tickers": [
+    "000660",
+    "003690",
+    "005490",
+    "005930",
+    "010120",
+    "012450",
+    "047810",
+    "086280",
+    "CORZ",
+    "CPNG",
+    "CRCL",
+    "GOOGL",
+    "HUT",
+    "IBM",
+    "MU",
+    "RXRX",
+    "SKHY",
+    "SNDK",
+    "TSLA",
+    "TSM",
+    "WRD",
+    "WULF"
+  ],
+  "unavailable": [],
+  "universe": [
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "SK\ud558\uc774\ub2c9\uc2a4",
+      "exchange": "KRX",
+      "industry": "Semiconductors",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "000660",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\ucf54\ub9ac\uc548\ub9ac",
+      "exchange": "KRX",
+      "industry": "Insurance and Reinsurance",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "003690",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "POSCO\ud640\ub529\uc2a4",
+      "exchange": "KRX",
+      "industry": "Steel Manufacturing",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Materials",
+      "ticker": "005490",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\uc0bc\uc131\uc804\uc790",
+      "exchange": "KRX",
+      "industry": "Communications Equipment",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "005930",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "LS\uc77c\ub809\ud2b8\ub9ad",
+      "exchange": "KRX",
+      "industry": "Electrical Equipment",
+      "issuer_type": null,
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Industrials",
+      "ticker": "010120",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\ud55c\ud654\uc5d0\uc5b4\ub85c\uc2a4\ud398\uc774\uc2a4",
+      "exchange": "KRX",
+      "industry": "Aerospace Manufacturing",
+      "issuer_type": null,
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Industrials",
+      "ticker": "012450",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\ud55c\uad6d\ud56d\uacf5\uc6b0\uc8fc\uc0b0\uc5c5",
+      "exchange": "KRX",
+      "industry": "Aerospace Manufacturing",
+      "issuer_type": null,
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Industrials",
+      "ticker": "047810",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "\ud604\ub300\uae00\ub85c\ube44\uc2a4",
+      "exchange": "KRX",
+      "industry": "Transportation and Logistics",
+      "issuer_type": "krx",
+      "market": "kr",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Industrials",
+      "ticker": "086280",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Core Scientific, Inc.",
+      "exchange": "NASDAQ",
+      "industry": "Financial Services",
+      "issuer_type": null,
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "CORZ",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Coupang, Inc.",
+      "exchange": "NYSE",
+      "industry": "Retail-Catalog & Mail-Order Houses",
+      "issuer_type": null,
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": null,
+      "ticker": "CPNG",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Circle Internet Group",
+      "exchange": "NYSE",
+      "industry": "Financial Services",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "CRCL",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Alphabet Inc. Class A",
+      "exchange": "NASDAQ",
+      "industry": "Information Technology Services",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "GOOGL",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Hut 8 Corp.",
+      "exchange": "NASDAQ",
+      "industry": "Financial Services",
+      "issuer_type": null,
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "HUT",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "IBM",
+      "exchange": "NYSE",
+      "industry": "Computer and Office Equipment",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "IBM",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Micron Technology",
+      "exchange": "NASDAQ",
+      "industry": "Semiconductors",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "MU",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Recursion Pharmaceuticals",
+      "exchange": "NASDAQ",
+      "industry": "Biotechnology and Pharmaceuticals",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Health Care",
+      "ticker": "RXRX",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "SK hynix Inc. ADR",
+      "exchange": "NASDAQ",
+      "industry": "Semiconductors",
+      "issuer_type": null,
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "SKHY",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "SanDisk",
+      "exchange": "NASDAQ",
+      "industry": "Computer Storage Devices",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "SNDK",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "Tesla, Inc.",
+      "exchange": "NASDAQ",
+      "industry": "Automotive",
+      "issuer_type": "domestic_us",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Consumer Discretionary",
+      "ticker": "TSLA",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "TSMC",
+      "exchange": "NYSE",
+      "industry": "Semiconductors",
+      "issuer_type": "foreign_private_issuer",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "TSM",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "WeRide",
+      "exchange": "NASDAQ",
+      "industry": "Information Technology Services",
+      "issuer_type": "foreign_private_issuer",
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Technology",
+      "ticker": "WRD",
+      "underlying_currency": null
+    },
+    {
+      "adr_currency": null,
+      "adr_ratio": null,
+      "company_name": "TeraWulf Inc.",
+      "exchange": "NASDAQ",
+      "industry": "Financial Services",
+      "issuer_type": null,
+      "market": "us",
+      "onboarding_state": "ACTIVE",
+      "ordinary_share_identifier": null,
+      "production_eligible": 1,
+      "sector": "Financials",
+      "ticker": "WULF",
+      "underlying_currency": null
+    }
+  ]
+}

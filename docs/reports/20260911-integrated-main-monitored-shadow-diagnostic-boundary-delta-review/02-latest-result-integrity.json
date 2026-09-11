@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "b72cf76bf454b67237347caf31b457dc5b56b57d92765eba568769c0fd19c98d",
+  "artifact_count": 176,
+  "expected_sha256": "b72cf76bf454b67237347caf31b457dc5b56b57d92765eba568769c0fd19c98d",
+  "hash_mismatch_count": 0,
+  "hash_mismatches": [],
+  "missing": [],
+  "missing_count": 0,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation-report.zip",
+  "secret_scan_failure_count": 0,
+  "secret_scan_failures": [],
+  "size_mismatch_count": 0,
+  "size_mismatches": [],
+  "status": "PASS",
+  "zip_integrity": "PASS"
+}

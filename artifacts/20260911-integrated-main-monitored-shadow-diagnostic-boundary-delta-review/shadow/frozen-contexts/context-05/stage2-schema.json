@@ -1,0 +1,638 @@
+{
+  "$defs": {
+    "T1_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T1_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T1_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T1_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "E27",
+        "E28",
+        "E29",
+        "E30",
+        "E31",
+        "E32",
+        "E33"
+      ],
+      "type": "string"
+    },
+    "T2_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T2_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T2_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T2_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "E27",
+        "E28",
+        "E29",
+        "E30",
+        "E31",
+        "E32",
+        "E33",
+        "E34",
+        "E35",
+        "E36",
+        "E37",
+        "E38"
+      ],
+      "type": "string"
+    },
+    "T3_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T3_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T3_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T3_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "E27",
+        "E28",
+        "E29",
+        "E30",
+        "E31",
+        "E32",
+        "E33",
+        "E34",
+        "E35",
+        "E36",
+        "E37",
+        "E38",
+        "E39"
+      ],
+      "type": "string"
+    },
+    "T4_CoreHolderView": {
+      "additionalProperties": false,
+      "properties": {
+        "business_invalidation_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Business Invalidation Condition",
+          "type": "string"
+        },
+        "business_invalidation_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Business Invalidation Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "HOLDABLE",
+            "REVIEW",
+            "REDUCE"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "business_invalidation_condition",
+        "business_invalidation_condition_refs"
+      ],
+      "title": "CoreHolderView",
+      "type": "object"
+    },
+    "T4_CoreNewBuyerView": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_business_condition": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Confirmation Business Condition",
+          "type": "string"
+        },
+        "confirmation_business_condition_refs": {
+          "items": {
+            "$ref": "#/$defs/T4_EvidenceAlias"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Confirmation Business Condition Refs",
+          "type": "array"
+        },
+        "stance": {
+          "enum": [
+            "ATTRACTIVE",
+            "WAIT",
+            "AVOID"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 420,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "summary",
+        "confirmation_business_condition",
+        "confirmation_business_condition_refs"
+      ],
+      "title": "CoreNewBuyerView",
+      "type": "object"
+    },
+    "T4_EvidenceAlias": {
+      "enum": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22",
+        "E23",
+        "E24",
+        "E25",
+        "E26",
+        "E27",
+        "E28",
+        "E29",
+        "E30",
+        "E31",
+        "E32",
+        "E33",
+        "E34",
+        "E35",
+        "E36",
+        "E37"
+      ],
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidates": {
+      "items": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "description": "Stage 2 output, deliberately excluding all writable core fields.",
+            "properties": {
+              "fundamental_holder": {
+                "$ref": "#/$defs/T1_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T1_CoreNewBuyerView"
+              },
+              "ticker": {
+                "const": "SKHY",
+                "title": "Ticker",
+                "type": "string"
+              }
+            },
+            "required": [
+              "ticker",
+              "fundamental_new_buyer",
+              "fundamental_holder"
+            ],
+            "title": "FundamentalStanceCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Stage 2 output, deliberately excluding all writable core fields.",
+            "properties": {
+              "fundamental_holder": {
+                "$ref": "#/$defs/T2_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T2_CoreNewBuyerView"
+              },
+              "ticker": {
+                "const": "SNDK",
+                "title": "Ticker",
+                "type": "string"
+              }
+            },
+            "required": [
+              "ticker",
+              "fundamental_new_buyer",
+              "fundamental_holder"
+            ],
+            "title": "FundamentalStanceCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Stage 2 output, deliberately excluding all writable core fields.",
+            "properties": {
+              "fundamental_holder": {
+                "$ref": "#/$defs/T3_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T3_CoreNewBuyerView"
+              },
+              "ticker": {
+                "const": "TSLA",
+                "title": "Ticker",
+                "type": "string"
+              }
+            },
+            "required": [
+              "ticker",
+              "fundamental_new_buyer",
+              "fundamental_holder"
+            ],
+            "title": "FundamentalStanceCandidate",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Stage 2 output, deliberately excluding all writable core fields.",
+            "properties": {
+              "fundamental_holder": {
+                "$ref": "#/$defs/T4_CoreHolderView"
+              },
+              "fundamental_new_buyer": {
+                "$ref": "#/$defs/T4_CoreNewBuyerView"
+              },
+              "ticker": {
+                "const": "TSM",
+                "title": "Ticker",
+                "type": "string"
+              }
+            },
+            "required": [
+              "ticker",
+              "fundamental_new_buyer",
+              "fundamental_holder"
+            ],
+            "title": "FundamentalStanceCandidate",
+            "type": "object"
+          }
+        ]
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "type": "array"
+    },
+    "contract": {
+      "const": "fundamental-stance-output-v1",
+      "type": "string"
+    },
+    "packet_id": {
+      "const": "20260911-m12af-shadow-20260911T015002Z-251b6e0ae38e",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract",
+    "packet_id",
+    "candidates"
+  ],
+  "title": "AliasConstrainedStructuredAutonomyBatch",
+  "type": "object"
+}

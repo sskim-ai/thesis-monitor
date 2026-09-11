@@ -1,0 +1,82 @@
+{
+  "balance_averaging": 0,
+  "fictional_two_stage_readiness": "NOT_READY",
+  "majority_vote": 0,
+  "monitored_diagnostic_allowed": true,
+  "rows": [
+    {
+      "business_delta": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "INTRINSIC_ADJACENT_PRIMARY_BOUNDARY_CANDIDATE",
+      "holder": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ],
+      "new_buyer": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "observed_direction": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "business_delta": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "UNCHANGED"
+      ],
+      "classification": "POSITIVE_THRESHOLD_BOUNDARY_PLUS_OPERATING_SIGNAL_VS_THESIS_DELTA_AMBIGUITY",
+      "holder": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ],
+      "new_buyer": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "observed_direction": [
+        "HOLD",
+        "HOLD",
+        "BUY"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "business_delta": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ],
+      "classification": "HOLDER_UNKNOWN_SEVERITY_BOUNDARY",
+      "holder": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "REVIEW"
+      ],
+      "new_buyer": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ],
+      "observed_direction": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "semantic_repair": 0,
+  "status": "FROZEN_DIAGNOSTIC_HYPOTHESES"
+}

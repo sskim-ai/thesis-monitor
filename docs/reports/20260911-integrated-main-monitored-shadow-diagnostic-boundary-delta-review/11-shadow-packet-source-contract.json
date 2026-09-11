@@ -1,0 +1,8 @@
+{
+  "one_frozen_single_stock_projection_per_ticker": true,
+  "provider_source_fetches": 0,
+  "same_packet_for_monolithic_stage1_stage2": true,
+  "shadow_label": "ARCHITECTURE_COMPATIBILITY_ONLY",
+  "source": "LATEST_COMPLETE_ARCHIVED_LOCAL_AI_REVIEW_PACKET",
+  "status": "PASS"
+}

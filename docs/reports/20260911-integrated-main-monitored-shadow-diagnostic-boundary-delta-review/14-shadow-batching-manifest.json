@@ -1,0 +1,236 @@
+{
+  "context_count": 6,
+  "contexts": [
+    {
+      "context": 1,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-prompt.txt",
+          "sha256": "5bbd1684741a985cafff946b3a8b1442e7c3bfe0da2cb5a01f9fdaf4dedf8207"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/monolithic-schema.json",
+          "sha256": "148f05cabadca8afa939402357ca1911a77bb5b56a6c8221f75b66d2608b01e2"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-prompt.txt",
+          "sha256": "a98858d5a55cc0803bc7f1b337e51c57377424a4bebfa39d27b90359b928a4d6"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage1-schema.json",
+          "sha256": "fdc0c90c30fc8e8d564b1a9b46f1c3163911826c8d88ac243827b718d4b8aa71"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-01/stage2-schema.json",
+          "sha256": "7521f7fd38c60271a88a2ba443d73ae876fae590c7785ea12a68fc6d802a0ee1"
+        }
+      },
+      "packet_set_sha256": "ebea4e21994e0a17bca4510013e9ab38f27f90b1134da35b0cc56a8bc7a2e3cc",
+      "packet_sha256": {
+        "000660": "d1fe72cd957c051e3605ce8d5ff7aa1f4cec873b0bf13e3ee30f21048e23cc84",
+        "003690": "b27638f9e34f89c661c819497e9bc3400d87c22dc8c3681b684a9de2cf3f744c",
+        "005490": "2afca7df09073e9f6fe8f89a2a06261ac0b3993d9dc9886c8d7f0bfc37534bef",
+        "005930": "d1ba173ef47a10b30e3a58df1117e75e4961325a0a8812712fe426e8fdb2f6ce"
+      },
+      "tickers": [
+        "000660",
+        "003690",
+        "005490",
+        "005930"
+      ]
+    },
+    {
+      "context": 2,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-prompt.txt",
+          "sha256": "fe66cae3f0148f24c39d5216fdf5b38309bd0e04a0a7d9b3df853e52ae976764"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/monolithic-schema.json",
+          "sha256": "649e4d30de1644aba89c936223eea241c04447c277caa93d4976ccd2dd7662c7"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-prompt.txt",
+          "sha256": "abc92272c277ede64b89b315472df9f2243da6ea4a5a2f32d8a6bb0ed49cf54b"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage1-schema.json",
+          "sha256": "1531877ce31bec12aeb8ec7c27093f03b39fb677b5374a11720342cf5f652c53"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-02/stage2-schema.json",
+          "sha256": "cbdb86ca68090b891b6ad0ae8e5984eb94d70a535ea9684f87eddc3d7af7067d"
+        }
+      },
+      "packet_set_sha256": "0d6eae3ec5109e9d3288f1b17d8547e747de30fa50cc83e1aab13f5b65c1f511",
+      "packet_sha256": {
+        "010120": "f923fd14decbbcb3e8ae4eef8d747d8b5e4a9d2cf60d4d1c3ca074d2068e6a69",
+        "012450": "6c5b39bb54f14b15750a7ba47cb49a4abc4bcba3a2355377e7d798f64b3037a3",
+        "047810": "df7035b68533bfe544d7003805666b0512fe31d5943f2fd62b85243437beaeba",
+        "086280": "a1ce3c11eb5b44126756c57c18478131ea320b0863f293f31cca837084f6a05f"
+      },
+      "tickers": [
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ]
+    },
+    {
+      "context": 3,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-prompt.txt",
+          "sha256": "b85faa11da8e85ed40824159ee7b8f2af49eccc0ea4aa4edf8769229b5ede458"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/monolithic-schema.json",
+          "sha256": "d21b00b1d683cacb37f5df6429831d6dc73a206a1ab3d071e48775e3c210c2e5"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-prompt.txt",
+          "sha256": "e8d8dea766e3b8e977557eb880da4852816fcb622195e2f9454c3afa724b73eb"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage1-schema.json",
+          "sha256": "83598b0706249f440384427e46726c663e03c478d757d8040e4c25da4ae06041"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-03/stage2-schema.json",
+          "sha256": "e8768f39ec34d7717db24a7d2f81d330cc6ed84240cffeb648e2c088fa36a2a7"
+        }
+      },
+      "packet_set_sha256": "e8a3177f21361a1a1d262b4d9bf7c25f7f89b3f1d7e445613f72ec622c7fa4f6",
+      "packet_sha256": {
+        "CORZ": "aeee6ed3989cafd575a4c1a8463db36d6eb0f8c1e19d70dce914c6462ce4c5b0",
+        "CPNG": "a13c05465c22e772bf3155f6058748e71b130e435c0216147be6fa366da703c0",
+        "CRCL": "32812e89a3c46146ccddfc215c0c499f28a34d6ea20c87a32e462d4e9e898f0b",
+        "GOOGL": "d3ffe7b0cc6c662da0788dcd9f21a8f37f3662386ce6ffd9e5f1a054bad00101"
+      },
+      "tickers": [
+        "CORZ",
+        "CPNG",
+        "CRCL",
+        "GOOGL"
+      ]
+    },
+    {
+      "context": 4,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-prompt.txt",
+          "sha256": "8d3410f00e90ce3410d6f9f52773252f7d678cc7a0d8b01c28366a80aad054ca"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/monolithic-schema.json",
+          "sha256": "82ab6ae8a5a6cfa4e1ff380d47d392df40c1319aa255ffa846cf8a7aa8a0afae"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-prompt.txt",
+          "sha256": "3765921639b2118e76c96ca3b3301decf77531a17a005d8832d8056f3a3470b6"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage1-schema.json",
+          "sha256": "5a757d61da6d049430beeae5faed86890a4ee1c213fb9d77ab59ce316446b824"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-04/stage2-schema.json",
+          "sha256": "580705a237df4d9393dc243455205f5daf7c851711c86c53202a170e36ee0aee"
+        }
+      },
+      "packet_set_sha256": "fd692108c742ca75f2452d541d20f078e6f540c9c584cef2857c2c89ac07b504",
+      "packet_sha256": {
+        "HUT": "cfa3ebff2e470d840f28a9fb2c573f0a5cbfc475047e9e8e047e1d1711110ec2",
+        "IBM": "87103b0cf4aa9239ad8561e78130567eda978307d17d6d1831b3cfd5397a5e49",
+        "MU": "dfae0b2d9cd168bad84409d82713103a8d09354b2d2bf3b19d5506ecb29537ba",
+        "RXRX": "65111d96631fa79c0df9ed82449b4aee75f12abfa96f881bb8f8cd2acec89b55"
+      },
+      "tickers": [
+        "HUT",
+        "IBM",
+        "MU",
+        "RXRX"
+      ]
+    },
+    {
+      "context": 5,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-prompt.txt",
+          "sha256": "2c2cb2cb4fea5b2a3e21aa7df767195821901e2338efaa8f5a0f688db91a15c7"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/monolithic-schema.json",
+          "sha256": "ebe65a2670055d8d261d420d3a014616a4ad81fc6b4d5a87b48f7d3f2b335242"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-prompt.txt",
+          "sha256": "6feb4e5297d55959ffdb2a8cac7cb3cbcedc42ea26d3b638208c4bb58144eb02"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage1-schema.json",
+          "sha256": "cc13dde7c5a96b35f140f05a8b8462844f97c25640cc72107b44ca751292633f"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-05/stage2-schema.json",
+          "sha256": "ee8c58d8ac27e1eddb1a0a338c41ef47291db5b353a6d678aaac90a5871578b4"
+        }
+      },
+      "packet_set_sha256": "544fd4d982f4295bd03ad7269772fdcb229d40e6d2ccc497521691c474a1dd6c",
+      "packet_sha256": {
+        "SKHY": "39997621bf3ac754c8f100502011c7523587de49a96d12314fb3d15ce87dcf20",
+        "SNDK": "7378c27effea9c4563e17ca537c4c6c4432a13b072fe7c15cb899ee583e47548",
+        "TSLA": "443ba3b158aa1d6ccbb2e974a29af4da5e942ed38ae57dc13dfe905531997011",
+        "TSM": "da6fb72fa5d0d893abd5c55344cec9c186e2ca33ebecf95cff95b7297f8d5073"
+      },
+      "tickers": [
+        "SKHY",
+        "SNDK",
+        "TSLA",
+        "TSM"
+      ]
+    },
+    {
+      "context": 6,
+      "inputs": {
+        "monolithic_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-prompt.txt",
+          "sha256": "b82c98c1d42f0aa2c97492c28d5d77e2df94acc969b984979d66df3a4ba8a428"
+        },
+        "monolithic_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/monolithic-schema.json",
+          "sha256": "d0100f02d9de6cf35069aadd0a2594a30ffd3193e8b1287e8952a5b27ea3bdf9"
+        },
+        "stage1_prompt": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-prompt.txt",
+          "sha256": "fe7e6d353cd65913ed92de74f841f3a89fe9fccdfd890f36216ce091d033a2fc"
+        },
+        "stage1_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage1-schema.json",
+          "sha256": "83b11b4905a25ae0bd60a4d0101fd7e59c0ca324974164c4f598d0234e97b7d8"
+        },
+        "stage2_schema": {
+          "path": "artifacts/20260911-integrated-main-monitored-shadow-diagnostic-boundary-delta-review/shadow/frozen-contexts/context-06/stage2-schema.json",
+          "sha256": "96da9d47e2d068565883629e87d0cb16f2dea0c917815ef862effe19170fb909"
+        }
+      },
+      "packet_set_sha256": "d0c5f4de37a104b66a582dad3a2c83f7e1f22303d381426e383fbeceedc16dc2",
+      "packet_sha256": {
+        "WRD": "843db8dcca5c599f372db6ee6dc1576abada16a3ec42f666ce4ec77d273b3128",
+        "WULF": "f595029326a02ea680905752148711e5feb2e654ad12ba4bd960880de74c113b"
+      },
+      "tickers": [
+        "WRD",
+        "WULF"
+      ]
+    }
+  ],
+  "planned_monolithic_calls": 6,
+  "planned_stage1_calls": 6,
+  "planned_stage2_calls": 6,
+  "planned_total_calls": 18,
+  "status": "FROZEN",
+  "subject_count": 22,
+  "subjects_per_context": 4
+}

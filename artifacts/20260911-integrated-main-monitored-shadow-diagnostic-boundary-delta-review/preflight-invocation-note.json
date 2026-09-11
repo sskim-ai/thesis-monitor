@@ -1,0 +1,12 @@
+{
+  "corrective_action": "Reinvoked the same committed runner through python -m without changing code or configuration.",
+  "first_invocation": "direct script path",
+  "first_invocation_result": "IMPORT_PATH_FAILURE_BEFORE_MODULE_LOAD",
+  "frozen_output_created_by_first_invocation": false,
+  "model_calls": 0,
+  "production_side_effects": 0,
+  "provider_source_fetches": 0,
+  "second_invocation": "python -m scripts.integrated_main_monitored_shadow_diagnostic_m12af prepare",
+  "second_invocation_result": "PASS",
+  "status": "RECORDED"
+}

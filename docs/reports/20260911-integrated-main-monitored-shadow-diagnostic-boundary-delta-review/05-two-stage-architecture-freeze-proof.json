@@ -1,0 +1,18 @@
+{
+  "architecture": "STAGE1_CORE_THEN_STAGE2_STANCE_DETERMINISTIC_COMPOSER",
+  "composer_semantic_change_count": 0,
+  "hash_match": true,
+  "hashes": {
+    "monolithic_control_code_sha256": "3ff975fab9188171566258f0105453230b4279754eccb3836335158296ea092c",
+    "monolithic_prompt_sha256": "ffec08bb75ecc3d1caae3f341833d867c695010bff3561ceed2a351d73861d0d",
+    "monolithic_schema_sha256": "e8eba3acda7e0289423132d33cd3cca9ba121439154df6a67c607a7d34beb1a0",
+    "stage1_prompt_sha256": "8438a335d19407228b800f57787e6226754d35c8f351c39d4714d4942720938b",
+    "stage1_schema_sha256": "070d43361a66658fedc810a48acc2e2459d7f356a894c2ddc58cdc0ccfa4ef23",
+    "stage2_prompt_sha256": "8bcce811f69c59a05262ecbd5ec661d238ad4d066bae7bb68a0806218be27a21",
+    "stage2_schema_sha256": "aea35a4f2f211caea4fb2b9d12a0f0ff9e0e0f7105f03a1545bcfb708ae09b89",
+    "two_stage_service_sha256": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c"
+  },
+  "prompt_schema_semantic_change_count": 0,
+  "status": "PASS",
+  "threshold_change_count": 0
+}
