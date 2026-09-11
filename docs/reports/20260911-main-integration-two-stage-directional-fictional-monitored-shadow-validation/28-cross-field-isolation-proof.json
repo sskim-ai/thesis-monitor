@@ -1,0 +1,7 @@
+{
+  "cross_subject_composition": "REJECT",
+  "pydantic_extra_policy": "FORBID",
+  "stage1_writable_stance_field_count": 0,
+  "stage2_writable_core_field_count": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,7 @@
+{
+  "hash": "SHA-256_CANONICAL_JSON",
+  "mismatch_action": "OBJECTIVE_ARCHITECTURE_HARD_FAILURE_STOP",
+  "post_compose_field": "post_compose_core_sha256",
+  "pre_compose_field": "core_snapshot_sha256",
+  "status": "PASS"
+}

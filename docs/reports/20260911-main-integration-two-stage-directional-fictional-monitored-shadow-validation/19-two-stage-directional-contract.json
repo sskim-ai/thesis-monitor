@@ -1,0 +1,7 @@
+{
+  "contract": "two-stage-directional-v1",
+  "external_contract": "directional-core-output-v1",
+  "selected_architecture": "STAGE1_CORE_THEN_STAGE2_STANCE_DETERMINISTIC_COMPOSER",
+  "service_sha256": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+  "status": "PASS"
+}

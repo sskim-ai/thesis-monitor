@@ -1,0 +1,29 @@
+{
+  "schema_properties": [
+    "business_reevaluation_down",
+    "business_reevaluation_up",
+    "business_thesis_change",
+    "business_thesis_context",
+    "buy_drivers",
+    "core_investment_judgment",
+    "directional_balance",
+    "directional_confidence",
+    "dominant_evidence",
+    "earnings_estimate_context",
+    "fundamental_holder",
+    "fundamental_new_buyer",
+    "hold_lean",
+    "market_expectation_context",
+    "material_directional_anchor_basis",
+    "overall_direction",
+    "risk_context",
+    "sector_interpretation",
+    "sell_drivers",
+    "ticker",
+    "uncertainty_limit",
+    "unknown_treatments",
+    "valuation_context"
+  ],
+  "schema_sha256": "e8eba3acda7e0289423132d33cd3cca9ba121439154df6a67c607a7d34beb1a0",
+  "status": "FROZEN"
+}

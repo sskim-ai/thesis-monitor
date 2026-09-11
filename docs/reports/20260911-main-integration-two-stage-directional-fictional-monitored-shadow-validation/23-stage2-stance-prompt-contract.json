@@ -1,0 +1,8 @@
+{
+  "generic_holder_contract": " Holder stance contract: HOLDABLE means no material confirmed fundamental reason to reconsider the holding. REVIEW means a material confirmed fundamental risk exists, but a critical severity, persistence, or reversibility question remains unresolved, so reducing exposure is not uniquely justified. REDUCE means confirmed fundamental downside is sufficiently severe or persistent that maintaining the same exposure is no longer justified even before price or timing overlays. SELL balance alone does not force REDUCE, and UNCHANGED business thesis alone does not force REVIEW. Price, technical, and supply evidence cannot create REDUCE.",
+  "generic_new_buyer_contract": "New-buyer stance contract: ATTRACTIVE requires a sufficiently supported issuer-level fundamental case for initiating exposure before price or timing overlays, without a material unresolved confirmation, durability, source-quality, or valuation constraint that makes entry premature. WAIT means the fundamental case remains investable but a material confirmation, durability, source-quality, or valuation question should be resolved before initiating exposure. AVOID means confirmed fundamental downside makes new exposure unjustified before price or timing overlays. BUY/HOLD/SELL and a directional balance do not mechanically determine this stance.",
+  "price_technical_supply_permitted": false,
+  "prompt_sha256": "8bcce811f69c59a05262ecbd5ec661d238ad4d066bae7bb68a0806218be27a21",
+  "status": "PASS",
+  "ticker_specific_exception_count": 0
+}

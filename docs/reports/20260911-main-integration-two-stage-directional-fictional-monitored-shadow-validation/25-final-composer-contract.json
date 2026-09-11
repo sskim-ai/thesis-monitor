@@ -1,0 +1,9 @@
+{
+  "averaging": 0,
+  "composer": "compose_directional_core",
+  "contract": "two-stage-directional-composition-v1",
+  "majority_vote": 0,
+  "model_calls": 0,
+  "scorecard": 0,
+  "status": "PASS"
+}

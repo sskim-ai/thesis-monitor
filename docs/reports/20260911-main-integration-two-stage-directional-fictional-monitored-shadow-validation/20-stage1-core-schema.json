@@ -1,0 +1,29 @@
+{
+  "contains_stance_fields": false,
+  "contract": "directional-core-judgment-output-v1",
+  "properties": [
+    "business_reevaluation_down",
+    "business_reevaluation_up",
+    "business_thesis_change",
+    "business_thesis_context",
+    "buy_drivers",
+    "core_investment_judgment",
+    "directional_balance",
+    "directional_confidence",
+    "dominant_evidence",
+    "earnings_estimate_context",
+    "hold_lean",
+    "market_expectation_context",
+    "material_directional_anchor_basis",
+    "overall_direction",
+    "risk_context",
+    "sector_interpretation",
+    "sell_drivers",
+    "ticker",
+    "uncertainty_limit",
+    "unknown_treatments",
+    "valuation_context"
+  ],
+  "schema_sha256": "070d43361a66658fedc810a48acc2e2459d7f356a894c2ddc58cdc0ccfa4ef23",
+  "status": "PASS"
+}

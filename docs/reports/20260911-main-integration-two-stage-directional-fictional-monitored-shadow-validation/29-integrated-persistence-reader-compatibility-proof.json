@@ -1,0 +1,7 @@
+{
+  "consumer": "existing serialized readers",
+  "external_schema_change_count": 0,
+  "production_code_change_count": 0,
+  "proof": "tests/test_two_stage_directional_service.py",
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "contains_core_fields": false,
+  "contract": "fundamental-stance-output-v1",
+  "properties": [
+    "fundamental_holder",
+    "fundamental_new_buyer",
+    "ticker"
+  ],
+  "schema_sha256": "aea35a4f2f211caea4fb2b9d12a0f0ff9e0e0f7105f03a1545bcfb708ae09b89",
+  "status": "PASS"
+}
