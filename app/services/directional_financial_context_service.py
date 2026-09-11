@@ -19,6 +19,8 @@ from app.services.cross_market_decision_engine_service import (
     FrozenModel,
 )
 from app.services.financial_framework_claim_service import (
+    FrameworkClaim,
+    FrameworkReferenceRole,
     candidate_financial_framework_claims,
     framework_reference_is_application,
 )
@@ -41,6 +43,16 @@ class FinancialSemanticCategory(StrEnum):
     VALUATION_READINESS = "VALUATION_READINESS"
     SECTOR_KPI = "SECTOR_KPI"
     OTHER_FINANCIAL_CONTEXT = "OTHER_FINANCIAL_CONTEXT"
+
+
+class FinancialClaimRole(StrEnum):
+    CURRENT_STATE_ASSERTION = "CURRENT_STATE_ASSERTION"
+    CURRENT_DIRECTIONAL_BASIS = "CURRENT_DIRECTIONAL_BASIS"
+    CURRENT_NUMERIC_CLAIM = "CURRENT_NUMERIC_CLAIM"
+    CONFIGURED_CONDITIONAL_CHECK = "CONFIGURED_CONDITIONAL_CHECK"
+    FUTURE_REEVALUATION_CONDITION = "FUTURE_REEVALUATION_CONDITION"
+    INVALIDATION_CONDITION = "INVALIDATION_CONDITION"
+    UNKNOWN_OR_AMBIGUOUS = "UNKNOWN_OR_AMBIGUOUS"
 
 
 class FinancialDecisionComparison(FrozenModel):
@@ -116,6 +128,62 @@ _CATEGORY_ORDER = {
     FinancialSemanticCategory.SECTOR_KPI: 6,
     FinancialSemanticCategory.OTHER_FINANCIAL_CONTEXT: 7,
 }
+
+_CONDITIONAL_FINANCIAL_LANGUAGE = re.compile(
+    r"(?:라면|다면|하면|되면|나면|으면|경우|때|시에|확인\s*후|"
+    r"\bif\b|\bwhen\b|\bunless\b|\bwould\b)",
+    re.IGNORECASE,
+)
+_CURRENT_FULFILLMENT_LANGUAGE = re.compile(
+    r"(?:현재|이미|지금).{0,24}(?:증가|상승|악화|부담|높)|"
+    r"(?:증가했|늘었|상승했|악화됐|악화되었|높아졌|발생했|나타났|확인됐|확인되었)|"
+    r"\b(?:currently|now|already)\b.{0,32}\b(?:increased|rose|high|worsened)\b|"
+    r"\b(?:has|have)\s+(?:increased|risen|worsened)\b",
+    re.IGNORECASE,
+)
+_CURRENT_DIRECTION_PATHS = (
+    "buy_drivers",
+    "sell_drivers",
+    "dominant_evidence",
+    "core_investment_judgment",
+    "material_directional_anchor_basis",
+    "risk_context",
+)
+
+
+def financial_claim_role(claim: FrameworkClaim) -> FinancialClaimRole:
+    """Classify assertion time/scope before requiring complete financial evidence."""
+
+    path = claim.field_path.casefold()
+    text = unicodedata.normalize("NFKC", claim.text)
+    conditional = _CONDITIONAL_FINANCIAL_LANGUAGE.search(text)
+    fulfilled = _CURRENT_FULFILLMENT_LANGUAGE.search(text)
+    if conditional is not None and (
+        fulfilled is None or fulfilled.start() >= conditional.start()
+    ):
+        if "business_reevaluation" in path:
+            return FinancialClaimRole.FUTURE_REEVALUATION_CONDITION
+        if "invalidation" in path:
+            return FinancialClaimRole.INVALIDATION_CONDITION
+        return FinancialClaimRole.CONFIGURED_CONDITIONAL_CHECK
+    if re.search(r"[-+]?\d[\d,.]*(?:\.\d+)?", text):
+        return FinancialClaimRole.CURRENT_NUMERIC_CLAIM
+    if any(token in path for token in _CURRENT_DIRECTION_PATHS):
+        return FinancialClaimRole.CURRENT_DIRECTIONAL_BASIS
+    if claim.role == FrameworkReferenceRole.UNRESOLVED:
+        return FinancialClaimRole.UNKNOWN_OR_AMBIGUOUS
+    return FinancialClaimRole.CURRENT_STATE_ASSERTION
+
+
+def financial_claim_requires_current_evidence(claim: FrameworkClaim) -> bool:
+    if not framework_reference_is_application(claim):
+        return False
+    return financial_claim_role(claim) in {
+        FinancialClaimRole.CURRENT_STATE_ASSERTION,
+        FinancialClaimRole.CURRENT_DIRECTIONAL_BASIS,
+        FinancialClaimRole.CURRENT_NUMERIC_CLAIM,
+        FinancialClaimRole.UNKNOWN_OR_AMBIGUOUS,
+    }
 
 _CASH_CONVERSION_METRICS = frozenset(
     {
@@ -865,7 +933,8 @@ def validate_directional_financial_semantics(
             errors.append("prior_year_end_described_as_yoy")
 
         net_debt_language = any(
-            claim.framework == "net_debt" and framework_reference_is_application(claim)
+            claim.framework == "net_debt"
+            and financial_claim_requires_current_evidence(claim)
             for claim in claims_by_path.get(field_path, ())
         )
         total_debt_language = any(

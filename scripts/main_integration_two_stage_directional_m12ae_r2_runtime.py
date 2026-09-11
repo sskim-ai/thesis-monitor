@@ -715,6 +715,7 @@ def _stage1_audit(
             core,
             contexts[ticker],
             catalogs[ticker],
+            owned=owned[ticker],
         )
         framework = m12ad._framework_role_audit(core)
         errors = list(row["errors"])
@@ -1260,7 +1261,10 @@ def finalize_fictional() -> None:
         for row in rows:
             ticker = str(row["ticker"])
             delta = business_delta.business_delta_audit(
-                row["core"], contexts[ticker], catalogs[ticker]
+                row["core"],
+                contexts[ticker],
+                catalogs[ticker],
+                owned=owned[ticker],
             )
             errors = list(row["errors"])
             if delta["status"] != "PASS":
@@ -1783,7 +1787,10 @@ def _full_candidate_audit(
     for row in rows:
         ticker = str(row["ticker"])
         delta = business_delta.business_delta_audit(
-            row["core"], contexts[ticker], catalogs[ticker]
+            row["core"],
+            contexts[ticker],
+            catalogs[ticker],
+            owned=owned[ticker],
         )
         errors = list(row["errors"])
         if delta["status"] != "PASS":

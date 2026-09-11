@@ -82,6 +82,17 @@ class EvidenceDomain(StrEnum):
     TECHNICAL_STATE = "TECHNICAL_STATE"
     RISK_REWARD_PRICE = "RISK_REWARD_PRICE"
     SUPPLY_POSITIONING = "SUPPLY_POSITIONING"
+    AUDIT_TELEMETRY = "AUDIT_TELEMETRY"
+
+
+class MonitoringTransitionSourceClass(StrEnum):
+    PRICE_CONFIRMATION_TRANSITION = "PRICE_CONFIRMATION_TRANSITION"
+    PRICE_RISK_REWARD_TRANSITION = "PRICE_RISK_REWARD_TRANSITION"
+    PRICE_SUPPORT_RESISTANCE_TRANSITION = "PRICE_SUPPORT_RESISTANCE_TRANSITION"
+    SUPPLY_FLOW_TRANSITION = "SUPPLY_FLOW_TRANSITION"
+    FUNDAMENTAL_BUSINESS_TRANSITION = "FUNDAMENTAL_BUSINESS_TRANSITION"
+    FUNDAMENTAL_FINANCIAL_TRANSITION = "FUNDAMENTAL_FINANCIAL_TRANSITION"
+    UNKNOWN_MONITORING_TRANSITION = "UNKNOWN_MONITORING_TRANSITION"
 
 
 CORE_DOMAINS = frozenset(
@@ -131,8 +142,25 @@ MATERIAL_DIRECTIONAL_DOMAINS = frozenset(
 _FAMILY_DOMAINS: dict[str, EvidenceDomain] = {
     domain.value: domain
     for domain in EvidenceDomain
-    if domain not in {EvidenceDomain.DATA_QUALITY_LIMIT}
+    if domain
+    not in {EvidenceDomain.DATA_QUALITY_LIMIT, EvidenceDomain.AUDIT_TELEMETRY}
 }
+
+_FUNDAMENTAL_BUSINESS_TRANSITION_FAMILIES = frozenset(
+    {
+        EvidenceDomain.BUSINESS_CURRENT.value,
+        EvidenceDomain.SECTOR_OPERATING_CURRENT.value,
+        EvidenceDomain.REGULATORY_CAPITAL_CURRENT.value,
+        EvidenceDomain.CLINICAL_REGULATORY_CURRENT.value,
+        EvidenceDomain.CAPITAL_ALLOCATION_CURRENT.value,
+    }
+)
+_FUNDAMENTAL_FINANCIAL_TRANSITION_FAMILIES = frozenset(
+    {
+        EvidenceDomain.EARNINGS_FINANCIAL_CURRENT.value,
+        EvidenceDomain.LIQUIDITY_CASHFLOW_CURRENT.value,
+    }
+)
 
 
 class OwnedEvidenceRef(FrozenModel):
@@ -367,6 +395,75 @@ def _feature_name(ref: DecisionEvidenceRef) -> str:
     return ""
 
 
+def _fact_id_for_ref(ref: DecisionEvidenceRef) -> str | None:
+    prefix = "stock.fact_catalog."
+    if not ref.source_ref.startswith(prefix):
+        return None
+    return ref.source_ref.removeprefix(prefix)
+
+
+def monitoring_transition_source_class(
+    ref: DecisionEvidenceRef,
+    *,
+    fact_family_by_id: Mapping[str, str],
+) -> MonitoringTransitionSourceClass | None:
+    """Classify monitoring transitions from canonical lineage, not display wording."""
+
+    fact_id = _fact_id_for_ref(ref)
+    if fact_id is None:
+        return None
+    label = ref.label.casefold()
+    is_transition = fact_id.startswith("monitoring:") or label in {
+        "monitoring_transition",
+        "monitoring_metric_transition",
+    }
+    if not is_transition:
+        return None
+
+    if fact_id == "monitoring:confirmation_transition":
+        return MonitoringTransitionSourceClass.PRICE_CONFIRMATION_TRANSITION
+    if fact_id == "monitoring:risk_reward_transition":
+        return MonitoringTransitionSourceClass.PRICE_RISK_REWARD_TRANSITION
+
+    family = fact_family_by_id.get(fact_id)
+    identity = f"{fact_id}|{ref.source_ref}".casefold()
+    if family == EvidenceDomain.PRICE_CONTEXT.value and any(
+        token in identity for token in ("support", "resistance", "invalidation")
+    ):
+        return MonitoringTransitionSourceClass.PRICE_SUPPORT_RESISTANCE_TRANSITION
+    if family == EvidenceDomain.SUPPLY_POSITIONING.value:
+        return MonitoringTransitionSourceClass.SUPPLY_FLOW_TRANSITION
+    if family in _FUNDAMENTAL_BUSINESS_TRANSITION_FAMILIES:
+        return MonitoringTransitionSourceClass.FUNDAMENTAL_BUSINESS_TRANSITION
+    if family in _FUNDAMENTAL_FINANCIAL_TRANSITION_FAMILIES:
+        return MonitoringTransitionSourceClass.FUNDAMENTAL_FINANCIAL_TRANSITION
+    return MonitoringTransitionSourceClass.UNKNOWN_MONITORING_TRANSITION
+
+
+def _monitoring_transition_domain(
+    source_class: MonitoringTransitionSourceClass,
+    *,
+    fact_id: str,
+    fact_family_by_id: Mapping[str, str],
+) -> EvidenceDomain:
+    if source_class == MonitoringTransitionSourceClass.PRICE_CONFIRMATION_TRANSITION:
+        return EvidenceDomain.TECHNICAL_STATE
+    if source_class == MonitoringTransitionSourceClass.PRICE_RISK_REWARD_TRANSITION:
+        return EvidenceDomain.RISK_REWARD_PRICE
+    if source_class == MonitoringTransitionSourceClass.PRICE_SUPPORT_RESISTANCE_TRANSITION:
+        return EvidenceDomain.SUPPORT_RESISTANCE
+    if source_class == MonitoringTransitionSourceClass.SUPPLY_FLOW_TRANSITION:
+        return EvidenceDomain.SUPPLY_POSITIONING
+    if source_class in {
+        MonitoringTransitionSourceClass.FUNDAMENTAL_BUSINESS_TRANSITION,
+        MonitoringTransitionSourceClass.FUNDAMENTAL_FINANCIAL_TRANSITION,
+    }:
+        family = fact_family_by_id.get(fact_id)
+        if family in _FAMILY_DOMAINS:
+            return _FAMILY_DOMAINS[family]
+    return EvidenceDomain.AUDIT_TELEMETRY
+
+
 def evidence_domain(
     ref: DecisionEvidenceRef,
     *,
@@ -375,6 +472,16 @@ def evidence_domain(
     prefix = "stock.fact_catalog."
     if ref.source_ref.startswith(prefix):
         fact_id = ref.source_ref.removeprefix(prefix)
+        transition_class = monitoring_transition_source_class(
+            ref,
+            fact_family_by_id=fact_family_by_id,
+        )
+        if transition_class is not None:
+            return _monitoring_transition_domain(
+                transition_class,
+                fact_id=fact_id,
+                fact_family_by_id=fact_family_by_id,
+            )
         family = fact_family_by_id.get(fact_id)
         if family in _FAMILY_DOMAINS:
             return _FAMILY_DOMAINS[family]

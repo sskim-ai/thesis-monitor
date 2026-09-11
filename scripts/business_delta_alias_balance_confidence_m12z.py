@@ -153,6 +153,8 @@ def business_delta_audit(
     candidate: Mapping[str, object],
     context: Mapping[str, object],
     catalog: object,
+    *,
+    owned: object | None = None,
 ) -> dict[str, object]:
     ticker = str(candidate.get("ticker") or "")
     observed = str(candidate.get("business_thesis_change") or "")
@@ -167,6 +169,39 @@ def business_delta_audit(
         context=context,
         catalog=catalog,
     )
+    owned_rows = {
+        row.ref.ref_id: row
+        for row in getattr(owned, "evidence", ())
+        if hasattr(row, "ref")
+    }
+    delta_domains = {
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT",
+        "LIQUIDITY_CASHFLOW_CURRENT",
+        "SECTOR_OPERATING_CURRENT",
+        "REGULATORY_CAPITAL_CURRENT",
+        "CLINICAL_REGULATORY_CURRENT",
+        "CAPITAL_ALLOCATION_CURRENT",
+    }
+
+    def eligibility(canonical_ref: str) -> tuple[bool, str]:
+        if owned is None:
+            return True, "LEGACY_UNSCOPED_AUDIT"
+        row = owned_rows.get(canonical_ref)
+        if row is None:
+            return False, "NOT_PRESENT_IN_OWNED_EVIDENCE"
+        domain = str(row.domain)
+        source_ref = str(row.ref.source_ref)
+        if domain not in delta_domains:
+            return False, f"NON_FUNDAMENTAL_CHANGE_DOMAIN:{domain}"
+        if source_ref.startswith("stock.thesis."):
+            return False, "STORED_THESIS_OR_CONFIGURED_SIGNAL_NOT_OBSERVED_DELTA"
+        if source_ref.startswith("stock.fact_catalog."):
+            return True, "CANONICAL_FUNDAMENTAL_FACT"
+        if source_ref.startswith(("fictional.", "fixture.")):
+            return True, "CONTROL_FIXTURE_FUNDAMENTAL_FACT"
+        return False, "UNTRUSTED_CHANGE_LINEAGE"
+
     linked: list[dict[str, object]] = []
     for ref in refs:
         canonical_ref = alias_to_canonical.get(ref, ref)
@@ -174,23 +209,32 @@ def business_delta_audit(
         if source is None:
             errors.append(f"INVALID_OR_UNRESOLVED_EVIDENCE_REF:{ref}")
             continue
-        directions = sorted(y._source_change_directions(str(source.get("statement") or "")))
+        delta_eligible, eligibility_reason = eligibility(canonical_ref)
+        directions = sorted(
+            y._source_change_directions(str(source.get("statement") or ""))
+            if delta_eligible
+            else ()
+        )
         linked.append(
             {
                 "selected_ref": ref,
                 "canonical_ref": canonical_ref,
                 "alias": str(source["alias"]),
                 "statement": str(source.get("statement") or ""),
+                "delta_evidence_eligible": delta_eligible,
+                "delta_evidence_eligibility_reason": eligibility_reason,
                 "supported_directions": directions,
             }
         )
     supported = {direction for row in linked for direction in row["supported_directions"]}
     if observed == "UNCHANGED":
         semantic_valid = True
+    elif observed == "UNRESOLVED":
+        semantic_valid = {"STRENGTHENED", "WEAKENED"}.issubset(supported)
     else:
         semantic_valid = observed in supported
-        if not semantic_valid:
-            errors.append("UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA")
+    if not semantic_valid:
+        errors.append("UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA")
     if ticker == "FIC-FIN-05" and observed != FIC_FIN_05_DELTA_TARGET:
         semantic_valid = False
         errors.append("FIC_FIN_05_BUSINESS_DELTA_TARGET_MISMATCH")
@@ -207,6 +251,9 @@ def business_delta_audit(
         ),
         "unsupported_absolute_state_to_delta_count": sum(
             error == "UNSUPPORTED_ABSOLUTE_STATE_TO_DELTA" for error in errors
+        ),
+        "ineligible_selected_evidence_count": sum(
+            not row["delta_evidence_eligible"] for row in linked
         ),
         "errors": errors,
     }
