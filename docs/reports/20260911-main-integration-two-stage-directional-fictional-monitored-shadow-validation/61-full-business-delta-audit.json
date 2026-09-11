@@ -1,0 +1,86 @@
+{
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "WEAKENED",
+        "WEAKENED",
+        "WEAKENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    }
+  ],
+  "status": "FAIL",
+  "unstable_subject_count": 1
+}

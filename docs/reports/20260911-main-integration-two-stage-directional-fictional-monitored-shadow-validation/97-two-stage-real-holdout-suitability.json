@@ -1,0 +1,10 @@
+{
+  "blockers": [
+    "PRIMARY_DIRECTION_UNSTABLE",
+    "PRIMARY_DIRECTION_UNSTABLE",
+    "BUSINESS_DELTA_UNSTABLE",
+    "HOLDER_STANCE_UNSTABLE"
+  ],
+  "status": "NOT_READY",
+  "two_stage_real_holdout_suitability": "NOT_READY"
+}

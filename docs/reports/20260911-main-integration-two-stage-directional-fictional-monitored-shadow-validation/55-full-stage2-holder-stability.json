@@ -1,0 +1,91 @@
+{
+  "fic_fin_05_holder_values": [
+    "REVIEW",
+    "REVIEW",
+    "REVIEW"
+  ],
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 2,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "REVIEW"
+      ]
+    }
+  ],
+  "status": "FAIL",
+  "unstable_subject_count": 1
+}

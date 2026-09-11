@@ -1,0 +1,891 @@
+{
+  "artifact_count": 176,
+  "contract": "m12ae-r2-failure-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "rows": [
+    {
+      "path": "app/services/two_stage_directional_service.py",
+      "sha256": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+      "size": 6116
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/M12AE-R2-FAILURE-CLOSEOUT.md",
+      "sha256": "f72c87fe828c505a2f352553c83bbab25bb043e9f6044ae9d5c07dd567dba38c",
+      "size": 1063
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/architecture-receipt.json",
+      "sha256": "d4a70b598f349ef174deb542fd556a09379a405d08043f5dda60d6e38538387e",
+      "size": 1607
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/baseline-receipt.json",
+      "sha256": "3dd62f59537e199bfd754ef5b2bde00b8896edde757b7dabd261ae57d8c7b7c6",
+      "size": 165
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/failure-closeout.json",
+      "sha256": "f98df07ef6ac6410bc646c7d9f18ba74040837429c584aa5371b3c20bfeef7d8",
+      "size": 17229
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional-model-call-gate.json",
+      "sha256": "b821531101a86800ad64bd7db8f7a8812ee1e2149e61b60f2a7a0bdcad91f7de",
+      "size": 1815
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional-readiness.json",
+      "sha256": "28b51e272de1e080d6e96324885791b1a45498e7218271f55fda0b473ac91a4f",
+      "size": 609
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage1-prompt.txt",
+      "sha256": "a7c04b1f0ee2758db046a053b3334c2fce3694070b553494bdf19dd352102877",
+      "size": 30311
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage1-schema.json",
+      "sha256": "abca655f06987cf7fa1fb278c9087b6830e7db221e7b4980023c5a632ad0bf47",
+      "size": 34617
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage2-schema.json",
+      "sha256": "16862f3326297b6e3975726568ef5f5946a0b4c4049b7a6e10b876189a376cfd",
+      "size": 13562
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage1-prompt.txt",
+      "sha256": "b9dba6b0a2ee9050b10bd0f4cc059b4ea8376795f5e2681d6cbc2a5d7f2b4ce8",
+      "size": 21706
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage1-schema.json",
+      "sha256": "1d1adc356bf4a17aa97d0522fee4899c62763059d0f441161aefdcf483273422",
+      "size": 34512
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage2-schema.json",
+      "sha256": "148380ab73aa7cf383744b7ef201bf75ea090c3c692adfa06a87d38081914602",
+      "size": 13457
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/output.raw.json",
+      "sha256": "b660190ca3eeef9d5a11cdaf5497cd44ce28d4102fb16c1ff1264bd288ef06b0",
+      "size": 12833
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/prompt.txt",
+      "sha256": "a7c04b1f0ee2758db046a053b3334c2fce3694070b553494bdf19dd352102877",
+      "size": 30311
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/receipt.json",
+      "sha256": "1e919b6d90455f93b081dee2e4fa637330681b8fe0eebe30951512aaa72268db",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/run-document.json",
+      "sha256": "b6181b3ed72e870a063b801f4c8f003b82bfcef974a63298c1e0940ca024e8d1",
+      "size": 118771
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/schema.json",
+      "sha256": "abca655f06987cf7fa1fb278c9087b6830e7db221e7b4980023c5a632ad0bf47",
+      "size": 34617
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-01/transport.log",
+      "sha256": "ed3da50ed7a5f924c3133999a74e60851e53b791ed6a95d8d896593919b33379",
+      "size": 70271
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/output.raw.json",
+      "sha256": "53c860e4915a274ee19d309879e67bfdc620927553f1e2593ee3d2b9745a1779",
+      "size": 11510
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/prompt.txt",
+      "sha256": "b9dba6b0a2ee9050b10bd0f4cc059b4ea8376795f5e2681d6cbc2a5d7f2b4ce8",
+      "size": 21706
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/receipt.json",
+      "sha256": "7f4f39b23a16b3e0e65b8fb99713b8774344f1009476a49a4185aefb7b782824",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/run-document.json",
+      "sha256": "260b150a98666362b2fa43d53034df4233f3c672b2e8f15301f8650de1696fa1",
+      "size": 106153
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/schema.json",
+      "sha256": "1d1adc356bf4a17aa97d0522fee4899c62763059d0f441161aefdcf483273422",
+      "size": 34512
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage1-context-02/transport.log",
+      "sha256": "0ca59aefe45c0358bdd4fe6b404bc4bf637c4cc13467dedac5b61efa79cb6686",
+      "size": 57417
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/output.raw.json",
+      "sha256": "44a8cc0e136b179046355734733c2430b6bf32a0eb346be5ed37e01d0c3cc9eb",
+      "size": 3549
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/prompt.txt",
+      "sha256": "cda269b668a16ab8e78da8e858397545d9c545992669856259211175016aff2a",
+      "size": 37669
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/receipt.json",
+      "sha256": "cc3f8345a75289187a5301b57e3537fb398349fc1ca2b373610f259c38ad8868",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/run-document.json",
+      "sha256": "70ee450930a8fcaaa060308d18db89ab845c8900c7efd0eeede591bdb5910f94",
+      "size": 96501
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/schema.json",
+      "sha256": "16862f3326297b6e3975726568ef5f5946a0b4c4049b7a6e10b876189a376cfd",
+      "size": 13562
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-01/transport.log",
+      "sha256": "97e2b9982aab406a65cd2ebbc0d60e7ba7e8d47ef084e6d3a31c1fc537c729c7",
+      "size": 48845
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/output.raw.json",
+      "sha256": "d4dadb4554e16a1557e14a890e3e002d3c27a87879ee27388f254eca4df476d1",
+      "size": 3564
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/prompt.txt",
+      "sha256": "9b072e2bc5077d7fe95b16f515e31c0457eefd58062d0c325938d8eda7ad5c2e",
+      "size": 27741
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/receipt.json",
+      "sha256": "5b55e9a185d02273edae0e33311d70c763ee9e89fbb5aa64b1e13bc4cbed17e3",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/run-document.json",
+      "sha256": "11bf244b66083159ce55e9e0b9e382f6c436ebff791f2daa09014a1b472c75cb",
+      "size": 91914
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/schema.json",
+      "sha256": "148380ab73aa7cf383744b7ef201bf75ea090c3c692adfa06a87d38081914602",
+      "size": 13457
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-1/stage2-context-02/transport.log",
+      "sha256": "b99a6823d9dc9f980a8d8dc27ceba5f49da586a7fea90d6eee8d3ba22f4e58a4",
+      "size": 37337
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/output.raw.json",
+      "sha256": "72501f7891b3aa571a077e39daf5b789caa191bb32a59cdda3db2016977aa21e",
+      "size": 13445
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/prompt.txt",
+      "sha256": "a7c04b1f0ee2758db046a053b3334c2fce3694070b553494bdf19dd352102877",
+      "size": 30311
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/receipt.json",
+      "sha256": "f312b4ec9a0ba68b19e454b46429d7c26ce4a13c5f58f982e5b53a32bfdf308f",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/run-document.json",
+      "sha256": "e0aec505dc42e39f765b126032cbcd7b9eb9714d3e9e275a7944166e86f754d6",
+      "size": 125691
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/schema.json",
+      "sha256": "abca655f06987cf7fa1fb278c9087b6830e7db221e7b4980023c5a632ad0bf47",
+      "size": 34617
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-01/transport.log",
+      "sha256": "cbb6d1e34afffd00dcc484dec3472f3d754c1f47a8170e4a0dac9674c03b0f8a",
+      "size": 63358
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/output.raw.json",
+      "sha256": "e7391a2af5defe569b466fd31eccfd4933000f1038970180cc369a0c20e4256f",
+      "size": 11832
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/prompt.txt",
+      "sha256": "b9dba6b0a2ee9050b10bd0f4cc059b4ea8376795f5e2681d6cbc2a5d7f2b4ce8",
+      "size": 21706
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/receipt.json",
+      "sha256": "4b9844727248cb0f8b9b13084644c25f2b967d82b68aa454dbbcd4c4f0b0b34f",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/run-document.json",
+      "sha256": "69256005380b7806db0e4b63512e395ead5cc2618188fe7584f7e7c41073179f",
+      "size": 104380
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/schema.json",
+      "sha256": "1d1adc356bf4a17aa97d0522fee4899c62763059d0f441161aefdcf483273422",
+      "size": 34512
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage1-context-02/transport.log",
+      "sha256": "1dfcdac37421541d3265ddfed24966e49aac7fbe1c9eb312a203114d30003de0",
+      "size": 69921
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/output.raw.json",
+      "sha256": "f99ea1045a2e79a2191531df641706a0f5f420a0af7aba259b116e0a3ba08aa6",
+      "size": 3689
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/prompt.txt",
+      "sha256": "2079921cabb47198edb33eeccaa3236cf29589e5563469b0e7864e986c839305",
+      "size": 38281
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/receipt.json",
+      "sha256": "6e68ddd3ececd29e95247065f1c11c634c7cccf71a3a74b5482854c1e1b76014",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/run-document.json",
+      "sha256": "86205dbe1b43b482ddcf1df3b6c70724ff1ade19a6acea773655a428f8f8fc25",
+      "size": 106309
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/schema.json",
+      "sha256": "16862f3326297b6e3975726568ef5f5946a0b4c4049b7a6e10b876189a376cfd",
+      "size": 13562
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-01/transport.log",
+      "sha256": "fc766642f50530c331a595d58f805b46c983f58f3bd504e3053815f12c485666",
+      "size": 48717
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/output.raw.json",
+      "sha256": "bdd9669cd6e2014ae303d1d22778aea34ffeb541abf99b826e139d8fe8a36777",
+      "size": 3824
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/prompt.txt",
+      "sha256": "60f914b64d6679acf6e885a4e89bf3f7779eb27e3a3d5fe55d3c15d45b9ecb8f",
+      "size": 28063
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/receipt.json",
+      "sha256": "718c343e4ca1d2f45bdf7ac913d0386435b5d5bac11af6c22fc101f4aa7b9303",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/run-document.json",
+      "sha256": "54adecf9fc45e1873a96328fec6a38ff52b069cc5efa9c69cdff296836c92489",
+      "size": 94555
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/schema.json",
+      "sha256": "148380ab73aa7cf383744b7ef201bf75ea090c3c692adfa06a87d38081914602",
+      "size": 13457
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-2/stage2-context-02/transport.log",
+      "sha256": "72a44fd9d1db9a0ca473c9ecf0a5a5002bf5684d8d060d3f2635e247675f1247",
+      "size": 36416
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/output.raw.json",
+      "sha256": "e55e4528a76c551800626abdf1191374ac9994d1f67cabe387dbb50b7ab1c438",
+      "size": 11727
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/prompt.txt",
+      "sha256": "a7c04b1f0ee2758db046a053b3334c2fce3694070b553494bdf19dd352102877",
+      "size": 30311
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/receipt.json",
+      "sha256": "e121aed9a2b3af6e309c3f3725d45fe18c078a2638d1c61fd646a4bea3577b29",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/run-document.json",
+      "sha256": "4f991dfc23845eb4c7274fda967df03fd84c6d927d847e8867fb6d5f2faed5d7",
+      "size": 116761
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/schema.json",
+      "sha256": "abca655f06987cf7fa1fb278c9087b6830e7db221e7b4980023c5a632ad0bf47",
+      "size": 34617
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-01/transport.log",
+      "sha256": "e31861e082cfd2ddf95e7789da566c727adbde4fc4c6379bfc664746560c242e",
+      "size": 78203
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/output.raw.json",
+      "sha256": "eec53814861f1a14523296f661913c637887d5006ea20ddbc778603ff00c1897",
+      "size": 12433
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/prompt.txt",
+      "sha256": "b9dba6b0a2ee9050b10bd0f4cc059b4ea8376795f5e2681d6cbc2a5d7f2b4ce8",
+      "size": 21706
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/receipt.json",
+      "sha256": "b2b6fce67279f79346e25edd30947421afcdab02f3959a826a3b5c80507fb678",
+      "size": 2666
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/run-document.json",
+      "sha256": "d4c88fe62d4a90d37e5806f4b92234411f8a680b881c2662ec39db05d53f757e",
+      "size": 111883
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/schema.json",
+      "sha256": "1d1adc356bf4a17aa97d0522fee4899c62763059d0f441161aefdcf483273422",
+      "size": 34512
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage1-context-02/transport.log",
+      "sha256": "3632cbaff386a8326e65db906bb0f6f73613fe277ad846363412d1ba59c3e0d8",
+      "size": 54292
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/output.raw.json",
+      "sha256": "f865cd9be6c8b47e885b374768898fb1b7a2aa079f5ba106fd7513084f7c29e9",
+      "size": 3757
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/prompt.txt",
+      "sha256": "aceeaad09fbefd751f9a5991b465cf3273401a33b25e78404b4dbc988b47d3e1",
+      "size": 36563
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/receipt.json",
+      "sha256": "03d04fe11b758319025f60d4b22682b75422b7a9cc5f369c9b29a3826505de86",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/run-document.json",
+      "sha256": "6edd86b7d5e3a572cb69c3444e4f94d9a01c8f25fd21edd3137d784cb7b08ebf",
+      "size": 101122
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/schema.json",
+      "sha256": "16862f3326297b6e3975726568ef5f5946a0b4c4049b7a6e10b876189a376cfd",
+      "size": 13562
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-01/transport.log",
+      "sha256": "2e2824194d56cb535110915965988580335543773ded5e17c593b994d3abcc0c",
+      "size": 46800
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/output.raw.json",
+      "sha256": "063a9d1b1d32979be81bb9ae4c27b5a7914e91e89475896d107201f3ee44af56",
+      "size": 3925
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/prompt.txt",
+      "sha256": "5ae24356837cea3fc522dcdd9d2658f56e09b2de60ec2834bd2fd9d54b8957c1",
+      "size": 28664
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/receipt.json",
+      "sha256": "fc447b440b3b53c9bd9c40bdfeece7a3aa09016a2edd3d58b6eca667c1fb81eb",
+      "size": 2665
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/run-document.json",
+      "sha256": "1e2da086273167163721e2bab482c3fdb09ade8125ca9d0f2e015b497c341ef5",
+      "size": 97528
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/schema.json",
+      "sha256": "148380ab73aa7cf383744b7ef201bf75ea090c3c692adfa06a87d38081914602",
+      "size": 13457
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/model-calls/run-3/stage2-context-02/transport.log",
+      "sha256": "47b119e15a3a5f4f93d08f564d89f2aca8faaa5c8d3a9fbc7ebb00bec6b6b243",
+      "size": 39248
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/postprocessing-adapter-receipt.json",
+      "sha256": "9e5d70d9e42b20d9b163e6a467d63a8ad135fd562627e236ec801cc4c3694432",
+      "size": 563
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/program-state.json",
+      "sha256": "7f4a1b0ba1be45047d225e8d722f0e2bd645b6ee0279e9a70a49c0c5b90a35e9",
+      "size": 9171
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/run-complete.json",
+      "sha256": "5da413b7692b5396d90b301733f2b7a535eb6af8e3c04003aa6aa2b5ad1a4991",
+      "size": 158
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/program-completion.json",
+      "sha256": "813a63445f3cad4d8d26496c5ad53db9abe007e798ae6415ab50b38079e1b72c",
+      "size": 8304
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/diff.txt",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/focused.txt",
+      "sha256": "599f8c4e6eeeb7ba1ecb78cc39b07724d703e21a26502ffd65b428c614446ebd",
+      "size": 340
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/full.txt",
+      "sha256": "0382ce3884d717810be6c270e32209592109e8c553d70b10026883a254f63a4c",
+      "size": 4413
+    },
+    {
+      "path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size": 19
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/01-repository-provenance.json",
+      "sha256": "1715e707e0ec18e83a71f0056d31bad90e172fa14dcec3db8349537ecd480b6d",
+      "size": 582
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/02-latest-result-integrity.json",
+      "sha256": "e32c984c9e04d78b908769fcf1bea329f065b10e8bb13d49aa4ba904ef423d99",
+      "size": 545
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/03-main-freeze.json",
+      "sha256": "b6dd37381a1c229873c80788b8ff4171e34ee79771b0a5c53f20f96e0eef52cc",
+      "size": 256
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/04-m12ad-source-head-freeze.json",
+      "sha256": "85e444d7b9dac88002e0ebe1d07a4a1c3911e0fa23fc3f63838aa6f6d0c09dbb",
+      "size": 358
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/05-integration-branch-creation.json",
+      "sha256": "94e1cb26c1736e1d13b11a2d5fbd79210b97d30a182e2760be0a384f8c54825d",
+      "size": 315
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/06-integration-merge-base.json",
+      "sha256": "dcecd64967589bb3fa19d7e39f6402b5ba60cf75af76636c25e567932f011aa7",
+      "size": 308
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/07-integration-conflict-ledger.json",
+      "sha256": "f8d7efbb06bacce5de389f60e3d53c73f7fc847a55989f0f94804ba78dd6a303",
+      "size": 202
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/08-main-only-relevant-change-audit.json",
+      "sha256": "79b5f4dccd19809eb9b4353a53c5cf5cf624bc43e540999caea9666624dbcd0e",
+      "size": 316
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/09-m12ad-semantic-fingerprint-before-merge.json",
+      "sha256": "7ad5f14e5c16eb628c93d1f33186e12d27fe939c765d114314dddaf3192c518f",
+      "size": 240
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/10-integrated-semantic-fingerprint-after-merge.json",
+      "sha256": "8af1f875e5a352de40b4c1e3b7d3691f9c4d5beaabe801a812fb0eebb8168ad2",
+      "size": 329
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/100-hosted-ci-portability-handoff.json",
+      "sha256": "32f29d89cc1dc8c78938b09671a0a055372ac87a0e4267f13ef8327d80b05db5",
+      "size": 138
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/101-astra-future-experiment-handoff.json",
+      "sha256": "bda1bdc71ed0c50b7c5ecb60602c644e30d128220721b54f82b2c2269cd99fc2",
+      "size": 110
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/102-production-no-change.json",
+      "sha256": "5f125e1829ba329477f6d707691bbb47eed5de15c322edc364388488c3d6b0ca",
+      "size": 493
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/103-schedule-pause-observation.json",
+      "sha256": "86d2ad7daf0f4b5f978aa597840a0b2a8bfad7aea734362eaf20756e01583939",
+      "size": 1346
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/104-master-workflow-update.json",
+      "sha256": "2252bc113d6a809933466be5ba5d9d565080cd278dd69944bab61b2ee934afe0",
+      "size": 335
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/105-program-completion.json",
+      "sha256": "813a63445f3cad4d8d26496c5ad53db9abe007e798ae6415ab50b38079e1b72c",
+      "size": 8304
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/11-post-merge-entrypoint-map.json",
+      "sha256": "f34b9de3096f348464be45452196ea3e22e3e9f536174d122cdbfed2b0bcc62a",
+      "size": 1212
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/12-duplicate-stale-path-audit.json",
+      "sha256": "4c50d0a9c7a8405b60ba202fc9d6abf76d47eccda4d394f191d3341329b5a764",
+      "size": 562
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/13-persistence-compatibility-audit.json",
+      "sha256": "3e3de256faee5bd615e33bbdd07e658b1999ad6a980c0e5d6fe5a21a1a8c9c24",
+      "size": 359
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/14-price-timing-renderer-integration-audit.json",
+      "sha256": "86507bb6feb9b644f6aa4957613a0a18b686932412a5fd5c62cd7b65783d00fd",
+      "size": 348
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/15-post-merge-integration-baseline-tests.json",
+      "sha256": "5945750567d08f11f99e8fbdffe119de47d09b37c2c6b7317bb6b8c63f59c96b",
+      "size": 488
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/16-post-merge-baseline-freeze.json",
+      "sha256": "f4f7a05a738e4c6be03d4b274f022a762fbb814678cb4a73f526b886b78ba1db",
+      "size": 275
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/17-monolithic-control-prompt-freeze.json",
+      "sha256": "17c36357a738bb82ec0f475e95deeb097f5cafd78381d8cf1c39d17db38191b2",
+      "size": 276
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/18-monolithic-control-schema-freeze.json",
+      "sha256": "20e78d242b13429e4fd48c91f13c007cd3db095db552f5abe30721338c0b9e84",
+      "size": 765
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/19-two-stage-directional-contract.json",
+      "sha256": "67fe7f2fa4a18d05f24361cff544ea25ef44f44e857a41e9a094282ca452c75a",
+      "size": 290
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/20-stage1-core-schema.json",
+      "sha256": "0ff95573662cbcfa1e814515a6286052726a82e74ee53bb5a085d1da51b1e7c9",
+      "size": 789
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/21-stage1-core-prompt-contract.json",
+      "sha256": "1b5fe9948c6df63161a21a8b9790559a7aa5b7c81407072415fec497ebb0998c",
+      "size": 222
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/22-stage2-stance-schema.json",
+      "sha256": "9df408bd7782d3b3405b77b9804b1b11d44d451b77696bff7a3b44e236eb7150",
+      "size": 280
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/23-stage2-stance-prompt-contract.json",
+      "sha256": "dd4e089b752d21187352856ede185c6fb4233b8c996a5d987b88a461d6c3bfc1",
+      "size": 1549
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/24-core-immutability-hash-contract.json",
+      "sha256": "4e95262af40d3c74c3d08144d5f1ea5e31ec73b5708056c6745fd8cd074c58ff",
+      "size": 223
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/25-final-composer-contract.json",
+      "sha256": "2d4fc6bc49e537a51ce2e061909a1bfd3789cffdc86b6066a1b2bf32a663bea1",
+      "size": 197
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/26-final-schema-compatibility-proof.json",
+      "sha256": "dc0650ed2a041d834bf0b74e249c95abe07fa14f97297699bd7d8f3d6ac74b8b",
+      "size": 197
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/27-legacy-output-compatibility-proof.json",
+      "sha256": "688b8a146aa82ec2d69efea9387e1e7f4d311578e5b0635fdf6925f8547fe574",
+      "size": 215
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/28-cross-field-isolation-proof.json",
+      "sha256": "c606198d514d55f18866b651e02462392a7c6d3e740122b18ad46474ae62e52a",
+      "size": 185
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/29-integrated-persistence-reader-compatibility-proof.json",
+      "sha256": "3005319194ff5020831d19c1b2af2cc2502eca95cf340f2a72fbb14745f11162",
+      "size": 200
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/30-integrated-price-timing-consumer-proof.json",
+      "sha256": "8f09e0f06f26d121b18ffcc9d36df5c473bef2fb71ae58f8e36f379570cb6a64",
+      "size": 189
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/31-integrated-renderer-consumer-proof.json",
+      "sha256": "e67b0c2d94cda1eb30667ec90f4728bdf45c878f5cf8386d7be5a6f1a917d9e2",
+      "size": 209
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/32-focused-test-results-after-two-stage.json",
+      "sha256": "840b314ee78e14fb01902839385cba059d4646bf9d59234d85da1de6bc7c0176",
+      "size": 1296
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/33-full-local-test-results-after-two-stage.json",
+      "sha256": "6a3773bccba7bc6d42aef6cf0b6faec0dca0031b0e160034ecef505cba4186a7",
+      "size": 392
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/34-ruff-and-diff-results.json",
+      "sha256": "fc5e828cd1004cf53885027687c16abcd7906f23a4738695da3e7718bf1819a2",
+      "size": 889
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/35-hosted-ci-portability-observation.json",
+      "sha256": "0acfccfe5b9e37fe9253dacfb51e9e7d61f08e34147d8969e8d7fc9c1e18fd68",
+      "size": 194
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/36-fictional-model-call-gate.json",
+      "sha256": "b821531101a86800ad64bd7db8f7a8812ee1e2149e61b60f2a7a0bdcad91f7de",
+      "size": 1815
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/37-fictional-two-stage-generation-manifest.json",
+      "sha256": "8a9dcce7d1a62e23845573ef4b823e5987736454e0e4a569147244c94f076d9a",
+      "size": 1663
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/38-fictional-source-lock.json",
+      "sha256": "0cb674cc677ca19e6839624cac56d17ad5e29693cfd50a3c5cd59b3d20610e66",
+      "size": 3355
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/39-stage1-run-1-context-01.json",
+      "sha256": "b6181b3ed72e870a063b801f4c8f003b82bfcef974a63298c1e0940ca024e8d1",
+      "size": 118771
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/40-stage1-run-1-context-02.json",
+      "sha256": "260b150a98666362b2fa43d53034df4233f3c672b2e8f15301f8650de1696fa1",
+      "size": 106153
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/41-stage2-run-1-context-01.json",
+      "sha256": "70ee450930a8fcaaa060308d18db89ab845c8900c7efd0eeede591bdb5910f94",
+      "size": 96501
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/42-stage2-run-1-context-02.json",
+      "sha256": "11bf244b66083159ce55e9e0b9e382f6c436ebff791f2daa09014a1b472c75cb",
+      "size": 91914
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/43-stage1-run-2-context-01.json",
+      "sha256": "e0aec505dc42e39f765b126032cbcd7b9eb9714d3e9e275a7944166e86f754d6",
+      "size": 125691
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/44-stage1-run-2-context-02.json",
+      "sha256": "69256005380b7806db0e4b63512e395ead5cc2618188fe7584f7e7c41073179f",
+      "size": 104380
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/45-stage2-run-2-context-01.json",
+      "sha256": "86205dbe1b43b482ddcf1df3b6c70724ff1ade19a6acea773655a428f8f8fc25",
+      "size": 106309
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/46-stage2-run-2-context-02.json",
+      "sha256": "54adecf9fc45e1873a96328fec6a38ff52b069cc5efa9c69cdff296836c92489",
+      "size": 94555
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/47-stage1-run-3-context-01.json",
+      "sha256": "4f991dfc23845eb4c7274fda967df03fd84c6d927d847e8867fb6d5f2faed5d7",
+      "size": 116761
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/48-stage1-run-3-context-02.json",
+      "sha256": "d4c88fe62d4a90d37e5806f4b92234411f8a680b881c2662ec39db05d53f757e",
+      "size": 111883
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/49-stage2-run-3-context-01.json",
+      "sha256": "6edd86b7d5e3a572cb69c3444e4f94d9a01c8f25fd21edd3137d784cb7b08ebf",
+      "size": 101122
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/50-stage2-run-3-context-02.json",
+      "sha256": "1e2da086273167163721e2bab482c3fdb09ade8125ca9d0f2e015b497c341ef5",
+      "size": 97528
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/51-full-stage1-hard-semantic-audit.json",
+      "sha256": "5194f2306b452db673c2f127b76aae84d9404f688d9f253d1967eeea653150b7",
+      "size": 298825
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/52-full-stage1-core-stability.json",
+      "sha256": "8779a8a0aa0e753001ca8c1b42169d169fa812306b745f1197cb4d3c4c18afd7",
+      "size": 1439
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/53-full-stage2-stance-semantic-audit.json",
+      "sha256": "2acba1aaf86fb799dccef0955cdc0997017eb47234a1718be14b1549e384b269",
+      "size": 58389
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/54-full-stage2-new-buyer-stability.json",
+      "sha256": "0f513919a25f09ccdb893afabb922d37f8a533cb999946b1be2c308b3573bb5e",
+      "size": 1470
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/55-full-stage2-holder-stability.json",
+      "sha256": "0aab527a1edb5106feeff306053e8c0bd06d42b5d243f400ee98db5dbb081071",
+      "size": 1626
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/56-full-core-immutability-audit.json",
+      "sha256": "d5966ee009196c5db1639cfaa718e9769c3a1ba0f1319151c53b9bc2d0bbafc7",
+      "size": 5078
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/57-full-final-composition-schema-audit.json",
+      "sha256": "6d83c0156e6956d11fa3a9e34ccfab31f8baad95ad550eb89ecdd9004aa373c1",
+      "size": 350664
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/58-full-final-decision-material-stability.json",
+      "sha256": "25da74060cd02b1545d8d5e8b292fc6269af4ff2da031b32a8ecab38a530776d",
+      "size": 5938
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/59-full-final-calibration-variance.json",
+      "sha256": "08f40b38d2798e8b8e711943294d15c5261d59ed66df0bdad5b9d756050749ae",
+      "size": 3413
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/60-full-financial-framework-scope-audit.json",
+      "sha256": "4c694ece5257b628f03ecdf463a1f5fdf0121cda1d700b8e147558c8f605972c",
+      "size": 24299
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/61-full-business-delta-audit.json",
+      "sha256": "d530850179e8cc3c186b4c100695428c22b6d66528de576c5fc259b421251dee",
+      "size": 1613
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/62-full-grounding-audit.json",
+      "sha256": "e05125a2c698904b27f9be2dd2b58a01ed5c1c702980f62c0acfdf0f7ea03b70",
+      "size": 350665
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/63-full-two-stage-runtime-audit.json",
+      "sha256": "6f61d21b380abf75e8d3c6eb87ee70464fc5598e09d0b6bd120a2c9f58274bf9",
+      "size": 211
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/64-fictional-two-stage-readiness-decision.json",
+      "sha256": "28b51e272de1e080d6e96324885791b1a45498e7218271f55fda0b473ac91a4f",
+      "size": 609
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/92-main-integration-success-decision.json",
+      "sha256": "1ceec8400893f24daf4d64b599ab7a8f97789fa5fdfce532e3fe46d7875cd729",
+      "size": 171
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/93-two-stage-architecture-success-decision.json",
+      "sha256": "a49dec57998cb54a318ff29ca3c6d01040c8303134ed23db63580d11ef5fbaa6",
+      "size": 175
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/94-fictional-proof-success-decision.json",
+      "sha256": "fb7d513574d6ac55951eda3181df7a3b82dc1945863444f6e3e86f31e394cc2a",
+      "size": 3132
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/95-shadow-compatibility-success-decision.json",
+      "sha256": "4e610dfcdffaa6626794b57c286fdd7bd7509f1bc6a30047a0a3327213a4fe21",
+      "size": 189
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/96-existing-monitored-impact-summary.json",
+      "sha256": "0ebedc4ef3853ba14813cfb44673996bb4c12d04dfc344e9f05a8f663c294792",
+      "size": 158
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/97-two-stage-real-holdout-suitability.json",
+      "sha256": "eaa66d2dcf9367f0355f8c80f750c5c9cc440a3af732c92ae58bad8cea6f1e45",
+      "size": 230
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/98-fresh-real-proof-readiness-decision.json",
+      "sha256": "4ecaef6686c13301bc99a2bf6dbecf4de99cd3f88493597059db2da8692c1e71",
+      "size": 295
+    },
+    {
+      "path": "docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/99-final-main-merge-readiness-note.json",
+      "sha256": "e1f99b6f737d07107a568f17efd0bc9943db16d435a0edf1279bcfb930f593bc",
+      "size": 158
+    },
+    {
+      "path": "docs/work-instructions/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation.md",
+      "sha256": "a794cc4e8deaecdfe23f591b3ca8934f8f9c5b1a9c479eec0ed07e1ba30a0b65",
+      "size": 37550
+    },
+    {
+      "path": "scripts/main_integration_two_stage_directional_m12ae_r2.py",
+      "sha256": "8cc7ef528beb7170707e98eb1a5f1e27fb3eaaa11a2cea6f892e23d65c40bae9",
+      "size": 11365
+    },
+    {
+      "path": "scripts/main_integration_two_stage_directional_m12ae_r2_failure_closeout.py",
+      "sha256": "7923af316189890d1096eea9e4b872d0925b5c7a5d53b8d1b2fa5e28add48227",
+      "size": 21643
+    },
+    {
+      "path": "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py",
+      "sha256": "3195cb6afcbf7d374f89cf96b8053a0c191df14a6af0e1828525e064fe965f2d",
+      "size": 122764
+    },
+    {
+      "path": "tests/test_two_stage_directional_service.py",
+      "sha256": "d293a158d47a12c2c72838d322d7443153ccc6fab11e306ce36e0f84c8542e40",
+      "size": 7415
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "secret_scan_failures": [],
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,16 @@
+{
+  "adapters": [
+    "unbounded in-memory candidate container for existing deterministic validators",
+    "string serialization for directional_confidence in calibration report"
+  ],
+  "model_calls_repeated": 0,
+  "model_output_changed": false,
+  "prompt_changed": false,
+  "reasons": [
+    "finalizer aggregated eight repetition rows into a four-row transport batch model",
+    "finalizer treated string-valued directional_confidence as an enum"
+  ],
+  "schema_changed": false,
+  "status": "BOUNDED_AUDIT_ONLY_ADAPTER",
+  "validator_semantics_changed": false
+}

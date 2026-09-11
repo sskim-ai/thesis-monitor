@@ -1,0 +1,7 @@
+{
+  "contract": "two-stage-directional-v1",
+  "core_mutation_count": 0,
+  "deterministic_architecture_proven": true,
+  "external_schema_change_count": 0,
+  "status": "PASS"
+}

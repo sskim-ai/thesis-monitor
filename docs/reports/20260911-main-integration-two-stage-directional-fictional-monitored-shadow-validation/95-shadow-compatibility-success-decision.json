@@ -1,0 +1,6 @@
+{
+  "reason": "artifact_64_fictional_two_stage_readiness_is_not_pass",
+  "shadow_compatibility_readiness": "NOT_MEASURED",
+  "shadow_model_calls": 0,
+  "status": "NOT_RUN_FICTIONAL_GATE"
+}

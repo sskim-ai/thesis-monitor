@@ -1,0 +1,18 @@
+{
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "deployments": 0,
+  "main_branch_mutations": 0,
+  "main_merges": 0,
+  "model_calls_real_fresh_unseen": 0,
+  "monitoring_registrations": 0,
+  "monitoring_stops": 0,
+  "notification_queue_writes": 0,
+  "production_db_mutations": 0,
+  "production_readiness": "NOT_AUTHORIZED",
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "status": "PASS",
+  "user_visible_change_count": 0,
+  "warning_mutations": 0
+}

@@ -1,0 +1,109 @@
+{
+  "blockers": [
+    {
+      "balances": [
+        {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      ],
+      "code": "PRIMARY_DIRECTION_UNSTABLE",
+      "interpretation": "The Stage 1 boundary reproduced the prior M12AD SELL/HOLD/HOLD pattern; stance decoupling did not remove intrinsic core-boundary variance.",
+      "observed": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "balances": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 6.0,
+          "sell": 4.0
+        }
+      ],
+      "code": "PRIMARY_DIRECTION_UNSTABLE",
+      "interpretation": "The same working-capital evidence landed at HOLD 5.5:4.5 twice and BUY 6.0:4.0 once.",
+      "observed": [
+        "HOLD",
+        "HOLD",
+        "BUY"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "code": "BUSINESS_DELTA_UNSTABLE",
+      "interpretation": "The frozen source supported a positive operating delta, but UNCHANGED remained validator-legal and appeared once.",
+      "observed": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "UNCHANGED"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "code": "HOLDER_STANCE_UNSTABLE",
+      "interpretation": "The financial-sector exclusion case split between no confirmed holding reconsideration and review for unresolved capital absorption.",
+      "observed": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "REVIEW"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "business_delta_unstable_subject_count": 1,
+  "core_mutation_after_stance_count": 0,
+  "fictional_two_stage_readiness": "NOT_READY",
+  "final_output_count": 24,
+  "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+  "holder_unstable_subject_count": 1,
+  "model_calls_repeated": 0,
+  "model_calls_total": 12,
+  "model_outputs_rewritten": false,
+  "monitored_shadow_allowed": false,
+  "new_buyer_unstable_subject_count": 0,
+  "objective_semantic_failure_count": 0,
+  "postprocessing_adapter": {
+    "adapters": [
+      "unbounded in-memory candidate container for existing deterministic validators",
+      "string serialization for directional_confidence in calibration report"
+    ],
+    "model_calls_repeated": 0,
+    "model_output_changed": false,
+    "prompt_changed": false,
+    "reasons": [
+      "finalizer aggregated eight repetition rows into a four-row transport batch model",
+      "finalizer treated string-valued directional_confidence as an enum"
+    ],
+    "schema_changed": false,
+    "status": "BOUNDED_AUDIT_ONLY_ADAPTER",
+    "validator_semantics_changed": false
+  },
+  "primary_direction_unstable_subject_count": 2,
+  "stage1_model_calls": 6,
+  "stage2_model_calls": 6,
+  "status": "FAIL",
+  "stop_reason": "FICTIONAL_TWO_STAGE_ACCEPTANCE_FAIL"
+}

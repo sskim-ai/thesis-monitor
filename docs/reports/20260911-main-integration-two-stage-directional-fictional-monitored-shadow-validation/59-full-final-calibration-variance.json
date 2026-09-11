@@ -1,0 +1,207 @@
+{
+  "readiness_blocking": false,
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        [
+          "6.5",
+          "3.5",
+          "NOT_HOLD",
+          "MEDIUM"
+        ],
+        [
+          "6.5",
+          "3.5",
+          "NOT_HOLD",
+          "MEDIUM"
+        ],
+        [
+          "6.5",
+          "3.5",
+          "NOT_HOLD",
+          "MEDIUM"
+        ]
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        [
+          "4.5",
+          "5.5",
+          "SELL_LEAN",
+          "LOW"
+        ],
+        [
+          "4.5",
+          "5.5",
+          "SELL_LEAN",
+          "LOW"
+        ],
+        [
+          "4.5",
+          "5.5",
+          "SELL_LEAN",
+          "LOW"
+        ]
+      ]
+    },
+    {
+      "classification": "VARIABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 2,
+      "values": [
+        [
+          "5.5",
+          "4.5",
+          "BUY_LEAN",
+          "LOW"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "LOW"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "LOW"
+        ]
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ]
+      ]
+    },
+    {
+      "classification": "VARIABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 2,
+      "values": [
+        [
+          "4.0",
+          "6.0",
+          "NOT_HOLD",
+          "MEDIUM"
+        ],
+        [
+          "4.5",
+          "5.5",
+          "SELL_LEAN",
+          "LOW"
+        ],
+        [
+          "4.5",
+          "5.5",
+          "SELL_LEAN",
+          "LOW"
+        ]
+      ]
+    },
+    {
+      "classification": "VARIABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        [
+          "5.5",
+          "4.5",
+          "BUY_LEAN",
+          "LOW"
+        ],
+        [
+          "5.5",
+          "4.5",
+          "BUY_LEAN",
+          "LOW"
+        ],
+        [
+          "6.0",
+          "4.0",
+          "NOT_HOLD",
+          "MEDIUM"
+        ]
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "MEDIUM"
+        ]
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "LOW"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "LOW"
+        ],
+        [
+          "5.0",
+          "5.0",
+          "NEUTRAL",
+          "LOW"
+        ]
+      ]
+    }
+  ],
+  "same_direction_calibration_variance_subject_count": 3,
+  "status": "MEASURED"
+}

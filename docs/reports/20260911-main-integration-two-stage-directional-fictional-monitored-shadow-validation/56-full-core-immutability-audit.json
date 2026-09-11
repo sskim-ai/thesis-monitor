@@ -1,0 +1,126 @@
+{
+  "mutation_count": 0,
+  "rows": [
+    {
+      "after": "8bca33b088091c8b69154addd71bcb8c5da476ffbdb58e7739d74f2262254cdb",
+      "before": "8bca33b088091c8b69154addd71bcb8c5da476ffbdb58e7739d74f2262254cdb",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after": "e3e99bf96b74faef14fc4012f61d7f8e0e7e33884543f7d4eb7db31262980775",
+      "before": "e3e99bf96b74faef14fc4012f61d7f8e0e7e33884543f7d4eb7db31262980775",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after": "000a981a651154dc3f54fa3db39c359fd1e104111df43b813d018c29001af705",
+      "before": "000a981a651154dc3f54fa3db39c359fd1e104111df43b813d018c29001af705",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after": "cf8c6b1532cb8cf04fc1af849993031aec38996da364a9f84065b04c05bb616b",
+      "before": "cf8c6b1532cb8cf04fc1af849993031aec38996da364a9f84065b04c05bb616b",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after": "b26f5ab400a1faca92cc675c40ad9410dc9cb271a4d709d813aebf0056c0e54d",
+      "before": "b26f5ab400a1faca92cc675c40ad9410dc9cb271a4d709d813aebf0056c0e54d",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after": "f91eb6d8bd5c50b6e2efcc48716e2b3c0aa86f082aaed1df03c73965f57e6a8a",
+      "before": "f91eb6d8bd5c50b6e2efcc48716e2b3c0aa86f082aaed1df03c73965f57e6a8a",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after": "e7b18a126eff4441ac891d4791c868969f1151de7dc8bf81c168a6631811c9d5",
+      "before": "e7b18a126eff4441ac891d4791c868969f1151de7dc8bf81c168a6631811c9d5",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after": "a574c8d684aa1d6dc8369a70f47c7e87f81faffe91122cbad591deb3941aa5d3",
+      "before": "a574c8d684aa1d6dc8369a70f47c7e87f81faffe91122cbad591deb3941aa5d3",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "after": "8aabb5c0cef75918dd9177d2ca02d2da39fc05ef75c49fa41d7b88590d3c5469",
+      "before": "8aabb5c0cef75918dd9177d2ca02d2da39fc05ef75c49fa41d7b88590d3c5469",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after": "3358170b206bf0106c6b3264008675026929f0ff804c0cd44d3b14772662c99c",
+      "before": "3358170b206bf0106c6b3264008675026929f0ff804c0cd44d3b14772662c99c",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after": "132775b0ca11546fd35f5ade5337bec027ac8a478db0d8ca0eb48e90d4ad09d0",
+      "before": "132775b0ca11546fd35f5ade5337bec027ac8a478db0d8ca0eb48e90d4ad09d0",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after": "60a82285da18c421ba9e2d53f8058d16d06b6b71f9377723d72f9ff7873b690a",
+      "before": "60a82285da18c421ba9e2d53f8058d16d06b6b71f9377723d72f9ff7873b690a",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after": "b277a6a467fa8d5d5ca543778fb88c061641b2813adefef76fbf7a262a886d43",
+      "before": "b277a6a467fa8d5d5ca543778fb88c061641b2813adefef76fbf7a262a886d43",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after": "8ac3474e3c4fde5e8d4ab0c9819d59f7568283d813e57b5ea4f02159f500e992",
+      "before": "8ac3474e3c4fde5e8d4ab0c9819d59f7568283d813e57b5ea4f02159f500e992",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after": "fcf11831ee2cf0d0a3f570dc200845a59759f5fd37c68264cdb3d7dbfd585393",
+      "before": "fcf11831ee2cf0d0a3f570dc200845a59759f5fd37c68264cdb3d7dbfd585393",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after": "663e795d3abbeeb9d29e6fb0ad4316efea979e02c1b3c0f86fe6897e1961f52b",
+      "before": "663e795d3abbeeb9d29e6fb0ad4316efea979e02c1b3c0f86fe6897e1961f52b",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "after": "1835cdbbda279be302616a48539ad7f55a3b273b0dd2b2726fe28bac1cc22b9a",
+      "before": "1835cdbbda279be302616a48539ad7f55a3b273b0dd2b2726fe28bac1cc22b9a",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after": "19175de3855fc2ed8edfecd2baaf7552ef837babf903b11db9575d8f536a94df",
+      "before": "19175de3855fc2ed8edfecd2baaf7552ef837babf903b11db9575d8f536a94df",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after": "414f36887d6b660ddeb3f92c41384a1bda019e8a8d728b531ce558b769d78e69",
+      "before": "414f36887d6b660ddeb3f92c41384a1bda019e8a8d728b531ce558b769d78e69",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after": "2fe29aa50dfeb2f9f53083ffd3fdb41d20c394486d0590177c9d7a8045c85183",
+      "before": "2fe29aa50dfeb2f9f53083ffd3fdb41d20c394486d0590177c9d7a8045c85183",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after": "8e44ee84f1876dcb31ce97665e25dd68439bbb22e9d9abb0d58ff179897f5b11",
+      "before": "8e44ee84f1876dcb31ce97665e25dd68439bbb22e9d9abb0d58ff179897f5b11",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after": "1dc7a98d0082cbadc9a8e926a3a5e51b6b79eb5d32cb9127f893b39c89a6930e",
+      "before": "1dc7a98d0082cbadc9a8e926a3a5e51b6b79eb5d32cb9127f893b39c89a6930e",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after": "0c9810175e28bb3ca59abfd9ce98b90026ee3098e321485d939f7031ca1322c9",
+      "before": "0c9810175e28bb3ca59abfd9ce98b90026ee3098e321485d939f7031ca1322c9",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after": "63ac1484c2fc417cdc71a1f3f28e14803b456bbe9c78cb1d87d7e4d5e1b65c9a",
+      "before": "63ac1484c2fc417cdc71a1f3f28e14803b456bbe9c78cb1d87d7e4d5e1b65c9a",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS"
+}

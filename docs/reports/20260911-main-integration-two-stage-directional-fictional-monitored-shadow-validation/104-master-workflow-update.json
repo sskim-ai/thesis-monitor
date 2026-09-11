@@ -1,0 +1,10 @@
+{
+  "fictional_two_stage": "NOT_READY",
+  "main_integration": "PASS",
+  "monitored_shadow": "NOT_RUN",
+  "next_scope": "PRIMARY_DIRECTION_BOUNDARY_POLICY_REVIEW_GPT56_SOL_ON_INTEGRATED_MAIN",
+  "persistent_master_workflow_mutation": 0,
+  "phase": "M12AE-R2",
+  "status": "RECORDED_IN_REPORT_ONLY",
+  "two_stage_architecture": "PASS"
+}

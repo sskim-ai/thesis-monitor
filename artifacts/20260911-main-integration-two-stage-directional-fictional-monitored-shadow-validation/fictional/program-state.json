@@ -1,0 +1,187 @@
+{
+  "batch_split": 0,
+  "code_hashes": {
+    "app/services/direction_timing_ownership_service.py": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+    "app/services/directional_financial_context_service.py": "6da99476274243fcd2d542fec11b04c3ffb3e7a8af270a274963423e0b71037b",
+    "app/services/fundamental_holder_stance_service.py": "c5df907e8b73b393bbf155c9183147cfad91ae993274f57726e82755b461cc00",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/two_stage_directional_service.py": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+    "scripts/business_delta_alias_balance_confidence_m12z.py": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+    "scripts/directional_core_price_timing_holdout.py": "3ff975fab9188171566258f0105453230b4279754eccb3836335158296ea092c",
+    "scripts/directional_financial_context_m12.py": "158f962cc2592df25160215bbf113dc2ed2e8fda79fd90d0df5260f378908b85",
+    "scripts/directional_financial_context_m12g.py": "bd0f11c411e76467e9c392773284ccaf582253ccf590fef77e1ec71aa157af61",
+    "scripts/financial_framework_negation_holder_stability_m12ad.py": "3098819c750702f800bc6cf4da609e6bbfd78205812f1d4b08ff7a53b1825206",
+    "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py": "3195cb6afcbf7d374f89cf96b8053a0c191df14a6af0e1828525e064fe965f2d"
+  },
+  "frozen_contexts": [
+    {
+      "context": 1,
+      "stage1_prompt": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage1-prompt.txt",
+      "stage1_prompt_sha256": "a7c04b1f0ee2758db046a053b3334c2fce3694070b553494bdf19dd352102877",
+      "stage1_schema": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage1-schema.json",
+      "stage1_schema_sha256": "abca655f06987cf7fa1fb278c9087b6830e7db221e7b4980023c5a632ad0bf47",
+      "stage2_schema": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-01/stage2-schema.json",
+      "stage2_schema_sha256": "16862f3326297b6e3975726568ef5f5946a0b4c4049b7a6e10b876189a376cfd",
+      "tickers": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ]
+    },
+    {
+      "context": 2,
+      "stage1_prompt": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage1-prompt.txt",
+      "stage1_prompt_sha256": "b9dba6b0a2ee9050b10bd0f4cc059b4ea8376795f5e2681d6cbc2a5d7f2b4ce8",
+      "stage1_schema": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage1-schema.json",
+      "stage1_schema_sha256": "1d1adc356bf4a17aa97d0522fee4899c62763059d0f441161aefdcf483273422",
+      "stage2_schema": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/fictional/frozen-contexts/context-02/stage2-schema.json",
+      "stage2_schema_sha256": "148380ab73aa7cf383744b7ef201bf75ea090c3c692adfa06a87d38081914602",
+      "tickers": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ]
+    }
+  ],
+  "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+  "implementation_head_sha": "9aaab9d8bb33b53eb5e4c26f4b5b81a3a2fd9482",
+  "manifest": {
+    "contexts": [
+      {
+        "context": 1,
+        "tickers": [
+          "FIC-FIN-01",
+          "FIC-FIN-02",
+          "FIC-FIN-03",
+          "FIC-FIN-04"
+        ]
+      },
+      {
+        "context": 2,
+        "tickers": [
+          "FIC-FIN-05",
+          "FIC-FIN-06",
+          "FIC-FIN-07",
+          "FIC-FIN-08"
+        ]
+      }
+    ],
+    "contract": "m12-fictional-financial-canary-manifest-v1",
+    "fictional_context_count": 2,
+    "fictional_repetition_count": 3,
+    "fictional_subject_count": 8,
+    "final_output_count": 24,
+    "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+    "model_calls": 12,
+    "real_issuer_model_exposure_count": 0,
+    "selected_architecture": "two-stage-directional-v1",
+    "stage1_model_calls": 6,
+    "stage2_model_calls": 6,
+    "status": "FROZEN",
+    "subjects": [
+      {
+        "case": "strong_quality",
+        "fictional": true,
+        "ticker": "FIC-FIN-01"
+      },
+      {
+        "case": "profit_cash_divergence",
+        "fictional": true,
+        "ticker": "FIC-FIN-02"
+      },
+      {
+        "case": "qtd_ytd_conflict",
+        "fictional": true,
+        "ticker": "FIC-FIN-03"
+      },
+      {
+        "case": "non_operating_net_income_boost",
+        "fictional": true,
+        "ticker": "FIC-FIN-04"
+      },
+      {
+        "case": "leverage_liquidity_pressure",
+        "fictional": true,
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "case": "inventory_receivables_build",
+        "fictional": true,
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "case": "missing_optional_context",
+        "fictional": true,
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "case": "financial_sector_exclusion",
+        "fictional": true,
+        "ticker": "FIC-FIN-08"
+      }
+    ]
+  },
+  "model": "gpt-5.6-sol",
+  "prepared_at": "2026-09-11T00:41:06.030371+00:00",
+  "reasoning_effort": "xhigh",
+  "source_lock": {
+    "alias_sha256": {
+      "FIC-FIN-01": "80a585660f2c86bbe207ce584915c08488342b7191565781fde1caffa40d9b33",
+      "FIC-FIN-02": "a93e193f1edb96927b67e87ad03c52fac3edaba55170ad6a49e5fbcf385a8df4",
+      "FIC-FIN-03": "40224aaa0e05dc82fdbf879aa800af8fedc9eb765709b3b987505080a508964b",
+      "FIC-FIN-04": "b528dfa4bdd35e9fecea36730384bb67f4833c062e5835b00f4a091cea50b024",
+      "FIC-FIN-05": "bfaeb2f603dd675c1715c3001b5b17aa853effc5826ac247eacf444b22c5c095",
+      "FIC-FIN-06": "5de870bb1abc1204e59aa15179590a6f8070d960140fb8e5333482d4bda1e6e3",
+      "FIC-FIN-07": "cf83cb7941480e9427da710933a959ef44a26dddedfbc45f74f9b276de3a3456",
+      "FIC-FIN-08": "cc1d9c5a0649ab220c23b9d661520231c04a47e0c314be00e652459e5d16c587"
+    },
+    "batch_split": 0,
+    "context_sha256": {
+      "FIC-FIN-01": "242ef2169c882c1c7cfa6c48b1d91230f13ca997151bac738bae7623e1bf3bbf",
+      "FIC-FIN-02": "df2511bdf97ee1fbf8ff0ada4d999c1928073853bb85da8b0eb3f546986138d0",
+      "FIC-FIN-03": "bca000b81efa2d5330c11ddbc21eb446609b010796e6e884ea083da3cc3ec6f3",
+      "FIC-FIN-04": "fc3ebac9fd933a96028c665807a70ba18bb2494b5bd822489b86ac5d1c4fb5c0",
+      "FIC-FIN-05": "49aab3c926b1a84c6ff0371ade3ad77b2431414a5555027aff6172bffa7a5356",
+      "FIC-FIN-06": "68366fbaf2fa672a89bd3da083b8e1cc02d2099b5dfb4002903f1592ac4a53da",
+      "FIC-FIN-07": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+      "FIC-FIN-08": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd"
+    },
+    "contract": "m12-fictional-source-lock-v1",
+    "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+    "model": "gpt-5.6-sol",
+    "owned_sha256": {
+      "FIC-FIN-01": "cf5910a11d4852efb0cc8d3830a097130b1e3db2289f54341f272b2bc74e00e7",
+      "FIC-FIN-02": "9d14162e4044e538d5502d998f68d9813e94de3b0ddfff37ca7ce0bc2d2ecde9",
+      "FIC-FIN-03": "655b6a49d5fd14da43910815cb4054aa6e58a8020104280774c732675bd0e64e",
+      "FIC-FIN-04": "47d05ae1a662bbbbce41ab3de225e2611d1ba84a786821787ed1e0cdb8790137",
+      "FIC-FIN-05": "c275ebe35b178d2f6f6eab1be983d207d5474a189c7af26473f7a8012cfa829f",
+      "FIC-FIN-06": "4b68da2f48910cea28badf8a6f2006d2a87ec3b248c4ca961e4574b75f1be9a2",
+      "FIC-FIN-07": "9047e6ff998feaef34c11ddfaaccc0e0d0d5e14c4003b495b5ffb2ef45f0d609",
+      "FIC-FIN-08": "8956fa49777230412f4e50a14bd2709277e78aa3c5dfab5a320240ad4c1d9b4d"
+    },
+    "packet_sha256": {
+      "FIC-FIN-01": "6500bece0aa2190be06234da98fb0b87cc413863875ec5aaaf78b2182c15f5e8",
+      "FIC-FIN-02": "c94da0e6f20d159b7dc6a3781192527f441b0533694d9f5cb67993342785bbb1",
+      "FIC-FIN-03": "89ed2949ba91674ff12df40abc29232064f5466dfb43c97e54fa665af57d4183",
+      "FIC-FIN-04": "f6be57135e66cbf75116b9dd7df2b62aeb33357ce0974af62996fb2cacf5e1f3",
+      "FIC-FIN-05": "095710f4dd5ffe3a908fefcae0d17123abc0a4d0979244e39200b66e79d9caa9",
+      "FIC-FIN-06": "a937631b827cf44160ef4ea7bc442c865d846a2bbef5cbc38e107803f9aac870",
+      "FIC-FIN-07": "1685ade7bead58635b1ed75279a445f0e4e330f93c65cbff4738b01332706323",
+      "FIC-FIN-08": "1b24fdefd6915c3df6c951026e540e17324920e267afbe12180fcdc9a8fbbd96"
+    },
+    "provider_source_fetches": 0,
+    "real_issuer_model_exposure_count": 0,
+    "reasoning_effort": "xhigh",
+    "runtime_mode": "MODEL_CONTEXT_COUPLED",
+    "source_lock_sha256": "e7c6de5d6f0e6095a8ff93a6ad5a8dd176d47dfaba96cc7bb921ef787afee339",
+    "subjects_per_shared_context": 4,
+    "timeout_seconds": 1800,
+    "wrapper_auto_retry": 0
+  },
+  "stage2_prompt_builder_sha256": "3195cb6afcbf7d374f89cf96b8053a0c191df14a6af0e1828525e064fe965f2d",
+  "status": "FROZEN",
+  "timeout_seconds": 1800,
+  "wrapper_auto_retry": 0
+}

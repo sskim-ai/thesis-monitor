@@ -1,0 +1,331 @@
+{
+  "business_delta": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "WEAKENED",
+        "WEAKENED",
+        "WEAKENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "UNCHANGED",
+        "UNCHANGED",
+        "UNCHANGED"
+      ]
+    }
+  ],
+  "holder": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "REVIEW",
+        "REVIEW",
+        "REVIEW"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "HOLDABLE"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 2,
+      "values": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "REVIEW"
+      ]
+    }
+  ],
+  "new_buyer": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "WAIT",
+        "WAIT",
+        "WAIT"
+      ]
+    }
+  ],
+  "primary_direction": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "BUY",
+        "BUY",
+        "BUY"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 2,
+      "values": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "BUY"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    }
+  ],
+  "status": "FAIL"
+}

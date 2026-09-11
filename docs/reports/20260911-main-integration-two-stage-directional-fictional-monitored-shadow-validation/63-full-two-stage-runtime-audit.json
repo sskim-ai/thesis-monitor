@@ -1,0 +1,10 @@
+{
+  "capacity_failure_count": 0,
+  "model_calls": 12,
+  "orphan_process_count": 0,
+  "pass_count": 12,
+  "runner_model_target_match": true,
+  "status": "PASS",
+  "timeout_count": 0,
+  "wrapper_retry_count": 0
+}

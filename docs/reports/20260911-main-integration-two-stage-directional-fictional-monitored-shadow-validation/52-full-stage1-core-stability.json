@@ -1,0 +1,85 @@
+{
+  "rows": [
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "BUY",
+        "BUY",
+        "BUY"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 2,
+      "values": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "UNSTABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "BUY"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    },
+    {
+      "classification": "STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "HOLD",
+        "HOLD",
+        "HOLD"
+      ]
+    }
+  ],
+  "status": "FAIL"
+}

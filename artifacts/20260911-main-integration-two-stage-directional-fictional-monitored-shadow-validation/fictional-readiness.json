@@ -1,0 +1,17 @@
+{
+  "business_delta_unstable_subject_count": 1,
+  "core_mutation_after_stance_count": 0,
+  "fictional_two_stage_readiness": "NOT_READY",
+  "final_output_count": 24,
+  "generation_id": "20260911-m12ae-r2-fictional-20260911T004106Z-95b298bb1eed",
+  "holder_unstable_subject_count": 1,
+  "model_calls_total": 12,
+  "monitored_shadow_allowed": false,
+  "new_buyer_unstable_subject_count": 0,
+  "objective_semantic_failure_count": 0,
+  "primary_direction_unstable_subject_count": 2,
+  "stage1_model_calls": 6,
+  "stage2_model_calls": 6,
+  "status": "FAIL",
+  "stop_reason": "FICTIONAL_TWO_STAGE_ACCEPTANCE_FAIL"
+}

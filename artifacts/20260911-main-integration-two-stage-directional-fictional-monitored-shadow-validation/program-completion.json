@@ -1,0 +1,217 @@
+{
+  "artifact_count": 176,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "balance_averaging_rule_count": 0,
+  "blocking_findings": [
+    {
+      "balances": [
+        {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      ],
+      "code": "PRIMARY_DIRECTION_UNSTABLE",
+      "interpretation": "The Stage 1 boundary reproduced the prior M12AD SELL/HOLD/HOLD pattern; stance decoupling did not remove intrinsic core-boundary variance.",
+      "observed": [
+        "SELL",
+        "HOLD",
+        "HOLD"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "balances": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        {
+          "buy": 6.0,
+          "sell": 4.0
+        }
+      ],
+      "code": "PRIMARY_DIRECTION_UNSTABLE",
+      "interpretation": "The same working-capital evidence landed at HOLD 5.5:4.5 twice and BUY 6.0:4.0 once.",
+      "observed": [
+        "HOLD",
+        "HOLD",
+        "BUY"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "code": "BUSINESS_DELTA_UNSTABLE",
+      "interpretation": "The frozen source supported a positive operating delta, but UNCHANGED remained validator-legal and appeared once.",
+      "observed": [
+        "STRENGTHENED",
+        "STRENGTHENED",
+        "UNCHANGED"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "code": "HOLDER_STANCE_UNSTABLE",
+      "interpretation": "The financial-sector exclusion case split between no confirmed holding reconsideration and review for unresolved capital absorption.",
+      "observed": [
+        "HOLDABLE",
+        "HOLDABLE",
+        "REVIEW"
+      ],
+      "severity": "BLOCKING",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "calibration_tiebreak_direction_changed": false,
+  "core_snapshot_hash_enabled": true,
+  "daily_delta_semantic_change_count": 0,
+  "deployments": 0,
+  "directional_increment_changed": false,
+  "directional_threshold_changed": false,
+  "duplicate_or_stale_path_count": 3,
+  "evidence_count_bucket_rule_count": 0,
+  "fictional_business_delta_unstable_subject_count": 1,
+  "fictional_core_mutation_after_stance_count": 0,
+  "fictional_final_output_count": 24,
+  "fictional_holder_unstable_subject_count": 1,
+  "fictional_model_calls_total": 12,
+  "fictional_new_buyer_unstable_subject_count": 0,
+  "fictional_primary_direction_unstable_subject_count": 2,
+  "fictional_same_direction_calibration_variance_subject_count": 3,
+  "fictional_stage1_model_calls": 6,
+  "fictional_stage2_model_calls": 6,
+  "fictional_two_stage_readiness": "NOT_READY",
+  "final_integration_head_sha": "a9a0ea52be9f3a8e4c1eedbae522e94078e2c656",
+  "final_main_merge_readiness": "NOT_READY",
+  "final_output_schema_change_count": 0,
+  "fixed_score_rule_count": 0,
+  "focused_test_result": "PASS",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "full_test_result": "PASS",
+  "git_diff_check": "PASS",
+  "hold_lean_contract_changed": false,
+  "hosted_ci_failure_count": "NOT_MEASURED",
+  "hosted_ci_status": "NOT_RUN_LOCAL_FAILURE_PRECEDED_PUSH",
+  "integrated_persistence_compatibility_status": "PASS",
+  "integrated_price_timing_compatibility_status": "PASS",
+  "integrated_renderer_compatibility_status": "PASS",
+  "integration_branch": "codex/20260911-main-integration-two-stage-directional",
+  "integration_conflict_count": 0,
+  "integration_conflict_resolved_count": 0,
+  "integration_entrypoint_status": "UNAMBIGUOUS_BY_ENVIRONMENT",
+  "integration_merge_base_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "integration_merge_commit_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "integration_unresolved_conflict_count": 0,
+  "internal_schema_change_count": 2,
+  "investment_judgment_model_target": "gpt-5.6-sol",
+  "investment_judgment_reasoning_effort": "xhigh",
+  "m12ad_semantic_fingerprint_status": "PRESERVED",
+  "m12ad_source_head_sha": "69661d6754b0555e4c11caba8a53bd55a1fe7140",
+  "main_behavior_preservation_status": "PRESERVED",
+  "main_branch_mutations": 0,
+  "main_commit_date": "2026-09-05T15:42:14+09:00",
+  "main_frozen_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "main_merges": 0,
+  "main_only_relevant_commit_count": 0,
+  "majority_vote_rule_count": 0,
+  "model_calls_real_fresh_unseen": 0,
+  "model_target_fallback_count": 0,
+  "monitoring_registrations": 0,
+  "monitoring_stops": 0,
+  "new_hosted_ci_failure_count": "NOT_MEASURED",
+  "next_scope": "PRIMARY_DIRECTION_BOUNDARY_POLICY_REVIEW_GPT56_SOL_ON_INTEGRATED_MAIN",
+  "notification_queue_writes": 0,
+  "observed_paused_schedule_count": 4,
+  "post_merge_baseline_focused_test_result": "PASS",
+  "post_merge_baseline_full_test_result": "PASS",
+  "post_merge_baseline_git_diff_check": "PASS",
+  "post_merge_baseline_ruff_result": "PASS",
+  "post_merge_baseline_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "postprocessing_adapter": {
+    "adapters": [
+      "unbounded in-memory candidate container for existing deterministic validators",
+      "string serialization for directional_confidence in calibration report"
+    ],
+    "model_calls_repeated": 0,
+    "model_output_changed": false,
+    "prompt_changed": false,
+    "reasons": [
+      "finalizer aggregated eight repetition rows into a four-row transport batch model",
+      "finalizer treated string-valued directional_confidence as an enum"
+    ],
+    "schema_changed": false,
+    "status": "BOUNDED_AUDIT_ONLY_ADAPTER",
+    "validator_semantics_changed": false
+  },
+  "price_timing_semantic_change_count": 0,
+  "production_db_mutations": 0,
+  "production_readiness": "NOT_AUTHORIZED",
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "reference_snapshot_added_tickers": [],
+  "reference_snapshot_removed_tickers": [],
+  "renderer_substantive_change_count": 0,
+  "ruff_result": "PASS",
+  "runner_model_target_match": true,
+  "scheduler_mutation_count": 0,
+  "selected_directional_architecture": "STAGE1_CORE_THEN_STAGE2_STANCE_DETERMINISTIC_COMPOSER",
+  "shadow_adr_security_basis_failure_count": "NOT_MEASURED",
+  "shadow_business_delta_change_count": "NOT_MEASURED",
+  "shadow_compatibility_readiness": "NOT_MEASURED",
+  "shadow_completed_ticker_count": 0,
+  "shadow_context_count": 0,
+  "shadow_core_mutation_after_stance_count": "NOT_MEASURED",
+  "shadow_cyclical_valuation_framework_failure_count": "NOT_MEASURED",
+  "shadow_expected_contract_correction_count": "NOT_MEASURED",
+  "shadow_financial_sector_framework_failure_count": "NOT_MEASURED",
+  "shadow_holder_change_count": "NOT_MEASURED",
+  "shadow_kr_count": "NOT_MEASURED",
+  "shadow_model_calls_total": 0,
+  "shadow_monolithic_model_calls": 0,
+  "shadow_multi_field_change_count": "NOT_MEASURED",
+  "shadow_new_buyer_change_count": "NOT_MEASURED",
+  "shadow_no_decision_material_change_count": "NOT_MEASURED",
+  "shadow_packet_available_count": "NOT_MEASURED",
+  "shadow_packet_mismatch_count": "NOT_MEASURED",
+  "shadow_packet_unavailable_count": "NOT_MEASURED",
+  "shadow_potential_architecture_regression_count": "NOT_MEASURED",
+  "shadow_primary_direction_change_count": "NOT_MEASURED",
+  "shadow_same_direction_calibration_change_count": "NOT_MEASURED",
+  "shadow_sector_coverage_count": "NOT_MEASURED",
+  "shadow_stage1_model_calls": 0,
+  "shadow_stage2_model_calls": 0,
+  "shadow_unresolved_review_required_count": "NOT_MEASURED",
+  "shadow_us_count": "NOT_MEASURED",
+  "source_sufficiency_semantic_change_count": 0,
+  "stage1_core_enabled": true,
+  "stage1_prompt_contains_holder_contract": false,
+  "stage1_prompt_contains_new_buyer_contract": false,
+  "stage1_schema_contains_stance_fields": false,
+  "stage2_schema_contains_core_fields": false,
+  "stage2_stance_enabled": true,
+  "stance_majority_vote_rule_count": 0,
+  "status": "NOT_READY",
+  "stop_reason": "FICTIONAL_DECISION_MATERIAL_STABILITY_FAIL",
+  "task_start_active_monitor_count": "NOT_MEASURED",
+  "task_start_active_monitor_tickers": [],
+  "two_stage_real_holdout_suitability": "NOT_READY",
+  "warning_mutations": 0
+}
