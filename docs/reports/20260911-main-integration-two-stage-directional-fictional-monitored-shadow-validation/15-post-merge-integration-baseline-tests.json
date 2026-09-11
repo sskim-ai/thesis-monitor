@@ -1,0 +1,23 @@
+{
+  "focused": {
+    "duration_seconds": 2.51,
+    "passed": 452,
+    "result": "PASS"
+  },
+  "full": {
+    "duration_seconds": 79.46,
+    "passed": 3388,
+    "result": "PASS",
+    "warnings": 2
+  },
+  "git_diff_check": "PASS",
+  "production_side_effect_firewall": "PASS",
+  "ruff": "PASS",
+  "runtime_config_smoke": {
+    "app_title": "Thesis Monitor API",
+    "result": "PASS",
+    "route_count": 14
+  },
+  "status": "PASS",
+  "tested_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2"
+}

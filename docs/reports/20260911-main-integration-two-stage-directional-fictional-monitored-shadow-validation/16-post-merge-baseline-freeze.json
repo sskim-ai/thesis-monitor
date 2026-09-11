@@ -1,0 +1,9 @@
+{
+  "model_calls": 0,
+  "post_merge_baseline_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "production_side_effects": 0,
+  "provider_source_fetches": 0,
+  "status": "PASS",
+  "two_stage_code_present_at_tested_sha": false,
+  "two_stage_implementation_may_begin": true
+}

@@ -1,0 +1,21 @@
+{
+  "authoritative_production_path": {
+    "api": "app/main.py -> app/api/routes_monitoring.py",
+    "assessment": "app/services/monitoring_service.py",
+    "renderer": "app/services/free_analyst_production_integration_service.py",
+    "runtime_candidate": "app/services/accepted_decision_v2_runtime_service.py"
+  },
+  "experimental_shadow_path": {
+    "business_delta_validator": "app/services/structured_autonomy_alias_service.py",
+    "directional_contract": "app/services/direction_timing_ownership_service.py",
+    "financial_context": "app/services/directional_financial_context_service.py",
+    "financial_framework_validator": "app/services/financial_framework_claim_service.py",
+    "m12ad_runner": "scripts/financial_framework_negation_holder_stability_m12ad.py",
+    "monolithic_directional": "scripts/directional_core_price_timing_holdout.py",
+    "nonproduction_lifecycle": "app/services/nonproduction_monitoring_lifecycle_service.py",
+    "price_timing": "app/services/direction_timing_ownership_service.py",
+    "structured_composer": "app/services/direction_timing_ownership_service.py::compose_decision"
+  },
+  "integration_entrypoint_status": "UNAMBIGUOUS_BY_ENVIRONMENT",
+  "status": "PASS"
+}

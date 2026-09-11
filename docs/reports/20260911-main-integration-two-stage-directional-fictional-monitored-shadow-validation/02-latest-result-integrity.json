@@ -1,0 +1,11 @@
+{
+  "actual_sha256": "9e8ad1e2191ae5fd530eadde2d2acfa62fec64d2b4b499148910b3b5fd9c393f",
+  "expected_sha256": "9e8ad1e2191ae5fd530eadde2d2acfa62fec64d2b4b499148910b3b5fd9c393f",
+  "indexed_payload_count": 168,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260911-financial-framework-negation-scope-holder-stance-decision-material-stability-full-sol-canary-report.zip",
+  "reported_hash_mismatch_count": 0,
+  "reported_secret_scan_failure_count": 0,
+  "reported_size_mismatch_count": 0,
+  "status": "PASS",
+  "zip_integrity": "PASS"
+}

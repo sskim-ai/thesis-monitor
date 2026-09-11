@@ -1,0 +1,8 @@
+{
+  "main_advanced_after_freeze": "NOT_OBSERVED_AT_FREEZE",
+  "main_branch_name": "main",
+  "main_commit_date": "2026-09-05T15:42:14+09:00",
+  "main_frozen_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "main_remote": "origin",
+  "status": "FROZEN"
+}

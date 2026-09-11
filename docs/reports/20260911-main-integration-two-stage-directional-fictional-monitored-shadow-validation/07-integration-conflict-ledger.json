@@ -1,0 +1,8 @@
+{
+  "conflicts": [],
+  "integration_conflict_count": 0,
+  "integration_conflict_resolved_count": 0,
+  "integration_unresolved_conflict_count": 0,
+  "merge_strategy": "ort --no-ff",
+  "status": "PASS"
+}

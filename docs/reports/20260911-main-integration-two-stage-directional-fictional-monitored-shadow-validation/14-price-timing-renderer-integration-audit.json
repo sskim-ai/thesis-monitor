@@ -1,0 +1,8 @@
+{
+  "baseline_consumer_regression": "PASS",
+  "price_timing_entrypoint": "app/services/direction_timing_ownership_service.py::compose_decision",
+  "price_timing_semantic_change_count": 0,
+  "renderer_entrypoint": "app/services/free_analyst_production_integration_service.py",
+  "renderer_substantive_change_count": 0,
+  "status": "PASS_BASELINE"
+}

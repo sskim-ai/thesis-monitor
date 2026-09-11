@@ -1,0 +1,20 @@
+{
+  "ambiguous_production_authoritative_path_count": 0,
+  "destructive_cleanup_count": 0,
+  "duplicate_or_stale_path_count": 3,
+  "paths": [
+    {
+      "classification": "SHADOW_CONTROL",
+      "path": "scripts/directional_core_price_timing_holdout.py"
+    },
+    {
+      "classification": "LEGACY_COMPATIBILITY",
+      "path": "scripts/directional_financial_context_m12.py"
+    },
+    {
+      "classification": "SHADOW_CONTROL",
+      "path": "scripts/financial_framework_negation_holder_stability_m12ad.py"
+    }
+  ],
+  "status": "PASS_WITH_CLASSIFICATION"
+}

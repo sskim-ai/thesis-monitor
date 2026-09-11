@@ -1,0 +1,12 @@
+{
+  "entry_count": 716,
+  "git_tree_entry_manifest_sha256": "cb15c5f6249753423f459eaa80124594c95a32536ead024e0094b952d19ff9e6",
+  "scope": [
+    "app",
+    "scripts",
+    "fixtures",
+    "manifests",
+    "tests"
+  ],
+  "status": "FROZEN"
+}

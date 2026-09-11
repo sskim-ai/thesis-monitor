@@ -1,0 +1,8 @@
+{
+  "history_preserved": true,
+  "integration_branch": "codex/20260911-main-integration-two-stage-directional",
+  "integration_premerge_main_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "main_branch_mutations": 0,
+  "status": "PASS",
+  "work_instruction_commit": "496e2e4eb857d25e3adf3dabf44ac452dc3c0534"
+}

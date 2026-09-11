@@ -1,0 +1,7 @@
+{
+  "integration_merge_base_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "integration_merge_commit_sha": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "integration_source_head_sha": "69661d6754b0555e4c11caba8a53bd55a1fe7140",
+  "source_is_linear_descendant_of_frozen_main": true,
+  "status": "PASS"
+}

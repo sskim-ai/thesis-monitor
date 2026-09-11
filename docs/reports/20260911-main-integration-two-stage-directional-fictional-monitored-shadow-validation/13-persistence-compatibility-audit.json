@@ -1,0 +1,10 @@
+{
+  "assessment_persistence_mutations": 0,
+  "future_requirement": "Composed two-stage output must validate as the existing DirectionalCoreCandidate before entering existing readers.",
+  "migration_count": 0,
+  "notification_queue_writes": 0,
+  "production_sends": 0,
+  "status": "PASS_BASELINE",
+  "storage_model_change_count": 0,
+  "warning_mutations": 0
+}

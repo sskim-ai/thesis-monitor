@@ -1,0 +1,7 @@
+{
+  "m12ad_source_head_sha": "69661d6754b0555e4c11caba8a53bd55a1fe7140",
+  "source_commit_date": "2026-09-11T08:23:00+09:00",
+  "source_ref": "origin/codex/20260911-financial-framework-negation-holder-stability-m12ad",
+  "source_worktree_exception": "untracked runtime-state retained in source worktree and excluded from integration",
+  "status": "FROZEN"
+}

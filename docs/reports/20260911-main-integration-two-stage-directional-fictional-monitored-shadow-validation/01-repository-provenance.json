@@ -1,0 +1,8 @@
+{
+  "integration_branch": "codex/20260911-main-integration-two-stage-directional",
+  "integration_merge_commit": "f1078d283b0bc963553fd25ade272b6002b7a4c2",
+  "repository": "sskim-ai/thesis-monitor",
+  "status": "PASS",
+  "work_instruction_commit": "496e2e4eb857d25e3adf3dabf44ac452dc3c0534",
+  "working_tree": "?? artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/\n?? docs/reports/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/\n?? scripts/main_integration_two_stage_directional_m12ae_r2.py"
+}
