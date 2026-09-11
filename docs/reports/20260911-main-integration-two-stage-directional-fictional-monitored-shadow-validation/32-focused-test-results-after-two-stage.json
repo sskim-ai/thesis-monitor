@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/Users/sskim/Codex/thesis-monitor/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_two_stage_directional_service.py",
+    "tests/test_financial_framework_negation_holder_stability_m12ad.py",
+    "tests/test_financial_framework_scope_threshold_zone_m12ac.py",
+    "tests/test_boundary_band_application_scope_m12aa.py",
+    "tests/test_leverage_hold_sell_boundary_m12ab.py",
+    "tests/test_business_delta_alias_balance_confidence_m12z.py",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_financial_exclusion_leverage_m12f.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_sol_leverage_target_delta_m12y.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
+  ],
+  "output_path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/focused.txt",
+  "output_sha256": "599f8c4e6eeeb7ba1ecb78cc39b07724d703e21a26502ffd65b428c614446ebd",
+  "returncode": 0,
+  "status": "PASS"
+}

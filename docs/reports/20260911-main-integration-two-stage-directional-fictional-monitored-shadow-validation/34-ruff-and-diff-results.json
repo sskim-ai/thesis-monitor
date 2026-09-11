@@ -1,0 +1,28 @@
+{
+  "code_unchanged_during_validation": true,
+  "git_diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "output_path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/diff.txt",
+    "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "returncode": 0,
+    "status": "PASS"
+  },
+  "ruff": {
+    "command": [
+      "/Users/sskim/Codex/thesis-monitor/.venv/bin/ruff",
+      "check",
+      "app",
+      "scripts",
+      "tests"
+    ],
+    "output_path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/ruff.txt",
+    "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "returncode": 0,
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

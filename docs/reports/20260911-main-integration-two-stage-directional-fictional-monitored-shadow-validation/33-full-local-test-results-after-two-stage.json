@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/sskim/Codex/thesis-monitor/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "output_path": "artifacts/20260911-main-integration-two-stage-directional-fictional-monitored-shadow-validation/validation-after-two-stage/full.txt",
+  "output_sha256": "0382ce3884d717810be6c270e32209592109e8c553d70b10026883a254f63a4c",
+  "returncode": 0,
+  "status": "PASS"
+}
