@@ -52,6 +52,7 @@ class FinancialClaimRole(StrEnum):
     CONFIGURED_CONDITIONAL_CHECK = "CONFIGURED_CONDITIONAL_CHECK"
     FUTURE_REEVALUATION_CONDITION = "FUTURE_REEVALUATION_CONDITION"
     INVALIDATION_CONDITION = "INVALIDATION_CONDITION"
+    PROSPECTIVE_RISK_SCENARIO = "PROSPECTIVE_RISK_SCENARIO"
     UNKNOWN_OR_AMBIGUOUS = "UNKNOWN_OR_AMBIGUOUS"
 
 
@@ -135,23 +136,77 @@ _CONDITIONAL_FINANCIAL_LANGUAGE = re.compile(
     re.IGNORECASE,
 )
 _CURRENT_FULFILLMENT_LANGUAGE = re.compile(
-    r"(?:현재|이미|지금).{0,24}(?:증가|상승|악화|부담|높)|"
-    r"(?:증가했|늘었|상승했|악화됐|악화되었|높아졌|발생했|나타났|확인됐|확인되었)|"
-    r"\b(?:currently|now|already)\b.{0,32}\b(?:increased|rose|high|worsened)\b|"
-    r"\b(?:has|have)\s+(?:increased|risen|worsened)\b",
+    r"(?:현재|이미|지금)|"
+    r"(?:증가했|증가해|늘었|상승했|악화됐|악화되었|높아졌|발생했|나타났|"
+    r"확인됐|확인되었|약화됐|약화되었|커졌|확대됐|확대되었|감소했|하락했|줄었)|"
+    r"\b(?:currently|now|already)\b|"
+    r"\b(?:has|have|had)\s+(?:increased|risen|worsened|weakened|deteriorated)\b|"
+    r"\b(?:increased|rose|worsened|weakened|deteriorated)\b.{0,24}\b(?:and|is|was)\b|"
+    r"\b(?:is|are)\s+(?:weighing|pressuring|hurting)\b",
     re.IGNORECASE,
 )
-_CURRENT_DIRECTION_PATHS = (
+_CURRENT_MAGNITUDE_LANGUAGE = re.compile(
+    r"(?:높은|과도한|큰)\s*(?:순부채|부채|운전자본)|"
+    r"(?:순부채|부채|운전자본)(?:\s*부담)?(?:이|가|은|는)?\s*(?:높다|과도하다|크다)|"
+    r"\b(?:net[ -]debt|leverage|working[ -]capital)\s+(?:is|remains|was)\s+"
+    r"(?:high|elevated|excessive)\b|"
+    r"\bhigher\s+(?:net[ -]debt|leverage)\s+(?:is|remains)\s+"
+    r"(?:weighing|pressuring|hurting)\b",
+    re.IGNORECASE,
+)
+_PROSPECTIVE_RISK_LANGUAGE = re.compile(
+    r"(?:핵심|주요)?\s*(?:위험|리스크)|(?:위험|리스크)(?:이다|입니다|요인|시나리오)|"
+    r"가능성|모니터링|동반\s*발생|겹치는\s*(?:경우|상황)|늘어나는\s*(?:경우|상황)|"
+    r"\b(?:key|major)\s+risk\b|\brisk\s+of\b|\brisk\s+scenario\b|"
+    r"\b(?:monitor|monitoring|possibility|scenario)\b|"
+    r"\balongside\b|\bwhile\b",
+    re.IGNORECASE,
+)
+_ALWAYS_CURRENT_DIRECTION_PATHS = (
     "buy_drivers",
     "sell_drivers",
     "dominant_evidence",
     "core_investment_judgment",
     "material_directional_anchor_basis",
-    "risk_context",
+)
+_RISK_CONTEXT_PATH = "risk_context"
+_FUTURE_REEVALUATION_PATH = "business_reevaluation"
+_INVALIDATION_PATH = "business_invalidation_condition"
+_CONFIGURED_PROSPECTIVE_SOURCE_REFS = frozenset(
+    {
+        "stock.thesis.strengthen_signals",
+        "stock.thesis.weaken_signals",
+        "stock.thesis.invalidation_signals",
+    }
 )
 
 
-def financial_claim_role(claim: FrameworkClaim) -> FinancialClaimRole:
+def _configured_prospective_evidence(ref: DecisionEvidenceRef) -> bool:
+    source_ref = ref.source_ref.casefold()
+    configured_source = any(
+        source_ref == expected or source_ref.startswith(f"{expected}.")
+        for expected in _CONFIGURED_PROSPECTIVE_SOURCE_REFS
+    )
+    return configured_source and ref.financial_context is None
+
+
+def _claim_has_only_configured_prospective_evidence(
+    claim: FrameworkClaim,
+    evidence_by_ref: Mapping[str, DecisionEvidenceRef] | None,
+) -> bool:
+    if evidence_by_ref is None or not claim.evidence_refs:
+        return False
+    refs = [evidence_by_ref.get(ref_id) for ref_id in claim.evidence_refs]
+    return all(
+        ref is not None and _configured_prospective_evidence(ref) for ref in refs
+    )
+
+
+def financial_claim_role(
+    claim: FrameworkClaim,
+    *,
+    evidence_by_ref: Mapping[str, DecisionEvidenceRef] | None = None,
+) -> FinancialClaimRole:
     """Classify assertion time/scope before requiring complete financial evidence."""
 
     path = claim.field_path.casefold()
@@ -161,24 +216,56 @@ def financial_claim_role(claim: FrameworkClaim) -> FinancialClaimRole:
     if conditional is not None and (
         fulfilled is None or fulfilled.start() >= conditional.start()
     ):
-        if "business_reevaluation" in path:
+        if _FUTURE_REEVALUATION_PATH in path:
             return FinancialClaimRole.FUTURE_REEVALUATION_CONDITION
-        if "invalidation" in path:
+        if _INVALIDATION_PATH in path or "invalidation" in path:
             return FinancialClaimRole.INVALIDATION_CONDITION
+        if (
+            _RISK_CONTEXT_PATH in path
+            and _claim_has_only_configured_prospective_evidence(
+                claim, evidence_by_ref
+            )
+        ):
+            return FinancialClaimRole.PROSPECTIVE_RISK_SCENARIO
         return FinancialClaimRole.CONFIGURED_CONDITIONAL_CHECK
     if re.search(r"[-+]?\d[\d,.]*(?:\.\d+)?", text):
         return FinancialClaimRole.CURRENT_NUMERIC_CLAIM
-    if any(token in path for token in _CURRENT_DIRECTION_PATHS):
+    if any(token in path for token in _ALWAYS_CURRENT_DIRECTION_PATHS):
         return FinancialClaimRole.CURRENT_DIRECTIONAL_BASIS
+    if _RISK_CONTEXT_PATH in path:
+        if fulfilled is not None or _CURRENT_MAGNITUDE_LANGUAGE.search(text):
+            return FinancialClaimRole.CURRENT_DIRECTIONAL_BASIS
+        if (
+            _PROSPECTIVE_RISK_LANGUAGE.search(text)
+            and _claim_has_only_configured_prospective_evidence(
+                claim, evidence_by_ref
+            )
+        ):
+            return FinancialClaimRole.PROSPECTIVE_RISK_SCENARIO
+        return FinancialClaimRole.UNKNOWN_OR_AMBIGUOUS
+    if (
+        _FUTURE_REEVALUATION_PATH in path
+        and _claim_has_only_configured_prospective_evidence(claim, evidence_by_ref)
+    ):
+        return FinancialClaimRole.FUTURE_REEVALUATION_CONDITION
+    if (
+        (_INVALIDATION_PATH in path or "invalidation" in path)
+        and _claim_has_only_configured_prospective_evidence(claim, evidence_by_ref)
+    ):
+        return FinancialClaimRole.INVALIDATION_CONDITION
     if claim.role == FrameworkReferenceRole.UNRESOLVED:
         return FinancialClaimRole.UNKNOWN_OR_AMBIGUOUS
     return FinancialClaimRole.CURRENT_STATE_ASSERTION
 
 
-def financial_claim_requires_current_evidence(claim: FrameworkClaim) -> bool:
+def financial_claim_requires_current_evidence(
+    claim: FrameworkClaim,
+    *,
+    evidence_by_ref: Mapping[str, DecisionEvidenceRef] | None = None,
+) -> bool:
     if not framework_reference_is_application(claim):
         return False
-    return financial_claim_role(claim) in {
+    return financial_claim_role(claim, evidence_by_ref=evidence_by_ref) in {
         FinancialClaimRole.CURRENT_STATE_ASSERTION,
         FinancialClaimRole.CURRENT_DIRECTIONAL_BASIS,
         FinancialClaimRole.CURRENT_NUMERIC_CLAIM,
@@ -880,6 +967,7 @@ def validate_directional_financial_semantics(
         for ref in supplied_refs
         if ref.financial_context is not None
     }
+    evidence_by_ref = {ref.ref_id: ref for ref in supplied_refs}
     allowed = set(allowed_ref_ids)
     errors: list[str] = []
     counts = {
@@ -934,7 +1022,10 @@ def validate_directional_financial_semantics(
 
         net_debt_language = any(
             claim.framework == "net_debt"
-            and financial_claim_requires_current_evidence(claim)
+            and financial_claim_requires_current_evidence(
+                claim,
+                evidence_by_ref=evidence_by_ref,
+            )
             for claim in claims_by_path.get(field_path, ())
         )
         total_debt_language = any(
