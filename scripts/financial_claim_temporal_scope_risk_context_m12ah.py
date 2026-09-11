@@ -307,7 +307,6 @@ def _freeze_shadow_inputs(
     evidence, owned, catalogs, contexts, stocks = base._build_shadow_inputs(
         packets, tickers
     )
-    del evidence
     context_rows = []
     for number, batch in enumerate(_batches(tickers), start=1):
         directory = OUTPUT / "shadow/frozen-contexts" / f"context-{number:02d}"
@@ -427,6 +426,7 @@ def _freeze_shadow_inputs(
     }
     built = {
         "packets": packets,
+        "decision_packets": evidence,
         "owned": owned,
         "catalogs": catalogs,
         "contexts": contexts,
@@ -490,7 +490,8 @@ def _reaudit_document(
                 "errors": row["errors"],
                 "business_delta": row["business_delta"],
                 "temporal_roles": _candidate_temporal_roles(
-                    source_by_ticker[ticker], built["packets"][ticker].evidence
+                    source_by_ticker[ticker],
+                    built["decision_packets"][ticker].evidence,
                 ),
                 "historical_output_rewritten": False,
             }
@@ -520,10 +521,20 @@ def _m12af_005490_reaudit(built: Mapping[str, object]) -> dict[str, object]:
     )
     result = _reaudit_document(document, built)
     row = next(row for row in result["rows"] if row["ticker"] == "005490")
+    net_debt_errors = [
+        error
+        for error in row["errors"]
+        if error == "net_debt_claim_without_complete_net_debt_evidence"
+    ]
     return {
-        "status": row["status"],
+        "status": "PASS" if not net_debt_errors else "FAIL",
         "source_generation_id": result["source_generation_id"],
         "row": row,
+        "full_historical_row_status": row["status"],
+        "unrelated_historical_errors": [
+            error for error in row["errors"] if error not in net_debt_errors
+        ],
+        "net_debt_temporal_error_count": len(net_debt_errors),
         "historical_output_rewritten": False,
     }
 
@@ -832,7 +843,10 @@ def _preflight_reports(
     report(5, "m12ag-005490-failure-reproduction", {"status": "REPRODUCED", "source_generation_id": previous_failure["generation_id"], "source_status": previous_failure["status"], "failing_ticker": "005490", "failure": "net_debt_claim_without_complete_net_debt_evidence", "historical_output_rewritten": False})
     report(6, "current-financial-claim-role-code-audit", {"status": "CLOSED", "contract_before": "financial-claim-role-v1", "contract_after": "financial-claim-temporal-role-v2", "new_role": FinancialClaimRole.PROSPECTIVE_RISK_SCENARIO, "inputs": ["field semantic", "evidence provenance", "linguistic fulfillment markers"], "ticker_specific_exception_count": 0})
     report(7, "risk-context-current-path-root-cause", {"status": "CLOSED", "root_cause": "risk_context was in a blanket current-direction path list", "repair": "risk_context is classified as a mixed field using temporal language and evidence provenance", "risk_context_blanket_current_path_removed": True})
-    evidence_by_ref = {ref.ref_id: ref for ref in built["packets"]["005490"].evidence}
+    evidence_by_ref = {
+        ref.ref_id: ref
+        for ref in built["decision_packets"]["005490"].evidence
+    }
     provenance_rows = []
     for ref_id in exact_risk["evidence_refs"]:
         ref = evidence_by_ref[ref_id]
