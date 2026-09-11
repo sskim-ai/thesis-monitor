@@ -1,0 +1,23 @@
+{
+  "contract": "m10-comparison-kind-contract-v1",
+  "kinds": [
+    "prior_year_comparable",
+    "prior_year_end"
+  ],
+  "precedence": [
+    "prior_year_comparable",
+    "prior_year_end"
+  ],
+  "same_basis_required": [
+    "metric",
+    "semantic",
+    "currency",
+    "unit",
+    "entity_scope",
+    "statement_basis",
+    "balance_scope",
+    "net_gross_scope"
+  ],
+  "year_end_to_interim_label": "change_since_prior_year_end",
+  "year_end_to_interim_yoy_allowed": false
+}

@@ -1,0 +1,67 @@
+{
+  "contract": "m12w-sol-proof-critical-restoration-v1",
+  "decision": "RESTORE_GPT56_SOL_XHIGH",
+  "model": "gpt-5.6-sol",
+  "effort": "xhigh",
+  "previous_astra_timeout_seconds": 2400,
+  "selected_timeout_seconds": 1800,
+  "subjects_per_context": 4,
+  "context_count": 2,
+  "repetition_count": 3,
+  "wrapper_retry_count": 0,
+  "batch_split": 0,
+  "single_authoritative_watchdog": true,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "runtime_instrumentation": {
+    "contract": "codex-transport-lifecycle-v1",
+    "status": "RETAIN_MODEL_NEUTRAL",
+    "first_last_local_byte_timing": true,
+    "process_group_cleanup": true,
+    "unique_runtime_namespace": true,
+    "unique_working_directory": true,
+    "backend_progress_heartbeat": false,
+    "semantic_change_count": 0
+  },
+  "astra": {
+    "proof_critical_status": "SUSPENDED_FROM_PROOF_CRITICAL_PATH",
+    "model_calls_in_m12w": 0,
+    "future_scope": "MODEL_COMPATIBILITY_OR_QUALITY_EXPERIMENT",
+    "automatic_return": false
+  },
+  "authoring": {
+    "model": "gpt-5.6-sol",
+    "effort": "xhigh",
+    "observed_at": "2026-09-10T01:39:36.046Z",
+    "source": "current Codex rollout turn_context",
+    "status": "PASS"
+  },
+  "semantic_freeze": {
+    "baseline": "M12U",
+    "financial_semantic_change_count": 0,
+    "directional_semantic_change_count": 0,
+    "fictional_case_change_count": 0,
+    "source_mapping_change_count": 0,
+    "target_buys": {
+      "FIC-FIN-01": 6.0,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5.0,
+      "FIC-FIN-05": 4.5
+    },
+    "directional_threshold": 6.0,
+    "directional_increment": 0.5,
+    "hold_lean": {
+      "5.5:4.5": "BUY_LEAN",
+      "5.0:5.0": "NEUTRAL",
+      "4.5:5.5": "SELL_LEAN"
+    },
+    "economic_independence": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+    "historical_sol_labels_are_targets": false
+  },
+  "stop_policy": {
+    "whole_generation_stop": true,
+    "selective_retry": false,
+    "generation_stitching": false,
+    "timeout_increase_after_start": false,
+    "fallback_model": null
+  }
+}

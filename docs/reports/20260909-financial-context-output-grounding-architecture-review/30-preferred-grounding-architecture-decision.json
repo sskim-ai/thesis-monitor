@@ -1,0 +1,12 @@
+{
+  "contract": "m12a-preferred-grounding-architecture-decision-v1",
+  "decision_basis": "The selected typed refs already share the catalog and resolver contract; only their model-facing evidence[] projection is missing.",
+  "preferred_grounding_architecture": "FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION",
+  "rejected": {
+    "HYBRID": "no distinct second problem is proven",
+    "NO_CHANGE_PROMPT_ONLY": "M12G repeated the split-surface failure",
+    "PROVENANCE_LINEAGE_BRIDGE": "current producer lineage coverage is zero",
+    "STRUCTURED_OUTPUT_FINANCIAL_GROUNDING": "adds schema and compliance cost without a missing resolver capability"
+  },
+  "status": "FROZEN"
+}

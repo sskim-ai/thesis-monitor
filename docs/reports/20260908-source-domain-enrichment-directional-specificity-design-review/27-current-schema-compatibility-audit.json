@@ -1,0 +1,113 @@
+{
+  "bounded_schema_proposal": {
+    "existing_fields_reused": [
+      "value",
+      "unit",
+      "source_ref",
+      "as_of"
+    ],
+    "field": "financial_context",
+    "migration": "additive and optional; no existing packet rewrite",
+    "placement": "optional field on DecisionEvidenceRef",
+    "production_activation": false,
+    "required_when": "typed financial domain evidence is emitted",
+    "shape": {
+      "attribution_basis": "total/parent/common/null as applicable",
+      "comparison": {
+        "compatibility_status": "PASS",
+        "input_source_refs": "ordered references",
+        "kind": "prior_year_comparable | prior_year_end | none"
+      },
+      "currency": "verified financial currency",
+      "derivation": {
+        "formula": "registered formula or null",
+        "input_source_refs": "ordered references",
+        "version": "derivation contract or null"
+      },
+      "entity_scope": "issuer/consolidation scope",
+      "evidence_status": "DIRECT_REPORTED | DERIVED_SAFE",
+      "limitations": "bounded list",
+      "metric": "canonical metric identifier",
+      "period": {
+        "duration_days": "integer or null",
+        "end": "date",
+        "start": "date or null for point-in-time",
+        "type": "QTD | YTD | FY | TTM | POINT_IN_TIME"
+      },
+      "quality": "verified/partial status",
+      "statement_basis": "official statement basis",
+      "unit_scale": "explicit source/normalized scale"
+    }
+  },
+  "contract": "m4-current-schema-compatibility-audit-v1",
+  "current_fields": [
+    "as_of",
+    "category",
+    "label",
+    "logical_condition",
+    "metric_refs",
+    "numeric_prose_eligible",
+    "ref_id",
+    "source_ref",
+    "statement",
+    "unit",
+    "value"
+  ],
+  "current_model": "DecisionEvidenceRef",
+  "missing_typed_fields": [
+    "currency",
+    "unit_scale",
+    "period_type",
+    "period_start",
+    "period_end",
+    "entity_scope",
+    "statement_basis",
+    "attribution_basis",
+    "evidence_status",
+    "comparison_basis",
+    "derivation_inputs",
+    "limitations"
+  ],
+  "rows": [
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "same_period_prior_year_comparison",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    },
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "operating_cash_flow",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    },
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "ppe_capex_simple_cash_conversion",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    },
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "debt_liquidity",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    },
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "inventory_receivables_working_capital",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    },
+    {
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "domain": "non_operating_financial_income_effects",
+      "m4_implementation": false,
+      "reason": "current ref cannot bind typed period, financial currency, entity/basis, direct-derived status, and comparison/derivation lineage together"
+    }
+  ],
+  "schema_extension_required_domain_count": 6,
+  "schema_modified_in_m4": false,
+  "schema_sufficient_domain_count": 0,
+  "status": "COMPLETE"
+}

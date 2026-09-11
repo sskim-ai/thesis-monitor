@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "base_sha256": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+      "changed": false,
+      "current_sha256": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+      "expected_changed": false,
+      "path": "app/services/coldstart_source_assembly_service.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

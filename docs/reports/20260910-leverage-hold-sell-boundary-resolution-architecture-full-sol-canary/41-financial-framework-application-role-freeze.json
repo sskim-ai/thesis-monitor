@@ -1,0 +1,19 @@
+{
+  "rows": [
+    {
+      "base_sha256": "1c62a769e2aae19942d9981c611bca36b23661564545db063b3677b37d1edd61",
+      "changed": false,
+      "current_sha256": "1c62a769e2aae19942d9981c611bca36b23661564545db063b3677b37d1edd61",
+      "path": "app/services/financial_framework_claim_service.py",
+      "status": "PASS"
+    },
+    {
+      "base_sha256": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+      "changed": false,
+      "current_sha256": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+      "path": "scripts/financial_exclusion_expectation_m12u.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

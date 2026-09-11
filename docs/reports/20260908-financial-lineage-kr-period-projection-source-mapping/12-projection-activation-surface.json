@@ -1,0 +1,11 @@
+{
+  "adapter_support_rows": "ARCHIVE_ONLY_INTERNAL",
+  "compact_ai_context_consumption": false,
+  "contract": "m7-projection-activation-surface-v1",
+  "fact_catalog_visible_rows": "existing_selection_unchanged",
+  "production_delivery_changed": false,
+  "public_action_changed": false,
+  "support_rows_interpretation_eligible": false,
+  "support_rows_numeric_registry_eligible": false,
+  "support_rows_prose_eligible": false
+}

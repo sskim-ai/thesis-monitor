@@ -1,0 +1,10 @@
+{
+  "expected_buy": 4.0,
+  "expected_direction": "SELL",
+  "expected_sell": 6.0,
+  "id": "NEG-ORD-01",
+  "pattern": "A negative issuer-level material anchor and sufficiently current or economically independent corroboration establish minimum negative direction.",
+  "reason": "This is minimum directional support on the symmetric negative side.",
+  "side": "NEGATIVE",
+  "status": "PASS"
+}

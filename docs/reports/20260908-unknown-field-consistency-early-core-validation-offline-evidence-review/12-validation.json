@@ -1,0 +1,46 @@
+{
+  "contract": "unknown-field-consistency-offline-validation-v1",
+  "validated_at": "2026-09-08T05:49:17Z",
+  "implementation_commit": "df8ffb7858a9a1b5f30b77d72ca440121f142c15",
+  "checks": [
+    {
+      "name": "focused_unknown_consistency",
+      "command": "PYTHONPATH=. .venv/bin/pytest -q tests/test_unknown_field_consistency_offline_review.py tests/test_structured_autonomy_shadow_service.py tests/test_new_issuer_holdout_selection_ownership_proof.py tests/test_directional_balance_ordinal_calibration.py",
+      "result": "329 passed",
+      "status": "PASS"
+    },
+    {
+      "name": "full_repository_pytest",
+      "command": ".venv/bin/pytest -q",
+      "result": "2746 passed, 1 third-party deprecation warning in 64.01s",
+      "status": "PASS"
+    },
+    {
+      "name": "ruff",
+      "command": ".venv/bin/ruff check .",
+      "result": "All checks passed",
+      "status": "PASS"
+    },
+    {
+      "name": "git_diff_check",
+      "command": "git diff --check",
+      "result": "no output",
+      "status": "PASS"
+    },
+    {
+      "name": "canonical_offline_audit",
+      "command": "PYTHONPATH=. .venv/bin/python scripts/unknown_field_consistency_offline_review.py --source-zip <S1> --output-dir <canonical-report-dir> --repo-root .",
+      "result": "CODE_AND_OFFLINE_EVIDENCE_REVIEW_COMPLETE",
+      "status": "PASS"
+    }
+  ],
+  "live_service_tests": 0,
+  "model_calls": {
+    "real": 0,
+    "fictional": 0,
+    "judge": 0
+  },
+  "provider_source_fetches": 0,
+  "production_mutations": 0,
+  "status": "PASS"
+}

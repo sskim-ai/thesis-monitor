@@ -1,0 +1,17 @@
+{
+  "exposed_real_retry_policy": "NEW_COHORT_REQUIRED",
+  "historical_sol": "PASS",
+  "runtime": {
+    "capacity_failure_count": 0,
+    "cli_internal_retry_event_count": 0,
+    "model_calls_fictional": 1,
+    "model_context_failure_count": 0,
+    "model_context_success_count": 1,
+    "orphan_process_count": 0,
+    "runtime_max_elapsed_seconds": 407.720583,
+    "runtime_median_elapsed_seconds": 407.720583,
+    "timeout_count": 0,
+    "wrapper_retry_count": 0
+  },
+  "status": "NOT_READY"
+}

@@ -1,0 +1,192 @@
+{
+  "status": "FROZEN",
+  "source_path": "artifacts/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/contexts/FIC-FIN-05.json",
+  "source_packet": {
+    "assessment_date": "2026-09-09",
+    "company_name": "Fictional Financial Case 05",
+    "evidence": [
+      {
+        "alias": "E01",
+        "as_of": "2026-09-09",
+        "category": "earnings",
+        "domain": "EARNINGS_FINANCIAL_CURRENT",
+        "label": "operating-evidence",
+        "metric_refs": [],
+        "statement": "Current operating profit is positive and broadly stable.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E02",
+        "as_of": "2026-09-09",
+        "category": "valuation",
+        "domain": "VALUATION_SAFE",
+        "label": "valuation-limit",
+        "metric_refs": [],
+        "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E03",
+        "as_of": "2026-09-09",
+        "category": "risks",
+        "domain": "STRUCTURAL_RISK",
+        "label": "structural-risk",
+        "metric_refs": [],
+        "statement": "A high complete debt balance and thin cash buffer reduce resilience.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E04",
+        "as_of": "2026-09-09",
+        "category": "earnings_quality",
+        "domain": "SECTOR_OPERATING_CURRENT",
+        "label": "sector-context",
+        "metric_refs": [],
+        "statement": "A standard operating-company debt and liquidity framework applies.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E05",
+        "as_of": "2026-06-30",
+        "category": "earnings",
+        "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+        "evidence_kind": "TYPED_FINANCIAL",
+        "financial_semantics": {
+          "comparison_kind": null,
+          "evidence_status": "DERIVED_SAFE",
+          "metric": "interest_bearing_debt_total",
+          "period_type": "POINT_IN_TIME",
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE"
+        },
+        "label": "interest_bearing_debt_total",
+        "metric_refs": [],
+        "statement": "Safely derived complete interest-bearing debt balance as of 2026-06-30.",
+        "unit": null,
+        "value": "900"
+      },
+      {
+        "alias": "E06",
+        "as_of": "2026-06-30",
+        "category": "earnings",
+        "domain": "LIQUIDITY_CASHFLOW_CURRENT",
+        "evidence_kind": "TYPED_FINANCIAL",
+        "financial_semantics": {
+          "comparison_kind": null,
+          "evidence_status": "DIRECT_REPORTED",
+          "metric": "cash_and_cash_equivalents",
+          "period_type": "POINT_IN_TIME",
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE"
+        },
+        "label": "cash_and_cash_equivalents",
+        "metric_refs": [],
+        "statement": "Reported cash and cash equivalents balance as of 2026-06-30.",
+        "unit": null,
+        "value": "40"
+      },
+      {
+        "alias": "E07",
+        "as_of": "2026-09-09",
+        "category": "expectations",
+        "domain": "MARKET_EXPECTATIONS",
+        "label": "market-expectation",
+        "metric_refs": [],
+        "statement": "Expectations do not appear to allow for a prolonged refinancing burden.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E08",
+        "as_of": "2026-09-09",
+        "category": "unknown",
+        "domain": "DATA_QUALITY_LIMIT",
+        "label": "remaining-unknown",
+        "metric_refs": [],
+        "statement": "Refinancing terms and maturity concentration are not supplied.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E09",
+        "as_of": "2026-09-09",
+        "category": "thesis",
+        "domain": "BUSINESS_CURRENT",
+        "label": "business-thesis",
+        "metric_refs": [],
+        "statement": "The business remains profitable, but balance-sheet resilience constrains optionality.",
+        "unit": null,
+        "value": null
+      }
+    ],
+    "financial_decision_context": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 2,
+      "evidence_items": [
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt.input"
+          ],
+          "evidence_id": "E05",
+          "evidence_status": "DERIVED_SAFE",
+          "limitations": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:complete-debt",
+          "unit_scale": 1000000,
+          "value": "900"
+        },
+        {
+          "comparison": null,
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "E06",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [
+            "cash_basis_cash_and_cash_equivalents_only"
+          ],
+          "metric": "cash_and_cash_equivalents",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "FINANCIAL_RESILIENCE",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-05:cash",
+          "unit_scale": 1000000,
+          "value": "40"
+        }
+      ],
+      "limitations": [
+        "lease_liabilities_excluded_from_debt_scope",
+        "cash_basis_cash_and_cash_equivalents_only"
+      ],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 0,
+      "unavailable_or_not_applicable": []
+    },
+    "market": "us",
+    "ticker": "FIC-FIN-05"
+  }
+}

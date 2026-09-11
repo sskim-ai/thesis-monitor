@@ -1,0 +1,5 @@
+{
+  "expected": "NO_AUTOMATIC_MINIMUM_SELL",
+  "id": "LEV-03",
+  "pattern": "high debt with strong compatible liquidity and stable operations"
+}

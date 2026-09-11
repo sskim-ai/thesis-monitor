@@ -1,0 +1,131 @@
+{
+  "contract": "m12u-bounded-exclusion-and-economic-independence-fixtures-v1",
+  "purpose": "Offline ordinal examples, not a numeric financial score engine",
+  "positive": [
+    "순부채 틀은 적용하지 않는다.",
+    "보험사에는 일반 기업의 순부채 틀이 적용 대상이 아니다.",
+    "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다.",
+    "순부채는 평가 대상이 아니다.",
+    "운전자본은 사용 대상이 아니다.",
+    "순부채는 해당 기준의 적용 대상이 아니다.",
+    "순부채는 일반 영업기업 기준의 대상이 아니다.",
+    "운전자본 기준은 이 업종의 핵심 평가틀이 아니다.",
+    "Net debt is not applicable.",
+    "Working capital does not apply.",
+    "Net debt is not an applicable framework.",
+    "Working capital is not the relevant framework.",
+    "We do not apply net debt.",
+    "Net debt and working capital are not applicable to insurers."
+  ],
+  "negative": [
+    "보험사의 순부채가 높아 SELL 근거다.",
+    "운전자본 악화가 투자 위험이다.",
+    "순부채 틀은 적용 대상이 아니지만 순부채가 높아 부정 판단을 강화한다.",
+    "순부채 틀은 적용 대상이 아니다. 운전자본이 악화해 부정적이다.",
+    "순부채 틀은 적용 대상이 아닌 것은 아니다.",
+    "순부채 틀은 적용 대상이 아니라고 볼 수 없다.",
+    "순부채가 높고 관련 계약은 적용 대상이 아니다.",
+    "순부채 틀이 적용 대상이 아니라면 보수적으로 판단한다.",
+    "Net debt is not inapplicable.",
+    "It is not true that net debt is not applicable.",
+    "We do not deny that working capital is not applicable.",
+    "Net debt does not apply, but net debt supports a negative conclusion.",
+    "If working capital does not apply.",
+    "Net debt is high; unrelated regulation is not applicable.",
+    "Net debt is not the relevant framework unless liquidity falls."
+  ],
+  "leverage": [
+    {
+      "id": "LEV-MKT-01",
+      "facts": [
+        "high complete debt and thin cash",
+        "stable operating profit",
+        "expectation assumes benign refinancing"
+      ],
+      "limitation": "refinancing severity and persistence unresolved; no distinct established current pricing risk",
+      "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+      "supportable_buy_buckets": [
+        4,
+        4.5
+      ],
+      "selected_buy": 4.5,
+      "rule": "conditional_expectation"
+    },
+    {
+      "id": "LEV-MKT-02",
+      "facts": [
+        "confirmed refinancing stress",
+        "independently established expectations assume benign financing"
+      ],
+      "limitation": "minimum downside supported; no stronger persistence proof",
+      "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+      "supportable_buy_buckets": [
+        4
+      ],
+      "selected_buy": 4,
+      "rule": "independent_expectation"
+    },
+    {
+      "id": "LEV-MKT-03",
+      "facts": [
+        "high complete debt and thin cash",
+        "stable profit",
+        "no expectation evidence"
+      ],
+      "limitation": "refinancing severity unresolved",
+      "classification": "NO_EXPECTATION_AXIS",
+      "supportable_buy_buckets": [
+        4,
+        4.5
+      ],
+      "selected_buy": 4.5,
+      "rule": "limiting_unknown"
+    },
+    {
+      "id": "LEV-MKT-04",
+      "facts": [
+        "high complete debt and thin cash",
+        "expectations already allow for stress"
+      ],
+      "limitation": "no extra negative expectation corroboration; severity unresolved",
+      "classification": "NOT_ADDITIONAL_NEGATIVE_CORROBORATION",
+      "supportable_buy_buckets": [
+        4,
+        4.5
+      ],
+      "selected_buy": 4.5,
+      "rule": "already_reflected"
+    },
+    {
+      "id": "LEV-MKT-05",
+      "facts": [
+        "strong balance sheet",
+        "already elevated expectations",
+        "no other positive operating or valuation support"
+      ],
+      "limitation": "resilience anchor alone does not reach minimum BUY",
+      "classification": "NOT_ADDITIONAL_POSITIVE_CORROBORATION",
+      "supportable_buy_buckets": [
+        5.5,
+        6
+      ],
+      "selected_buy": 5.5,
+      "rule": "positive_symmetry"
+    },
+    {
+      "id": "LEV-MKT-06",
+      "facts": [
+        "balance sheet resilience constraint",
+        "confirmed persistent loss of a distinct customer economics source",
+        "expectations independently assume customer economics remain intact"
+      ],
+      "limitation": "distinct confirmed risk supports minimum downside, not stronger bucket without more support",
+      "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+      "supportable_buy_buckets": [
+        4
+      ],
+      "selected_buy": 4,
+      "rule": "independent_risk_axis"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+  "contract": "directional-core-stability-audit-v1",
+  "counts": {
+    "BOUNDARY_UNCERTAINTY": 1,
+    "STABLE": 6,
+    "UNSTABLE": 1
+  },
+  "fictional_boundary_uncertainty_count": 1,
+  "fictional_stable_count": 6,
+  "fictional_unstable_count": 1,
+  "majority_vote": 0,
+  "opposite_direction_reversal_count": 0,
+  "rows": [
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-01",
+      "values": {
+        "a": [
+          "BUY",
+          6.5,
+          3.5,
+          "NOT_HOLD",
+          "ATTRACTIVE",
+          "HOLDABLE"
+        ],
+        "b": [
+          "BUY",
+          6.5,
+          3.5,
+          "NOT_HOLD",
+          "ATTRACTIVE",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.5,
+          3.5,
+          "NOT_HOLD",
+          "ATTRACTIVE",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-02",
+      "values": {
+        "a": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-03",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-04",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "FIC-FIN-05",
+      "values": {
+        "a": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-06",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "FIC-FIN-07",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "reasons": [
+        "CORE_FIELD_VARIANCE_WITHOUT_DIRECTION_REVERSAL"
+      ],
+      "ticker": "FIC-FIN-08",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    }
+  ],
+  "status": "FAIL"
+}

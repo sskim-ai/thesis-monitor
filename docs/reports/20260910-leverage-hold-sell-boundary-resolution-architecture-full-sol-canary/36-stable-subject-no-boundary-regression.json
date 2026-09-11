@@ -1,0 +1,37 @@
+{
+  "hard_controls": [
+    "FIC-FIN-01",
+    "FIC-FIN-04",
+    "FIC-FIN-07"
+  ],
+  "no_boundary_resolution": {
+    "boundary": {
+      "evidence_refs": [],
+      "less_directional_balance": null,
+      "more_directional_balance": null,
+      "reason": null,
+      "status": "NONE"
+    },
+    "contract": "directional-boundary-resolution-v1",
+    "raw_state": {
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "hold_lean": "NOT_HOLD",
+      "overall_direction": "SELL"
+    },
+    "resolution_rule": "NONE",
+    "resolved_state": {
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "hold_lean": "NOT_HOLD",
+      "overall_direction": "SELL"
+    },
+    "selected_evidence_refs": [],
+    "status": "UNCHANGED"
+  },
+  "status": "PASS"
+}

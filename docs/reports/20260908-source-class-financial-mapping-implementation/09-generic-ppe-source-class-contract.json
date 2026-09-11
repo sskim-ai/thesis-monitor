@@ -1,0 +1,20 @@
+{
+  "accepted_semantics": [
+    "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+    "us-gaap:PaymentsForAdditionsToPropertyPlantAndEquipment",
+    "ifrs-full:PurchaseOfPropertyPlantAndEquipment",
+    "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities"
+  ],
+  "baseline_scope": "purchase_of_property_plant_and_equipment_cash_outflow",
+  "contract": "m8-generic-ppe-source-class-contract-v1",
+  "excluded_classes": [
+    "intangibles",
+    "acquisitions",
+    "investments",
+    "leases",
+    "generic_investing_cash_flow"
+  ],
+  "hut_specific_mapping_count": 0,
+  "new_sec_taxonomy_mapping_count": 0,
+  "status": "EXISTING_GENERIC_CLASS_PRESERVED_HUT_EVIDENCE_INSUFFICIENT"
+}

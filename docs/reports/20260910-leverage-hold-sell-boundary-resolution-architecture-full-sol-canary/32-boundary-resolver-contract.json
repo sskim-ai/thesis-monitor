@@ -1,0 +1,7 @@
+{
+  "averaging": false,
+  "economic_scoring": false,
+  "majority_vote": false,
+  "rule": "SELECT_DECLARED_LESS_DIRECTIONAL_ENDPOINT_TOWARD_5_0",
+  "status": "PASS"
+}

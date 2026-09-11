@@ -1,0 +1,34 @@
+{
+  "audit": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 0,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "material_financial_anchor_refs": [],
+    "material_grounding_required": false,
+    "narrative_only_duplicate_refs": [],
+    "narrative_substitution_failure_count": 0,
+    "relevant_claim_count": 0,
+    "selected_financial_refs": [],
+    "status": "PASS",
+    "used_financial_refs": [],
+    "valid": true,
+    "working_capital_checkpoint_count": 0,
+    "working_capital_grounding_failure_count": 0,
+    "working_capital_grounding_required": false
+  },
+  "candidate": {
+    "risk_context": {
+      "evidence_refs": [
+        "fictional:fixture:narrative-risk"
+      ],
+      "text": "재고와 매출채권의 전환을 확인해야 한다."
+    }
+  },
+  "contract": "m12g-no-selected-financial-context-control-v1",
+  "fake_grounding_requirement_count": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,97 @@
+{
+  "contract": "m10-receivables-taxonomy-v1",
+  "gross_net_comparison_allowed": false,
+  "net_precedence": "EXACT_NET_PRECEDES_SAME_SCOPE_GROSS",
+  "other_loan_tax_related_party_auto_trade_count": 0,
+  "rows": [
+    {
+      "balance_scope": "trade_receivables_current",
+      "canonical_metric": "trade_accounts_receivable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "TRADE_RECEIVABLE",
+      "source_semantic": "us-gaap:AccountsReceivableTradeCurrent"
+    },
+    {
+      "balance_scope": "trade_receivables_current",
+      "canonical_metric": "trade_accounts_receivable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "TRADE_RECEIVABLE",
+      "source_semantic": "ifrs-full:CurrentTradeReceivables"
+    },
+    {
+      "balance_scope": "trade_receivables_noncurrent",
+      "canonical_metric": "trade_accounts_receivable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "TRADE_RECEIVABLE",
+      "source_semantic": "ifrs-full:NoncurrentTradeReceivables"
+    },
+    {
+      "balance_scope": "trade_receivables_total",
+      "canonical_metric": "trade_accounts_receivable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 105,
+      "role": "TRADE_RECEIVABLE",
+      "source_semantic": "ifrs-full:TradeReceivables"
+    },
+    {
+      "balance_scope": "broad_receivables_current",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "net",
+      "priority": 100,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsReceivableNetCurrent"
+    },
+    {
+      "balance_scope": "broad_receivables_total",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "net",
+      "priority": 100,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsReceivableNet"
+    },
+    {
+      "balance_scope": "broad_receivables_current",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "gross",
+      "priority": 90,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsReceivableGrossCurrent"
+    },
+    {
+      "balance_scope": "broad_receivables_current",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "net",
+      "priority": 90,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsAndOtherReceivablesNetCurrent"
+    },
+    {
+      "balance_scope": "broad_receivables_total",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "net",
+      "priority": 85,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsAndNotesReceivableNet"
+    },
+    {
+      "balance_scope": "broad_receivables_current",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "ifrs-full:TradeAndOtherCurrentReceivables"
+    },
+    {
+      "balance_scope": "broad_receivables_total",
+      "canonical_metric": "accounts_receivable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 95,
+      "role": "BROAD_RECEIVABLE_CONTEXT",
+      "source_semantic": "ifrs-full:TradeAndOtherReceivables"
+    }
+  ],
+  "trade_and_broad_are_distinct": true
+}

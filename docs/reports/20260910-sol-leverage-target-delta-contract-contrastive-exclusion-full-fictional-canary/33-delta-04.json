@@ -1,0 +1,9 @@
+{
+  "baseline_change": true,
+  "expected": "STRENGTHENED",
+  "facts": [
+    "operating and cash conversion improved versus prior comparable period"
+  ],
+  "id": "DELTA-04",
+  "status": "PASS"
+}

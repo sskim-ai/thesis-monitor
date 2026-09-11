@@ -1,0 +1,11 @@
+# Production Integration Next Handoff
+
+| Gate | Value |
+| --- | --- |
+| contract | "production-integration-next-handoff-v1" |
+| main_merge | 0 |
+| next_bounded_task | "STABILITY_AND_FUNDAMENTAL_DOMINANCE_ARCHITECTURE_REVIEW_WITH_NEW_HOLDOUT_AFTER_AUTHORIZED_REPAIR" |
+| production_activation | 0 |
+| readiness | "NEEDS_ARCHITECTURE_WORK" |
+| blocking_observations | ["PLTR_BUY_LEAN_SELL_LEAN_FLIP", "NKE_PRICE_ONLY_DOMINATED_SELL_REVIEW_FLAG"] |
+| same_generation_repair | 0 |

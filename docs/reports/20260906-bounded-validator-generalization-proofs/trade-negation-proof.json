@@ -1,0 +1,17 @@
+{
+  "actionable_trade_false_negative": 0,
+  "contract": "trade-language-semantic-v1",
+  "exact_sentence_whitelist": 0,
+  "fixture_negated_trade_language": "PASS",
+  "fresh_first_false_positive_count": 1,
+  "fresh_first_failure_class": "NOMINAL_NEGATION_SCOPE_FALSE_POSITIVE",
+  "fresh_first_failure_ticker": "WULF",
+  "negated_trade_language": "FAIL",
+  "post_result_hotfix": 0,
+  "semantics": [
+    "ACTIONABLE",
+    "NEGATED",
+    "DESCRIPTIVE",
+    "NONE"
+  ]
+}

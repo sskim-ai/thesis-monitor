@@ -1,0 +1,51 @@
+{
+  "contract": "m12s-conservative-tiebreak-consistency-audit-v1",
+  "frozen_rule_present": true,
+  "increment_changed": false,
+  "rows": [
+    {
+      "adjacent_buckets": [
+        6.0,
+        6.5
+      ],
+      "case": "strong_quality_with_valuation_and_persistence_unknown",
+      "consistent": false,
+      "less_directional_bucket": 6.0,
+      "observed_buy_balances": [
+        6.5,
+        6.0,
+        6.5
+      ]
+    },
+    {
+      "adjacent_buckets": [
+        4.5,
+        4.0
+      ],
+      "case": "cash_conversion_deterioration_with_healthy_demand_and_unknown_cause",
+      "consistent": false,
+      "less_directional_bucket": 4.5,
+      "observed_buy_balances": [
+        4.0,
+        4.5,
+        4.0
+      ]
+    },
+    {
+      "adjacent_buckets": [
+        5.0,
+        5.5
+      ],
+      "case": "flat_operations_with_non_operating_net_income_support",
+      "consistent": false,
+      "less_directional_bucket": 5.0,
+      "observed_buy_balances": [
+        5.0,
+        5.0,
+        5.5
+      ]
+    }
+  ],
+  "status": "INCONSISTENT_APPLICATION_UNDER_UNRESOLVED_ADJACENT_FIT",
+  "threshold_changed": false
+}

@@ -1,0 +1,88 @@
+{
+  "mapper_status": "PASS",
+  "readiness_gate_enabled": false,
+  "rows": [
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "OUTSIDE_THRESHOLD_ZONE_POSITIVE",
+        "OUTSIDE_THRESHOLD_ZONE_POSITIVE",
+        "OUTSIDE_THRESHOLD_ZONE_POSITIVE"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "NEGATIVE_THRESHOLD_ZONE",
+        "NEGATIVE_THRESHOLD_ZONE",
+        "NEGATIVE_THRESHOLD_ZONE"
+      ]
+    },
+    {
+      "classification": "ZONE_VARIABLE",
+      "ticker": "FIC-FIN-03",
+      "unique_count": 2,
+      "values": [
+        "NEUTRAL",
+        "POSITIVE_THRESHOLD_ZONE",
+        "NEUTRAL"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "NEGATIVE_THRESHOLD_ZONE",
+        "NEGATIVE_THRESHOLD_ZONE",
+        "NEGATIVE_THRESHOLD_ZONE"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-06",
+      "unique_count": 1,
+      "values": [
+        "POSITIVE_THRESHOLD_ZONE",
+        "POSITIVE_THRESHOLD_ZONE",
+        "POSITIVE_THRESHOLD_ZONE"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ]
+    },
+    {
+      "classification": "ZONE_STABLE",
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "NEUTRAL",
+        "NEUTRAL",
+        "NEUTRAL"
+      ]
+    }
+  ],
+  "status": "MEASURED",
+  "variance_subject_count": 1
+}

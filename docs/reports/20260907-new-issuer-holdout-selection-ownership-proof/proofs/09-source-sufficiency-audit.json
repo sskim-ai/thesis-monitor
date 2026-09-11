@@ -1,0 +1,84 @@
+{
+  "attempted_candidate_count": 5,
+  "base_market_data_request_count": "PARTIALLY_MEASURED",
+  "contract": "new-source-sufficiency-audit-v1",
+  "diagnostic_read_only_recheck_count": 5,
+  "directional_model_calls_on_source_insufficient": 0,
+  "failure_reason": "US_TARGET_4_HAS_ONLY_2_FINAL_PACKET_ELIGIBLE_CANDIDATES",
+  "official_profile_request_count": 10,
+  "official_profile_success_count": 10,
+  "rows": [
+    {
+      "base_status": "ASSEMBLED",
+      "final_directional_model_eligible": true,
+      "framework": "asset_heavy_or_cyclical",
+      "fundamental_sufficiency": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "initial_or_reserve": "INITIAL",
+      "market": "us",
+      "selected_before_failure": true,
+      "ticker": "NVDA",
+      "validation_errors": []
+    },
+    {
+      "base_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "final_directional_model_eligible": false,
+      "framework": "bank_or_insurer",
+      "fundamental_sufficiency": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "initial_or_reserve": "INITIAL",
+      "market": "us",
+      "missing_required_families": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "selected_before_failure": false,
+      "ticker": "JPM",
+      "validation_errors": []
+    },
+    {
+      "base_status": "VALIDATION_BLOCK",
+      "final_directional_model_eligible": false,
+      "framework": "standard_operating_company",
+      "fundamental_sufficiency": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "initial_or_reserve": "INITIAL",
+      "market": "us",
+      "preflight_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "selected_before_failure": false,
+      "ticker": "WMT",
+      "validation_errors": [
+        "current_price_unavailable",
+        "price_as_of_unavailable",
+        "technical_context_not_safe:UNAVAILABLE"
+      ]
+    },
+    {
+      "base_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "final_directional_model_eligible": false,
+      "framework": "bank_or_insurer",
+      "fundamental_sufficiency": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "initial_or_reserve": "INITIAL",
+      "market": "us",
+      "missing_required_families": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT"
+      ],
+      "selected_before_failure": false,
+      "ticker": "BRK-B",
+      "validation_errors": []
+    },
+    {
+      "base_status": "ASSEMBLED",
+      "final_directional_model_eligible": true,
+      "framework": "standard_operating_company",
+      "fundamental_sufficiency": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "initial_or_reserve": "RESERVE",
+      "market": "us",
+      "selected_before_failure": true,
+      "ticker": "MSFT",
+      "validation_errors": []
+    }
+  ],
+  "sec_companyfacts_cache_hit_count": 5,
+  "sec_companyfacts_network_request_count": 5,
+  "sec_companyfacts_network_success_count": 5,
+  "source_insufficient_candidate_count": 3,
+  "source_sufficient_candidate_count": 2,
+  "status": "FAIL_CLOSED"
+}

@@ -1,0 +1,107 @@
+{
+  "contract": "m4-domain-design-v1",
+  "design": {
+    "applicable_sector_families": [
+      "all reporting issuers with compatible comparatives"
+    ],
+    "comparability_requirements": [
+      "same semantic account",
+      "same duration and period type",
+      "same currency, entity, statement, and attribution basis",
+      "prior-year end distance must be compatible"
+    ],
+    "currency_basis": "same verified financial currency; no inferred FX conversion",
+    "current_parser_mapping_locations": [
+      "app/services/sec_financial_snapshot_service.py",
+      "app/services/kr_financial_lineage_service.py::growth_lineage_compatible"
+    ],
+    "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+    "decision_evidence_packet_representation": {
+      "activation_in_m4": false,
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "proposal": "optional typed financial_context on DecisionEvidenceRef"
+    },
+    "directional_core_usage": [
+      "establish trend or persistence only when comparable",
+      "required evidence for an explicit improvement/deterioration claim",
+      "not independent valuation evidence"
+    ],
+    "directly_reported_vs_derived": [
+      "DIRECT_REPORTED",
+      "DERIVED_SAFE"
+    ],
+    "domain": "same_period_prior_year_comparison",
+    "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+    "forbidden_derivations": [
+      "QTD vs YTD",
+      "quarter vs FY",
+      "different duration or fiscal basis",
+      "different attribution or consolidation basis",
+      "incompatible currency arithmetic",
+      "annualization of interim results"
+    ],
+    "implementation_risk": "MEDIUM",
+    "initial_analysis_use": "eligible as absolute evidence when valid and material",
+    "investment_purpose": [
+      "trend persistence",
+      "period-specific earnings direction"
+    ],
+    "kr_free_public_source_availability": "SUPPORTED_CURRENTLY",
+    "message_usage": [
+      "name the actual period type when material",
+      "do not call unavailable comparison negative evidence"
+    ],
+    "missing_data_behavior": "comparison unavailable; no trend claim and no negative polarity",
+    "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+    "non_applicable_or_caution_sector_families": [
+      "new issuers without comparable history",
+      "basis-changing issuers"
+    ],
+    "period_basis": [
+      "QTD vs QTD",
+      "YTD vs YTD",
+      "FY vs FY"
+    ],
+    "required_validation_tests": [
+      "QTD/QTD, YTD/YTD, and FY/FY acceptance",
+      "mixed period, basis, attribution, and currency rejection",
+      "safe cumulative-to-quarter derivation lineage"
+    ],
+    "safe_derivations": [
+      {
+        "failure_conditions": [
+          "any comparability mismatch"
+        ],
+        "formula": "current - prior comparable",
+        "inputs": 2,
+        "name": "same_period_absolute_delta",
+        "status": "DERIVED_SAFE"
+      },
+      {
+        "failure_conditions": [
+          "zero/negative base percentage request"
+        ],
+        "formula": "signed relation without negative-base growth percentage",
+        "inputs": 2,
+        "name": "same_period_direction_relation",
+        "status": "DERIVED_SAFE"
+      },
+      {
+        "failure_conditions": [
+          "fiscal year or basis mismatch"
+        ],
+        "formula": "current YTD - previous-quarter YTD",
+        "inputs": 2,
+        "name": "qtd_from_compatible_ytd",
+        "status": "DERIVED_SAFE"
+      }
+    ],
+    "schema_change_required": true,
+    "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+    "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+    "us_free_public_source_availability": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+    "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+    "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+  },
+  "status": "FROZEN_DESIGN"
+}

@@ -1,0 +1,655 @@
+{
+  "classification": "GENERIC_SOURCE_CLASS_WITH_BOUNDED_VARIANT",
+  "contract": "m8-kr-canonical-promotion-gap-diagnostic-v1",
+  "historical_root_cause": "axis_name_contains_consolidated_and_separate_while_member_is_unambiguous",
+  "real_cache_count": 7,
+  "real_denial_count": 0,
+  "real_promoted_fact_count": 14,
+  "real_source_candidate_count": 14,
+  "rows": [
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "c244f122ded8f4dfa42c303615f019ff6ec82118ba22fcd39af0b5595514276e",
+      "compact_ai_context_before_sha256": "c244f122ded8f4dfa42c303615f019ff6ec82118ba22fcd39af0b5595514276e",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:ad87a6b73402a5a471293625",
+      "downstream_existing_fcf_value": "73413665000000",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:51adb0da0984e956022fdea0",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "opendart-occurrence:98e8105d0afe192e7e9615b7",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "91742501000000"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:3dc163e4bcc362ada39e48bd",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "opendart-occurrence:5e0e4ef54dddd6518cac2352",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "18328836000000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "memory_semiconductor",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00164779",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "91742501000000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00164779",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "18328836000000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/000660/20260814003509",
+      "source_file_sha256": {
+        "CFS.json": "a81c0357d155c3bdd21ff3cf67375934f72dd6ca8cac3030c05cc381c35930cf",
+        "OFS.json": "0a469ec3624ac30916ab2bae9ee4cc6e305d602a96d8096e5dce462cab8fe759",
+        "xbrl.zip": "593776c29024f37910aafe5500390a135bdad0d8542288f5e81e61016c4f41b6"
+      },
+      "ticker": "000660",
+      "xbrl_context_count": 1505,
+      "xbrl_fact_count": 5095
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "cc4114fbc802ad39dc135beea69f9bf64e1c80ac6f7db5a0c2e49e628a2e32e0",
+      "compact_ai_context_before_sha256": "cc4114fbc802ad39dc135beea69f9bf64e1c80ac6f7db5a0c2e49e628a2e32e0",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:22ce330b69ec80953fca8816",
+      "downstream_existing_fcf_value": "131215149738",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:8877efd9251ed8d4e5abe45c",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003862",
+          "source_occurrence_id": "opendart-occurrence:c73efb640c80d8eb587cef60",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "157945519751"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:0fb216ce3b852f917db21f09",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003862",
+          "source_occurrence_id": "opendart-occurrence:79b3855880fa959d74733971",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "26730370013"
+        }
+      ],
+      "financial_type": "financial",
+      "idempotent": true,
+      "industry": "insurance_reinsurance",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00113191",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "157945519751",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00113191",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "26730370013",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/003690/20260814003862",
+      "source_file_sha256": {
+        "CFS.json": "068b876e7cb65e4714ccb8c0d8471d02078012c6c37bc46b81e2ff8514b0e8d1",
+        "OFS.json": "a652c0f4addd40a532da21339c8559cfb9136ee3415c1a0ee5570b07f691da22",
+        "xbrl.zip": "a4d27fd7fc1602bc491977206f4871f9e60b934361eef9047b8fd9bf5e18021d"
+      },
+      "ticker": "003690",
+      "xbrl_context_count": 3716,
+      "xbrl_fact_count": 11779
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "209305e96ab390bc4dea6cf39c9135411821f1332e66ca83d3bed644d1f31b7a",
+      "compact_ai_context_before_sha256": "209305e96ab390bc4dea6cf39c9135411821f1332e66ca83d3bed644d1f31b7a",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:9ba4496aca189283617b9f52",
+      "downstream_existing_fcf_value": "-1410093540455",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:e4fde9b454eb4f4b5952f8da",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "opendart-occurrence:2478e7d690c7625d82f2c5b9",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "708619472560"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:44449ab3860902d7637a426d",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "opendart-occurrence:e253b2c0c42ad12be856dcaa",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "2118713013015"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "steel_materials",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00155319",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "708619472560",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00155319",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "2118713013015",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/005490/20260814000957",
+      "source_file_sha256": {
+        "CFS.json": "f1ddb2d6e5ce1c606b766d246d556beee7a4084dd0369bf9a7c032e5e46c69fa",
+        "OFS.json": "226158c5ef882cb397271547fea6eb72e8da83fc31aeca85364cbac0280dd0cc",
+        "xbrl.zip": "709fe577d0e3637f63bde9844b1a4c7b016273bbd7721e36212b55c10115c9b7"
+      },
+      "ticker": "005490",
+      "xbrl_context_count": 1557,
+      "xbrl_fact_count": 6022
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "a2f71eda7794abf39f7565c5c72dfa597274f908b24e802e260294269341176e",
+      "compact_ai_context_before_sha256": "a2f71eda7794abf39f7565c5c72dfa597274f908b24e802e260294269341176e",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:1cd54ec2ba1468a3c9995ba3",
+      "downstream_existing_fcf_value": "114120374000000",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:32e6762174369dfe8cf46541",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "opendart-occurrence:2b081a2614b1e09e29efbfe3",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "145355192000000"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:21a0b5943c8a4cf074b9085c",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "opendart-occurrence:a93aca4e866b80824b62fb32",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "31234818000000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "memory_semiconductor",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00126380",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "145355192000000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00126380",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "31234818000000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/005930/20260814003699",
+      "source_file_sha256": {
+        "CFS.json": "ad329ffd4c111576bb0bab7c5a8424f2821195eb9b501aa3182b85eaa36c6fc5",
+        "OFS.json": "48055a9b9063fa8365dc0c7bc776fcd9e47e92d715b8d5ad526304c6069e0be7",
+        "xbrl.zip": "95504ab7d7b3bb213428329a2b455ae2d2d7c36190b8308bebffb322c3dce427"
+      },
+      "ticker": "005930",
+      "xbrl_context_count": 1074,
+      "xbrl_fact_count": 3932
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "b01fae4342acba27f36259f453baa2d6961f409fdb641eca2132132d867e2591",
+      "compact_ai_context_before_sha256": "b01fae4342acba27f36259f453baa2d6961f409fdb641eca2132132d867e2591",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:5af19373e8872dac35be071b",
+      "downstream_existing_fcf_value": "-168432727190",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:d38b32af1f770eef593943cb",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "opendart-occurrence:bbd39819d045d40ba25227eb",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "-81987921486"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:82b12607f635fb2e82546f98",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "opendart-occurrence:2f50fbb279b8c5aeb0892d91",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "86444805704"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "industrial_epc",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00105855",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "-81987921486",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00105855",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "86444805704",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/010120/20260814003088",
+      "source_file_sha256": {
+        "CFS.json": "9e2f62581e549f5b47a1cf4044fcb98b8630479e81563ee30e344707b21202c6",
+        "OFS.json": "a90fc9cacef0c6937c8cd570671bbe55a09978d92fb1c7c4fdd4cd7b7abef907",
+        "xbrl.zip": "9ad26c59baa23d18cef1f4f216d26d8ee7b398aabd95513b44ee6e006b24cba0"
+      },
+      "ticker": "010120",
+      "xbrl_context_count": 2688,
+      "xbrl_fact_count": 6943
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "1f8d1946132ccca0f99b59b6310dc21d6352866d2b150626f1dc6478f585bc13",
+      "compact_ai_context_before_sha256": "1f8d1946132ccca0f99b59b6310dc21d6352866d2b150626f1dc6478f585bc13",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:0012fe68531128addb435714",
+      "downstream_existing_fcf_value": "-1091983355000",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:5b3181aa38ddcbebd0b10e03",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "opendart-occurrence:92c2a16623533275735226a5",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "-370703561000"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:63b797c571a51e4ebfe6f2fa",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "opendart-occurrence:ba16123c3e725098bf145326",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "721279794000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "aerospace_epc",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00126566",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "-370703561000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00126566",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "721279794000",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/012450/20260814003198",
+      "source_file_sha256": {
+        "CFS.json": "da4731d6d78f72ef9355bbbdc96ba75a626b0dd8d501621d502b2513e69c35d1",
+        "OFS.json": "7ce442b972372eaa491edd0fbc5d0f4835dd078ba340694a373deee491a11b11",
+        "xbrl.zip": "b7d9528b2f1e26960a2f93d3859259d3483bad194a510f9d9e0b36ed7baf560a"
+      },
+      "ticker": "012450",
+      "xbrl_context_count": 2835,
+      "xbrl_fact_count": 8524
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 2,
+      "compact_ai_context_after_sha256": "56b306ea2837c81dcd1c28297ec33f2672baff5c21a0467c74cd085e2e36ee3b",
+      "compact_ai_context_before_sha256": "56b306ea2837c81dcd1c28297ec33f2672baff5c21a0467c74cd085e2e36ee3b",
+      "compact_ai_context_unchanged": true,
+      "denials": [],
+      "downstream_existing_fcf_fact_id": "cashflow:52f7d3bbcd7ba26314934549",
+      "downstream_existing_fcf_value": "984630455883",
+      "facts": [
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:facfc6a43bd57fbc81e83367",
+          "fact_type": "REPORTED",
+          "metric": "operating_cash_flow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "opendart-occurrence:1453b449fc40783af29fbe4d",
+          "source_semantic": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
+          "statement_basis": "consolidated",
+          "value": "1183462959438"
+        },
+        {
+          "currency": "KRW",
+          "entity_scope": "issuer_level",
+          "fact_id": "cashflow-reported:cc1270a93978e39b314bc397",
+          "fact_type": "REPORTED",
+          "metric": "ppe_capex_cash_outflow",
+          "period_end": "2026-06-30",
+          "period_start": "2026-01-01",
+          "period_type": "YTD",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "opendart-occurrence:04dfc1ccecea66dd013e3c61",
+          "source_semantic": "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+          "statement_basis": "consolidated",
+          "value": "198832503555"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "transport_logistics",
+      "ocf_exact_context": {
+        "account_id": "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00360595",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "1183462959438",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "ppe_exact_context": {
+        "account_id": "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+        "context_ref": "CFY2026dHYA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+        "currency": "KRW",
+        "dimensions": [
+          [
+            "ifrs-full:ConsolidatedAndSeparateFinancialStatementsAxis",
+            "ifrs-full:ConsolidatedMember"
+          ]
+        ],
+        "duration_days": 181,
+        "entity_identifier": "00360595",
+        "period_end": "2026-06-30",
+        "period_start": "2026-01-01",
+        "reported_amount": "198832503555",
+        "statement_basis": "consolidated",
+        "unit_ref": "KRW"
+      },
+      "promoted_fact_count": 2,
+      "source_candidates": 2,
+      "source_directory": "/Users/sskim/Documents/Codex/2026-07-04/the/thesis-monitor-phase7-2/data/cache/opendart/recovery-final/086280/20260814002854",
+      "source_file_sha256": {
+        "CFS.json": "d5a4e14fc102f5f0e832926430e4681d1270fdab5149609f4864180dfbf16703",
+        "OFS.json": "203bc9d1fcf3b07232a86f8080ff7d9172eca4c7671eddb820ef00495a0da5c3",
+        "xbrl.zip": "f5ad1f4baa12fbe4a8507ede98acb693080533ab7a15b31c72ad1895ce84eda7"
+      },
+      "ticker": "086280",
+      "xbrl_context_count": 1512,
+      "xbrl_fact_count": 5756
+    }
+  ]
+}

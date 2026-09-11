@@ -1,0 +1,211 @@
+{
+  "generation_id": "20260910-m12y-fictional-20260910T043154Z-2761aab01862",
+  "historical_output_rewritten": false,
+  "model_semantic_violation_count": 0,
+  "rows": [
+    {
+      "alias_selection_count": 45,
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "fictional:FIC-FIN-01:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-01:business-thesis",
+            "statement": "Recurring demand and disciplined reinvestment support durable economics.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E04",
+            "canonical_ref": "fictional:FIC-FIN-01:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-01:operating-evidence",
+            "statement": "Comparable-period revenue and operating profit both improved.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          },
+          {
+            "alias": "E08",
+            "canonical_ref": "canonical:fictional:FIC-FIN-01:ocf-current",
+            "selected_ref": "canonical:fictional:FIC-FIN-01:ocf-current",
+            "statement": "Reported operating cash flow for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "fictional:FIC-FIN-01:business-thesis",
+          "fictional:FIC-FIN-01:operating-evidence",
+          "canonical:fictional:FIC-FIN-01:ocf-current"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "expected": "STRENGTHENED",
+      "observed": "STRENGTHENED",
+      "status": "PASS",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "alias_selection_count": 41,
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E06",
+            "canonical_ref": "fictional:FIC-FIN-02:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-02:business-thesis",
+            "statement": "Demand remains healthy, but conversion of growth into cash needs confirmation.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E08",
+            "canonical_ref": "canonical:fictional:FIC-FIN-02:ocf-current",
+            "selected_ref": "canonical:fictional:FIC-FIN-02:ocf-current",
+            "statement": "Reported operating cash flow for YTD ending 2026-06-30 is lower than the prior-year comparable period.",
+            "supported_directions": [
+              "WEAKENED"
+            ]
+          },
+          {
+            "alias": "E10",
+            "canonical_ref": "fictional:FIC-FIN-02:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-02:operating-evidence",
+            "statement": "Comparable-period sales and accounting profit improved.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "WEAKENED",
+        "selected_refs": [
+          "fictional:FIC-FIN-02:business-thesis",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "fictional:FIC-FIN-02:operating-evidence"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED",
+          "WEAKENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "expected": "WEAKENED",
+      "observed": "WEAKENED",
+      "status": "PASS",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "alias_selection_count": 41,
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E03",
+            "canonical_ref": "fictional:FIC-FIN-03:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-03:business-thesis",
+            "statement": "A recent operating rebound is visible, but cumulative recovery is incomplete.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          },
+          {
+            "alias": "E06",
+            "canonical_ref": "fictional:FIC-FIN-03:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-03:operating-evidence",
+            "statement": "The latest quarter is profitable while the year-to-date result remains a loss.",
+            "supported_directions": []
+          },
+          {
+            "alias": "E08",
+            "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+            "selected_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+            "statement": "Reported operating income for YTD ending 2026-06-30.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "fictional:FIC-FIN-03:business-thesis",
+          "fictional:FIC-FIN-03:operating-evidence",
+          "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "expected": "STRENGTHENED",
+      "observed": "STRENGTHENED",
+      "status": "PASS",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "alias_selection_count": 41,
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E06",
+            "canonical_ref": "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+            "selected_ref": "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+            "statement": "Safely derived net financial income effect for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          },
+          {
+            "alias": "E09",
+            "canonical_ref": "fictional:FIC-FIN-04:operating-evidence",
+            "selected_ref": "fictional:FIC-FIN-04:operating-evidence",
+            "statement": "Operating result is broadly flat while reported net income improved.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          },
+          {
+            "alias": "E10",
+            "canonical_ref": "fictional:FIC-FIN-04:business-thesis",
+            "selected_ref": "fictional:FIC-FIN-04:business-thesis",
+            "statement": "The operating franchise is stable but has not shown material acceleration.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+          "fictional:FIC-FIN-04:operating-evidence",
+          "fictional:FIC-FIN-04:business-thesis"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "expected": "UNCHANGED",
+      "observed": "UNCHANGED",
+      "status": "PASS",
+      "ticker": "FIC-FIN-04"
+    }
+  ],
+  "status": "PASS",
+  "validator_false_accept_count": 0,
+  "validator_false_reject_count": 0
+}

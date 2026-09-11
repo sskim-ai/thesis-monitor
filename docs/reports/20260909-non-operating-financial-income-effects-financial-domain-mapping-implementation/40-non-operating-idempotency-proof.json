@@ -1,0 +1,37 @@
+{
+  "contract": "m11-idempotency-proof-v1",
+  "duplicate_output_count": 0,
+  "rows": [
+    {
+      "idempotent": true,
+      "ticker": "000660"
+    },
+    {
+      "idempotent": true,
+      "ticker": "003690"
+    },
+    {
+      "idempotent": true,
+      "ticker": "005490"
+    },
+    {
+      "idempotent": true,
+      "ticker": "005930"
+    },
+    {
+      "idempotent": true,
+      "ticker": "010120"
+    },
+    {
+      "idempotent": true,
+      "ticker": "012450"
+    },
+    {
+      "idempotent": true,
+      "ticker": "086280"
+    }
+  ],
+  "same_derived_fact_ids": true,
+  "same_direct_fact_ids": true,
+  "status": "PASS"
+}

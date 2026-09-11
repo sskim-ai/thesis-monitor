@@ -1,0 +1,34 @@
+{
+  "contract": "m12d-qtd-ytd-validator-source-audit-v1",
+  "current_file_sha256": "9492412c3fbf91f7a9d265d34af287d9cd6cf47e4f541f0312263f0d25ff66e0",
+  "function": "validate_qtd_ytd_conflict_semantics",
+  "path": "app/services/directional_financial_context_service.py",
+  "requirements_observed": {
+    "one_claim_must_link_same_metric_qtd_and_ytd_refs": true,
+    "qtd_marker_required": true,
+    "relation_marker_required": true,
+    "ytd_marker_required": true
+  },
+  "token_probe": {
+    "공존한다": {
+      "relation": true
+    },
+    "누적 영업손실": {
+      "ytd": true
+    },
+    "분기 영업흑자": {
+      "qtd": true
+    },
+    "상충한다": {
+      "relation": false
+    },
+    "상충해": {
+      "relation": false
+    },
+    "충돌한다": {
+      "relation": true
+    }
+  },
+  "validator_claim_paths_include_confirmation_and_invalidation_conditions": true,
+  "status": "PASS"
+}

@@ -1,0 +1,19 @@
+{
+  "actual_sha256": "e2f0c5f84e637ca10a18211c7fa8a4c061232eac5d15ca4874ceccf2930a7fc0",
+  "adjacent_checksum_matches": true,
+  "adjacent_checksum_present": true,
+  "contract": "indexed-result-bundle-integrity-v1",
+  "crc_failure": null,
+  "duplicate_member_count": 0,
+  "expected_sha256": "e2f0c5f84e637ca10a18211c7fa8a4c061232eac5d15ca4874ceccf2930a7fc0",
+  "hash_mismatch_count": 0,
+  "index_membership_mismatch": 0,
+  "indexed_payload_count": 9,
+  "member_count": 13,
+  "name": "thesis-monitor-20260908-us-source-universe-expansion-fresh-generalization-proof-resume-report.zip",
+  "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-us-source-universe-expansion-fresh-generalization-proof-resume-report.zip",
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0,
+  "status": "PASS",
+  "unsafe_member_count": 0
+}

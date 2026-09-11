@@ -1,0 +1,11 @@
+{
+  "contract": "m12r-qtd-ytd-validator-root-cause-v1",
+  "missed_valid_marker": "누적",
+  "model_semantic_failure": false,
+  "recognized_before": [
+    "ytd",
+    "누계"
+  ],
+  "root_cause": "QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT",
+  "status": "CONFIRMED"
+}

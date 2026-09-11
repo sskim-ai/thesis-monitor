@@ -1,0 +1,11 @@
+{
+  "dual_market_diagnostic_source_readiness": "PASS",
+  "kr_fundamental_source_sufficient_count": 12,
+  "kr_identity_audit_readiness": "PASS",
+  "ownership_generalization_verdict": "NOT_ESTABLISHED",
+  "readiness": "READY_FOR_NEW_ISSUER_HOLDOUT_SELECTION_REVIEW",
+  "reserve_buffer_status": "PASS",
+  "status": "PASS",
+  "us_fundamental_source_sufficient_count": 4,
+  "us_universe_readiness": "PASS"
+}

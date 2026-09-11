@@ -1,0 +1,7 @@
+{
+  "failure_classification": "VALIDATOR_FALSE_REJECT_ALIAS_RESOLUTION_GAP",
+  "model_semantic_violation_count_after_raw_alias_replay": 0,
+  "next_repair": "RESOLVE_CANONICAL_REFS_TO_SOURCE_ALIASES_BEFORE_DELTA_AUDIT",
+  "status": "FAIL",
+  "target": "UNCHANGED"
+}

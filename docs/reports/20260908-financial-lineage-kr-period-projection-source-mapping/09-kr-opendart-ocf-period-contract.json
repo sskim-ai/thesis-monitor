@@ -1,0 +1,28 @@
+{
+  "adapter_capability_evidence": "SYNTHETIC_CONTRACT_FIXTURE",
+  "calendar_start_guessing": false,
+  "contract": "m7-kr-opendart-ocf-duration-period-v1",
+  "cumulative_semantic": "YTD_OR_FY_NOT_QTD",
+  "metric": "operating_cash_flow",
+  "preserved_from_xbrl": [
+    "period_start",
+    "period_end",
+    "duration_days",
+    "context_ref",
+    "entity_identifier"
+  ],
+  "real_blocked_count": 7,
+  "real_issuer_support_claimed": false,
+  "real_resolved_count": 0,
+  "report_label_only_promotion": false,
+  "required_exact_match": [
+    "taxonomy_element",
+    "reported_amount",
+    "KRW_unit",
+    "statement_basis",
+    "entity_identifier",
+    "unique_duration_context"
+  ],
+  "source": "existing_offline_opendart_xbrl",
+  "status": "IMPLEMENTED_EXACT_CONTEXT_ONLY_REAL_COVERAGE_BLOCKED"
+}

@@ -1,0 +1,21 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "allowed_changes": [
+    "shared financial-framework reference-role classification",
+    "bounded validator consumers",
+    "deterministic threshold-zone shadow metadata",
+    "fictional-only runner tests reports"
+  ],
+  "forbidden_changes": [
+    "production renderer",
+    "production schedules",
+    "real issuer calls",
+    "provider fetches",
+    "majority voting",
+    "balance averaging",
+    "fixed scorecard",
+    "threshold or increment changes"
+  ]
+}

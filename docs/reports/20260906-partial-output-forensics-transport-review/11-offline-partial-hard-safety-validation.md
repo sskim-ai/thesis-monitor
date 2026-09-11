@@ -1,0 +1,21 @@
+# 11 Offline Partial Hard Safety Validation
+
+Contract: `offline-partial-hard-safety-validation-v1`
+
+Status: `PASS_WITH_EXPLICIT_NOT_MEASURED_FIELDS`
+
+```json
+{
+  "accounting_attribution_substitution": "NOT_MEASURED",
+  "adr_share_basis_mixing": "NOT_MEASURED",
+  "contract": "offline-partial-hard-safety-validation-v1",
+  "fabricated_numeric_provenance": "NOT_MEASURED",
+  "known_hard_safety_regression": 0,
+  "measurement_boundary": "DIRECTIONAL_CORE_OUTPUT_AND_FROZEN_ALIAS_GRAPH_ONLY",
+  "price_or_technical_promoted_to_fundamental_logic": 0,
+  "provisional_earnings_fabrication": "NOT_MEASURED",
+  "status": "PASS_WITH_EXPLICIT_NOT_MEASURED_FIELDS",
+  "supply_promoted_to_fundamental_logic": 0,
+  "unavailable_alias_promoted_to_fact": 0
+}
+```

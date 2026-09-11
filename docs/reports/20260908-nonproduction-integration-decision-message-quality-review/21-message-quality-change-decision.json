@@ -1,0 +1,11 @@
+{
+  "contract": "m2-message-quality-change-decision-v1",
+  "decision": "NO_RENDERER_PARAPHRASE_REPAIR",
+  "future_change": "Any specificity remediation belongs upstream in evidence/reasoning and requires a separately frozen model revalidation.",
+  "primary_root_causes": {
+    "MIXED": 36,
+    "MODEL_GENERIC_REEVALUATION_LANGUAGE": 13,
+    "RENDERER_TEMPLATE_REPETITION": 1
+  },
+  "status": "FROZEN"
+}

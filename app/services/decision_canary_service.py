@@ -306,9 +306,14 @@ def file_sha256(path: Path) -> str:
 
 def strict_json_schema(value: object) -> object:
     if isinstance(value, dict):
-        transformed = {
-            key: strict_json_schema(item) for key, item in value.items() if key != "default"
-        }
+        transformed: dict[str, object] = {}
+        for key, item in value.items():
+            if key in {"default", "discriminator"}:
+                continue
+            target = "anyOf" if key == "oneOf" else key
+            if target in transformed:
+                raise ValueError(f"strict_schema_keyword_collision:{target}")
+            transformed[target] = strict_json_schema(item)
         properties = transformed.get("properties")
         if isinstance(properties, dict):
             transformed["required"] = list(properties)

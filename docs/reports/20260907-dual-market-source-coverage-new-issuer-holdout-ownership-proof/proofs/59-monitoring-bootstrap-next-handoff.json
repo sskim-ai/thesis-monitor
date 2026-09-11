@@ -1,0 +1,6 @@
+{
+  "contract": "monitoring-bootstrap-next-handoff-v1",
+  "next_scope": "BOUNDED_US_SOURCE_COVERAGE_REMEDIATION",
+  "readiness": "NOT_READY_US_SOURCE_COVERAGE_BLOCKED",
+  "status": "NOT_READY"
+}

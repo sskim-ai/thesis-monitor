@@ -1,0 +1,9 @@
+{
+  "status": "DETERMINISTIC_REPAIR_PASS_FULL_CANARY_NOT_MEASURED",
+  "offline_original_fic_fin_08_replay": "PASS",
+  "positive_fixture_count": 12,
+  "negative_fixture_count": 20,
+  "fixture_status": "PASS",
+  "full_fictional_exclusion_result": "NOT_MEASURED",
+  "original_m12e_failed_verdict_preserved": true
+}

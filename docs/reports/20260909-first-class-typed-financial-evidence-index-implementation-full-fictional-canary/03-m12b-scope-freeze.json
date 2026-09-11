@@ -1,0 +1,20 @@
+{
+  "batch_split": 0,
+  "contract": "m12b-scope-freeze-v1",
+  "fictional_context_count": 2,
+  "fictional_model_calls": 6,
+  "fictional_repetition_count": 3,
+  "fictional_subject_count": 8,
+  "judge_model_calls": 0,
+  "model": "gpt-5.6-sol",
+  "preferred_grounding_architecture": "FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION",
+  "production_side_effects_allowed": false,
+  "provider_source_fetches": 0,
+  "real_model_calls": 0,
+  "reasoning_effort": "xhigh",
+  "runtime_mode": "MODEL_CONTEXT_COUPLED",
+  "status": "FROZEN",
+  "subjects_per_context": 4,
+  "timeout_seconds": 1800,
+  "wrapper_auto_retry": 0
+}

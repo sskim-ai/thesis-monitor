@@ -1,0 +1,19 @@
+{
+  "contract": "m12-fcf-label-negative-control-v1",
+  "detected": true,
+  "status": "PASS",
+  "validation": {
+    "contract": "directional-financial-semantic-validator-v1",
+    "errors": [
+      "ppe_only_cash_conversion_proxy_called_fcf"
+    ],
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "invalid_financial_reference_count": 0,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 1,
+    "partial_debt_total_claim_count": 0,
+    "valid": false,
+    "year_end_as_yoy_count": 0
+  }
+}

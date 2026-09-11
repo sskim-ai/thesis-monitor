@@ -1,0 +1,22 @@
+{
+  "activated": [
+    "exact SEC/IFRS/DART balance-sheet semantic registry",
+    "exact OpenDART instant-context reconciliation",
+    "canonical point-in-time financial facts",
+    "financial_context adapter metadata",
+    "derived complete debt total and net debt"
+  ],
+  "contract": "m9-source-mapping-activation-surface-v1",
+  "not_activated": [
+    "compact AI context",
+    "Directional Core prompt",
+    "Price-Timing prompt",
+    "renderer",
+    "source sufficiency",
+    "Daily Delta",
+    "warnings",
+    "working capital",
+    "non-operating effects",
+    "production delivery"
+  ]
+}

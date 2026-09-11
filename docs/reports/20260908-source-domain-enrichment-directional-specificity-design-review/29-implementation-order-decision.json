@@ -1,0 +1,13 @@
+{
+  "contract": "m4-implementation-order-decision-v1",
+  "order": [
+    "B_PACKET_FINANCIAL_CONTEXT_EXTENSION",
+    "A_EXISTING_CANONICAL_DOMAIN_ADAPTERS",
+    "A_ADDITIONAL_SOURCE_MAPPING_SUBPACKAGES",
+    "C_DIRECTIONAL_SPECIFICITY_CONTRACT",
+    "D_SECTOR_GATE_REVIEW_IF_COVERAGE_PROVES_REQUIRED"
+  ],
+  "reason": "freeze additive packet representation before source producers or prompt semantics",
+  "simultaneous_source_prompt_renderer_change": false,
+  "status": "DECIDED"
+}

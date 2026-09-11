@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "base_sha256": "bff087fc514ca765a7a2cfb6108c72198eb37ced62c5595bdefe04f90894f615",
+      "changed": false,
+      "current_sha256": "bff087fc514ca765a7a2cfb6108c72198eb37ced62c5595bdefe04f90894f615",
+      "expected_changed": false,
+      "path": "scripts/sol_runtime_adapter_m12w.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

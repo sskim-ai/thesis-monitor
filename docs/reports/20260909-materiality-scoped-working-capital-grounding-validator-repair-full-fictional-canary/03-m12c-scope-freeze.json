@@ -1,0 +1,36 @@
+{
+  "contract": "m12c-scope-freeze-v1",
+  "forensic_before_implementation": true,
+  "allowed_branch_a_change": [
+    "working-capital grounding requirement from selection-triggered to material-claim/metric-use-triggered",
+    "generic fixtures and M12C audit orchestration"
+  ],
+  "frozen": [
+    "M12B first-class projection",
+    "financial context selector",
+    "Directional prompt",
+    "Price-Timing prompt",
+    "output schema",
+    "QTD/YTD validator",
+    "non-working-capital financial validators",
+    "renderer",
+    "calibration and thresholds",
+    "source sufficiency",
+    "Daily Delta",
+    "monitoring lifecycle",
+    "warning semantics",
+    "production behavior"
+  ],
+  "prohibited": [
+    "ticker or case branch in production validator",
+    "prompt-only repair",
+    "threshold relaxation",
+    "provider fetch",
+    "real issuer model call",
+    "production mutation or send",
+    "schedule resume"
+  ],
+  "branch_decision_pending_at_scope_freeze": true,
+  "model_calls_before_forensic_freeze": 0,
+  "status": "FROZEN"
+}

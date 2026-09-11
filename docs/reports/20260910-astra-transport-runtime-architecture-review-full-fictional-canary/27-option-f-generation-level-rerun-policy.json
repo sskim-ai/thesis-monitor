@@ -1,0 +1,6 @@
+{
+  "id": "F",
+  "reason": "Generation retry cannot repair unseen real cohort exposure; selective retry forbidden.",
+  "selected": false,
+  "status": "BLOCKING"
+}

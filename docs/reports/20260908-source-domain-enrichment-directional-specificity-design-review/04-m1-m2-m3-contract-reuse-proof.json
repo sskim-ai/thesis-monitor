@@ -1,0 +1,33 @@
+{
+  "contract": "m4-m1-m2-m3-contract-reuse-proof-v1",
+  "rows": [
+    {
+      "phase": "M1",
+      "reopened": false,
+      "reused": [
+        "Unknown nonnegative semantics",
+        "early Core validation"
+      ]
+    },
+    {
+      "phase": "M2",
+      "reopened": false,
+      "reused": [
+        "source-to-Core preserved-domain audit",
+        "Directional/Timing ownership",
+        "file-only message boundary"
+      ]
+    },
+    {
+      "phase": "M3",
+      "reopened": false,
+      "reused": [
+        "initial vs baseline vs Daily Delta separation",
+        "baseline cutoff",
+        "late pre-baseline evidence is not a delta",
+        "idempotent warning/assessment boundary"
+      ]
+    }
+  ],
+  "status": "PASS"
+}

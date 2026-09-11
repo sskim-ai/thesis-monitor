@@ -1,0 +1,13 @@
+{
+  "candidate_source_request_count": 0,
+  "contract": "source-configuration-preflight-v1",
+  "protected_source_config_bound": true,
+  "real_model_invocation_count": 0,
+  "required_setting_presence": {
+    "OPENDART_API_KEY": true,
+    "SEC_USER_AGENT": true
+  },
+  "secret_values_emitted": 0,
+  "source_loader_identity_sha256": "6031756dc73d4a8d10535610c41d35cd970d535c81dcc53eb3a894a17a544251",
+  "status": "PASS"
+}

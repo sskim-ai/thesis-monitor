@@ -1,0 +1,83 @@
+{
+  "contract": "m2-candidate-change-decision-record-v1",
+  "ordered_plan": [
+    "prove lifecycle bootstrap and Daily Delta in nonproduction",
+    "separately decide archive source-domain enrichment",
+    "then freeze any Core specificity change before a new model proof"
+  ],
+  "rows": [
+    {
+      "affected_modules": [
+        "app/services/nonproduction_lifecycle_decision_service.py"
+      ],
+      "class": "LIFECYCLE_INTEGRATION_CHANGE",
+      "decision": "IMPLEMENTED_NONPRODUCTION_ONLY",
+      "expected_benefit": "Prevents Initial/Baseline/Daily semantic collapse.",
+      "model_revalidation_required": false,
+      "real_holdout_required": false,
+      "required_tests": "tests/test_nonproduction_lifecycle_decision_service.py",
+      "root_cause": "Lifecycle provenance was not attached to shared decision output.",
+      "semantic_risk": "LOW"
+    },
+    {
+      "affected_modules": [],
+      "class": "SOURCE_TO_CORE_INPUT_CHANGE",
+      "decision": "NO_CHANGE",
+      "expected_benefit": "Avoids unjustified broad input expansion.",
+      "model_revalidation_required": false,
+      "real_holdout_required": false,
+      "required_tests": "source-to-core lineage audit",
+      "root_cause": "No target-domain packet-to-Core drop was detected.",
+      "semantic_risk": "NONE"
+    },
+    {
+      "affected_modules": [
+        "future Core prompt/acceptance contract"
+      ],
+      "class": "DIRECTIONAL_REASONING_CHANGE",
+      "decision": "DEFERRED_REQUIRES_USER_DECISION",
+      "expected_benefit": "More issuer-specific anchors without invented detail.",
+      "model_revalidation_required": true,
+      "real_holdout_required": true,
+      "required_tests": "new frozen model validation and unseen real holdout",
+      "root_cause": "Model-owned generic reasoning under sparse/equivalent inputs.",
+      "semantic_risk": "HIGH"
+    },
+    {
+      "affected_modules": [],
+      "class": "MESSAGE/RENDERER_CHANGE",
+      "decision": "NO_CHANGE",
+      "expected_benefit": "Preserves reasoning ownership.",
+      "model_revalidation_required": false,
+      "real_holdout_required": false,
+      "required_tests": "existing renderer regression",
+      "root_cause": "Renderer is mostly a structural wrapper, not the source of substance.",
+      "semantic_risk": "NONE"
+    },
+    {
+      "affected_modules": [],
+      "class": "NO_CHANGE",
+      "decision": "PRESERVE_SHARED_DECISION_AND_RENDERER_CONTRACTS",
+      "expected_benefit": "Avoids conflating message variety with investment quality.",
+      "model_revalidation_required": false,
+      "real_holdout_required": false,
+      "required_tests": "existing ownership and renderer regressions",
+      "root_cause": "The shared ownership, composition, and structural renderer passed.",
+      "semantic_risk": "NONE"
+    },
+    {
+      "affected_modules": [
+        "future official source enrichment"
+      ],
+      "class": "DEFERRED_REQUIRES_USER_DECISION",
+      "decision": "SEPARATE_SOURCE_DOMAIN_DESIGN",
+      "expected_benefit": "Potentially improves decision sufficiency with safe evidence.",
+      "model_revalidation_required": true,
+      "real_holdout_required": true,
+      "required_tests": "period/entity/currency/semantic lineage tests",
+      "root_cause": "Several requested domains are absent from the preserved archive.",
+      "semantic_risk": "HIGH"
+    }
+  ],
+  "status": "FROZEN"
+}

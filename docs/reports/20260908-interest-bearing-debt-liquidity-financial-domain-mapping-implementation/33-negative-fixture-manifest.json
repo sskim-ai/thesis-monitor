@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "case": "total_liabilities_only_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "total_current_liabilities_only_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "total_noncurrent_liabilities_only_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "cash_debt_date_mismatch_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "currency_mismatch_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "unit_missing_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "entity_scope_mismatch_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "statement_basis_mismatch_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "parent_child_overlap_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "current_only_partial_debt_not_total",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "restricted_cash_not_netted",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "combined_cash_restricted_not_netted",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "unsupported_convertible_preferred_liability_blocks_completeness",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "financial_sector_generic_net_debt_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "bank_industrial_route_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "insurance_industrial_route_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "reinsurance_industrial_route_blocked",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "adr_ratio_financial_conversion_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "ticker_specific_mapping_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "price_currency_copy_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "partial_debt_labeled_total_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "working_capital_domain_emission_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "non_operating_domain_emission_absent",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "source_conflict_blocked_not_averaged",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    }
+  ],
+  "contract": "m9-negative-fixture-manifest-v1",
+  "fixture_count": 24,
+  "rejected_count": 24
+}

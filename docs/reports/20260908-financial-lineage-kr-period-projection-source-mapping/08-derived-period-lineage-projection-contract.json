@@ -1,0 +1,23 @@
+{
+  "contract": "canonical-financial-lineage-projection-v1",
+  "derived_lineage_projected_fact_count": 380,
+  "derived_period_projected_fact_count": 189,
+  "formula_counts": {
+    "CURRENT_YTD_MINUS_PRIOR_QUARTER_YTD": 93,
+    "OCF_MINUS_PPE_CAPEX_CASH_OUTFLOW": 191,
+    "PRIOR_FY_PLUS_CURRENT_YTD_MINUS_PRIOR_COMPARABLE_YTD": 40,
+    "Q1_QTD_EQUALS_VERIFIED_Q1_YTD": 56
+  },
+  "incomplete_behavior": "remain_blocked",
+  "new_derived_fact_count": 0,
+  "projected_fields": [
+    "formula",
+    "derivation_version",
+    "ordered_input_fact_ids",
+    "ordered_input_source_refs",
+    "period_and_fiscal_identity",
+    "currency_and_unit",
+    "issuer_entity_statement_basis",
+    "source_document_occurrence_and_raw_sha"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "actionable_trade_false_negative": 0,
+  "contract": "clause-aware-nominal-negation-scope-v1",
+  "double_negation_fail_closed": "PASS",
+  "exact_source_phrase_whitelist": 0,
+  "historical_fixture_is_primary_implementation_target": 0,
+  "later_actionable_directive_detected": "PASS",
+  "nominal_negation": "PASS",
+  "ticker_specific_exception": 0,
+  "trade_negation_model": "CLAUSE_AWARE",
+  "writer_prompt_change_for_wulf_wording": 0
+}

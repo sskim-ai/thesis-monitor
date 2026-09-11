@@ -1,0 +1,10 @@
+{
+  "after_implementation": "8 fictional subjects x 3 repeats",
+  "contract": "m12a-next-model-canary-scope-v1",
+  "first_failure_stop": true,
+  "fresh_real_after_fictional_pass_only": true,
+  "model_call_in_m12a": 0,
+  "same_frozen_cases": true,
+  "selective_rerun": false,
+  "status": "NOT_RUN"
+}

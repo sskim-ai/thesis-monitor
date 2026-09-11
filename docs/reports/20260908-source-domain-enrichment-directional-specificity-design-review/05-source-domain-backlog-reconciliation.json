@@ -1,0 +1,44 @@
+{
+  "contract": "m4-source-domain-backlog-reconciliation-v1",
+  "reconciled_count": 6,
+  "rows": [
+    {
+      "domain": "same_period_prior_year_comparison",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    },
+    {
+      "domain": "operating_cash_flow",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    },
+    {
+      "domain": "ppe_capex_simple_cash_conversion",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    },
+    {
+      "domain": "debt_liquidity",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    },
+    {
+      "domain": "non_operating_financial_income_effects",
+      "m4_state": "CONTRACT_CLOSED",
+      "next_action": "SCHEMA_THEN_BOUNDED_SOURCE_ADAPTER",
+      "prior_state": "PRESERVE_AS_SEPARATE_DESIGN_REVIEW"
+    }
+  ],
+  "source": "docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/25-source-domain-backlog-update.json",
+  "status": "PASS"
+}

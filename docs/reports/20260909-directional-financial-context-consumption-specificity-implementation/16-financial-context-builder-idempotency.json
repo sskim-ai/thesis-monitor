@@ -1,0 +1,14 @@
+{
+  "hashes": {
+    "FIC-FIN-01": "ab45ea0d1209ef32875aaf58348a999e87ffa7abec13cbe3083b5f9bb229f779",
+    "FIC-FIN-02": "9b2eacc9a25875bb09b8c08d472bf7606a97aef4bf7012f17cee3397bd0a3e6f",
+    "FIC-FIN-03": "247066517013b4a33df101673509be1661066ca90463c3283908ddd46c5d19c7",
+    "FIC-FIN-04": "4e9549603c65d890af22f0e884882c603813cf8a41f39f4b3b1c14fcf6db79d8",
+    "FIC-FIN-05": "03c8edc9edb2441f6fae9b49c8e6337fe56e118c5a8b744b28ee90320fc0f16d",
+    "FIC-FIN-06": "382d422600b89957b331e948c0b519db14474d24de66c965320c2516000b4011",
+    "FIC-FIN-07": "7898f02bac2affd67558c0081b05fc21cdfde226f944d544b5956cc761d11dd4",
+    "FIC-FIN-08": "1b87e2df91f6ebf33e2d3ac7e3ec1cbce0c0e39b209d05655aa2398e8d599e0b"
+  },
+  "same_packet_same_selection": true,
+  "status": "PASS"
+}

@@ -1,0 +1,6 @@
+{
+  "monitoring_remains_paused": true,
+  "next_scope": "GENERIC_OWNERSHIP_ARCHITECTURE_REPAIR",
+  "readiness": "NOT_READY",
+  "status": "PASS"
+}

@@ -1,0 +1,22 @@
+{
+  "contract": "m12e-frozen-source-interpretation-notes-v1",
+  "source_lock_sha256": "f560bb1aa9ed648916d5a1b5c40ca2973c6cdd27a16297789195189b467666c6",
+  "source_changes": 0,
+  "purpose": "Separate illustrative calibration patterns from exact frozen canary amounts; not model-facing guidance",
+  "notes": [
+    {
+      "ticker": "FIC-FIN-02",
+      "operating_cash_flow": "40 million USD, prior comparable YTD 100 million USD",
+      "ocf_less_ppe_capex": "-20 million USD, prior comparable YTD 55 million USD",
+      "interpretation_boundary": "OCF is positive and lower, not negative operating cash flow. The post-PPE residual is negative. Inventory is compared with prior year-end, not prior-year comparable YTD.",
+      "generic_fixture_difference": "CAL-BAL-02 describes a negative-OCF archetype. It must not overwrite the unchanged FIC-FIN-02 evidence."
+    },
+    {
+      "ticker": "FIC-FIN-04",
+      "operating_income": "52 million USD, prior comparable QTD 50 million USD",
+      "net_income": "90 million USD, prior comparable QTD 45 million USD",
+      "net_financial_income_effect": "38 million USD, prior comparable QTD 4 million USD",
+      "interpretation_boundary": "The operating result has a small positive change but the source narrative says broadly flat, without material acceleration. Do not rewrite it as an exact zero change or treat the non-operating boost alone as a material operating anchor."
+    }
+  ]
+}

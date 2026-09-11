@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "942274b7dd10150ddbe5972d77f4804fbf275502dc989f0672ca8de7d9b8da81",
+  "checksum_status": "PASS",
+  "contract": "m11-latest-result-integrity-v1",
+  "expected_sha256": "942274b7dd10150ddbe5972d77f4804fbf275502dc989f0672ca8de7d9b8da81",
+  "filename": "thesis-monitor-20260909-inventory-receivables-working-capital-financial-domain-mapping-implementation-report.zip",
+  "integrity": "PASS",
+  "internal_index": {
+    "hash_mismatch_count": 0,
+    "missing_payload_count": 0,
+    "secret_scan_failure_count": 0,
+    "size_mismatch_count": 0
+  },
+  "m10_next_scope": "NON_OPERATING_FINANCIAL_INCOME_EFFECTS_MAPPING_IMPLEMENTATION",
+  "m10_status": "M10_COMPLETE"
+}

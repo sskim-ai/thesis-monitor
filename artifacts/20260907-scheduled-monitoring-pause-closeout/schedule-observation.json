@@ -1,0 +1,265 @@
+{
+  "contract": "scheduled-monitoring-pause-observation-v1",
+  "timezone": "Asia/Seoul",
+  "authorized_logical_schedule_count": 2,
+  "authorized_markets": [
+    "us",
+    "kr"
+  ],
+  "before_observed_at": "2026-09-07T16:10:16+09:00",
+  "after_verified_at": "2026-09-07T16:30:35+09:00",
+  "repository_before_mutation": {
+    "branch": "codex/20260907-scheduled-monitoring-pause-capacity-failure-partial-proof-closeout",
+    "head": "309cd95959d184461a02078aa0c5b2c388d65f0a",
+    "status": "CLEAN"
+  },
+  "codex_automation_update_tool": {
+    "attempted": true,
+    "result": "UNAVAILABLE_USE_CODEX_APP_MCP",
+    "fallback_method": "STATUS_FIELD_ONLY_WITH_EXACT_BACKUP",
+    "fields_changed": [
+      "status"
+    ]
+  },
+  "objects": [
+    {
+      "id": "com.seungsoo.thesis-monitor.daily",
+      "backend": "launchd_user_agent",
+      "market": "us",
+      "purpose": "packet_producer",
+      "command": "python -m app.jobs.monitor_daily --market us",
+      "configured_triggers_kst": [
+        "08:05",
+        "08:10",
+        "08:15",
+        "08:20"
+      ],
+      "definition_sha256": "020df8c4d3c2a9bfe5e49dea3cff506552c1798fcd4916f07155a68a600505ee",
+      "before": {
+        "disable_override": false,
+        "loaded": true,
+        "state": "not running",
+        "runs": 16,
+        "last_exit_code": 0
+      },
+      "after": {
+        "disable_override": true,
+        "loaded": false,
+        "state": "not loaded",
+        "runs": 16,
+        "last_exit_code": 0,
+        "effective_next_trigger": null
+      },
+      "mutation": "launchctl_disable_then_bootout_after_nonrunning_verification",
+      "forced_termination": false
+    },
+    {
+      "id": "thesis-monitor-ai-review-us-primary",
+      "backend": "codex_cron_automation",
+      "market": "us",
+      "purpose": "ai_review_primary",
+      "configured_triggers_kst": [
+        "08:15"
+      ],
+      "before_definition_sha256": "28179792c052f03c6e0c5b40ffee8f029442f9d1dc97df5552056d03680c3f2a",
+      "after_definition_sha256": "83eee7c0efa97466da0360f23ef319cc2bd4f21230926ad695f78a4f727d4bbf",
+      "before": {
+        "status": "ACTIVE"
+      },
+      "after": {
+        "status": "PAUSED",
+        "effective_next_trigger": null
+      },
+      "mutation": "status_only",
+      "forced_termination": false
+    },
+    {
+      "id": "thesis-monitor-ai-review-us-backup",
+      "backend": "codex_cron_automation",
+      "market": "us",
+      "purpose": "ai_review_backup",
+      "configured_triggers_kst": [
+        "08:30"
+      ],
+      "before_definition_sha256": "f87c2a653f34f72adaf4329f51ec79bd3318fbdab14e7e4fd7c74e4990ee97a1",
+      "after_definition_sha256": "80e1d57ac4cb43fa8196a47a4210b94138dfb6b717114e716c3c2d9cbadf6e2e",
+      "before": {
+        "status": "ACTIVE"
+      },
+      "after": {
+        "status": "PAUSED",
+        "effective_next_trigger": null
+      },
+      "mutation": "status_only",
+      "forced_termination": false
+    },
+    {
+      "id": "com.seungsoo.thesis-monitor.kr-close",
+      "backend": "launchd_user_agent",
+      "market": "kr",
+      "purpose": "packet_producer",
+      "command": "python -m app.jobs.monitor_daily --market kr",
+      "configured_triggers_kst": [
+        "16:05",
+        "16:20",
+        "16:50"
+      ],
+      "definition_sha256": "9eb77b8c019452154dc820086da01b0a721a7ab408aa9543426744b269247e3a",
+      "before": {
+        "disable_override": false,
+        "loaded": true,
+        "state": "not running",
+        "runs": 9,
+        "last_exit_code": 0
+      },
+      "after": {
+        "disable_override": true,
+        "loaded": false,
+        "state": "not loaded",
+        "runs": 11,
+        "last_exit_code": 0,
+        "effective_next_trigger": null,
+        "runs_note": "the already-loaded calendar job invoked once at 16:20 after disable override; it completed before bootout and no process was force-terminated"
+      },
+      "mutation": "launchctl_disable_then_bootout_after_nonrunning_verification",
+      "forced_termination": false
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-primary",
+      "backend": "codex_cron_automation",
+      "market": "kr",
+      "purpose": "ai_review_primary",
+      "configured_triggers_kst": [
+        "16:15"
+      ],
+      "before_definition_sha256": "c4c1e2e9937d99ec3d32eb444d2e13fd9a97df64a3d0e6dac017a04de869cce4",
+      "after_definition_sha256": "f917e9d5247b0fda8adb4d8c3c17f6d67e9d4845585256da79f3ae823b1256b0",
+      "before": {
+        "status": "ACTIVE"
+      },
+      "after": {
+        "status": "PAUSED",
+        "effective_next_trigger": null
+      },
+      "mutation": "status_only",
+      "forced_termination": false
+    },
+    {
+      "id": "thesis-monitor-ai-review-kr-backup",
+      "backend": "codex_cron_automation",
+      "market": "kr",
+      "purpose": "ai_review_backup",
+      "configured_triggers_kst": [
+        "16:55"
+      ],
+      "before_definition_sha256": "4dbccd5fa08301415e48dca5b3512d76f8ae77e7102f7ea51e924ed72eea7689",
+      "after_definition_sha256": "20c7a801a45ff6e55d37022c204666642c53a35bfd9d340b9d6c7294421d3417",
+      "before": {
+        "status": "ACTIVE"
+      },
+      "after": {
+        "status": "PAUSED",
+        "effective_next_trigger": null
+      },
+      "mutation": "status_only",
+      "forced_termination": false
+    }
+  ],
+  "shared_jobs_inspected_not_changed": [
+    {
+      "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "backend": "launchd_user_agent",
+      "command": "python -m app.jobs.ai_review fallback --market all",
+      "configured_triggers_kst": [
+        "08:40",
+        "17:10"
+      ],
+      "definition_sha256": "079d4a7ca01707bee818a3598a445e10155ddc9025e463197e44e52c0ec4207a",
+      "state": "not running",
+      "per_market_pause_supported": false,
+      "changed": false
+    },
+    {
+      "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+      "backend": "launchd_user_agent",
+      "command": "python -m app.jobs.ai_review retry-delivery --market all",
+      "configured_triggers_kst": [
+        "08:22",
+        "08:25",
+        "08:30",
+        "16:22",
+        "16:25",
+        "16:30"
+      ],
+      "definition_sha256": "2ee920d697da1732efc79916d50a84e9f8b674284f741e909f3ca322e6319f6c",
+      "state": "not running",
+      "per_market_pause_supported": false,
+      "changed": false
+    }
+  ],
+  "last_successful_monitor_runs": {
+    "us": {
+      "id": 59,
+      "run_date": "2026-09-07",
+      "status": "success",
+      "ticker_count": 14,
+      "success_count": 14,
+      "failure_count": 0,
+      "completed_at_utc": "2026-09-06 23:06:44.223852"
+    },
+    "kr": {
+      "id": 60,
+      "run_date": "2026-09-07",
+      "status": "success",
+      "ticker_count": 8,
+      "success_count": 8,
+      "failure_count": 0,
+      "completed_at_utc": "2026-09-07 07:06:25.549127"
+    }
+  },
+  "same_day_delivery_state_at_pause": {
+    "us": {
+      "sent": 15,
+      "pending": 0
+    },
+    "kr": {
+      "sent": 0,
+      "pending": 9,
+      "pending_state": "held",
+      "packet_id": "2026-09-07-kr-run-60-4ec80c93055c"
+    }
+  },
+  "post_kr_primary_trigger_process_check": {
+    "observed_at": "2026-09-07T16:15:45+09:00",
+    "matching_process_count": 0,
+    "forced_termination_count": 0
+  },
+  "pause_transition_observation": {
+    "scheduled_invocation_count": 1,
+    "market": "kr",
+    "trigger_kst": "16:20",
+    "evidence": "kr-close.out.log mtime advanced to 2026-09-07T16:20:14+09:00 and launchd runs advanced from 10 to 11",
+    "cause": "disable override did not unload the already-loaded calendar job",
+    "completed_before_final_verification": true,
+    "forced_termination": false,
+    "distinct_monitor_run_row_created": false,
+    "latest_monitor_run_id_after_invocation": 60,
+    "database_write_scope": "UNKNOWN_WITHIN_EXISTING_SAME_DAY_RUN; no task-initiated manual DB mutation",
+    "telegram_delivery_after_invocation": {
+      "kr_sent": 0,
+      "kr_pending": 9
+    },
+    "corrective_action": "both producer agents booted out only after not-running state was verified"
+  },
+  "pause_result": {
+    "us": "PAUSED_BY_TASK",
+    "kr": "BLOCKED_OUT_OF_SCOPE_DEPENDENCY",
+    "kr_blocker": "existing held KR9 can still be dispatched by unchanged shared 17:10 fallback; no existing per-market pause control",
+    "scheduler_objects_changed_count": 6,
+    "authorized_schedule_change_count": 6,
+    "unauthorized_schedule_change_count": 0,
+    "auto_resume_configured": false
+  },
+  "backup_location": "scheduler-backup/",
+  "restoration_requires_new_explicit_user_instruction": true
+}

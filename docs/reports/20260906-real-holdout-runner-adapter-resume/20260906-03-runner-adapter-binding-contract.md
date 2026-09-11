@@ -1,0 +1,13 @@
+# 03 Runner Adapter Binding Contract
+
+| Field | Value |
+| --- | --- |
+| adapter_api_widened | 0 |
+| canonical_adapter_parameters | ["prompt", "output", "log", "schema", "cwd", "timeout", "state_namespace", "invocation_id", "stage", "batch_id", "subject_count"] |
+| continuation_transport_adapter_mutation | 0 |
+| contract | runner-adapter-binding-contract-v1 |
+| normalization | VERIFY_CODEX_BINARY_IDENTITY_THEN_REMOVE_RUNNER_ONLY_KEY |
+| runner_owned_parameters | ["codex_bin"] |
+| status | PASS |
+
+Machine proof: `proofs/03-runner-adapter-binding-contract.json`.

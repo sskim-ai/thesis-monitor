@@ -1,0 +1,15 @@
+{
+  "after": {
+    "buy": 6.5,
+    "direction": "BUY",
+    "sell": 3.5
+  },
+  "before": {
+    "buy": 6.0,
+    "direction": "BUY",
+    "sell": 4.0
+  },
+  "changed_field": "derived fictional expected target only",
+  "source_case_change_count": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,33 @@
+{
+  "contract": "m8-remaining-source-mapping-backlog-v1",
+  "count": 5,
+  "higher_risk_domain_count": 3,
+  "items": [
+    {
+      "action": "DEFER_NO_TICKER_EXCEPTION",
+      "classification": "SOURCE_EVIDENCE_INSUFFICIENT",
+      "item": "hut_ppe_source_evidence"
+    },
+    {
+      "action": "DEFER_UNTIL_OFFICIAL_OCCURRENCE_EXISTS",
+      "classification": "SOURCE_COVERAGE_ABSENT_CLASS_ALREADY_SUPPORTED",
+      "item": "skhy_financial_statement_occurrence"
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "interest_bearing_debt_and_liquidity",
+      "priority": 1
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "inventory_receivables_working_capital",
+      "priority": 2
+    },
+    {
+      "classification": "HIGHER_RISK_DOMAIN",
+      "item": "non_operating_financial_income_effects",
+      "priority": 3
+    }
+  ],
+  "low_risk_source_gap_count": 2
+}

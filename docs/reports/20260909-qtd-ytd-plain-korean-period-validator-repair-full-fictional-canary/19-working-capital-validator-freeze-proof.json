@@ -1,0 +1,19 @@
+{
+  "contract": "m12d-working-capital-validator-freeze-v1",
+  "file_freeze": {
+    "after_sha256": "bd0f11c411e76467e9c392773284ccaf582253ccf590fef77e1ec71aa157af61",
+    "before_sha256": "bd0f11c411e76467e9c392773284ccaf582253ccf590fef77e1ec71aa157af61",
+    "change_count": 0,
+    "changed": false,
+    "path": "scripts/directional_financial_context_m12g.py",
+    "status": "PASS"
+  },
+  "regressions": {
+    "fic02_run1": "PASS",
+    "fic02_run2": "PASS",
+    "fic06_corrected": "PASS",
+    "fic06_old": "PASS"
+  },
+  "status": "PASS",
+  "working_capital_validator_semantic_change_count": 0
+}

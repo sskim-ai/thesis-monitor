@@ -1,0 +1,9 @@
+# USKR22 Dev-Set Retirement
+
+| Gate | Value |
+| --- | --- |
+| contract | "uskr22-devset-retirement-v1" |
+| generation_id | "20260906-uskr22-nominal-negation-20260906T010416Z-e45acd16cf43" |
+| status | "NOT_RETIRED" |
+| reason | "a_gate_not_clean" |
+| regression_fixture_retained | 1 |

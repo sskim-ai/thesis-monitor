@@ -1,5 +1,68 @@
 # Next Session Prompt
 
+## 2026-09-10 M12W Nonproduction Closeout
+
+Start with `docs/reports/20260910-m12w-completion.md` and the M12W report directory.
+M12W restored the proof-critical runner to `gpt-5.6-sol / xhigh`, 1800 seconds and four
+subjects/context while preserving the M12U source/prompt/schema/semantic contract.
+Frozen implementation: `538cb761e1c10754cd74dd66b22d3e2f803561ac`.
+Generation: `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`.
+Source lock: `ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa`.
+
+The first context returned normally in 407.720583s: Sol/xhigh identity and schema 4/4 PASS,
+with timeout/capacity/internal retry/wrapper retry/orphan all zero. It then failed the frozen
+FIC-FIN-01 ordinal target because observed BUY was 6.5 versus expected 6.0. Whole-generation
+stop was applied; the remaining five contexts are NOT_RUN. Full 8x3 stability is NOT_MEASURED.
+
+Next bounded scope: `BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`. Diagnose the general contract
+boundary for the FIC-FIN-01 source pattern without ticker-specific exceptions, threshold
+relaxation, candidate rewriting or reuse of this generation. Do not resume/selectively rerun it,
+start a real issuer proof, return automatically to Astra, merge, deploy or resume schedules.
+Fresh real and production remain NOT_READY. Eight schedules stay PAUSED. Local focused/full
+260/3255 PASS; hosted CI retains five historical portability failures and zero new M12W failures.
+
+All older next-session directives below are historical, not current execution authorization.
+
+## 2026-09-10 M12V Nonproduction Closeout
+
+Start with `docs/reports/20260910-m12v-completion.md` and the M12V report directory.
+M12V_RUNTIME_PROOF_FAIL: the new first fictional Astra/xhigh context hit the frozen 2400s
+watchdog without final output. One attempt, zero outputs, five contexts NOT_RUN, no retry,
+no orphan. Immutable implementation: 46ec85c62f37ff3a81aed356d3b1265d74ee5511.
+Generation: 20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8.
+Source lock: 98b38c1b63b147269b25953a1770cd97c4eb8eb354fa3102ddc797d81b433577.
+All financial semantics and 679 frozen code/contract files remain unchanged after execution.
+Next bounded review: ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW.
+Explain why longer finite tolerance was insufficient for the observed request; do not infer
+backend acceptance/progress/model identity from a local CLI header or silent process.
+Do not resume this generation, increase the timeout, split context, call another model, or
+expose a real issuer without a new authorized scope. Financial canary stability remains
+NOT_MEASURED. Eight schedules stay PAUSED. No automatic monitoring resume, merge or deployment.
+Fresh real and production NOT_READY. Local focused/full 243/3238 PASS; hosted CI retains five
+historical portability failures, new M12V failures 0. P0 0/P1 2 (runtime proof and CI backlog).
+
+All older next-session directives below are historical, not current execution authorization.
+
+## 2026-09-10 M12U Nonproduction Closeout
+
+M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.
+
+The M12T and older sections below are historical. They do not authorize retries or production resumption.
+
+## 2026-09-10 M12T Nonproduction Closeout
+
+M12T: PARTIAL_STOPPED. Read `docs/reports/20260910-m12t-completion.md` and
+`docs/reports/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/62-program-completion.json`.
+Frozen implementation: `695464f2b122bfe6e5378476b066cd945415eb61`.
+Transport returned 2/2 in 321.70s/331.91s with timeout/internal retry/wrapper retry 0.
+New generation emitted 8 schema-valid rows, but final acceptance was 6/8: FIC-FIN-08
+explicit non-applicability false reject and FIC-FIN-05 frozen 5.5/6.0 leverage boundary violation.
+Remaining four contexts were NOT_RUN; full stability is NOT_MEASURED.
+Next: bounded generic exclusion-scope repair and full-source leverage/market-expectation
+independence review, no current-generation hotfix or retry. CI retains the same five portability
+failures; new M12T failures 0. Fresh real and production NOT_READY. Eight schedules remain PAUSED.
+This nonproduction state does not supersede or deploy changes to the historical live implementation.
+
 Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
 integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
 `docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact
@@ -1068,3 +1131,15 @@ claim-scoped Codex state preflight, model reach, V2 candidate/accepted/explicit 
 daily-review quality receipt, KRX night `BAS_DD` mapping, fallback route, and exactly-once delivery.
 Do not manually run a Scheduled Task, resend a completed packet, expose recipient values, or treat
 the `22/22` dedicated-sink proof as natural LIVE_PASS. Production Assist remains OFF.
+
+The latest nonproduction experiment is M12X. Start with
+`docs/reports/20260910-m12x-completion.md` and the M12X program-completion JSON. The FIC-FIN-01
+positive stronger-bucket contract is closed at `BUY 6.5`; do not change that target or the frozen
+Directional/financial semantics.
+
+Next action: `SOL_RUNTIME_REGRESSION_REVIEW`, limited to preserved-output analysis of two failures:
+FIC-FIN-05 observed `BUY 4.0` versus frozen 4.5, and FIC-FIN-08 explicit insurance exclusion
+language flagged by the net-debt/financial-sector validator. Determine whether each is a model
+variance, over-constrained exact target, or validator exclusion-language false positive. Do not
+invoke a model, rerun a context, change a candidate, relax a threshold, or resume monitoring during
+that review. Any later canary requires a separate approval and an entirely new generation.

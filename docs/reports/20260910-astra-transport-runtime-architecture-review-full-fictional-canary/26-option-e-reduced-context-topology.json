@@ -1,0 +1,6 @@
+{
+  "id": "E",
+  "reason": "Changes coupling semantics; successful and failed histories already share topology, no size-causality evidence.",
+  "selected": false,
+  "status": "BLOCKING"
+}

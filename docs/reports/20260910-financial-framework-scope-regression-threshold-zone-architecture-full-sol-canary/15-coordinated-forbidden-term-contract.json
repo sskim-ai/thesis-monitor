@@ -1,0 +1,165 @@
+{
+  "rows": [
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc21c\ubd80\ucc44\ub098 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \uc9c0\uae09\uc5ec\ub825\uacfc \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uc744 \ud3c9\uac00\ud574\uc57c \ud55c\ub2e4"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "\uc21c\ubd80\ucc44\ub098 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \uc9c0\uae09\uc5ec\ub825\uacfc \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uc744 \ud3c9\uac00\ud574\uc57c \ud55c\ub2e4"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "\uc21c\ubd80\ucc44\ub098 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \uc9c0\uae09\uc5ec\ub825\uacfc \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uc744 \ud3c9\uac00\ud574\uc57c \ud55c\ub2e4.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "Use regulatory capital and underwriting discipline instead of net debt and working capital"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "Use regulatory capital and underwriting discipline instead of net debt and working capital"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "Use regulatory capital and underwriting discipline instead of net debt and working capital.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "roles": {
+        "application_count": 0,
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "Rather than net debt or working capital, apply regulatory capital and underwriting discipline"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "sector_interpretation.text",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "role": "CONTRASTIVE_REPLACEMENT",
+            "text": "Rather than net debt or working capital, apply regulatory capital and underwriting discipline"
+          }
+        ],
+        "roles": [
+          "CONTRASTIVE_REPLACEMENT"
+        ]
+      },
+      "text": "Rather than net debt or working capital, apply regulatory capital and underwriting discipline.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    }
+  ],
+  "status": "PASS",
+  "supported_coordination": [
+    "Korean conjunctive/disjunctive framework clusters",
+    "English and/or framework clusters"
+  ]
+}

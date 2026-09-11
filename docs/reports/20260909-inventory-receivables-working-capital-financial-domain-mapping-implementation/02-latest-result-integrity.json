@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "f175e53c0c1e7ae9e17d885f7348040cec77a4333c75e5b84220f86916e5d790",
+  "checksum_status": "PASS",
+  "contract": "m10-latest-result-integrity-v1",
+  "expected_sha256": "f175e53c0c1e7ae9e17d885f7348040cec77a4333c75e5b84220f86916e5d790",
+  "filename": "thesis-monitor-20260908-interest-bearing-debt-liquidity-financial-domain-mapping-implementation-report.zip",
+  "integrity": "PASS",
+  "internal_index": {
+    "hash_mismatch_count": 0,
+    "missing_payload_count": 0,
+    "secret_scan_failure_count": 0,
+    "size_mismatch_count": 0
+  },
+  "m9_next_scope": "INVENTORY_RECEIVABLES_WORKING_CAPITAL_MAPPING_IMPLEMENTATION",
+  "m9_status": "M9_COMPLETE"
+}

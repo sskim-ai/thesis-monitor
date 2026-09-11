@@ -1,0 +1,116 @@
+{
+  "contract": "m12r-qtd-ytd-positive-fixtures-v1",
+  "fixture_count": 6,
+  "pass_count": 6,
+  "rows": [
+    {
+      "fixture_id": "positive-01",
+      "status": "PASS",
+      "text": "최근 분기는 흑자지만 연초 이후 누적 기준은 적자다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-02",
+      "status": "PASS",
+      "text": "분기 영업흑자와 누계 영업손실이 공존한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-03",
+      "status": "PASS",
+      "text": "QTD profit is positive while YTD operating income remains negative.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-04",
+      "status": "PASS",
+      "text": "The latest quarter is profitable whereas year-to-date income is negative.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-05",
+      "status": "PASS",
+      "text": "Quarterly profit is positive while cumulative operating income is negative.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "fixture_id": "positive-06",
+      "status": "PASS",
+      "text": "이번 분기는 개선됐지만 연초부터 누적 실적은 아직 손실이다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 1,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    }
+  ],
+  "status": "PASS"
+}

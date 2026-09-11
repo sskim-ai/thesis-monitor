@@ -1,0 +1,85 @@
+{
+  "contract": "m12x-model-free-ordinal-fixtures-v1",
+  "status": "FROZEN",
+  "policy": {
+    "qualitative_ordinal": true,
+    "fixed_score_rule": false,
+    "evidence_count_bucket_rule": false,
+    "valuation_required_for_stronger_bucket": false,
+    "symmetric": true
+  },
+  "fixtures": [
+    {
+      "id": "POS-ORD-01",
+      "side": "POSITIVE",
+      "pattern": "A positive issuer-level anchor and one current or economically independent corroborating fact establish direction, while material limitations leave no broader stronger support.",
+      "expected_direction": "BUY",
+      "expected_buy": 6.0,
+      "expected_sell": 4.0,
+      "reason": "This is minimum directional support."
+    },
+    {
+      "id": "POS-ORD-02",
+      "side": "POSITIVE",
+      "pattern": "Distinct current operating improvement, cash-conversion improvement, and balance-sheet resilience materially strengthen breadth and quality; limitations remain but do not make adjacent buckets genuinely ambiguous.",
+      "expected_direction": "BUY",
+      "expected_buy": 6.5,
+      "expected_sell": 3.5,
+      "reason": "This is stronger current support beyond minimum BUY."
+    },
+    {
+      "id": "POS-ORD-03",
+      "side": "POSITIVE",
+      "pattern": "Multiple positive economic axes exist, but an unresolved causal or persistence issue directly threatens whether the observed improvement represents durable support.",
+      "expected_direction": "BUY",
+      "expected_buy": 6.0,
+      "expected_sell": 4.0,
+      "reason": "The existing adjacent-bucket tie-break selects the less directional bucket."
+    },
+    {
+      "id": "POS-ORD-04",
+      "side": "POSITIVE",
+      "pattern": "Strong distinct current operating, cash-conversion, and balance-sheet support is established; safe valuation is the only missing domain.",
+      "expected_direction": "BUY",
+      "expected_buy": 6.5,
+      "expected_sell": 3.5,
+      "reason": "Valuation absence limits conviction but is not a universal stronger-bucket cap."
+    },
+    {
+      "id": "POS-ORD-05",
+      "side": "POSITIVE",
+      "pattern": "Strong distinct current fundamental support is established and expectations are elevated, but the expectation evidence does not establish current deterioration or a valuation conclusion.",
+      "expected_direction": "BUY",
+      "expected_buy": 6.5,
+      "expected_sell": 3.5,
+      "reason": "Elevated expectations are a caution whose economic force is evaluated in context, not an automatic downgrade."
+    },
+    {
+      "id": "NEG-ORD-01",
+      "side": "NEGATIVE",
+      "pattern": "A negative issuer-level material anchor and sufficiently current or economically independent corroboration establish minimum negative direction.",
+      "expected_direction": "SELL",
+      "expected_buy": 4.0,
+      "expected_sell": 6.0,
+      "reason": "This is minimum directional support on the symmetric negative side."
+    },
+    {
+      "id": "NEG-ORD-02",
+      "side": "NEGATIVE",
+      "pattern": "Distinct current operating deterioration, cash-conversion deterioration, and balance-sheet fragility materially strengthen negative breadth and quality beyond minimum direction.",
+      "expected_direction": "SELL",
+      "expected_buy": 3.5,
+      "expected_sell": 6.5,
+      "reason": "This is stronger negative support under the symmetric contract."
+    },
+    {
+      "id": "NEG-ORD-03",
+      "side": "NEGATIVE",
+      "pattern": "Multiple negative economic axes exist, but an unresolved causal or persistence issue directly leaves minimum and stronger SELL buckets genuinely adjacent.",
+      "expected_direction": "SELL",
+      "expected_buy": 4.0,
+      "expected_sell": 6.0,
+      "reason": "The existing adjacent-bucket tie-break selects the less directional bucket."
+    }
+  ]
+}

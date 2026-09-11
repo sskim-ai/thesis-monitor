@@ -1,0 +1,47 @@
+{
+  "architecture_hashes": {
+    "directional_balance_service": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "directional_core_candidate_schema_owner": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+    "directional_core_prompt_owner": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061"
+  },
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "calibration_contract_sha256": "3443dc0f7505d01bc5ba965fa0f20128f12f2678d5e16d5f883ce41f47067d33",
+  "contract": "fictional-calibration-input-freeze-v1",
+  "fixture_manifest_sha256": "8218c902d517ee84e6045ebe7eabf8c0b7c547eb9ccbb6cdbc644d0d2fa8abb1",
+  "generation_id": "20260908-directional-calibration-fictional-20260908T043000Z-3d5220a4528a",
+  "implementation_commit": "00c65bb233eedad45bf6ecf1805d391ab6be9426",
+  "implementation_tree": "50f7bf3d26e06ddce37207401ec16f5af5c8a522",
+  "model": "gpt-5.6-sol",
+  "prompt_schema_rows": [
+    {
+      "context": 1,
+      "prompt_sha256": "b9873fd651fb6906d929b29316d6c876278ae0d5dad4a94c2798ab86c520be96",
+      "schema_sha256": "00727a60188955fa669bc97d8cce7aad703f4fcfb53ec6be9ee5d17610dd3753",
+      "tickers": [
+        "FICUS01",
+        "FICUS02",
+        "FICUS03",
+        "FICUS04"
+      ]
+    },
+    {
+      "context": 2,
+      "prompt_sha256": "18eda7598f00d959ad8f1e5ab6fb7cfdeb0c37954aa326693d6206b9f18feec1",
+      "schema_sha256": "bd6cdf7f4a78fe49e8583e902c5c21e66c23b680cb31c08fce3826b0dc64ae34",
+      "tickers": [
+        "FICKR01",
+        "FICKR02",
+        "FICKR03",
+        "FICKR04"
+      ]
+    }
+  ],
+  "prompt_set_sha256": "4f869333e1df0d2fd883b95b6188bc9c49734865301ab96b683429f5fed94550",
+  "reasoning_effort": "xhigh",
+  "schema_set_sha256": "5eb1eaca6071db492c791fb3d55c5e115d72e3dc0927609e121802a23a281648",
+  "status": "FROZEN",
+  "subjects_per_context": 4,
+  "timeout_owner_count": 1,
+  "timeout_seconds": 1800,
+  "wrapper_retry_count": 0
+}

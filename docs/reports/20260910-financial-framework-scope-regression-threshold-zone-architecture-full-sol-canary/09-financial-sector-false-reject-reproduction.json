@@ -1,0 +1,18 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "ticker": "FIC-FIN-08",
+  "source_row_rewritten": false,
+  "text": "보험사에는 산업회사식 순부채와 운전자본 대신 보험 인수 규율과 규제자본 기준을 적용해야 한다.",
+  "roles_before": {
+    "net_debt": "ASSERTED_STATE",
+    "working_capital": "ASSERTED_STATE"
+  },
+  "errors_before": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "actual_industrial_framework_misuse_count": 0,
+  "reproduction": "PASS"
+}

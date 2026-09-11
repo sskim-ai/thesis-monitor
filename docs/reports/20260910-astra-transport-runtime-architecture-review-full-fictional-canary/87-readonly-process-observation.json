@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-09-10 00:20:48 UTC",
+  "rows": [
+    "  PID  PPID  %CPU    RSS     ELAPSED COMM",
+    "  686     1   0.0   9296 06-09:03:37 /opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python",
+    "  882     1   0.0   8288 04-17:43:45 /opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python",
+    "15513 92170   0.0 157760       00:19 /opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "15556 15513 100.0 398624       00:13 /opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "92133     1   0.0   2352    10:45:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/browser_crashpad_handler",
+    "92135     1   0.0   2256    10:45:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/browser_crashpad_handler",
+    "92139 92130   4.8  99872    10:45:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Service).app/Contents/MacOS/Codex (Service)",
+    "92140 92130   0.0  69344    10:45:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Service).app/Contents/MacOS/Codex (Service)",
+    "92141 92130   0.0  32608    10:45:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Service).app/Contents/MacOS/Codex (Service)",
+    "92170 92130   0.9 289600    10:45:45 /Applications/ChatGPT.app/Contents/Resources/codex",
+    "92172 92130   0.3 237216    10:45:44 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Renderer).app/Contents/MacOS/Codex (Renderer)",
+    "92173 92130   3.8 724976    10:45:44 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Renderer).app/Contents/MacOS/Codex (Renderer)",
+    "92204 92130   0.0  34304    10:45:41 /Users/sskim/.codex/computer-use/Codex Computer Use.app/Contents/MacOS/SkyComputerUseService",
+    "92316 92130   0.0 273120    10:45:35 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Renderer).app/Contents/MacOS/Codex (Renderer)",
+    "92318 92130   0.0  43744    10:45:35 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Renderer).app/Contents/MacOS/Codex (Renderer)",
+    "92383 92170   0.0  58992    10:44:55 /Applications/ChatGPT.app/Contents/Resources/codex-code-mode-host",
+    "92444 92130   0.0  25536    10:42:45 /Applications/ChatGPT.app/Contents/Frameworks/Codex Framework.framework/Versions/152.0.7977.83/Helpers/Codex (Service).app/Contents/MacOS/Codex (Service)"
+  ],
+  "exit_code": 0,
+  "interpretation": "Current authoring app and local validation are visible. No additional model-exec process identified from this command-name snapshot. Historical contention and backend state remain NOT_MEASURED."
+}

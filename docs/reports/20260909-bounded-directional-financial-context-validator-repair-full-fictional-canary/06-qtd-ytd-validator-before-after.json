@@ -1,0 +1,32 @@
+{
+  "after": {
+    "status": "PASS",
+    "ticker": "FIC-FIN-03",
+    "validation": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 4,
+      "linked_claim_count": 7,
+      "qtd_evidence_ref_count": 1,
+      "required": true,
+      "required_metrics": [
+        "operating_income"
+      ],
+      "valid": true,
+      "ytd_evidence_ref_count": 1
+    },
+    "validator_behavior": "SAME_METRIC_QTD_YTD_REFS_PLUS_BOUNDED_PERIOD_LANGUAGE_AND_RELATION"
+  },
+  "before": {
+    "errors": [
+      "qtd_ytd_conflict_not_explicit"
+    ],
+    "status": "FAIL",
+    "ticker": "FIC-FIN-03",
+    "validator_behavior": "QTD_OR_QUARTER_AND_YTD_OR_NUGYE_ONLY"
+  },
+  "contract": "m12r-qtd-ytd-validator-before-after-v1",
+  "fictional_case_changed": false,
+  "prompt_changed": false,
+  "status": "PASS"
+}

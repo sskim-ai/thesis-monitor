@@ -1,0 +1,80 @@
+{
+  "cases": [
+    {
+      "case": "financial_income_cost_same_ytd",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_interest_income",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_interest_expense",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_fx_gain",
+      "status": "PASS"
+    },
+    {
+      "case": "direct_fx_loss",
+      "status": "PASS"
+    },
+    {
+      "case": "broad_other_income_context",
+      "status": "PASS"
+    },
+    {
+      "case": "broad_other_expense_context",
+      "status": "PASS"
+    },
+    {
+      "case": "asset_disposal_gain",
+      "status": "PASS"
+    },
+    {
+      "case": "income_tax_expense",
+      "status": "PASS"
+    },
+    {
+      "case": "official_continuing_operations_income",
+      "status": "PASS"
+    },
+    {
+      "case": "kr_exact_opendart_financial_income_qtd_ytd",
+      "status": "PASS"
+    },
+    {
+      "case": "kr_exact_opendart_financial_cost_qtd_ytd",
+      "status": "PASS"
+    },
+    {
+      "case": "us_ifrs_exact_synthetic_source_class",
+      "status": "PASS"
+    },
+    {
+      "case": "safe_aggregate_net_financial_effect",
+      "status": "PASS"
+    },
+    {
+      "case": "official_direct_net_precedence",
+      "status": "PASS"
+    },
+    {
+      "case": "holding_company_component_without_non_core_label",
+      "status": "PASS"
+    },
+    {
+      "case": "prior_year_same_period_comparison",
+      "status": "PASS"
+    },
+    {
+      "case": "same_input_rerun_idempotent",
+      "status": "PASS"
+    }
+  ],
+  "contract": "m11-positive-fixture-manifest-v1",
+  "count": 18,
+  "pass_count": 18,
+  "synthetic_separate_from_real_coverage": true
+}

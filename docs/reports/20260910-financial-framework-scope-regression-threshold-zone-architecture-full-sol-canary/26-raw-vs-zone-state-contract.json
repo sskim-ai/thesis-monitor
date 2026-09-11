@@ -1,0 +1,11 @@
+{
+  "additive_field": "decision_threshold_zone",
+  "balance_rewrite_count": 0,
+  "direction_rewrite_count": 0,
+  "raw_fields_preserved": [
+    "overall_direction",
+    "directional_balance",
+    "hold_lean"
+  ],
+  "status": "PASS"
+}

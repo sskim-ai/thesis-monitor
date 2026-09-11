@@ -1,0 +1,14 @@
+{
+  "changed_paths": [
+    "M\tapp/services/cash_flow_capital_efficiency_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "M\tapp/services/financial_lineage_projection_service.py",
+    "A\tapp/services/non_operating_financial_mapping_service.py",
+    "M\tdocs/MASTER_WORKFLOW.md",
+    "A\tscripts/non_operating_financial_mapping_evidence.py",
+    "A\ttests/test_non_operating_financial_mapping_service.py"
+  ],
+  "contract": "m11-implementation-diff-v1",
+  "implementation_commit": "a5d561c238d13b4904bd116aed3d7e47a61f4abd",
+  "production_prompt_renderer_scheduler_path_count": 0
+}

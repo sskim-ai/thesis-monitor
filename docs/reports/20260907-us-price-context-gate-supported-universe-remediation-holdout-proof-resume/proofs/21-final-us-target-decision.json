@@ -1,0 +1,17 @@
+{
+  "contract": "final-us-target-decision-v1",
+  "extended_reserve_attempt_count": 0,
+  "full_e2e_contract": "directional fundamentals ready and price timing READY or UNAVAILABLE_SAFE",
+  "model_calls": 0,
+  "original_five_attempted": 5,
+  "original_five_post_repair_pass_count": 5,
+  "selected_us": [
+    "NVDA",
+    "JPM",
+    "WMT",
+    "BRK-B"
+  ],
+  "source_sufficient_us_count": 4,
+  "source_target_status": "PASS",
+  "status": "PASS"
+}

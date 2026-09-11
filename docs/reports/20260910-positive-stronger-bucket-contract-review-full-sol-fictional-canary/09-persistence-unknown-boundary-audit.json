@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "unknown": "Durability beyond the current reporting cycle remains unproven.",
+  "classification": "MISSING_LONGER_TERM_CONFIRMATION_NOT_CURRENT_AXIS_REVERSAL",
+  "generic_rule": "A persistence Unknown constrains strength only when it makes adjacent buckets genuinely supportable; it is not a mechanical 6.0 cap.",
+  "fic_fin_01_effect": "It prevents a stronger claim about durability beyond the observed reporting cycle but does not negate the three distinct current supports.",
+  "adjacent_ambiguity_for_6_0_vs_6_5": false,
+  "supports_bucket_above_6_5": false,
+  "negative_evidence": false
+}

@@ -1,0 +1,10 @@
+{
+  "command": "$HOME/Codex/thesis-monitor/.venv/bin/pytest -q",
+  "contract": "m10-full-test-results-v1",
+  "duration_seconds": 69.18,
+  "failed": 0,
+  "passed": 2970,
+  "result": "PASS",
+  "warning_class": "existing Starlette deprecation warning",
+  "warnings": 1
+}

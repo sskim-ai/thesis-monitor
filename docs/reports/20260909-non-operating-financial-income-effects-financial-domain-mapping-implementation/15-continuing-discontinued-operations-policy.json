@@ -1,0 +1,50 @@
+{
+  "continuity_scopes": [
+    "continuing_operations",
+    "discontinued_operations"
+  ],
+  "contract": "m11-continuity-policy-v1",
+  "cross_scope_subtraction_count": 0,
+  "rows": [
+    {
+      "canonical_metric": "continuing_operations_income",
+      "continuity_scope": "continuing_operations",
+      "economic_role": "CONTINUING_RESULT",
+      "financial_effect_scope": "continuing_operations_result",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "ifrs-full:ProfitLossFromContinuingOperations"
+    },
+    {
+      "canonical_metric": "continuing_operations_income",
+      "continuity_scope": "continuing_operations",
+      "economic_role": "CONTINUING_RESULT",
+      "financial_effect_scope": "continuing_operations_result",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "us-gaap:IncomeLossFromContinuingOperations"
+    },
+    {
+      "canonical_metric": "discontinued_operations_result",
+      "continuity_scope": "discontinued_operations",
+      "economic_role": "DISCONTINUED_RESULT",
+      "financial_effect_scope": "discontinued_operations_result",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "ifrs-full:ProfitLossFromDiscontinuedOperations"
+    },
+    {
+      "canonical_metric": "discontinued_operations_result",
+      "continuity_scope": "discontinued_operations",
+      "economic_role": "DISCONTINUED_RESULT",
+      "financial_effect_scope": "discontinued_operations_result_net_of_tax",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "us-gaap:IncomeLossFromDiscontinuedOperationsNetOfTax"
+    }
+  ]
+}

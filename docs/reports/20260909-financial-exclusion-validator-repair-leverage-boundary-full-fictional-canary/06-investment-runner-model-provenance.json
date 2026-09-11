@@ -1,0 +1,30 @@
+{
+  "cache_advertised": true,
+  "fallback_count": 0,
+  "implementation_executor_effort_receipt": "NOT_MEASURED",
+  "implementation_executor_model_receipt": "NOT_MEASURED",
+  "invocation_accepted": "NOT_MEASURED",
+  "reasoning_effort": "xhigh",
+  "requested_model": "gpt-6-astra",
+  "status": "PASS",
+  "actual_attempts": [
+    {
+      "context": "model-calls/run-1/context-01",
+      "observed_runtime": {
+        "model": "gpt-6-astra",
+        "effort": "xhigh"
+      },
+      "session_id": "01a086b1-d78d-7002-8553-41ce6bf86303"
+    },
+    {
+      "context": "model-calls/run-1/context-02",
+      "observed_runtime": {
+        "model": "gpt-6-astra",
+        "effort": "xhigh"
+      },
+      "session_id": "01a086c3-2383-76f1-ab51-9c601df7157b"
+    }
+  ],
+  "actual_target_match": true,
+  "failed_receipt_enrichment_note": "The wrapper enriches observed_runtime only after a successful return. The timed-out call's actual CLI header independently verifies Astra/xhigh; original receipt is unchanged."
+}

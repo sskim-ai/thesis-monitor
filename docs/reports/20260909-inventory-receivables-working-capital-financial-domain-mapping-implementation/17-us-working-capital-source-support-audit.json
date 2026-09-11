@@ -1,0 +1,12 @@
+{
+  "contract": "m10-us-working-capital-source-support-audit-v1",
+  "coverage_claim": "NO_REAL_US_ARCHIVE_COVERAGE_CLAIM",
+  "preserved_balance_sheet_payload_count": 0,
+  "provider_fetches": 0,
+  "synthetic_exact_sec_contract": "PASS",
+  "us_comparable_balance_pair_count": 0,
+  "us_inventory_direct_count": 0,
+  "us_nonfinancial_candidate_count": 13,
+  "us_trade_payables_direct_count": 0,
+  "us_trade_receivables_direct_count": 0
+}

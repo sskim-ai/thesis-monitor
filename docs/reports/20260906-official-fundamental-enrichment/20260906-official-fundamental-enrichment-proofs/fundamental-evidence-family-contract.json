@@ -1,0 +1,19 @@
+{
+  "contract": "fundamental-evidence-family-v1",
+  "families": [
+    "IDENTITY_SECURITY",
+    "BUSINESS_CURRENT",
+    "EARNINGS_FINANCIAL_CURRENT",
+    "LIQUIDITY_CASHFLOW_CURRENT",
+    "SECTOR_OPERATING_CURRENT",
+    "REGULATORY_CAPITAL_CURRENT",
+    "CLINICAL_REGULATORY_CURRENT",
+    "CAPITAL_ALLOCATION_CURRENT",
+    "VALUATION_SAFE",
+    "PRICE_CONTEXT",
+    "MARKET_CONTEXT"
+  ],
+  "owner": "official source adapter / canonical normalizer",
+  "price_is_fundamental": 0,
+  "prose_inference": 0
+}

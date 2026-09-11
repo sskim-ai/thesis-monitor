@@ -1,0 +1,8 @@
+{
+  "after_sha256": "897efb78e0ed727ec814537b0bc1c0448b22122151e1ed5b7e01954b69127cad",
+  "before_sha256": "897efb78e0ed727ec814537b0bc1c0448b22122151e1ed5b7e01954b69127cad",
+  "changed": false,
+  "path": "app/services/structured_autonomy_shadow_service.py",
+  "renderer_substantive_analysis_change_count": 0,
+  "status": "PASS"
+}

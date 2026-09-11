@@ -1,0 +1,39 @@
+{
+  "auto_financial_classification_count": 0,
+  "auto_one_off_classification_count": 0,
+  "contract": "m11-other-context-policy-v1",
+  "other_income_minus_other_expense_formula_count": 0,
+  "policy": "SEPARATE_BROAD_CONTEXT",
+  "rows": [
+    {
+      "canonical_metric": "other_income_context",
+      "continuity_scope": "unspecified",
+      "economic_role": "BROAD_CONTEXT",
+      "financial_effect_scope": "other_income_broad_context",
+      "parent_scope": null,
+      "presentation_type": "BROAD_CONTEXT",
+      "priority": 100,
+      "source_semantic": "dart:OtherGains"
+    },
+    {
+      "canonical_metric": "other_expense_context",
+      "continuity_scope": "unspecified",
+      "economic_role": "BROAD_CONTEXT",
+      "financial_effect_scope": "other_expense_broad_context",
+      "parent_scope": null,
+      "presentation_type": "BROAD_CONTEXT",
+      "priority": 100,
+      "source_semantic": "dart:OtherLosses"
+    },
+    {
+      "canonical_metric": "other_income_context",
+      "continuity_scope": "unspecified",
+      "economic_role": "BROAD_CONTEXT",
+      "financial_effect_scope": "other_income_broad_context",
+      "parent_scope": null,
+      "presentation_type": "BROAD_CONTEXT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:OtherIncome"
+    }
+  ]
+}

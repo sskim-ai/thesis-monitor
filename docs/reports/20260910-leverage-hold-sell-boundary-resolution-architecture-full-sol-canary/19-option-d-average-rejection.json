@@ -1,0 +1,19 @@
+{
+  "complexity": "LOW",
+  "conservative_tiebreak_compatibility": "LOW_OR_NONE",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "FORBIDDEN",
+  "deterministic_numeric_semantics": "MEDIUM",
+  "faithfulness_to_ai_economic_judgment": "LOW",
+  "hidden_scorecard_risk": "HIGH",
+  "holdout_proof_integrity": "WEAKENED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "AVERAGE_BALANCES",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "D",
+  "output_schema_impact": "NONE",
+  "reason": "Averaging ordinal judgments invents unsupported semantics.",
+  "renderer_impact": "NONE",
+  "single_call_stability": "ARTIFICIAL",
+  "valuation_price_ownership_impact": "NONE"
+}

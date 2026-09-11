@@ -1,0 +1,102 @@
+{
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다.",
+      "validator_valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채가 아니라 규제자본을 본다"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "순부채가 아니라 규제자본을 본다.",
+      "validator_valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "순부채보다는 규제자본이 적절한 평가틀이다"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "순부채보다는 규제자본이 적절한 평가틀이다.",
+      "validator_valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "use regulatory capital instead of industrial net debt"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "use regulatory capital instead of industrial net debt.",
+      "validator_valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "rather than industrial working capital, evaluate underwriting and capital"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "rather than industrial working capital, evaluate underwriting and capital.",
+      "validator_valid": true
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "text": "not industrial net debt but regulatory capital"
+        }
+      ],
+      "expected_exclusion": true,
+      "status": "PASS",
+      "text": "not industrial net debt but regulatory capital.",
+      "validator_valid": true
+    }
+  ],
+  "status": "PASS"
+}

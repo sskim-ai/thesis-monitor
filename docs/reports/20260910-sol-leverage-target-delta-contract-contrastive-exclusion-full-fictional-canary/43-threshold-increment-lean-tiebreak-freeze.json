@@ -1,0 +1,17 @@
+{
+  "calibration_tiebreak_direction_changed": false,
+  "directional_increment_changed": false,
+  "directional_threshold_changed": false,
+  "evidence_count_bucket_rule_count": 0,
+  "fixed_score_rule_count": 0,
+  "hold_lean": {
+    "4.5:5.5": "SELL_LEAN",
+    "5.0:5.0": "NEUTRAL",
+    "5.5:4.5": "BUY_LEAN"
+  },
+  "hold_lean_contract_changed": false,
+  "increment": 0.5,
+  "status": "PASS",
+  "threshold": 6.0,
+  "tie_break": "toward 5.0"
+}

@@ -1,0 +1,13 @@
+# 13 Model Free Prespawn Guard Preflight
+
+| Field | Value |
+| --- | --- |
+| contract | model-free-prespawn-guard-preflight-v1 |
+| exception_path | {"context_evidence_preservation_status": "PASS", "context_preservation_secondary_failure_count": 0, "contract": "prespawn-exception-path-preflight-v1", "real_model_calls": 0, "root_exception": "model_free_exception_provenance_preflight", "root_exception_masked": 0, "root_exception_type": "LiveWorkloadObservationUnavailable", "spawn_started": 0, "status": "PASS", "transport_receipt_created": 0, "transport_receipt_expected": 0} |
+| observation_path | {"active_natural_job_count": 0, "contract": "prespawn-live-workload-guard-preflight-v1", "observation_capabilities": {"model_execution_observable": true, "model_execution_signal": "open /codex_runtime_state/ files", "natural_job_observable": true, "natural_job_signal": "loaded LaunchAgent state", "protected_window_observable": true, "ps_dependency": false}, "protected_window": null, "real_model_calls": 0, "running_model_process_count": 0, "safe_to_spawn": 1, "spawn_started": 0, "status": "PASS", "transport_receipt_expected": 0, "workload_observation_backend": "LAUNCHCTL_JOB_STATE_PLUS_LSOF_CODEX_RUNTIME_STATE"} |
+| prespawn_guard_preflight | PASS |
+| real_model_calls | 0 |
+| safe_to_spawn | 1 |
+| status | PASS |
+
+Machine proof: `proofs/13-model-free-prespawn-guard-preflight.json`.

@@ -1,0 +1,48 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "idempotency_key": "ticker|assessment_date|thesis_version|evidence_generation",
+  "proof": {
+    "assessment_count": 3,
+    "checks": {
+      "assessment_idempotent": true,
+      "baseline_idempotent": true,
+      "onboarding_resume_idempotent": true,
+      "resolved_repeat_idempotent": true,
+      "side_effect_firewall": true,
+      "warning_open_idempotent": true,
+      "warning_resolve_idempotent": true,
+      "warning_resolved": true
+    },
+    "intent_counts": {
+      "ASSESSMENT": 3,
+      "BASELINE": 1,
+      "ONBOARDING_EVIDENCE": 4,
+      "ONBOARDING_RESUME": 1,
+      "REGISTRATION": 1,
+      "WARNING_OPEN": 1,
+      "WARNING_RESOLVE": 1
+    },
+    "side_effects": {
+      "assessment_persistence_mutations": 0,
+      "model_calls_fictional": 0,
+      "model_calls_judge": 0,
+      "model_calls_real": 0,
+      "monitoring_registration_calls": 0,
+      "notification_queue_writes": 0,
+      "production_db_connections": 0,
+      "production_db_mutations": 0,
+      "production_sends": 0,
+      "provider_source_fetches": 0,
+      "warning_mutations": 0
+    },
+    "status": "PASS",
+    "warning": {
+      "opened_by_evidence_id": "warning-open",
+      "resolved_by_evidence_id": "warning-resolve",
+      "status": "RESOLVED",
+      "warning_key": "margin_pressure"
+    },
+    "warning_count": 1
+  },
+  "status": "PASS"
+}

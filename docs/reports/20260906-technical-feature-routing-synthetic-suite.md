@@ -1,0 +1,13 @@
+# Technical Feature Routing Synthetic Suite
+
+| Gate | Value |
+| --- | --- |
+| contract | technical-feature-routing-synthetic-suite-v1 |
+| covered | ["support_resistance", "volume", "rsi", "macd", "bollinger", "multi_timeframe_structure", "risk_reward", "supply_positioning"] |
+| feature_unavailable_distinct_from_neutral | True |
+| invented_technical_indicator | 0 |
+| inventory | {"bollinger": true, "feature_count": 4, "invented_feature_count": 0, "macd": true, "moving_average": false, "risk_reward": false, "rsi": true, "supply_positioning": true, "support_resistance": false, "technical_ref_count": 7, "unavailable_is_zero": false, "volume": true} |
+| status | PASS |
+| ticker_free | 1 |
+
+Machine proof: `20260906-direction-timing-ownership-proofs/technical-feature-routing-synthetic-suite.json`.

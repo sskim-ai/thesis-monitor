@@ -1,0 +1,9 @@
+{
+  "contract": "m2-nonproduction-integration-design-v1",
+  "new_module": "app/services/nonproduction_lifecycle_decision_service.py",
+  "parallel_decision_engine_created": false,
+  "path": "lifecycle-qualified fixture -> existing DecisionEvidencePacket/OwnedEvidencePacket -> existing Directional Core + Price-Timing -> existing compose/validate/render -> labeled file-only derivative",
+  "production_callers_changed": 0,
+  "side_effect_boundaries_imported": false,
+  "status": "PASS"
+}

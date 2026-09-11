@@ -1,0 +1,138 @@
+{
+  "complete": false,
+  "formal_classifier_replaced": false,
+  "rows": [
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 6,
+          "sell": 4
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "BUY"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 5,
+          "sell": 5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 4.5,
+          "sell": 5.5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 5.5,
+          "sell": 4.5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 5,
+          "sell": 5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "balance_unique_count": 1,
+      "balance_values": [
+        {
+          "buy": 5,
+          "sell": 5
+        }
+      ],
+      "direction_unique_count": 1,
+      "direction_values": [
+        "HOLD"
+      ],
+      "row_count": 1,
+      "status": "NOT_MEASURED",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "NOT_MEASURED",
+  "reason": "Observed unique values are one-run descriptions, not three-run stability measurements.",
+  "core_only_stable_count": "NOT_MEASURED",
+  "core_only_unstable_count": "NOT_MEASURED"
+}

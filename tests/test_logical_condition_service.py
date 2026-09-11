@@ -1,14 +1,21 @@
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from app.services.logical_condition_service import (
     ClaimLogicalCondition,
-    ClaimLogicalExpression,
+    ClaimLogicalComposite,
+    ClaimLogicalLeaf,
     LogicalCoverageMode,
     LogicalOperator,
     LogicalSeverity,
     SourceLogicalCondition,
-    SourceLogicalExpression,
+    SourceLogicalComposite,
+    SourceLogicalLeaf,
+    CheckpointMetric,
     logical_condition_errors,
+    source_checkpoint_metric_refs,
     source_claim_expression,
     source_logical_condition,
 )
@@ -20,12 +27,12 @@ def _source(operator: LogicalOperator = LogicalOperator.ANY_OF) -> SourceLogical
         generation_id="packet-1",
         source_condition_ref="K1",
         severity=LogicalSeverity.INVALIDATION_CANDIDATE,
-        expression=SourceLogicalExpression(
+        expression=SourceLogicalComposite(
             condition_id="K1",
             type=operator,
             children=(
-                SourceLogicalExpression(condition_id="K1A", type=LogicalOperator.LEAF),
-                SourceLogicalExpression(condition_id="K1B", type=LogicalOperator.LEAF),
+                SourceLogicalLeaf(condition_id="K1A"),
+                SourceLogicalLeaf(condition_id="K1B"),
             ),
         ),
     )
@@ -38,12 +45,12 @@ def _claim(
     coverage: LogicalCoverageMode = LogicalCoverageMode.FULL,
 ) -> ClaimLogicalCondition:
     expression = (
-        ClaimLogicalExpression(type=LogicalOperator.LEAF, condition_ref=refs[0])
+        ClaimLogicalLeaf(leaf_ref=refs[0])
         if operator == LogicalOperator.LEAF
-        else ClaimLogicalExpression(
+        else ClaimLogicalComposite(
             type=operator,
             children=tuple(
-                ClaimLogicalExpression(type=LogicalOperator.LEAF, condition_ref=ref)
+                ClaimLogicalLeaf(leaf_ref=ref)
                 for ref in refs
             ),
         )
@@ -77,6 +84,22 @@ def test_source_adapter_owns_explicit_or_before_writer() -> None:
     assert source.expression.type == LogicalOperator.ANY_OF
     assert len(source.expression.children) == 2
     assert "또는" not in (source.expression.children[0].statement or "")
+
+
+def test_source_metric_aliases_are_exact_and_do_not_parse_future_grammar() -> None:
+    assert source_checkpoint_metric_refs(
+        "영업현금흐름이 개선되고 잉여현금흐름을 점검"
+    ) == (CheckpointMetric.OCF, CheckpointMetric.FCF)
+    assert source_checkpoint_metric_refs("CAPEX 증가를 점검") == ()
+
+    source = source_logical_condition(
+        subject="GENERIC",
+        generation_id="packet-1",
+        evidence_ref="cash-flow-1",
+        statement="영업현금흐름이 개선",
+        severity=LogicalSeverity.STRENGTHENING,
+    )
+    assert source.metric_refs == (CheckpointMetric.OCF,)
 
 
 def test_full_any_of_to_all_of_is_rejected_without_reading_prose() -> None:
@@ -135,3 +158,59 @@ def test_subject_and_generation_are_part_of_source_identity() -> None:
     assert _errors(source, _claim(LogicalOperator.ANY_OF)) == (
         "logical_condition_owner_mismatch",
     )
+
+
+def _claim_document(expression: object) -> dict[str, object]:
+    return {
+        "source_condition_ref": "K1",
+        "coverage_mode": "FULL",
+        "severity": "INVALIDATION_CANDIDATE",
+        "expression": expression,
+    }
+
+
+def test_claim_schema_is_a_discriminated_union() -> None:
+    expression = ClaimLogicalCondition.model_json_schema()["properties"]["expression"]
+
+    assert expression["discriminator"]["propertyName"] == "type"
+    assert set(expression["discriminator"]["mapping"]) == {"LEAF", "ANY_OF", "ALL_OF"}
+
+
+def test_leaf_requires_leaf_ref_and_forbids_children() -> None:
+    parsed = ClaimLogicalCondition.model_validate(
+        _claim_document({"type": "LEAF", "leaf_ref": "K1A"})
+    )
+    assert isinstance(parsed.expression, ClaimLogicalLeaf)
+
+    with pytest.raises(ValidationError) as exc_info:
+        ClaimLogicalCondition.model_validate(
+            _claim_document(
+                {
+                    "type": "LEAF",
+                    "leaf_ref": "K1A",
+                    "children": [{"type": "LEAF", "leaf_ref": "K1B"}],
+                }
+            )
+        )
+    assert "children" in str(exc_info.value)
+
+
+@pytest.mark.parametrize("operator", ("ANY_OF", "ALL_OF"))
+def test_composite_requires_children_and_forbids_leaf_ref(operator: str) -> None:
+    valid = ClaimLogicalCondition.model_validate(
+        _claim_document(
+            {
+                "type": operator,
+                "children": [
+                    {"type": "LEAF", "leaf_ref": "K1A"},
+                    {"type": "LEAF", "leaf_ref": "K1B"},
+                ],
+            }
+        )
+    )
+    assert isinstance(valid.expression, ClaimLogicalComposite)
+
+    with pytest.raises(ValidationError):
+        ClaimLogicalCondition.model_validate(
+            _claim_document({"type": operator, "leaf_ref": "K1A"})
+        )

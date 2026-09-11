@@ -1,0 +1,11 @@
+{
+  "attempted": 11,
+  "contract": "expanded-us-target-decision-v1",
+  "model_execution_allowed": 1,
+  "readiness": "READY_FOR_FRESH_SOURCE_LOCK",
+  "source_insufficient": 7,
+  "source_sufficient": 4,
+  "status": "PASS",
+  "target": 4,
+  "us_target_status": "PASS"
+}

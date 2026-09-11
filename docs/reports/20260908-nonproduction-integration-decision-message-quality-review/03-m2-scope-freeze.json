@@ -1,0 +1,14 @@
+{
+  "contract": "m2-scope-freeze-v1",
+  "model_calls": {
+    "fictional": 0,
+    "judge": 0,
+    "real": 0
+  },
+  "production_mutations_allowed": false,
+  "provider_source_fetches": 0,
+  "renderer_substantive_reasoning_change_allowed": false,
+  "scheduler_resume_allowed": false,
+  "semantic_input_expansion_allowed": false,
+  "status": "FROZEN"
+}

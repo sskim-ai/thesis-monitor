@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_directional_financial_context_m12g.py",
+    "tests/test_directional_financial_context_m12r.py",
+    "tests/test_directional_financial_context_m12.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_decision_evidence_financial_context.py",
+    "tests/test_financial_context_adapter_service.py",
+    "tests/test_financial_lineage_projection_service.py",
+    "tests/test_source_class_financial_mapping_service.py",
+    "tests/test_debt_liquidity_financial_mapping_service.py",
+    "tests/test_working_capital_financial_mapping_service.py",
+    "tests/test_non_operating_financial_mapping_service.py",
+    "tests/test_direction_timing_ownership_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_coldstart_fundamental_enrichment_service.py",
+    "tests/test_nonproduction_monitoring_lifecycle_service.py",
+    "tests/test_structured_autonomy_shadow_service.py"
+  ],
+  "finished_at": "2026-09-09T10:15:45.702137+00:00",
+  "output_path": "artifacts/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/validation/focused-tests.txt",
+  "output_sha256": "64de18650a1b58dc4794c85781effb4f57432ea4856620ed1b785289365763d5",
+  "returncode": 0,
+  "started_at": "2026-09-09T10:15:34.687323+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

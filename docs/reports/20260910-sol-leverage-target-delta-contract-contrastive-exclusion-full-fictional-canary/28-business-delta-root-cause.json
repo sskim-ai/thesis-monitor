@@ -1,0 +1,6 @@
+{
+  "status": "FROZEN",
+  "root_cause": "ABSOLUTE_NEGATIVE_STATE_MISREAD_AS_WEAKENING_DELTA",
+  "observed": "WEAKENED",
+  "source_supported": "UNCHANGED"
+}

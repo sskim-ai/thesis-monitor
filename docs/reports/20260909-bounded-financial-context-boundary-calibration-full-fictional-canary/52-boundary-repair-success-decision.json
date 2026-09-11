@@ -1,0 +1,16 @@
+{
+  "status": "NOT_PROVEN",
+  "implementation_status": "IMPLEMENTED",
+  "deterministic_gate": "PASS",
+  "planned_model_contexts": 6,
+  "completed_transport_contexts": 2,
+  "accepted_canary_contexts": 1,
+  "failed_canary_contexts": 1,
+  "planned_rows": 24,
+  "observed_rows": 8,
+  "passed_rows": 7,
+  "failed_rows": 1,
+  "targeted_first_observations_contract_consistent": 3,
+  "full_repetition_stability": "NOT_MEASURED",
+  "reason": "Whole-generation stop on frozen validator FAIL, plus FIC-FIN-05 expected regression pattern not preserved. No primary repair success claim."
+}

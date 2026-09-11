@@ -1,0 +1,6 @@
+{
+  "contract": "cross-market-failure-comparison-v1",
+  "kr_failure_count": 3,
+  "status": "PASS",
+  "us_failure_count": 6
+}

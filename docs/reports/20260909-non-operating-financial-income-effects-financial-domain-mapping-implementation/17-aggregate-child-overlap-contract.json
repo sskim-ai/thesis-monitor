@@ -1,0 +1,14 @@
+{
+  "aggregate_child_overlap_conflict_count": 8,
+  "aggregate_precedence_count": 8,
+  "child_detail_preserved_count": 8,
+  "child_policy": "PRESERVE_DESCRIPTIVE_DETAIL_NO_SUMMATION",
+  "contract": "m11-overlap-contract-v1",
+  "parent_policy": "AGGREGATE_PRECEDENCE_FOR_DERIVATION",
+  "presentation_types": [
+    "DIRECT_AGGREGATE",
+    "DIRECT_COMPONENT",
+    "BROAD_CONTEXT",
+    "DERIVED_AGGREGATE"
+  ]
+}

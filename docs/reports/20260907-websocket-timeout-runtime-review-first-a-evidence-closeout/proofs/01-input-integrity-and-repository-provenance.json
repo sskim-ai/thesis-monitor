@@ -1,0 +1,77 @@
+{
+  "base_sha": "665a1115b29c7e14747e533df9694f440246f723",
+  "branch": "codex/20260907-websocket-timeout-runtime-review-first-a-evidence-closeout",
+  "checks": {
+    "crc": true,
+    "duplicate_members": true,
+    "hashes": true,
+    "index_membership": true,
+    "indexed_payload_count": true,
+    "input_zip_sha256": true,
+    "member_count": true,
+    "safe_paths": true,
+    "sizes": true
+  },
+  "contract": "historical-input-integrity-v1",
+  "current_work_instruction_zip_sha256": "dcf456c73abe143c559aaa3f50f8447fe2b6a1066d4e4c640e2c646fbc49faf4",
+  "duplicate_member_count": 0,
+  "final_head_sha_at_report_generation": "9258efab7fcf265482ce7431ddb16ba292471c96",
+  "git_status_at_report_generation": "CLEAN",
+  "hash_mismatch_count": 0,
+  "historical_reference_member_sha256": {
+    "experiment/model-contexts/A/DIRECTIONAL_CORE/batch-01/transport_receipt.json": {
+      "byte_size": 2909,
+      "sha256": "1f3f2f99c1b48990d06de690528c14b3dffcbc8b936ca3e26f238a317fb7d2bb"
+    },
+    "experiment/model-contexts/B/DIRECTIONAL_CORE/batch-01/context_manifest.json": {
+      "byte_size": 2566,
+      "sha256": "0b8b326df16d0cc952aa3f00224e83a4fd888ca8b009b17fadc94fab08ad0b0e"
+    },
+    "experiment/model-contexts/B/DIRECTIONAL_CORE/batch-01/stderr.raw.log": {
+      "byte_size": 18604,
+      "sha256": "bf1d4b7af7f3b2e309a35bb272af1a745c634b7e7149ffd15d63379a8456bebb"
+    },
+    "experiment/model-contexts/B/DIRECTIONAL_CORE/batch-01/transport_log.raw.log": {
+      "byte_size": 18605,
+      "sha256": "3729dd768916385ff5924cf7b9ccc5456dae068d2ffc73a6c8ce84669fa6d6f9"
+    },
+    "experiment/model-contexts/B/DIRECTIONAL_CORE/batch-01/transport_receipt.json": {
+      "byte_size": 2855,
+      "sha256": "9e5434a8695ec8863b47f92a68f9202b20e33c5e40f64e4a4b07efd02e916dc5"
+    },
+    "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/transport_receipt.json": {
+      "byte_size": 2913,
+      "sha256": "dade650efa5b5e39233c49edb14c9a79df87377293424aedf5436547edd29423"
+    },
+    "reports/proofs/27-first-execution-summary.json": {
+      "byte_size": 409249,
+      "sha256": "3b1985c7b80c369a2f499c1bbe835bb0eb692ab64713b470bdc9820aad0906f4"
+    },
+    "reports/proofs/33-run-a-execution-summary.json": {
+      "byte_size": 417733,
+      "sha256": "c379dca36f8c6bf3982a430ec013fb46b5a1b07948ed01925e92e4aa7327549d"
+    },
+    "reports/proofs/62-reporting-closeout-recovery.json": {
+      "byte_size": 3441,
+      "sha256": "328be507d0efa2b2831c3e6655c78a7e3c5afc29262516ac51031d7fc762e49d"
+    }
+  },
+  "historical_report_identified_final_head": "46e09b999d6c5834fa5f5adf7ec1ff0df159bfb1",
+  "implementation_commit_or_not_changed": "9258efab7fcf265482ce7431ddb16ba292471c96",
+  "initial_repository_observation": {
+    "branch": "codex/20260907-monitoring-pause-completion-fresh-issuer-ownership-proof",
+    "head": "665a1115b29c7e14747e533df9694f440246f723",
+    "status": "CLEAN"
+  },
+  "input_indexed_payload_count": 1164,
+  "input_member_count": 1165,
+  "input_zip_sha256": "3b957ec1e2257832fa8fc531ae883e4f0c9f8228449b6f0d78fbbbd9fe1e7309",
+  "later_commit_explanation": "665a111 is the report/evidence closeout descendant of 46e09b9; it contains no additional model invocation or investment semantic change.",
+  "missing_from_index_count": 0,
+  "missing_from_payload_count": 0,
+  "previous_work_instruction_zip_sha256": "899518ffca1ba67e3f11049e2a660d802e759a0b73a0140c7001010651511eb9",
+  "size_mismatch_count": 0,
+  "status": "PASS",
+  "unsafe_path_count": 0,
+  "work_instruction_commit": "0c8003768794f9eda46c8ae36246fe5c617b66b7"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary-report.zip",
+  "expected_sha256": "828e0ac45bae7fd095907cf6db2e11c0333f3d30e87e94a4a6beb566ac38aff8",
+  "actual_sha256": "828e0ac45bae7fd095907cf6db2e11c0333f3d30e87e94a4a6beb566ac38aff8",
+  "artifact_index_payload_count": 217,
+  "zip_entry_count": 218,
+  "missing_count": 0,
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "size_mismatch_count": 0
+}

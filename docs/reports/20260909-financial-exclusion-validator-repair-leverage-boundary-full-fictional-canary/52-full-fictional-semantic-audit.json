@@ -1,0 +1,13 @@
+{
+  "completed_rows": 4,
+  "hard_error_count": 0,
+  "hard_errors": [],
+  "status": "PARTIAL_PASS_FULL_SAMPLE_NOT_MEASURED",
+  "completed_contexts": 1,
+  "attempted_contexts": 2,
+  "planned_contexts": 6,
+  "unstarted_contexts": 4,
+  "full_sample_status": "NOT_MEASURED",
+  "stop_classification": "RUNTIME_TIMEOUT_NOT_SEMANTIC_FAILURE",
+  "error_count_scope": "Only four completed, schema-valid rows; no outputs for FIC-FIN-05 through 08"
+}

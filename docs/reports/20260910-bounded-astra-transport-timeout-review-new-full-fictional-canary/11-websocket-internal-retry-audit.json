@@ -1,0 +1,30 @@
+{
+  "M12E": [
+    {
+      "context": 1,
+      "events": [],
+      "wrapper_retry_count": 0
+    },
+    {
+      "context": 2,
+      "events": [],
+      "wrapper_retry_count": 0
+    }
+  ],
+  "M12F": [
+    {
+      "context": 1,
+      "events": [
+        "2026-09-09T15:19:24.548222Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 188ms)... turn_id=01a086b1-d7a1-76d0-a2bd-c030f8500bd1 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake"
+      ],
+      "wrapper_retry_count": 0
+    },
+    {
+      "context": 2,
+      "events": [
+        "2026-09-09T15:26:23.270844Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 201ms)... turn_id=01a086c3-239b-7762-8fef-d26112c57aa3 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake"
+      ],
+      "wrapper_retry_count": 0
+    }
+  ]
+}

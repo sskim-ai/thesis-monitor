@@ -1,0 +1,18 @@
+{
+  "contract": "m10-current-working-capital-source-inventory-v1",
+  "official_sources": [
+    "SEC EDGAR CompanyFacts",
+    "OpenDART XBRL"
+  ],
+  "preserved_kr_filing_count": 7,
+  "preserved_us_balance_sheet_payload_count": 0,
+  "provider_source_fetches": 0,
+  "registry_entry_count": 35,
+  "source_classes": {
+    "contract_context": 4,
+    "current_balance": 4,
+    "inventory": 9,
+    "payables": 7,
+    "receivables": 11
+  }
+}

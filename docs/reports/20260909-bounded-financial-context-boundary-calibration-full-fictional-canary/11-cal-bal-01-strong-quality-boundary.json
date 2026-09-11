@@ -1,0 +1,17 @@
+{
+  "facts": [
+    "positive operating anchor",
+    "positive cash conversion",
+    "positive resilience"
+  ],
+  "id": "CAL-BAL-01",
+  "limitation": "material valuation/persistence confirmation unresolved; adjacent fit remains reasonable",
+  "rule": "minimum_vs_strong",
+  "selected_buy": 6.0,
+  "selected_contract_buy": 6.0,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    6.0,
+    6.5
+  ]
+}

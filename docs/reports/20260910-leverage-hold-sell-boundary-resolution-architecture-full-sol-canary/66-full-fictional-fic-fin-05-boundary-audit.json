@@ -1,0 +1,32 @@
+{
+  "boundary_active_count": 0,
+  "expected_pair_count": 0,
+  "resolved_hold_sell_lean_count": 1,
+  "rows": [
+    {
+      "evidence_refs": [],
+      "less_directional_balance": null,
+      "more_directional_balance": null,
+      "raw_state": {
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "hold_lean": "SELL_LEAN",
+        "overall_direction": "HOLD"
+      },
+      "repetition": 1,
+      "resolved_state": {
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "hold_lean": "SELL_LEAN",
+        "overall_direction": "HOLD"
+      },
+      "status": "NONE",
+      "ticker": "FIC-FIN-05"
+    }
+  ],
+  "status": "FAIL"
+}

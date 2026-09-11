@@ -1,0 +1,10 @@
+{
+  "classification": "PRE_SPAWN_RUNNER_GATE_FILENAME_MISMATCH",
+  "discarded_generation_id": "20260910-m12ac-fictional-20260910T113316Z-1db92d17bb00",
+  "discarded_source_hash": "ab1af21b1ee71f82356a144b11cdb512c9454776cd26ffbfd753507550930171",
+  "model_process_started": false,
+  "model_calls_fictional": 0,
+  "root_cause": "reused runner requires phase-a-receipt.json while M12AC wrote only model-call-gate.json",
+  "status": "DISCARDED_BEFORE_MODEL_START",
+  "wrapper_retry_count": 0
+}

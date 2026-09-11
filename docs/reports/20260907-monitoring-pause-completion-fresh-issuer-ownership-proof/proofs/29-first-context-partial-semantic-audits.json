@@ -1,0 +1,612 @@
+{
+  "contract": "run-context-partial-semantic-audits-v1",
+  "per_context_semantic_failure_count": 0,
+  "rows": [
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "NU"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "LNG"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "TCI"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "WMG"
+        }
+      ],
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS",
+      "timing_renderer_gates": "NOT_MEASURED"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "043100"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "025000"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "131030"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "372910"
+        }
+      ],
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS",
+      "timing_renderer_gates": "NOT_MEASURED"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "130740"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "045340"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "006910"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "288980"
+        }
+      ],
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS",
+      "timing_renderer_gates": "NOT_MEASURED"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "023440"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "064820"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "001440"
+        },
+        {
+          "buy_without_nonprice_material_anchor": 0,
+          "directional_core_price_technical_refs": 0,
+          "directional_core_supply_refs": 0,
+          "directional_model_calls_on_source_insufficient": 0,
+          "errors": [],
+          "final_direction_owner": "DIRECTIONAL_CORE",
+          "price_only_directional_model_calls": 0,
+          "sell_without_nonprice_material_anchor": 0,
+          "status": "PASS",
+          "supply_directional_core_usage": 0,
+          "ticker": "073490"
+        }
+      ],
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS",
+      "timing_renderer_gates": "NOT_MEASURED"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "NU"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "LNG"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "TCI"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "WMG"
+        }
+      ],
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "043100"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "025000"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "131030"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "372910"
+        }
+      ],
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "130740"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "045340"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "006910"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "288980"
+        }
+      ],
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "contract": "per-context-partial-semantic-audit-v1",
+      "rows": [
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "023440"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "064820"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "001440"
+        },
+        {
+          "ai_imperative_primary_action": 0,
+          "errors": [],
+          "ownership": {
+            "buy_without_nonprice_material_anchor": 0,
+            "contract": "direction-timing-ownership-validator-v1",
+            "directional_core_price_technical_refs": 0,
+            "directional_core_supply_refs": 0,
+            "errors": [],
+            "price_only_holder_reduce": 0,
+            "price_timing_new_buyer_upgrade": 0,
+            "sell_without_nonprice_material_anchor": 0,
+            "timing_stage_balance_mutation": 0,
+            "timing_stage_direction_mutation": 0,
+            "timing_stage_hold_lean_mutation": 0,
+            "valid": true
+          },
+          "primary_user_action_wording_owner": "RENDERER",
+          "status": "PASS",
+          "ticker": "073490"
+        }
+      ],
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    }
+  ],
+  "run": "first",
+  "status": "PASS"
+}

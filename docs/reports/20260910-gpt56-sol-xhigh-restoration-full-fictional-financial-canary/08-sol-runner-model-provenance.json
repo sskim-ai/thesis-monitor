@@ -1,0 +1,8 @@
+{
+  "cache_advertised": true,
+  "fallback_count": 0,
+  "invocation_accepted": "NOT_MEASURED",
+  "reasoning_effort": "xhigh",
+  "requested_model": "gpt-5.6-sol",
+  "status": "PASS"
+}

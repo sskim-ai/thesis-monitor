@@ -1,0 +1,40 @@
+{
+  "attempted_count": 6,
+  "budget_exhausted": false,
+  "candidate_failure_membership": [
+    "YARW",
+    "DMII"
+  ],
+  "candidate_limit": 24,
+  "candidate_success_membership": [
+    "NVMI",
+    "SKYH",
+    "WKSP",
+    "EROC"
+  ],
+  "details_path": "evidence/diagnostics/us-source-readiness.json",
+  "fundamental_source_sufficient_count": 4,
+  "market": "us",
+  "provider_totals": {
+    "cache_hits": 0,
+    "companyfacts_requests": 6,
+    "companyfacts_successes": 5,
+    "profile_requests": 6,
+    "profile_successes": 6,
+    "statement_requests": 0,
+    "statement_successes": 0
+  },
+  "provider_unavailability_counts": {
+    "BUSINESS_CURRENTORSECTOR_OPERATING_CURRENT": 1,
+    "CLINICAL_REGULATORY_CURRENT": 1,
+    "EARNINGS_FINANCIAL_CURRENTORLIQUIDITY_CASHFLOW_CURRENTORSECTOR_OPERATING_CURRENT": 1,
+    "LIQUIDITY_CASHFLOW_CURRENT": 1,
+    "validated_current_sec_financial_occurrence_unavailable": 1
+  },
+  "status": "PASS",
+  "target": 4,
+  "untested_ranked_candidate_count": 18,
+  "us_fundamental_source_sufficient_count": 4,
+  "us_identity_supported_reserve_count": 21,
+  "us_reserve_source_status": "UNTESTED_IDENTITY_SUPPORTED"
+}

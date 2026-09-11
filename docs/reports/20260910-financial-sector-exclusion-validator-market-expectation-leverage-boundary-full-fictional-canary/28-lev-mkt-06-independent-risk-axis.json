@@ -1,0 +1,16 @@
+{
+  "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+  "facts": [
+    "balance sheet resilience constraint",
+    "confirmed persistent loss of a distinct customer economics source",
+    "expectations independently assume customer economics remain intact"
+  ],
+  "id": "LEV-MKT-06",
+  "limitation": "distinct confirmed risk supports minimum downside, not stronger bucket without more support",
+  "rule": "independent_risk_axis",
+  "selected_buy": 4,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4
+  ]
+}

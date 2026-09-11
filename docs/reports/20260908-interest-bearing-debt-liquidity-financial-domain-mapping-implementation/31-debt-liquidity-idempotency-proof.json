@@ -1,0 +1,9 @@
+{
+  "contract": "m9-debt-liquidity-idempotency-proof-v1",
+  "duplicate_fact_id_count": 0,
+  "idempotent_fixture_count": 7,
+  "real_cache_fixture_count": 7,
+  "same_derived_fact_ids": true,
+  "same_direct_fact_ids": true,
+  "status": "PASS"
+}

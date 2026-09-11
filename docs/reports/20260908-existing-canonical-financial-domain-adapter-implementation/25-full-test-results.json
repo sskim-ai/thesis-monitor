@@ -1,0 +1,9 @@
+{
+  "command": ".venv/bin/pytest -q",
+  "contract": "m6-full-test-results-v1",
+  "duration_seconds": 60.29,
+  "failed": 0,
+  "passed": 2887,
+  "result": "PASS",
+  "warnings": 2
+}

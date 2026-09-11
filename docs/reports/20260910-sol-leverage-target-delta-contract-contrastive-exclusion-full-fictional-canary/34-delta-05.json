@@ -1,0 +1,10 @@
+{
+  "baseline_change": true,
+  "expected": "WEAKENED",
+  "facts": [
+    "current neutral condition",
+    "newly confirmed structural deterioration"
+  ],
+  "id": "DELTA-05",
+  "status": "PASS"
+}

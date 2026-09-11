@@ -1,0 +1,10 @@
+{
+  "expected_buy": 3.5,
+  "expected_direction": "SELL",
+  "expected_sell": 6.5,
+  "id": "NEG-ORD-02",
+  "pattern": "Distinct current operating deterioration, cash-conversion deterioration, and balance-sheet fragility materially strengthen negative breadth and quality beyond minimum direction.",
+  "reason": "This is stronger negative support under the symmetric contract.",
+  "side": "NEGATIVE",
+  "status": "PASS"
+}

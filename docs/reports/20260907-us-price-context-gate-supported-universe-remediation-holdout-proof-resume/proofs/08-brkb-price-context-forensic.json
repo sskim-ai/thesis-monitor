@@ -1,0 +1,32 @@
+{
+  "arbitrary_alias_probe_count": 0,
+  "canonical_exchange": "NY",
+  "canonical_security": "BRK-B common class B",
+  "contract": "brkb-price-context-forensic-v1",
+  "daily_bar_count": 0,
+  "latest_bar": null,
+  "packet_created": true,
+  "provider": {
+    "adjusted_request_count": 27,
+    "cache_behavior": "no successful bars available for cache reuse",
+    "canonical_provider": "kiwoom",
+    "fallback_behavior": "no second canonical OHLCV provider configured",
+    "http_status_counts": {
+      "200": 0,
+      "502": 36
+    },
+    "request_observation_count": 36,
+    "retry_layers": {
+      "provider": "429-only retry; non-429 HTTP errors fail closed",
+      "thesis_monitor": "up to monitor_retry_attempts, capped at 5"
+    },
+    "unadjusted_request_count": 9,
+    "upstream_endpoint": "/api/us/chart",
+    "wrapper_endpoint": "/ohlcv"
+  },
+  "provider_requested_symbol": "BRK-B",
+  "repository_normalization": "BRK.B -> BRK-B",
+  "root_cause": "PROVIDER_SOURCE_ABSENCE",
+  "safe_price_propagation": "UNAVAILABLE_SAFE",
+  "status": "PASS"
+}

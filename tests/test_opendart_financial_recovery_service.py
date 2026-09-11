@@ -6,6 +6,7 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import httpx
+import pytest
 
 from app.services.opendart_financial_recovery_service import (
     FIELD_SPECS,
@@ -245,6 +246,150 @@ def test_cash_flow_uses_unique_xbrl_duration_and_rejects_multiple_match() -> Non
     assert resolved["fields"]["operating_cash_flow"]["status"] == "verified_usable"
     assert resolved["fields"]["operating_cash_flow"]["lineage"]["amount_period_type"] == "year_to_date_cumulative"
     assert ambiguous["fields"]["operating_cash_flow"]["status"] == "unknown"
+
+
+def _cash_flow_xbrl(
+    *,
+    start: str,
+    end: str,
+    entity: str = "00123456",
+    duplicate: bool = False,
+) -> bytes:
+    duplicate_fact = (
+        '<ifrs:CashFlowsFromUsedInOperatingActivities contextRef="duration-cfs-2" '
+        'unitRef="KRW">50</ifrs:CashFlowsFromUsedInOperatingActivities>'
+        if duplicate
+        else ""
+    )
+    duplicate_context = (
+        f'<context id="duration-cfs-2"><entity><identifier scheme="corp">{entity}</identifier>'
+        '<segment><xbrldi:explicitMember dimension="dart:StatementBasisAxis">'
+        'dart:ConsolidatedMember</xbrldi:explicitMember></segment></entity>'
+        f"<period><startDate>{start}</startDate><endDate>{end}</endDate></period></context>"
+        if duplicate
+        else ""
+    )
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<xbrl xmlns="http://www.xbrl.org/2003/instance"
+      xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+      xmlns:ifrs="http://xbrl.ifrs.org/taxonomy/2024-03-27/ifrs-full"
+      xmlns:dart="http://dart.fss.or.kr/taxonomy">
+  <context id="duration-cfs"><entity><identifier scheme="corp">{entity}</identifier>
+    <segment><xbrldi:explicitMember dimension="dart:StatementBasisAxis">dart:ConsolidatedMember</xbrldi:explicitMember></segment>
+  </entity><period><startDate>{start}</startDate><endDate>{end}</endDate></period></context>
+  {duplicate_context}
+  <ifrs:CashFlowsFromUsedInOperatingActivities contextRef="duration-cfs" unitRef="KRW">50</ifrs:CashFlowsFromUsedInOperatingActivities>
+  <ifrs:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities contextRef="duration-cfs" unitRef="KRW">25</ifrs:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities>
+  {duplicate_fact}
+</xbrl>'''.encode()
+
+
+def _cash_flow_rows() -> dict[str, list[dict[str, object]]]:
+    rows = _rows()
+    rows["CFS"].extend(
+        (
+            _row(
+                "ifrs-full_CashFlowsFromUsedInOperatingActivities",
+                "영업활동현금흐름",
+                "50",
+                statement="CF",
+                ordinal="7",
+            ),
+            _row(
+                "ifrs-full_PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities",
+                "유형자산의 취득",
+                "25",
+                statement="CF",
+                ordinal="8",
+            ),
+        )
+    )
+    return rows
+
+
+def test_cash_flow_period_comes_from_exact_noncalendar_xbrl_context() -> None:
+    _contexts, facts = parse_xbrl_document(
+        _cash_flow_xbrl(start="2025-10-01", end="2026-03-31")
+    )
+
+    recovered = promote_recovered_fields(_filing(), _cash_flow_rows(), xbrl_facts=facts)
+    ocf = recovered["fields"]["operating_cash_flow"]["lineage"]
+    ppe = recovered["capex_components"][0]
+
+    assert ocf["amount_period_type"] == "year_to_date_cumulative"
+    assert ocf["amount_period_start"] == "2025-10-01"
+    assert ocf["amount_period_end"] == "2026-03-31"
+    assert ocf["duration_days"] == 182
+    assert ocf["fiscal_year"] == 2026
+    assert ocf["fiscal_quarter"] == 2
+    assert ocf["period_source"] == "exact_opendart_xbrl_duration_context"
+    assert ppe["aggregation_eligible"] is True
+    assert ppe["reason"] is None
+    assert ppe["lineage"]["amount_period_start"] == "2025-10-01"
+    assert ppe["lineage"]["amount_period_end"] == "2026-03-31"
+
+
+def test_annual_cash_flow_preserves_exact_noncalendar_xbrl_bounds() -> None:
+    filing = Filing(
+        ticker="GENERIC",
+        corp_code="00123456",
+        company_name="Generic",
+        receipt_no="20260814000001",
+        report_name="사업보고서 (2026.03)",
+        receipt_date=date(2026, 8, 14),
+        business_year=2026,
+        report_code="11011",
+        correction=False,
+    )
+    _contexts, facts = parse_xbrl_document(
+        _cash_flow_xbrl(start="2025-04-01", end="2026-03-31")
+    )
+
+    recovered = promote_recovered_fields(filing, _cash_flow_rows(), xbrl_facts=facts)
+    ocf = recovered["fields"]["operating_cash_flow"]["lineage"]
+    ppe = recovered["capex_components"][0]["lineage"]
+
+    assert ocf["amount_period_type"] == "full_year"
+    assert ocf["amount_period_start"] == "2025-04-01"
+    assert ocf["amount_period_end"] == "2026-03-31"
+    assert ocf["fiscal_quarter"] is None
+    assert ppe["amount_period_type"] == "full_year"
+
+
+@pytest.mark.parametrize(
+    ("payload", "ppe_resolved"),
+    (
+        (
+            _cash_flow_xbrl(
+                start="2026-01-01",
+                end="2026-06-30",
+                entity="00999999",
+            ),
+            False,
+        ),
+        (
+            _cash_flow_xbrl(
+                start="2026-01-01",
+                end="2026-06-30",
+                duplicate=True,
+            ),
+            True,
+        ),
+    ),
+)
+def test_ambiguous_or_wrong_entity_xbrl_period_remains_blocked(
+    payload: bytes,
+    ppe_resolved: bool,
+) -> None:
+    _contexts, facts = parse_xbrl_document(payload)
+
+    recovered = promote_recovered_fields(_filing(), _cash_flow_rows(), xbrl_facts=facts)
+
+    assert recovered["fields"]["operating_cash_flow"]["status"] == "unknown"
+    assert recovered["capex_components"][0]["aggregation_eligible"] is ppe_resolved
+    assert recovered["capex_components"][0]["reason"] == (
+        None if ppe_resolved else "cash_flow_period_requires_unique_xbrl_context"
+    )
 
 
 def test_capex_components_are_audit_only_until_cash_flow_period_is_verified() -> None:

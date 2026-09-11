@@ -1,0 +1,25 @@
+{
+  "contract": "m9-m5-m8-contract-reuse-proof-v1",
+  "m5_optional_financial_context_preserved": true,
+  "m6_adapter_lineage_revalidation_preserved": true,
+  "m7_point_in_time_projection_uses_null_external_period_start": true,
+  "m8_exact_context_source_promotion_preserved": true,
+  "m8_historical_packet_compatibility": {
+    "contract": "m8-historical-packet-compatibility-v1",
+    "historical_archives_rewritten": 0,
+    "legacy_fixture_count": 14,
+    "legacy_hash_unchanged_count": 14,
+    "legacy_parse_pass_count": 14,
+    "m7_authoritative_evidence": {
+      "contract": "m7-historical-packet-compatibility-v1",
+      "financial_context_remains_optional": true,
+      "historical_archives_rewritten": 0,
+      "legacy_fixture_count": 14,
+      "legacy_hash_unchanged_count": 14,
+      "legacy_parse_pass_count": 14,
+      "m6_authoritative_artifact_sha256": "00174259c3a7a5c93809028431b5eae4de068d3a8130b2bea7b7b99fb2359b8c"
+    }
+  },
+  "m8_ticker_specific_mapping_count": 0,
+  "status": "PASS"
+}

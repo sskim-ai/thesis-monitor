@@ -1,0 +1,22 @@
+{
+  "non_hold_lean_normalization": [
+    {
+      "direction": "SELL",
+      "left": null,
+      "right": "NOT_HOLD",
+      "equal": true
+    },
+    {
+      "direction": "BUY",
+      "left": "not-applicable",
+      "right": "NOT_HOLD",
+      "equal": true
+    },
+    {
+      "direction": "HOLD",
+      "left": "SELL_LEAN",
+      "right": "NEUTRAL",
+      "equal": false
+    }
+  ]
+}

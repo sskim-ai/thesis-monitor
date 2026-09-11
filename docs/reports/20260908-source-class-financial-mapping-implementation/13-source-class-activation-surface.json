@@ -1,0 +1,16 @@
+{
+  "activation_surface": [
+    "generic_xbrl_statement_basis_member_parsing",
+    "official_occurrence_batch_canonicalization",
+    "opendart_exact_context_direct_fact_promotion"
+  ],
+  "changed_runtime_modules": [
+    "app/services/opendart_xbrl_service.py",
+    "app/services/official_cash_flow_service.py",
+    "app/services/source_class_financial_mapping_service.py"
+  ],
+  "contract": "m8-source-class-activation-surface-v1",
+  "excluded_surfaces_changed": [],
+  "ownership_semantic_change_count": 0,
+  "ticker_specific_mapping_count": 0
+}

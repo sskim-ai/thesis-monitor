@@ -1,0 +1,69 @@
+{
+  "contract": "validator-p1-structured-autonomy-experiment-freeze-v1",
+  "status": "FROZEN",
+  "frozen_at": "2026-09-05T16:10:46Z",
+  "code": {
+    "head": "8e8f83edceecaf6f9c8d9b694e0cf518e5e90d9c",
+    "tree": "126443ca24c77c8523e1a3fe5efe17150a54b7b8",
+    "required_commits": [
+      "b915dcdd0d6a5d51657b404a7a9308061ec71e0a",
+      "00e4f2fd00cc11c883480caf3ca728d9c3f1af75",
+      "d594c01fe1208f746aaa0ed89f6caab87d53eea4"
+    ]
+  },
+  "inference": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "cohort": "US14_KR8_FULL_22",
+    "runs": [
+      "first",
+      "a",
+      "b",
+      "c"
+    ],
+    "resume_existing": false,
+    "selective_ticker_rerun": false,
+    "candidate_reuse": false
+  },
+  "contracts": {
+    "output": "structured-autonomy-decision-v2-shadow-output",
+    "validator": "structured-autonomy-decision-v2-shadow-validator",
+    "renderer": "structured-autonomy-decision-v2-shadow-renderer",
+    "logical_condition": "source-owned-logical-condition-v1"
+  },
+  "file_sha256": {
+    "app/jobs/accepted_decision_v2_runtime.py": "e9d85b6ca340b63f6e1a5f8dceea876f9966931020b277a6c26b3726a9dfbdb9",
+    "app/services/accepted_decision_v2_runtime_service.py": "557e9e6160c2ce860b33f78fb08e713b497ec6caa38f72d485f8e04312f5a421",
+    "app/services/cross_market_decision_engine_service.py": "25652b55b8a432e2ae69cd51b14ac6f34c47778737d85bae62c86a1a241e8c83",
+    "app/services/krx_night_session_contract_service.py": "645a9575cf2c1ff5f89b4d45336bd3f493c6bd11ba48e9e1ba9d60de8ea911e0",
+    "app/services/logical_condition_service.py": "255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/structured_autonomy_shadow_service.py": "eb67e9e04eb8b450b60bbda7af945cf36889a5c71000fd55084f9205b338d925",
+    "app/services/structured_autonomy_stability_service.py": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188",
+    "scripts/uskr22_structured_autonomy_shadow.py": "a3cd049af924c3f67e1eff3309cbd32a73e294fca8b891a07dcee886b2b6f7ea",
+    "scripts/validator_p1_night_futures_stability_repair.py": "4bb818d83fcdde9b72195fb2e77ac154824276fd95ed482a4d75621b330f3b46"
+  },
+  "source_sha256": {
+    "us_packet": "db9a3173a938dacf633f75e482b0ec19bfbb338cf150265cb6ee200eb5fc7b61",
+    "kr_packet": "794925a9a73752925a6f36bc8c39cd23d5e41f0f9da9eccbf9d2a659acf9f528",
+    "us_base_messages": "e35738205245eb23325c1d980a129925a8f2e6d0cd58aea0c0ab2e72396b72c9",
+    "kr_base_messages": "fc8c238ad0a35e118a19d9c8a8df62505ea6c9bdc77f917632ee9f95c6197405"
+  },
+  "night_futures": {
+    "fixture_sha256": "742cff0c55ea28401fbde0d294951e4d14ba0f830f1e8f6643a93bdef08f71cb",
+    "structured_autonomy_packet_injection": false,
+    "mode": "SEPARATE_FROZEN_SHADOW_MARKET_DATA_PROOF",
+    "refresh_between_runs": false
+  },
+  "post_start_policy": {
+    "code_or_config_change": false,
+    "prompt_change": false,
+    "builder_change": false,
+    "validator_change": false,
+    "renderer_change": false,
+    "ticker_exception": false,
+    "korean_grammar_regex_addition": false,
+    "threshold_relaxation": false,
+    "result_driven_hotfix": false
+  }
+}

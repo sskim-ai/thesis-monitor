@@ -1,0 +1,120 @@
+{
+  "alias_builder_freeze": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "6af1b1db3c318798bb658ba79007626b53a6cfde4d07740fd25710a14f13e863",
+        "before_sha256": "6af1b1db3c318798bb658ba79007626b53a6cfde4d07740fd25710a14f13e863",
+        "changed": false,
+        "function": "stage_alias_catalogs"
+      }
+    ],
+    "path": "app/services/direction_timing_ownership_service.py",
+    "status": "PASS"
+  },
+  "alias_renumber_count": 0,
+  "catalog_order_failure_count": 0,
+  "contract": "m12b-alias-reuse-and-ordering-v1",
+  "duplicate_alias_count": 0,
+  "rows": [
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "selected_aliases": [
+        "E03",
+        "E08",
+        "E09"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "selected_aliases": [
+        "E01",
+        "E04",
+        "E08"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E01",
+        "E08"
+      ],
+      "selected_aliases": [
+        "E01",
+        "E08"
+      ],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "selected_aliases": [
+        "E02",
+        "E06",
+        "E07"
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E05",
+        "E06"
+      ],
+      "selected_aliases": [
+        "E05",
+        "E06"
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [
+        "E03",
+        "E04"
+      ],
+      "selected_aliases": [
+        "E03",
+        "E04"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [],
+      "selected_aliases": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "catalog_order_preserved": true,
+      "duplicate_alias_count": 0,
+      "first_class_aliases": [],
+      "selected_aliases": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS"
+}

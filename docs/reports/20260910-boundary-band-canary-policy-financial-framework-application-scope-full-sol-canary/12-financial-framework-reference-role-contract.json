@@ -1,0 +1,24 @@
+{
+  "fic_fin_08_expected_role": "CONTRASTIVE_REPLACEMENT",
+  "hard_misuse_roles": [
+    "ASSERTED_STATE",
+    "APPLIED_DECISION_FRAMEWORK",
+    "CONTRADICTORY_MIXED_USE"
+  ],
+  "roles": [
+    "ASSERTED_STATE",
+    "APPLIED_DECISION_FRAMEWORK",
+    "EXPLICIT_NON_APPLICATION",
+    "CONTRASTIVE_REPLACEMENT",
+    "CONTEXT_ONLY_MENTION",
+    "CONTRADICTORY_MIXED_USE",
+    "UNRESOLVED"
+  ],
+  "shared_by": [
+    "net debt completeness validation",
+    "financial-sector generic-framework validation"
+  ],
+  "status": "FROZEN",
+  "unresolved_material_use": "FAIL_CLOSED",
+  "version": "financial-framework-reference-role-v1"
+}

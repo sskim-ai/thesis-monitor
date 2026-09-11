@@ -1,0 +1,14 @@
+{
+  "after": "contract='pre-model-source-sufficiency-v1' status=<SourceSufficiencyStatus.SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT: 'SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT'> framework=<AnalysisFramework.STANDARD_OPERATING: 'standard_operating_company'> directional_model_eligible=True valid_families=(<FundamentalEvidenceFamily.BUSINESS_CURRENT: 'BUSINESS_CURRENT'>, <FundamentalEvidenceFamily.EARNINGS_FINANCIAL_CURRENT: 'EARNINGS_FINANCIAL_CURRENT'>, <FundamentalEvidenceFamily.IDENTITY_SECURITY: 'IDENTITY_SECURITY'>) stale_families=() invalid_families=() missing_required_families=() reasons=('framework_required_current_evidence_present',) price_direction_inputs_used=0 hidden_weighted_score_used=0",
+  "before": "contract='pre-model-source-sufficiency-v1' status=<SourceSufficiencyStatus.SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT: 'SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT'> framework=<AnalysisFramework.STANDARD_OPERATING: 'standard_operating_company'> directional_model_eligible=True valid_families=(<FundamentalEvidenceFamily.BUSINESS_CURRENT: 'BUSINESS_CURRENT'>, <FundamentalEvidenceFamily.EARNINGS_FINANCIAL_CURRENT: 'EARNINGS_FINANCIAL_CURRENT'>, <FundamentalEvidenceFamily.IDENTITY_SECURITY: 'IDENTITY_SECURITY'>) stale_families=() invalid_families=() missing_required_families=() reasons=('framework_required_current_evidence_present',) price_direction_inputs_used=0 hidden_weighted_score_used=0",
+  "contract": "m9-source-sufficiency-no-change-proof-v1",
+  "debt_liquidity_gate_activated": false,
+  "module": {
+    "after_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "before_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "changed": false,
+    "path": "app/services/coldstart_fundamental_enrichment_service.py"
+  },
+  "outcome_equal": true,
+  "semantic_change_count": 0
+}

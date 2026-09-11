@@ -1,0 +1,11 @@
+{
+  "context_identical": true,
+  "contract": "m6-adapter-idempotency-proof-v1",
+  "derived_ref_identity": "canonical_existing_fact_id",
+  "duplicate_ref_count": 0,
+  "first_context_digest": "e43818f1220e2a99a766d84ff71026a4320b20e9999960ae3aca259adebd933d",
+  "input_fact_count": 606,
+  "runtime_timestamp_in_identity": false,
+  "second_context_digest": "e43818f1220e2a99a766d84ff71026a4320b20e9999960ae3aca259adebd933d",
+  "status": "PASS"
+}

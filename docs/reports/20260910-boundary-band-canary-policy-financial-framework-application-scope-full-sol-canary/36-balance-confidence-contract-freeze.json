@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "base_sha256": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+      "changed": false,
+      "current_sha256": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+      "expected_changed": false,
+      "path": "app/services/directional_balance_service.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

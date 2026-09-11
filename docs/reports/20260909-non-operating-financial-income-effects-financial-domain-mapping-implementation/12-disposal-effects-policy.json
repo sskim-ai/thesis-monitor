@@ -1,0 +1,37 @@
+{
+  "contract": "m11-disposal-policy-v1",
+  "normalized_earnings_subtraction_count": 0,
+  "policy": "DIRECT_COMPONENT_CONTEXT_ONLY",
+  "rows": [
+    {
+      "canonical_metric": "asset_disposal_gain",
+      "continuity_scope": "unspecified",
+      "economic_role": "GAIN",
+      "financial_effect_scope": "ppe_disposal_gain_component",
+      "parent_scope": "other_income_broad_context",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:GainsOnDisposalsOfPropertyPlantAndEquipment"
+    },
+    {
+      "canonical_metric": "asset_disposal_loss",
+      "continuity_scope": "unspecified",
+      "economic_role": "LOSS",
+      "financial_effect_scope": "ppe_disposal_loss_component",
+      "parent_scope": "other_expense_broad_context",
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "ifrs-full:LossesOnDisposalsOfPropertyPlantAndEquipment"
+    },
+    {
+      "canonical_metric": "asset_disposal_result_context",
+      "continuity_scope": "unspecified",
+      "economic_role": "NET_EFFECT",
+      "financial_effect_scope": "ppe_disposal_net_result",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_COMPONENT",
+      "priority": 100,
+      "source_semantic": "us-gaap:GainLossOnSaleOfPropertyPlantEquipment"
+    }
+  ]
+}

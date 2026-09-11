@@ -1,0 +1,12 @@
+{
+  "cli": "codex-cli 0.153.4",
+  "files": {
+    "app/services/codex_transport_lifecycle_service.py": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774",
+    "scripts/astra_runtime_adapter_m12v.py": "2e4b1419d0101f0c168235ea90a425c9c0684c30eb96309cd2a062a687d6e532",
+    "scripts/astra_runtime_m12v.py": "8b2b1c0907d612ac1ffebaa8bdf0792f786dd2627130a9b0b7a690165ae1b04c"
+  },
+  "implementation": "existing codex-transport-lifecycle-v1",
+  "new_consumer": "archive-only M12V",
+  "os": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+  "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 17.0.0 (clang-1700.6.4.2)]"
+}

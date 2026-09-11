@@ -1,0 +1,42 @@
+{
+  "archived_m12aa_rewritten": false,
+  "contract": "m12ab-corrected-m12aa-boundary-band-v1",
+  "in_band_hold_sell_lean_count": 1,
+  "in_band_minimum_sell_count": 2,
+  "out_of_band_count": 0,
+  "rows": [
+    {
+      "outcome": "IN_BAND_MINIMUM_SELL",
+      "raw": {
+        "buy": 4.0,
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "sell": 6.0
+      },
+      "repetition": 1
+    },
+    {
+      "outcome": "IN_BAND_HOLD_SELL_LEAN",
+      "raw": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "repetition": 2
+    },
+    {
+      "outcome": "IN_BAND_MINIMUM_SELL",
+      "raw": {
+        "buy": 4.0,
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "sell": 6.0
+      },
+      "repetition": 3
+    }
+  ],
+  "source_bundle_sha256": "0416d8719b5e71e79de6591f574a2ba3332657dd32deddb870bbaa8d2e854a7a",
+  "stable_preference": "MIXED_BOUNDARY",
+  "status": "PASS"
+}

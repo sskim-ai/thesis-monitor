@@ -1,0 +1,8 @@
+{
+  "contract": "m4-master-workflow-update-v1",
+  "marker_present": true,
+  "next_scope": "DECISION_EVIDENCE_PACKET_DOMAIN_EXTENSION_IMPLEMENTATION",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "required_marker": "m4-source-domain-enrichment-design-review-v1",
+  "status": "PASS"
+}

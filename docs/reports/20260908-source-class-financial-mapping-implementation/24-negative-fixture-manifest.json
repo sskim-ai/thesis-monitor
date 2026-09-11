@@ -1,0 +1,23 @@
+{
+  "cases": [
+    "ticker_specific_hut_branch_absent",
+    "ticker_specific_skhy_branch_absent",
+    "intangible_purchase_not_ppe",
+    "generic_investing_cash_flow_not_ppe",
+    "wrong_foreign_entity_identity",
+    "foreign_currency_basis_ambiguity",
+    "adr_share_basis_not_attached",
+    "kr_report_label_only_period_rejected",
+    "kr_multiple_xbrl_contexts_rejected",
+    "kr_amount_mismatch_rejected",
+    "kr_statement_basis_mismatch_rejected",
+    "kr_entity_mismatch_rejected",
+    "duplicate_direct_fact_deduplicated",
+    "material_source_conflict_blocked",
+    "filing_identity_mismatch_rejected",
+    "higher_risk_domain_not_emitted"
+  ],
+  "contract": "m8-negative-fixture-manifest-v1",
+  "fixture_count": 16,
+  "rejected_count": 16
+}

@@ -1,0 +1,32 @@
+{
+  "backend_sampling_request_count": "NOT_MEASURED",
+  "capacity_failure_count": 0,
+  "cli_internal_retry_event_count": 0,
+  "identities": {
+    "invocation_id": [
+      "20260910-m12u-fictional-20260909T231913Z-1e045065810d:run-1:context-01"
+    ],
+    "runtime_state_namespace_hash": [
+      "17489fc8d5c4eb6a7185fe80"
+    ],
+    "session_id": [
+      "01a08878-78e1-72c1-a4aa-1f02d3f0d680"
+    ],
+    "working_directory_identity": [
+      "ed4a4c234307003ffc742dacc168e9906e813f4d89ee2ed85ebc103c44b60a1d"
+    ]
+  },
+  "model_calls_fictional": 1,
+  "model_context_failure_count": 1,
+  "model_context_success_count": 0,
+  "stop": {
+    "failed_invocation": "20260910-m12u-fictional-20260909T231913Z-1e045065810d:run-1:context-01",
+    "model_calls_completed": 1,
+    "status": "FAIL",
+    "stop_reason": "M12B_RUNTIME_FAILURE",
+    "wrapper_retry_count": 0
+  },
+  "timeout_count": 1,
+  "unique": true,
+  "wrapper_retry_count": 0
+}

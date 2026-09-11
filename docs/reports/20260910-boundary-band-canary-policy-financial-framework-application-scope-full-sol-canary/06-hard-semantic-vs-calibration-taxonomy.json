@@ -1,0 +1,13 @@
+{
+  "calibration_deviation_stops_generation": false,
+  "classes": {
+    "ADVISORY_QUALITY_OBSERVATION": "RECORD_AND_CONTINUE",
+    "CALIBRATION_OBSERVATION": "RECORD_AND_CONTINUE",
+    "OBJECTIVE_SEMANTIC_HARD_FAILURE": "STOP_IMMEDIATELY",
+    "RUNTIME_OR_SCHEMA_HARD_FAILURE": "STOP_IMMEDIATELY"
+  },
+  "confidence_variance_stops_generation": false,
+  "stance_variance_stops_generation": false,
+  "status": "PASS",
+  "version": "m12aa-canary-stop-policy-v1"
+}

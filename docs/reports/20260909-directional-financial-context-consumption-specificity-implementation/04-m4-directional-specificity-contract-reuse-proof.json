@@ -1,0 +1,14 @@
+{
+  "balance_sum": 10.0,
+  "buy_threshold": 6.0,
+  "hold_lean": {
+    "4.5:5.5": "SELL_LEAN",
+    "5.0:5.0": "NEUTRAL",
+    "5.5:4.5": "BUY_LEAN"
+  },
+  "increment": 0.5,
+  "less_directional_tiebreak": "toward_5.0",
+  "sell_threshold": 6.0,
+  "status": "PASS",
+  "threshold_changed": false
+}

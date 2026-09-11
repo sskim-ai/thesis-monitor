@@ -1,0 +1,13 @@
+{
+  "allowed_market_enum": [
+    "kr",
+    "us"
+  ],
+  "contract": "canary-fixture-root-cause-v1",
+  "model_invocation_at_failure": 0,
+  "prior_value": "synthetic",
+  "production_schema_defect": 0,
+  "repair_scope": "TEST_FIXTURE_ONLY_BEFORE_FIRST_MODEL_CANARY",
+  "root_cause": "SYNTHETIC_CANARY_FIXTURE_MARKET_ENUM_INVALID",
+  "status": "CLOSED"
+}

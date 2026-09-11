@@ -1,0 +1,13 @@
+{
+  "contract": "m12-fictional-canary-stability-v1",
+  "generation_id": "20260909-m12-fictional-20260909T031350Z-72c281729499",
+  "required_repetition_count": 3,
+  "completed_repetition_count": 0,
+  "partial_first_repetition_context_count": 1,
+  "fictional_stable_count": "NOT_MEASURED",
+  "fictional_boundary_uncertainty_count": "NOT_MEASURED",
+  "fictional_unstable_count": "NOT_MEASURED",
+  "opposite_direction_reversal_count": "NOT_MEASURED",
+  "reason": "CANARY_STOPPED_BEFORE_REPEATED_STABILITY_SAMPLE",
+  "status": "NOT_MEASURED"
+}

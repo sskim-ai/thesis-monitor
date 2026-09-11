@@ -1,0 +1,107 @@
+{
+  "contract": "m12a-current-evidence-grounding-flow-v1",
+  "split_created_at": "scripts/directional_core_price_timing_holdout.py::_owned_context",
+  "split_mechanism": "selected typed refs are retained in the catalog but filtered out of evidence[] and emitted only in financial_decision_context.evidence_items[]",
+  "status": "PASS",
+  "steps": [
+    {
+      "human_readable_semantics_present": false,
+      "input_object": "canonical/source packet fact rows",
+      "lineage_preserved": true,
+      "one_alias_namespace": null,
+      "output_object": "DecisionEvidenceRef",
+      "owner_module": "app/services/cross_market_decision_engine_service.py::build_decision_evidence_packet",
+      "step": "canonical source ref -> DecisionEvidenceRef",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": null
+    },
+    {
+      "human_readable_semantics_present": false,
+      "input_object": "DecisionEvidenceRef",
+      "lineage_preserved": true,
+      "one_alias_namespace": null,
+      "output_object": "FinancialContext optional field",
+      "owner_module": "app/services/cross_market_decision_engine_service.py::DecisionEvidenceRef",
+      "step": "DecisionEvidenceRef -> financial_context",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": null
+    },
+    {
+      "human_readable_semantics_present": true,
+      "input_object": "typed core DecisionEvidenceRef rows",
+      "lineage_preserved": true,
+      "one_alias_namespace": null,
+      "output_object": "bounded FinancialDecisionContext",
+      "owner_module": "app/services/directional_financial_context_service.py::build_financial_decision_context",
+      "step": "financial-context selection",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": null
+    },
+    {
+      "human_readable_semantics_present": false,
+      "input_object": "OwnedEvidencePacket + selected financial refs",
+      "lineage_preserved": true,
+      "one_alias_namespace": true,
+      "output_object": "one EvidenceAliasCatalog",
+      "owner_module": "app/services/direction_timing_ownership_service.py::stage_alias_catalogs",
+      "step": "stage alias catalog",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": true
+    },
+    {
+      "human_readable_semantics_present": false,
+      "input_object": "OwnedEvidencePacket + EvidenceAliasCatalog",
+      "lineage_preserved": true,
+      "one_alias_namespace": true,
+      "output_object": "evidence[] + financial_decision_context.evidence_items[]",
+      "owner_module": "scripts/directional_core_price_timing_holdout.py::_owned_context",
+      "step": "model input evidence projection",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": true
+    },
+    {
+      "human_readable_semantics_present": true,
+      "input_object": "split Directional Core context",
+      "lineage_preserved": true,
+      "one_alias_namespace": true,
+      "output_object": "model text input",
+      "owner_module": "scripts/directional_core_price_timing_holdout.py::_core_prompt",
+      "step": "prompt",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": true
+    },
+    {
+      "human_readable_semantics_present": null,
+      "input_object": "alias-constrained output",
+      "lineage_preserved": false,
+      "one_alias_namespace": true,
+      "output_object": "ordinary evidence_refs fields",
+      "owner_module": "app/services/direction_timing_ownership_service.py::DirectionalCoreCandidate",
+      "step": "candidate evidence refs",
+      "typed_financial_evidence_present": false,
+      "validator_can_resolve": true
+    },
+    {
+      "human_readable_semantics_present": null,
+      "input_object": "candidate aliases + one catalog",
+      "lineage_preserved": true,
+      "one_alias_namespace": true,
+      "output_object": "canonical evidence refs + selection audit",
+      "owner_module": "app/services/structured_autonomy_alias_service.py::resolve_candidate_aliases",
+      "step": "alias resolution",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": true
+    },
+    {
+      "human_readable_semantics_present": null,
+      "input_object": "resolved candidate + selected canonical metrics",
+      "lineage_preserved": true,
+      "one_alias_namespace": true,
+      "output_object": "grounding receipt",
+      "owner_module": "scripts/directional_financial_context_m12g.py::audit_financial_grounding",
+      "step": "financial grounding validation",
+      "typed_financial_evidence_present": true,
+      "validator_can_resolve": true
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "auto_resume_executed": 0,
+  "contract": "pause-state-historical-transition-accounting-v1",
+  "current_observation": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T12:43:31.801196+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "historical_natural_delivery": {
+    "composition": "one KR digest plus eight company messages",
+    "items": 9,
+    "pending_at_2026_09_07_17_42_54_kst": 0,
+    "sent_at_2026_09_07_17_42_54_kst": 9,
+    "task_initiated_delivery": false,
+    "window_kst": "2026-09-07 17:10:00-17:10:18"
+  },
+  "historical_pause": {
+    "automatic_restoration": false,
+    "forced_termination": 0,
+    "kr": "PAUSED_COMPLETE",
+    "latest_task_additional_changes": 2,
+    "paused_scheduler_objects": 8,
+    "prior_task_changes": 6,
+    "us": "PAUSED_COMPLETE"
+  },
+  "historical_source_documents": {
+    "backlog_transition": {
+      "contract": "monitoring-pause-transition-ledger-v1",
+      "historical_held_packet": {
+        "packet_id": "2026-09-07-kr-run-60-4ec80c93055c",
+        "state_at_2026-09-07T16:30:35+09:00": {
+          "held_or_pending": 9,
+          "sent": 0
+        }
+      },
+      "natural_fallback_transition": {
+        "attempt_count_per_item": 1,
+        "completed_through_kst": "2026-09-07T17:10:18+09:00",
+        "delivery_item_count": 9,
+        "delivery_mode": "deterministic_fallback",
+        "delivery_row_ids": [
+          566,
+          567,
+          568,
+          569,
+          570,
+          571,
+          572,
+          573,
+          574
+        ],
+        "evidence": [
+          "read-only notificationdelivery ledger",
+          "ai-review-fallback.out.log final result"
+        ],
+        "interpretation": "the natural 17:10 fallback consumed the held backlog before the current task disabled and unloaded the fallback job",
+        "job": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "pending_count": 0,
+        "result": "FALLBACK_DELIVERED",
+        "sent_count": 9,
+        "task_initiated": false,
+        "tickers": [
+          "__DAILY_DIGEST_KR__",
+          "000660",
+          "003690",
+          "005490",
+          "005930",
+          "010120",
+          "012450",
+          "047810",
+          "086280"
+        ],
+        "trigger_kst": "2026-09-07T17:10:00+09:00"
+      },
+      "preservation": {
+        "delivery_rows_deleted": 0,
+        "delivery_rows_manually_marked_sent": 0,
+        "delivery_rows_requeued": 0,
+        "investment_history_rewritten": 0,
+        "task_initiated_database_mutation": 0,
+        "task_initiated_telegram_send": 0
+      },
+      "state_after_transition": {
+        "historical_kr_packet_pending_count": 0,
+        "historical_kr_packet_sent_count": 9,
+        "in_flight_relevant_process_count": 0,
+        "observed_at": "2026-09-07T17:42:54+09:00",
+        "same_day_pending_count": 0,
+        "same_day_sent_count": 24
+      },
+      "status": "PASS_WITH_NATURAL_TRANSITION_DELIVERY"
+    },
+    "pause_after_state": {
+      "authorized_logical_schedule_count": 2,
+      "auto_resume_configured": false,
+      "contract": "authorized-schedule-pause-verification-v1",
+      "current_effective_states": {
+        "codex_automations_paused": [
+          "thesis-monitor-ai-review-us-primary",
+          "thesis-monitor-ai-review-us-backup",
+          "thesis-monitor-ai-review-kr-primary",
+          "thesis-monitor-ai-review-kr-backup"
+        ],
+        "launchd_disabled_and_unloaded": [
+          "com.seungsoo.thesis-monitor.daily",
+          "com.seungsoo.thesis-monitor.kr-close",
+          "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "com.seungsoo.thesis-monitor.ai-review-delivery-retry"
+        ],
+        "relevant_process_count": 0
+      },
+      "current_task": {
+        "newly_changed_scheduler_object_count": 2,
+        "objects": [
+          {
+            "after": {
+              "disable_override": true,
+              "effective_next_trigger": null,
+              "launchctl_print_exit_code": 113,
+              "loaded": false
+            },
+            "before": {
+              "disable_override": false,
+              "last_exit_code": 0,
+              "loaded": true,
+              "runs": 8,
+              "state": "not running"
+            },
+            "forced_termination": false,
+            "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+            "mutation": "launchctl disable followed by bootout only after inactive-process verification"
+          },
+          {
+            "after": {
+              "disable_override": true,
+              "effective_next_trigger": null,
+              "launchctl_print_exit_code": 113,
+              "loaded": false
+            },
+            "before": {
+              "disable_override": false,
+              "last_exit_code": 0,
+              "loaded": true,
+              "runs": 24,
+              "state": "not running"
+            },
+            "forced_termination": false,
+            "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+            "mutation": "launchctl disable followed by bootout only after inactive-process verification"
+          }
+        ]
+      },
+      "kr_pause_status": "PAUSED_COMPLETE",
+      "operational_pause_status": "PAUSED_COMPLETE",
+      "prior_task": {
+        "changed_scheduler_object_count": 6,
+        "current_state_reverified": "PAUSED",
+        "objects": [
+          "com.seungsoo.thesis-monitor.daily",
+          "com.seungsoo.thesis-monitor.kr-close",
+          "thesis-monitor-ai-review-us-primary",
+          "thesis-monitor-ai-review-us-backup",
+          "thesis-monitor-ai-review-kr-primary",
+          "thesis-monitor-ai-review-kr-backup"
+        ]
+      },
+      "remaining_automatic_send_path_through_these_schedules": 0,
+      "restoration_requires_new_explicit_user_request": true,
+      "status": "PASS",
+      "timezone": "Asia/Seoul",
+      "total_paused_scheduler_object_count": 8,
+      "transition_window": {
+        "after_verified_at": "2026-09-07T17:35:19+09:00",
+        "definition_backups_created_at": "2026-09-07T17:34:46+09:00"
+      },
+      "us_pause_status": "PAUSED_COMPLETE"
+    }
+  },
+  "new_scheduler_mutation_count": 0,
+  "status": "PASS"
+}

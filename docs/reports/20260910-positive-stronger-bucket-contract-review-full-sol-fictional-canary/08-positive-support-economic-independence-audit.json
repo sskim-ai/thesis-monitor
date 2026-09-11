@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "ticker": "FIC-FIN-01",
+  "economic_axes": [
+    {
+      "axis": "OPERATING_BUSINESS_IMPROVEMENT",
+      "independent": true,
+      "basis": "Revenue and operating profit establish operating performance."
+    },
+    {
+      "axis": "CASH_CONVERSION_IMPROVEMENT",
+      "independent": true,
+      "basis": "Reported QTD OCF establishes cash conversion rather than repeating accounting earnings."
+    },
+    {
+      "axis": "BALANCE_SHEET_RESILIENCE",
+      "independent": true,
+      "basis": "Net cash establishes resilience at a point in time and is distinct from period earnings and OCF."
+    }
+  ],
+  "excluded_from_axis_count": [
+    {
+      "metric": "ocf_less_ppe_capex",
+      "reason": "Substantially overlapping OCF lineage."
+    }
+  ],
+  "conclusion": "The current evidence provides materially stronger breadth and quality than the minimum BUY pattern without using reference counting.",
+  "fixed_score_rule_count": 0,
+  "evidence_count_bucket_rule_count": 0
+}

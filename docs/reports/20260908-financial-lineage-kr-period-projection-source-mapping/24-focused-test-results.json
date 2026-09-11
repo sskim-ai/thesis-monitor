@@ -1,0 +1,10 @@
+{
+  "command": "shared-venv/bin/pytest -q tests/test_decision_evidence_financial_context.py tests/test_financial_context_adapter_service.py tests/test_financial_lineage_projection_service.py tests/test_cash_flow_capital_efficiency_service.py tests/test_opendart_financial_recovery_service.py tests/test_opendart_xbrl_service.py tests/test_cross_market_decision_engine.py tests/test_cash_flow_user_visible_service.py tests/test_cash_flow_user_visible_integration.py tests/test_coldstart_fundamental_enrichment_service.py tests/test_nonproduction_monitoring_lifecycle_service.py tests/test_nonproduction_lifecycle_decision_service.py",
+  "contract": "m7-focused-test-results-v1",
+  "duration_seconds": 8.09,
+  "failed": 0,
+  "model_calls": 0,
+  "passed": 252,
+  "provider_calls": 0,
+  "result": "PASS"
+}

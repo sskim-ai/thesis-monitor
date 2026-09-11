@@ -1,0 +1,28 @@
+{
+  "causal_conclusion": "No resource cause established; a current snapshot cannot explain historical backend stalls.",
+  "historical_resource_contention": "NOT_MEASURED",
+  "load_average": [
+    2.390625,
+    2.560546875,
+    2.75830078125
+  ],
+  "observations": {
+    "disk": {
+      "output": "Filesystem   1024-blocks      Used Available Capacity iused     ifree %iused  Mounted on\n/dev/disk3s5   239362496 158657956  41827828    80% 1384585 418278280    0%   /System/Volumes/Data\n",
+      "returncode": 0
+    },
+    "fd": {
+      "output": "",
+      "returncode": 1
+    },
+    "memory": {
+      "output": "The system has 17179869184 (1048576 pages with a page size of 16384).\nSystem-wide memory free percentage: 75%\n",
+      "returncode": 0
+    },
+    "processes": {
+      "error_type": "PermissionError",
+      "status": "NOT_MEASURED"
+    }
+  },
+  "observed_at": "2026-09-10T00:23:13.603208+00:00"
+}

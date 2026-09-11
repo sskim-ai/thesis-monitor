@@ -1,0 +1,7 @@
+{
+  "contract": "m6-directional-specificity-activation-decision-v1",
+  "decision": "NOT_IN_M6",
+  "model_proof_performed": false,
+  "production_readiness": "NOT_READY",
+  "reason": "typed adapter emission is intentionally dormant in compact model context"
+}

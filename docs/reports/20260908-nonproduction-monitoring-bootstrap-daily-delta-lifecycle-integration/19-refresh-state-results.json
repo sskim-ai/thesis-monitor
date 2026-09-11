@@ -1,0 +1,365 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "fresh": {
+    "actual_status": "no_material_change",
+    "assessment": {
+      "assessment_date": "2026-09-08",
+      "assessment_id": "8e7dda2db9b1482ddda76181b9d0457212c7223aa4a1ad846d67346fed1e71e3",
+      "business_evidence_ids": [],
+      "directional_core_change": "UNCHANGED",
+      "lineage": {
+        "assessment_date": "2026-09-08",
+        "baseline_cutoff": "2026-09-08T00:00:00Z",
+        "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+        "evidence_effective_at": {},
+        "evidence_generation": "a97f788c4b4347d6506dff5f33f2e64d28f5bef630c0e137e1e3680bae35058f",
+        "evidence_observed_at": {},
+        "excluded_evidence_ids": [],
+        "genuinely_new_evidence_ids": [],
+        "prebaseline_enrichment_ids": [],
+        "refresh_state": "AVAILABLE",
+        "source_evidence_ids": [],
+        "thesis_version": 1
+      },
+      "market_expectation_level": "balanced",
+      "price_evidence_ids": [],
+      "price_evidence_state": "READY",
+      "status": "no_material_change",
+      "supply_evidence_ids": [],
+      "thesis_version": 1,
+      "ticker": "SYNTHETIC_M2_REVIEW",
+      "valuation_context": "neutral",
+      "valuation_evidence_ids": [],
+      "warning_intent_ids": []
+    },
+    "description": "fresh successful refresh with no material change",
+    "expected_status": "no_material_change",
+    "fixture_id": "M3-04",
+    "lifecycle_trace": [
+      {
+        "registration_intent_created": true,
+        "snapshot": {
+          "baseline": null,
+          "bootstrap_complete": false,
+          "evidence_ids": [],
+          "monitoring_ready": false,
+          "monitoring_requested": true,
+          "onboarding_state": "PENDING_ONBOARDING",
+          "source_ready": false,
+          "subject_lifecycle": "EXISTING_MONITORED",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "REGISTERED_PENDING"
+      },
+      {
+        "baseline": {
+          "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+          "cutoff": "2026-09-08T00:00:00Z",
+          "established_at": "2026-09-08T00:00:00Z",
+          "historical_enrichment_ids": [],
+          "original_evidence_ids": [
+            "baseline-fact"
+          ],
+          "thesis_version": 1
+        },
+        "snapshot": {
+          "baseline": {
+            "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+            "cutoff": "2026-09-08T00:00:00Z",
+            "established_at": "2026-09-08T00:00:00Z",
+            "historical_enrichment_ids": [],
+            "original_evidence_ids": [
+              "baseline-fact"
+            ],
+            "thesis_version": 1
+          },
+          "bootstrap_complete": false,
+          "evidence_ids": [
+            "baseline-fact"
+          ],
+          "monitoring_ready": false,
+          "monitoring_requested": true,
+          "onboarding_state": "PENDING_ONBOARDING",
+          "source_ready": false,
+          "subject_lifecycle": "EXISTING_MONITORED",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "BASELINE_CREATED_BOOTSTRAP_INCOMPLETE"
+      },
+      {
+        "snapshot": {
+          "baseline": {
+            "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+            "cutoff": "2026-09-08T00:00:00Z",
+            "established_at": "2026-09-08T00:00:00Z",
+            "historical_enrichment_ids": [],
+            "original_evidence_ids": [
+              "baseline-fact"
+            ],
+            "thesis_version": 1
+          },
+          "bootstrap_complete": true,
+          "evidence_ids": [
+            "baseline-fact"
+          ],
+          "monitoring_ready": true,
+          "monitoring_requested": true,
+          "onboarding_state": "READY",
+          "source_ready": true,
+          "subject_lifecycle": "EXISTING_MONITORED",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "MONITORING_READY"
+      }
+    ],
+    "message_label": "OFFLINE_NONPRODUCTION_DERIVATIVE",
+    "message_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-04.txt",
+    "message_sections": {
+      "absolute_decision": true,
+      "daily_delta": true,
+      "holder": true,
+      "new_buyer": true,
+      "next_check": true,
+      "price_timing": true
+    },
+    "message_sha256": "e325b9447b2e15ea810d2d989618d3217095dc12afd59665c0039d8c5e5dca2f",
+    "pass": true,
+    "shared_composed_sha256": "995ebcc545a1cfdf0c675f24758e7c130598be81115d70d224d6d676cfea736c",
+    "subject": {
+      "baseline": {
+        "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+        "cutoff": "2026-09-08T00:00:00Z",
+        "established_at": "2026-09-08T00:00:00Z",
+        "historical_enrichment_ids": [],
+        "original_evidence_ids": [
+          "baseline-fact"
+        ],
+        "thesis_version": 1
+      },
+      "bootstrap_complete": true,
+      "evidence_ids": [
+        "baseline-fact"
+      ],
+      "monitoring_ready": true,
+      "monitoring_requested": true,
+      "onboarding_state": "READY",
+      "source_ready": true,
+      "subject_lifecycle": "EXISTING_MONITORED",
+      "thesis_versions": [
+        {
+          "created_at": "2026-09-07T21:00:00Z",
+          "logic_fingerprint": "logic-v1",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "ticker": "SYNTHETIC_M2_REVIEW"
+    }
+  },
+  "missing": {
+    "actual_status": "needs_review",
+    "assessment": {
+      "assessment_date": "2026-09-08",
+      "assessment_id": "a495fe9979933e27941ef7f889316511e52f591bba891cbca93eae6d741ddff4",
+      "business_evidence_ids": [],
+      "directional_core_change": "UNRESOLVED",
+      "lineage": {
+        "assessment_date": "2026-09-08",
+        "baseline_cutoff": "2026-09-08T00:00:00Z",
+        "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+        "evidence_effective_at": {},
+        "evidence_generation": "8cbc3d045518258d64707ad7bf6cd54ec87cc848c7a055de62008af50a42b375",
+        "evidence_observed_at": {},
+        "excluded_evidence_ids": [],
+        "genuinely_new_evidence_ids": [],
+        "prebaseline_enrichment_ids": [],
+        "refresh_state": "MISSING",
+        "source_evidence_ids": [],
+        "thesis_version": 1
+      },
+      "market_expectation_level": "balanced",
+      "price_evidence_ids": [],
+      "price_evidence_state": "READY",
+      "status": "needs_review",
+      "supply_evidence_ids": [],
+      "thesis_version": 1,
+      "ticker": "SYNTHETIC_M2_REVIEW",
+      "valuation_context": "neutral",
+      "valuation_evidence_ids": [],
+      "warning_intent_ids": []
+    },
+    "description": "required refresh missing",
+    "expected_status": "needs_review",
+    "fixture_id": "M3-08",
+    "lifecycle_trace": [
+      {
+        "registration_intent_created": true,
+        "snapshot": {
+          "baseline": null,
+          "bootstrap_complete": false,
+          "evidence_ids": [],
+          "monitoring_ready": false,
+          "monitoring_requested": true,
+          "onboarding_state": "PENDING_ONBOARDING",
+          "source_ready": false,
+          "subject_lifecycle": "NEW_ISSUER",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "REGISTERED_PENDING"
+      },
+      {
+        "baseline": {
+          "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+          "cutoff": "2026-09-08T00:00:00Z",
+          "established_at": "2026-09-08T00:00:00Z",
+          "historical_enrichment_ids": [],
+          "original_evidence_ids": [
+            "baseline-fact"
+          ],
+          "thesis_version": 1
+        },
+        "snapshot": {
+          "baseline": {
+            "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+            "cutoff": "2026-09-08T00:00:00Z",
+            "established_at": "2026-09-08T00:00:00Z",
+            "historical_enrichment_ids": [],
+            "original_evidence_ids": [
+              "baseline-fact"
+            ],
+            "thesis_version": 1
+          },
+          "bootstrap_complete": false,
+          "evidence_ids": [
+            "baseline-fact"
+          ],
+          "monitoring_ready": false,
+          "monitoring_requested": true,
+          "onboarding_state": "PENDING_ONBOARDING",
+          "source_ready": false,
+          "subject_lifecycle": "NEW_ISSUER",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "BASELINE_CREATED_BOOTSTRAP_INCOMPLETE"
+      },
+      {
+        "snapshot": {
+          "baseline": {
+            "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+            "cutoff": "2026-09-08T00:00:00Z",
+            "established_at": "2026-09-08T00:00:00Z",
+            "historical_enrichment_ids": [],
+            "original_evidence_ids": [
+              "baseline-fact"
+            ],
+            "thesis_version": 1
+          },
+          "bootstrap_complete": true,
+          "evidence_ids": [
+            "baseline-fact"
+          ],
+          "monitoring_ready": true,
+          "monitoring_requested": true,
+          "onboarding_state": "READY",
+          "source_ready": true,
+          "subject_lifecycle": "NEW_ISSUER",
+          "thesis_versions": [
+            {
+              "created_at": "2026-09-07T21:00:00Z",
+              "logic_fingerprint": "logic-v1",
+              "status": "active",
+              "version": 1
+            }
+          ],
+          "ticker": "SYNTHETIC_M2_REVIEW"
+        },
+        "stage": "MONITORING_READY"
+      }
+    ],
+    "message_label": "OFFLINE_NONPRODUCTION_DERIVATIVE",
+    "message_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-08.txt",
+    "message_sections": {
+      "absolute_decision": true,
+      "daily_delta": true,
+      "holder": true,
+      "new_buyer": true,
+      "next_check": true,
+      "price_timing": true
+    },
+    "message_sha256": "8860ab5f4a510ae88d8b7e44f5387e72ea1384c00bc877265bfa3ecae77c306c",
+    "pass": true,
+    "shared_composed_sha256": "38854575fc1f68ba9ef5e852797413021e148e7806cf9a24ef0e59cf57c1bbfb",
+    "subject": {
+      "baseline": {
+        "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+        "cutoff": "2026-09-08T00:00:00Z",
+        "established_at": "2026-09-08T00:00:00Z",
+        "historical_enrichment_ids": [],
+        "original_evidence_ids": [
+          "baseline-fact"
+        ],
+        "thesis_version": 1
+      },
+      "bootstrap_complete": true,
+      "evidence_ids": [
+        "baseline-fact"
+      ],
+      "monitoring_ready": true,
+      "monitoring_requested": true,
+      "onboarding_state": "READY",
+      "source_ready": true,
+      "subject_lifecycle": "NEW_ISSUER",
+      "thesis_versions": [
+        {
+          "created_at": "2026-09-07T21:00:00Z",
+          "logic_fingerprint": "logic-v1",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "ticker": "SYNTHETIC_M2_REVIEW"
+    }
+  },
+  "missing_as_no_material_change_count": 0,
+  "status": "PASS"
+}

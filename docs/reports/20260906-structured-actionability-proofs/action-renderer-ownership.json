@@ -1,0 +1,15 @@
+{
+  "contract": "action-renderer-ownership-v1",
+  "investment_reasoning_invented": 0,
+  "owned_fields": [
+    "overall_direction",
+    "directional_balance",
+    "hold_lean",
+    "new_buyer_stance",
+    "entry_mode",
+    "holder_stance",
+    "price_review_label",
+    "business_invalidation_label"
+  ],
+  "primary_user_action_wording_owner": "RENDERER"
+}

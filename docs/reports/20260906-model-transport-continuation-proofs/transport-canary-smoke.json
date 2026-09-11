@@ -1,0 +1,17 @@
+{
+  "contract": "transport-canary-smoke-v1",
+  "elapsed_to_exit_seconds": 6.595957,
+  "elapsed_to_first_output_seconds": 1.093439,
+  "fictional_subjects_only": 1,
+  "input_bytes": 75,
+  "model": "gpt-5.6-sol",
+  "orphan_model_process_count": 0,
+  "output_bytes": 15,
+  "reasoning_effort": "xhigh",
+  "receipt_sha256": "1b3275d0aa90432505c5fcaa1b1ca5680a57ce7e881eab20174ba5ce2673eb44",
+  "status": "PASS",
+  "stderr_bytes": 456,
+  "stdout_bytes": 16,
+  "structured_output_validation": "PASS",
+  "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG"
+}

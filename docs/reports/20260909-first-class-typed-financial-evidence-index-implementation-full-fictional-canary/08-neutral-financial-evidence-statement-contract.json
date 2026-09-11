@@ -1,0 +1,8 @@
+{
+  "contract": "m12b-neutral-financial-evidence-statement-v1",
+  "exact_numeric_model_prose_required": false,
+  "investment_verdict_statement_count": 0,
+  "neutral_financial_statement_count": 15,
+  "raw_json_statement_count": 0,
+  "status": "PASS"
+}

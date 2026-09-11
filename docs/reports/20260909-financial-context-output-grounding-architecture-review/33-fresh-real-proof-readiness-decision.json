@@ -1,0 +1,7 @@
+{
+  "contract": "m12a-fresh-real-proof-readiness-decision-v1",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "next_gate": "FIRST_CLASS_TYPED_FINANCIAL_EVIDENCE_INDEX_IMPLEMENTATION",
+  "reason": "chosen architecture has not yet been implemented or model-canary validated",
+  "status": "NOT_READY"
+}

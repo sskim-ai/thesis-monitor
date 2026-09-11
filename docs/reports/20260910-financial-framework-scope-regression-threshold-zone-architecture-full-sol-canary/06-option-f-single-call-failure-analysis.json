@@ -1,0 +1,15 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "option": "BOUNDARY_DECLARATION_PLUS_CONSERVATIVE_RESOLUTION",
+  "historical_fic_fin_05_raw": [
+    "SELL 4.0:6.0",
+    "HOLD 4.5:5.5 SELL_LEAN",
+    "SELL 4.0:6.0"
+  ],
+  "m12ab_first_fic_fin_05_raw": "HOLD 4.5:5.5 SELL_LEAN",
+  "m12ab_first_adjacent_boundary": "NONE",
+  "intended_detector_result": "MISSED_KNOWN_CROSS_RUN_THRESHOLD_BOUNDARY",
+  "conclusion": "OPTION_F_NOT_PROVEN"
+}

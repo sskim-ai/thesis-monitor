@@ -1,0 +1,47 @@
+{
+  "rows": [
+    {
+      "business_thesis_change": "UNCHANGED",
+      "confidence": "MEDIUM",
+      "core": {
+        "buy": 4.0,
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "sell": 6.0
+      },
+      "hard_error_count": 0,
+      "holder": "REVIEW",
+      "new_buyer": "AVOID",
+      "repetition": 1
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "confidence": "MEDIUM",
+      "core": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "hard_error_count": 0,
+      "holder": "REVIEW",
+      "new_buyer": "WAIT",
+      "repetition": 2
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "confidence": "MEDIUM",
+      "core": {
+        "buy": 4.0,
+        "direction": "SELL",
+        "lean": "NOT_HOLD",
+        "sell": 6.0
+      },
+      "hard_error_count": 0,
+      "holder": "REDUCE",
+      "new_buyer": "AVOID",
+      "repetition": 3
+    }
+  ],
+  "status": "MEASURED"
+}

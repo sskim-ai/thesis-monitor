@@ -1,0 +1,7 @@
+{
+  "contract": "m10-non-operating-next-scope-decision-v1",
+  "decision": "PROCEED_AS_SEPARATE_BOUNDED_PACKAGE",
+  "generic_working_capital_repair_required": false,
+  "recommended_next_scope": "NON_OPERATING_FINANCIAL_INCOME_EFFECTS_MAPPING_IMPLEMENTATION",
+  "sector_specific_or_ticker_specific_gaps_do_not_block": true
+}

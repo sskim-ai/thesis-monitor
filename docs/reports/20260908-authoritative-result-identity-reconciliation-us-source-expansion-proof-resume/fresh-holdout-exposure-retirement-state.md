@@ -1,0 +1,12 @@
+# fresh-holdout-exposure-retirement-state
+
+| Field | Value |
+| --- | --- |
+| contract | "holdout-exposure-retirement-state-v1" |
+| exposed_subjects | 16 rows; sha256=25440caccf016c529c3408fa7572ade64066fdbc89b79d39c3ae3fa2f9a0fedb |
+| future_unseen_holdout_reuse_allowed | 0 |
+| holdout_output_exposure_state | "FULLY_EXPOSED" |
+| holdout_retirement_state | "RETIRED_FOR_ARCHITECTURE_REPAIR" |
+| holdout_semantic_revelation_state | "REVEALED_FOR_ARCHITECTURE_TUNING" |
+| same_cohort_architecture_tuning_rerun_allowed | 0 |
+| status | "STOPPED" |

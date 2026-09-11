@@ -1,0 +1,36 @@
+{
+  "contract": "m12d-run3-qtd-ytd-evidence-linkage-trace-v1",
+  "evidence": [
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "metric": "operating_income",
+      "period_type": "QTD",
+      "selected_alias": "E01"
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+      "metric": "operating_income",
+      "period_type": "YTD",
+      "selected_alias": "E08"
+    }
+  ],
+  "linked_claim_count": 7,
+  "linked_paths": [
+    "business_reevaluation_up[0].text",
+    "core_investment_judgment.text",
+    "dominant_evidence.text",
+    "earnings_estimate_context.text",
+    "fundamental_holder.business_invalidation_condition",
+    "fundamental_new_buyer.confirmation_business_condition",
+    "sector_interpretation.text"
+  ],
+  "qtd_evidence_ref_count": 1,
+  "required": true,
+  "required_metrics": [
+    "operating_income"
+  ],
+  "same_claim_both_ref_count": 7,
+  "same_metric_pair": true,
+  "status": "PASS",
+  "ytd_evidence_ref_count": 1
+}

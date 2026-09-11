@@ -1,0 +1,20 @@
+{
+  "architecture_hashes": {
+    "alias_fencing": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "directional_balance": "2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab",
+    "experiment_runner": "4c29cc1545518f448180e0b8adf6efa2e3472ae64b4b2f95003965b0d4320713",
+    "frozen_runner": "caf95d9f8191825892dc71a922e2898d71d4aaf06befdcad616860a622c2ebaa",
+    "ownership_service": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+    "pause_completion_orchestrator": "1fa8dc01ca2a983d7ee5ef366e950e4d407f10ef78bcb0e34a347321bbc1d110",
+    "risk_carried_orchestrator": "37e107bc25a21bbe01af4aaca0dae0e22675bb7e493d67a1d2e5b829f8bf28b8",
+    "source_assembly": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+    "source_enrichment": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "stability_classifier": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188",
+    "transport_adapter": "a30db21cc387e72559586356e90b24ec069cba4c1107a12543b5490502c79846",
+    "transport_lifecycle": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774",
+    "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f"
+  },
+  "contract": "architecture-semantic-freeze-v1",
+  "investment_decision_threshold_mutation": 0,
+  "status": "FROZEN"
+}

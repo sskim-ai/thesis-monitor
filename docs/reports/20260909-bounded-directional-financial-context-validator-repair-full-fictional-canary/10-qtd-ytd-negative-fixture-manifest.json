@@ -1,0 +1,298 @@
+{
+  "contract": "m12r-qtd-ytd-negative-fixtures-v1",
+  "fixture_count": 10,
+  "rejected_count": 10,
+  "rows": [
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "최근 실적은 엇갈린다."
+        }
+      },
+      "fixture_id": "vague-recent-results",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "분기 실적이 좋지만 누적적으로도 중요하다."
+        }
+      },
+      "fixture_id": "adverbial-cumulative",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "최근 분기 실적만 개선됐다."
+        }
+      },
+      "fixture_id": "qtd-marker-only",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "연초 이후 누적 실적은 손실이다."
+        }
+      },
+      "fixture_id": "ytd-marker-only",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd"
+          ],
+          "text": "분기는 흑자지만 누계는 적자다."
+        }
+      },
+      "fixture_id": "both-markers-one-ref",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "분기는 흑자지만 누계는 적자다."
+        }
+      },
+      "fixture_id": "both-markers-ytd-ref-only",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "QTD와 YTD 영업실적을 확인했다."
+        }
+      },
+      "fixture_id": "both-refs-period-names-without-contrast",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claim": {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+            "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+          ],
+          "text": "두 실적은 엇갈린다."
+        }
+      },
+      "fixture_id": "both-refs-no-explicit-period-contrast",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claims": [
+          {
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ],
+            "text": "최근 실적은 엇갈린다."
+          },
+          {
+            "evidence_refs": [],
+            "text": "다음 분기 수요를 확인한다."
+          }
+        ]
+      },
+      "fixture_id": "unrelated-quarter-checkpoint",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "candidate": {
+        "claims": [
+          {
+            "evidence_refs": [
+              "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+              "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+            ],
+            "text": "최근 실적은 엇갈린다."
+          },
+          {
+            "evidence_refs": [],
+            "text": "고객 누적 수는 별도 지표다."
+          }
+        ]
+      },
+      "fixture_id": "unrelated-cumulative-text",
+      "status": "PASS",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    }
+  ],
+  "status": "PASS"
+}

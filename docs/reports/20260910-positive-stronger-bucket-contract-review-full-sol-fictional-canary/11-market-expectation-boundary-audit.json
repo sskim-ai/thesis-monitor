@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "expectation": "The market expects continued profitable growth, leaving an execution bar.",
+  "risk": "Competition could narrow pricing power.",
+  "classification": "CURRENT_CAUTION_WITHOUT_OBSERVED_FUNDAMENTAL_REVERSAL",
+  "generic_rule": "Elevated expectations and competition risk limit conviction according to their established economic effect; they are not valuation multiples and do not mechanically set a bucket.",
+  "fic_fin_01_effect": "Both cautions are material and explicitly retained, but neither establishes current operating, cash-conversion, or balance-sheet deterioration.",
+  "reduces_6_5_to_6_0": false,
+  "valuation_inferred": false,
+  "automatic_rule_created": false
+}

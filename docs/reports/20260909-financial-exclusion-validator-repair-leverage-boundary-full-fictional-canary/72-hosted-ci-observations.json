@@ -1,0 +1,16 @@
+{
+  "status": "FAIL",
+  "implementation_sha": "dc80d2b67961d7e71983db91351657a4132f2e78",
+  "run_url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34366986588",
+  "test": {
+    "passed": 3169,
+    "failed": 5
+  },
+  "lint": "SKIPPED_AFTER_TEST_FAILURE",
+  "historical_git_object_failures": 3,
+  "local_only_archive_failures": 2,
+  "new_m12f_local_archive_dependency_failure": 1,
+  "failed_summary": "pytest\tTest\t2026-09-09T15:00:41.7838439Z FAILED tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text - subprocess.CalledProcessError: Command '['git', 'show', '67bdc56bcd0dba05d154c727fa1f819816b1a1f4:app/services/directional_balance_service.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:00:41.7840843Z FAILED tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history - FileNotFoundError: [Errno 2] No such file or directory: '/Users/sskim/Documents/Codex/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-full-fictional-canary-report.zip'\npytest\tTest\t2026-09-09T15:00:41.7843374Z FAILED tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged - subprocess.CalledProcessError: Command '['git', 'show', 'efd31109b0f52bd7151f37cebef03820e40eb2ef:scripts/directional_core_price_timing_holdout.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:00:41.7845604Z FAILED tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean - FileNotFoundError: [Errno 2] No such file or directory: '/Users/sskim/Documents/Codex/thesis-monitor-20260909-financial-context-output-grounding-architecture-review-report.zip'\npytest\tTest\t2026-09-09T15:00:41.7847737Z FAILED tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded - subprocess.CalledProcessError: Command '['git', 'show', '0615ea399f295476c2bf47d66ac441eef04ec0d8:scripts/directional_financial_context_m12g.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:00:41.7849200Z ============ 5 failed, 3169 passed, 2 warnings in 196.87s (0:03:16) ============\n",
+  "interpretation": "Not a hosted CI pass. One newly added M12F test depends on the local authoritative M12E ZIP. Four other failing tests predate M12F. Frozen generation will not be hotfixed; hosted test portability remains a separate P1 follow-up.",
+  "phase_a_gate_scope": "Local full repository test gate passed separately; hosted CI is separately disclosed and not claimed PASS."
+}

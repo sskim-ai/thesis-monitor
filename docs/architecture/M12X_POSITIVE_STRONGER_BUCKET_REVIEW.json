@@ -1,0 +1,87 @@
+{
+  "contract": "m12x-positive-stronger-bucket-contract-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "work_instruction_commit": "239b799a1361b8ad8168aef2310f03eaf8fc641e",
+  "root_cause_commit": "6aa35700448539cde45e440f7082f329a78d9e68",
+  "root_cause": "EXACT_FIXTURE_TARGET_OVERCONSTRAINED",
+  "selected_branch": "FIXTURE_TARGET_CORRECTION_ONLY",
+  "authoring": {
+    "model": "gpt-5.6-sol",
+    "effort": "xhigh",
+    "status": "PASS"
+  },
+  "model": "gpt-5.6-sol",
+  "effort": "xhigh",
+  "selected_timeout_seconds": 1800,
+  "subjects_per_context": 4,
+  "context_count": 2,
+  "repetition_count": 3,
+  "wrapper_retry_count": 0,
+  "batch_split": 0,
+  "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+  "semantic_freeze": {
+    "baseline": "M12W",
+    "financial_semantic_change_count": 0,
+    "directional_prompt_change_count": 0,
+    "fictional_case_change_count": 0,
+    "source_mapping_change_count": 0,
+    "fixture_target_change_count": 1,
+    "target_buys": {
+      "FIC-FIN-01": 6.5,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5.0,
+      "FIC-FIN-05": 4.5
+    },
+    "directional_threshold": 6.0,
+    "directional_increment": 0.5,
+    "hold_lean": {
+      "5.5:4.5": "BUY_LEAN",
+      "5.0:5.0": "NEUTRAL",
+      "4.5:5.5": "SELL_LEAN"
+    },
+    "tie_break": "toward 5.0 when adjacent buckets are genuinely supportable",
+    "fixed_score_rule_count": 0,
+    "evidence_count_bucket_rule_count": 0
+  },
+  "expectation": {
+    "all_target_buys": {
+      "FIC-FIN-01": 6.5,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5.0,
+      "FIC-FIN-05": 4.5
+    }
+  },
+  "positive_contract": {
+    "minimum_buy": "A positive issuer-level material anchor plus sufficiently current or economically independent corroboration supports 6.0.",
+    "stronger_buy": "Distinct current support that materially strengthens corroboration, persistence, quality, visibility, or valuation beyond minimum direction can support 6.5.",
+    "adjacent_ambiguity": "Use 6.0 when a material unresolved causal, reversibility, persistence, or critical-validation limit makes both 6.0 and 6.5 genuinely supportable.",
+    "missing_domain": "Missing one domain is not a universal 6.5 cap.",
+    "expectations": "Elevated expectations are weighed by established economic effect and do not mechanically set the bucket."
+  },
+  "negative_contract": {
+    "symmetry": "Apply the exact ordinal logic to minimum and stronger SELL support.",
+    "adjacent_ambiguity": "Use SELL 6.0 rather than 6.5 when a material unresolved limit makes both adjacent negative buckets genuinely supportable."
+  },
+  "fic_fin_01": {
+    "previous_target": {
+      "direction": "BUY",
+      "buy": 6.0,
+      "sell": 4.0
+    },
+    "frozen_target": {
+      "direction": "BUY",
+      "buy": 6.5,
+      "sell": 3.5
+    },
+    "target_change_reason": "Distinct current operating improvement, reported cash conversion, and net-cash resilience materially exceed minimum BUY support; the retained Unknowns and cautions do not make the adjacent buckets genuinely ambiguous."
+  },
+  "runtime": {
+    "model_context_coupled": true,
+    "whole_generation_stop": true,
+    "selective_retry": false,
+    "generation_stitching": false,
+    "timeout_increase_after_start": false,
+    "fallback_model": null
+  }
+}

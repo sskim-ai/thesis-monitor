@@ -1,0 +1,11 @@
+{
+  "contract": "m2-boundary-stability-context-note-v1",
+  "formal_current_cohort_stability": "NOT_MEASURED",
+  "historical_complete_messages": 48,
+  "historical_core_rows": 64,
+  "historical_timing_rows": 52,
+  "model_emission_effectiveness": "NOT_MEASURED",
+  "note": "Historical repeatability is descriptive and is not a new model proof.",
+  "ownership_generalization": "NOT_ESTABLISHED",
+  "status": "RECORDED"
+}

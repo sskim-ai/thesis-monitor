@@ -1,0 +1,49 @@
+{
+  "business_delta": [
+    "STRENGTHENED",
+    "STRENGTHENED",
+    "STRENGTHENED"
+  ],
+  "confidence": [
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "holder": [
+    "REVIEW",
+    "REVIEW",
+    "REVIEW"
+  ],
+  "new_buyer": [
+    "WAIT",
+    "WAIT",
+    "WAIT"
+  ],
+  "overall_directions": [
+    "HOLD",
+    "HOLD",
+    "HOLD"
+  ],
+  "raw_values": [
+    {
+      "buy": 5.0,
+      "hold_lean": "NEUTRAL",
+      "overall_direction": "HOLD",
+      "sell": 5.0
+    },
+    {
+      "buy": 5.5,
+      "hold_lean": "BUY_LEAN",
+      "overall_direction": "HOLD",
+      "sell": 4.5
+    },
+    {
+      "buy": 5.5,
+      "hold_lean": "BUY_LEAN",
+      "overall_direction": "HOLD",
+      "sell": 4.5
+    }
+  ],
+  "status": "CALIBRATION_VARIANCE_SAME_DIRECTION",
+  "ticker": "FIC-FIN-03"
+}

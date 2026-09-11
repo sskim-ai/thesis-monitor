@@ -1,0 +1,1283 @@
+{
+  "contract": "combined-source-sufficiency-audit-v1",
+  "directional_model_calls_on_source_insufficient": 0,
+  "provider_totals": {
+    "cache_hits": 16,
+    "companyfacts_requests": 0,
+    "companyfacts_successes": 4,
+    "profile_requests": 16,
+    "profile_successes": 16,
+    "statement_requests": 12,
+    "statement_successes": 12
+  },
+  "rows": [
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 1,
+      "canonical_issuer_identity": "0001045810",
+      "company_name": "NVDA",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "asset_heavy_or_cyclical",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0001045810",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "d49f4a37bd60642dc310ccbb43b763f7c5d53f33a3dfcff8c4ec182fd4640638",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0001045810",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": true,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "NVDA",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 2,
+      "canonical_issuer_identity": "0000019617",
+      "company_name": "JPM",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT",
+        "SECTOR_OPERATING_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "bank_or_insurer",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0000019617",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "1830d1835eb3c8dc41642d37375aecf49ca6f14cd8c1857a6942c8ac11182b5b",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 4,
+          "price_success_count": 4,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0000019617",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": true,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "JPM",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 3,
+      "canonical_issuer_identity": "0000104169",
+      "company_name": "WMT",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0000104169",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "5b98f3af7a71b81c0e3e7f348725b6241741abd36814abf1a3bb652055a2b438",
+      "price_context_readiness": "UNAVAILABLE",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "UNAVAILABLE_SAFE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "UNAVAILABLE",
+          "price_request_count": 9,
+          "price_success_count": 0,
+          "price_timing_readiness": "UNAVAILABLE_SAFE",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0000104169",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": true,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "WMT",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 4,
+      "canonical_issuer_identity": "0001067983",
+      "company_name": "BRK-B",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT",
+        "SECTOR_OPERATING_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "bank_or_insurer",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "0001067983",
+      "market": "us",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "2d8b43f112a7adcce696d092433bc20d5320f8ec0c4cdd8bcea2b3dc9aa63b8d",
+      "price_context_readiness": "UNAVAILABLE",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "UNAVAILABLE_SAFE",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "UNAVAILABLE",
+          "price_request_count": 9,
+          "price_success_count": 0,
+          "price_timing_readiness": "UNAVAILABLE_SAFE",
+          "technical_context": "UNAVAILABLE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "companyfacts_requests": 0,
+          "companyfacts_successes": 1,
+          "profile_requests": 1,
+          "profile_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "0001067983",
+          "source": "sec_submissions",
+          "status": "success"
+        },
+        {
+          "cache_hit": true,
+          "source": "sec_companyfacts",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "BRK-B",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 1,
+      "canonical_issuer_identity": "00879020",
+      "company_name": "유니트론텍",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "asset_heavy_or_cyclical",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00879020",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "698ffe0f63861e58be490433228e94c165fafe8ed1cd65c13842320a2f16bf50",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00879020",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814001041",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "142210",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 2,
+      "canonical_issuer_identity": "00367695",
+      "company_name": "에이전트AI",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00367695",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "581087cb3a82f8fe1f7f5daedec33d2bcf43fbd5e5dbe3571a646b2653403954",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00367695",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002544",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "060900",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 3,
+      "canonical_issuer_identity": "00140566",
+      "company_name": "한탑",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00140566",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "eec69b3298e6d9099dcbcab301b5660f24b55a6a915b9528938c181f64703409",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00140566",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002353",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "002680",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 4,
+      "canonical_issuer_identity": "00266961",
+      "company_name": "NAVER",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00266961",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "6c6cc68543afcea8128157fc993fecfd4320630be79ae0ec2798c6f163fcee0a",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00266961",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002266",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "035420",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 5,
+      "canonical_issuer_identity": "00819073",
+      "company_name": "인크로스",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00819073",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "5febdd3e73b4c46b45cd36166e9becabf09d03b54250d53f6953c6ffc34a6d2a",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00819073",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001007",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "216050",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 6,
+      "canonical_issuer_identity": "00362201",
+      "company_name": "세운메디칼",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00362201",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "9a94787c7d17c738eedf0843ff2ee80c1f61bc13eefbb69871d71824b26d07cb",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00362201",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814000724",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "100700",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 7,
+      "canonical_issuer_identity": "00118345",
+      "company_name": "디아이동일",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00118345",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "0a49ccfef66a971494004d0edf206f33e4aa90b92c6ed549b72fe99ef8ed9e2f",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00118345",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814003957",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "001530",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 8,
+      "canonical_issuer_identity": "01565364",
+      "company_name": "폴레드",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "01565364",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "1819f50c748fb6b3f7d01104fce9b671f8b7394f19a6c1aaa2665ca60f15a938",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "01565364",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814001197",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "487580",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 9,
+      "canonical_issuer_identity": "00287812",
+      "company_name": "에코심플렉스",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00287812",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "1deba6b218a10616e598b8a2399829f87906b478d33198fc7bcc77e5eb32ff08",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00287812",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002208",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "038870",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 10,
+      "canonical_issuer_identity": "01428948",
+      "company_name": "오아",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "01428948",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "ff5519ed07d0bc4edcc54e3f7fd5bd8826d1a9856009df18211990e57d062b7a",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "01428948",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002688",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "342870",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 11,
+      "canonical_issuer_identity": "00363510",
+      "company_name": "제이케이시냅스",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "00363510",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "94eac46ab81e774d83b2eab4909ba67449fb7e5644e82085fc05c41057ac1e9c",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "00363510",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814004139",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "060230",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    },
+    {
+      "assembler_or_normalization_gap_suspected": false,
+      "candidate_rank": 12,
+      "canonical_issuer_identity": "01540815",
+      "company_name": "스튜디오삼익",
+      "data_received_but_not_assembled": false,
+      "duplicate_issuer": false,
+      "earnings_context_status": "PASS",
+      "eligible_for_final_holdout": true,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_class": "NOT_APPLICABLE",
+      "failure_domains": [],
+      "failure_reason_codes": [],
+      "filing_or_official_financial_status": "PASS",
+      "framework": "standard_operating_company",
+      "full_end_to_end_holdout_readiness": "READY",
+      "fundamental_directional_source_sufficiency": "READY",
+      "identity_validation_status": "PASS",
+      "issuer_key": "01540815",
+      "market": "kr",
+      "missing_required_families": [],
+      "model_calls": 0,
+      "official_profile_status": "PASS",
+      "other_required_domain_status": "PASS",
+      "packet_created": true,
+      "packet_hash": "ff3ff9c86372fa76834276be0d53caeba27b31bd9b73922a45037f50d0390118",
+      "price_context_readiness": "READY",
+      "price_context_status": "PASS",
+      "price_timing_input_readiness": "READY",
+      "primary_or_reserve": "INITIAL",
+      "provider_audit": {
+        "base": {
+          "identity": "success",
+          "ohlcv": "success",
+          "price_cache_use_count": 0,
+          "price_context_readiness": "READY",
+          "price_request_count": 3,
+          "price_success_count": 3,
+          "price_timing_readiness": "READY",
+          "technical_context": "PARTIAL_SAFE"
+        },
+        "fundamental": {
+          "cache_hits": 1,
+          "profile_requests": 1,
+          "profile_successes": 1,
+          "statement_requests": 1,
+          "statement_successes": 1
+        }
+      },
+      "raw_required_domain_evidence_present": false,
+      "selected": true,
+      "source_pipeline_attempted": [
+        "official_profile",
+        "official_financial_enrichment",
+        "coldstart_packet_assembly"
+      ],
+      "source_pipeline_status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+      "source_provenance": [
+        {
+          "issuer_id": "01540815",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260813001574",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "PASS",
+      "ticker": "415380",
+      "true_source_absence_suspected": false,
+      "validation_errors": [],
+      "valuation_input_status": "UNAVAILABLE"
+    }
+  ],
+  "selected_sufficient_count": 16,
+  "status": "PASS"
+}

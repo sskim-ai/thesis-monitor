@@ -1,0 +1,253 @@
+{
+  "rows": [
+    {
+      "audit": {
+        "boundary": {
+          "evidence_refs": [
+            "E1"
+          ],
+          "less_directional_balance": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "more_directional_balance": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "reason": "Adjacent strengths remain supportable after the cited limit.",
+          "status": "ADJACENT_BUCKETS_REASONABLE"
+        },
+        "contract": "directional-boundary-resolution-v1",
+        "raw_state": {
+          "directional_balance": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "SELL"
+        },
+        "resolution_rule": "LESS_DIRECTIONAL_ADJACENT_TOWARD_5_0",
+        "resolved_state": {
+          "directional_balance": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD"
+        },
+        "selected_evidence_refs": [
+          "E1"
+        ],
+        "status": "RESOLVED_TOWARD_5_0"
+      },
+      "declared_less": [
+        4.5,
+        5.5
+      ],
+      "declared_more": [
+        4.0,
+        6.0
+      ],
+      "raw": [
+        4.0,
+        6.0,
+        "SELL",
+        "NOT_HOLD"
+      ],
+      "resolved": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "status": "PASS"
+    },
+    {
+      "audit": {
+        "boundary": {
+          "evidence_refs": [
+            "E1"
+          ],
+          "less_directional_balance": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "more_directional_balance": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "reason": "Adjacent strengths remain supportable after the cited limit.",
+          "status": "ADJACENT_BUCKETS_REASONABLE"
+        },
+        "contract": "directional-boundary-resolution-v1",
+        "raw_state": {
+          "directional_balance": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD"
+        },
+        "resolution_rule": "LESS_DIRECTIONAL_ADJACENT_TOWARD_5_0",
+        "resolved_state": {
+          "directional_balance": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "hold_lean": "SELL_LEAN",
+          "overall_direction": "HOLD"
+        },
+        "selected_evidence_refs": [
+          "E1"
+        ],
+        "status": "RESOLVED_TOWARD_5_0"
+      },
+      "declared_less": [
+        4.5,
+        5.5
+      ],
+      "declared_more": [
+        4.0,
+        6.0
+      ],
+      "raw": [
+        4.5,
+        5.5,
+        "HOLD",
+        "SELL_LEAN"
+      ],
+      "resolved": {
+        "buy": 4.5,
+        "direction": "HOLD",
+        "lean": "SELL_LEAN",
+        "sell": 5.5
+      },
+      "status": "PASS"
+    },
+    {
+      "audit": {
+        "boundary": {
+          "evidence_refs": [
+            "E1"
+          ],
+          "less_directional_balance": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "more_directional_balance": {
+            "buy": 6.5,
+            "sell": 3.5
+          },
+          "reason": "Adjacent strengths remain supportable after the cited limit.",
+          "status": "ADJACENT_BUCKETS_REASONABLE"
+        },
+        "contract": "directional-boundary-resolution-v1",
+        "raw_state": {
+          "directional_balance": {
+            "buy": 6.5,
+            "sell": 3.5
+          },
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY"
+        },
+        "resolution_rule": "LESS_DIRECTIONAL_ADJACENT_TOWARD_5_0",
+        "resolved_state": {
+          "directional_balance": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "hold_lean": "NOT_HOLD",
+          "overall_direction": "BUY"
+        },
+        "selected_evidence_refs": [
+          "E1"
+        ],
+        "status": "RESOLVED_TOWARD_5_0"
+      },
+      "declared_less": [
+        6.0,
+        4.0
+      ],
+      "declared_more": [
+        6.5,
+        3.5
+      ],
+      "raw": [
+        6.5,
+        3.5,
+        "BUY",
+        "NOT_HOLD"
+      ],
+      "resolved": {
+        "buy": 6.0,
+        "direction": "BUY",
+        "lean": "NOT_HOLD",
+        "sell": 4.0
+      },
+      "status": "PASS"
+    },
+    {
+      "audit": {
+        "boundary": {
+          "evidence_refs": [
+            "E1"
+          ],
+          "less_directional_balance": {
+            "buy": 5.0,
+            "sell": 5.0
+          },
+          "more_directional_balance": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "reason": "Adjacent strengths remain supportable after the cited limit.",
+          "status": "ADJACENT_BUCKETS_REASONABLE"
+        },
+        "contract": "directional-boundary-resolution-v1",
+        "raw_state": {
+          "directional_balance": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "hold_lean": "BUY_LEAN",
+          "overall_direction": "HOLD"
+        },
+        "resolution_rule": "LESS_DIRECTIONAL_ADJACENT_TOWARD_5_0",
+        "resolved_state": {
+          "directional_balance": {
+            "buy": 5.0,
+            "sell": 5.0
+          },
+          "hold_lean": "NEUTRAL",
+          "overall_direction": "HOLD"
+        },
+        "selected_evidence_refs": [
+          "E1"
+        ],
+        "status": "RESOLVED_TOWARD_5_0"
+      },
+      "declared_less": [
+        5.0,
+        5.0
+      ],
+      "declared_more": [
+        5.5,
+        4.5
+      ],
+      "raw": [
+        5.5,
+        4.5,
+        "HOLD",
+        "BUY_LEAN"
+      ],
+      "resolved": {
+        "buy": 5.0,
+        "direction": "HOLD",
+        "lean": "NEUTRAL",
+        "sell": 5.0
+      },
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

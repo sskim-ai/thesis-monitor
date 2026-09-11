@@ -1,0 +1,20 @@
+{
+  "contract": "m9-debt-completeness-contract-v1",
+  "partial_debt_labeled_total_count": 0,
+  "partial_metric_created": false,
+  "requirements": [
+    "official statement inventory present",
+    "no unsupported debt semantic",
+    "current debt scope represented",
+    "noncurrent debt scope represented",
+    "same issuer/date/currency/unit/entity/statement/document",
+    "non-overlapping selected components"
+  ],
+  "states": [
+    "COMPLETE",
+    "PARTIAL",
+    "UNKNOWN",
+    "NOT_APPLICABLE"
+  ],
+  "total_emission_state": "COMPLETE_ONLY"
+}

@@ -1,0 +1,15 @@
+{
+  "business_invalidation_field_present": true,
+  "contract": "m12s-holder-stance-contract-audit-v1",
+  "enum_contract_present": true,
+  "explicit_review_reduce_fundamental_boundary": false,
+  "fic_fin_05_sequence": [
+    "REDUCE",
+    "REVIEW",
+    "REDUCE"
+  ],
+  "price_only_reduce_forbidden": true,
+  "price_timing_involved": false,
+  "same_direction_balance_thesis_and_anchors": true,
+  "status": "UNDER_SPECIFIED"
+}

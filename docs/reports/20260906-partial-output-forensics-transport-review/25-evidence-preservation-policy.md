@@ -1,0 +1,23 @@
+# 25 Evidence Preservation Policy
+
+Contract: `per-context-experiment-evidence-preservation-v1`
+
+Status: `ACTIVE_FOR_THIS_PROBE_AND_FUTURE_EXPERIMENT_HANDOFF`
+
+```json
+{
+  "contract": "per-context-experiment-evidence-preservation-v1",
+  "required_after_each_successful_context": [
+    "exact_raw_model_output",
+    "transport_receipt",
+    "stdout_or_safe_redacted_derivative",
+    "stderr_or_safe_redacted_derivative",
+    "prompt_and_schema_hashes",
+    "generation_invocation_stage_batch_subject_identity"
+  ],
+  "scope": "EXPERIMENT_HARNESS_ONLY",
+  "shared_production_transport_change": 0,
+  "status": "ACTIVE_FOR_THIS_PROBE_AND_FUTURE_EXPERIMENT_HANDOFF",
+  "wait_for_whole_run_before_preservation": 0
+}
+```

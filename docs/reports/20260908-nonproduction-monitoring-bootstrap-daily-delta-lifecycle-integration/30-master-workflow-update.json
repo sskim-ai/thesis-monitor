@@ -1,0 +1,10 @@
+{
+  "contract": "m3-master-workflow-update-v1",
+  "m1_status": "COMPLETE",
+  "m2_status": "COMPLETE",
+  "m3_status": "COMPLETE",
+  "next_scope": "SOURCE_DOMAIN_ENRICHMENT_AND_DIRECTIONAL_SPECIFICITY_DESIGN_REVIEW",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "sha256": "fe3ebddd301a18851cd0721abc5b251b400b06dabcec4288a8e2236a921e069b",
+  "status": "RECORDED"
+}

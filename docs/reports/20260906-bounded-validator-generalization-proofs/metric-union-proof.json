@@ -1,0 +1,14 @@
+{
+  "contract": "same-severity-selected-evidence-metric-union-v1",
+  "cross_severity_metric_union_accepted": 0,
+  "packet_wide_ownership": 0,
+  "primary_scope": "SELECTED_EVIDENCE_ONLY",
+  "same_checkpoint_kind": "PASS",
+  "same_claim_scope": "PASS",
+  "same_generation": "PASS",
+  "same_semantic_severity": "PASS",
+  "same_severity_metric_union": "PASS",
+  "same_subject": "PASS",
+  "same_time_scope": "PASS",
+  "unowned_strengthening_severity_accepted": 0
+}

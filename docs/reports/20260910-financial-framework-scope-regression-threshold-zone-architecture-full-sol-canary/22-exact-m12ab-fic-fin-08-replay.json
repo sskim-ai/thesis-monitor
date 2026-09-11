@@ -1,0 +1,274 @@
+{
+  "after_errors": [],
+  "before_errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "current_row": {
+    "ai_imperative_primary_action_count": 0,
+    "core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uac00 \ubcf4\ud5d8 \uc601\uc5c5\uacfc \uaddc\uc81c\uc790\ubcf8\uc744 \uc57d\ud654\ud558\uba74 \uc0ac\uc5c5 \ud310\ub2e8\uc744 \ub0ae\ucd98\ub2e4."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:market-expectation",
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "\uac00\uaca9 \uaddc\uc728\uc774 \uc548\uc815\uc801\uc778 \ubcf4\ud5d8 \uc601\uc5c5\uc73c\ub85c \uc774\uc5b4\uc9c0\uace0 \uaddc\uc81c\uc790\ubcf8\uc758 \uc801\uc815\uc131\uc774 \ud655\uc778\ub418\uba74 \uc0ac\uc5c5 \ud310\ub2e8\uc744 \ub192\uc778\ub2e4."
+        }
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "\ubcf4\ud5d8 \uc601\uc5c5\uc740 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \uac00\uaca9 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8\uc774 \ud575\uc2ec \uc0ac\uc5c5 \uac80\uc99d \ud56d\ubaa9\uc774\ub2e4."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "\ud604\uc7ac \ubcf4\ud5d8 \uc601\uc5c5 \uacb0\uacfc\ub294 \uc548\uc815\uc801\uc774\ub2e4."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "\uc548\uc815\uc801\uc778 \ubcf4\ud5d8 \uc601\uc5c5\uacfc \uc911\ub300\ud55c \ubcf4\ud5d8\uae08 \ubcc0\ub3d9 \uc704\ud5d8\uc774 \uade0\ud615\uc744 \uc774\ub8e8\uba70, \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138 \ubd80\uc7ac\ub85c \ubc29\ud5a5\uc744 \uc815\ud558\uae30 \uc5b4\ub835\ub2e4."
+      },
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "LOW",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "\ubcf4\ud5d8 \uc601\uc5c5 \uc548\uc815\uc131\uc740 \ud655\uc778\ub418\uc9c0\ub9cc \uc911\ub300\ud55c \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uacfc \ubbf8\ud655\uc778 \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138\uac00 \ud310\ub2e8\uc744 \uc81c\ud55c\ud55c\ub2e4."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "\ubcf4\ud5d8 \uc601\uc5c5 \uacb0\uacfc\ub294 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc740 \uc5ec\uc804\ud788 \uc911\uc694\ud558\ub2e4."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uac00 \ubcf4\ud5d8 \uc601\uc5c5 \uaddc\uc728\uc774\ub098 \uaddc\uc81c\uc790\ubcf8\uc758 \uc801\uc815\uc131\uc744 \ud6fc\uc190\ud558\ub294 \uacbd\uc6b0\ub2e4.",
+        "business_invalidation_condition_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "REVIEW",
+        "summary": "\ubcf4\ud5d8 \uc601\uc5c5\uc740 \uc548\uc815\uc801\uc774\uc9c0\ub9cc \uaddc\uc81c\uc790\ubcf8\uacfc \ubcf4\ud5d8\uae08 \uc804\uac1c\ub97c \uc810\uac80\ud560 \ud544\uc694\uac00 \uc788\ub2e4."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "\uac00\uaca9 \uaddc\uc728\uc774 \uc720\uc9c0\ub418\uace0 \uaddc\uc81c\uc790\ubcf8\uc758 \uc801\uc815\uc131\uc774 \ud655\uc778\ub418\uba70 \uc548\uc804\ud55c \uac00\uce58\ud3c9\uac00 \uae30\uc900\uc774 \ud655\ubcf4\ub418\ub294 \uacbd\uc6b0\ub2e4.",
+        "confirmation_business_condition_refs": [
+          "fictional:FIC-FIN-08:valuation-limit",
+          "fictional:FIC-FIN-08:market-expectation",
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "WAIT",
+        "summary": "\uc2e0\uaddc \uad00\ucc30\uc790\ub294 \uaddc\uc81c\uc790\ubcf8\uacfc \uac00\uce58\ud3c9\uac00 \uadfc\uac70\uac00 \ud655\uc778\ub420 \ub54c\uae4c\uc9c0 \uae30\ub2e4\ub9b4 \uc774\uc720\uac00 \uc788\ub2e4."
+      },
+      "hold_lean": "NEUTRAL",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:market-expectation"
+        ],
+        "text": "\uc2dc\uc7a5 \uae30\ub300\ub294 \uac00\uaca9 \uaddc\uc728\uacfc \ucda9\ubd84\ud55c \uaddc\uc81c\uc790\ubcf8\uc744 \uc804\uc81c\ub85c \ud55c\ub2e4."
+      },
+      "material_directional_anchor_basis": [],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "\ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc774 \ud06c\uace0 \ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c \uac00\ub2a5\uc131\uc774 \uc788\uc73c\uba70 \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138\ub294 \ud655\uc778\ub418\uc9c0 \uc54a\uc558\ub2e4."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4."
+      },
+      "sell_drivers": [
+        {
+          "classification": "SECTOR_NORMAL",
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "\uc911\ub300\ud55c \ubcf4\ud5d8\uae08 \ubcc0\ub3d9\uc131\uc774 \ubcf4\ud5d8 \uc601\uc5c5 \uc548\uc815\uc131\uc744 \uc81c\uc57d\ud55c\ub2e4."
+        },
+        {
+          "classification": "STRUCTURAL_RISK",
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:structural-risk"
+          ],
+          "text": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\ub294 \ubcf4\ud5d8\uc5c5 \uace0\uc720\uc758 \uacbd\uc81c\uc131\uc744 \uc57d\ud654\ud560 \uc218 \uc788\ub2e4."
+        }
+      ],
+      "ticker": "FIC-FIN-08",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:valuation-limit",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "\uc548\uc804\ud55c \uac00\uce58\ud3c9\uac00 \uae30\uc900\uacfc \uaddc\uc81c\uc790\ubcf8 \ucd94\uc138\uac00 \uc5c6\uc5b4 \uc808\ub300 \ubc29\ud5a5\uc758 \ud655\uc2e0\uc774 \ub0ae\ub2e4."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:market-expectation",
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "summary": "\uaddc\uc81c\uc790\ubcf8\uc758 \uc801\uc815\uc131\uacfc \ucd94\uc138 \ud655\uc778\uc774 \uc0ac\uc5c5 \ubc29\ud5a5\uc744 \uac00\ub97c \ud575\uc2ec \uac80\uc99d\uc774\ub2e4.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:valuation-limit"
+          ],
+          "summary": "\uc548\uc804\ud55c \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \uae30\uc900 \ubd80\uc7ac\ub294 \ud310\ub2e8 \ud655\uc2e0\uc744 \uc81c\ud55c\ud55c\ub2e4.",
+          "treatment": "CONFIDENCE_LIMIT"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk"
+          ],
+          "summary": "\ubd88\ub9ac\ud55c \ubcf4\ud5d8\uae08 \uc804\uac1c\uac00 \uc2e4\uc81c\ub85c \ub098\ud0c0\ub098\ub294\uc9c0\ub294 \ucd94\uac00 \ud655\uc778\uc774 \ud544\uc694\ud558\ub2e4.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:valuation-limit"
+        ],
+        "text": "\uc548\uc804\ud558\uac8c \uc0ac\uc6a9\ud560 \ud604\uc7ac \uac00\uce58\ud3c9\uac00 \ubc30\uc218\uac00 \uc5c6\uc5b4 \uac00\uce58\ud3c9\uac00\ub294 \ubbf8\ud574\uacb0\uc774\ub2e4."
+      }
+    },
+    "errors": [],
+    "financial_anchor_count": 0,
+    "financial_grounding": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounded_claim_count": 0,
+      "grounded_working_capital_checkpoint_count": 0,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 0,
+      "material_financial_anchor_refs": [],
+      "material_grounding_required": false,
+      "narrative_only_duplicate_refs": [],
+      "narrative_substitution_failure_count": 0,
+      "relevant_claim_count": 0,
+      "selected_financial_refs": [],
+      "status": "PASS",
+      "used_financial_refs": [],
+      "valid": true,
+      "working_capital_checkpoint_count": 0,
+      "working_capital_grounding_failure_count": 0,
+      "working_capital_grounding_required": false
+    },
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 0,
+      "valid": true,
+      "year_end_as_yoy_count": 0
+    },
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "qtd_ytd_semantics": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 0,
+      "linked_claim_count": 0,
+      "qtd_evidence_ref_count": 0,
+      "required": false,
+      "required_metrics": [],
+      "valid": true,
+      "ytd_evidence_ref_count": 0
+    },
+    "selected_financial_refs": [],
+    "status": "PASS",
+    "ticker": "FIC-FIN-08",
+    "used_financial_refs": []
+  },
+  "financial_sector_true_misuse_count": 0,
+  "roles": {
+    "application_count": 0,
+    "claims": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "field_path": "sector_interpretation.text",
+        "framework": "net_debt",
+        "kind": "EXPLICIT_EXCLUSION",
+        "role": "CONTRASTIVE_REPLACEMENT",
+        "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4"
+      },
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "field_path": "sector_interpretation.text",
+        "framework": "working_capital",
+        "kind": "EXPLICIT_EXCLUSION",
+        "role": "CONTRASTIVE_REPLACEMENT",
+        "text": "\ubcf4\ud5d8\uc0ac\uc5d0\ub294 \uc0b0\uc5c5\ud68c\uc0ac\uc2dd \uc21c\ubd80\ucc44\uc640 \uc6b4\uc804\uc790\ubcf8 \ub300\uc2e0 \ubcf4\ud5d8 \uc778\uc218 \uaddc\uc728\uacfc \uaddc\uc81c\uc790\ubcf8 \uae30\uc900\uc744 \uc801\uc6a9\ud574\uc57c \ud55c\ub2e4"
+      }
+    ],
+    "roles": [
+      "CONTRASTIVE_REPLACEMENT"
+    ]
+  },
+  "source_output_rewritten": false,
+  "status": "PASS"
+}

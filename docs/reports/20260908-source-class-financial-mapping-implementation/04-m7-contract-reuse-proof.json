@@ -1,0 +1,28 @@
+{
+  "adapter_contract": "existing-canonical-financial-domain-adapter-v1",
+  "adapter_function": {
+    "after_sha256": "5502ac67806186b5c6894a3dd0986065cf2d03b9e18d2726f914ffdc76b34223",
+    "before_sha256": "5502ac67806186b5c6894a3dd0986065cf2d03b9e18d2726f914ffdc76b34223",
+    "changed": false,
+    "function": "adapt_fact_catalog_financial_context",
+    "path": "app/services/financial_context_adapter_service.py"
+  },
+  "contract": "m8-m7-contract-reuse-proof-v1",
+  "exact_duration_reconciler": {
+    "after_sha256": "bd28f1538bb76816cc3d9dd687f7875bdfc3c97cee25269dd7bd5631dfcf0b57",
+    "before_sha256": "bd28f1538bb76816cc3d9dd687f7875bdfc3c97cee25269dd7bd5631dfcf0b57",
+    "changed": false,
+    "function": "reconcile_xbrl_duration_fact",
+    "path": "app/services/opendart_xbrl_service.py"
+  },
+  "lineage_contract": "canonical-financial-lineage-projection-v1",
+  "lineage_projection_function": {
+    "after_sha256": "532a3bae3bfe606ecb8c6e7ac00faa676d52713959acb4e609d15ad7ccd37678",
+    "before_sha256": "532a3bae3bfe606ecb8c6e7ac00faa676d52713959acb4e609d15ad7ccd37678",
+    "changed": false,
+    "function": "canonical_lineage_projection",
+    "path": "app/services/financial_lineage_projection_service.py"
+  },
+  "new_derivation_formula_count": 0,
+  "result": "PASS"
+}

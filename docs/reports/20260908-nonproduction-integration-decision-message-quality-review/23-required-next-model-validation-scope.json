@@ -1,0 +1,9 @@
+{
+  "contract": "m2-required-next-model-validation-scope-v1",
+  "fresh_first_selective_rerun": "FORBIDDEN_UNLESS_SEPARATELY_AUTHORIZED",
+  "future_model_validation_required": true,
+  "future_real_holdout_required": true,
+  "immediate_next_scope_uses_model": false,
+  "precondition": "Only after a separately authorized input or reasoning contract is frozen.",
+  "status": "DEFERRED"
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-09T08:56:00.232348+00:00",
+  "output_path": "artifacts/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/validation/full-tests.txt",
+  "output_sha256": "aeda32ea4286f706958bf6b9c615d77f51e997bd8d87ba80f4c015d1cad8d018",
+  "returncode": 0,
+  "started_at": "2026-09-09T08:54:48.644868+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

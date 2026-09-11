@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "bundle": "thesis-monitor-20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary-report.zip",
+  "sha256": "67292aaaf81b8122c2c1a8bb62682d2889d83c5182317207fbd61fe9401169e3",
+  "expected_sha256": "67292aaaf81b8122c2c1a8bb62682d2889d83c5182317207fbd61fe9401169e3",
+  "indexed_payload_count": 176,
+  "missing_count": 0,
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "size_mismatch_count": 0,
+  "duplicate_member_count": 0
+}

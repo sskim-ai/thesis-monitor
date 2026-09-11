@@ -1,0 +1,18 @@
+{
+  "contract": "m9-total-liabilities-negative-control-v1",
+  "denial_reasons": [
+    "total_liabilities_not_interest_bearing_debt",
+    "total_liabilities_not_interest_bearing_debt",
+    "missing_debt_components"
+  ],
+  "legacy_field_changed": false,
+  "legacy_liabilities_as_debt_usage_count": 0,
+  "new_contract_bridge_status": "REJECTED_EXPLICITLY",
+  "synthetic_debt_total_emitted": false,
+  "synthetic_semantics": [
+    "us-gaap:Liabilities",
+    "us-gaap:LiabilitiesCurrent",
+    "ifrs-full:NoncurrentLiabilities"
+  ],
+  "total_liabilities_used_as_debt_count": 0
+}

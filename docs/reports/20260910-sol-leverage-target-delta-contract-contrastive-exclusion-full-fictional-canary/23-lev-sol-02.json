@@ -1,0 +1,11 @@
+{
+  "expected": "STRONGER_NEGATIVE_MAY_BE_SUPPORTED",
+  "facts": [
+    "complete high debt",
+    "thin cash",
+    "confirmed refinancing stress"
+  ],
+  "id": "LEV-SOL-02",
+  "limitation": "valuation unavailable",
+  "status": "PASS"
+}

@@ -1,0 +1,36 @@
+{
+  "alias_resolution": "PASS",
+  "batch_semantics": "SINGLE_MODEL_CONTEXT",
+  "canary": "c3-directional-kr",
+  "contract": "schema-valid-directional-core-canary-v1",
+  "core_only_evidence_validation": "PASS",
+  "core_only_evidence_violations": {},
+  "real_issuer_used_as_canary": 0,
+  "receipt": {
+    "child_cleanup_status": "NOT_NEEDED",
+    "elapsed_to_exit_seconds": 40.034501,
+    "elapsed_to_first_output_seconds": 0.961789,
+    "input_bytes": 3606,
+    "invocation_id": "20260906-synthetic-canary-resume-20260906T115500Z-6adb47774f0e:canary:c3-directional-kr",
+    "model": "gpt-5.6-sol",
+    "orphan_model_process_count": 0,
+    "output_bytes": 4198,
+    "prompt_sha256": "8a9a3dda2ec8dd29a5dcdd7ccde711c328ea34ccef55466a30bf9b328154640f",
+    "reasoning_effort": "xhigh",
+    "receipt_sha256": "e7e0a9bb72a65395d1b5c378b522e8d8f7d982a83dfcabb86b96cea775dc29d5",
+    "schema_sha256": "0e16d649620075db9bc4bc2f363586b14d5fda3b073db92de6acdb2d45635244",
+    "secret_exposure_count": 0,
+    "status": "PASS",
+    "stderr_bytes": 8179,
+    "stdout_bytes": 4199,
+    "subject_count": 1,
+    "timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+    "transport_grouping_mode": "SINGLE_MODEL_CONTEXT"
+  },
+  "resolved_candidate_sha256": {
+    "SYNTHETIC_KR_C3_DIRECTIONAL_KR_1": "03a1e84f29dccd9b3591482348338104edd57c9aa4ae4bb70f6097d1c245d567"
+  },
+  "routing_market": "kr",
+  "status": "PASS",
+  "subject_count": 1
+}

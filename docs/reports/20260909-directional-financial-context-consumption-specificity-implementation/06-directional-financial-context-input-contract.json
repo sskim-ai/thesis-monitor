@@ -1,0 +1,18 @@
+{
+  "contract": "directional-financial-decision-context-v1",
+  "directional_core_only": true,
+  "fields": [
+    "contract",
+    "sector_framework",
+    "evidence_items",
+    "unavailable_or_not_applicable",
+    "limitations",
+    "selected_item_cap",
+    "eligible_input_count",
+    "selected_input_count",
+    "suppressed_input_count"
+  ],
+  "item_cap": 8,
+  "score": null,
+  "status": "PASS"
+}

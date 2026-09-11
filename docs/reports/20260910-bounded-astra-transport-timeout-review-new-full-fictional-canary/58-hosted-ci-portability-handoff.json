@@ -1,0 +1,39 @@
+{
+  "status": "FAIL",
+  "scope": "HOSTED_CI_HISTORICAL_ARTIFACT_PORTABILITY_REPAIR",
+  "implementation_commit": "695464f2b122bfe6e5378476b066cd945415eb61",
+  "run_id": 34376081552,
+  "url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34376081552",
+  "passed": 3174,
+  "failed": 5,
+  "lint": "SKIPPED",
+  "new_m12t_failures": 0,
+  "failures": [
+    {
+      "test": "tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text",
+      "cause": "historical git object 67bdc56 absent in hosted checkout"
+    },
+    {
+      "test": "tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history",
+      "cause": "local M12E ZIP missing",
+      "introduced": "M12F"
+    },
+    {
+      "test": "tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged",
+      "cause": "historical git object efd3110 absent"
+    },
+    {
+      "test": "tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean",
+      "cause": "local M12A ZIP missing"
+    },
+    {
+      "test": "tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded",
+      "cause": "historical git object0615ea3 absent"
+    }
+  ],
+  "transport_root_cause": false,
+  "repair_in_m12t": false,
+  "priority": "P1",
+  "next": "Dedicated portability repair: repository-contained immutable fixtures / appropriately fetched historical refs; preserve assertion strength.",
+  "final_exact_sha_ci": "NOT_MEASURED"
+}

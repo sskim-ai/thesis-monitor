@@ -1,0 +1,10 @@
+{
+  "status": "FROZEN",
+  "ticker": "FIC-FIN-01",
+  "target": {
+    "direction": "BUY",
+    "buy": 6.5,
+    "sell": 3.5
+  },
+  "reopen": false
+}

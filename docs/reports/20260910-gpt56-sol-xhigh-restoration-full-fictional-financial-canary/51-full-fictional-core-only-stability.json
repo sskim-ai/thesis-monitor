@@ -1,0 +1,85 @@
+{
+  "full": false,
+  "rows": [
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-01",
+      "values": [
+        [
+          "BUY",
+          6.5,
+          "NOT_HOLD"
+        ]
+      ]
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-02",
+      "values": [
+        [
+          "HOLD",
+          4.5,
+          "SELL_LEAN"
+        ]
+      ]
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-03",
+      "values": [
+        [
+          "HOLD",
+          5.0,
+          "NEUTRAL"
+        ]
+      ]
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-04",
+      "values": [
+        [
+          "HOLD",
+          5.0,
+          "NEUTRAL"
+        ]
+      ]
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-05",
+      "values": []
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-06",
+      "values": []
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-07",
+      "values": []
+    },
+    {
+      "balance_unique_count": "NOT_MEASURED",
+      "direction_unique_count": "NOT_MEASURED",
+      "hold_lean_unique_count": "NOT_MEASURED",
+      "ticker": "FIC-FIN-08",
+      "values": []
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "MARKET_FAILURE_DOES_NOT_ABORT_OTHER_MARKET_DIAGNOSTIC": 1,
+  "candidate_universe": "frozen canonical supported-security universe",
+  "contract": "dual-market-source-coverage-policy-v1",
+  "deterministic_ordering_rule": "sector-stratified round robin ordered by SHA256(selection_salt|market|canonical_sector_or_industry|ticker)",
+  "diversity_rule": "canonical sector/industry strata round robin; unclassified remains one stratum",
+  "exclusion_registry_sha256": "fcffb2ae8b00eba24c4890888871bcf7ec7c3e6a50bdbd0ec5a39ec9713dbdef",
+  "finalization_rule": "first source-sufficient unique 4 US and 12 KR in precommitted order",
+  "market_policies": {
+    "kr": {
+      "bounded_evaluation_limit": 48,
+      "candidate_universe": [
+        "142210",
+        "060900",
+        "002680",
+        "035420",
+        "216050",
+        "100700",
+        "001530",
+        "487580",
+        "038870",
+        "342870",
+        "060230",
+        "094800",
+        "415380",
+        "036560",
+        "417790",
+        "246250",
+        "003920",
+        "007110",
+        "284740",
+        "475960",
+        "051500",
+        "003490",
+        "073560",
+        "044380",
+        "030960",
+        "118000",
+        "475560",
+        "484590",
+        "001720",
+        "151860",
+        "014160",
+        "071950",
+        "133750",
+        "307180",
+        "380540",
+        "080420",
+        "049070",
+        "002450",
+        "008370",
+        "031440",
+        "046890",
+        "005830",
+        "128820",
+        "054050",
+        "052220",
+        "001520",
+        "063440",
+        "023150"
+      ],
+      "initial_candidate_count": 12,
+      "reserve_count": 36,
+      "target_issuer_count": 12
+    },
+    "us": {
+      "bounded_evaluation_limit": 5,
+      "candidate_universe": [
+        "NVDA",
+        "JPM",
+        "WMT",
+        "BRK-B",
+        "MSFT"
+      ],
+      "initial_candidate_count": 4,
+      "reserve_count": 1,
+      "target_issuer_count": 4
+    }
+  },
+  "model_calls": 0,
+  "objective_eligibility_rules": [
+    "supported common stock identity",
+    "not previously model exposed",
+    "not in retired partial cohort",
+    "not in consumed regression cohort",
+    "unique canonical issuer identity"
+  ],
+  "replacement_forbidden_reasons": [
+    "valuation appearance",
+    "price trend",
+    "expected direction or ownership result",
+    "transport result"
+  ],
+  "replacement_rules": [
+    "ordered reserve only",
+    "identity validation failure",
+    "unsupported market or duplicate issuer",
+    "source insufficiency or hard source validation failure",
+    "missing required evidence packet"
+  ],
+  "selection_seed_or_rule": "20260907-new-issuer-holdout-selection-ownership-proof-v1",
+  "selection_uses_expected_direction": 0,
+  "selection_uses_model_output": 0,
+  "source_sufficiency_rules": [
+    "frozen official enrichment directional eligibility",
+    "assembled canonical packet directional eligibility",
+    "required identity, fundamental, valuation, and price validation gates"
+  ],
+  "status": "FROZEN",
+  "stop_condition": "complete both bounded market diagnostics; freeze only when both targets pass",
+  "supported_universe_count": 2571,
+  "target_cohort_size": 16,
+  "target_market_mix": {
+    "kr": 12,
+    "us": 4
+  }
+}

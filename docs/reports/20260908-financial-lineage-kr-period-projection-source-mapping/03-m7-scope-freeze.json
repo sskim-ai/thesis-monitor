@@ -1,0 +1,20 @@
+{
+  "contract": "m7-scope-freeze-v1",
+  "excluded": [
+    "hut_ppe_source_mapping",
+    "skhy_ocf_ppe_source_mapping",
+    "debt_liquidity",
+    "working_capital",
+    "non_operating_effects",
+    "model_prompt_or_provider_changes",
+    "production_or_scheduler_changes"
+  ],
+  "included": [
+    "compatible_prior_year_fact_projection",
+    "derived_period_lineage_projection",
+    "kr_opendart_ocf_duration_period",
+    "kr_opendart_ppe_duration_period"
+  ],
+  "model_calls_required": 0,
+  "provider_source_fetches_required": 0
+}

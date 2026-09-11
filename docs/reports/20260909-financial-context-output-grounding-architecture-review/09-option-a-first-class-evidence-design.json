@@ -1,0 +1,13 @@
+{
+  "contract": "m12a-option-a-design-v1",
+  "design": "Project only selected FinancialDecisionContext items into the existing evidence[] using their already-assigned aliases and deterministic neutral statements.",
+  "financial_detail_block_retained_as_metadata": true,
+  "one_alias_namespace": true,
+  "one_evidence_ref_contract": true,
+  "option": "UNIFIED_FIRST_CLASS_EVIDENCE_INDEX",
+  "output_schema_change_required": false,
+  "status": "STRONG",
+  "typed_metadata_retained": true,
+  "unselected_raw_financial_projection_count": 0,
+  "validator_semantic_change_required": false
+}

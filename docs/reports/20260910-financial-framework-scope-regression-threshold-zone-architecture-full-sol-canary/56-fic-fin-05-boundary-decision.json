@@ -1,0 +1,22 @@
+{
+  "raw_values": [
+    {
+      "buy": 4.0,
+      "sell": 6.0
+    },
+    {
+      "buy": 4.0,
+      "sell": 6.0
+    },
+    {
+      "buy": 4.0,
+      "sell": 6.0
+    }
+  ],
+  "status": "PASS",
+  "zone_values": [
+    "NEGATIVE_THRESHOLD_ZONE",
+    "NEGATIVE_THRESHOLD_ZONE",
+    "NEGATIVE_THRESHOLD_ZONE"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "astra_reasoning_quality_failure_claim": false,
+  "basis": "M12V selected 2400-second tail-tolerance hypothesis failed on its first context with zero final output.",
+  "decision": "RESTORE_GPT56_SOL_XHIGH",
+  "status": "PASS"
+}

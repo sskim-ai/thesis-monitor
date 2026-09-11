@@ -1,0 +1,600 @@
+{
+  "complete_count": 6,
+  "contract": "m4-source-domain-contract-matrix-v1",
+  "domain_count": 6,
+  "rows": [
+    {
+      "applicable_sector_families": [
+        "all reporting issuers with compatible comparatives"
+      ],
+      "comparability_requirements": [
+        "same semantic account",
+        "same duration and period type",
+        "same currency, entity, statement, and attribution basis",
+        "prior-year end distance must be compatible"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/sec_financial_snapshot_service.py",
+        "app/services/kr_financial_lineage_service.py::growth_lineage_compatible"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "establish trend or persistence only when comparable",
+        "required evidence for an explicit improvement/deterioration claim",
+        "not independent valuation evidence"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED",
+        "DERIVED_SAFE"
+      ],
+      "domain": "same_period_prior_year_comparison",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "QTD vs YTD",
+        "quarter vs FY",
+        "different duration or fiscal basis",
+        "different attribution or consolidation basis",
+        "incompatible currency arithmetic",
+        "annualization of interim results"
+      ],
+      "implementation_risk": "MEDIUM",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "trend persistence",
+        "period-specific earnings direction"
+      ],
+      "kr_free_public_source_availability": "SUPPORTED_CURRENTLY",
+      "message_usage": [
+        "name the actual period type when material",
+        "do not call unavailable comparison negative evidence"
+      ],
+      "missing_data_behavior": "comparison unavailable; no trend claim and no negative polarity",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "new issuers without comparable history",
+        "basis-changing issuers"
+      ],
+      "period_basis": [
+        "QTD vs QTD",
+        "YTD vs YTD",
+        "FY vs FY"
+      ],
+      "required_validation_tests": [
+        "QTD/QTD, YTD/YTD, and FY/FY acceptance",
+        "mixed period, basis, attribution, and currency rejection",
+        "safe cumulative-to-quarter derivation lineage"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "any comparability mismatch"
+          ],
+          "formula": "current - prior comparable",
+          "inputs": 2,
+          "name": "same_period_absolute_delta",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "zero/negative base percentage request"
+          ],
+          "formula": "signed relation without negative-base growth percentage",
+          "inputs": 2,
+          "name": "same_period_direction_relation",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "fiscal year or basis mismatch"
+          ],
+          "formula": "current YTD - previous-quarter YTD",
+          "inputs": 2,
+          "name": "qtd_from_compatible_ytd",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    {
+      "applicable_sector_families": [
+        "standard operating company",
+        "manufacturing",
+        "software",
+        "cloud/platform",
+        "biotech"
+      ],
+      "comparability_requirements": [
+        "same cash-flow semantic",
+        "same issuer, currency, unit, entity, and statement basis",
+        "source filing version compatibility"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/official_cash_flow_service.py",
+        "app/services/cash_flow_capital_efficiency_service.py",
+        "app/services/opendart_financial_recovery_service.py"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "cash-conversion evidence, not an automatic thesis verdict",
+        "contrast with compatible earnings only",
+        "negative OCF is a fact requiring sector and stage context"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED",
+        "DERIVED_SAFE_PERIOD"
+      ],
+      "domain": "operating_cash_flow",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "EBITDA, operating income, or net income as OCF proxy",
+        "interim annualization",
+        "cumulative YTD labeled as a single quarter",
+        "industrial interpretation for a financial institution",
+        "missing OCF converted to zero"
+      ],
+      "implementation_risk": "MEDIUM",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "earnings cash conversion",
+        "growth-quality cross-check",
+        "operating cash generation"
+      ],
+      "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "message_usage": [
+        "label operating cash flow and period explicitly",
+        "avoid implying a working-capital cause without supporting facts"
+      ],
+      "missing_data_behavior": "Unknown for a cash-conversion claim; otherwise no negative inference",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance/reinsurance",
+        "financial institution"
+      ],
+      "period_basis": [
+        "reported QTD",
+        "YTD",
+        "FY",
+        "safe TTM"
+      ],
+      "required_validation_tests": [
+        "official operating-activities semantic acceptance",
+        "YTD/QTD/TTM period safety",
+        "financial-industry interpretation suppression"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "period or source-version mismatch"
+          ],
+          "formula": "current YTD OCF - prior-quarter YTD OCF",
+          "inputs": 2,
+          "name": "ocf_qtd",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "missing or incompatible component"
+          ],
+          "formula": "prior FY + current YTD - prior comparable YTD",
+          "inputs": 3,
+          "name": "ocf_ttm",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "SUPPORTED_CURRENTLY",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    {
+      "applicable_sector_families": [
+        "manufacturing",
+        "semiconductor/memory",
+        "automotive",
+        "cloud/platform",
+        "infrastructure"
+      ],
+      "comparability_requirements": [
+        "OCF and PPE purchase share exact period and basis",
+        "PPE scope remains explicit",
+        "same currency and normalized unit"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/official_cash_flow_service.py",
+        "app/services/cash_flow_capital_efficiency_service.py::derive_fcf",
+        "app/services/opendart_financial_recovery_service.py::CAPEX_COMPONENTS"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "separate operating cash generation from reinvestment absorption",
+        "higher capex is not inherently negative",
+        "use OCF less PPE capex, never an inferred maintenance-capex result"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED_PPE_OUTFLOW",
+        "DERIVED_SAFE"
+      ],
+      "domain": "ppe_capex_simple_cash_conversion",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "generic investing cash flow as capex",
+        "business acquisitions as PPE capex",
+        "securities purchases as PPE capex",
+        "automatic intangible or capitalized-software inclusion",
+        "maintenance-capex inference",
+        "partial capex subtraction labeled as company-defined FCF",
+        "different-period OCF and capex arithmetic"
+      ],
+      "implementation_risk": "MEDIUM",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "reinvestment burden",
+        "post-PPE cash conversion"
+      ],
+      "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "message_usage": [
+        "preferred label: OCF less PPE acquisition cash outflow",
+        "if FCF is used, qualify it as PPE-only and not management-defined FCF"
+      ],
+      "missing_data_behavior": "PPE cash-conversion unavailable; OCF may remain independently usable",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance/reinsurance",
+        "asset-light issuer with material intangible investment"
+      ],
+      "period_basis": [
+        "same-period QTD",
+        "YTD",
+        "FY",
+        "safe TTM"
+      ],
+      "required_validation_tests": [
+        "accepted/rejected CAPEX semantics",
+        "sign normalization",
+        "same-basis arithmetic and complete input lineage"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "unverified investing semantic"
+          ],
+          "formula": "semantic-aware sign normalization to positive magnitude",
+          "inputs": 1,
+          "name": "ppe_capex_positive_outflow",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "period, currency, entity, or basis mismatch"
+          ],
+          "formula": "OCF - PPE acquisition cash outflow",
+          "inputs": 2,
+          "name": "ocf_less_ppe_capex",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "SUPPORTED_CURRENTLY",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    {
+      "applicable_sector_families": [
+        "standard operating company",
+        "capital-intensive company",
+        "pre-profit company",
+        "holding company"
+      ],
+      "comparability_requirements": [
+        "same balance-sheet date for cash and debt components",
+        "complete interest-bearing debt scope",
+        "same currency, entity, and consolidation basis"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/models/financial.py::FinancialSnapshot",
+        "app/services/financial_snapshot_service.py",
+        "app/services/coldstart_fundamental_enrichment_service.py"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "liquidity and refinancing context when capital structure is thesis-relevant",
+        "sector-specific capital framework replaces generic debt logic for financials"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED_COMPONENTS",
+        "DERIVED_SAFE_IF_COMPLETE"
+      ],
+      "domain": "debt_liquidity",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "total liabilities substituted for debt",
+        "net debt from incomplete debt components",
+        "price currency copied to financial facts",
+        "ordinary industrial net-debt logic for banks or insurers",
+        "missing debt detail treated as bearish evidence"
+      ],
+      "implementation_risk": "HIGH",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "financial resilience",
+        "refinancing and dilution risk"
+      ],
+      "kr_free_public_source_availability": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "message_usage": [
+        "name verified debt/cash scope",
+        "do not say net debt when only liabilities are available"
+      ],
+      "missing_data_behavior": "Unknown; may limit confidence for financing-dependent issuers",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance/reinsurance",
+        "financial institution requiring sector capital framework"
+      ],
+      "period_basis": [
+        "balance-sheet point-in-time"
+      ],
+      "required_validation_tests": [
+        "debt component completeness and overlap",
+        "cash/debt point-in-time compatibility",
+        "total-liabilities negative control",
+        "financial-sector routing"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "component overlap or incomplete scope"
+          ],
+          "formula": "sum verified non-overlapping short/long/current debt components",
+          "inputs": "2+",
+          "name": "interest_bearing_debt_total",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "cash/debt scope or period mismatch"
+          ],
+          "formula": "complete interest-bearing debt - compatible cash basis",
+          "inputs": 2,
+          "name": "net_debt",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "SECTOR_CONDITIONAL_REQUIRED",
+      "us_free_public_source_availability": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    {
+      "applicable_sector_families": [
+        "manufacturing",
+        "hardware",
+        "consumer/retail",
+        "EPC/construction",
+        "selected distributor"
+      ],
+      "comparability_requirements": [
+        "trade vs broad AR/AP semantics remain distinct",
+        "same balance scope, currency, entity, and basis",
+        "revenue/COGS relation requires compatible flow period"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/cash_flow_capital_efficiency_service.py",
+        "app/services/opendart_financial_recovery_service.py",
+        "docs/reports/20260820-phase9-0b-canonical-facts.json"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "compare inventory/receivable movement with compatible revenue evidence",
+        "state observed divergence without asserting its cause",
+        "CCC remains deferred"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED_POINT_IN_TIME",
+        "DERIVED_SAFE"
+      ],
+      "domain": "inventory_receivables_working_capital",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "other receivables as trade AR",
+        "other payables as trade AP",
+        "year-end to interim balance called YoY",
+        "DSO without average trade AR and compatible revenue",
+        "inventory days without average inventory and compatible COGS",
+        "DPO without explicit denominator policy",
+        "CCC with any missing component",
+        "missing working-capital data treated as negative"
+      ],
+      "implementation_risk": "MEDIUM",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "working-capital quality",
+        "cash-conversion warning"
+      ],
+      "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "message_usage": [
+        "identify point-in-time comparison basis",
+        "avoid generic working-capital deterioration when only one balance is known"
+      ],
+      "missing_data_behavior": "Unavailable and confidence-limiting only when the claim depends on it",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance",
+        "asset manager",
+        "many SaaS issuers"
+      ],
+      "period_basis": [
+        "balance date vs prior-year comparable date",
+        "balance date vs prior year-end with explicit label"
+      ],
+      "required_validation_tests": [
+        "trade/broad semantic separation",
+        "point-in-time period labels",
+        "balance vs flow compatibility",
+        "CCC dependency failure controls"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "balance scope mismatch"
+          ],
+          "formula": "current point-in-time balance - compatible prior balance",
+          "inputs": 2,
+          "name": "balance_absolute_delta",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "year-end comparator mislabeled YoY"
+          ],
+          "formula": "directional relation to prior-year comparable balance",
+          "inputs": 2,
+          "name": "balance_yoy_relation",
+          "status": "DERIVED_SAFE"
+        },
+        {
+          "failure_conditions": [
+            "period or semantic mismatch"
+          ],
+          "formula": "compare compatible balance and revenue directions",
+          "inputs": "3+",
+          "name": "balance_vs_revenue_relation",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    },
+    {
+      "applicable_sector_families": [
+        "standard operating company",
+        "holding company"
+      ],
+      "comparability_requirements": [
+        "same period, currency, entity, statement, and attribution basis",
+        "sector semantic class verified before operating/non-operating label",
+        "no double count across subtotal and components"
+      ],
+      "currency_basis": "same verified financial currency; no inferred FX conversion",
+      "current_parser_mapping_locations": [
+        "app/services/coldstart_fundamental_enrichment_service.py",
+        "app/services/sec_financial_snapshot_service.py",
+        "app/services/opendart_financial_recovery_service.py"
+      ],
+      "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+      "decision_evidence_packet_representation": {
+        "activation_in_m4": false,
+        "classification": "SCHEMA_EXTENSION_REQUIRED",
+        "proposal": "optional typed financial_context on DecisionEvidenceRef"
+      },
+      "directional_core_usage": [
+        "limit an operating-quality conclusion when material verified effects explain NI",
+        "keep financial-sector core revenue semantics separate"
+      ],
+      "directly_reported_vs_derived": [
+        "DIRECT_REPORTED_COMPONENTS",
+        "DERIVED_SAFE_IF_COMPLETE"
+      ],
+      "domain": "non_operating_financial_income_effects",
+      "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+      "forbidden_derivations": [
+        "pretax income minus operating income called complete non-operating income",
+        "unmapped residual normalized by invention",
+        "bank interest income labeled non-operating",
+        "tax effect attributed without direct evidence",
+        "net-income improvement equated with operating improvement"
+      ],
+      "implementation_risk": "HIGH",
+      "initial_analysis_use": "eligible as absolute evidence when valid and material",
+      "investment_purpose": [
+        "operating vs non-operating earnings attribution"
+      ],
+      "kr_free_public_source_availability": "SOURCE_EXISTS_MAPPING_INCOMPLETE",
+      "message_usage": [
+        "name the reported effect and period",
+        "do not use a generic non-operating label where sector treatment differs"
+      ],
+      "missing_data_behavior": "No attribution claim; missing evidence is not negative",
+      "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+      "non_applicable_or_caution_sector_families": [
+        "bank",
+        "insurance/reinsurance",
+        "financial institution where interest is core economics"
+      ],
+      "period_basis": [
+        "same income-statement duration and fiscal period"
+      ],
+      "required_validation_tests": [
+        "component/subtotal overlap",
+        "sector semantic routing",
+        "same-period operating/pretax/net-income compatibility"
+      ],
+      "safe_derivations": [
+        {
+          "failure_conditions": [
+            "incomplete bridge or sector semantic mismatch"
+          ],
+          "formula": "signed sum of complete, non-overlapping mapped components",
+          "inputs": "2+",
+          "name": "verified_non_operating_component_sum",
+          "status": "DERIVED_SAFE"
+        }
+      ],
+      "schema_change_required": true,
+      "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+      "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+      "us_free_public_source_availability": "PARTIALLY_SUPPORTED",
+      "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+      "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+    }
+  ],
+  "status": "COMPLETE"
+}

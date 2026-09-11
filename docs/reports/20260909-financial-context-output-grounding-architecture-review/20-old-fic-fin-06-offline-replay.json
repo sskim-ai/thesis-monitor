@@ -1,0 +1,26 @@
+{
+  "contract": "m12a-old-fic-fin-06-offline-replay-v1",
+  "historical_failure_preserved": true,
+  "historical_output_modified": false,
+  "historical_output_sha256": "dfe323433e17d0732e85965224acdd315d72984e62732c20560bff3eb1af6926",
+  "historically_cited_typed_refs": [],
+  "option_a": {
+    "reason": "old output still cites neither selected typed ref",
+    "result": "FAIL",
+    "retroactive_alias_reclassification_count": 0
+  },
+  "option_b": {
+    "reason": "old narrative refs have no producer-supplied financial lineage",
+    "result": "FAIL",
+    "text_similarity_lineage_count": 0
+  },
+  "option_c": {
+    "reason": "old output predates the proposed structured field",
+    "result": "LEGACY_NOT_APPLICABLE"
+  },
+  "selected_typed_refs": [
+    "canonical:fictional:FIC-FIN-06:inventory-current",
+    "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+  ],
+  "status": "PASS"
+}

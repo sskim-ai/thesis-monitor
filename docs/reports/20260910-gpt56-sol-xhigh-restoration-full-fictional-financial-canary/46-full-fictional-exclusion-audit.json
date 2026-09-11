@@ -1,0 +1,31 @@
+{
+  "full": false,
+  "rows": [
+    {
+      "claims": [],
+      "errors": [
+        "frozen_ordinal_contract_inconsistent"
+      ],
+      "repetition": 1,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "claims": [],
+      "errors": [],
+      "repetition": 1,
+      "ticker": "FIC-FIN-04"
+    }
+  ]
+}

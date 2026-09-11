@@ -1,0 +1,76 @@
+{
+  "comparison_labeling_violation_count": 0,
+  "contract": "m10-comparison-labeling-control-v1",
+  "prior_year_comparable_delta": {
+    "balance_scope": "inventory_total",
+    "cautions": [
+      "balance_change_not_interpreted",
+      "source_metric:inventory",
+      "comparison_kind:prior_year_comparable"
+    ],
+    "comparison_kind": "prior_year_comparable",
+    "currency": "USD",
+    "derivation_formula": "balance_absolute_delta",
+    "derivation_version": "inventory-receivables-working-capital-v1",
+    "entity_scope": "issuer_level",
+    "fact_id": "working-capital-derived:47a5792584f22021314f2d3e",
+    "fact_type": "DERIVED_METRIC",
+    "fiscal_quarter": 2,
+    "fiscal_year": 2026,
+    "input_fact_ids": [
+      "working-capital-reported:4c542af6cb968f89ce1c92e9",
+      "working-capital-reported:9e38b6c169286bb1b03a619e"
+    ],
+    "metric": "working_capital_balance_delta",
+    "net_gross_scope": "net",
+    "period_end": "2026-06-30",
+    "period_start": null,
+    "period_type": "POINT_IN_TIME",
+    "source_document_id": "derived:47a5792584f22021314f2d3e",
+    "source_occurrence_id": "derived-occurrence:47a5792584f22021314f2d3e",
+    "source_provider": "canonical_financial_derivation",
+    "source_semantic": null,
+    "statement_basis": "issuer_reported_balance_sheet",
+    "unit": "USD",
+    "value": "30"
+  },
+  "prior_year_end_delta": {
+    "balance_scope": "inventory_total",
+    "cautions": [
+      "balance_change_not_interpreted",
+      "source_metric:inventory",
+      "comparison_kind:prior_year_end"
+    ],
+    "comparison_kind": "prior_year_end",
+    "currency": "USD",
+    "derivation_formula": "balance_absolute_delta",
+    "derivation_version": "inventory-receivables-working-capital-v1",
+    "entity_scope": "issuer_level",
+    "fact_id": "working-capital-derived:043830ba60c3a4dbda45af04",
+    "fact_type": "DERIVED_METRIC",
+    "fiscal_quarter": 2,
+    "fiscal_year": 2026,
+    "input_fact_ids": [
+      "working-capital-reported:4c542af6cb968f89ce1c92e9",
+      "working-capital-reported:d475d56fc5031696c76b5705"
+    ],
+    "metric": "working_capital_balance_delta",
+    "net_gross_scope": "net",
+    "period_end": "2026-06-30",
+    "period_start": null,
+    "period_type": "POINT_IN_TIME",
+    "source_document_id": "derived:043830ba60c3a4dbda45af04",
+    "source_occurrence_id": "derived-occurrence:043830ba60c3a4dbda45af04",
+    "source_provider": "canonical_financial_derivation",
+    "source_semantic": null,
+    "statement_basis": "issuer_reported_balance_sheet",
+    "unit": "USD",
+    "value": "20"
+  },
+  "status": "PASS",
+  "year_end_as_yoy_output": null,
+  "year_end_as_yoy_rejection_reasons": [
+    "fiscal_quarter_mismatch",
+    "point_in_time_mismatch"
+  ]
+}

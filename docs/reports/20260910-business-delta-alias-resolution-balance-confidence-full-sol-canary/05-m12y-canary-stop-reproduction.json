@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "generation_id": "20260910-m12y-fictional-20260910T043154Z-2761aab01862",
+  "completed_contexts": 1,
+  "completed_outputs": 4,
+  "model": "gpt-5.6-sol",
+  "effort": "xhigh",
+  "elapsed_seconds": 445.399,
+  "timeout_count": 0,
+  "wrapper_retry_count": 0,
+  "cli_internal_retry_count": 0,
+  "orphan_process_count": 0,
+  "stop_reason": "M12B_MODEL_CANARY_FAIL",
+  "observed_buckets": {
+    "FIC-FIN-01": "BUY 6.0:4.0",
+    "FIC-FIN-02": "HOLD 4.5:5.5 SELL_LEAN",
+    "FIC-FIN-03": "HOLD 5.5:4.5 BUY_LEAN",
+    "FIC-FIN-04": "HOLD 5.0:5.0 NEUTRAL"
+  },
+  "actual_target_miss": "FIC-FIN-01"
+}

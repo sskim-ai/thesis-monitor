@@ -1,0 +1,101 @@
+{
+  "alias_map_sha256": "58d5ef10c2d608260afb1eb4a60cc6600852054112db0794c8474dbaccbdcb53",
+  "contract": "structured-autonomy-evidence-alias-v1",
+  "entries": [
+    {
+      "alias": "E01",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:valuation-limit",
+      "category": "valuation",
+      "content_sha256": "0a4c81f1d554fea115dda810da6378ce8d99f6aa5f0a3c6f1e3f8a04e03d880e",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "valuation-limit",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:market-expectation",
+      "category": "expectations",
+      "content_sha256": "2f8ba5c2991e2e9ef2fc86c1f506d868d20198e0fc85567856c1031850f38acf",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "market-expectation",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Expectations require disciplined pricing and adequate regulatory capital.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:business-thesis",
+      "category": "thesis",
+      "content_sha256": "85a2834f302e757ff2348cd39420119e9bf59f989e44e405e6b296e5435ec92c",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "business-thesis",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Underwriting discipline and regulatory capital are the applicable business framework.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:operating-evidence",
+      "category": "earnings",
+      "content_sha256": "b0f4f22b2f8a7d4cb7440785d743fff5d57f494bcb738704e4ed42ca7157ea31",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "operating-evidence",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Underwriting result is stable while claims volatility remains material.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:sector-context",
+      "category": "earnings_quality",
+      "content_sha256": "be185c8d48b560412d34c415cfd173c939ca7dad649a6e5e8d67c6792d37c611",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "sector-context",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "This is an insurer; industrial net-debt and working-capital templates do not apply.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:structural-risk",
+      "category": "risks",
+      "content_sha256": "cc47223d4cfd7a422f504d8d8018f05d0a47b1344c0373c99f32d5150be0d6ac",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "structural-risk",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "Adverse claims development could weaken sector-specific economics.",
+      "ticker": "FIC-FIN-08"
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-09-09",
+      "canonical_ref": "fictional:FIC-FIN-08:remaining-unknown",
+      "category": "unknown",
+      "content_sha256": "e43e690721785fd0ffe955b7011eb34b42f74fff9cd913eeb47c6d1c7ad1f8fe",
+      "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+      "label": "remaining-unknown",
+      "market": "us",
+      "metric_refs": [],
+      "statement": "A sector-specific capital adequacy trend is not supplied.",
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "evidence_fingerprint": "2591c07c4e3fb58159a7fac65c9dafdbd3b6d8b778eef2721041f68ba3cf14ce",
+  "generation": "20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4",
+  "market": "us",
+  "ticker": "FIC-FIN-08"
+}

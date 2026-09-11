@@ -1,0 +1,12 @@
+{
+  "combined_implementation": false,
+  "contract": "m8-higher-risk-domain-priority-decision-v1",
+  "decision": "INTEREST_BEARING_DEBT_LIQUIDITY_FIRST",
+  "ordered_subpackages": [
+    "interest_bearing_debt_and_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "reason": "Debt and liquidity are the highest-priority remaining bounded domain and must retain interest-bearing scope and industry applicability.",
+  "recommended_next_scope": "HIGHER_RISK_FINANCIAL_DOMAIN_MAPPING_IMPLEMENTATION_INTEREST_BEARING_DEBT_LIQUIDITY"
+}

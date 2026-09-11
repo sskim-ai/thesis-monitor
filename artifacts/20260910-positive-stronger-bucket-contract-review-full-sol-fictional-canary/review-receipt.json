@@ -1,0 +1,12 @@
+{
+  "fixture_status": "PASS",
+  "root_cause": "EXACT_FIXTURE_TARGET_OVERCONSTRAINED",
+  "selected_branch": "FIXTURE_TARGET_CORRECTION_ONLY",
+  "status": "PASS",
+  "target_buys": {
+    "FIC-FIN-01": 6.5,
+    "FIC-FIN-02": 4.5,
+    "FIC-FIN-04": 5.0,
+    "FIC-FIN-05": 4.5
+  }
+}

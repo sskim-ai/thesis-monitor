@@ -1,0 +1,12 @@
+{
+  "actual_sha256": "0416d8719b5e71e79de6591f574a2ba3332657dd32deddb870bbaa8d2e854a7a",
+  "duplicate_member_count": 0,
+  "expected_sha256": "0416d8719b5e71e79de6591f574a2ba3332657dd32deddb870bbaa8d2e854a7a",
+  "extra_count": 0,
+  "hash_mismatch_count": 0,
+  "indexed_payload_count": 272,
+  "missing_count": 0,
+  "size_mismatch_count": 0,
+  "status": "PASS",
+  "zip_entry_count": 273
+}

@@ -1,0 +1,18 @@
+{
+  "status": "FAIL_KNOWN_HISTORICAL_PORTABILITY",
+  "head_sha": "551f98f92e1f075990de1db1fd23eff4753c4da4",
+  "run_id": 34416304641,
+  "url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34416304641",
+  "passed": 3220,
+  "failed": 5,
+  "new_m12u_failure_count": 0,
+  "lint": "SKIPPED_AFTER_TEST_FAILURE",
+  "new_m12u_tests_passed": 46,
+  "failures": [
+    "tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text",
+    "tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history",
+    "tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged",
+    "tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded"
+  ]
+}

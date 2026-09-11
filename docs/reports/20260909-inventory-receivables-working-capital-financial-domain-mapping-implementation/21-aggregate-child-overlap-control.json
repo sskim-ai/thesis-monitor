@@ -1,0 +1,38 @@
+{
+  "aggregate_child_overlap_blocked_count": 3,
+  "aggregate_child_overlap_conflict_count": 1,
+  "aggregate_precedence_count": 3,
+  "contract": "m10-aggregate-child-overlap-control-v1",
+  "direct_facts": [
+    {
+      "balance_scope": "inventory_total",
+      "cautions": [
+        "inventory_aggregate"
+      ],
+      "comparison_kind": null,
+      "currency": "USD",
+      "derivation_formula": null,
+      "derivation_version": null,
+      "entity_scope": "issuer_level",
+      "fact_id": "working-capital-reported:4c542af6cb968f89ce1c92e9",
+      "fact_type": "REPORTED",
+      "fiscal_quarter": 2,
+      "fiscal_year": 2026,
+      "input_fact_ids": [],
+      "metric": "inventory",
+      "net_gross_scope": "net",
+      "period_end": "2026-06-30",
+      "period_start": null,
+      "period_type": "POINT_IN_TIME",
+      "source_document_id": "0000000000-26-000001",
+      "source_occurrence_id": "working-capital-occurrence:ab996784144beb54914b72b3",
+      "source_provider": "sec_edgar_companyfacts",
+      "source_semantic": "us-gaap:InventoryNet",
+      "statement_basis": "issuer_reported_balance_sheet",
+      "unit": "USD",
+      "value": "120"
+    }
+  ],
+  "reconstructed_total_count": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,26 @@
+{
+  "aggregate_source_lock_sha256": "ae3dc56b1858db74d56ba8446926d825fb0977f3cafd4b8a4f29b4f04122211a",
+  "contract": "fresh-final-source-generation-v1",
+  "per_issuer_packet_hashes": {
+    "020180": "86bd96d990eb05ff7b3cc0c2ec40ec7b9b8f0edacd712199c8faeab0e5fef84b",
+    "023910": "c06efdb7edd970cac493c53f7db7046e8a3991f6882c7d034a5e991be0146c72",
+    "053270": "746abbcdba34add5711e3eff703c60255432251a95bd05a923a547c6ec6c9208",
+    "064850": "e1d6295995b9f93bfbc52a282d44f6c36ae8451b2256b6cfdb777c1e9de2e3d8",
+    "065510": "4c50e2f3c95a37ab43d355d7b4de4331de0dcbcaedf5a11cd671511115acb843",
+    "078860": "19d2679e0e37a92a76f333dcdf0c56e4cb879fa548eaf44b793be86962be739d",
+    "122310": "9c3c0fde1811c14ab516ed5c34f8d2c25888ee29ffc1687af2eebcda28a9edc7",
+    "145720": "61c9473347c868258fd9177b30b55ddac5af730f8d8b7c1eb1c047ebbe44f6ea",
+    "199730": "4bba3c894d0a37f10fe90636f9acc51a55f616ac84a9206f8b647a73f4bb86d4",
+    "299900": "6bcbd946bc47d13dcb3a09b4a96d51071f7ea15d36105c62cc3674e9e4cc9f33",
+    "396470": "c2685800a29119a68e1aad59ac3377481bbecb5011c992cefe0a28ef6f26cf4a",
+    "417200": "6beabba7df05419106b4e234bfd4604dd0b3299cc1594e46d3063a7db3231bbb",
+    "ASTI": "1a49fb1b4d66eb437442140d1be16ed5e5396b6e22e3313884e9778b4e9c45f5",
+    "DOX": "edea5809df3858eb9735eaedd91f15d025a2d7f902d5924918dadfe9ed26c8bd",
+    "NWS": "13de46c2911c4b1f8415e21f65cdd059e0f00e3519889806bc0ff796a77cbc49",
+    "WYNN": "5c989730d37ebf2a9692f125808e48540b512f76d501dc6e61d16d2179cca943"
+  },
+  "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T181651Z-695d9f8eaacc",
+  "source_generation_id": "20260907-fresh-issuer-source-20260907T181651Z-c5cb0cee45e8",
+  "source_runtime_identity_separated": true,
+  "status": "PASS"
+}

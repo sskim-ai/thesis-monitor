@@ -1,0 +1,15 @@
+{
+  "contract": "m12c-repository-provenance-v1",
+  "branch": "codex/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary",
+  "base_sha": "0615ea399f295476c2bf47d66ac441eef04ec0d8",
+  "authoritative_m12b_actual_head": "0615ea399f295476c2bf47d66ac441eef04ec0d8",
+  "origin_m12b_head": "0615ea399f295476c2bf47d66ac441eef04ec0d8",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "work_instruction_zip_sha256": "39bf84e0a723abc15df439f9f7da35d32b27cff1c76f78c5f332baaa8a4e635e",
+  "work_instruction_payload_sha256": "82bbb4175a0e7fc9d8653f023416d1f3f3e1bd1854c02fb08e3f95f23ed4da18",
+  "work_instruction_commit": "6a75e839fd05d7d8b095ae5d23180f621b7abb3a",
+  "implementation_commit": "NOT_CREATED",
+  "report_commit": "NOT_CREATED",
+  "checked_at": "2026-09-09T09:47:44Z",
+  "status": "PASS"
+}

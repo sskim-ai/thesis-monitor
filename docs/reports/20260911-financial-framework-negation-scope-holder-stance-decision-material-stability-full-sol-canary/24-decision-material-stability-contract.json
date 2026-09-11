@@ -1,0 +1,12 @@
+{
+  "confidence_variance_advisory": true,
+  "contract": "directional-decision-material-stability-v1",
+  "material_fields": [
+    "overall_direction",
+    "business_thesis_change",
+    "fundamental_new_buyer.stance",
+    "fundamental_holder.stance"
+  ],
+  "same_direction_half_point_variance_blocking": false,
+  "status": "PASS"
+}

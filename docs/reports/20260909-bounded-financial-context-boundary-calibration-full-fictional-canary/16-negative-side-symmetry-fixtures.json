@@ -1,0 +1,50 @@
+{
+  "rows": [
+    {
+      "facts": [
+        "negative material anchor"
+      ],
+      "id": "CAL-NEG-LEAN",
+      "limitation": "distinct corroboration missing; adjacent fit remains reasonable",
+      "rule": "limiting_unknown",
+      "selected_buy": 4.5,
+      "selected_contract_buy": 4.5,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        4.0,
+        4.5
+      ]
+    },
+    {
+      "facts": [
+        "negative material anchor",
+        "distinct independent corroboration"
+      ],
+      "id": "CAL-NEG-MIN",
+      "limitation": "no material causal or persistence blocker",
+      "rule": "independent_support",
+      "selected_buy": 4.0,
+      "selected_contract_buy": 4.0,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        4.0
+      ]
+    },
+    {
+      "facts": [
+        "minimum negative direction",
+        "materially stronger persistence of negative economics"
+      ],
+      "id": "CAL-NEG-STRONG",
+      "limitation": "stronger support actually established",
+      "rule": "stronger_support",
+      "selected_buy": 3.5,
+      "selected_contract_buy": 3.5,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        3.5
+      ]
+    }
+  ],
+  "status": "PASS"
+}

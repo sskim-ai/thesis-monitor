@@ -1,0 +1,20 @@
+{
+  "source_report_bundle": "thesis-monitor-20260906-bounded-validator-generalization-clean-abc-proof-report.zip",
+  "source_report_sha256": "6ea876ee720c830fc59cd745a002960d83cb27d90abc634a58128c5d9fabf276",
+  "source_generation": "20260906-uskr22-validator-generalization-20260905T234949Z-6347e07b3702",
+  "source_first": "21/22",
+  "source_failure": {
+    "ticker": "WULF",
+    "validator": "mandatory_trade_language",
+    "audit_class": "NOMINAL_NEGATION_SCOPE_FALSE_POSITIVE"
+  },
+  "next_required_path": [
+    "FIRST 22/22",
+    "A 22/22",
+    "B 22/22",
+    "C 22/22",
+    "DEVSET RETIREMENT",
+    "UNSEEN COLD-START HANDOFF"
+  ],
+  "production_mutation_allowed": false
+}

@@ -1,0 +1,123 @@
+{
+  "contract": "m5-negative-fixture-manifest-v1",
+  "fail_open_count": 0,
+  "negative_fixture_count": 19,
+  "negative_fixture_rejected_count": 19,
+  "rows": [
+    {
+      "actual": "REJECT",
+      "case": "derived_without_derivation",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "direct_with_derivation",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "duration_without_start",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "point_in_time_with_start",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "point_in_time_with_duration",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "end_before_start",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "duration_mismatch",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "comparison_without_refs",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "none_comparison_with_refs",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "empty_metric",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "missing_currency",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "invalid_unit_scale",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "empty_derivation_refs",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "empty_limitation",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "duplicate_comparison_ref",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "duplicate_derivation_ref",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "unknown_evidence_status",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "invalid_period_type",
+      "expected": "REJECT",
+      "status": "PASS"
+    },
+    {
+      "actual": "REJECT",
+      "case": "ambiguous_attribution",
+      "expected": "REJECT",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

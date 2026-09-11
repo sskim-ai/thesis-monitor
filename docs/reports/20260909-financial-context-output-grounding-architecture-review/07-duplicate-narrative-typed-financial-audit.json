@@ -1,0 +1,231 @@
+{
+  "classification_counts": {
+    "NARRATIVE_INTERPRETATION_NOT_DUPLICATE": 3,
+    "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE": 8,
+    "NO_NARRATIVE_DUPLICATE": 4
+  },
+  "contract": "m12a-duplicate-narrative-typed-financial-audit-v1",
+  "method": {
+    "lineage_requirement": "PRODUCER_SUPPLIED_PROVENANCE_ONLY",
+    "topic_matching_may_create_lineage": false,
+    "topic_matching_use": "AUDIT_CLASSIFICATION_ONLY"
+  },
+  "narrative_duplicate_selected_item_count": 8,
+  "rows": [
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+      "classification": "NARRATIVE_INTERPRETATION_NOT_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "ocf_less_ppe_capex",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-01:business-thesis"
+      ],
+      "ticker": "FIC-FIN-01",
+      "typed_alias": "E09",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-01:ocf-current",
+      "classification": "NO_NARRATIVE_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "operating_cash_flow",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [],
+      "ticker": "FIC-FIN-01",
+      "typed_alias": "E08",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-01:net-debt",
+      "classification": "NO_NARRATIVE_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "net_debt",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [],
+      "ticker": "FIC-FIN-01",
+      "typed_alias": "E03",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+      "classification": "NO_NARRATIVE_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "ocf_less_ppe_capex",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [],
+      "ticker": "FIC-FIN-02",
+      "typed_alias": "E01",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-02:ocf-current",
+      "classification": "NO_NARRATIVE_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "operating_cash_flow",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [],
+      "ticker": "FIC-FIN-02",
+      "typed_alias": "E08",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-02:inventory-current",
+      "classification": "NARRATIVE_INTERPRETATION_NOT_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "inventory",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-02:structural-risk",
+        "fictional:FIC-FIN-02:remaining-unknown"
+      ],
+      "ticker": "FIC-FIN-02",
+      "typed_alias": "E04",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "metric": "operating_income",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_alias": "E01",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-03:operating-profit-ytd",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "metric": "operating_income",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-03:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-03",
+      "typed_alias": "E08",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-04:net-income-current",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "metric": "net_income",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_alias": "E02",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-04:operating-profit-current",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "metric": "operating_income",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-04:operating-evidence"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_alias": "E07",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+      "classification": "NARRATIVE_INTERPRETATION_NOT_DUPLICATE",
+      "factual_duplicate_refs": [],
+      "metric": "net_financial_income_effect",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-04:structural-risk",
+        "fictional:FIC-FIN-04:sector-context",
+        "fictional:FIC-FIN-04:remaining-unknown"
+      ],
+      "ticker": "FIC-FIN-04",
+      "typed_alias": "E06",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-05:complete-debt",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "metric": "interest_bearing_debt_total",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "ticker": "FIC-FIN-05",
+      "typed_alias": "E05",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-05:cash",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "metric": "cash_and_cash_equivalents",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "ticker": "FIC-FIN-05",
+      "typed_alias": "E06",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-06:inventory-current",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "metric": "inventory",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-06:business-thesis",
+        "fictional:FIC-FIN-06:structural-risk",
+        "fictional:FIC-FIN-06:sector-context"
+      ],
+      "ticker": "FIC-FIN-06",
+      "typed_alias": "E04",
+      "valid_lineage_refs": []
+    },
+    {
+      "canonical_ref": "canonical:fictional:FIC-FIN-06:trade-receivables-current",
+      "classification": "NARRATIVE_SUMMARY_DUPLICATE_WITHOUT_LINEAGE",
+      "factual_duplicate_refs": [
+        "fictional:FIC-FIN-06:structural-risk"
+      ],
+      "metric": "trade_accounts_receivable",
+      "metric_refs_are_financial_lineage": false,
+      "related_narrative_refs": [
+        "fictional:FIC-FIN-06:business-thesis",
+        "fictional:FIC-FIN-06:structural-risk",
+        "fictional:FIC-FIN-06:sector-context",
+        "fictional:FIC-FIN-06:remaining-unknown"
+      ],
+      "ticker": "FIC-FIN-06",
+      "typed_alias": "E03",
+      "valid_lineage_refs": []
+    }
+  ],
+  "selected_typed_financial_count": 15,
+  "status": "PASS",
+  "unique_narrative_duplicate_ref_count": 4,
+  "valid_lineage_count": 0
+}

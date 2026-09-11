@@ -1,0 +1,188 @@
+{
+  "capacity_failure_count": 0,
+  "model_calls_fictional": 2,
+  "model_context_failure_count": 1,
+  "model_context_success_count": 1,
+  "orphan_process_count": 0,
+  "receipts": [
+    {
+      "batch_split": 0,
+      "contract": "m12-single-attempt-model-receipt-v1",
+      "failure_type": null,
+      "finished_at": "2026-09-09T15:22:09.762848+00:00",
+      "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-01",
+      "log_sha256": "68a3ed607ef5ee7544207300a238f8f189475bb526fc2a27bac33ceca4c16196",
+      "model": "gpt-6-astra",
+      "model_process_spawned": true,
+      "network_readiness": {
+        "attempts": 1,
+        "contract": "codex-network-readiness-v1",
+        "failure_type": null,
+        "ready": true,
+        "resolved_address_count": 4
+      },
+      "observed_runtime": {
+        "effort": "xhigh",
+        "model": "gpt-6-astra"
+      },
+      "orphan_process_count": 0,
+      "output_exists": true,
+      "output_sha256": "d56409ae35a61cb225427cc8bda7a424ac4260af9a590df7bd47db6238c7cf7f",
+      "output_size": 20429,
+      "prompt_sha256": "df128613fb8d6bfcea9bc54a9eda8034b2757500f40a58c0e63a84fcd69281be",
+      "raw_diagnostic_token": null,
+      "reasoning_effort": "xhigh",
+      "returncode": 0,
+      "runtime_isolation": {
+        "base_namespace_hash": "e23856e1315ce0253986b424",
+        "contract": "codex-model-context-runtime-isolation-v1",
+        "execution_isolation_valid": true,
+        "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-01",
+        "invocation_identity_unique": true,
+        "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+        "runtime_state_namespace_hash": "41dc02709e061917e7b4d79a",
+        "runtime_state_namespace_unique": true,
+        "working_directory_identity": "f2533af102ccd42483ef546b3120b1ec74363928be6dd83acb1fc06fa2cb264c",
+        "working_directory_unique": true
+      },
+      "runtime_state": {
+        "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/41dc02709e061917e7b4d79a/home",
+        "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+        "contract": "codex-runtime-state-v1",
+        "mode": "0700",
+        "namespace_hash": "41dc02709e061917e7b4d79a",
+        "ownership": "uid:501",
+        "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+        "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/41dc02709e061917e7b4d79a/sqlite",
+        "sqlite_wal_probe": "PASS"
+      },
+      "schema_sha256": "e17484f3dde593e304d05bfd43b834942e1b4df6cb84a3b10fb63b84537d4c43",
+      "single_authoritative_watchdog": true,
+      "started_at": "2026-09-09T15:03:16.283455+00:00",
+      "status": "PASS",
+      "timed_out": false,
+      "timeout_count": 0,
+      "timeout_seconds": 1800,
+      "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+      "transport_attempt_count": 1,
+      "wrapper_retry_count": 0
+    },
+    {
+      "batch_split": 0,
+      "contract": "m12-single-attempt-model-receipt-v1",
+      "failure_type": "MODEL_TIMEOUT",
+      "finished_at": "2026-09-09T15:52:09.821574+00:00",
+      "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02",
+      "log_sha256": "b95247a35b9edd0fdf4c563816d258e77f49baa582434706a72169b8dda88209",
+      "model": "gpt-6-astra",
+      "model_process_spawned": true,
+      "network_readiness": {
+        "attempts": 1,
+        "contract": "codex-network-readiness-v1",
+        "failure_type": null,
+        "ready": true,
+        "resolved_address_count": 4
+      },
+      "orphan_process_count": 0,
+      "output_exists": false,
+      "output_sha256": null,
+      "output_size": 0,
+      "prompt_sha256": "ae2a8292680f6f4ea130219ea34ad52bf162d4163d70d821f7fcf370f9b8ccb7",
+      "raw_diagnostic_token": null,
+      "reasoning_effort": "xhigh",
+      "returncode": -15,
+      "runtime_isolation": {
+        "base_namespace_hash": "e23856e1315ce0253986b424",
+        "contract": "codex-model-context-runtime-isolation-v1",
+        "execution_isolation_valid": true,
+        "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02",
+        "invocation_identity_unique": true,
+        "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+        "runtime_state_namespace_hash": "3d34170739880127f328c031",
+        "runtime_state_namespace_unique": true,
+        "working_directory_identity": "bdf00f2eed2fde19a1e9036383c38fefbb53adc59a7a93296765a779fc34a0ff",
+        "working_directory_unique": true
+      },
+      "runtime_state": {
+        "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/3d34170739880127f328c031/home",
+        "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+        "contract": "codex-runtime-state-v1",
+        "mode": "0700",
+        "namespace_hash": "3d34170739880127f328c031",
+        "ownership": "uid:501",
+        "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+        "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/3d34170739880127f328c031/sqlite",
+        "sqlite_wal_probe": "PASS"
+      },
+      "schema_sha256": "d42a0940e84aeb734c01197e4eab6635d7f1f7fbb82fef3011cfbe88997d71f2",
+      "single_authoritative_watchdog": true,
+      "started_at": "2026-09-09T15:22:09.811639+00:00",
+      "status": "FAIL",
+      "timed_out": true,
+      "timeout_count": 1,
+      "timeout_seconds": 1800,
+      "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+      "transport_attempt_count": 1,
+      "wrapper_retry_count": 0
+    }
+  ],
+  "stop": {
+    "failed_invocation": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02",
+    "model_calls_completed": 2,
+    "status": "FAIL",
+    "stop_reason": "M12B_RUNTIME_FAILURE",
+    "wrapper_retry_count": 0
+  },
+  "timeout_count": 1,
+  "wrapper_retry_count": 0,
+  "actual_cli_header_and_elapsed": [
+    {
+      "context": "model-calls/run-1/context-01",
+      "started_at": "2026-09-09T15:03:16.283455+00:00",
+      "finished_at": "2026-09-09T15:22:09.762848+00:00",
+      "elapsed_seconds": 1133.479393,
+      "status": "PASS",
+      "failure_type": null,
+      "observed_runtime": {
+        "model": "gpt-6-astra",
+        "effort": "xhigh"
+      },
+      "session_id": "01a086b1-d78d-7002-8553-41ce6bf86303",
+      "internal_retry_events": [
+        "2026-09-09T15:19:24.548222Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 188ms)... turn_id=01a086b1-d7a1-76d0-a2bd-c030f8500bd1 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake"
+      ],
+      "receipt_sha256": "29b04835956fa8b02a99a2dc07dc9bbe979b9b6065bc6189708cdd0c27e4477c",
+      "output_exists": true
+    },
+    {
+      "context": "model-calls/run-1/context-02",
+      "started_at": "2026-09-09T15:22:09.811639+00:00",
+      "finished_at": "2026-09-09T15:52:09.821574+00:00",
+      "elapsed_seconds": 1800.009935,
+      "status": "FAIL",
+      "failure_type": "MODEL_TIMEOUT",
+      "observed_runtime": {
+        "model": "gpt-6-astra",
+        "effort": "xhigh"
+      },
+      "session_id": "01a086c3-2383-76f1-ab51-9c601df7157b",
+      "internal_retry_events": [
+        "2026-09-09T15:26:23.270844Z  WARN codex_core::responses_retry: stream disconnected - retrying sampling request (1/5 in 201ms)... turn_id=01a086c3-239b-7762-8fef-d26112c57aa3 retries=1 max_retries=5 sampling_error=stream disconnected before completion: WebSocket protocol error: Connection reset without closing handshake"
+      ],
+      "receipt_sha256": "7bc75ec628c0972a11c9ac1bc9bf95fff0b1836f0127d905fe95386484f43fa7",
+      "output_exists": false
+    }
+  ],
+  "cli_internal_retry_event_count": 2,
+  "top_level_invocation_count": 2,
+  "backend_sampling_request_count": "NOT_MEASURED",
+  "receipt_transport_attempt_count_note": "Original receipt field counts the single wrapper invocation, not every CLI-internal sampling retry. Two internal retry warnings are separately preserved.",
+  "failure_classification": "MODEL_TIMEOUT_AFTER_WEBSOCKET_RESET_WARNING",
+  "root_cause": "NOT_ESTABLISHED beyond observed connection-reset warning and watchdog timeout; no evidence to attribute to capacity, schema, financial validator, or source data.",
+  "remaining_model_processes_after_watchdog": 0,
+  "orphan_check": "pgrep matching M12F runner/CLI returned no process after completion",
+  "frozen_code_config_hash_check": {
+    "code_file_sha256": [],
+    "config_file_sha256": []
+  }
+}

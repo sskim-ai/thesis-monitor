@@ -1,0 +1,287 @@
+{
+  "a": {
+    "average_character_count": 619.31,
+    "contract": "structured-autonomy-message-quality-v2-shadow",
+    "errors": [
+      "cross_ticker_substantive_repetition"
+    ],
+    "max_character_count": 672,
+    "message_count": 16,
+    "repeated_substantive_span_count": 9,
+    "repeated_substantive_spans": [
+      "BUY 쪽: 영업흑자를 유지하면서 순이익 전환과 사업 KPI 개선이 확인되면 상향 재평가한다.",
+      "BUY 쪽: 후속 공시에서도 영업 및 순이익 흑자가 유지되고 세부 사업 KPI가 확인되면 상향 재평가할 수 있다.",
+      "SELL 쪽: 후속 공시에서 영업손익이나 순손익이 적자로 전환되거나 매출 기반이 약화되면 하향 재평가가 필요하다.",
+      "SELL 쪽: 후속 공식 공시에서 매출 기반과 귀속이익이 함께 약화되면 하향 재평가한다.",
+      "공식 매출과 영업·순이익 흑자가 방향을 지지하지만 지속성 확인은 더 필요하다.",
+      "영업흑자 유지와 순이익 전환, 세부 사업 KPI 개선이 확인돼야 한다.",
+      "현재 실적은 긍정적이나 가치평가와 실행 근거가 부족해 신규 관점에서는 확인이 우선이다.",
+      "현재 흑자는 긍정적이나 신규 관점에는 지속성 확인이 필요하다.",
+      "후속 공시에서 영업 및 순이익 흑자와 매출 기반이 유지되고 세부 사업 KPI가 확인돼야 한다."
+    ],
+    "repetition_taxonomy": {
+      "ACTION_CONTEXT_WRAPPER_REPEAT": 20,
+      "MATERIAL_SPAM_REPEAT": 9,
+      "MODEL_OWNED_SUBSTANTIVE_REPEAT": 172,
+      "RENDERER_OWNED_REPEAT": 197,
+      "REQUIRED_SAFETY_REPEAT": 0
+    },
+    "rows": [
+      {
+        "character_count": 640,
+        "duplicate_substantive_lines": [],
+        "ticker": "NU",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 643,
+        "duplicate_substantive_lines": [],
+        "ticker": "LNG",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 646,
+        "duplicate_substantive_lines": [],
+        "ticker": "TCI",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 652,
+        "duplicate_substantive_lines": [],
+        "ticker": "WMG",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 570,
+        "duplicate_substantive_lines": [],
+        "ticker": "043100",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 606,
+        "duplicate_substantive_lines": [],
+        "ticker": "025000",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 589,
+        "duplicate_substantive_lines": [],
+        "ticker": "131030",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 569,
+        "duplicate_substantive_lines": [],
+        "ticker": "372910",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 672,
+        "duplicate_substantive_lines": [],
+        "ticker": "130740",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 671,
+        "duplicate_substantive_lines": [],
+        "ticker": "045340",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 668,
+        "duplicate_substantive_lines": [],
+        "ticker": "006910",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 603,
+        "duplicate_substantive_lines": [],
+        "ticker": "288980",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 578,
+        "duplicate_substantive_lines": [],
+        "ticker": "023440",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 595,
+        "duplicate_substantive_lines": [],
+        "ticker": "064820",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 595,
+        "duplicate_substantive_lines": [],
+        "ticker": "001440",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 612,
+        "duplicate_substantive_lines": [],
+        "ticker": "073490",
+        "validation": "PASS"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "common_evidence_limitations_may_explain_some_repetition_but_do_not_resolve_it": true,
+  "contract": "first-a-message-quality-scope-v1",
+  "derived_original_message_export": {
+    "derivative_not_model_output": true,
+    "path": "derived/first-a-original-rendered-messages.json",
+    "row_count": 32
+  },
+  "execution_code_sha256": "4c29cc1545518f448180e0b8adf6efa2e3472ae64b4b2f95003965b0d4320713",
+  "first": {
+    "average_character_count": 622.31,
+    "contract": "structured-autonomy-message-quality-v2-shadow",
+    "errors": [
+      "cross_ticker_substantive_repetition"
+    ],
+    "max_character_count": 693,
+    "message_count": 16,
+    "repeated_substantive_span_count": 14,
+    "repeated_substantive_spans": [
+      "BUY 쪽: 영업·순이익 흑자가 반복되고 세부 사업 지표가 지속성을 뒷받침할 경우 추가 상향 재평가한다.",
+      "BUY 쪽: 후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되면 상향 재평가한다.",
+      "BUY 쪽: 후속 공식 공시에서 흑자 지속과 이를 뒷받침하는 사업 KPI가 확인되면 상향 재평가한다.",
+      "SELL 쪽: 영업 또는 순이익이 적자로 전환하거나 매출과 핵심 사업 지표가 약화될 경우 하향 재평가한다.",
+      "SELL 쪽: 후속 공식 공시에서 매출 기반이 약해지거나 순이익이 손실로 전환되면 하향 재평가한다.",
+      "SELL 쪽: 후속 공식 공시에서 매출 기반이 약화되거나 영업손익과 순손익이 적자로 전환되면 하향 재평가한다.",
+      "매출을 바탕으로 영업·순이익 흑자가 확인돼 사업 방향은 긍정적이다.",
+      "본업 흑자가 최종손익 개선으로 연결되는지 확인이 필요하다.",
+      "영업·순이익 흑자의 반복성과 세부 사업 지표가 확인되고 검증 가능한 밸류에이션 근거가 확보되는 경우다.",
+      "이유: 허용된 눌림목과 확인 기준이 모두 없어 가격 기반 진입 방식은 비어 있다.",
+      "현재 수익성은 보유 논리를 지지하지만 지속성 확인은 필요하다.",
+      "현재 실적은 긍정적이지만 지속성과 밸류에이션 확인이 필요하다.",
+      "현재 흑자의 지속, 세부 사업 KPI, 안전한 밸류에이션 근거가 함께 확인되는 경우다.",
+      "후속 공식 공시에서 매출과 순이익의 지속성 및 핵심 사업 KPI 실행이 확인되는 경우다."
+    ],
+    "repetition_taxonomy": {
+      "ACTION_CONTEXT_WRAPPER_REPEAT": 11,
+      "MATERIAL_SPAM_REPEAT": 14,
+      "MODEL_OWNED_SUBSTANTIVE_REPEAT": 181,
+      "RENDERER_OWNED_REPEAT": 198,
+      "REQUIRED_SAFETY_REPEAT": 0
+    },
+    "rows": [
+      {
+        "character_count": 652,
+        "duplicate_substantive_lines": [],
+        "ticker": "NU",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 661,
+        "duplicate_substantive_lines": [],
+        "ticker": "LNG",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 693,
+        "duplicate_substantive_lines": [],
+        "ticker": "TCI",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 666,
+        "duplicate_substantive_lines": [],
+        "ticker": "WMG",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 615,
+        "duplicate_substantive_lines": [],
+        "ticker": "043100",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 687,
+        "duplicate_substantive_lines": [],
+        "ticker": "025000",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 685,
+        "duplicate_substantive_lines": [],
+        "ticker": "131030",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 671,
+        "duplicate_substantive_lines": [],
+        "ticker": "372910",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 626,
+        "duplicate_substantive_lines": [],
+        "ticker": "130740",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 609,
+        "duplicate_substantive_lines": [],
+        "ticker": "045340",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 602,
+        "duplicate_substantive_lines": [],
+        "ticker": "006910",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 606,
+        "duplicate_substantive_lines": [],
+        "ticker": "288980",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 502,
+        "duplicate_substantive_lines": [],
+        "ticker": "023440",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 556,
+        "duplicate_substantive_lines": [],
+        "ticker": "064820",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 579,
+        "duplicate_substantive_lines": [],
+        "ticker": "001440",
+        "validation": "PASS"
+      },
+      {
+        "character_count": 547,
+        "duplicate_substantive_lines": [],
+        "ticker": "073490",
+        "validation": "PASS"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "gate_role_evidence": {
+    "a_execution_status": "PASS",
+    "a_message_quality_status": "FAIL",
+    "first_execution_status": "PASS",
+    "first_message_quality_status": "FAIL",
+    "progression_instruction_hard_gates": [
+      "ownership",
+      "renderer",
+      "hard_safety"
+    ],
+    "quality_evaluator_classification_reproduced": true
+  },
+  "important_issuer_specific_evidence_omission_status": "NOT_MEASURED",
+  "message_quality_gate_role_at_execution": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+  "precommitted_instruction_sha256": "4b6d6f858d3518f7a813c3722af9e0ddad06cc6be89c29f83a1469cb9fe707a1",
+  "prompt_or_renderer_tuning_against_exposed_cohort": 0,
+  "repeated_span_metric_is_not_failed_subject_count": true,
+  "status": "UNRESOLVED_MESSAGE_QUALITY_FAIL_PRESERVED"
+}

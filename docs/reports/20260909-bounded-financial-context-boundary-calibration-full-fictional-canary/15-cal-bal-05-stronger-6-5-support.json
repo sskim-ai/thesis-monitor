@@ -1,0 +1,15 @@
+{
+  "facts": [
+    "minimum positive direction",
+    "materially stronger persistence, visibility or valuation support"
+  ],
+  "id": "CAL-BAL-05",
+  "limitation": "stronger support actually established",
+  "rule": "stronger_support",
+  "selected_buy": 6.5,
+  "selected_contract_buy": 6.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    6.5
+  ]
+}

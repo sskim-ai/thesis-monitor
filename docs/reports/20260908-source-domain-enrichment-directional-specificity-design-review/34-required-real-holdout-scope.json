@@ -1,0 +1,16 @@
+{
+  "contract": "m4-required-real-holdout-scope-v1",
+  "historical_retired_cohort_reuse": false,
+  "real_holdout_runs_in_m4": 0,
+  "required": true,
+  "required_cases": [
+    "dual-market",
+    "financial-sector N/A",
+    "capital-intensive negative post-PPE cash conversion",
+    "working-capital divergence",
+    "non-operating attribution",
+    "missing domain remains nonnegative"
+  ],
+  "status": "FUTURE_REQUIRED",
+  "timing": "after model validation contract freeze"
+}

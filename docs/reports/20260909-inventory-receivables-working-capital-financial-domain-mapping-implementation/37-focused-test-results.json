@@ -1,0 +1,10 @@
+{
+  "command": "$HOME/Codex/thesis-monitor/.venv/bin/pytest -q tests/test_working_capital_financial_mapping_service.py tests/test_working_capital_evidence_service.py tests/test_working_capital_core_service.py tests/test_debt_liquidity_financial_mapping_service.py tests/test_source_class_financial_mapping_service.py tests/test_opendart_financial_recovery_service.py tests/test_opendart_xbrl_service.py tests/test_financial_context_adapter_service.py tests/test_financial_lineage_projection_service.py tests/test_decision_evidence_financial_context.py tests/test_cash_flow_capital_efficiency_service.py tests/test_official_cash_flow_service.py tests/test_cross_market_decision_engine.py tests/test_cash_flow_user_visible_service.py tests/test_cash_flow_user_visible_integration.py tests/test_coldstart_fundamental_enrichment_service.py tests/test_nonproduction_monitoring_lifecycle_service.py tests/test_nonproduction_lifecycle_decision_service.py",
+  "contract": "m10-focused-test-results-v1",
+  "duration_seconds": 8.13,
+  "failed": 0,
+  "live_provider_tests": 0,
+  "model_tests": 0,
+  "passed": 339,
+  "result": "PASS"
+}

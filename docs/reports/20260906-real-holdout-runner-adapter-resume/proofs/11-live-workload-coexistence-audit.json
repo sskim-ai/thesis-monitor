@@ -1,0 +1,40 @@
+{
+  "contract": "natural-live-workload-coexistence-guard-v1",
+  "events": [
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "core-batch-01",
+      "observed_at": "2026-09-06T13:30:21.820512+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "core-batch-02",
+      "observed_at": "2026-09-06T13:32:57.724177+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    },
+    {
+      "action": "CONTINUE",
+      "active_natural_job_count": 0,
+      "batch_id": "core-batch-03",
+      "observed_at": "2026-09-06T13:35:32.906684+00:00",
+      "other_codex_exec_count": 0,
+      "scheduled_window": null,
+      "stage": "DIRECTIONAL_CORE",
+      "subject_count": 4
+    }
+  ],
+  "live_workload_contention_risk": 0,
+  "natural_live_cancel_count": 0,
+  "scheduler_mutation": 0,
+  "shadow_pause_for_natural_live": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,22 @@
+{
+  "contract": "m12s-new-buyer-stance-contract-audit-v1",
+  "enum_contract_present": true,
+  "explicit_absolute_direction_mapping": false,
+  "explicit_balance_strength_mapping": false,
+  "explicit_confirmation_mapping": false,
+  "explicit_valuation_mapping": false,
+  "fic_fin_01_sequence": [
+    "ATTRACTIVE",
+    "WAIT",
+    "ATTRACTIVE"
+  ],
+  "fic_fin_02_sequence": [
+    "AVOID",
+    "WAIT",
+    "WAIT"
+  ],
+  "pre_timing_owner_present": true,
+  "same_valuation_unknown_all_repetitions": true,
+  "schema_owner_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+  "status": "UNDER_SPECIFIED"
+}

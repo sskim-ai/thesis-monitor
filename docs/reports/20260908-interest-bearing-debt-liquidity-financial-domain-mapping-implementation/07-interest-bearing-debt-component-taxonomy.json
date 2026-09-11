@@ -1,0 +1,140 @@
+{
+  "canonical_component_class_count": 10,
+  "contract": "m9-interest-bearing-debt-component-taxonomy-v1",
+  "derived_total_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+  "forbidden_automatic_components": [
+    "accounts_payable",
+    "lease_liabilities",
+    "provisions",
+    "contract_liabilities",
+    "tax_liabilities",
+    "pension_liabilities",
+    "derivative_liabilities",
+    "total_current_liabilities",
+    "total_noncurrent_liabilities",
+    "total_liabilities"
+  ],
+  "fuzzy_matching": false,
+  "registered_exact_semantic_count": 17,
+  "rows": [
+    {
+      "canonical_metric": "short_term_borrowings",
+      "component_group": "short_term_borrowings",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:ShortTermBorrowings"
+    },
+    {
+      "canonical_metric": "current_interest_bearing_debt",
+      "component_group": "current_debt_aggregate",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:DebtCurrent"
+    },
+    {
+      "canonical_metric": "current_portion_of_long_term_debt",
+      "component_group": "current_portion_long_term_debt",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:LongTermDebtCurrent"
+    },
+    {
+      "canonical_metric": "long_term_borrowings",
+      "component_group": "long_term_borrowings",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:LongTermDebtNoncurrent"
+    },
+    {
+      "canonical_metric": "notes_payable_current",
+      "component_group": "notes_payable_current",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:NotesPayableCurrent"
+    },
+    {
+      "canonical_metric": "notes_payable_noncurrent",
+      "component_group": "notes_payable_noncurrent",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:NotesPayableNoncurrent"
+    },
+    {
+      "canonical_metric": "convertible_debt_current",
+      "component_group": "convertible_debt_current",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:ConvertibleDebtCurrent"
+    },
+    {
+      "canonical_metric": "convertible_debt_noncurrent",
+      "component_group": "convertible_debt_noncurrent",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "us-gaap:ConvertibleDebtNoncurrent"
+    },
+    {
+      "canonical_metric": "short_term_borrowings",
+      "component_group": "short_term_borrowings",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:ShorttermBorrowings"
+    },
+    {
+      "canonical_metric": "current_interest_bearing_debt",
+      "component_group": "current_borrowings_aggregate",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings"
+    },
+    {
+      "canonical_metric": "current_interest_bearing_debt",
+      "component_group": "current_borrowings_aggregate",
+      "priority": 95,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:CurrentLoansReceivedAndCurrentPortionOfNoncurrentLoansReceived"
+    },
+    {
+      "canonical_metric": "short_term_borrowings",
+      "component_group": "short_term_borrowings",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "dart:CurrentLoansReceived"
+    },
+    {
+      "canonical_metric": "current_portion_of_long_term_debt",
+      "component_group": "current_portion_long_term_debt",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:CurrentPortionOfLongtermBorrowings"
+    },
+    {
+      "canonical_metric": "long_term_borrowings",
+      "component_group": "long_term_borrowings",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:LongtermBorrowings"
+    },
+    {
+      "canonical_metric": "long_term_borrowings",
+      "component_group": "long_term_borrowings",
+      "priority": 95,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentLoansReceived"
+    },
+    {
+      "canonical_metric": "bonds_payable_current",
+      "component_group": "bonds_payable_current",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "dart:CurrentPortionOfNoncurrentBondsIssued"
+    },
+    {
+      "canonical_metric": "bonds_payable_noncurrent",
+      "component_group": "bonds_payable_noncurrent",
+      "priority": 100,
+      "role": "DEBT_COMPONENT",
+      "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentBondsIssued"
+    }
+  ]
+}

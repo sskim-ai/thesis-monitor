@@ -1,0 +1,64 @@
+{
+  "bounded_candidate_count": 5,
+  "candidate_rows": [
+    {
+      "candidate_rank": 1,
+      "company_name": "NVDA",
+      "exchange": "ND",
+      "industry": "",
+      "primary_or_reserve": "INITIAL",
+      "sector": "",
+      "ticker": "NVDA"
+    },
+    {
+      "candidate_rank": 2,
+      "company_name": "JPM",
+      "exchange": "NY",
+      "industry": "",
+      "primary_or_reserve": "INITIAL",
+      "sector": "",
+      "ticker": "JPM"
+    },
+    {
+      "candidate_rank": 3,
+      "company_name": "WMT",
+      "exchange": "NY",
+      "industry": "",
+      "primary_or_reserve": "INITIAL",
+      "sector": "",
+      "ticker": "WMT"
+    },
+    {
+      "candidate_rank": 4,
+      "company_name": "BRK-B",
+      "exchange": "NY",
+      "industry": "",
+      "primary_or_reserve": "INITIAL",
+      "sector": "",
+      "ticker": "BRK-B"
+    },
+    {
+      "candidate_rank": 5,
+      "company_name": "MSFT",
+      "exchange": "ND",
+      "industry": "",
+      "primary_or_reserve": "RESERVE",
+      "sector": "",
+      "ticker": "MSFT"
+    }
+  ],
+  "contract": "us-candidate-manifest-v1",
+  "initial_candidates": [
+    "NVDA",
+    "JPM",
+    "WMT",
+    "BRK-B"
+  ],
+  "market": "us",
+  "model_calls": 0,
+  "ordered_reserve": [
+    "MSFT"
+  ],
+  "status": "FROZEN",
+  "target_count": 4
+}

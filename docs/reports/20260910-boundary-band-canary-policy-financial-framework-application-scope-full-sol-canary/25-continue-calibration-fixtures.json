@@ -1,0 +1,70 @@
+{
+  "rows": [
+    {
+      "class": "CALIBRATION_OBSERVATION",
+      "condition": "adjacent_exact_target_deviation",
+      "id": "CONTINUE-01",
+      "observed": {
+        "classification": "CALIBRATION_OBSERVATION",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [],
+        "stop_generation": false
+      },
+      "status": "PASS",
+      "stop": false
+    },
+    {
+      "class": "CALIBRATION_OBSERVATION",
+      "condition": "fic_fin_05_hold_sell_lean",
+      "id": "CONTINUE-02",
+      "observed": {
+        "classification": "CALIBRATION_OBSERVATION",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [],
+        "stop_generation": false
+      },
+      "status": "PASS",
+      "stop": false
+    },
+    {
+      "class": "CALIBRATION_OBSERVATION",
+      "condition": "fic_fin_05_minimum_sell",
+      "id": "CONTINUE-03",
+      "observed": {
+        "classification": "CALIBRATION_OBSERVATION",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [],
+        "stop_generation": false
+      },
+      "status": "PASS",
+      "stop": false
+    },
+    {
+      "class": "CALIBRATION_OBSERVATION",
+      "condition": "new_buyer_stance_variance",
+      "id": "CONTINUE-04",
+      "observed": {
+        "classification": "CALIBRATION_OBSERVATION",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [],
+        "stop_generation": false
+      },
+      "status": "PASS",
+      "stop": false
+    },
+    {
+      "class": "CALIBRATION_OBSERVATION",
+      "condition": "holder_stance_variance",
+      "id": "CONTINUE-05",
+      "observed": {
+        "classification": "CALIBRATION_OBSERVATION",
+        "objective_semantic_errors": [],
+        "runtime_or_schema_errors": [],
+        "stop_generation": false
+      },
+      "status": "PASS",
+      "stop": false
+    }
+  ],
+  "status": "PASS"
+}

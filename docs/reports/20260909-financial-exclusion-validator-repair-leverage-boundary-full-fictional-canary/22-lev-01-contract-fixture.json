@@ -1,0 +1,10 @@
+{
+  "expected": "HOLD_SELL_LEAN_5_5",
+  "id": "LEV-01",
+  "pattern": "complete high debt + thin cash + stable operating profit + refinancing/maturity unknown",
+  "selected_buy": 4.5,
+  "supportable_buy_buckets": [
+    4,
+    4.5
+  ]
+}

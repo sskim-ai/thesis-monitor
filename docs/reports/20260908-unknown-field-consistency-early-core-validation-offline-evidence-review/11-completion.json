@@ -1,0 +1,35 @@
+{
+  "candidate_mutations": 0,
+  "context_semantic_failures": 1,
+  "contract": "unknown-field-consistency-offline-evidence-review-v1",
+  "deployment": 0,
+  "early_core_detection_result": "PASS",
+  "formal_current_cohort_stability": "NOT_MEASURED",
+  "generated_at": "2026-09-08T05:44:34.652842+00:00",
+  "historical_c_attempted_contexts": 5,
+  "historical_c_completed_full_runs": 0,
+  "historical_invalid_output_still_rejected": true,
+  "implementation_result": "PASS",
+  "integration_inventory_completion": "COMPLETE",
+  "main_merge": 0,
+  "message_quality_original_advisory": "RECORDED",
+  "message_quality_review_completion": "COMPLETE",
+  "model_calls": {
+    "fictional": 0,
+    "judge": 0,
+    "real": 0
+  },
+  "model_emission_effectiveness": "NOT_MEASURED",
+  "next_scope": "NONPRODUCTION_INTEGRATION_AND_DECISION_MESSAGE_QUALITY_REVIEW",
+  "offline_regression_result": "PASS",
+  "ownership_generalization": "NOT_ESTABLISHED",
+  "production_db_send_registration_mutations": [
+    0,
+    0,
+    0
+  ],
+  "production_readiness": "NOT_READY",
+  "provider_source_fetches": 0,
+  "status": "CODE_AND_OFFLINE_EVIDENCE_REVIEW_COMPLETE",
+  "transport_failures": 0
+}

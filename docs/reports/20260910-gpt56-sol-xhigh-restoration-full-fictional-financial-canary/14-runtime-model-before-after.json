@@ -1,0 +1,6 @@
+{
+  "after": "gpt-5.6-sol/xhigh",
+  "before": "gpt-6-astra/xhigh",
+  "fallback": null,
+  "status": "PASS"
+}

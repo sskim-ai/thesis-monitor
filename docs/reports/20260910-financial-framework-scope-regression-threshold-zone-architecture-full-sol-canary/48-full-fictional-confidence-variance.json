@@ -1,0 +1,78 @@
+{
+  "rows": [
+    {
+      "ticker": "FIC-FIN-01",
+      "unique_count": 1,
+      "values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-02",
+      "unique_count": 1,
+      "values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-03",
+      "unique_count": 1,
+      "values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-04",
+      "unique_count": 1,
+      "values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-05",
+      "unique_count": 1,
+      "values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-06",
+      "unique_count": 2,
+      "values": [
+        "LOW",
+        "MEDIUM",
+        "MEDIUM"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-07",
+      "unique_count": 1,
+      "values": [
+        "MEDIUM",
+        "MEDIUM",
+        "MEDIUM"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-08",
+      "unique_count": 1,
+      "values": [
+        "LOW",
+        "LOW",
+        "LOW"
+      ]
+    }
+  ],
+  "status": "MEASURED",
+  "variance_subject_count": 1
+}

@@ -1,0 +1,56 @@
+{
+  "direction_neutral_paragraphs": [
+    "Independent corroboration adds a distinct economic fact. Multiple financial metrics sharing underlying cash-flow inputs, derivation lineage, or substantially overlapping source basis are not automatically independent corroboration for moving from a 5.5 lean to a 6.0 directional bucket. For example, operating cash flow and OCF less identified PPE cash outflow can describe overlapping economics. Judge the economic contribution, not the number of metrics or evidence references; apply this equally to positive and negative cases.",
+    "A material unresolved causal, reversibility, persistence, or critical-validation limit constrains justified directional strength without becoming negative evidence. When an anchor and support exist but such a limit leaves adjacent buckets reasonably supportable, apply the existing tie-break toward 5.0. Do not mechanically subtract strength for every Unknown or require HOLD solely from LOW confidence.",
+    "A financial or non-operating effect that improves reported net income while underlying operations remain broadly flat explains earnings composition; by itself it does not support a positive 5.5 lean. A positive lean needs a separate positive issuer-level operating/business, cash-conversion, balance-sheet, valuation, or other material anchor. Apply the same composition-versus-direction distinction on the negative side where appropriate. Do not assume that all non-operating gains are one-off or low quality.",
+    "6.0 is minimum directional support. A 6.5-or-stronger bucket needs evidence beyond that minimum which materially strengthens persistence, quality, visibility, independent corroboration, or valuation support. If an unresolved material confirmation leaves both 6.0 and 6.5 reasonably supportable, the existing tie-break selects 6.0. Apply this equally to BUY and SELL strength; missing one particular domain is not an automatic cap when distinct stronger support is actually established."
+  ],
+  "status": "PASS",
+  "symmetry_fixtures": [
+    {
+      "facts": [
+        "negative material anchor"
+      ],
+      "id": "CAL-NEG-LEAN",
+      "limitation": "distinct corroboration missing; adjacent fit remains reasonable",
+      "rule": "limiting_unknown",
+      "selected_buy": 4.5,
+      "selected_contract_buy": 4.5,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        4.0,
+        4.5
+      ]
+    },
+    {
+      "facts": [
+        "negative material anchor",
+        "distinct independent corroboration"
+      ],
+      "id": "CAL-NEG-MIN",
+      "limitation": "no material causal or persistence blocker",
+      "rule": "independent_support",
+      "selected_buy": 4.0,
+      "selected_contract_buy": 4.0,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        4.0
+      ]
+    },
+    {
+      "facts": [
+        "minimum negative direction",
+        "materially stronger persistence of negative economics"
+      ],
+      "id": "CAL-NEG-STRONG",
+      "limitation": "stronger support actually established",
+      "rule": "stronger_support",
+      "selected_buy": 3.5,
+      "selected_contract_buy": 3.5,
+      "status": "PASS",
+      "supportable_buy_buckets": [
+        3.5
+      ]
+    }
+  ]
+}

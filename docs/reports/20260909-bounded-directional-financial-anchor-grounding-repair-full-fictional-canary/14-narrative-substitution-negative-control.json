@@ -1,0 +1,46 @@
+{
+  "audit": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [
+      "material_financial_anchor_grounding_failure",
+      "working_capital_grounding_failure",
+      "narrative_substitution_failure"
+    ],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 0,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 1,
+    "material_financial_anchor_refs": [],
+    "material_grounding_required": true,
+    "narrative_only_duplicate_refs": [
+      "fictional:fixture:narrative-risk"
+    ],
+    "narrative_substitution_failure_count": 1,
+    "relevant_claim_count": 1,
+    "selected_financial_refs": [
+      "canonical:fixture:inventory",
+      "canonical:fixture:receivables"
+    ],
+    "status": "FAIL",
+    "used_financial_refs": [],
+    "valid": false,
+    "working_capital_checkpoint_count": 1,
+    "working_capital_grounding_failure_count": 1,
+    "working_capital_grounding_required": true
+  },
+  "candidate": {
+    "risk_context": {
+      "evidence_refs": [
+        "fictional:fixture:narrative-risk"
+      ],
+      "text": "재고와 매출채권이 연말 이후 증가했다."
+    }
+  },
+  "fixture_id": "narrative-only-substitution",
+  "selected_metrics_by_ref": {
+    "canonical:fixture:inventory": "inventory",
+    "canonical:fixture:receivables": "trade_accounts_receivable"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,17 @@
+{
+  "contract": "structured-autonomy-stability-gate-receipt-v1",
+  "generation_id": "20260905-uskr22-validator-night-20260905T161259Z-1a32918a3962",
+  "status": "NOT_MEASURED_STOPPED_B_GATE",
+  "runs": {
+    "first": {"validated": 22, "required": 22, "status": "PASS"},
+    "a": {"validated": 22, "required": 22, "status": "PASS"},
+    "b": {"validated": 17, "required": 22, "status": "FAIL"},
+    "c": {"validated": 0, "required": 22, "status": "NOT_RUN"}
+  },
+  "stable_count": null,
+  "boundary_uncertainty_count": null,
+  "unstable_count": null,
+  "majority_vote": 0,
+  "decision_averaging": 0,
+  "selective_ticker_rerun": 0
+}

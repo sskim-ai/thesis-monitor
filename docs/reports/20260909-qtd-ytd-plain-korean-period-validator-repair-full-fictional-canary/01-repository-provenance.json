@@ -1,0 +1,12 @@
+{
+  "base_sha": "6c1928846c25063b66662da6ff9465988ac44e98",
+  "branch": "codex/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary",
+  "contract": "m12d-repository-provenance-v1",
+  "fetched_origin": true,
+  "frozen_at": "2026-09-09T11:13:49Z",
+  "origin_main_sha": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "previous_branch_remote_sha": "6c1928846c25063b66662da6ff9465988ac44e98",
+  "status": "PASS",
+  "work_instruction_commit": "dd28946351e9a1517d1c50992c93265113efdba0",
+  "work_instruction_sha256": "b66da2dc8c051ee7601e120d5c05c23b987126006acc2f2ef67c23dc0ac9097e"
+}

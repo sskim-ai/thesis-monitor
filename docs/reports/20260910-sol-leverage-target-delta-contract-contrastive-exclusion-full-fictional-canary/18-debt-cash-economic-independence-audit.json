@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN",
+  "classification": "B",
+  "evidence_refs": {
+    "synthesis": "E03",
+    "complete_debt": "E05",
+    "thin_cash": "E06",
+    "counterevidence": "E01",
+    "unknown": "E08"
+  },
+  "reference_count_rule": false,
+  "conclusion": "A material complete-debt anchor plus current verified thin-cash corroboration jointly establishes present balance-sheet resilience pressure; E03 is synthesis, not an extra axis."
+}

@@ -1,0 +1,72 @@
+{
+  "allowed_common_equity_count": 32,
+  "contract": "expanded-canonical-us-universe-v1",
+  "excluded_non_common_security_count": 1,
+  "expanded_count": 0,
+  "expanded_rows": [],
+  "exposure_registry_issuer_count": 61,
+  "exposure_ticker_count": 62,
+  "post_exposure_count": 5,
+  "post_exposure_rows": [
+    {
+      "company_name": "BRK-B",
+      "exchange": "NY",
+      "industry": "",
+      "market": "us",
+      "sector": "",
+      "security_type": "common_stock",
+      "source": "ohlcv_analyst_symbol_resolver_registry",
+      "source_sha256": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6",
+      "ticker": "BRK-B"
+    },
+    {
+      "company_name": "JPM",
+      "exchange": "NY",
+      "industry": "",
+      "market": "us",
+      "sector": "",
+      "security_type": "common_stock",
+      "source": "ohlcv_analyst_symbol_resolver_registry",
+      "source_sha256": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6",
+      "ticker": "JPM"
+    },
+    {
+      "company_name": "MSFT",
+      "exchange": "ND",
+      "industry": "",
+      "market": "us",
+      "sector": "",
+      "security_type": "common_stock",
+      "source": "ohlcv_analyst_symbol_resolver_registry",
+      "source_sha256": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6",
+      "ticker": "MSFT"
+    },
+    {
+      "company_name": "NVDA",
+      "exchange": "ND",
+      "industry": "",
+      "market": "us",
+      "sector": "",
+      "security_type": "common_stock",
+      "source": "ohlcv_analyst_symbol_resolver_registry",
+      "source_sha256": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6",
+      "ticker": "NVDA"
+    },
+    {
+      "company_name": "WMT",
+      "exchange": "NY",
+      "industry": "",
+      "market": "us",
+      "sector": "",
+      "security_type": "common_stock",
+      "source": "ohlcv_analyst_symbol_resolver_registry",
+      "source_sha256": "6cc8d7f38545a3abbe2fa882ef187ff7200d71a914d8b63e521a3917b6e226a6",
+      "ticker": "WMT"
+    }
+  ],
+  "raw_registry_count": 33,
+  "selection_uses_model_output": 0,
+  "selection_uses_source_outcome": 0,
+  "source": "ohlcv_analyst_symbol_resolver_registry",
+  "status": "FROZEN"
+}

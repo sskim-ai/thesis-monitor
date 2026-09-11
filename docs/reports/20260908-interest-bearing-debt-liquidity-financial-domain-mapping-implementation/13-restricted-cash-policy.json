@@ -1,0 +1,9 @@
+{
+  "combined_cash_direct_context_allowed": true,
+  "combined_only_net_debt_emitted": false,
+  "contract": "m9-restricted-cash-policy-v1",
+  "decision": "EXCLUDE_FROM_NET_DEBT_CASH_BASIS",
+  "net_debt_cash_basis_eligible": false,
+  "restricted_cash_direct_context_allowed": true,
+  "restricted_only_net_debt_emitted": false
+}

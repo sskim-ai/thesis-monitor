@@ -1,0 +1,25 @@
+{
+  "comparison_emission_count": 164,
+  "contract": "m7-compatible-prior-year-projection-v1",
+  "deduplication": "canonical_fact_id",
+  "missing_or_ambiguous_behavior": "comparison_absent",
+  "projected_prior_fact_count": 164,
+  "required_compatibility": [
+    "metric",
+    "currency",
+    "unit_scale",
+    "period_type",
+    "entity_scope",
+    "statement_basis",
+    "attribution_basis",
+    "issuer_identity_when_available",
+    "fiscal_relationship"
+  ],
+  "supported_period_types": [
+    "QTD",
+    "YTD",
+    "FY",
+    "POINT_IN_TIME"
+  ],
+  "synthetic_prior_fact_created": false
+}

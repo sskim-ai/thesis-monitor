@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_sol_leverage_target_delta_m12y.py",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_positive_stronger_bucket_m12x.py",
+    "tests/test_sol_restoration_m12w.py",
+    "tests/test_financial_exclusion_leverage_m12f.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
+  ],
+  "finished_at": "2026-09-10T04:25:50.543195+00:00",
+  "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/focused.txt",
+  "output_sha256": "5d0dfdc8f149aac5eea2a6c7accbe2f824e10ebb4c42a83f0c7e1344e9a29944",
+  "returncode": 0,
+  "started_at": "2026-09-10T04:25:45.988211+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

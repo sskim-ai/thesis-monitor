@@ -1,0 +1,14 @@
+{
+  "ambiguous_context_policy": "BLOCK_NO_FIRST_MATCH",
+  "conflict_count": 0,
+  "contract": "m8-source-precedence-and-dedup-contract-v1",
+  "deduplicated_count": 0,
+  "duplicate_candidate_count": 0,
+  "material_conflict_policy": "BLOCK_DO_NOT_AVERAGE",
+  "precedence": [
+    "official_xbrl_exact_context",
+    "CFS_before_OFS",
+    "latest_authoritative_filing_version"
+  ],
+  "source_conflict_blocked_count": 0
+}

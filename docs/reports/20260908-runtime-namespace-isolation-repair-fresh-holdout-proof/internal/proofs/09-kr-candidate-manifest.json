@@ -1,0 +1,411 @@
+{
+  "bounded_candidate_count": 36,
+  "candidate_rows": [
+    {
+      "candidate_rank": 1,
+      "canonical_issuer_key": "opendart:corp:00149646",
+      "canonical_security_id": "kr:kospi:024110",
+      "company_name": "기업은행",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "024110"
+    },
+    {
+      "candidate_rank": 2,
+      "canonical_issuer_key": "opendart:corp:00331016",
+      "canonical_security_id": "kr:kosdaq:064850",
+      "company_name": "에프앤가이드",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "064850"
+    },
+    {
+      "candidate_rank": 3,
+      "canonical_issuer_key": "opendart:corp:00202060",
+      "canonical_security_id": "kr:kosdaq:053270",
+      "company_name": "구영테크",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "053270"
+    },
+    {
+      "candidate_rank": 4,
+      "canonical_issuer_key": "opendart:corp:00543204",
+      "canonical_security_id": "kr:kosdaq:078860",
+      "company_name": "아이오케이이엔엠",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "078860"
+    },
+    {
+      "candidate_rank": 5,
+      "canonical_issuer_key": "opendart:corp:00526599",
+      "canonical_security_id": "kr:kospi:145720",
+      "company_name": "덴티움",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "145720"
+    },
+    {
+      "candidate_rank": 6,
+      "canonical_issuer_key": "opendart:corp:01110058",
+      "canonical_security_id": "kr:kosdaq:199730",
+      "company_name": "바이오인프라",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "199730"
+    },
+    {
+      "candidate_rank": 7,
+      "canonical_issuer_key": "opendart:corp:00398668",
+      "canonical_security_id": "kr:kosdaq:065510",
+      "company_name": "휴비츠",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "065510"
+    },
+    {
+      "candidate_rank": 8,
+      "canonical_issuer_key": "opendart:corp:00866451",
+      "canonical_security_id": "kr:kosdaq:396470",
+      "company_name": "워트",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "396470"
+    },
+    {
+      "candidate_rank": 9,
+      "canonical_issuer_key": "opendart:corp:00533191",
+      "canonical_security_id": "kr:kosdaq:082800",
+      "company_name": "비보존 제약",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "082800"
+    },
+    {
+      "candidate_rank": 10,
+      "canonical_issuer_key": "opendart:corp:01276327",
+      "canonical_security_id": "kr:kosdaq:299900",
+      "company_name": "위지윅스튜디오",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "299900"
+    },
+    {
+      "candidate_rank": 11,
+      "canonical_issuer_key": "opendart:corp:00110875",
+      "canonical_security_id": "kr:kosdaq:020180",
+      "company_name": "대신정보통신",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "020180"
+    },
+    {
+      "candidate_rank": 12,
+      "canonical_issuer_key": "opendart:corp:00799539",
+      "canonical_security_id": "kr:kosdaq:122310",
+      "company_name": "제노레이",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "122310"
+    },
+    {
+      "candidate_rank": 13,
+      "canonical_issuer_key": "opendart:corp:01110474",
+      "canonical_security_id": "kr:kosdaq:298060",
+      "company_name": "풍전약품",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "298060"
+    },
+    {
+      "candidate_rank": 14,
+      "canonical_issuer_key": "opendart:corp:01528141",
+      "canonical_security_id": "kr:kosdaq:417200",
+      "company_name": "LS머트리얼즈",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "417200"
+    },
+    {
+      "candidate_rank": 15,
+      "canonical_issuer_key": "opendart:corp:00113128",
+      "canonical_security_id": "kr:kosdaq:023910",
+      "company_name": "대한약품",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "023910"
+    },
+    {
+      "candidate_rank": 16,
+      "canonical_issuer_key": "opendart:corp:00303192",
+      "canonical_security_id": "kr:kosdaq:066900",
+      "company_name": "디에이피",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "066900"
+    },
+    {
+      "candidate_rank": 17,
+      "canonical_issuer_key": "opendart:corp:00442570",
+      "canonical_security_id": "kr:kosdaq:079370",
+      "company_name": "제우스",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "079370"
+    },
+    {
+      "candidate_rank": 18,
+      "canonical_issuer_key": "opendart:corp:01160363",
+      "canonical_security_id": "kr:kosdaq:247540",
+      "company_name": "에코프로비엠",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "247540"
+    },
+    {
+      "candidate_rank": 19,
+      "canonical_issuer_key": "opendart:corp:00997812",
+      "canonical_security_id": "kr:kosdaq:183300",
+      "company_name": "코미코",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "183300"
+    },
+    {
+      "candidate_rank": 20,
+      "canonical_issuer_key": "opendart:corp:01442115",
+      "canonical_security_id": "kr:kosdaq:950200",
+      "company_name": "소마젠",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "950200"
+    },
+    {
+      "candidate_rank": 21,
+      "canonical_issuer_key": "opendart:corp:00132637",
+      "canonical_security_id": "kr:kospi:014820",
+      "company_name": "동원시스템즈",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "014820"
+    },
+    {
+      "candidate_rank": 22,
+      "canonical_issuer_key": "opendart:corp:01565054",
+      "canonical_security_id": "kr:kosdaq:318060",
+      "company_name": "그래피",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "318060"
+    },
+    {
+      "candidate_rank": 23,
+      "canonical_issuer_key": "opendart:corp:00755739",
+      "canonical_security_id": "kr:kosdaq:106240",
+      "company_name": "파인테크닉스",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "106240"
+    },
+    {
+      "candidate_rank": 24,
+      "canonical_issuer_key": "opendart:corp:01152470",
+      "canonical_security_id": "kr:kosdaq:263750",
+      "company_name": "펄어비스",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "263750"
+    },
+    {
+      "candidate_rank": 25,
+      "canonical_issuer_key": "opendart:corp:00956930",
+      "canonical_security_id": "kr:kospi:170900",
+      "company_name": "동아에스티",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "170900"
+    },
+    {
+      "candidate_rank": 26,
+      "canonical_issuer_key": "opendart:corp:00369213",
+      "canonical_security_id": "kr:kosdaq:039980",
+      "company_name": "폴라리스AI",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "039980"
+    },
+    {
+      "candidate_rank": 27,
+      "canonical_issuer_key": "opendart:corp:00144395",
+      "canonical_security_id": "kr:kospi:026960",
+      "company_name": "동서",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "026960"
+    },
+    {
+      "candidate_rank": 28,
+      "canonical_issuer_key": "opendart:corp:00761059",
+      "canonical_security_id": "kr:kosdaq:251970",
+      "company_name": "펌텍코리아",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "251970"
+    },
+    {
+      "candidate_rank": 29,
+      "canonical_issuer_key": "opendart:corp:00323868",
+      "canonical_security_id": "kr:kosdaq:053580",
+      "company_name": "웹케시",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "053580"
+    },
+    {
+      "candidate_rank": 30,
+      "canonical_issuer_key": "opendart:corp:00695969",
+      "canonical_security_id": "kr:kosdaq:094170",
+      "company_name": "동운아나텍",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "094170"
+    },
+    {
+      "candidate_rank": 31,
+      "canonical_issuer_key": "opendart:corp:00165343",
+      "canonical_security_id": "kr:kospi:003010",
+      "company_name": "혜인",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "003010"
+    },
+    {
+      "candidate_rank": 32,
+      "canonical_issuer_key": "opendart:corp:01354740",
+      "canonical_security_id": "kr:kosdaq:365900",
+      "company_name": "브이씨",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "365900"
+    },
+    {
+      "candidate_rank": 33,
+      "canonical_issuer_key": "opendart:corp:00125576",
+      "canonical_security_id": "kr:kospi:033250",
+      "company_name": "체시스",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "033250"
+    },
+    {
+      "candidate_rank": 34,
+      "canonical_issuer_key": "opendart:corp:00129387",
+      "canonical_security_id": "kr:kospi:000390",
+      "company_name": "SP삼화",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "000390"
+    },
+    {
+      "candidate_rank": 35,
+      "canonical_issuer_key": "opendart:corp:01559637",
+      "canonical_security_id": "kr:kosdaq:439580",
+      "company_name": "블루엠텍",
+      "exchange": "KOSDAQ",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "439580"
+    },
+    {
+      "candidate_rank": 36,
+      "canonical_issuer_key": "opendart:corp:00107677",
+      "canonical_security_id": "kr:kospi:002070",
+      "company_name": "비비안",
+      "exchange": "KOSPI",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "002070"
+    }
+  ],
+  "contract": "risk-carried-fresh-kr-candidate-manifest-v1",
+  "exclusion_registry_count": 133,
+  "initial_candidates": [
+    "024110",
+    "064850",
+    "053270",
+    "078860",
+    "145720",
+    "199730",
+    "065510",
+    "396470",
+    "082800",
+    "299900",
+    "020180",
+    "122310"
+  ],
+  "market": "kr",
+  "model_calls": 0,
+  "ordered_reserve": [
+    "298060",
+    "417200",
+    "023910",
+    "066900",
+    "079370",
+    "247540",
+    "183300",
+    "950200",
+    "014820",
+    "318060",
+    "106240",
+    "263750",
+    "170900",
+    "039980",
+    "026960",
+    "251970",
+    "053580",
+    "094170",
+    "003010",
+    "365900",
+    "033250",
+    "000390",
+    "439580",
+    "002070"
+  ],
+  "status": "FROZEN",
+  "target_count": 12
+}

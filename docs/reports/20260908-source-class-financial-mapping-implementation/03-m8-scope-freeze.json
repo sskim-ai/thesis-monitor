@@ -1,0 +1,17 @@
+{
+  "contract": "m8-scope-freeze-v1",
+  "excluded": [
+    "interest_bearing_debt_and_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "included": [
+    "hut_ppe_source_class_classification",
+    "skhy_foreign_issuer_source_class_classification",
+    "kr_opendart_exact_context_canonical_promotion"
+  ],
+  "model_calls_allowed": false,
+  "monitoring_resume_allowed": false,
+  "production_changes_allowed": false,
+  "provider_fetches_allowed": false
+}

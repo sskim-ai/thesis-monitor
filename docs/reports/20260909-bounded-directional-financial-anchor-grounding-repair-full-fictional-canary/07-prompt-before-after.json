@@ -1,0 +1,68 @@
+{
+  "added_lines": [
+    "Ground material financial_decision_context claims in 1–3 typed refs, not narrative alone; no force/list/double count. Keep QTD/YTD/FY/TTM/POINT_IN_TIME distinct; report both sides of conflicts. prior_year_comparable=same-period; prior_year_end=since year-end, never YoY."
+  ],
+  "after_sha256": "aba06bec1138074232994f7ef3a222982a6ad4a172a1a77d25f3dfcf346f681a",
+  "before_sha256": "f50b5a6aac4017f232927c3ffba98759f7dca0f5b6f4fe50b7f3b35937260251",
+  "bounded_grounding_clarification_count": 1,
+  "classification": "BOUNDED_TYPED_FINANCIAL_ALIAS_GROUNDING_CLARIFICATION",
+  "contract": "m12g-directional-prompt-before-after-v1",
+  "diff": [
+    "--- 6a870cd34dd9:scripts/directional_core_price_timing_holdout.py:_core_prompt",
+    "+++ working-tree:_core_prompt",
+    "@@ -16,7 +16,7 @@",
+    " ",
+    " Every claim and condition must cite only aliases supplied for that ticker. BUY or SELL requires material_directional_anchor_basis with at least one same-direction issuer-level business, earnings, cash-flow, capital, valuation, expectations, or structural-risk anchor. Macro alone is insufficient. Unknown evidence may limit confidence but is not automatically negative. Use directional_negative_basis only for DIRECTIONAL_NEGATIVE and cite a supplied confirmed negative fact there; keep it empty for CONFIDENCE_LIMIT and CONFIRMATION_REQUIRED, while contextual historical facts remain in evidence_refs. The fundamental new-buyer and holder stances are pre-timing views. Business invalidation and reevaluation conditions must be issuer-specific and non-price. Keep all prose concise and natural Korean. Do not put exact numbers in prose. Never state unsupported FCF yield, per-share FCF, EV/FCF, P/FCF, ROIC, CCC, DSO, DPO, or runway months.",
+    " ",
+    "-From financial_decision_context choose 1–3 distinct value-relevant anchors; no lists or revenue-profit double counts. Keep QTD/YTD/FY/TTM/POINT_IN_TIME distinct; report both sides of conflicts. prior_year_comparable=same-period; prior_year_end=since year-end, never YoY.",
+    "+Ground material financial_decision_context claims in 1–3 typed refs, not narrative alone; no force/list/double count. Keep QTD/YTD/FY/TTM/POINT_IN_TIME distinct; report both sides of conflicts. prior_year_comparable=same-period; prior_year_end=since year-end, never YoY.",
+    " ",
+    " ocf_less_ppe_capex is a cash-conversion proxy, never FCF. Net-debt/interest-bearing-debt totals need complete metrics. Debt parts/liabilities/restricted cash/inventory/receivables prove neither total nor deterioration. Invent no working-capital metrics or one-off/low-quality/normalized/adjusted earnings. Separate operating/non-operating/financial/tax effects. Bank/insurance forbids industrial templates. Missing/N/A/omitted is neutral; cannot raise SELL. No fixed financial scorecard.",
+    " "
+  ],
+  "directional_prompt_change_count": 1,
+  "function": "_core_prompt",
+  "model_input_freeze": {
+    "contract": "m12g-model-input-freeze-v1",
+    "model_prompt_hash_change_count": 2,
+    "prompt_rows": [
+      {
+        "after_normalized_sha256": "ae915ca5a674bc0b218fd8b6ca7459ff64e0f9e6aff5476eb6dd935d407ab8ba",
+        "before_normalized_sha256": "1499ea09fc767e53d83f8357545e219ca5f707a568831ce29c5c962e408c0fd1",
+        "changed": true,
+        "context": 1,
+        "grounding_marker_present": true
+      },
+      {
+        "after_normalized_sha256": "0429af8b16a3a144789680615fe79e18e56fd812907d418103ba44d3fb4fd2bf",
+        "before_normalized_sha256": "b34dfb2ac1b095ee9ca7f735d7fbdec8d41706a21570ea531b60937a4afdd4c7",
+        "changed": true,
+        "context": 2,
+        "grounding_marker_present": true
+      }
+    ],
+    "schema_change_count": 0,
+    "schema_rows": [
+      {
+        "after_normalized_sha256": "175540f94727b992fad5ca218ca0115cb215d1de6c33d6d50425a0c00a89c7b0",
+        "before_normalized_sha256": "175540f94727b992fad5ca218ca0115cb215d1de6c33d6d50425a0c00a89c7b0",
+        "changed": false,
+        "context": 1
+      },
+      {
+        "after_normalized_sha256": "1ed3e0f5749c84ce3721a866a8b5c04955c23ed8501a3f8432f72825b9bd57cd",
+        "before_normalized_sha256": "1ed3e0f5749c84ce3721a866a8b5c04955c23ed8501a3f8432f72825b9bd57cd",
+        "changed": false,
+        "context": 2
+      }
+    ],
+    "status": "PASS"
+  },
+  "path": "scripts/directional_core_price_timing_holdout.py",
+  "removed_line_count": 1,
+  "removed_lines": [
+    "From financial_decision_context choose 1–3 distinct value-relevant anchors; no lists or revenue-profit double counts. Keep QTD/YTD/FY/TTM/POINT_IN_TIME distinct; report both sides of conflicts. prior_year_comparable=same-period; prior_year_end=since year-end, never YoY."
+  ],
+  "replaced_anchor_instruction_count": 1,
+  "status": "PASS"
+}

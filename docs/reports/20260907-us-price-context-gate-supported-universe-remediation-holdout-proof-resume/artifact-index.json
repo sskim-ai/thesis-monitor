@@ -1,0 +1,1570 @@
+{
+  "artifact_hash_mismatch_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "contract": "us-price-context-holdout-artifact-index-v1",
+  "indexed_artifact_count": 195,
+  "rows": [
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1156,
+      "relative_path": "reports/01-repository-provenance.md",
+      "secret_scan_status": "PASS",
+      "sha256": "f11b529be1260da0b72549776810bf6755f25c45eccd283d067e14262365902c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/01-repository-provenance.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 503,
+      "relative_path": "reports/02-latest-result-integrity.md",
+      "secret_scan_status": "PASS",
+      "sha256": "4d71ab5579062b547709229eb62be1493ef52b2de5340fde6f431b1ce9f3d48d",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/02-latest-result-integrity.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 297,
+      "relative_path": "reports/03-current-us-readiness-baseline.md",
+      "secret_scan_status": "PASS",
+      "sha256": "39d74a579b2e18d082fd765a3eedb8534a4945aecd2ad117de70c75fb7076616",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/03-current-us-readiness-baseline.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 758,
+      "relative_path": "reports/04-price-context-gate-contract-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "d15277d27a7b430f4d07a160c62f48c992e08b994ec993994e0922d030f5a3da",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/04-price-context-gate-contract-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 336,
+      "relative_path": "reports/05-price-context-gate-classification.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3080a2263eb3f4e8eae9fe03774c2195d56f0161389b589d59aec312ebb57dc8",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/05-price-context-gate-classification.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 495,
+      "relative_path": "reports/06-price-context-gate-remediation-decision.md",
+      "secret_scan_status": "PASS",
+      "sha256": "5ffe8575241671cb38b6de2a5b829335bcaa5653c077ef06d67f876f5a089a98",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/06-price-context-gate-remediation-decision.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 487,
+      "relative_path": "reports/07-price-context-gate-tests-if-any.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3d5720a4e26b8ace483ca48bcac58f064eefb807bd96818c6bd665f8304fd366",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/07-price-context-gate-tests-if-any.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1080,
+      "relative_path": "reports/08-brkb-price-context-forensic.md",
+      "secret_scan_status": "PASS",
+      "sha256": "9793040b8d7a93a594eb05592060a9d5109a9897e5250e64d9bd7340e72b00b0",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/08-brkb-price-context-forensic.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 373,
+      "relative_path": "reports/09-brkb-price-remediation-decision.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3c627ad71b6bebb6d0bfd5099c051d7040c554d5bb3ca1c68fa4584173b69bc8",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/09-brkb-price-remediation-decision.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 340,
+      "relative_path": "reports/10-brkb-price-remediation-diff-if-any.md",
+      "secret_scan_status": "PASS",
+      "sha256": "bc981d09027516a13b06f6d66371b790316ed64a36040cfa21854d27775bd5d4",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/10-brkb-price-remediation-diff-if-any.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 855,
+      "relative_path": "reports/11-wmt-price-provider-resilience-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "8b4c57182afab165b2349dfba84ba280f4de7f35180531cacb8a75ee0bf51dca",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/11-wmt-price-provider-resilience-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 336,
+      "relative_path": "reports/12-wmt-price-fallback-decision.md",
+      "secret_scan_status": "PASS",
+      "sha256": "6442fbfb0db9dafe53d670d3460c8662d2aebcd8c098f0aeacc231908e2f2c20",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/12-wmt-price-fallback-decision.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 302,
+      "relative_path": "reports/13-wmt-price-remediation-diff-if-any.md",
+      "secret_scan_status": "PASS",
+      "sha256": "86246d7f574b6f90ee1372167cd76b2b8be43911c725f4990de873d52e7075b9",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/13-wmt-price-remediation-diff-if-any.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 545,
+      "relative_path": "reports/14-us-supported-universe-funnel.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3449b306f6b39064bedc964d3df5d713dc7cc5fcc5e8d3ebf411bac20e5cdd26",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/14-us-supported-universe-funnel.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 603,
+      "relative_path": "reports/15-us-supported-universe-root-cause.md",
+      "secret_scan_status": "PASS",
+      "sha256": "4b3bf02fd259c054e2e499dea10844428c9d7ffb16e9dc3fa3237ff5677eacc2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/15-us-supported-universe-root-cause.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 615,
+      "relative_path": "reports/16-expanded-canonical-us-universe.md",
+      "secret_scan_status": "PASS",
+      "sha256": "c7bb098e701c758d229834398f60b1c638045eaf4f777f2d7c606498f07a00e0",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/16-expanded-canonical-us-universe.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1153,
+      "relative_path": "reports/17-expanded-us-reserve-policy-v2.md",
+      "secret_scan_status": "PASS",
+      "sha256": "5cd89898403689b56a8343ca8fe9d19e98861e2bda478cc6577bc366e29312c2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/17-expanded-us-reserve-policy-v2.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 274,
+      "relative_path": "reports/18-expanded-us-reserve-manifest-v2.md",
+      "secret_scan_status": "PASS",
+      "sha256": "88012e91a478dfcffcb059b9303966e6f7e67aa1f42fb1730bd55dccdd951ce0",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/18-expanded-us-reserve-manifest-v2.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 378,
+      "relative_path": "reports/19-us-original-five-readiness-reevaluation.md",
+      "secret_scan_status": "PASS",
+      "sha256": "ece5a31d0af693f41b61424d07fa354e5fdf3efd5441f7e84ebdb5ce2a5b05f8",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/19-us-original-five-readiness-reevaluation.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 318,
+      "relative_path": "reports/20-us-expanded-reserve-coverage-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "efe0a80d83c748cafec6412c296c2adc9288caa1f11c4d39c11ba06bedc9bfd4",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/20-us-expanded-reserve-coverage-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 534,
+      "relative_path": "reports/21-final-us-target-decision.md",
+      "secret_scan_status": "PASS",
+      "sha256": "5d9527de99b80e392dae904c629a94fa77bda2ff27930dac2f077bd3ad6504c5",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/21-final-us-target-decision.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 566,
+      "relative_path": "reports/22-kr-pass-preservation.md",
+      "secret_scan_status": "PASS",
+      "sha256": "4b403f08dafd65061af1f75c5566b53d504b69466dca5b943db18860239bbd95",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/22-kr-pass-preservation.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 319,
+      "relative_path": "reports/23-final-us4-selection.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e647d449102627d2c6de5b2aaf56deffc08766d8b539ba55e72a5bb49ef82c81",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/23-final-us4-selection.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 433,
+      "relative_path": "reports/24-final-kr12-selection.md",
+      "secret_scan_status": "PASS",
+      "sha256": "20b35b2101c817b2ba8337983c49f68425f226cc89a430081c1dd7d00d90c3a3",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/24-final-kr12-selection.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 532,
+      "relative_path": "reports/25-fresh-combined-source-generation.md",
+      "secret_scan_status": "PASS",
+      "sha256": "80e04814795a1286aa1d719aa386afef6441c37517676d5b7d5432fc10697027",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/25-fresh-combined-source-generation.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 513,
+      "relative_path": "reports/26-combined-source-readiness-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "0c7d9049caeae515f4b3b9e180240fb949f2b35232d923edbba0baa1effbf74f",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/26-combined-source-readiness-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 286,
+      "relative_path": "reports/27-combined-source-identity-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e9e23e4dc372f77ece1b7281dc124e1fa491f32de81a54ab43bbf0ebc5c987dd",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/27-combined-source-identity-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 976,
+      "relative_path": "reports/28-new-source-lock.md",
+      "secret_scan_status": "PASS",
+      "sha256": "6555a671673be479adc36c9a6c524d71a71e6d4af90d465b13bce842c01106d1",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/28-new-source-lock.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1739,
+      "relative_path": "reports/29-new-holdout-precommit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "0287aa4e42ff7442ea1e4890a2de493dfae47badb689903ce52657f88889ba59",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/29-new-holdout-precommit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 356,
+      "relative_path": "reports/30-architecture-semantic-freeze.md",
+      "secret_scan_status": "PASS",
+      "sha256": "b265113c2c39ed5f0042a5bf653bf6a4195a23a36758feb34a89be20d6cb6446",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/30-architecture-semantic-freeze.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 363,
+      "relative_path": "reports/31-prompt-schema-freeze.md",
+      "secret_scan_status": "PASS",
+      "sha256": "b89ffb089af238d83b71f314d2958d14510a4625fa79027d49be829422a3659b",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/31-prompt-schema-freeze.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 545,
+      "relative_path": "reports/32-model-context-freeze.md",
+      "secret_scan_status": "PASS",
+      "sha256": "5df30c9d3fb6ad55a3d23fc11283365cde7b8c1a09787a18d58c419feb375986",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/32-model-context-freeze.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 816,
+      "relative_path": "reports/33-transport-topology-freeze.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e85fc92e5d2680afc2a664c42e18ecff972500265dc8d118b847abf827f8b903",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/33-transport-topology-freeze.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 497,
+      "relative_path": "reports/34-holdout-unseen-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "04e226d0aefb31d8723a5c96c2656a7bef825b2f84913dd827f3f50206d4e28e",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/34-holdout-unseen-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 492,
+      "relative_path": "reports/35-live-workload-coexistence-audit.md",
+      "secret_scan_status": "PASS",
+      "sha256": "87dea6a83f0ddb9df51dce9b3d806e921172c7ddf3bbbbe85ea614e46712c7af",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/35-live-workload-coexistence-audit.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 446,
+      "relative_path": "reports/36-first-execution-summary.md",
+      "secret_scan_status": "PASS",
+      "sha256": "1faa070e2d5b0ec2ee8f4436c73670c44077af1fa6656e9fc8b4603f9f4e50fb",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/36-first-execution-summary.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 294,
+      "relative_path": "reports/37-first-context-artifact-manifest.md",
+      "secret_scan_status": "PASS",
+      "sha256": "4ed88ad8c7298fb06538dbbcfaf46fb4aa10f6b1f12a53890bffd9bd3a063fc2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/37-first-context-artifact-manifest.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 303,
+      "relative_path": "reports/38-first-context-partial-semantic-audits.md",
+      "secret_scan_status": "PASS",
+      "sha256": "c336e36247ed2340b8ee004f9b3d26bf1751c376f07767bc1f878c82d939aed1",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/38-first-context-partial-semantic-audits.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 355,
+      "relative_path": "reports/39-first-ownership-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "cc3b88c18c80e3286bc225c2eaf0ba2984f64956315e9b1a4e11eab780a260a6",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/39-first-ownership-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 352,
+      "relative_path": "reports/40-first-renderer-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "de30f70d50bfadcc897aca5f3d872cf761de174251b6c7ed7530c4c84ec0fcf2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/40-first-renderer-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 361,
+      "relative_path": "reports/41-first-hard-safety-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "45c5edf2f2a5452ce00256ed622ffce7769d38bee5b464d5391e5db2aeac9a0b",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/41-first-hard-safety-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 336,
+      "relative_path": "reports/42-run-a-execution-summary.md",
+      "secret_scan_status": "PASS",
+      "sha256": "35df0bf2cc38cb3ff0527b15ea5ba3255d846a1ac8f4b21f7f9224de977776d2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/42-run-a-execution-summary.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 352,
+      "relative_path": "reports/43-run-a-context-artifact-manifest.md",
+      "secret_scan_status": "PASS",
+      "sha256": "d1789b8c33d3a791e02e5efd55a5671648e3865f95fba0436942bc340f35bf2c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/43-run-a-context-artifact-manifest.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 364,
+      "relative_path": "reports/44-run-a-context-partial-semantic-audits.md",
+      "secret_scan_status": "PASS",
+      "sha256": "8f064ecfd8f6dc3625ff003ce83dee1d2d78bf51e0ff24ca8853935a534bdb51",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/44-run-a-context-partial-semantic-audits.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 330,
+      "relative_path": "reports/45-run-a-ownership-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "54ce6b547c3c6a9eb62a8eddce1a191adf0857cef8208ed6fee047267355ce82",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/45-run-a-ownership-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 328,
+      "relative_path": "reports/46-run-a-renderer-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "c2524be03574ff90524471fd2d09c25f11968ba450f1607adc337f1d97386ef0",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/46-run-a-renderer-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 334,
+      "relative_path": "reports/47-run-a-hard-safety-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "aaffc965b9680003fa09cd7187f9173c563f2d654178e92a98a982f6452fc2a3",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/47-run-a-hard-safety-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 336,
+      "relative_path": "reports/48-run-b-execution-summary.md",
+      "secret_scan_status": "PASS",
+      "sha256": "6e4a99454e7e91d15b74d6f90589490963f4b609dd1c04058dbb59895da75343",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/48-run-b-execution-summary.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 352,
+      "relative_path": "reports/49-run-b-context-artifact-manifest.md",
+      "secret_scan_status": "PASS",
+      "sha256": "c71ca640c2706c624e3c59aaa6ad4288a3864b8fe7d5b328d99411ebcf0e49a3",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/49-run-b-context-artifact-manifest.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 364,
+      "relative_path": "reports/50-run-b-context-partial-semantic-audits.md",
+      "secret_scan_status": "PASS",
+      "sha256": "50f0423029091d45307e7482c065bccbd6330c5bc9d1d494465810d60319eb90",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/50-run-b-context-partial-semantic-audits.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 330,
+      "relative_path": "reports/51-run-b-ownership-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "f21eb7169f200757a9ebaaa8940a3e45a3759aa0933c4f46e245f042e48fbc93",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/51-run-b-ownership-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 328,
+      "relative_path": "reports/52-run-b-renderer-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "351aa43cc06ddf3c111916305de7111908b31c0189d9952cfa491273852c4a6c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/52-run-b-renderer-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 334,
+      "relative_path": "reports/53-run-b-hard-safety-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "77210badd8554d6a0b214552fc16a3f696609e0982296f481e9cfbeff74bbc97",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/53-run-b-hard-safety-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 336,
+      "relative_path": "reports/54-run-c-execution-summary.md",
+      "secret_scan_status": "PASS",
+      "sha256": "d50665a1032d76b3b5e0a722662389d98dc5fe4a19864795e92ab452079b34c8",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/54-run-c-execution-summary.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 352,
+      "relative_path": "reports/55-run-c-context-artifact-manifest.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3b055fd8e17fb29b8d38d2ea972dd260e27c99c932d9280c8b54a5325686b808",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/55-run-c-context-artifact-manifest.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 364,
+      "relative_path": "reports/56-run-c-context-partial-semantic-audits.md",
+      "secret_scan_status": "PASS",
+      "sha256": "bed0982624224e387705b93e05a1fd4415f4ff78f417924588ab77355ac7c724",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/56-run-c-context-partial-semantic-audits.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 330,
+      "relative_path": "reports/57-run-c-ownership-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e962469408e46344939dd0a68523355cbc819c9615d33dde0dd18bedee8591d5",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/57-run-c-ownership-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 328,
+      "relative_path": "reports/58-run-c-renderer-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "4e5e1541baa2b8174115048d82397639c31e8d9c65119a6c48ce4f51a108071b",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/58-run-c-renderer-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 334,
+      "relative_path": "reports/59-run-c-hard-safety-gate.md",
+      "secret_scan_status": "PASS",
+      "sha256": "ae90709d4b44b6d694010e65d51be1f428fd73cb305003091c9b2465ab73e527",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/59-run-c-hard-safety-gate.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 430,
+      "relative_path": "reports/60-holdout-exposure-retirement-state.md",
+      "secret_scan_status": "PASS",
+      "sha256": "b02a44ee4066e3d369a530cfc2bfbefabf616f6266205d69c07deaf87a48a6a6",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/60-holdout-exposure-retirement-state.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 386,
+      "relative_path": "reports/61-core-stability.md",
+      "secret_scan_status": "PASS",
+      "sha256": "3456eed20e33715272e9d32162d2c8dbf333a39752da8a47a1acc92213c0d531",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/61-core-stability.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 386,
+      "relative_path": "reports/62-timing-stability.md",
+      "secret_scan_status": "PASS",
+      "sha256": "5c4a1e55152454d7dbe24441f7e6cd9d9a5dc3ff4482c8f45ff42f7b6c67bf21",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/62-timing-stability.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1015,
+      "relative_path": "reports/63-ownership-generalization.md",
+      "secret_scan_status": "PASS",
+      "sha256": "f3d5c74ca87d9c87e2d6bcb9510be968b74fade5a58d80ba90211b28f8496954",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/63-ownership-generalization.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 319,
+      "relative_path": "reports/64-renderer-ownership-proof.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e7d86f6f9b6d7a862a9cfa5df8af46c3d9ded9451049f23b325aad45f3542b5a",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/64-renderer-ownership-proof.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 405,
+      "relative_path": "reports/65-hard-safety-regression.md",
+      "secret_scan_status": "PASS",
+      "sha256": "2edc8ea2643216f072f161131e485c7dafa0d5a7d28b7ba82e4128c99151a370",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/65-hard-safety-regression.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 395,
+      "relative_path": "reports/66-production-no-change.md",
+      "secret_scan_status": "PASS",
+      "sha256": "f41375953bcdadd38f8c1d574dd0eba034e1c2cb33225ba260c437f95906744f",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/66-production-no-change.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 264,
+      "relative_path": "reports/67-night-futures-no-change.md",
+      "secret_scan_status": "PASS",
+      "sha256": "e010827081d30bbc77763baaf345819a7037d83207b78af48171e3ef79a033af",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/67-night-futures-no-change.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 367,
+      "relative_path": "reports/68-monitoring-bootstrap-next-handoff.md",
+      "secret_scan_status": "PASS",
+      "sha256": "937fc0cae74640a75d52b12ad48a1bd9cc55c129365ad2a6ec12a9fecba20f86",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/68-monitoring-bootstrap-next-handoff.md"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1133,
+      "relative_path": "reports/proofs/01-repository-provenance.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ded86de063d2cda0e299498b34fe7723c7a2a7db34df2947e85410ba3b74e8bb",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/01-repository-provenance.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 394,
+      "relative_path": "reports/proofs/02-latest-result-integrity.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8919bd2a4701a6b0be8b52d3d08487cc15357715c935d5e91d6063fc68abe484",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/02-latest-result-integrity.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 12326,
+      "relative_path": "reports/proofs/03-current-us-readiness-baseline.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ff4b89d13bbbe5d805460be47773ce440e5d30e3315a3a74430d3927dd6e8a7d",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/03-current-us-readiness-baseline.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 643,
+      "relative_path": "reports/proofs/04-price-context-gate-contract-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "b3c7a57e7b9119871e5661c6d7e6c38a51399c01e9def936d396bac73e892c13",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/04-price-context-gate-contract-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 205,
+      "relative_path": "reports/proofs/05-price-context-gate-classification.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8b40249272cd1a9aa4aa930732969b7a0b5c2fd9f30183a3a94a2c9eee1c44db",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/05-price-context-gate-classification.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 352,
+      "relative_path": "reports/proofs/06-price-context-gate-remediation-decision.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c3dce46224ae0bea45850675be6376efe8d64fc9fe760a41330e44f5a464f870",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/06-price-context-gate-remediation-decision.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 370,
+      "relative_path": "reports/proofs/07-price-context-gate-tests-if-any.json",
+      "secret_scan_status": "PASS",
+      "sha256": "0a9e934c10aa15d3f72d13ac774f187bf242eb4584882b6ffc1546116dc036ba",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/07-price-context-gate-tests-if-any.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1051,
+      "relative_path": "reports/proofs/08-brkb-price-context-forensic.json",
+      "secret_scan_status": "PASS",
+      "sha256": "6cc5c0bc1bf8a6fbab17475c0c89aa6e22aa44c4f3eb3bc5f0a744d7d4118d95",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/08-brkb-price-context-forensic.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 248,
+      "relative_path": "reports/proofs/09-brkb-price-remediation-decision.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d742e399d38dd100bfe07eab0b67877fde5b1cb880038b2344e749a701ddee1e",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/09-brkb-price-remediation-decision.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 205,
+      "relative_path": "reports/proofs/10-brkb-price-remediation-diff-if-any.json",
+      "secret_scan_status": "PASS",
+      "sha256": "0f988bbcea459f367a0f4be332b89a09d741253e03c8e0a01e999fa98922b655",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/10-brkb-price-remediation-diff-if-any.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 810,
+      "relative_path": "reports/proofs/11-wmt-price-provider-resilience-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "96434eada1c64524847dc84784271fd60b8e795ed431579a90e3c6de20167055",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/11-wmt-price-provider-resilience-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 217,
+      "relative_path": "reports/proofs/12-wmt-price-fallback-decision.json",
+      "secret_scan_status": "PASS",
+      "sha256": "82d4e6269ec0b5fc88a86e2e3516bd8a5f4e59084e408b835869785c073ab5ba",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/12-wmt-price-fallback-decision.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 169,
+      "relative_path": "reports/proofs/13-wmt-price-remediation-diff-if-any.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8cc171d2013e7fa6fc98b3e9cb5fdd2f4b9aced1d21b90dcb6f001119a101b15",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/13-wmt-price-remediation-diff-if-any.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 422,
+      "relative_path": "reports/proofs/14-us-supported-universe-funnel.json",
+      "secret_scan_status": "PASS",
+      "sha256": "024d3a800118c0c38115369b1190ff73b7177c80807d14568444d97d399e0744",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/14-us-supported-universe-funnel.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 490,
+      "relative_path": "reports/proofs/15-us-supported-universe-root-cause.json",
+      "secret_scan_status": "PASS",
+      "sha256": "097c899d74d23d5361f593008f9b18eeb4412cdce86017bc3a16412d4c5e7649",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/15-us-supported-universe-root-cause.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 2195,
+      "relative_path": "reports/proofs/16-expanded-canonical-us-universe.json",
+      "secret_scan_status": "PASS",
+      "sha256": "a52ce67de6d533c33424d1e770060abda2a5664156a693cbd673345b5d14020d",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/16-expanded-canonical-us-universe.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1085,
+      "relative_path": "reports/proofs/17-expanded-us-reserve-policy-v2.json",
+      "secret_scan_status": "PASS",
+      "sha256": "dbaa6c2a5d4aa305e54db3d361891a721cbed26faeae1e6a7c87b773e9fa50a0",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/17-expanded-us-reserve-policy-v2.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 143,
+      "relative_path": "reports/proofs/18-expanded-us-reserve-manifest-v2.json",
+      "secret_scan_status": "PASS",
+      "sha256": "899f6cf9466bb9e47d7976a3c1f8c4f6e9fe49243d4d6c46537139232facfcf3",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/18-expanded-us-reserve-manifest-v2.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 13735,
+      "relative_path": "reports/proofs/19-us-original-five-readiness-reevaluation.json",
+      "secret_scan_status": "PASS",
+      "sha256": "edc8bf8b75129e4c934186226865e1fc638152d08345bab93c54403be5158d4e",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/19-us-original-five-readiness-reevaluation.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 183,
+      "relative_path": "reports/proofs/20-us-expanded-reserve-coverage-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "10f60a31415a50a05c03051b340cb36d2ebe04947accde17e91c9e28db23c96a",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/20-us-expanded-reserve-coverage-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 443,
+      "relative_path": "reports/proofs/21-final-us-target-decision.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5942cc866d69a0bb8f164a6010db2b4451052255abe690f45f92c61be28afdc5",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/21-final-us-target-decision.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 515,
+      "relative_path": "reports/proofs/22-kr-pass-preservation.json",
+      "secret_scan_status": "PASS",
+      "sha256": "40694ae056b3a7b291340a94aa0763c5cf3b94695dc05cf35e2fa3abc152dbe2",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/22-kr-pass-preservation.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 236,
+      "relative_path": "reports/proofs/23-final-us4-selection.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c868782ded46db3916c30f35874a1eb27bcb6112ed4ac53923369602afde39d9",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/23-final-us4-selection.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 378,
+      "relative_path": "reports/proofs/24-final-kr12-selection.json",
+      "secret_scan_status": "PASS",
+      "sha256": "47a7060f1bf14803d7cd324e5d9a967c78791c85dee0c3072f090c87a4984b84",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/24-final-kr12-selection.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 5080,
+      "relative_path": "reports/proofs/25-fresh-combined-source-generation.json",
+      "secret_scan_status": "PASS",
+      "sha256": "90740ac35324171efbcbe7790377d5dfc3c57e77dc4b56c143620199214da695",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/25-fresh-combined-source-generation.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 43732,
+      "relative_path": "reports/proofs/26-combined-source-readiness-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8f9588ddbc6b40f0998e7280eee18a570e5c1a3dc73609028fd8f9e9ca9c468e",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/26-combined-source-readiness-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 3526,
+      "relative_path": "reports/proofs/27-combined-source-identity-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "0751edbca555e0853cc5469c47ee436a55c1f3ad493442fc9a2d895044c5f664",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/27-combined-source-identity-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 246993,
+      "relative_path": "reports/proofs/28-new-source-lock.json",
+      "secret_scan_status": "PASS",
+      "sha256": "206fbc36ddbdac66e4d1c3b5de8cc7f1ed91254aa0cd61fc08c2350161537d5c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/28-new-source-lock.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 3173,
+      "relative_path": "reports/proofs/29-new-holdout-precommit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8f437c8e98adc0282193257969c06971fb08fc86799735de00745b262b528a82",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/29-new-holdout-precommit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1250,
+      "relative_path": "reports/proofs/30-architecture-semantic-freeze.json",
+      "secret_scan_status": "PASS",
+      "sha256": "419eeff50b50c5278e0d11dd970ece1cf25c59ff54512116071375e85d6cb4f3",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/30-architecture-semantic-freeze.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 2896,
+      "relative_path": "reports/proofs/31-prompt-schema-freeze.json",
+      "secret_scan_status": "PASS",
+      "sha256": "43941e400822347c128e627246a92519e4dc5cae23a04b9a732907ff47657525",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/31-prompt-schema-freeze.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 612,
+      "relative_path": "reports/proofs/32-model-context-freeze.json",
+      "secret_scan_status": "PASS",
+      "sha256": "413a540b08984f5d826b2a30f577e6ca9772be420e27bbabac8e3a356e4380e1",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/32-model-context-freeze.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 725,
+      "relative_path": "reports/proofs/33-transport-topology-freeze.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c7b7678faa9c689f23eed758ad821845c35999dcb3fe4941e293af0742d808f1",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/33-transport-topology-freeze.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 464,
+      "relative_path": "reports/proofs/34-holdout-unseen-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "46eddc73e914ba473274b0b57bbe7e2801f38b5aec29e4ca0a03d62306dfb088",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/34-holdout-unseen-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 395,
+      "relative_path": "reports/proofs/35-live-workload-coexistence-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "6fd7e0f5747da6f1241982c84b2de12be760686222a0a67f3d0f652b373b1781",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/35-live-workload-coexistence-audit.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 337,
+      "relative_path": "reports/proofs/36-first-execution-summary.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ec88af4bc3e473f9edc71d266057f545a77d76e979f59f38fd414b33ba6f49eb",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/36-first-execution-summary.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 165,
+      "relative_path": "reports/proofs/37-first-context-artifact-manifest.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8d0d360f6dc74bc89a4e3b2578a3b8efa79693d3dbe1ee28c73979f803d41af4",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/37-first-context-artifact-manifest.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 162,
+      "relative_path": "reports/proofs/38-first-context-partial-semantic-audits.json",
+      "secret_scan_status": "PASS",
+      "sha256": "206f3149cc720792c80a9c6504813f7dab3783409518e374ae79191d588342ea",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/38-first-context-partial-semantic-audits.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 254,
+      "relative_path": "reports/proofs/39-first-ownership-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "e8727e0bacb6f6d441b10008a2760173fa7b28df9a157ca28eea951047c40256",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/39-first-ownership-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 253,
+      "relative_path": "reports/proofs/40-first-renderer-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "2a2abf860139ff15a9f30e9c80f3c6d6352f6052148f77a0b51e96b6d98c9e2c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/40-first-renderer-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 256,
+      "relative_path": "reports/proofs/41-first-hard-safety-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "35c145c241c57b1f0bd5193ccbf18607617856d3ed14efc1f0fc938d3cfe9c20",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/41-first-hard-safety-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/42-run-a-execution-summary.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/42-run-a-execution-summary.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/43-run-a-context-artifact-manifest.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/43-run-a-context-artifact-manifest.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/44-run-a-context-partial-semantic-audits.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/44-run-a-context-partial-semantic-audits.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/45-run-a-ownership-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/45-run-a-ownership-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/46-run-a-renderer-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/46-run-a-renderer-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/47-run-a-hard-safety-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "39d4b47dd010105ec7091d9217cd5bce373a4e84ee9a6e654732ff1e62f5ed36",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/47-run-a-hard-safety-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/48-run-b-execution-summary.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/48-run-b-execution-summary.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/49-run-b-context-artifact-manifest.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/49-run-b-context-artifact-manifest.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/50-run-b-context-partial-semantic-audits.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/50-run-b-context-partial-semantic-audits.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/51-run-b-ownership-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/51-run-b-ownership-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/52-run-b-renderer-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/52-run-b-renderer-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/53-run-b-hard-safety-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5f6e796b7531023d292012195d416971394c5446396fd927b3613a1e7a002712",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/53-run-b-hard-safety-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/54-run-c-execution-summary.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/54-run-c-execution-summary.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/55-run-c-context-artifact-manifest.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/55-run-c-context-artifact-manifest.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/56-run-c-context-partial-semantic-audits.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/56-run-c-context-partial-semantic-audits.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/57-run-c-ownership-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/57-run-c-ownership-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/58-run-c-renderer-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/58-run-c-renderer-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 227,
+      "relative_path": "reports/proofs/59-run-c-hard-safety-gate.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d5b1048b12175fd723bdd8773a63dbf1b62de930d328c4b61fff7992bf9fe8dc",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/59-run-c-hard-safety-gate.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 303,
+      "relative_path": "reports/proofs/60-holdout-exposure-retirement-state.json",
+      "secret_scan_status": "PASS",
+      "sha256": "9a2e01a8d83198089ac55ebb75f0cdd130a06864c0489d2d8f14faafcee038fb",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/60-holdout-exposure-retirement-state.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 309,
+      "relative_path": "reports/proofs/61-core-stability.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ae578c600b3c844d29ee03415c7dd3edd8994a3160e871ff93117b671cc95bad",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/61-core-stability.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 305,
+      "relative_path": "reports/proofs/62-timing-stability.json",
+      "secret_scan_status": "PASS",
+      "sha256": "2fe8751b01499872c58df798f1c441ddc5ea5b62fe1f3b9c88264aef262d56f5",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/62-timing-stability.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 936,
+      "relative_path": "reports/proofs/63-ownership-generalization.json",
+      "secret_scan_status": "PASS",
+      "sha256": "276328c5ceada9f52aef7f357ea08adb12df31a8071f53cd071e02e30ddc780c",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/63-ownership-generalization.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 206,
+      "relative_path": "reports/proofs/64-renderer-ownership-proof.json",
+      "secret_scan_status": "PASS",
+      "sha256": "11d2d62e320095c43767c4105a877897e8b073f9c684bd42327e01daa6f432c1",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/64-renderer-ownership-proof.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 302,
+      "relative_path": "reports/proofs/65-hard-safety-regression.json",
+      "secret_scan_status": "PASS",
+      "sha256": "cae46d0ffc8db11e29ab7e27f5b462a33663605e4c8d60a2166856a7879b3b74",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/65-hard-safety-regression.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 288,
+      "relative_path": "reports/proofs/66-production-no-change.json",
+      "secret_scan_status": "PASS",
+      "sha256": "d49fba7672b7cba63254cd6916cde179a1204e9df5afbbdbc75c1082a580021d",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/66-production-no-change.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 151,
+      "relative_path": "reports/proofs/67-night-futures-no-change.json",
+      "secret_scan_status": "PASS",
+      "sha256": "fa916eb9ae102adeb8c5616ce04421bd34f1072bcf41ce9711f82fcab60752cd",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/67-night-futures-no-change.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 238,
+      "relative_path": "reports/proofs/68-monitoring-bootstrap-next-handoff.json",
+      "secret_scan_status": "PASS",
+      "sha256": "6df4d81e001c1c7f84f268f356d30c0f3fa1c517c5778f46f4978dab02c2a870",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/proofs/68-monitoring-bootstrap-next-handoff.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 994,
+      "relative_path": "reports/transport-runtime-forensic.json",
+      "secret_scan_status": "PASS",
+      "sha256": "782dc4ceaa3682e22b83157fd1810a91e21d636cdc0667846ac7a5e53c403a4d",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/transport-runtime-forensic.json"
+    },
+    {
+      "artifact_class": "REPORT",
+      "byte_size": 1074,
+      "relative_path": "reports/transport-runtime-forensic.md",
+      "secret_scan_status": "PASS",
+      "sha256": "a67b658a8fc92c674f69b624c2c1502842ead400399b2af4eb8a5ca30db699f4",
+      "source_path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/docs/reports/20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume/transport-runtime-forensic.md"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 464,
+      "relative_path": "experiment/base-contexts/001530.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "21f0da5b0ece7e064fc887e1f1bef6cad9086bdf2c052a336dcedf0dbb594e75",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/001530.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 523,
+      "relative_path": "experiment/base-contexts/002680.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "ea29138acb40562a747f04b06c61918e56efa58d2b4f6100ea4d06baedd3d863",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/002680.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 578,
+      "relative_path": "experiment/base-contexts/035420.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "63404ded856724b8e8010912e8b06227549dc8ae4bf1789fef7d703e9ed5dbbe",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/035420.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 515,
+      "relative_path": "experiment/base-contexts/038870.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "f6d940052fabeb587d2e28831eebc7c36ff9ae37f1050935f81c197f83889aee",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/038870.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 496,
+      "relative_path": "experiment/base-contexts/060230.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "1bd86ee0d15ef6b517f4526d69d44dc301fab669ba257480f577a9c92a584174",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/060230.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 449,
+      "relative_path": "experiment/base-contexts/060900.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "83dd6199b888276b3895b9bae9b73d3b912cd0a245f22bfc18ff3df82ca71b9b",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/060900.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 538,
+      "relative_path": "experiment/base-contexts/100700.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "c5dd3534b448c676f2e2865dbbf8f2fa671f912a77b90a884f59eb6377b0bebf",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/100700.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 512,
+      "relative_path": "experiment/base-contexts/142210.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "9bd8cc22615d0021b01e4713f3482a1afa668dacf0b96d964a9397d1a83f33a5",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/142210.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 447,
+      "relative_path": "experiment/base-contexts/216050.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "4e6188a71bcd1dd11015a3f480a64a7ad0d85c6e865f693ad93b4e03638c53fe",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/216050.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 513,
+      "relative_path": "experiment/base-contexts/342870.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "19fb3c36d7311a762e88fe61129fc9938907507f44ab5481c9069f551b24ee63",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/342870.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 493,
+      "relative_path": "experiment/base-contexts/415380.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "d9390dceb44eb8c112ac60ecb8878fc3e2fc18541cdea7392f4be7dc4cd52856",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/415380.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 478,
+      "relative_path": "experiment/base-contexts/487580.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "55b5e5c48d391c5aeeaed1bf2c59da15cddbd0314c807614f1e52f81dbf85b9b",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/487580.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 442,
+      "relative_path": "experiment/base-contexts/BRK-B.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "38e113df02ee249e58c2208ff4c845d509ed9761d8ac57b119e8325f5ab0d5b3",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/BRK-B.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 435,
+      "relative_path": "experiment/base-contexts/JPM.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "d9103f1a46c9c3393a70dc6dac7fefb4d47177f21b90049fa3e87f8f906cfec4",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/JPM.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 437,
+      "relative_path": "experiment/base-contexts/NVDA.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "e3ff3c10f02c1b77967426c95a24eac6e342c3a53b0274814aa0af315ab69fba",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/NVDA.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 438,
+      "relative_path": "experiment/base-contexts/WMT.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "34925406ba50797615ede316fe5c978aeaea5b50b4683486cbe5e0871aa69807",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/base-contexts/WMT.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 2195,
+      "relative_path": "experiment/expanded-canonical-us-universe.json",
+      "secret_scan_status": "PASS",
+      "sha256": "a52ce67de6d533c33424d1e770060abda2a5664156a693cbd673345b5d14020d",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/expanded-canonical-us-universe.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 1085,
+      "relative_path": "experiment/expanded-us-reserve-policy.json",
+      "secret_scan_status": "PASS",
+      "sha256": "dbaa6c2a5d4aa305e54db3d361891a721cbed26faeae1e6a7c87b773e9fa50a0",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/expanded-us-reserve-policy.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 395,
+      "relative_path": "experiment/live-workload-coexistence-audit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "6fd7e0f5747da6f1241982c84b2de12be760686222a0a67f3d0f652b373b1781",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/live-workload-coexistence-audit.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 20483,
+      "relative_path": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/prompt.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "039c416832b11d4088e44700e601e1126d02d599d81343bebfc3f7ae79e3c1a8",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/prompt.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44354,
+      "relative_path": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/schema.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ee0a634b0b9633a87d2809340b7284e2ed47a60277b7f0651ba0f73f5110fbc0",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01/schema.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 3173,
+      "relative_path": "experiment/new-holdout-precommit.json",
+      "secret_scan_status": "PASS",
+      "sha256": "8f437c8e98adc0282193257969c06971fb08fc86799735de00745b262b528a82",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/new-holdout-precommit.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 260220,
+      "relative_path": "experiment/packets/001530.json",
+      "secret_scan_status": "PASS",
+      "sha256": "13c63bed9a959fa19319036d7d95ef648d07057a82d50fa71c22999b96f7380f",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/001530.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 256886,
+      "relative_path": "experiment/packets/002680.json",
+      "secret_scan_status": "PASS",
+      "sha256": "5cde4dd772593b41649c58bd572c84c5071814e5d6a6b60a2195210a3f7238fc",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/002680.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 261119,
+      "relative_path": "experiment/packets/035420.json",
+      "secret_scan_status": "PASS",
+      "sha256": "dc20fe5febd2c39140d95a848679644cd8311ff61bc2be4fc98a2149b0becc53",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/035420.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 255019,
+      "relative_path": "experiment/packets/038870.json",
+      "secret_scan_status": "PASS",
+      "sha256": "34e14f7611ff5659af52febd1cb365a968593ccf1c1076422070218ac4a15a98",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/038870.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 255048,
+      "relative_path": "experiment/packets/060230.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c89604e89666e7b0896dcfb2dbf40d9acdcdbd2ec70db4f6b5027300dc66175d",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/060230.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 255598,
+      "relative_path": "experiment/packets/060900.json",
+      "secret_scan_status": "PASS",
+      "sha256": "3446f2a92726128f4a7e54e8d3e20fa4f03408ff3b9210bad2c331fc71fef935",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/060900.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 254718,
+      "relative_path": "experiment/packets/100700.json",
+      "secret_scan_status": "PASS",
+      "sha256": "a99f324b6fbd9bb23de5723fc71dd9b557a780a2705055228fa4ac8103b44cdb",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/100700.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 252174,
+      "relative_path": "experiment/packets/142210.json",
+      "secret_scan_status": "PASS",
+      "sha256": "056e01b287ba5daad700c51b311b76d4dbb7391dc99d9ffa2764a1421e97f905",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/142210.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 249777,
+      "relative_path": "experiment/packets/216050.json",
+      "secret_scan_status": "PASS",
+      "sha256": "77190bdf0fb783ed4e0b3acb69e010c6897a2760957593f7894951767b96c678",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/216050.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 162243,
+      "relative_path": "experiment/packets/342870.json",
+      "secret_scan_status": "PASS",
+      "sha256": "3a4cfc2f440753e66c5369f58bcee422159af347084ab31767afcc9bcd72c15e",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/342870.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 217472,
+      "relative_path": "experiment/packets/415380.json",
+      "secret_scan_status": "PASS",
+      "sha256": "0b2ad827b71c85fc0c74f48b4693d957cb8a07bfccba83c1100cf24085cbe065",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/415380.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 107212,
+      "relative_path": "experiment/packets/487580.json",
+      "secret_scan_status": "PASS",
+      "sha256": "4489f2ddc6139a8855f42925f5fd8dd79eff0ece741f2c52ce8893a7386e64be",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/487580.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 18125,
+      "relative_path": "experiment/packets/BRK-B.json",
+      "secret_scan_status": "PASS",
+      "sha256": "635737e9d474fd50a6a7abdd869d138876a3fae31f45ddb6bddd230a9bb5d65b",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/BRK-B.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 245678,
+      "relative_path": "experiment/packets/JPM.json",
+      "secret_scan_status": "PASS",
+      "sha256": "6bd8b4ad8a57eca59d9766d245e82193f9783b5d0db52be543a582ca39e6de7c",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/JPM.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 258174,
+      "relative_path": "experiment/packets/NVDA.json",
+      "secret_scan_status": "PASS",
+      "sha256": "0be768c18d133b57617125ad98393fbbd0858b7350bc6487a4f7bc82eca5e20a",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/NVDA.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 16295,
+      "relative_path": "experiment/packets/WMT.json",
+      "secret_scan_status": "PASS",
+      "sha256": "50fbab6cecc4986c1211d0f03a98b999933508a06157342fc8206159977f182c",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/packets/WMT.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 4297,
+      "relative_path": "experiment/program-state.json",
+      "secret_scan_status": "PASS",
+      "sha256": "1001a842c2897d2db4a62f7e69ece6fb7d29ccbacddd70d2b839420e57d07d5e",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/program-state.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 2522,
+      "relative_path": "experiment/prompt-schema-lock.json",
+      "secret_scan_status": "PASS",
+      "sha256": "04bcbbe5cf77ab49afc5f5103a2cf6938a6e584764a0b2ddb0518d1dab677264",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/prompt-schema-lock.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 20483,
+      "relative_path": "experiment/prompts/core-batch-01.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "039c416832b11d4088e44700e601e1126d02d599d81343bebfc3f7ae79e3c1a8",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/prompts/core-batch-01.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 18012,
+      "relative_path": "experiment/prompts/core-batch-02.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "c716dac27b5f14d6e1b7e514f005c35c11218c7e2ceb129b71aee591876ac1e4",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/prompts/core-batch-02.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 17872,
+      "relative_path": "experiment/prompts/core-batch-03.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "7d8f4009f350e59966c9d02c4eb9e1cef159a58586c639fad03dba1670639a49",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/prompts/core-batch-03.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 17987,
+      "relative_path": "experiment/prompts/core-batch-04.txt",
+      "secret_scan_status": "PASS",
+      "sha256": "f6d7e80a22bbc575baa281894e1276f5e940f67f877e1362e1c57a11f6fa27f8",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/prompts/core-batch-04.txt"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44354,
+      "relative_path": "experiment/schemas/core-batch-01.json",
+      "secret_scan_status": "PASS",
+      "sha256": "ee0a634b0b9633a87d2809340b7284e2ed47a60277b7f0651ba0f73f5110fbc0",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/core-batch-01.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44303,
+      "relative_path": "experiment/schemas/core-batch-02.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c504387b02fbeaf0c1f2bb99491456b9cebcdb2377c7e40b386d8c1b637a8ec8",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/core-batch-02.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44303,
+      "relative_path": "experiment/schemas/core-batch-03.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c953181bf026d048e53c3d1090d507b50e8c569f9e04482a2e8fc038cf027681",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/core-batch-03.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44303,
+      "relative_path": "experiment/schemas/core-batch-04.json",
+      "secret_scan_status": "PASS",
+      "sha256": "fb7651d3d84c014ce402e362f64d4cb2e83feeff1ef3ca822ef78be07c99f08f",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/core-batch-04.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 36804,
+      "relative_path": "experiment/schemas/timing-batch-01.json",
+      "secret_scan_status": "PASS",
+      "sha256": "89d989c9e1bef78f9d0d3e269fc06540042cf036d000154537d6210bd8f58d79",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/timing-batch-01.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 47199,
+      "relative_path": "experiment/schemas/timing-batch-02.json",
+      "secret_scan_status": "PASS",
+      "sha256": "98164d0e41ed61356ed8f7f00494a375109f82361efc0983c4165ec396e90ecb",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/timing-batch-02.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44622,
+      "relative_path": "experiment/schemas/timing-batch-03.json",
+      "secret_scan_status": "PASS",
+      "sha256": "c66ca702fe1f4c79582f5e601f17272c177716bf3c3e4c09d5cefdcad596bcb8",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/timing-batch-03.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 44959,
+      "relative_path": "experiment/schemas/timing-batch-04.json",
+      "secret_scan_status": "PASS",
+      "sha256": "a15c4f18f85d5fca53a047a534e1891a7f233c6a339fc1f7ac5b6a29f485800b",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/schemas/timing-batch-04.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 246993,
+      "relative_path": "experiment/source-lock.json",
+      "secret_scan_status": "PASS",
+      "sha256": "206fbc36ddbdac66e4d1c3b5de8cc7f1ed91254aa0cd61fc08c2350161537d5c",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/source-lock.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 131552,
+      "relative_path": "experiment/timing-contexts/batch-01.json",
+      "secret_scan_status": "PASS",
+      "sha256": "3461d6dbf1ccb11201c8ef29819e3d3b3776857c671611930087c80252696f1e",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/timing-contexts/batch-01.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 363940,
+      "relative_path": "experiment/timing-contexts/batch-02.json",
+      "secret_scan_status": "PASS",
+      "sha256": "15ec9ccc65038cd5dd5ab506bf192352361eca3243c2412a8d00599df74b53e9",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/timing-contexts/batch-02.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 310413,
+      "relative_path": "experiment/timing-contexts/batch-03.json",
+      "secret_scan_status": "PASS",
+      "sha256": "14f94428c3a22c915cda5183ffe379694ba55ecfcce9cb1630c76c31673022c9",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/timing-contexts/batch-03.json"
+    },
+    {
+      "artifact_class": "EXPERIMENT",
+      "byte_size": 311168,
+      "relative_path": "experiment/timing-contexts/batch-04.json",
+      "secret_scan_status": "PASS",
+      "sha256": "151da28a4593c95af482e94cdf851adf7b496c0a1dd16c26b23a5209773297a1",
+      "source_path": "/private/tmp/thesis-monitor-20260907-us-price-context-gate-supported-universe-remediation-holdout-proof-resume-run/timing-contexts/batch-04.json"
+    }
+  ],
+  "status": "PASS"
+}

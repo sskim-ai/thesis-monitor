@@ -1,0 +1,22 @@
+{
+  "conclusion": "failure",
+  "contract": "m12ad-hosted-ci-observation-v1",
+  "failed": 5,
+  "head_sha": "c52b852c515e08c5123534810fd33c4768f67060",
+  "historical_portability_failure_count": 5,
+  "new_failures": [],
+  "new_m12ad_failure_count": 0,
+  "observed_failures": [
+    "test_authoritative_m12a_bundle_remains_integrity_clean",
+    "test_frozen_semantic_surfaces_remain_unchanged",
+    "test_full_offline_replay_closes_exclusion_without_rewriting_history",
+    "test_historical_transport_prompt_is_exact_prior_text",
+    "test_m12c_genericity_and_validator_scope_are_bounded"
+  ],
+  "passed": 3382,
+  "run_id": 34539130856,
+  "run_url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34539130856",
+  "skipped": 1,
+  "status": "FAIL_HISTORICAL_PORTABILITY_ONLY",
+  "workflow_name": "test"
+}

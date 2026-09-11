@@ -1,0 +1,14 @@
+{
+  "component_overlap_blocked_count": 1,
+  "component_overlap_conflict_count": 1,
+  "component_precedence_count": 0,
+  "contract": "m9-component-overlap-and-precedence-contract-v1",
+  "current_borrowings_aggregate_precedence": "aggregate replaces short-term and current-portion borrowings children",
+  "current_debt_aggregate_precedence": "aggregate replaces all registered current-debt children",
+  "forged_overlap_reasons": [
+    "component_overlap"
+  ],
+  "forged_overlap_result": "BLOCKED",
+  "parent_plus_children_summed": false,
+  "real_aggregate_precedence_count": 0
+}

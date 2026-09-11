@@ -1,0 +1,20 @@
+{
+  "base_sha": "58ae6feb3654d3c11f9ca98a6483c748163c5886",
+  "branch": "codex/20260909-directional-financial-context-consumption-specificity-implementation",
+  "changed_paths_from_instruction_commit": [
+    "app/services/direction_timing_ownership_service.py",
+    "app/services/directional_financial_context_service.py",
+    "scripts/directional_core_price_timing_holdout.py",
+    "scripts/directional_financial_context_m12.py",
+    "tests/test_direction_timing_ownership_service.py",
+    "tests/test_directional_financial_context_m12.py",
+    "tests/test_directional_financial_context_service.py"
+  ],
+  "contract": "m12-repository-provenance-v1",
+  "head_sha": "72c28172949939b268806f5cb347ae4761a0d7f0",
+  "implementation_commit": "72c28172949939b268806f5cb347ae4761a0d7f0",
+  "status": "PASS",
+  "status_short": "?? artifacts/20260909-directional-financial-context-consumption-specificity-implementation/",
+  "unexpected_changed_paths": [],
+  "work_instruction_commit": "942f794cfff67f7ec881911a07804f96998c5158"
+}

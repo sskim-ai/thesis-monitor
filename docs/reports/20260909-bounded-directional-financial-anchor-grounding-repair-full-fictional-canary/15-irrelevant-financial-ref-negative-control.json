@@ -1,0 +1,46 @@
+{
+  "audit": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [
+      "material_financial_anchor_grounding_failure",
+      "working_capital_grounding_failure",
+      "irrelevant_financial_ref_grounding_failure"
+    ],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 0,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 1,
+    "material_financial_anchor_grounding_failure_count": 1,
+    "material_financial_anchor_refs": [],
+    "material_grounding_required": true,
+    "narrative_only_duplicate_refs": [],
+    "narrative_substitution_failure_count": 0,
+    "relevant_claim_count": 1,
+    "selected_financial_refs": [
+      "canonical:fixture:cash",
+      "canonical:fixture:inventory"
+    ],
+    "status": "FAIL",
+    "used_financial_refs": [
+      "canonical:fixture:cash"
+    ],
+    "valid": false,
+    "working_capital_checkpoint_count": 1,
+    "working_capital_grounding_failure_count": 1,
+    "working_capital_grounding_required": true
+  },
+  "candidate": {
+    "risk_context": {
+      "evidence_refs": [
+        "canonical:fixture:cash"
+      ],
+      "text": "재고와 매출채권의 전환을 확인해야 한다."
+    }
+  },
+  "fixture_id": "irrelevant-financial-ref",
+  "selected_metrics_by_ref": {
+    "canonical:fixture:cash": "cash_and_cash_equivalents",
+    "canonical:fixture:inventory": "inventory"
+  },
+  "status": "PASS"
+}

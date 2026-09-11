@@ -1,0 +1,12 @@
+{
+  "coldstart_producer_changes": 0,
+  "contract": "m5-source-producer-activation-decision-v1",
+  "decision": "NOT_IN_M5",
+  "next_allowed_scope": "EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION",
+  "onboarding_producer_changes": 0,
+  "opendart_parser_changes": 0,
+  "production_builder_negative_control_count": 1,
+  "production_financial_context_emission_count": 0,
+  "sec_parser_changes": 0,
+  "status": "PASS"
+}

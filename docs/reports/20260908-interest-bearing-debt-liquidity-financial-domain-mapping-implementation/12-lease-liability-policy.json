@@ -1,0 +1,51 @@
+{
+  "contract": "m9-lease-liability-policy-v1",
+  "decision": "SEPARATE_CONTEXT_ONLY",
+  "included_in_interest_bearing_debt_total": false,
+  "registered_exact_semantics": [
+    {
+      "canonical_metric": "lease_liabilities_current",
+      "component_group": "lease_liability_current",
+      "priority": 100,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "us-gaap:FinanceLeaseLiabilityCurrent"
+    },
+    {
+      "canonical_metric": "lease_liabilities_noncurrent",
+      "component_group": "lease_liability_noncurrent",
+      "priority": 100,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "us-gaap:FinanceLeaseLiabilityNoncurrent"
+    },
+    {
+      "canonical_metric": "lease_liabilities_current",
+      "component_group": "lease_liability_current",
+      "priority": 90,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "us-gaap:OperatingLeaseLiabilityCurrent"
+    },
+    {
+      "canonical_metric": "lease_liabilities_noncurrent",
+      "component_group": "lease_liability_noncurrent",
+      "priority": 90,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "us-gaap:OperatingLeaseLiabilityNoncurrent"
+    },
+    {
+      "canonical_metric": "lease_liabilities_current",
+      "component_group": "lease_liability_current",
+      "priority": 100,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "ifrs-full:CurrentLeaseLiabilities"
+    },
+    {
+      "canonical_metric": "lease_liabilities_noncurrent",
+      "component_group": "lease_liability_noncurrent",
+      "priority": 100,
+      "role": "LEASE_CONTEXT",
+      "source_semantic": "ifrs-full:NoncurrentLeaseLiabilities"
+    }
+  ],
+  "scope_limitation": "lease_liabilities_excluded_from_debt_scope",
+  "silent_inclusion_count": 0
+}

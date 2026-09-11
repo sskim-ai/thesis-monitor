@@ -1,0 +1,43 @@
+{
+  "status": "DEFERRED_NOT_MEASURED",
+  "contract_changes": 0,
+  "variance_subject_count": "NOT_MEASURED",
+  "historical_ambiguity_preserved": [
+    "FIC-FIN-05"
+  ],
+  "observed_once": [
+    {
+      "ticker": "FIC-FIN-01",
+      "stance": "HOLDABLE"
+    },
+    {
+      "ticker": "FIC-FIN-02",
+      "stance": "REVIEW"
+    },
+    {
+      "ticker": "FIC-FIN-03",
+      "stance": "REVIEW"
+    },
+    {
+      "ticker": "FIC-FIN-04",
+      "stance": "HOLDABLE"
+    },
+    {
+      "ticker": "FIC-FIN-05",
+      "stance": "REVIEW"
+    },
+    {
+      "ticker": "FIC-FIN-06",
+      "stance": "HOLDABLE"
+    },
+    {
+      "ticker": "FIC-FIN-07",
+      "stance": "HOLDABLE"
+    },
+    {
+      "ticker": "FIC-FIN-08",
+      "stance": "HOLDABLE"
+    }
+  ],
+  "note": "FIC-FIN-05 now also differs in core balance and thesis, not merely holder stance. Do not collapse these into a holder-only repair."
+}

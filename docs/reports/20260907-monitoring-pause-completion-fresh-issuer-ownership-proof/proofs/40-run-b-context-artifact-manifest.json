@@ -1,0 +1,76 @@
+{
+  "context_evidence_preservation_failure_count": 0,
+  "contract": "run-context-artifact-manifest-v1",
+  "rows": [
+    {
+      "actual_request_identity_preflight_status": "PASS",
+      "artifact_reopen_status": "PASS",
+      "batch_id": "01",
+      "category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "child_cleanup_status": "PROCESS_GROUP_TERMINATED",
+      "context_evidence_preservation_status": "PASS",
+      "contract": "model-context-artifact-manifest-v1",
+      "elapsed_to_exit_seconds": 1800.056758,
+      "exit_code": -15,
+      "first_stderr_seconds": 1.299495,
+      "first_stdout_seconds": null,
+      "generation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe",
+      "identity_binding_lock_hash": "b7557d3bc8f684ab571d86fb84b58c20368429c9d3f2b24a18b77a30fd61e2e5",
+      "input_bytes": 17940,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+      "last_stderr_seconds": 74.974474,
+      "market_mix": {
+        "kr": 0,
+        "us": 4
+      },
+      "model": "gpt-5.6-sol",
+      "orphan_model_process_count": 0,
+      "output_bytes": 0,
+      "output_file_created": false,
+      "output_parsed": false,
+      "per_context_partial_semantic_audit_status": "NOT_MEASURED",
+      "per_subject_packet_hashes": {
+        "LNG": "31d86a51115d3bfe444e9a53e465a6eb0965c7a8ea79d6e9c4a14eec1fc814b7",
+        "NU": "914dbae2e8ad1b3aba3f3002f4cba039b99d18b6ac24275fa6965a3974cc9085",
+        "TCI": "10dec932fddd7121943e168da54080217d14616223d33f2ac6085163c2e1c569",
+        "WMG": "85ec6b05c12a183a7df021ad7f8782ed56227e38fd30d20f92d08c12156042e4"
+      },
+      "prompt_sha256": "20decffc0c506d66e2ed3c5746c6ce840e9c9f41625738af1e36d4edff4e84dd",
+      "raw_output_bytes": 0,
+      "raw_output_path": null,
+      "raw_output_sha256": null,
+      "reasoning_effort": "xhigh",
+      "receipt_path": "model-contexts/B/DIRECTIONAL_CORE/batch-01/transport_receipt.json",
+      "receipt_sha256": "9e5434a8695ec8863b47f92a68f9202b20e33c5e40f64e4a4b07efd02e916dc5",
+      "run_id": "b",
+      "runtime_state_namespace_hash": "fd2eb80103c5366955bff83e",
+      "schema_sha256": "10d702a4c76c45fa2eed40627f78603071bc2ae7ffcd8faf33059b2332304dfb",
+      "secret_exposure_count": 0,
+      "secret_scan_status": "PASS",
+      "sequence_position": 1,
+      "source_generation_id": "20260907-fresh-issuer-source-20260907T090500Z-2b1e0d043243",
+      "source_lock": "eee5764bb11218ab080a65ac6179e7b5d6440be11753ce34f8cd292ffc2504ef",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "TIMEOUT",
+      "stderr_bytes": 18604,
+      "stdout_bytes": 0,
+      "subject_count": 4,
+      "subjects": [
+        "NU",
+        "LNG",
+        "TCI",
+        "WMG"
+      ],
+      "termination_initiator": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+      "timeout": 1800,
+      "timeout_owner_count": 1
+    }
+  ],
+  "run": "b",
+  "status": "PARTIAL"
+}

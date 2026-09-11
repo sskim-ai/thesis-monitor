@@ -1,0 +1,18 @@
+{
+  "canonical_core": "unchanged_fact_creation_and_derivation",
+  "contract": "m7-projection-responsibility-matrix-v1",
+  "m6_adapter": [
+    "validate_projection_identity",
+    "validate_formula_order_arithmetic_and_basis",
+    "emit_typed_financial_context"
+  ],
+  "model_and_renderer": "unchanged",
+  "opendart_mapper": "unique_exact_xbrl_duration_context_only",
+  "projection_service": [
+    "preserve_existing_lineage",
+    "recursive_input_closure",
+    "compatible_prior_fact_projection",
+    "archive_only_support_rows",
+    "deterministic_lineage_digest"
+  ]
+}

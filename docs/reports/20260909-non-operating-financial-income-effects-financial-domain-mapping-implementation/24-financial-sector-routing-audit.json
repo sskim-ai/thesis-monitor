@@ -1,0 +1,141 @@
+{
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 0,
+      "aggregate_child_overlap_conflict_count": 0,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "insurance",
+      "child_detail_preserved_count": 0,
+      "compact_ai_context_after_sha256": "434de60b6563c46e22e286f3161aee4356a95a908b35fa09ea8406ba4186991a",
+      "compact_ai_context_before_sha256": "434de60b6563c46e22e286f3161aee4356a95a908b35fa09ea8406ba4186991a",
+      "compact_ai_context_unchanged": true,
+      "comparison_counts": {},
+      "denials": [
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:InterestExpense"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:InterestExpense"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:InterestExpense"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:InterestExpense"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:IncomeTaxExpenseContinuingOperations"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:IncomeTaxExpenseContinuingOperations"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:IncomeTaxExpenseContinuingOperations"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:IncomeTaxExpenseContinuingOperations"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:OtherComprehensiveIncomeNetOfTaxExchangeDifferencesOnTranslation"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:OtherComprehensiveIncomeNetOfTaxExchangeDifferencesOnTranslation"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:OtherComprehensiveIncomeNetOfTaxExchangeDifferencesOnTranslation"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:OtherComprehensiveIncomeNetOfTaxExchangeDifferencesOnTranslation"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:ProfitLossFromOperatingActivities"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:ProfitLossFromOperatingActivities"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:ProfitLossFromOperatingActivities"
+        },
+        {
+          "metric": "non_operating_financial_effect",
+          "reason": "sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:ProfitLossFromOperatingActivities"
+        }
+      ],
+      "derived_net_fact_count": 0,
+      "direct_fact_count": 0,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 16,
+      "facts": [],
+      "financial_type": "financial",
+      "idempotent": true,
+      "industry": "insurance_reinsurance",
+      "overlap_events": [],
+      "period_type_counts": {},
+      "safe_net_fact_count": 0,
+      "sector_route": "SECTOR_FRAMEWORK_REQUIRED",
+      "sign_semantics_unresolved_count": 0,
+      "source_candidates": 16,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "068b876e7cb65e4714ccb8c0d8471d02078012c6c37bc46b81e2ff8514b0e8d1",
+        "OFS.json": "a652c0f4addd40a532da21339c8559cfb9136ee3415c1a0ee5570b07f691da22",
+        "xbrl.zip": "a4d27fd7fc1602bc491977206f4871f9e60b934361eef9047b8fd9bf5e18021d"
+      },
+      "ticker": "003690",
+      "xbrl_context_count": 3716,
+      "xbrl_fact_count": 11779
+    }
+  ],
+  "contract": "m11-financial-sector-routing-audit-v1",
+  "generic_non_operating_emission_count": 0,
+  "required_route": "SECTOR_FRAMEWORK_REQUIRED"
+}

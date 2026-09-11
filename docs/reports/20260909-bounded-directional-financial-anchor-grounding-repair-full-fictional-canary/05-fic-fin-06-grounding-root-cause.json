@@ -1,0 +1,8 @@
+{
+  "contract": "m12g-grounding-root-cause-v1",
+  "model_understood_financial_concept": true,
+  "root_cause": "FIC_FIN_06_TYPED_FINANCIAL_EVIDENCE_NOT_GROUNDED",
+  "selected_typed_financial_ref_used": false,
+  "status": "CONFIRMED",
+  "validator_false_reject": false
+}

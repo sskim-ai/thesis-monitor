@@ -1,0 +1,226 @@
+{
+  "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+  "contract": "risk-carried-input-provenance-pause-v1",
+  "inputs": {
+    "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+    "contract": "risk-carried-task-input-integrity-v1",
+    "historical_predecessor": {
+      "checks": {
+        "crc": true,
+        "duplicate_members": true,
+        "index_membership": true,
+        "indexed_hashes": true,
+        "indexed_payload_count": true,
+        "indexed_sizes": true,
+        "member_count": true,
+        "safe_paths": true,
+        "sha256": true
+      },
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "hash_mismatch_count": 0,
+      "indexed_payload_count": 328,
+      "member_count": 329,
+      "missing_from_index_count": 0,
+      "missing_from_payload_count": 0,
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-websocket-timeout-runtime-review-first-a-evidence-closeout-report.zip",
+      "sha256": "1ddf30ac6b1420eed68f6e44e7f19ef455ca3e6619588b45be537e1d385612b3",
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_path_count": 0
+    },
+    "latest_diagnostic": {
+      "checks": {
+        "crc": true,
+        "duplicate_members": true,
+        "index_membership": true,
+        "indexed_hashes": true,
+        "indexed_payload_count": true,
+        "indexed_sizes": true,
+        "member_count": true,
+        "safe_paths": true,
+        "sha256": true
+      },
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "hash_mismatch_count": 0,
+      "indexed_payload_count": 83,
+      "member_count": 84,
+      "missing_from_index_count": 0,
+      "missing_from_payload_count": 0,
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-bounded-fictional-websocket-reconnect-observability-diagnostic-report.zip",
+      "sha256": "1546b6830ab350f7d7cee68f8b2732806aa5e53b3a5cde8ed4648ee1223d49ec",
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_path_count": 0
+    },
+    "latest_diagnostic_next_scope": "SEPARATELY_AUTHORIZED_REAL_PROOF_WITH_TRANSPORT_RISK_CARRIED",
+    "registry_overlay_source": {
+      "checks": {
+        "crc": true,
+        "duplicate_members": true,
+        "index_membership": true,
+        "indexed_hashes": true,
+        "indexed_sizes": true,
+        "safe_paths": true,
+        "sha256": true
+      },
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "hash_mismatch_count": 0,
+      "indexed_payload_count": 126,
+      "member_count": 127,
+      "missing_from_index_count": 0,
+      "missing_from_payload_count": 0,
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-scheduled-monitoring-pause-capacity-failure-partial-proof-closeout-report.zip",
+      "sha256": "6c63a46a135a0abd6f5491366d33d56bbfe2d19f40e4b1f171633a3078b4adbe",
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_path_count": 0
+    },
+    "status": "PASS",
+    "supported_reference_source": {
+      "checks": {
+        "crc": true,
+        "duplicate_members": true,
+        "index_membership": true,
+        "indexed_hashes": true,
+        "indexed_sizes": true,
+        "safe_paths": true,
+        "sha256": true
+      },
+      "crc_failure": null,
+      "duplicate_member_count": 0,
+      "hash_mismatch_count": 0,
+      "indexed_payload_count": 1308,
+      "member_count": 1309,
+      "missing_from_index_count": 0,
+      "missing_from_payload_count": 0,
+      "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260907-bounded-us-supported-universe-expansion-issuer-audit-reconciliation-report.zip",
+      "sha256": "12ed21a8fcd378036fb86e08193fcffb5b3e0f9f0710f92602a2f3c595c18cf4",
+      "size_mismatch_count": 0,
+      "status": "PASS",
+      "unsafe_path_count": 0
+    }
+  },
+  "latest_pause": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T16:03:59.744611+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "pause": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T15:26:55.144078+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "repository": {
+    "base_sha": "446b5ce077d7a5ec0d2a8429fa95f0e23bf8f9d4",
+    "branch": "codex/20260907-fresh-issuer-ownership-proof-transport-risk-carried",
+    "contract": "repository-provenance-v1",
+    "implementation_commit": "ee68d6ecec948345be7bea69ac39abd6088e6ead",
+    "implementation_tree": "905bb806a867d80dfa3f7064926026cddded0b97",
+    "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+    "status": "PASS",
+    "work_instruction_commit": "badcf61634adc4cb343f6e8de499ce619831220f",
+    "work_instruction_sha256": "7c3c5cc7a214d40278ce6b052a9ada8094e67db03ab14cf82d90702cc605c752"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,6 @@
+{
+  "decision": "BOUNDARY_DECLARATION_PLUS_CONSERVATIVE_RESOLUTION",
+  "option": "F",
+  "reason": "The AI retains ownership of whether adjacent ordinal buckets are economically supportable and of its raw preferred balance. Deterministic code validates that declaration and applies only the already-frozen tie-break toward 5.0.",
+  "status": "SELECTED"
+}

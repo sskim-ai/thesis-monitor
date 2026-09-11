@@ -1,0 +1,9 @@
+{
+  "baseline_change": true,
+  "expected": "WEAKENED",
+  "facts": [
+    "high debt worsened materially versus supplied prior baseline"
+  ],
+  "id": "DELTA-02",
+  "status": "PASS"
+}

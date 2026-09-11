@@ -1,0 +1,28 @@
+{
+  "base_ohlcv_wrapper_status": {
+    "identity": "success",
+    "ohlcv": "success",
+    "technical_context": "UNAVAILABLE"
+  },
+  "contract": "wmt-price-context-forensic-v1",
+  "current_price_propagation": "NOT_REACHED_NO_DAILY_BAR",
+  "packet_assembler": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+  "post_remediation_validation_errors": [
+    "current_price_unavailable",
+    "price_as_of_unavailable",
+    "technical_context_not_safe:UNAVAILABLE"
+  ],
+  "price_date": "UNAVAILABLE",
+  "prior_validation_errors": [
+    "current_price_unavailable",
+    "price_as_of_unavailable",
+    "technical_context_not_safe:UNAVAILABLE"
+  ],
+  "provider_http_502_observation_count": 108,
+  "raw_latest_available_bar": "UNAVAILABLE",
+  "security_identity": "PASS",
+  "status": "PASS",
+  "symbol_normalization": "PASS",
+  "ticker": "WMT",
+  "wmt_price_context_root_cause": "PROVIDER_SOURCE_ABSENCE"
+}

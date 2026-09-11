@@ -1,0 +1,14 @@
+{
+  "backend_progress_state": "NOT_MEASURED",
+  "cli_internal_retry_event_count": 0,
+  "effort": "xhigh",
+  "elapsed_seconds": 2404.422353,
+  "failure_type": "MODEL_TIMEOUT",
+  "model": "gpt-6-astra",
+  "orphan_process_count": 0,
+  "output_bytes": 0,
+  "receipt_sha256": "9f546531216c59293cfc4b88befc3a27facfa1ae66cb8ba64fc188c4d2d4c810",
+  "status": "FAIL",
+  "timeout_seconds": 2400,
+  "wrapper_retry_count": 0
+}

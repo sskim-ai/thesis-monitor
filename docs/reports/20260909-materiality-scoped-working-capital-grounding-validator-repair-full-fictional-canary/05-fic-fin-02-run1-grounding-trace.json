@@ -1,0 +1,44 @@
+{
+  "contract": "m12c-financial-grounding-trace-v1",
+  "source": "M12B run-1/context-01",
+  "ticker": "FIC-FIN-02",
+  "focal_domain": "CASH_CONVERSION",
+  "selected_metrics_by_ref": {
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current": "ocf_less_ppe_capex",
+    "canonical:fictional:FIC-FIN-02:inventory-current": "inventory",
+    "canonical:fictional:FIC-FIN-02:ocf-current": "operating_cash_flow"
+  },
+  "used_typed_refs": [
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+    "canonical:fictional:FIC-FIN-02:inventory-current",
+    "canonical:fictional:FIC-FIN-02:ocf-current"
+  ],
+  "material_anchor_refs": [
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+    "canonical:fictional:FIC-FIN-02:inventory-current",
+    "canonical:fictional:FIC-FIN-02:ocf-current"
+  ],
+  "working_capital_specific_claims": [
+    {
+      "path": "risk_context",
+      "text": "재고는 전년 말보다 늘었지만 이것만으로 악화를 입증하지는 않는다. 운전자본 사용의 원인과 지속성이 핵심 위험이다.",
+      "matching_typed_refs": [
+        "canonical:fictional:FIC-FIN-02:inventory-current"
+      ],
+      "checkpoint": true
+    }
+  ],
+  "generic_working_capital_claims": [
+    {
+      "path": "sell_drivers[1]",
+      "text": "운전자본 흡수가 지속될 수 있다.",
+      "matching_typed_refs": [],
+      "checkpoint": true
+    }
+  ],
+  "working_capital_checkpoint_count": 4,
+  "grounded_working_capital_checkpoint_count": 3,
+  "errors": [],
+  "replay_status": "PASS",
+  "status": "PASS"
+}

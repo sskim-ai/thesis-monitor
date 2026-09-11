@@ -1,0 +1,275 @@
+{
+  "acceptance_protocol": {
+    "core_partial_audit_sha256": "beb7ce7950ccd59f25970c143612d88ffc1f06c02658f2ac2c196c70eaad79a5",
+    "core_stability_sha256": "dac6ab2a09ff00c49f912028ab8e00788fc2948a8a86c2ad3b47cc575b6422a8",
+    "message_quality_sha256": "1b8e944512b9fd2dda0669f135b72181ae7b6b5f41af136bba2f91ebc6499d6f",
+    "quality_gate_role": "ADVISORY_NOT_INCLUDED_IN_RUN_STATUS_OR_PROGRESS_SEQUENCE",
+    "run_gate_documents_sha256": "d311905e8648bad3f9f83d960ef99ec45cbd9be2f3b4fe6b5f3da93cc50d79d8",
+    "status_mapping": {
+      "advisory_message_quality_failure": "REPORT_WITHOUT_PROGRESS_BLOCK",
+      "four_valid_runs_required_for_stability": true,
+      "hard_context_or_run_failure": "STOP_REMAINING_CALLS"
+    },
+    "timing_partial_audit_sha256": "a76cec0729f33aa64ac84820e7b843b631f4879b01adf93af1afb6fab516fab3",
+    "timing_stability_sha256": "d81eb366e6be40653937e65af64cf86f0fcf95458b14e3e0be8a1aeff1b99666"
+  },
+  "acceptance_protocol_sha256": "939459e6efc6b21cb8b14f2c256e6e56364724ae1f76a2a5cdb518ce66a77c17",
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "batch_split": 0,
+  "capacity_or_health_model_smoke_calls": 0,
+  "carried_runtime_risk": "UNRESOLVED_RUNTIME_RELIABILITY_NOT_ESTABLISHED",
+  "context_groups": [
+    [
+      "ACHR",
+      "BNED",
+      "CROX",
+      "AWX"
+    ],
+    [
+      "095720",
+      "000250",
+      "389030",
+      "009310"
+    ],
+    [
+      "042700",
+      "002690",
+      "103590",
+      "025750"
+    ],
+    [
+      "084680",
+      "377330",
+      "024840",
+      "360070"
+    ]
+  ],
+  "contract": "fresh-issuer-risk-carried-execution-precommit-v1",
+  "exclusion_registry_count": 117,
+  "exclusion_registry_sha256": "7ffd6fed1125e88073efb867d3d5adc4024a0f22485e0c376151fbe5e3b6b437",
+  "expected_invocations_per_run": 8,
+  "expected_total_model_invocations": 32,
+  "failed_call_replacements": 0,
+  "frozen_evaluation_cutoff": "2026-09-07T15:27:51+00:00",
+  "hotfix_after_first_output": 0,
+  "implementation_commit": "0ef6c9ea9a82d1a761701b5ee91cc81a15530bd4",
+  "implementation_tree": "f24ab725802fc99935f67064a7b5b15fb77487ed",
+  "market_by_ticker": {
+    "000250": "kr",
+    "002690": "kr",
+    "009310": "kr",
+    "024840": "kr",
+    "025750": "kr",
+    "042700": "kr",
+    "084680": "kr",
+    "095720": "kr",
+    "103590": "kr",
+    "360070": "kr",
+    "377330": "kr",
+    "389030": "kr",
+    "ACHR": "us",
+    "AWX": "us",
+    "BNED": "us",
+    "CROX": "us"
+  },
+  "maximum_fresh_real_cohorts": 1,
+  "maximum_real_model_subprocess_attempts": 32,
+  "model": "gpt-5.6-sol",
+  "model_free_preflight": {
+    "actual_request_preflight_count": 32,
+    "actual_request_preflight_failure_count": 0,
+    "binding_lock_count": 32,
+    "context_preservation_failure_count": 0,
+    "contract": "fresh-issuer-actual-request-model-free-preflight-v1",
+    "expected_simulated_invocation_count": 32,
+    "kr4_context_count": 24,
+    "market_manifest_failure_count": 0,
+    "output_identity_failure_count": 0,
+    "real_investment_model_invocation_count": 0,
+    "real_model_invocation_count": 0,
+    "receipt_artifact_mode_failure_count": 0,
+    "receipt_identity_failure_count": 0,
+    "run_results": {
+      "a": "PASS",
+      "b": "PASS",
+      "c": "PASS",
+      "first": "PASS"
+    },
+    "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T152751Z-78228f940e3c",
+    "simulated_invocation_count": 32,
+    "source_generation_id": "20260907-fresh-issuer-source-20260907T152751Z-3f4af1225c1c",
+    "status": "PASS",
+    "us4_context_count": 8
+  },
+  "model_retry_count": 0,
+  "namespace_policy": "one isolated signed-in Codex CLI subprocess, temporary working directory and runtime-state namespace per model context",
+  "new_fictional_model_calls": 0,
+  "ordered_cohort": [
+    "ACHR",
+    "BNED",
+    "CROX",
+    "AWX",
+    "095720",
+    "000250",
+    "389030",
+    "009310",
+    "042700",
+    "002690",
+    "103590",
+    "025750",
+    "084680",
+    "377330",
+    "024840",
+    "360070"
+  ],
+  "packet_sha256": {
+    "000250": "c78fa44c0c0d70cfa9de1291225a52c5458726adab66f72a79d4d1b8cc5c32b0",
+    "002690": "cd9692812ae2a42c67cdf72629616231e6425794a5220e7ea09f264bcc1b515c",
+    "009310": "4b3cd7a81a0b230d9733c327de68e77f1335ce3f7a9d61df33ae3e73cbb265b0",
+    "024840": "df054d367aface2c1007922c580a3825890d55b37057524cc0e1fda14714cddb",
+    "025750": "e33e31e9c418b0bbaeca54eb3a4f0d79350694183807cf57a336fc4f24eb8eff",
+    "042700": "0678de3bec1d3a889cba1fe92a06af55c78c01246fe802fa89f0d3cba9bfc00e",
+    "084680": "f2f5efa1af1e6fdd1fe1a9e6bee445804af832373f35d086628340356aa35a57",
+    "095720": "0792df57b43c9c0b8cdc3c2fe8e013b2cd5ee3eda52c8f5e4a6962e3d57fa987",
+    "103590": "22db74e19af1e2887e98f6d6d2e90fd1373702a919d8f418796803368d417413",
+    "360070": "e435f6b1c1f76f7b7edb4b744496819e5240ffedb1a2227f6bc3577890e51b9a",
+    "377330": "6d2aa7c57b80dcf49aa973ae8019ca8eb36ab41aa963aa7171f1661b69fcc6dd",
+    "389030": "ee73234e105b8887ef71c0476023295426046a1d8455d37ebd652d060df263f4",
+    "ACHR": "ccc166323172f7a4e8158b64b78144c8466bd5f779dff79636e23605e711c1fa",
+    "AWX": "c550676474a56d67505c1527729b349b47064531ce66ab66db232acbac7c5e8b",
+    "BNED": "b67368fadd066cbd3b7a59a4415b8c566783d5f8811b262425c8ccec63282774",
+    "CROX": "e5cbc6cbf26ccb99a7e7e7f311a6b158e6df7f8e76c5e7bf192804e9817666d0"
+  },
+  "pause_observation": {
+    "auto_resume_executed": 0,
+    "codex_automations": [
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review US Backup",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Primary",
+        "state": "PAUSED"
+      },
+      {
+        "active": false,
+        "name": "Thesis Monitor AI Review KR Backup",
+        "state": "PAUSED"
+      }
+    ],
+    "contract": "current-monitoring-pause-observation-v1",
+    "launch_agents": [
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.daily",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.kr-close",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      },
+      {
+        "active": false,
+        "name": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "state": "PAUSED_DISABLED_UNLOADED"
+      }
+    ],
+    "observation_only": true,
+    "observed_at": "2026-09-07T16:54:05.055155+00:00",
+    "observed_scheduler_object_count": 8,
+    "scheduler_mutation_count": 0,
+    "status": "VERIFIED_PAUSED_COMPLETE",
+    "unexpected_active_paths": []
+  },
+  "pre_first_frozen_at": "2026-09-07T16:54:05.021783+00:00",
+  "process_observation": {
+    "active_natural_job_count": 0,
+    "model_execution_pids": [],
+    "natural_job_rows": [],
+    "observation_capabilities": {
+      "model_execution_observable": true,
+      "natural_process_observable": true,
+      "paused_schedule_registry_observable": true,
+      "protected_window_observable": true,
+      "scheduler_mutation": false
+    },
+    "pause_observed_at": "2026-09-07T16:54:05.086793+00:00",
+    "paused_schedule_count": 8,
+    "running_model_process_count": 0,
+    "unexpected_active_monitoring_paths": [],
+    "workload_observation_backend": "PAUSE_REGISTRY_PLUS_PS_NATURAL_MARKERS_PLUS_LSOF_CODEX_RUNTIME_STATE"
+  },
+  "prompt_schema_lock_sha256": "6b53836e40c99f4db6ec883bdc270ee67433c19bc7312c13154da54bddbbb9a9",
+  "reasoning_effort": "xhigh",
+  "reconnect_path_exercised": "NOT_OBSERVED",
+  "reference_snapshot_sha256": "c64c01f9576c4f2d0acf8dfe2b82dc4da89dd46d5fd76d9d90055c51fc9aea7a",
+  "replacement_cohort_attempts": 0,
+  "reserve_order_sha256": "e6e7dd34f4b859554ccf611e646f173ac5a06e62950bbbbb3b6fd820bf82b048",
+  "run_order": [
+    "first",
+    "a",
+    "b",
+    "c"
+  ],
+  "runs": [
+    "first",
+    "a",
+    "b",
+    "c"
+  ],
+  "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T152751Z-78228f940e3c",
+  "runtime_reliability_status": "NOT_ESTABLISHED",
+  "selection_policy_sha256": "07defbbe29042495ebaa08cb24ca5fcc57cd42c859bfbf80ccc5d984068b2f8f",
+  "selective_rerun": 0,
+  "signed_in_cli_identity": {
+    "checks": {
+      "sha256": true,
+      "version": true
+    },
+    "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "sha256": "7645c3caf5607e4528eb3a15b12496c284c2a918939aed34e863c760c1b421e7",
+    "status": "PASS",
+    "version": "codex-cli 0.148.0-alpha.15"
+  },
+  "source_generation_id": "20260907-fresh-issuer-source-20260907T152751Z-3f4af1225c1c",
+  "source_lock_sha256": "74dbadf1f826891e45ee86d47d8071d5a6deb512f1f06e89b397011ac478af92",
+  "stage_and_context_order": [
+    "DIRECTIONAL_CORE_01",
+    "DIRECTIONAL_CORE_02",
+    "DIRECTIONAL_CORE_03",
+    "DIRECTIONAL_CORE_04",
+    "PRICE_TIMING_01",
+    "PRICE_TIMING_02",
+    "PRICE_TIMING_03",
+    "PRICE_TIMING_04"
+  ],
+  "stages": [
+    "DIRECTIONAL_CORE",
+    "PRICE_TIMING"
+  ],
+  "status": "FROZEN",
+  "stop_matrix": {
+    "advisory_message_quality_failure": "REPORT_AND_CONTINUE",
+    "hard_semantic_or_safety_failure": "STOP_ALL_REMAINING",
+    "preservation_failure": "STOP_ALL_REMAINING",
+    "schema_identity_order_alias_failure": "STOP_ALL_REMAINING",
+    "terminal_transport_failure": "STOP_ALL_REMAINING"
+  },
+  "subjects_per_context": 4,
+  "timeout_owner_count": 1,
+  "timeout_seconds": 1800,
+  "wrapper_explicit_retries": 0
+}

@@ -1,0 +1,275 @@
+{
+  "business_thesis_change_sequence": [
+    "UNCHANGED",
+    "UNCHANGED",
+    "UNCHANGED"
+  ],
+  "buy_balance_sequence": [
+    5.0,
+    5.0,
+    5.5
+  ],
+  "contract": "m12s-ticker-stability-forensic-v1",
+  "direction_sequence": [
+    "HOLD",
+    "HOLD",
+    "HOLD"
+  ],
+  "economic_semantic_flags_stable": false,
+  "formal_classification": "BOUNDARY_UNCERTAINTY",
+  "holder_stance_sequence": [
+    "HOLDABLE",
+    "HOLDABLE",
+    "HOLDABLE"
+  ],
+  "material_interpretation_delta": "MINOR_EMPHASIS_DELTA",
+  "new_buyer_stance_sequence": [
+    "WAIT",
+    "WAIT",
+    "WAIT"
+  ],
+  "pairwise_deltas": [
+    {
+      "adjacent_balance_only": false,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications",
+        "semantic_flags"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": false,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 2
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "buy_driver_classifications",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": true,
+      "left_repetition": 1,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3
+    },
+    {
+      "adjacent_balance_only": true,
+      "changed_fields": [
+        "business_invalidation_domains",
+        "business_reevaluation_down_domains",
+        "business_reevaluation_up_domains",
+        "directional_balance",
+        "dominant_evidence_refs",
+        "dominant_evidence_semantic_categories",
+        "hold_lean",
+        "material_directional_anchor_basis",
+        "material_directional_anchor_domains",
+        "sector_interpretation_domains",
+        "sell_driver_classifications",
+        "semantic_flags"
+      ],
+      "classification": "MINOR_EMPHASIS_DELTA",
+      "economic_semantic_flags_equal": false,
+      "left_repetition": 2,
+      "material_semantic_change": false,
+      "reasons": [
+        "SAME_ECONOMIC_POLARITY_WITH_PRESENTATION_OR_LABEL_VARIANCE"
+      ],
+      "right_repetition": 3
+    }
+  ],
+  "primary_root_cause": "ADJACENT_BALANCE_BUCKET_CALIBRATION_AMBIGUITY",
+  "repeated_values": [
+    {
+      "business_thesis_change": "UNCHANGED",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "hold_lean": "NEUTRAL",
+      "holder": "HOLDABLE",
+      "invalidation_domains": [
+        "NON_OPERATING_EFFECT",
+        "PERFORMANCE_TREND",
+        "RISKS",
+        "THESIS"
+      ],
+      "material_anchors": [],
+      "new_buyer": "WAIT",
+      "overall_direction": "HOLD",
+      "reevaluation_down_domains": [
+        "EARNINGS",
+        "PERFORMANCE_TREND",
+        "RISKS"
+      ],
+      "reevaluation_up_domains": [
+        "EARNINGS",
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "repetition": 1,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "CONTEXT",
+        "operating_trend": "MIXED",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "hold_lean": "NEUTRAL",
+      "holder": "HOLDABLE",
+      "invalidation_domains": [
+        "PERFORMANCE_TREND",
+        "RISKS",
+        "THESIS"
+      ],
+      "material_anchors": [
+        "canonical:fictional:FIC-FIN-04:operating-profit-current",
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current"
+      ],
+      "new_buyer": "WAIT",
+      "overall_direction": "HOLD",
+      "reevaluation_down_domains": [
+        "NON_OPERATING_EFFECT",
+        "RISKS",
+        "THESIS"
+      ],
+      "reevaluation_up_domains": [
+        "EARNINGS_QUALITY",
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "repetition": 2,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "CONTEXT",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    },
+    {
+      "business_thesis_change": "UNCHANGED",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "hold_lean": "BUY_LEAN",
+      "holder": "HOLDABLE",
+      "invalidation_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS"
+      ],
+      "material_anchors": [
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "new_buyer": "WAIT",
+      "overall_direction": "HOLD",
+      "reevaluation_down_domains": [
+        "EARNINGS",
+        "NON_OPERATING_EFFECT",
+        "RISKS"
+      ],
+      "reevaluation_up_domains": [
+        "NON_OPERATING_EFFECT",
+        "PERFORMANCE_TREND",
+        "UNKNOWN"
+      ],
+      "repetition": 3,
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "CONTEXT",
+        "operating_trend": "MIXED",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "unknown_treatments": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ]
+    }
+  ],
+  "secondary_root_causes": [
+    "ANCHOR_SELECTION_PRESENTATION_VARIANCE"
+  ],
+  "semantic_flags_sequence": [
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NOT_USED",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "CONTEXT",
+      "operating_trend": "MIXED",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    },
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NOT_USED",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "CONTEXT",
+      "operating_trend": "POSITIVE",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    },
+    {
+      "cash_conversion": "NOT_USED",
+      "debt_liquidity": "NOT_USED",
+      "missing_data_confidence_limit": true,
+      "non_operating_effect": "CONTEXT",
+      "operating_trend": "MIXED",
+      "period_conflict_present": false,
+      "working_capital": "NOT_USED"
+    }
+  ],
+  "stability_root_cause_scope": "NONSTABLE_ROOT_CAUSE",
+  "status": "PASS",
+  "ticker": "FIC-FIN-04"
+}

@@ -1,0 +1,229 @@
+{
+  "failed_rows": [
+    {
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence",
+        "financial_sector_generic_reasoning"
+      ],
+      "repetition": 3,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "m12ac_completion": {
+    "application_scope_false_accept_count": 0,
+    "application_scope_false_reject_count": 2,
+    "artifact_count": 163,
+    "artifact_hash_mismatch_count": 0,
+    "artifact_secret_scan_failure_count": 0,
+    "artifact_size_mismatch_count": 0,
+    "assessment_persistence_mutations": 0,
+    "automatic_monitoring_resume": 0,
+    "balance_averaging_rule_count": 0,
+    "base_sha": "f22c3cef615c665150fe5e92b45e185345782d1c",
+    "branch": "codex/20260910-financial-framework-threshold-zone-m12ac",
+    "business_delta_contract_violation_count": 0,
+    "business_delta_semantic_change_count": 0,
+    "calibration_tiebreak_direction_changed": false,
+    "capacity_failure_count": 0,
+    "cli_internal_retry_event_count": 0,
+    "deployments": 0,
+    "directional_confidence_variance_subject_count": 1,
+    "directional_increment_changed": false,
+    "directional_prompt_change_count": 0,
+    "directional_threshold_changed": false,
+    "evidence_count_bucket_rule_count": 0,
+    "fic_fin_01_raw_balance_values": [
+      {
+        "buy": 6.5,
+        "sell": 3.5
+      },
+      {
+        "buy": 6.5,
+        "sell": 3.5
+      },
+      {
+        "buy": 6.5,
+        "sell": 3.5
+      }
+    ],
+    "fic_fin_02_raw_balance_values": [
+      {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      {
+        "buy": 4.5,
+        "sell": 5.5
+      }
+    ],
+    "fic_fin_03_raw_balance_values": [
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      {
+        "buy": 5.5,
+        "sell": 4.5
+      }
+    ],
+    "fic_fin_04_raw_balance_values": [
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      }
+    ],
+    "fic_fin_05_raw_balance_unique_count": 1,
+    "fic_fin_05_raw_balance_values": [
+      {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      {
+        "buy": 4.0,
+        "sell": 6.0
+      }
+    ],
+    "fic_fin_05_threshold_zone_unique_count": 1,
+    "fic_fin_05_threshold_zone_values": [
+      "NEGATIVE_THRESHOLD_ZONE",
+      "NEGATIVE_THRESHOLD_ZONE",
+      "NEGATIVE_THRESHOLD_ZONE"
+    ],
+    "fic_fin_06_raw_balance_values": [
+      {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      {
+        "buy": 5.5,
+        "sell": 4.5
+      }
+    ],
+    "fic_fin_07_raw_balance_values": [
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      }
+    ],
+    "fic_fin_08_raw_balance_values": [
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      {
+        "buy": 5.0,
+        "sell": 5.0
+      }
+    ],
+    "fictional_context_count": 2,
+    "fictional_generation_id": "20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752",
+    "fictional_output_row_count": 24,
+    "fictional_repetition_count": 3,
+    "fictional_schema_pass_count": 24,
+    "fictional_subject_count": 8,
+    "final_head_sha": "RESOLVED_FROM_GIT_AT_BUNDLE_EXPORT",
+    "financial_framework_exclusion_false_reject_count": 2,
+    "financial_framework_scope_repair_status": "FAIL",
+    "financial_framework_scope_root_cause": "KOREAN_BOUNDARY_NOUN_BEFORE_CONTRAST_MARKER_NOT_RECOGNIZED",
+    "financial_sector_true_misuse_count": 0,
+    "financial_semantic_change_count": 0,
+    "fixed_score_rule_count": 0,
+    "focused_test_result": "PASS",
+    "fresh_real_proof_readiness": "NOT_READY_OTHER",
+    "full_test_result": "PASS",
+    "git_diff_check": "PASS",
+    "grounding_failure_count": 0,
+    "hold_lean_contract_changed": false,
+    "holder_stance_variance_subject_count": 1,
+    "hosted_ci_failure_count": 5,
+    "hosted_ci_status": "FAIL_HISTORICAL_PORTABILITY_ONLY",
+    "implementation_commit": "6d4f8cfd4d8677e351cf9c0cbec3c250c9680e64",
+    "invalid_financial_reference_count": 0,
+    "latest_result_integrity": "PASS",
+    "latest_result_zip_sha256": "2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926",
+    "m12ab_status": "M12AB_PARTIAL",
+    "m12ac_status": "M12AC_PARTIAL",
+    "main_merges": 0,
+    "majority_vote_rule_count": 0,
+    "market_expectation_contract_change_count": 0,
+    "model_calls_fictional": 6,
+    "model_calls_judge": 0,
+    "model_calls_real": 0,
+    "model_context_failure_count": 0,
+    "model_context_success_count": 6,
+    "monitoring_registrations": 0,
+    "new_buyer_stance_variance_subject_count": 0,
+    "new_hosted_ci_failure_count": 0,
+    "next_scope": "BOUNDED_M12AC_HARD_FAILURE_REPAIR",
+    "notification_queue_writes": 0,
+    "objective_semantic_hard_failure_count": 2,
+    "observed_paused_schedule_count": 8,
+    "option_f_final_status": "RETIRED_FROM_MODEL_FACING_EXPERIMENT",
+    "option_f_model_facing_disabled": true,
+    "option_f_previous_status": "OPTION_F_NOT_PROVEN",
+    "orphan_process_count": 0,
+    "output_schema_change_count": 0,
+    "preferred_boundary_architecture_v2": "DETERMINISTIC_THRESHOLD_ZONE",
+    "production_db_mutations": 0,
+    "production_readiness": "NOT_READY",
+    "production_sends": 0,
+    "provider_source_fetches": 0,
+    "raw_formal_boundary_uncertainty_count": 0,
+    "raw_formal_stable_count": 7,
+    "raw_formal_unstable_count": 1,
+    "real_issuer_model_exposure_count": 0,
+    "renderer_substantive_change_count": 0,
+    "report_commit": "f8cade9fc51f9df902778700c8396d7436af1ba9",
+    "ruff_result": "PASS",
+    "scheduler_mutation_count": 0,
+    "sol_runtime_real_holdout_suitability": "READY",
+    "status": "FAIL",
+    "stop_reason": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+    "threshold_zone_enabled": true,
+    "threshold_zone_renderer_enabled": false,
+    "threshold_zone_stable_count": 7,
+    "threshold_zone_unstable_count": 1,
+    "timeout_count": 0,
+    "warning_mutations": 0,
+    "work_instruction_commit": "b44dd2c4b81b6145a2f26b231a72d11312d70a27",
+    "wrapper_retry_count": 0
+  },
+  "row_count": 24,
+  "status": "MEASURED"
+}

@@ -1,0 +1,22 @@
+# Resume First
+
+| Gate | Value |
+| --- | --- |
+| contract | direction-timing-two-stage-run-v1 |
+| error | ContinuationTransportAdapter.invoke() got an unexpected keyword argument 'codex_bin' |
+| error_type | TypeError |
+| execution_harness_interface_failure | 1 |
+| first_model_invocation_started | 0 |
+| model_context_packet_id | 20260906-direction-timing-holdout-20260906T093200Z-bd30668470f0 |
+| real_holdout_transport_retry_count | 0 |
+| resume_generation_id | 20260906-synthetic-canary-resume-20260906T115500Z-6adb47774f0e |
+| run | first |
+| same_generation_repair | 0 |
+| schema_failure | 0 |
+| selective_rerun | 0 |
+| source_lock_sha256 | efe64d0942afa00c3b40131afc4de5fa411babc0680271d1571aaac69816050d |
+| status | FAILED |
+| transport_failure | 0 |
+| transport_receipts | [] |
+
+Machine proof: `20260906-synthetic-canary-resume-proofs/resume-first.json`.

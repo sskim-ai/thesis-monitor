@@ -1,0 +1,14 @@
+# 15 Canonical Transport Freeze
+
+| Field | Value |
+| --- | --- |
+| continuation_adapter_semantic_mutation | 0 |
+| contract | canonical-transport-freeze-v1 |
+| current | {"ContinuationTransportAdapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1", "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd", "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13"} |
+| instrumented_codex_lifecycle_mutation | 0 |
+| previous | {"ContinuationTransportAdapter": "05e8910008bec06fa592aeeb2df3c204b87a2a45a43b17607946b5c32355f9f1", "instrumented_runner": "10df1482dd937278ebe450ab82631ae3abf2bcb5b1b41a56bdabee1eea7ebbfd", "invoke_instrumented_codex": "e5fc8e00b99e5330b31502ad2d975970a4e0ce7da7aed5c9baa8ba9f8df94e13"} |
+| status | PASS |
+| timeout_owner_mutation | 0 |
+| transport_process_topology_mutation | 0 |
+
+Machine proof: `proofs/15-canonical-transport-freeze.json`.

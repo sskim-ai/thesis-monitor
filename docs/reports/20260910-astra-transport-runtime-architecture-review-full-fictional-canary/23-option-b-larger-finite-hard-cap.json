@@ -1,0 +1,17 @@
+{
+  "auth": "STRONG",
+  "cleanup": "STRONG",
+  "complexity": "ACCEPTABLE",
+  "failure_detection": "STRONG",
+  "id": "B",
+  "identity": "ACCEPTABLE",
+  "integrity": "STRONG",
+  "observability": "ACCEPTABLE",
+  "real_holdout": "WEAK",
+  "reason": "Finite measured-tail budget plus existing lifecycle observability; reliability improvement unproven until new proof.",
+  "reliability": "WEAK",
+  "selected": true,
+  "semantics": "STRONG",
+  "status": "ACCEPTABLE",
+  "tail_tolerance": "ACCEPTABLE"
+}

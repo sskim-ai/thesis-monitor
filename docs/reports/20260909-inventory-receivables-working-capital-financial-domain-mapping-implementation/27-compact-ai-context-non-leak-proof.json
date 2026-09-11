@@ -1,0 +1,56 @@
+{
+  "compact_ai_context_changed_count": 0,
+  "contract": "m10-compact-ai-context-non-leak-proof-v1",
+  "function_hash": {
+    "after_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "before_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "changed": false,
+    "function": "compact_ai_context",
+    "path": "app/services/cross_market_decision_engine_service.py"
+  },
+  "real_archive_rows": [
+    {
+      "after_sha256": "6657f158c6ad557d790b9962098c411bbd9f24f730016a8cc8e7293b19f922e8",
+      "before_sha256": "6657f158c6ad557d790b9962098c411bbd9f24f730016a8cc8e7293b19f922e8",
+      "ticker": "000660",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "4578bda2f3409a8bc8eaccced9954b073d999fd5ad364a34ac404aeac2c84df1",
+      "before_sha256": "4578bda2f3409a8bc8eaccced9954b073d999fd5ad364a34ac404aeac2c84df1",
+      "ticker": "003690",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "a35bbcbf44598228ca9602bab943775bb38c0432bbae33aa2231a197bd0cacf7",
+      "before_sha256": "a35bbcbf44598228ca9602bab943775bb38c0432bbae33aa2231a197bd0cacf7",
+      "ticker": "005490",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "6ec3908a07accd9586eec7a92f63d5be406d0fb2b17feba9937b05d13fbdb1fc",
+      "before_sha256": "6ec3908a07accd9586eec7a92f63d5be406d0fb2b17feba9937b05d13fbdb1fc",
+      "ticker": "005930",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "645f6b0714506eba42c03b324b5aa8a26bd063fd8922a007a3b505b55e8aa441",
+      "before_sha256": "645f6b0714506eba42c03b324b5aa8a26bd063fd8922a007a3b505b55e8aa441",
+      "ticker": "010120",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "bfbf97d4ae51664586562ccf3873e31997e0fb67e8c8c9e34b3be0804b5897b3",
+      "before_sha256": "bfbf97d4ae51664586562ccf3873e31997e0fb67e8c8c9e34b3be0804b5897b3",
+      "ticker": "012450",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "250627ec73a19d7b4bd9119c1d8e284a5424b7c6fffccf313e0b2360ec6b5e54",
+      "before_sha256": "250627ec73a19d7b4bd9119c1d8e284a5424b7c6fffccf313e0b2360ec6b5e54",
+      "ticker": "086280",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

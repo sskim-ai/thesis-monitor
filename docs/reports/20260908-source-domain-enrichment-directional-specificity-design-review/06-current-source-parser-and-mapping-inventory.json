@@ -1,0 +1,73 @@
+{
+  "contract": "m4-current-source-parser-mapping-inventory-v1",
+  "provider_calls": 0,
+  "rows": [
+    {
+      "capability": "SEC/IFRS official OCF and PPE-only CAPEX semantic registry",
+      "file_exists": true,
+      "gap": "not represented in DecisionEvidenceRef",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/official_cash_flow_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "typed canonical facts and guarded period/FCF derivation",
+      "file_exists": true,
+      "gap": "advanced working-capital and ROIC remain deferred",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/cash_flow_capital_efficiency_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "SEC Company Facts income/equity snapshot history",
+      "file_exists": true,
+      "gap": "no generic OCF/debt/working-capital/non-operating mapping here",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/sec_financial_snapshot_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "KR income, inventory, OCF candidate, and CAPEX components",
+      "file_exists": true,
+      "gap": "cash-flow period reconciliation unresolved in stored audit",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/opendart_financial_recovery_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "period/basis-safe comparison and cumulative distinction",
+      "file_exists": true,
+      "gap": "does not recover unresolved OpenDART cash-flow durations",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/kr_financial_lineage_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "current KR snapshot assembly",
+      "file_exists": true,
+      "gap": "legacy liabilities-as-debt is unsafe and excluded from M4 debt design",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/financial_snapshot_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "sector framework and selected bank/insurance concepts",
+      "file_exists": true,
+      "gap": "no broad financial-domain enrichment producer",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/coldstart_fundamental_enrichment_service.py",
+      "tokens_present": true
+    },
+    {
+      "capability": "current compact DecisionEvidenceRef",
+      "file_exists": true,
+      "gap": "typed financial period/basis/direct-derived/comparison metadata absent",
+      "inspection_status": "VERIFIED",
+      "path": "app/services/cross_market_decision_engine_service.py",
+      "tokens_present": true
+    }
+  ],
+  "status": "PASS",
+  "unresolved_count": 0,
+  "verified_count": 8
+}

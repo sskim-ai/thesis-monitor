@@ -1,0 +1,48 @@
+{
+  "contract": "m12ab-leverage-hold-sell-boundary-architecture-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "base_sha": "95addf0a6a484e7ea307a7b8cb63c175e71332e2",
+  "work_instruction_commit": "96377fedd6f575f10b97a30db564fa71cde8e766",
+  "selected_architecture": "BOUNDARY_DECLARATION_PLUS_CONSERVATIVE_RESOLUTION",
+  "selected_option": "F",
+  "selection_reason": "The AI retains ownership of whether adjacent ordinal buckets are economically supportable and of its raw preferred balance. Deterministic code validates that declaration and applies only the already-frozen tie-break toward 5.0.",
+  "ownership": {
+    "ai": [
+      "economic interpretation",
+      "raw directional balance",
+      "whether an adjacent boundary is genuinely supportable",
+      "boundary reason and evidence references"
+    ],
+    "deterministic_core": [
+      "boundary declaration validation",
+      "mechanical selection of the adjacent balance closer to 5.0",
+      "derivation of resolved direction and HOLD lean"
+    ],
+    "hidden_scorecard": false,
+    "majority_vote": false,
+    "balance_averaging": false
+  },
+  "schema": {
+    "impact": "ADDITIVE_OPTIONAL_EXPERIMENTAL",
+    "versioned_contract_required": true,
+    "legacy_output_parse_required": true,
+    "production_activation": false
+  },
+  "downstream": {
+    "raw_state_preserved": true,
+    "resolved_state_preserved": true,
+    "renderer_change": false,
+    "daily_delta_change": false,
+    "monitoring_lifecycle_change": false,
+    "valuation_or_price_ownership_change": false
+  },
+  "frozen_semantics": {
+    "buy_threshold": 6.0,
+    "sell_threshold": 6.0,
+    "increment": 0.5,
+    "tie_break": "TOWARD_5_0",
+    "financial_semantic_change_count": 0,
+    "business_delta_semantic_change_count": 0,
+    "financial_framework_semantic_change_count": 0
+  }
+}

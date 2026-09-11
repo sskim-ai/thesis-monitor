@@ -1,0 +1,16 @@
+{
+  "cache_advertised": true,
+  "requested_model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "observed_cli_model": "gpt-6-astra",
+  "observed_cli_effort": "xhigh",
+  "cli_version": "0.153.4",
+  "session_id": "01a08878-78e1-72c1-a4aa-1f02d3f0d680",
+  "fallback_count": 0,
+  "local_process_spawned": true,
+  "invocation_accepted": "NOT_MEASURED_NO_SERVER_OUTPUT",
+  "backend_model_response": "NOT_MEASURED",
+  "target_configuration_status": "PASS",
+  "execution_status": "MODEL_TIMEOUT",
+  "receipt": "experiment/model-calls/run-1/context-01/receipt.json"
+}

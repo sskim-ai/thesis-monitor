@@ -1,0 +1,7 @@
+{
+  "CLI_retry": "CLI-owned; counted from observed retry logs, not disabled by wrapper",
+  "prior_timeout_owner": "subprocess.wait timeout1800",
+  "progress_vs_silence": "Local first/last bytes measurable; backend progress unavailable",
+  "selected_timeout_owner": "PYTHON_MONOTONIC_LIFECYCLE_WATCHDOG",
+  "wrapper_retry": 0
+}

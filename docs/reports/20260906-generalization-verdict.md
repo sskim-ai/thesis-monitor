@@ -1,0 +1,17 @@
+# Generalization Verdict
+
+| Gate | Value |
+| --- | --- |
+| contract | "generalization-verdict-v1" |
+| decision_engine_mutation | 0 |
+| first_abc_all_valid | true |
+| fundamental_vs_price_audit | "REVIEW_PRICE_DOMINANCE" |
+| program_generation_id | "20260906-fundamental-holdout-20260906T065029Z-a6b43b8a61c4" |
+| readiness | "NEEDS_ARCHITECTURE_WORK" |
+| same_generation_repair | 0 |
+| source_packet_mutation | 0 |
+| source_sufficiency_escape | 0 |
+| stability_counts | {"BOUNDARY_UNCERTAINTY": 8, "STABLE": 7, "UNSTABLE": 1} |
+| verdict | "GENERALIZATION_NEEDS_ARCHITECTURE_WORK" |
+| stability_acceptable | false |
+| adjudication | {"price_only_dominated_buy_sell_tickers": ["NKE"], "reason": "one_unstable_subject_and_one_price_only_dominated_sell_review_flag", "same_generation_repair": 0, "unstable_tickers": ["PLTR"]} |

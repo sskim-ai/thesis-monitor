@@ -1,0 +1,34 @@
+{
+  "contract": "m12e-pre-model-deterministic-gate-repair-note-v1",
+  "initial_implementation": "526fb00",
+  "initial_full_test_result": {"passed": 3119, "failed": 3},
+  "initial_model_calls": 0,
+  "failures": [
+    {
+      "test": "test_frozen_semantic_surfaces_remain_unchanged",
+      "cause": "Historical M12B whole-file freeze included the calibration prose explicitly authorized to evolve in M12E.",
+      "repair": "All other M12B surfaces still require PASS. Calibration executable AST excluding only the prompt literal must match the historical baseline. Dedicated M12E tests enforce four added paragraphs and preserve the original prompt."
+    },
+    {
+      "test": "test_fixed_fixture_is_fictional_us4_and_comparable_core_size",
+      "cause": "Historical transport fixture uses a 15000-20000 byte comparison budget; the added calibration paragraphs increased its dynamically built prompt to 21893 bytes.",
+      "repair": "The historical comparison explicitly uses the exact prior calibration prompt. The 20000 byte ceiling remains unchanged."
+    },
+    {
+      "test": "test_probe_precommit_is_fictional_same_namespace_and_sized",
+      "cause": "The same historical transport-size contract was unintentionally consuming evolving calibration prose.",
+      "repair": "Freeze only the historical test's prompt dependency. Production and diagnostic runner source, size guards, padding and thresholds remain unchanged."
+    }
+  ],
+  "frozen_implementation": "44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630",
+  "final_focused_test_result": {"passed": 107, "failed": 0},
+  "final_full_test_result": {"passed": 3123, "failed": 0, "warnings": 2},
+  "ruff": "PASS",
+  "git_diff_check": "PASS",
+  "canary_input_replaced_by_historical_prompt": false,
+  "historical_diagnostic_with_current_longer_prompt": "Still subject to its unchanged size ceiling; not claimed requalified for a new transport experiment",
+  "model_result_driven_hotfix_count": 0,
+  "decision_threshold_relaxation_count": 0,
+  "transport_size_threshold_relaxation_count": 0,
+  "initial_failure_artifacts": "initial-validation/ in final bundle"
+}

@@ -1,0 +1,9 @@
+{
+  "balance_confidence_separation_preserved": true,
+  "business_delta_prompt_preserved": true,
+  "first_class_financial_evidence_preserved": true,
+  "m12y_m12z_semantics_preserved": true,
+  "market_expectation_independence_preserved": true,
+  "restored_contract": "directional-core-output-v1",
+  "status": "PASS"
+}

@@ -1,0 +1,138 @@
+{
+  "rows": [
+    {
+      "buy": 6.5,
+      "direction": "BUY",
+      "id": "ZONE-01",
+      "lean": "NOT_HOLD",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "OUTSIDE_THRESHOLD_ZONE_POSITIVE",
+        "directional_balance": {
+          "buy": 6.5,
+          "sell": 3.5
+        },
+        "hold_lean": "NOT_HOLD",
+        "overall_direction": "BUY"
+      },
+      "sell": 3.5,
+      "status": "PASS",
+      "zone": "OUTSIDE_THRESHOLD_ZONE_POSITIVE"
+    },
+    {
+      "buy": 6.0,
+      "direction": "BUY",
+      "id": "ZONE-02",
+      "lean": "NOT_HOLD",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "POSITIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 6.0,
+          "sell": 4.0
+        },
+        "hold_lean": "NOT_HOLD",
+        "overall_direction": "BUY"
+      },
+      "sell": 4.0,
+      "status": "PASS",
+      "zone": "POSITIVE_THRESHOLD_ZONE"
+    },
+    {
+      "buy": 5.5,
+      "direction": "HOLD",
+      "id": "ZONE-03",
+      "lean": "BUY_LEAN",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "POSITIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 5.5,
+          "sell": 4.5
+        },
+        "hold_lean": "BUY_LEAN",
+        "overall_direction": "HOLD"
+      },
+      "sell": 4.5,
+      "status": "PASS",
+      "zone": "POSITIVE_THRESHOLD_ZONE"
+    },
+    {
+      "buy": 5.0,
+      "direction": "HOLD",
+      "id": "ZONE-04",
+      "lean": "NEUTRAL",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEUTRAL",
+        "directional_balance": {
+          "buy": 5.0,
+          "sell": 5.0
+        },
+        "hold_lean": "NEUTRAL",
+        "overall_direction": "HOLD"
+      },
+      "sell": 5.0,
+      "status": "PASS",
+      "zone": "NEUTRAL"
+    },
+    {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "id": "ZONE-05",
+      "lean": "SELL_LEAN",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEGATIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 4.5,
+          "sell": 5.5
+        },
+        "hold_lean": "SELL_LEAN",
+        "overall_direction": "HOLD"
+      },
+      "sell": 5.5,
+      "status": "PASS",
+      "zone": "NEGATIVE_THRESHOLD_ZONE"
+    },
+    {
+      "buy": 4.0,
+      "direction": "SELL",
+      "id": "ZONE-06",
+      "lean": "NOT_HOLD",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "NEGATIVE_THRESHOLD_ZONE",
+        "directional_balance": {
+          "buy": 4.0,
+          "sell": 6.0
+        },
+        "hold_lean": "NOT_HOLD",
+        "overall_direction": "SELL"
+      },
+      "sell": 6.0,
+      "status": "PASS",
+      "zone": "NEGATIVE_THRESHOLD_ZONE"
+    },
+    {
+      "buy": 3.5,
+      "direction": "SELL",
+      "id": "ZONE-07",
+      "lean": "NOT_HOLD",
+      "observed": {
+        "contract": "directional-threshold-zone-v1",
+        "decision_threshold_zone": "OUTSIDE_THRESHOLD_ZONE_NEGATIVE",
+        "directional_balance": {
+          "buy": 3.5,
+          "sell": 6.5
+        },
+        "hold_lean": "NOT_HOLD",
+        "overall_direction": "SELL"
+      },
+      "sell": 6.5,
+      "status": "PASS",
+      "zone": "OUTSIDE_THRESHOLD_ZONE_NEGATIVE"
+    }
+  ],
+  "status": "PASS"
+}

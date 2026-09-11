@@ -1,0 +1,119 @@
+{
+  "canonical_identities": {
+    "014820": {
+      "canonical_issuer_key": "opendart:corp:00132637",
+      "market": "kr"
+    },
+    "026960": {
+      "canonical_issuer_key": "opendart:corp:00144395",
+      "market": "kr"
+    },
+    "039980": {
+      "canonical_issuer_key": "opendart:corp:00369213",
+      "market": "kr"
+    },
+    "066900": {
+      "canonical_issuer_key": "opendart:corp:00303192",
+      "market": "kr"
+    },
+    "079370": {
+      "canonical_issuer_key": "opendart:corp:00442570",
+      "market": "kr"
+    },
+    "106240": {
+      "canonical_issuer_key": "opendart:corp:00755739",
+      "market": "kr"
+    },
+    "170900": {
+      "canonical_issuer_key": "opendart:corp:00956930",
+      "market": "kr"
+    },
+    "183300": {
+      "canonical_issuer_key": "opendart:corp:00997812",
+      "market": "kr"
+    },
+    "247540": {
+      "canonical_issuer_key": "opendart:corp:01160363",
+      "market": "kr"
+    },
+    "251970": {
+      "canonical_issuer_key": "opendart:corp:00761059",
+      "market": "kr"
+    },
+    "263750": {
+      "canonical_issuer_key": "opendart:corp:01152470",
+      "market": "kr"
+    },
+    "318060": {
+      "canonical_issuer_key": "opendart:corp:01565054",
+      "market": "kr"
+    },
+    "AA": {
+      "canonical_issuer_key": "sec:cik:0001675149",
+      "market": "us"
+    },
+    "NEON": {
+      "canonical_issuer_key": "sec:cik:0000087050",
+      "market": "us"
+    },
+    "RMD": {
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "market": "us"
+    },
+    "TDW": {
+      "canonical_issuer_key": "sec:cik:0000098222",
+      "market": "us"
+    }
+  },
+  "cohort": [
+    "RMD",
+    "NEON",
+    "AA",
+    "TDW",
+    "066900",
+    "079370",
+    "247540",
+    "183300",
+    "014820",
+    "318060",
+    "106240",
+    "263750",
+    "170900",
+    "039980",
+    "026960",
+    "251970"
+  ],
+  "cohort_count": 16,
+  "contract": "current-cohort-exposure-retirement-review-v1",
+  "exposure_state": "FULLY_EXPOSED",
+  "missing_canonical_issuers_after_reconciliation": [],
+  "missing_canonical_issuers_before_reconciliation": [
+    "014820",
+    "026960",
+    "039980",
+    "066900",
+    "079370",
+    "106240",
+    "170900",
+    "183300",
+    "247540",
+    "251970",
+    "263750",
+    "318060",
+    "AA",
+    "NEON",
+    "RMD",
+    "TDW"
+  ],
+  "newly_appended_in_this_task": 16,
+  "reconciled_registry_count": 165,
+  "retirement_state": "RETIRED_FOR_ARCHITECTURE_REPAIR",
+  "same_cohort_rerun_allowed": false,
+  "second_pass_appended_count": 0,
+  "second_pass_registry_rows_equivalent": true,
+  "source_recorded_newly_excluded_current_cohort_count": 0,
+  "source_registry_count": 149,
+  "source_registry_sha256": "8d9f121ff6fc4749ef5da5cecad4e8f731a991a051e771cdeb5512fe34b63f6b",
+  "status": "PASS",
+  "updated_registry_sha256": "38054b257eb3ed189c05b20117de82f5227d0be2e6102f99daba34b48c5f373a"
+}

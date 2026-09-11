@@ -1,0 +1,13 @@
+{
+  "contract": "m12-fresh-real-proof-readiness-decision-v1",
+  "fresh_real_proof_readiness": "NOT_READY",
+  "production_readiness": "NOT_READY",
+  "blocking_issue": "QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT",
+  "affected_case": "FIC-FIN-03",
+  "bounded_repair": "GENERIC_QTD_YTD_SEMANTIC_VALIDATOR_VOCABULARY_AND_REGRESSION_REPAIR",
+  "ticker_specific_exception_allowed": false,
+  "threshold_change_allowed": false,
+  "required_next_canary": "NEW_GENERATION_FULL_SIX_CONTEXT_FICTIONAL_CANARY",
+  "next_scope": "BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR",
+  "status": "NOT_READY"
+}

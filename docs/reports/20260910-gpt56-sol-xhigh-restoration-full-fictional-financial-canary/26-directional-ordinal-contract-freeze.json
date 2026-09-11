@@ -1,0 +1,12 @@
+{
+  "baseline": "M12U semantics at M12V final base",
+  "changed_existing_paths": [],
+  "proof": "03-m12w-scope-freeze.json",
+  "status": "PASS",
+  "target_buys": {
+    "FIC-FIN-01": 6.0,
+    "FIC-FIN-02": 4.5,
+    "FIC-FIN-04": 5.0,
+    "FIC-FIN-05": 4.5
+  }
+}

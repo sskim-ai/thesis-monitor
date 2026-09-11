@@ -1,0 +1,26 @@
+{
+  "checks": {
+    "delta_fixtures": true,
+    "directional_prompt_unchanged": true,
+    "exclusion_false_accept_zero": true,
+    "exclusion_false_reject_zero": true,
+    "exclusion_fixtures": true,
+    "fic_fin_08_replay": true,
+    "frozen_surfaces_unchanged": true,
+    "leverage_fixtures": true,
+    "market_expectation_contract_frozen": true,
+    "one_business_delta_prompt_addition": true,
+    "root_cause_commit_matches": true
+  },
+  "contrastive_exclusion_root_cause": "CONTRASTIVE_REPLACEMENT_EXCLUSION_NOT_RECOGNIZED",
+  "fic_fin_05_business_delta_root_cause": "ABSOLUTE_NEGATIVE_STATE_MISREAD_AS_WEAKENING_DELTA",
+  "fic_fin_05_business_delta_target": "UNCHANGED",
+  "fic_fin_05_leverage_target_root_cause": "EXACT_FIXTURE_TARGET_OVERCONSTRAINED_EXPECT_6_0",
+  "fic_fin_05_target": {
+    "buy": 4,
+    "direction": "SELL",
+    "hold_lean": "NOT_HOLD",
+    "sell": 6
+  },
+  "status": "PASS"
+}

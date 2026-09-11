@@ -1,0 +1,214 @@
+{
+  "contract": "m12d-qtd-ytd-negative-fixtures-v1",
+  "fixture_count": 10,
+  "rejected_count": 10,
+  "rows": [
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "both_refs_but_period_contrast_not_explicit",
+      "fixture_id": "negative-01",
+      "text": "분기점이 중요하며 누적 영업손실과 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "both_refs_but_period_contrast_not_explicit",
+      "fixture_id": "negative-02",
+      "text": "분기 영업흑자만 확인됐다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "both_refs_but_period_contrast_not_explicit",
+      "fixture_id": "negative-03",
+      "text": "누적 영업손실만 확인됐다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "both_refs_but_period_contrast_not_explicit",
+      "fixture_id": "negative-04",
+      "text": "서로 다른 실적이 있다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "both_refs_but_period_contrast_not_explicit",
+      "fixture_id": "negative-05",
+      "text": "QTD와 YTD 영업실적을 확인했다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "missing_ytd_link",
+      "fixture_id": "negative-06",
+      "text": "분기 영업흑자와 누적 영업손실이 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "missing_qtd_link",
+      "fixture_id": "negative-07",
+      "text": "분기 영업흑자와 누적 영업손실이 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "unlinked",
+      "fixture_id": "negative-08",
+      "text": "분기 영업흑자와 누적 영업손실이 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "unrelated_plain_quarter_path",
+      "fixture_id": "negative-09",
+      "text": "분기 appears only in an unrelated unlinked sector claim",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [
+          "qtd_ytd_conflict_not_explicit"
+        ],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 1,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": false,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "accepted_as_same_metric_conflict": false,
+      "case": "different_metrics_not_a_required_conflict",
+      "fixture_id": "negative-10",
+      "text": "분기 영업흑자와 누적 매출이 상충한다.",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

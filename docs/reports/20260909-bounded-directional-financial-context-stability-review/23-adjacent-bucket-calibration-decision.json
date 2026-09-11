@@ -1,0 +1,13 @@
+{
+  "contract": "m12s-adjacent-bucket-calibration-decision-v1",
+  "decision": "PRIMARY_REPAIR_REQUIRED",
+  "increment_change_required": false,
+  "status": "PASS",
+  "subject_count": 3,
+  "threshold_change_required": false,
+  "tickers": [
+    "FIC-FIN-01",
+    "FIC-FIN-02",
+    "FIC-FIN-04"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "base_sha": "e8e82e353ff71f251c66a1c6940af4d70ff0c778",
+  "branch": "codex/20260910-financial-exclusion-expectation-m12u",
+  "implementation_commit": "551f98f92e1f075990de1db1fd23eff4753c4da4",
+  "offline_review_commit": "f73ce3ad5018704c403b2a5f0ce91884306cf61b",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "work_instruction_commit": "459af1097022b11fab15d9cda0a5836bd144bd9c",
+  "working_tree_state": "?? docs/reports/20260910-financial-sector-exclusion-validator-market-expectation-leverage-boundary-full-fictional-canary/"
+}

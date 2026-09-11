@@ -1,0 +1,21 @@
+{
+  "base_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+  "business_thesis_change_outside_current_formal_key": true,
+  "changed_in_m12s": false,
+  "contract": "m12s-formal-stability-classifier-audit-v1",
+  "current_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+  "decision": "KEEP",
+  "detects_fic_fin_02_output_instability": true,
+  "formal_classifier_change_required": false,
+  "historical_m12d_result_rewritten": false,
+  "separate_fingerprint_advisory_required": true,
+  "source_path": "scripts/directional_core_price_timing_holdout.py",
+  "status": "PASS",
+  "tracked_fields": [
+    "overall_direction",
+    "directional_balance",
+    "hold_lean",
+    "fundamental_new_buyer.stance",
+    "fundamental_holder.stance"
+  ]
+}

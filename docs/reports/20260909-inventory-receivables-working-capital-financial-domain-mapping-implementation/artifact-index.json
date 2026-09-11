@@ -1,0 +1,573 @@
+{
+  "contract": "m10-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "payload_count": 47,
+  "rows": [
+    {
+      "path": "01-repository-provenance.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "cdef96c090fcf667a451137c468268c7365b9dd07fd1be4d9eb216bec60b7959",
+      "size_bytes": 1167
+    },
+    {
+      "path": "02-latest-result-integrity.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "211fc4a800182d5a86aa07feca72bf0061a3302f4da8dbaa07570d0da7b53ed9",
+      "size_bytes": 670
+    },
+    {
+      "path": "03-m10-scope-freeze.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "848c2f471e8041c526bd3a5a7ed4fc1adf0a8d4f34b479de5d6863247a0b3f73",
+      "size_bytes": 541
+    },
+    {
+      "path": "04-m4-working-capital-contract-reuse-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "464b5b580d103ef7036b351d6290b3dfd1c272f617b600fae69dc47335ad623e",
+      "size_bytes": 5151
+    },
+    {
+      "path": "05-m5-m9-contract-reuse-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "4d51486802e8e602c9df150b64558d482bd077677215970c2eb6e4c3392b7572",
+      "size_bytes": 898
+    },
+    {
+      "path": "06-current-working-capital-source-inventory.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "59be1ea840710adf43fc9b9c0ae8f0ff4e571cb0ac75ca458caab5d5587891ed",
+      "size_bytes": 433
+    },
+    {
+      "path": "07-sector-routing-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "db4f6801b77e08f1283d3fd4704374adb107619bf795497be16a4217a350992b",
+      "size_bytes": 389
+    },
+    {
+      "path": "08-inventory-taxonomy.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "3dc7220356939c723cd9f01d1938bfbe4ee7b2d1ea7719257095e6a6a019faac",
+      "size_bytes": 2640
+    },
+    {
+      "path": "09-receivables-taxonomy.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "84da9efc8f11b5493eef33b75fd9ae704d459958253e4f5f0e23842f9fe9865b",
+      "size_bytes": 3379
+    },
+    {
+      "path": "10-trade-payables-taxonomy.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "c3b537f94d9bd2a98958be4c997519daea19005ce8c30a871bd859a3d72940c8",
+      "size_bytes": 2186
+    },
+    {
+      "path": "11-contract-assets-liabilities-policy.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "6747c060df8cb91d3e6d219118bbe5b8486fb4c9a9572dcb75ea0420328ac316",
+      "size_bytes": 1414
+    },
+    {
+      "path": "12-working-capital-formula-boundary.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "486ef615109d4155a6b53bcf1c028193366eb3ab1034e486664b21fd53307620",
+      "size_bytes": 409
+    },
+    {
+      "path": "13-comparison-kind-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "76eeee7235bd152c0770d7693123718036c1c8cb1e2d7bc28cd354f6e478ffb6",
+      "size_bytes": 475
+    },
+    {
+      "path": "14-working-capital-adapter-contract.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "957ddda1764d90cb7306bd0ebdb6400c3d317d2f3983933d8472e8ac3977b573",
+      "size_bytes": 441
+    },
+    {
+      "path": "15-working-capital-implementation-diff.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "45d692c359604a507949aeeaf030e1a93a8a1ca93730892b238dc0c676beb4b0",
+      "size_bytes": 579
+    },
+    {
+      "path": "16-source-mapping-activation-surface.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f1d931a4766c0cb593cb0bb57f987e39030e2fb06436adef1c4997aa8170cad6",
+      "size_bytes": 438
+    },
+    {
+      "path": "17-us-working-capital-source-support-audit.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "2cdf4eb7d622a9d0717a63cfd67b9b622bcb96c5690d1e27a90d0e527c359848",
+      "size_bytes": 434
+    },
+    {
+      "path": "18-kr-working-capital-source-support-audit.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "5ff91514524742f981167ab9f1f23f1aa25b176aad73440aeae06ff493919632",
+      "size_bytes": 161575
+    },
+    {
+      "path": "19-financial-sector-routing-audit.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "4da7c65342ff7aab1b2dcfffddb4c1bfba6c91cf14d304502a61af26a9c8e436",
+      "size_bytes": 2502
+    },
+    {
+      "path": "20-gross-net-receivables-control.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a9951c5d896173e3f887137c345e3f3285f0a9cd29b98885c2c514e64e94b3c1",
+      "size_bytes": 244
+    },
+    {
+      "path": "21-aggregate-child-overlap-control.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f390f8b3160399ec3869db8994a982428a30a8a1f7ec4ed3f709d0f4fd29fd2d",
+      "size_bytes": 1222
+    },
+    {
+      "path": "22-comparison-labeling-control.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d5569638d27e9016ed283657f603fe5b46c8ae4108f2b3e7e3e01428dac26ba2",
+      "size_bytes": 2718
+    },
+    {
+      "path": "23-efficiency-ratio-negative-control.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "25fd99a77043fa03c1d28eecbd0cf7315a5b49c7e550c5d6875ada571f40f99e",
+      "size_bytes": 334
+    },
+    {
+      "path": "24-real-archive-coverage.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "acb8c1e2c3403d860e5bda33a19160221cbd1502dc5f717c5c0e82d665d7d395",
+      "size_bytes": 909
+    },
+    {
+      "path": "25-comparison-coverage-audit.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "15e7b75865118650044a2d47648419e560022f2ae5de96458f55f9f8db85d06d",
+      "size_bytes": 382
+    },
+    {
+      "path": "26-denial-accounting.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "7ee812db519aeb0eab544ff549a4f5961330953812ee8ebb13a17eb6445914e2",
+      "size_bytes": 751
+    },
+    {
+      "path": "27-compact-ai-context-non-leak-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "3ea6a85ee85a3ef9da8891a303d61a9b99189aba1ab0c27fac6fdd7d96b193e8",
+      "size_bytes": 2189
+    },
+    {
+      "path": "28-directional-prompt-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d4c2a8f1f1190df652afc842dcac19d5e5963c6aaade9b0a42afea3b0070d55d",
+      "size_bytes": 387
+    },
+    {
+      "path": "29-price-timing-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "c5f9e392492dd8f26929b1eebc25bc80819cdba442d30ec93e92c3c7ab7f03bc",
+      "size_bytes": 384
+    },
+    {
+      "path": "30-source-sufficiency-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "49afddeec5e30047fcc7b05501f110393e4d62382471196b0f14b67be826fd88",
+      "size_bytes": 1874
+    },
+    {
+      "path": "31-daily-delta-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "11726a9266daf9399d2b7b02bca5adf3fc0fffa122cf3b0fb0ff30e8bfcbab02",
+      "size_bytes": 819
+    },
+    {
+      "path": "32-warning-no-change-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "5fdd58a95920b839a22778196b040cf6ca8cc4fa65fd607f2ae406df7148a090",
+      "size_bytes": 729
+    },
+    {
+      "path": "33-historical-packet-compatibility.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "15a9ae95698f4af4d2b5a39f24508c932883261ce9465ffafea7727155840586",
+      "size_bytes": 1218
+    },
+    {
+      "path": "34-working-capital-idempotency-proof.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "2a2f8787ea341372058a76072197df7cd33f38326f5b89308dba5d41ea39a9be",
+      "size_bytes": 272
+    },
+    {
+      "path": "35-positive-fixture-manifest.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f9a231387d9957a4ce6d2301ca73e9cc74acdbd297a22c18a6b108b43afe10ac",
+      "size_bytes": 1739
+    },
+    {
+      "path": "36-negative-fixture-manifest.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "9eaebf093e289f5d9afcf374abac55c0b5063da4596ef212882c1336c6780f23",
+      "size_bytes": 2541
+    },
+    {
+      "path": "37-focused-test-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "250f09489b05eaf1e6ee271026f1c5f1063d1659da536b43a7583b7c4f9993dd",
+      "size_bytes": 1124
+    },
+    {
+      "path": "38-full-test-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f253cc175afd10d14ca23104a98e8fc1e4ae218db69c852db1fd914d3bb13ba7",
+      "size_bytes": 268
+    },
+    {
+      "path": "39-ruff-and-diff-results.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "5ba45fa9f01bddc6d06205088530524cd3385791147374983bb00ba46fa0fbb9",
+      "size_bytes": 311
+    },
+    {
+      "path": "40-non-operating-next-scope-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "37c9cdb9ec177657d20fa32db318c9b8bb897f3752370e20467b8d8104d63c03",
+      "size_bytes": 323
+    },
+    {
+      "path": "41-directional-specificity-activation-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "4269328c945ad64dddd108bca358ec45984c9e1f847bda6bf8d92ac21e0e4fc2",
+      "size_bytes": 217
+    },
+    {
+      "path": "42-source-sufficiency-future-review-decision.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a03619f4fd5034ea6c2ec4d362e9caef2adb4dd0bb0cab6458ea88c66430911f",
+      "size_bytes": 234
+    },
+    {
+      "path": "43-production-no-change.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "6fc5482a11343d11b5d1de859d80c316e8b49a8679c260afce7334e6c642e6a1",
+      "size_bytes": 633
+    },
+    {
+      "path": "44-schedule-pause-observation.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8f212c6d85e562c3a1db7964e5b03206bc187fa709b9743d52636296b5bf456e",
+      "size_bytes": 1094
+    },
+    {
+      "path": "45-master-workflow-update.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "bcbf11321902999410641a5b70c280ecdb52cc77a912190bb19812d15a555f6f",
+      "size_bytes": 374
+    },
+    {
+      "path": "46-program-completion.json",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "e7c9a8d6526a4f9087bf2516fa2bacb2dfea4bf1c6b5ee520b6304f44fb01630",
+      "size_bytes": 4305
+    },
+    {
+      "path": "20260909-inventory-receivables-working-capital-financial-domain-mapping-implementation.md",
+      "secret_category_counts": {
+        "aws_access_key": 0,
+        "openai_key": 0,
+        "private_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "5b03a7ce32a86bd46f7b49ae8a29afb9f2af0b457203a318e09bbe7e5107f2e5",
+      "size_bytes": 2387
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0
+}

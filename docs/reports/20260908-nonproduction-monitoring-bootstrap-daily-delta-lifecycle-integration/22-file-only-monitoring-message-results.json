@@ -1,0 +1,167 @@
+{
+  "all_labeled": true,
+  "all_sections_present": true,
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "message_count": 12,
+  "queue_writes": 0,
+  "rows": [
+    {
+      "fixture_id": "M3-01",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-01.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "9901f3a69f97fedc2c87519d43012b28d274e65fbb54d084f81c1980c18e91b2"
+    },
+    {
+      "fixture_id": "M3-02",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-02.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "1b91f0266704f899abad2ade2cf9a9a5f10fc4ed76de8ee5d78d5260d86605b1"
+    },
+    {
+      "fixture_id": "M3-03",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-03.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "bd0afe85fcf278cbeaf0165f8fd929f3f95241ddf010b39ff673e069333d3217"
+    },
+    {
+      "fixture_id": "M3-04",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-04.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "e325b9447b2e15ea810d2d989618d3217095dc12afd59665c0039d8c5e5dca2f"
+    },
+    {
+      "fixture_id": "M3-05",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-05.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "ece39ad14275ee4ac026e6ce22ad1aa07354ca7dd619d075a6f2ba7937364e51"
+    },
+    {
+      "fixture_id": "M3-06",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-06.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "46b2b372cea37b8582b7800d7910f87582af944c99810e6149f4ae64710fc2c7"
+    },
+    {
+      "fixture_id": "M3-07",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-07.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "4f68697fcee5e4a0f9b8945df2ef1e99313c2a217cd17c17ed0ef28e6e9f2258"
+    },
+    {
+      "fixture_id": "M3-08",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-08.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "8860ab5f4a510ae88d8b7e44f5387e72ea1384c00bc877265bfa3ecae77c306c"
+    },
+    {
+      "fixture_id": "M3-09",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-09.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "67c1b8dfec9c6609603a23b68d3f583958408d5d7d8aa6a081ab2492a60da825"
+    },
+    {
+      "fixture_id": "M3-10",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-10.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "956bb29001cc88250901673af739bb278241960632b5cdbe93342b25be7b96d1"
+    },
+    {
+      "fixture_id": "M3-11",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-11.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "5dcaed73bcb0a47360ce03705d953aab84b5101aa510037c4b823d2ba0c9e910"
+    },
+    {
+      "fixture_id": "M3-12",
+      "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/docs/reports/20260908-nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration/messages/m3-12.txt",
+      "sections": {
+        "absolute_decision": true,
+        "daily_delta": true,
+        "holder": true,
+        "new_buyer": true,
+        "next_check": true,
+        "price_timing": true
+      },
+      "sha256": "404c3b840aeba4dd6a114a8ab5d8751a465638aed57491d50034a517a2b01668"
+    }
+  ],
+  "sends": 0,
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+{
+  "averaged_conflict_count": 0,
+  "contract": "m9-source-conflict-and-dedup-audit-v1",
+  "real_deduplicated_fact_count": 0,
+  "real_source_conflict_count": 0,
+  "selection_policy": "latest eligible filing date then latest source document; equal-authority conflict blocks; identical facts deduplicate",
+  "synthetic_deduplicated_fact_count": 1,
+  "synthetic_source_conflict_blocked_count": 1,
+  "synthetic_source_conflict_count": 1
+}

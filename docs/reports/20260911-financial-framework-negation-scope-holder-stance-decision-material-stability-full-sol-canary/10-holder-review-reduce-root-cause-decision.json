@@ -1,0 +1,14 @@
+{
+  "accepted_contract": {
+    "fic_fin_05_target": "REVIEW",
+    "holdable": "no material confirmed fundamental reason to reconsider the holding",
+    "reduce": "confirmed fundamental downside is sufficiently severe or persistent that maintaining the same exposure is no longer justified",
+    "review": "material confirmed fundamental risk exists but a critical severity, persistence, or reversibility question remains unresolved, so exposure reduction is not uniquely justified",
+    "sell_mechanically_forces_reduce": false,
+    "unchanged_mechanically_forces_review": false
+  },
+  "prompt_change_allowed": true,
+  "root_cause": "HOLDER_REVIEW_REDUCE_SEVERITY_PERSISTENCE_BOUNDARY_UNSPECIFIED",
+  "status": "BOUNDED_GENERIC_CLARIFICATION_REQUIRED",
+  "ticker_specific_prompt": false
+}

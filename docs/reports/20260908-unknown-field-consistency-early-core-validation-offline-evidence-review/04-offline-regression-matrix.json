@@ -1,0 +1,90 @@
+{
+  "actual_orchestration_early_stop_test": "tests/test_new_issuer_holdout_selection_ownership_proof.py::test_execute_run_stops_before_timing_after_invalid_core",
+  "case_count": 10,
+  "cases": [
+    {
+      "actual": "FAIL",
+      "case": "exact_historical_neon_invalid_core",
+      "errors": [
+        "unknown_nonnegative_has_directional_basis"
+      ],
+      "expected": "FAIL",
+      "source_kind": "EXACT_HISTORICAL_MODEL_OUTPUT",
+      "status": "PASS"
+    },
+    {
+      "actual": "PASS",
+      "case": "confirmation_required_context_without_negative_basis",
+      "errors": [],
+      "expected": "PASS",
+      "status": "PASS"
+    },
+    {
+      "actual": "FAIL",
+      "case": "confidence_limit_with_negative_basis",
+      "errors": [
+        "unknown_nonnegative_has_directional_basis"
+      ],
+      "expected": "FAIL",
+      "status": "PASS"
+    },
+    {
+      "actual": "PASS",
+      "case": "confirmed_negative_plus_separate_unknown",
+      "errors": [],
+      "expected": "PASS",
+      "status": "PASS"
+    },
+    {
+      "actual": "FAIL",
+      "case": "missing_only_promoted_to_negative",
+      "errors": [
+        "unknown_directional_negative_without_non_unknown_evidence"
+      ],
+      "expected": "FAIL",
+      "status": "PASS"
+    },
+    {
+      "actual": "FAIL",
+      "case": "forbidden_price_reference_in_core",
+      "errors": [
+        "directional_core_contains_price_or_technical_ref",
+        "directional_core_ref_outside_domain_registry"
+      ],
+      "expected": "FAIL",
+      "status": "PASS"
+    },
+    {
+      "actual": "PASS",
+      "case": "same_candidate_before_after_valid_alias_resolution",
+      "expected": "PASS",
+      "status": "PASS"
+    },
+    {
+      "actual": "FAIL",
+      "case": "nonexistent_alias_rejected",
+      "error": "nonexistent_evidence_alias:SYNTHETIC_UNKNOWN_CONTRACT:E999",
+      "expected": "FAIL",
+      "status": "PASS"
+    },
+    {
+      "actual": "FAIL",
+      "case": "cross_issuer_catalog_rejected",
+      "error": "cross_subject_evidence_alias",
+      "expected": "FAIL",
+      "status": "PASS"
+    },
+    {
+      "actual": "PASS",
+      "case": "independently_valid_core_timing_ownership_unchanged",
+      "errors": [],
+      "expected": "PASS",
+      "status": "PASS"
+    }
+  ],
+  "contract": "unknown-field-offline-regression-matrix-v1",
+  "corrected_derivatives": "TEST_DERIVATIVE_NOT_MODEL_OUTPUT",
+  "failure_count": 0,
+  "fixture_policy": "HAND_AUTHORED_OR_EXACT_HISTORICAL_NO_MODEL_CALL",
+  "status": "PASS"
+}

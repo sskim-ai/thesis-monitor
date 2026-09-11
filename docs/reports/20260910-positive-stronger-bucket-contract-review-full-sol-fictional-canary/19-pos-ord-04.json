@@ -1,0 +1,10 @@
+{
+  "expected_buy": 6.5,
+  "expected_direction": "BUY",
+  "expected_sell": 3.5,
+  "id": "POS-ORD-04",
+  "pattern": "Strong distinct current operating, cash-conversion, and balance-sheet support is established; safe valuation is the only missing domain.",
+  "reason": "Valuation absence limits conviction but is not a universal stronger-bucket cap.",
+  "side": "POSITIVE",
+  "status": "PASS"
+}

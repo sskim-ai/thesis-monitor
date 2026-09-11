@@ -1,0 +1,11 @@
+{
+  "contract": "m11-directional-prompt-no-change-v1",
+  "directional_prompt_change_count": 0,
+  "proof": {
+    "after_sha256": "280b9df969de5b965e46623728ce3ecdbfb01e5a044f52058861fe3b7dc334ff",
+    "before_sha256": "280b9df969de5b965e46623728ce3ecdbfb01e5a044f52058861fe3b7dc334ff",
+    "changed": false,
+    "function": "_core_prompt",
+    "path": "scripts/directional_core_price_timing_holdout.py"
+  }
+}

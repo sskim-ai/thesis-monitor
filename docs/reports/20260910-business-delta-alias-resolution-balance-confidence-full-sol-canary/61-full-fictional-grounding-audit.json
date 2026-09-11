@@ -1,0 +1,192 @@
+{
+  "complete_sample": false,
+  "contract": "m12g-full-fictional-canary-financial-grounding-audit-v1",
+  "irrelevant_financial_ref_grounding_failure_count": 0,
+  "material_financial_anchor_grounding_failure_count": 0,
+  "narrative_substitution_failure_count": 0,
+  "rows": [
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-01:net-debt",
+        "canonical:fictional:FIC-FIN-01:ocf-current"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-01:sector-context"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-01:net-debt",
+        "canonical:fictional:FIC-FIN-01:ocf-current"
+      ],
+      "ticker": "FIC-FIN-01",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-01:net-debt",
+        "canonical:fictional:FIC-FIN-01:ocf-current"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [
+        "canonical:fictional:FIC-FIN-02:inventory-current"
+      ],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-02:business-thesis",
+        "fictional:FIC-FIN-02:operating-evidence",
+        "fictional:FIC-FIN-02:remaining-unknown",
+        "fictional:FIC-FIN-02:sector-context",
+        "fictional:FIC-FIN-02:structural-risk",
+        "fictional:FIC-FIN-02:valuation-limit"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "ticker": "FIC-FIN-02",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-03:market-expectation",
+        "fictional:FIC-FIN-03:remaining-unknown",
+        "fictional:FIC-FIN-03:sector-context",
+        "fictional:FIC-FIN-03:structural-risk",
+        "fictional:FIC-FIN-03:valuation-limit"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "ticker": "FIC-FIN-03",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-04:market-expectation",
+        "fictional:FIC-FIN-04:remaining-unknown",
+        "fictional:FIC-FIN-04:sector-context",
+        "fictional:FIC-FIN-04:structural-risk"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "ticker": "FIC-FIN-04",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-05:operating-evidence",
+        "fictional:FIC-FIN-05:remaining-unknown",
+        "fictional:FIC-FIN-05:sector-context",
+        "fictional:FIC-FIN-05:structural-risk"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "ticker": "FIC-FIN-05",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-06:business-thesis",
+        "fictional:FIC-FIN-06:operating-evidence",
+        "fictional:FIC-FIN-06:remaining-unknown",
+        "fictional:FIC-FIN-06:sector-context",
+        "fictional:FIC-FIN-06:valuation-limit"
+      ],
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ],
+      "ticker": "FIC-FIN-06",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-06:inventory-current",
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+      ]
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [],
+      "narrative_only_duplicate_refs": [],
+      "selected_financial_refs": [],
+      "ticker": "FIC-FIN-07",
+      "used_financial_refs": []
+    },
+    {
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounding_status": "PASS",
+      "material_financial_anchor_refs": [],
+      "narrative_only_duplicate_refs": [],
+      "selected_financial_refs": [],
+      "ticker": "FIC-FIN-08",
+      "used_financial_refs": []
+    }
+  ],
+  "selected_financial_ref_count": 15,
+  "status": "PASS",
+  "used_financial_ref_count": 15,
+  "working_capital_grounding_failure_count": 0
+}

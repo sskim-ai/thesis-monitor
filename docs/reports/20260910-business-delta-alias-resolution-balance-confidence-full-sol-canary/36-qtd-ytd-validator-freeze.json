@@ -1,0 +1,21 @@
+{
+  "rows": [
+    {
+      "base_sha256": "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0",
+      "changed": false,
+      "current_sha256": "d793d98a46b4e2759d71c9307d9e31017c54045fdb457f157f9ab599243714c0",
+      "expected_changed": false,
+      "path": "scripts/qtd_ytd_plain_korean_period_validator_m12d.py",
+      "status": "PASS"
+    },
+    {
+      "base_sha256": "a3677f5204a9e4a951378e09604b49ab535cefe95171c8ca4af6994345915ddc",
+      "changed": false,
+      "current_sha256": "a3677f5204a9e4a951378e09604b49ab535cefe95171c8ca4af6994345915ddc",
+      "expected_changed": false,
+      "path": "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

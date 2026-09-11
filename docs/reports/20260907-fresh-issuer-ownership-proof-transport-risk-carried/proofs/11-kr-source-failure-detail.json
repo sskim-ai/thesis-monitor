@@ -1,0 +1,1783 @@
+{
+  "contract": "fresh-kr-source-failure-detail-v1",
+  "failure_count": 48,
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 1,
+      "canonical_issuer_key": "opendart:corp:00628189",
+      "canonical_security_id": "kr:kospi:095720",
+      "diagnostic_packet_sha256": "eb8c12c45aff08cac231b2873c6908a72dd1fcc60c5419060967d32b0d63d817",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "095720"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 2,
+      "canonical_issuer_key": "opendart:corp:00128546",
+      "canonical_security_id": "kr:kosdaq:000250",
+      "diagnostic_packet_sha256": "894a4d410cdedff1ccb9e43a8699926aa62480b954f8cd1ea38160bed6168db4",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 2,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "000250"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 3,
+      "canonical_issuer_key": "opendart:corp:01494154",
+      "canonical_security_id": "kr:kosdaq:389030",
+      "diagnostic_packet_sha256": "0755bad88eed0f1f6ff9567b0356eb7ff1d7f01f7a32320a1260b42326a0847d",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 3,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "389030"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 4,
+      "canonical_issuer_key": "opendart:corp:00149646",
+      "canonical_security_id": "kr:kospi:024110",
+      "diagnostic_packet_sha256": "9e5cd90b9901e2264091cc132389d27f5b956182ffaa07c2773ce05e4330de86",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "bank_or_insurer",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "024110"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 5,
+      "canonical_issuer_key": "opendart:corp:00153621",
+      "canonical_security_id": "kr:kospi:009310",
+      "diagnostic_packet_sha256": "0c6f7f42d2fd47656ec6a60b52fcbd70be5e1386d44ae41e22b0a5ffa2c3b47c",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 5,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "009310"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 6,
+      "canonical_issuer_key": "opendart:corp:00161383",
+      "canonical_security_id": "kr:kospi:042700",
+      "diagnostic_packet_sha256": "953644135df921f005bca6866cac326439433b783dc8fc1859d487a99b5d6c23",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 6,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "042700"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 7,
+      "canonical_issuer_key": "opendart:corp:00118451",
+      "canonical_security_id": "kr:kospi:002690",
+      "diagnostic_packet_sha256": "340f41f135c3c70a8f408ad7c34526af9dbca41ec97144a9f705663cdd01eeb5",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 7,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "002690"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 8,
+      "canonical_issuer_key": "opendart:corp:00683469",
+      "canonical_security_id": "kr:kospi:103590",
+      "diagnostic_packet_sha256": "9a3877c7bafa5217f6e92ca0c24f8b965470f7f02a579cb87747b5d78808cdc4",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 8,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "103590"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 9,
+      "canonical_issuer_key": "opendart:corp:00203582",
+      "canonical_security_id": "kr:kospi:025750",
+      "diagnostic_packet_sha256": "6ff6f0a232d60142982d248c271579bf884973a7cfb2b4e0658bb21b706104b1",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "025750"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 10,
+      "canonical_issuer_key": "opendart:corp:00540605",
+      "canonical_security_id": "kr:kospi:084680",
+      "diagnostic_packet_sha256": "151cdb85f2c57af4ba330a9e6acd146d8ac61674a2931bc1d0b26dbab80d9cce",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 10,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "084680"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 11,
+      "canonical_issuer_key": "opendart:corp:01140837",
+      "canonical_security_id": "kr:kosdaq:377330",
+      "diagnostic_packet_sha256": "e73bc50f6f0167cae9a0287760175802e22d34d70a05bddf0129356137d38b75",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 11,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "377330"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 12,
+      "canonical_issuer_key": "opendart:corp:00158024",
+      "canonical_security_id": "kr:kosdaq:024840",
+      "diagnostic_packet_sha256": "699a94288ae2592c6837b3ced34f3bde1e5916d63e72f073a0a14a61c2f7ec0f",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 12,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "024840"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 13,
+      "canonical_issuer_key": "opendart:corp:01360875",
+      "canonical_security_id": "kr:kosdaq:360070",
+      "diagnostic_packet_sha256": "683c2bc385d6d634e6f39e87408fffca547a0bfe29d48b3235f161e8da28a462",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 13,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "360070"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 14,
+      "canonical_issuer_key": "opendart:corp:00331016",
+      "canonical_security_id": "kr:kosdaq:064850",
+      "diagnostic_packet_sha256": "162c8a224d819a25898dcd341a84ea0181ef99d426f3c0af09b074c11a096adc",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 14,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "064850"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 15,
+      "canonical_issuer_key": "opendart:corp:00202060",
+      "canonical_security_id": "kr:kosdaq:053270",
+      "diagnostic_packet_sha256": "851ad92b08acc16cd2a6329248f6935a33da8906534f7c305e9036a000491db2",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 15,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "053270"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 16,
+      "canonical_issuer_key": "opendart:corp:00543204",
+      "canonical_security_id": "kr:kosdaq:078860",
+      "diagnostic_packet_sha256": "5395a6288e4ab51bef5a19a78e7aa31269f4e4c3faffadecd29d65e3e92f373c",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 16,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "078860"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 17,
+      "canonical_issuer_key": "opendart:corp:00526599",
+      "canonical_security_id": "kr:kospi:145720",
+      "diagnostic_packet_sha256": "5e305be2004aa8efc452c71c16d140e9104ecbfc6b6b45e64fb024c2c49bb67d",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 17,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "145720"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 18,
+      "canonical_issuer_key": "opendart:corp:01110058",
+      "canonical_security_id": "kr:kosdaq:199730",
+      "diagnostic_packet_sha256": "9b496bd64aca123a1c1042dff75d76d7717823a8ccfeb9dbdf32f3bdd371394f",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 18,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "199730"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 19,
+      "canonical_issuer_key": "opendart:corp:00398668",
+      "canonical_security_id": "kr:kosdaq:065510",
+      "diagnostic_packet_sha256": "438077f8564c27d90a46b9bcd86c3c69de2597ebdd05b04cd47bc394c6a4e65c",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 19,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "065510"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 20,
+      "canonical_issuer_key": "opendart:corp:00866451",
+      "canonical_security_id": "kr:kosdaq:396470",
+      "diagnostic_packet_sha256": "6e96838f38bf4de015bc968d7966649d38bb5b6bb706aff4d98df29a11c13178",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 20,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "396470"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 21,
+      "canonical_issuer_key": "opendart:corp:00533191",
+      "canonical_security_id": "kr:kosdaq:082800",
+      "diagnostic_packet_sha256": "fa7ca7009fe549ecc6e9576fb27ff3c6cb4a84d1e827e7f6a4306bab65b6e03c",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 21,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "082800"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 22,
+      "canonical_issuer_key": "opendart:corp:01276327",
+      "canonical_security_id": "kr:kosdaq:299900",
+      "diagnostic_packet_sha256": "5490bca9ca0ff1a8c1d9cf5e168bbcdabeed2c5f2b3ed442d6efa4df89798196",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 22,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "299900"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 23,
+      "canonical_issuer_key": "opendart:corp:00110875",
+      "canonical_security_id": "kr:kosdaq:020180",
+      "diagnostic_packet_sha256": "67e1cea791bcfe98e1b31e44b05ff687d21cabbb0e17133974755cc147b58ee5",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 23,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "020180"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 24,
+      "canonical_issuer_key": "opendart:corp:00799539",
+      "canonical_security_id": "kr:kosdaq:122310",
+      "diagnostic_packet_sha256": "fb73e2cad05ac6c8252f9bbcdd71c7bdf1e735e01f90b6321fe238222b19db0a",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 24,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "122310"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 25,
+      "canonical_issuer_key": "opendart:corp:01110474",
+      "canonical_security_id": "kr:kosdaq:298060",
+      "diagnostic_packet_sha256": "ea664c1c85f7dd239569573cd4543e250879772446f1eca84536cdf6196eb3e5",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 25,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "298060"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 26,
+      "canonical_issuer_key": "opendart:corp:01528141",
+      "canonical_security_id": "kr:kosdaq:417200",
+      "diagnostic_packet_sha256": "3d337c3d6291a4e9b99f6f833d94ecd0077990c9a3d9734d107f65730c16f367",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 26,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "417200"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 27,
+      "canonical_issuer_key": "opendart:corp:00113128",
+      "canonical_security_id": "kr:kosdaq:023910",
+      "diagnostic_packet_sha256": "613428365bb2cedc6404b7747d74db9cd0ef19606658296ee2701bb25dbd8e27",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 27,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "023910"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 28,
+      "canonical_issuer_key": "opendart:corp:00303192",
+      "canonical_security_id": "kr:kosdaq:066900",
+      "diagnostic_packet_sha256": "03d94b2a782928f956a5e8e1a5446be7a01f7f9fb3e2f29e15c2e7ab7fc4e863",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 28,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "066900"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 29,
+      "canonical_issuer_key": "opendart:corp:00442570",
+      "canonical_security_id": "kr:kosdaq:079370",
+      "diagnostic_packet_sha256": "e1f73446240a3a4ff988c2b70aa2f66064440082e8480377aedef05e46c2e1e0",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 29,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "079370"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 30,
+      "canonical_issuer_key": "opendart:corp:01160363",
+      "canonical_security_id": "kr:kosdaq:247540",
+      "diagnostic_packet_sha256": "19924de18774f0cf8dfdb3c19478ffd92d599300568aeb6f74f075cbe9fe057b",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 30,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "247540"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 31,
+      "canonical_issuer_key": "opendart:corp:00997812",
+      "canonical_security_id": "kr:kosdaq:183300",
+      "diagnostic_packet_sha256": "82dd76501f0f84688bb348b6cc9d56e0a8a64c4ef0b1f9a332a7a34463403866",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 31,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "183300"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 32,
+      "canonical_issuer_key": "opendart:corp:01442115",
+      "canonical_security_id": "kr:kosdaq:950200",
+      "diagnostic_packet_sha256": "625e50675f4bb41fd5c0e6e84721cdaeec6b6e6b43e95d76bfc69c7b44461ec5",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 32,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "950200"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 33,
+      "canonical_issuer_key": "opendart:corp:00132637",
+      "canonical_security_id": "kr:kospi:014820",
+      "diagnostic_packet_sha256": "e863d8d4f8bdcbc71e53539003d6ce368dbdcf64609368cbe4fa8aed9e7150c4",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 33,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "014820"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 34,
+      "canonical_issuer_key": "opendart:corp:01565054",
+      "canonical_security_id": "kr:kosdaq:318060",
+      "diagnostic_packet_sha256": "868dffd68780e73d56c7500ecdb457839fb170c5f8258b03fc14742dc0d388cd",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 34,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "318060"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 35,
+      "canonical_issuer_key": "opendart:corp:00755739",
+      "canonical_security_id": "kr:kosdaq:106240",
+      "diagnostic_packet_sha256": "4f86f41ba38902a5ede7ffaa1e22f06f9754c6eb0530125f6c2b66bc01ad12d6",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 35,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "106240"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 36,
+      "canonical_issuer_key": "opendart:corp:01152470",
+      "canonical_security_id": "kr:kosdaq:263750",
+      "diagnostic_packet_sha256": "a6579fea70b4edac5a893d2779039f6f634ca334e351c20608bbc30433737439",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 36,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "263750"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 37,
+      "canonical_issuer_key": "opendart:corp:00956930",
+      "canonical_security_id": "kr:kospi:170900",
+      "diagnostic_packet_sha256": "94938f1c4f5af5ad98d334eb98c6e029b8c9fb6eb280f3f50da6d05fbf2de246",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 37,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "170900"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 38,
+      "canonical_issuer_key": "opendart:corp:00369213",
+      "canonical_security_id": "kr:kosdaq:039980",
+      "diagnostic_packet_sha256": "77f260a376fa2e57a971f5323da7764f9a3d3fade22aef1252995269deb3c30a",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 38,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "039980"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 39,
+      "canonical_issuer_key": "opendart:corp:00144395",
+      "canonical_security_id": "kr:kospi:026960",
+      "diagnostic_packet_sha256": "276f4e97b1d7d1b0e1962bb21de21f3f40faabe572f261a851ee6fa067aa8918",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 39,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "026960"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 40,
+      "canonical_issuer_key": "opendart:corp:00761059",
+      "canonical_security_id": "kr:kosdaq:251970",
+      "diagnostic_packet_sha256": "5616234cc1978faaa6e7b0d201108e970625551f20d036b41791f474749a728c",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 40,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "251970"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 41,
+      "canonical_issuer_key": "opendart:corp:00323868",
+      "canonical_security_id": "kr:kosdaq:053580",
+      "diagnostic_packet_sha256": "b4a17646c29e3f2180acf3d2caf5b8da1297596c857b5aa1ff8b8f9f7e1c40b8",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 41,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "053580"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 42,
+      "canonical_issuer_key": "opendart:corp:00695969",
+      "canonical_security_id": "kr:kosdaq:094170",
+      "diagnostic_packet_sha256": "b99d21f5b8908ed10f3b7cddaeb6c1726b1d6da7c84be9257a5aa18c221a4b6f",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 42,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "094170"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 43,
+      "canonical_issuer_key": "opendart:corp:00165343",
+      "canonical_security_id": "kr:kospi:003010",
+      "diagnostic_packet_sha256": "c3a4ec26011971ecf963cf5a173daf7761071ff7a02d6df893dd38694b81ad4b",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 43,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "003010"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 44,
+      "canonical_issuer_key": "opendart:corp:01354740",
+      "canonical_security_id": "kr:kosdaq:365900",
+      "diagnostic_packet_sha256": "b899ecb093a20c7b1bc88c9f1331cc48682e0fa834936676baa68420c2ab2b54",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 44,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "365900"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 45,
+      "canonical_issuer_key": "opendart:corp:00125576",
+      "canonical_security_id": "kr:kospi:033250",
+      "diagnostic_packet_sha256": "1d0c3c27d38a227782b556dd399eb76ecaf711b8ed97d50d47630e575f3a0867",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "asset_heavy_or_cyclical",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 45,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "033250"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 46,
+      "canonical_issuer_key": "opendart:corp:00129387",
+      "canonical_security_id": "kr:kospi:000390",
+      "diagnostic_packet_sha256": "aebbc8518d36959d7ba3f3db4bf690f62d28646675ef3937e90c534e518617e8",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 46,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "000390"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 47,
+      "canonical_issuer_key": "opendart:corp:01559637",
+      "canonical_security_id": "kr:kosdaq:439580",
+      "diagnostic_packet_sha256": "672eb295ca26578e933be287587d5d9b6fcb4569fe18e02110bc04e16a08368d",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 47,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "439580"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 48,
+      "canonical_issuer_key": "opendart:corp:00107677",
+      "canonical_security_id": "kr:kospi:002070",
+      "diagnostic_packet_sha256": "5deb562e4399de5dee99651537364000d9d908bea4e3b153b1c6b53677d21088",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [],
+      "failure_reasons": [
+        "official_profile_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "standard_operating_company",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "profile_requests": 1,
+        "profile_successes": 0
+      },
+      "rank": 48,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": null,
+      "source_quality": "unavailable",
+      "source_request_lineage": [
+        {
+          "source": "official_profile",
+          "status": "unavailable"
+        }
+      ],
+      "source_sufficiency_status": "SECURITY_OR_ACCOUNTING_BASIS_BLOCK",
+      "ticker": "002070"
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE"
+}

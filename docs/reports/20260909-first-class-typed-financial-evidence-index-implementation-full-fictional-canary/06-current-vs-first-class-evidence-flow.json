@@ -1,0 +1,8 @@
+{
+  "after": "same aliases in ordinary evidence[] plus retained detail metadata",
+  "before": "selected typed aliases only in financial_decision_context detail",
+  "contract": "m12b-current-vs-first-class-evidence-flow-v1",
+  "first_class_typed_financial_projection_count": 15,
+  "selected_typed_financial_ref_count": 15,
+  "status": "PASS"
+}

@@ -1,0 +1,22 @@
+{
+  "adjacent_balance_alone_is_material": false,
+  "contract": "m12s-evidence-interpretation-fingerprint-contract-v1",
+  "llm_used": false,
+  "material_delta_rule": "economic semantic flag or disjoint dominant causal-domain change",
+  "normalized_dimensions": [
+    "direction",
+    "balance",
+    "hold lean",
+    "business thesis state",
+    "new-buyer stance",
+    "holder stance",
+    "material and dominant anchor domains",
+    "driver domains",
+    "Unknown treatments",
+    "reevaluation and invalidation domains",
+    "financial domains and metrics actually cited",
+    "economic semantic flags"
+  ],
+  "source": "preserved structured M12D outputs and aliases only",
+  "status": "FROZEN"
+}

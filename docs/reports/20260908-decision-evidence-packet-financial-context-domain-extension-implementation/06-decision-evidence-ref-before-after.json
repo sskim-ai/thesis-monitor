@@ -1,0 +1,38 @@
+{
+  "added_fields": [
+    "financial_context"
+  ],
+  "after_fields": [
+    "ref_id",
+    "category",
+    "label",
+    "statement",
+    "as_of",
+    "value",
+    "unit",
+    "source_ref",
+    "numeric_prose_eligible",
+    "metric_refs",
+    "logical_condition",
+    "financial_context"
+  ],
+  "before_fields": [
+    "ref_id",
+    "category",
+    "label",
+    "statement",
+    "as_of",
+    "value",
+    "unit",
+    "source_ref",
+    "numeric_prose_eligible",
+    "metric_refs",
+    "logical_condition"
+  ],
+  "contract": "m5-decision-evidence-ref-before-after-v1",
+  "financial_context_optional": true,
+  "legacy_serialization_omits_absent_context": true,
+  "removed_fields": [],
+  "required_existing_field_changes": [],
+  "status": "PASS"
+}

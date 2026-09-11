@@ -1,0 +1,16 @@
+{
+  "branch": "BRANCH_A",
+  "classification": "OTHER_BOUNDED_VALIDATOR_DEFECT",
+  "contract": "m12d-qtd-ytd-root-cause-v1",
+  "evidence_linkage_defect": false,
+  "frozen_at": "2026-09-09T11:13:49Z",
+  "genuine_model_semantic_failure": false,
+  "plain_korean_qtd_marker_false_reject": false,
+  "qtd_marker_detected_on_authoritative_claim": true,
+  "repair_boundary": "Add the generic Korean period-relation stem 상충 to the relation-marker family; preserve every evidence-linkage, QTD, YTD, path, prompt, schema, calibration, and working-capital requirement.",
+  "root_cause": "The authoritative run-3 claim links the same operating_income QTD/YTD refs and explicitly says 분기 영업흑자와 누적 영업손실이 상충해, but the frozen relation-marker family recognizes 공존/충돌/맞서/엇갈 and not 상충.",
+  "source_output_satisfies_semantic_contract": true,
+  "status": "FROZEN",
+  "subtype": "KOREAN_PERIOD_RELATION_MARKER_FALSE_REJECT",
+  "ytd_marker_detected_on_authoritative_claim": true
+}

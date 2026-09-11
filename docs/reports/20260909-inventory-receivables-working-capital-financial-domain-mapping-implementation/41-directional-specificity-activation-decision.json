@@ -1,0 +1,7 @@
+{
+  "contract": "m10-directional-specificity-activation-decision-v1",
+  "decision": "NOT_IN_M10",
+  "directional_prompt_change_count": 0,
+  "future_review": "AFTER_NON_OPERATING_DOMAIN_DECISION",
+  "model_calls": 0
+}

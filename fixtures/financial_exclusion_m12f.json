@@ -1,0 +1,39 @@
+{
+  "contract": "m12f-exclusion-fixture-v1",
+  "positive": [
+    "보험사에는 일반 영업기업의 순부채 틀을 적용하지 않는다.",
+    "운전자본 기준은 이 금융업종의 핵심 평가틀로 사용하지 않는다.",
+    "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다.",
+    "은행은 운전자본 기준으로 평가하지 않는다.",
+    "순부채 분석은 해당하지 않는다.",
+    "순부채 등 일반 틀을 배제한다.",
+    "순부채는 일반 영업기업 기준이 아니다.",
+    "보험사에는 순부채 틀을 적용하지 않습니다. 규제자본과 보험 인수 규율로 평가합니다.",
+    "Industrial net debt is not applicable to insurers.",
+    "Working capital metrics are not used for banks.",
+    "We do not use net debt and working capital frameworks.",
+    "We exclude industrial net debt framework."
+  ],
+  "negative": [
+    "순부채가 높아 재무위험이 크다.",
+    "보험사의 순부채와 운전자본 악화가 핵심 리스크다.",
+    "보험사는 운전자본 악화로 수익성이 낮다.",
+    "보험사라 순부채 틀은 적용하지 않지만 순부채가 높아 SELL 근거다.",
+    "순부채 틀은 적용하지 않는다. 순부채가 높아 위험하다.",
+    "순부채가 높고 보험 규정은 적용하지 않는다.",
+    "순부채가 중요하지 않지 않다.",
+    "순부채 틀을 적용하지 않지 않는다.",
+    "순부채 틀을 적용하지 않는다고 볼 수 없다.",
+    "순부채가 낮지 않다.",
+    "순부채 100이라는 수치는 적용하지 않는다.",
+    "순부채 틀은 적용하지 않지만 높아 위험하다.",
+    "순부채는 적용하지 않는다. 운전자본 악화가 위험이다.",
+    "We do not use net debt, but net debt is high.",
+    "Net debt is not low.",
+    "If net debt is not applicable to insurers.",
+    "Net debt is not inapplicable.",
+    "Net debt framework is not used unless refinancing deteriorates.",
+    "Net debt is high; we do not apply this unrelated policy.",
+    "We do not apply contracts to net debt."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "contract": "m12-fictional-canary-message-specificity-advisory-v1",
+  "generation_id": "20260909-m12-fictional-20260909T031350Z-72c281729499",
+  "sample_scope": "RUN_1_CONTEXT_01_ONLY",
+  "subject_count": 4,
+  "subjects_with_material_financial_anchor": 4,
+  "financial_anchor_counts": {
+    "FIC-FIN-01": 2,
+    "FIC-FIN-02": 1,
+    "FIC-FIN-03": 2,
+    "FIC-FIN-04": 3
+  },
+  "period_specificity_actual_quality": "PASS",
+  "issuer_case_specific_checkpoint_actual_quality": "PASS",
+  "generic_substantive_repetition": "NOT_MEASURED",
+  "renderer_introduced_repetition": "NOT_MEASURED",
+  "message_specificity_advisory_status": "PARTIAL_SAMPLE_PASS",
+  "status": "PARTIAL"
+}

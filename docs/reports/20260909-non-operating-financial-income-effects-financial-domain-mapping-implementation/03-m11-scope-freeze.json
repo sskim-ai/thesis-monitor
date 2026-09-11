@@ -1,0 +1,24 @@
+{
+  "contract": "m11-scope-freeze-v1",
+  "implemented": [
+    "exact_direct_non_operating_components",
+    "sector_routing",
+    "duration_period_identity",
+    "sign_role_metadata",
+    "aggregate_child_overlap_control",
+    "bounded_net_financial_income_effect",
+    "canonical_lineage_and_internal_financial_context"
+  ],
+  "model_calls": 0,
+  "not_implemented": [
+    "adjusted_or_normalized_earnings",
+    "effective_tax_rate",
+    "reconstructed_operating_profit",
+    "materiality_or_recurrence_score",
+    "directional_or_timing_consumption",
+    "source_sufficiency_or_warning_change",
+    "model_provider_production_or_scheduler_change"
+  ],
+  "production_mutations": 0,
+  "provider_source_fetches": 0
+}

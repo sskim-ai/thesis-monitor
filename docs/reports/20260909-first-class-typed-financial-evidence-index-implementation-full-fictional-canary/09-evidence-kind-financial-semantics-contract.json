@@ -1,0 +1,14 @@
+{
+  "compact_fields": [
+    "metric",
+    "semantic_category",
+    "period_type",
+    "comparison_kind",
+    "evidence_status",
+    "quality"
+  ],
+  "contract": "m12b-evidence-kind-financial-semantics-v1",
+  "detailed_context_retained": true,
+  "evidence_kind": "TYPED_FINANCIAL",
+  "status": "PASS"
+}

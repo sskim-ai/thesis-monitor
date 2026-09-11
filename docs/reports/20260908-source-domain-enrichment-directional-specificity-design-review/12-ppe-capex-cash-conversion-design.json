@@ -1,0 +1,105 @@
+{
+  "contract": "m4-domain-design-v1",
+  "design": {
+    "applicable_sector_families": [
+      "manufacturing",
+      "semiconductor/memory",
+      "automotive",
+      "cloud/platform",
+      "infrastructure"
+    ],
+    "comparability_requirements": [
+      "OCF and PPE purchase share exact period and basis",
+      "PPE scope remains explicit",
+      "same currency and normalized unit"
+    ],
+    "currency_basis": "same verified financial currency; no inferred FX conversion",
+    "current_parser_mapping_locations": [
+      "app/services/official_cash_flow_service.py",
+      "app/services/cash_flow_capital_efficiency_service.py::derive_fcf",
+      "app/services/opendart_financial_recovery_service.py::CAPEX_COMPONENTS"
+    ],
+    "daily_delta_use": "only newly effective post-baseline validated change; preserve M3 cutoff lineage",
+    "decision_evidence_packet_representation": {
+      "activation_in_m4": false,
+      "classification": "SCHEMA_EXTENSION_REQUIRED",
+      "proposal": "optional typed financial_context on DecisionEvidenceRef"
+    },
+    "directional_core_usage": [
+      "separate operating cash generation from reinvestment absorption",
+      "higher capex is not inherently negative",
+      "use OCF less PPE capex, never an inferred maintenance-capex result"
+    ],
+    "directly_reported_vs_derived": [
+      "DIRECT_REPORTED_PPE_OUTFLOW",
+      "DERIVED_SAFE"
+    ],
+    "domain": "ppe_capex_simple_cash_conversion",
+    "entity_attribution_basis": "same issuer, consolidation scope, statement basis, and attribution basis",
+    "forbidden_derivations": [
+      "generic investing cash flow as capex",
+      "business acquisitions as PPE capex",
+      "securities purchases as PPE capex",
+      "automatic intangible or capitalized-software inclusion",
+      "maintenance-capex inference",
+      "partial capex subtraction labeled as company-defined FCF",
+      "different-period OCF and capex arithmetic"
+    ],
+    "implementation_risk": "MEDIUM",
+    "initial_analysis_use": "eligible as absolute evidence when valid and material",
+    "investment_purpose": [
+      "reinvestment burden",
+      "post-PPE cash conversion"
+    ],
+    "kr_free_public_source_availability": "PARTIALLY_SUPPORTED",
+    "message_usage": [
+      "preferred label: OCF less PPE acquisition cash outflow",
+      "if FCF is used, qualify it as PPE-only and not management-defined FCF"
+    ],
+    "missing_data_behavior": "PPE cash-conversion unavailable; OCF may remain independently usable",
+    "monitoring_baseline_use": "may enrich baseline; enrichment is not Daily Delta",
+    "non_applicable_or_caution_sector_families": [
+      "bank",
+      "insurance/reinsurance",
+      "asset-light issuer with material intangible investment"
+    ],
+    "period_basis": [
+      "same-period QTD",
+      "YTD",
+      "FY",
+      "safe TTM"
+    ],
+    "required_validation_tests": [
+      "accepted/rejected CAPEX semantics",
+      "sign normalization",
+      "same-basis arithmetic and complete input lineage"
+    ],
+    "safe_derivations": [
+      {
+        "failure_conditions": [
+          "unverified investing semantic"
+        ],
+        "formula": "semantic-aware sign normalization to positive magnitude",
+        "inputs": 1,
+        "name": "ppe_capex_positive_outflow",
+        "status": "DERIVED_SAFE"
+      },
+      {
+        "failure_conditions": [
+          "period, currency, entity, or basis mismatch"
+        ],
+        "formula": "OCF - PPE acquisition cash outflow",
+        "inputs": 2,
+        "name": "ocf_less_ppe_capex",
+        "status": "DERIVED_SAFE"
+      }
+    ],
+    "schema_change_required": true,
+    "single_quarter_vs_cumulative_semantics": "QTD, YTD, FY, TTM, and point-in-time remain distinct; no label-based guess",
+    "source_sufficiency_impact": "REQUIRED_ONLY_FOR_SPECIFIC_CLAIM",
+    "us_free_public_source_availability": "SUPPORTED_CURRENTLY",
+    "valuation_usage": "context for denominator quality only; no multiple, price target, or valuation fact",
+    "warning_kill_condition_use": "may support warning when material and contextual; no one-period automatic kill"
+  },
+  "status": "FROZEN_DESIGN"
+}

@@ -1,0 +1,13 @@
+{
+  "active_us_foreign_nonfinancial_candidate_count": 13,
+  "contract": "m9-us-debt-liquidity-source-support-audit-v1",
+  "coverage_claim": "NO_REAL_US_ARCHIVE_COVERAGE_CLAIM",
+  "preserved_balance_sheet_payload_count": 0,
+  "provider_source_fetches": 0,
+  "real_cash_direct_count": 0,
+  "real_complete_debt_total_count": 0,
+  "real_debt_component_direct_count": 0,
+  "real_net_debt_count": 0,
+  "synthetic_sec_exact_contract_fixture_count": 1,
+  "synthetic_sec_exact_contract_result": "PASS"
+}

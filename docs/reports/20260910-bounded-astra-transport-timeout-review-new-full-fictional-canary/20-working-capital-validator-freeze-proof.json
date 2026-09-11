@@ -1,0 +1,7 @@
+{
+  "baseline": "be3ee8d17e97edcf82ab2c8535d222c03b13667f",
+  "changed_paths": [],
+  "hash_manifest": "03-m12t-scope-freeze.json",
+  "proof": "All existing Python/config/fixture bytes unchanged",
+  "status": "PASS"
+}

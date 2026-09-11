@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "generic_contract": {
+    "minimum_buy": 6.0,
+    "stronger_buy": 6.5,
+    "valuation_required_for_6_5": false,
+    "persistence_unknown_automatically_caps_at_6_0": false,
+    "adjacent_tie_break_toward_5": true
+  },
+  "fixture_contract": {
+    "previous_expected_buy": 6.0,
+    "source": "M12U_EXCLUSION_EXPECTATION_REVIEW.expectation.all_target_buys"
+  },
+  "candidate": {
+    "observed_buy": 6.5,
+    "reasoning_tracks_generic_contract": true,
+    "risk_and_unknown_disclosure_complete": true,
+    "overlapping_metric_double_counted": false
+  },
+  "conclusion": "The exact 6.0 fixture target imposes a stronger cap than the generic contract derives for this evidence pattern.",
+  "fixture_follows_generic_contract": false,
+  "prompt_semantics_require_change": false
+}

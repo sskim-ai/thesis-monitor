@@ -1,0 +1,5 @@
+{
+  "expected": "MINIMUM_SELL_MAY_BE_SUPPORTED_WITH_DISTINCT_NEGATIVE_CONFIRMATION",
+  "id": "LEV-02",
+  "pattern": "same leverage plus confirmed refinancing or debt-service stress"
+}

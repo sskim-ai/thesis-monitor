@@ -1,0 +1,6 @@
+{
+  "contrastive_replacement": "PASS",
+  "explicit_non_application": "PASS",
+  "status": "PASS",
+  "true_industrial_application": "HARD_FAIL"
+}

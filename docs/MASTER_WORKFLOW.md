@@ -1,2522 +1,1293 @@
-# Thesis Monitor Master Workflow
+# Thesis Monitor — 마스터 워크플로우
 
-Master Workflow: `v31`
-As of: `2026-09-01`
-Repository: `sskim-ai/thesis-monitor`
-Operating branch: `main`
-Latest evidence branch: `codex/20260901-v2-natural-cli-path-product-identifier-repair`
-Commit resolution: run `git rev-parse HEAD`; this document is part of that commit and must not
-hardcode a self-referential final SHA. Resolve `origin/main` and the clean operating checkout at
-session start. Phase 9.1A defines `working-capital-evidence-v1`; Phase 9.1B implements canonical
-Facts and typed relations; Phase 9.1C closes archive-only consumption; Phase 9.1D observes detached
-natural canaries; Phase 9.1E defines the user-visible family gate. Natural run-32 established total
-Inventory `LIVE_PASS` with zero production influence while exact Trade AR remains `NOT_OBSERVED`.
-Phase 9.1E.1 implements only the Inventory path, reuses the existing contract, preserves strict
-AI/fallback parity and leaves Trade AR/broad AR/AP/advanced ratios blocked. Open P0/material P1 are
-zero. Natural AI-assisted delivery remains `PARTIAL` independently.
-KRX 8.2A.x and peer 8.3.x also remain experimental.
+**버전:** 2026-09-11 / m12ad-financial-framework-negation-holder-stability-partial-v1
+**문서 성격:** 최신 실행 결과와 사용자 결정에 맞춘 프로젝트 기준선·작업 순서 갱신본.
+**현재 위치:** `M12AD 6/6 transport·24/24 schema 완료 / 금융업 대조 배제 및 holder REVIEW 안정 / FIC-FIN-05 primary direction 불안정 / fresh real NOT_READY`
+**운영 상태:** US/KR 예약 모니터링 중단 유지가 사용자 지시. 자동 재개 금지.
+**M12AD는 금융업 대조 배제 false reject를 0으로 닫고 FIC-FIN-05 holder stance를 REVIEW 3/3으로 안정화했다. Sol/xhigh 6개 호출과 24개 schema output은 모두 완료됐고 hard semantic·grounding·business-delta 오류도 0이다. 다만 FIC-FIN-05 primary direction이 SELL/HOLD/HOLD로 변해 M12AD_PARTIAL이며, 새 model call 없이 방향 경계의 bounded review가 필요하다.**
 
-## 0. V2 Natural CLI Path and Product-Identifier Provenance Repair
+---
 
-Exact instructions were committed first as
-`b2c0a4af72c5eb060dcdacd8b281e30307c717f1` on base
-`1aa10f04016cabede492c82686b6d671b4c27f55`. Implementation
-`b5be74439b2e8e769b1605e539599835abbc8a84` closes two independent natural-runtime defects without
-changing decision policy. All Codex CLI subprocess paths now resolve from the canonical repository
-root, the schema is preflighted before the model call, writable parents are created deterministically,
-and persisted claims retain portable relative paths. The same path contract serves primary, backup,
-KR, US, test, and natural entry points.
+## 1. 지금 프로젝트가 달성하려는 것
 
-The numeric lexer recognizes only canonical evidence-owned product identifiers as identifier spans.
-It excludes those exact spans from numeric validation while continuing to validate adjacent real
-numbers and reject unproven hyphen-number text. No `KF-21`/`FA-50` allowlist, KR-only exception, or
-validator relaxation exists. Frozen run 50 passes `8/8`, the production-equivalent US path passes
-`14/14`, and the dedicated non-production sink received `22/22 exact` after identity-aware 429
-continuation. Production recipient sends, production delivery intents, duplicate and orphan messages,
-scheduler changes, Price Structure numeric changes, and valuation numeric changes are all zero.
+### 최신 M12AD 결과
 
-Focused tests are `270 PASS`; full pytest is `2045 PASS`; Ruff, diff, message quality, and the
-implementation GitHub Actions Test/Lint run pass. Open P0/material P1 are `0/0`. Clean linear
-promotion completed through `26004d926247c4ef053e49b74dc8fb9654353199`; branch Actions
-`33507836260`, main Actions `33508187986`, API health, and operating parity pass. State is
-`DEPLOYED_AWAITING_NATURAL_US_KR_LIVE`, not natural LIVE_PASS. Inspect the next ordinary KR and US
-cycles read-only. Do not replay an already delivered production packet, manually run a Scheduled
-Task, or use the production Telegram recipient for proof.
+M12AC 결과 ZIP SHA `2b5dd84efcaf207e31e5fec15521c0879022fdb9fb411fb0b7cd2cedd80801fe`와
+내부 index 무결성을 재검산했다. 작업지시서 `ee61646`, architecture `d098941`, 모델 호출 전
+구현 `c52b852`를 순서대로 동결했다. 금융업 대조 배제 parser는 replacement predicate
+`판단한다/판단합니다`, adnominal negation `아닌`, 조사 `으로/로`를 bounded하게 인식하도록
+수리했다. FIC-FIN-08 M12AC 3회차 원문은 false reject 없이 통과했고 실제 산업회사식
+framework 적용과 모순 사례는 계속 fail-closed한다.
 
-## 0. Malformed OHLC Provider Integrity
+FIC-FIN-05 holder 기준은 모델 출력을 보기 전에 `REVIEW`로 동결했다. 확인된 높은 부채와
+얇은 현금은 review가 필요한 material risk지만, 만기·재융자 severity와 persistence가 확인되지
+않았고 안정적 영업이익이 반대 근거이므로 active `REDUCE`를 유일한 결론으로 강제하지 않는다.
+새 holder 계약은 7/7 offline fixture를 통과했다.
 
-Exact instructions were committed first as `235cf78d5c386da0f5c02284b373b911ef1b7647` on base
-`813beb6345fc2c6643018b33f568702b50fab37d`. Implementation
-`a6707b82cb9d46c2895560ff07fd14d1bf8c2dc9` adds
-`ohlcv-provider-integrity-v1`: every normalized provider response is checked before feature
-construction, one malformed-content refetch is allowed, and repeated malformed content remains
-unchanged and INVALID. Invalid rows now remain in the packet raw fingerprint and exact integrity
-events retain sanitized row values and hashes. No clipping, swapping, ticker exception, threshold
-change, or synthetic OHLC repair exists.
+새 generation `20260911-m12ad-fictional-20260910T225211Z-4dc83d2d03b5`, source lock
+`67f46e42cd933584af58f590f6a012d842dbd4ca276f29be28dcc9264cf08328` 아래
+`gpt-5.6-sol / xhigh` 6/6 호출과 24/24 schema output을 완료했다. timeout, capacity,
+CLI/wrapper retry, orphan, invalid reference, grounding, business-delta failure, 금융업 false
+reject/accept와 true misuse는 모두 0이다. FIC-FIN-05 holder는 `REVIEW` 3/3, new-buyer와
+business delta도 각각 `WAIT`와 `UNCHANGED`로 안정됐다.
 
-Direct provider probes classify CPNG as `STABLE_BAD_SOURCE` and HUT as
-`INTERMITTENT_BAD_SOURCE`; both remain INVALID. MU and SKHY are
-`TRANSIENT_PROVIDER_DEFECT` controls whose current raw responses are valid, so run-49 replay is
-FULL 12 / INVALID 2. All 14 US decisions and all 8 KR decisions are accepted-ready with message
-quality PASS. The dedicated sink passed 22/22 exact after a rate-limit continuation, with zero
-production sends or intents. Full pytest is 2019 PASS; open P0/material P1 is 0/0. Report commit
-`9c6919a2e35905defe380f7adcd7f0d454887abd` passed GitHub Actions run `33473079100`, was
-fast-forwarded to main and operating, and passed API/OHLCV health. The deployed state is
-`DEPLOYED_AWAITING_NATURAL_US_LIVE`; the natural pass remains pending and must be observed
-read-only.
+Decision-material classifier는 raw exact diagnostics와 legacy formal projection을 그대로 보존하면서
+같은 HOLD 방향의 0.5 balance 차이는 calibration variance로 분리한다. FIC-FIN-03은
+`HOLD 5.0:5.0`, `HOLD 5.5:4.5`, `HOLD 5.0:5.0`이지만 모두 HOLD/WAIT/REVIEW여서
+`CALIBRATION_VARIANCE_SAME_DIRECTION`이며 readiness blocker가 아니다. 반면 FIC-FIN-05는
+`SELL 4.0:6.0`, `HOLD 4.5:5.5`, `HOLD 4.5:5.5`로 primary direction이 바뀌어
+`PRIMARY_DIRECTION_UNSTABLE`이다. 결과 확인 후 prompt, validator, threshold, source 또는
+candidate를 수정하거나 재호출하지 않았다.
 
-## 0. OHLCV Technical Context Resilience
+따라서 `M12AD_PARTIAL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. P0는 0이고 P1은 FIC-FIN-05 primary-direction boundary
+stability 1건이다. 다음 범위는 `PRIMARY_DIRECTION_BOUNDARY_STABILITY_REVIEW_GPT56_SOL`이며,
+새 호출 전에 보존된 세 출력을 이용해 SELL/HOLD 경계가 evidence-severity ambiguity인지 계약
+불충분인지 분리한다. 실종목/provider/judge 호출, production send/mutation, merge/deploy,
+scheduler 변경은 모두 0이고 예약 8개는 PAUSED다. 상세 결과는
+`docs/reports/20260911-m12ad-completion.md`와 M12AD reports 42/45/50/51/54/60/67을 따른다.
 
-Exact work instructions were committed first as
-`1dd691a340b4961e105371af53142c76db7385d7` on base
-`f7c4331e7aa34eeb87e0627fb7e79ee27a1cbfa7`. The root cause was
-`PROCESS_NAMESPACE_MISMATCH`: the host OHLCV LaunchAgent was healthy while a restricted decision
-process could not open the loopback socket. The repaired V2 path consumes validated
-`packet-owned-technical-context-v1`, uses bounded recovery, and isolates malformed or unavailable
-technical data by subject. It does not perform a duplicate decision-stage OHLCV HTTP fetch.
+아래 M12AC 및 이전 단계는 역사적 결과이며 M12AD 재실행 또는 운영 재개 승인이 아니다.
 
-Run-49 isolated replay passed `14/14`, the dedicated US sink passed `14/14 exact`, KR run-48
-remained FULL `8/8`, and the Korean-particle/Russell 2000 provenance false positive is closed
-without an allowlist. Complete report commit `3efe688bb7eaa41bc084061c9eb9de910d86423a`
-passed Actions run `33464969356` and was promoted by clean fast-forward. API and OHLCV health are
-PASS; open P0/material P1 is `0/0`. Natural US `LIVE_PASS` is not inferred from replay or the test
-sink. The next action is read-only observation of the next ordinary US cycle.
+### 이전 M12AC 결과
 
-## 0. V2 Accepted Decision Ownership
+M12AB 결과 ZIP SHA `2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926`와
+192개 index 무결성을 재검산했다. 지시서 `b44dd2c`, architecture `29d0aeb`, 모델 호출 전
+구현 `6d4f8cf`를 동결했다. Option F는 model-facing prompt/schema에서 제거했고 raw 방향,
+balance, lean은 보존한 채 deterministic threshold zone만 후처리했다.
 
-Exact work instructions were committed first as `4662c08` on base
-`29bdd4cf378438fedad7f602b4b8ede80c46dd44`. Tracks A/B/C implement deterministic accepted
-ownership through `f55605189ee0179ab4af7030b94d79d706ed32a8`. Raw candidate and adjudication artifacts are
-immutable history; after a material disagreement the only summary, renderer, validator, test-sink,
-and readiness authority is `accepted_plan` under `v2-accepted-decision-ownership-v1`.
+새 generation `20260910-m12ac-fictional-20260910T114423Z-c9fd32f80752`, source lock
+`fc6d6e1943063f4437693913dabda32fa94a4942fcca0eb438674a159bd00b7e`로
+`gpt-5.6-sol / xhigh` 6/6 transport와 24/24 schema output을 완료했다. timeout, capacity,
+retry, orphan, invalid reference, grounding, business-delta failure는 모두 0이다.
 
-The raw candidate distribution remains BUY `2`, HOLD `14`, SELL `4`. The frozen adjudicated result
-is BUY `1`, HOLD `16`, SELL `3`: keep v1 for `003690/SNDK`, and keep v2 for `GOOGL/HUT/RXRX`.
-Rejected `003690` pre-confirmation BUY semantics cannot leak into accepted output; `GOOGL` remains
-the sole accepted pre-confirmation BUY. Missing required adjudication fails closed as `NOT_READY`
-and never silently falls back to either candidate.
+FIC-FIN-08은 1·2회차에서 산업회사식 순부채·운전자본 배제를 정상 인식했으나, 3회차의
+"산업회사식 순부채·운전자본 틀이 아니라 인수 규율과 규제자본으로 판단" 문장을 parser가
+대조 배제로 인식하지 못했다. 실제 금융업 오용은 0이지만 framework별 false reject 2건과
+objective-semantic hard error 2건이 발생했다. 결과를 본 뒤 validator를 바꾸거나 재호출하지 않았다.
 
-The accepted renderer and validator passed all 20 subjects. The dedicated sink passed `20/20 exact`
-with zero production recipient sends/intents and no recipient identifiers retained. V1 production
-canary state and user-visible output are unchanged. Open P0/material P1 is `0/0`, and
-`V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`. The next action is review of accepted V2
-messages; this repair does not authorize production migration.
+FIC-FIN-05는 세 번 모두 `SELL 4.0:6.0`, `NEGATIVE_THRESHOLD_ZONE`으로 안정적이었다.
+반면 FIC-FIN-03은 `5.0:5.0` 1회와 `5.5:4.5 BUY_LEAN` 2회로 변해 zone도 `NEUTRAL`과
+`POSITIVE_THRESHOLD_ZONE`을 오갔다. 전체 raw/zone 안정성은 각각 7/8이다. New-buyer stance는
+8/8 안정적이지만 FIC-FIN-05 holder stance와 FIC-FIN-06 confidence는 각각 변동했다.
 
-## 0. Pre-Confirmation Asymmetry Decision Engine V2
+따라서 `M12AC_PARTIAL`, `fresh_real_proof_readiness=NOT_READY_OTHER`,
+`production_readiness=NOT_READY`다. 다음 범위는
+`BOUNDED_M12AC_HARD_FAILURE_REPAIR`: 금융업 대조문의 bounded 명사 경계 처리와
+NEUTRAL↔POSITIVE threshold 경계 정책을 분리 검토한다. 실종목/provider/judge 호출,
+production send/mutation, merge/deploy, scheduler 변경은 모두 0이며 예약 8개는 PAUSED다.
+상세 결과는 `docs/reports/20260910-m12ac-completion.md`와 M12AC report 39/40/44/46/66을 따른다.
 
-Exact work instructions were committed first as `46bdf4c` on base
-`1359a5769c36d64dd5e0acc9bbf03f90578fb062`. Track A/B/C/D implementation is fixed through
-`c0c9139babb06ead11112aea072a67ef364a9b22`. The archive-only engine adds driver-level evidence
-maturity, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost,
-pre-confirmation error cost, and explicit pre-confirmation BUY/post-confirmation HOLD semantics.
-There is no fixed score or maturity-to-decision map.
+아래 M12W 및 이전 단계는 역사적 결과이며 M12AC 재실행 또는 운영 재개 승인이 아니다.
 
-The same 20 canonical evidence packets were reviewed label-blind with signed-in Codex CLI
-`gpt-5.6-sol / xhigh`. V2 produced BUY `2`, HOLD `14`, SELL `4`; `003690` and `GOOGL` were
-pre-confirmation BUY candidates. All 20 candidates and messages passed. Five v1/v2 disagreements
-were adjudicated: keep v1 for `003690/SNDK`, keep v2 for `GOOGL/HUT/RXRX`; open P0/material P1 is
-`0/0`.
+### 최신 M12W 결과
 
-The dedicated test sink passed `20/20 exact` with zero production recipient sends, intents,
-duplicates, orphans, or raw recipient identifiers retained. Historical confirmation-delay outcome
-diagnostics remain `NOT_AVAILABLE` because canonical PIT outcome/estimate series are not archived;
-look-ahead leakage and alpha claims are zero. `V2_MIGRATION_RECOMMENDATION=READY_WITH_OBSERVATION`.
-V2 production exposure is still zero and the exact v1 canary remains unchanged. Review the v2
-shadow decisions before creating any separate bounded migration instruction.
+지시서 `e8441e0`, 구현 `538cb76` 순서로 동결했다. GPT-6 Astra는 proof-critical
+경로에서 중단하고 `gpt-5.6-sol / xhigh`, 1,800초, 4종목/context, wrapper retry 0을
+적용했다. M12U 금융 의미, target, fictional source, prompt, schema, selector와 운영 코드는
+변경하지 않았다. 로컬 focused/full은 260/3255 PASS, Ruff/diff PASS다. Hosted CI는
+3250 PASS/기존 portability 5 FAIL이며 M12W 신규 실패는 0이다.
 
-## 0. Bounded Cross-Market Decision Canary
+새 generation `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`의 첫 호출은
+407.720583초에 Sol/xhigh identity, parsed output, schema 4/4를 반환했다. Timeout, capacity,
+CLI 내부 retry, wrapper retry, orphan은 모두 0이다. 그러나 FIC-FIN-01 BUY가 frozen target
+6.0 대신 6.5여서 `frozen_ordinal_contract_inconsistent`가 발생했고 whole-generation stop을
+적용했다. FIC-FIN-02/03/04는 해당 호출에서 PASS, 나머지 5개 context는 NOT_RUN이다.
 
-Exact work instructions were committed first as `c62ddff`; implementation is
-`a639d326a578bb7f3a2c53b1df31723bfb2b9829`. The production decision surface is limited to KR
-`003690,000660` and US `GOOGL,RXRX`. Current natural classifications are `HOLD/HOLD/HOLD/SELL`;
-current BUY is zero and no BUY was forced. Signed-in Codex CLI uses `gpt-5.6-sol / xhigh`.
+따라서 Sol transport 회복은 한 context에서 관측됐지만 full 8x3 stability는 입증되지 않았다.
+Fresh real과 production은 NOT_READY다. 다음 범위는
+`BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`; threshold 자동 변경, 현 generation 재개,
+selective rerun, 모델 fallback은 금지한다. 예약 8개는 PAUSED 상태를 유지한다.
+결과 근거: `docs/reports/20260910-m12w-completion.md`와 M12W reports 53/59/63/69.
 
-The dedicated test sink received four current production-equivalent messages plus two explicitly
-historical BUY fixtures `6/6 exact`. Production recipient sends/intents, duplicates, orphans,
-unowned retries, order language, Price Structure numeric changes, and non-canary decision blocks
-are all zero. Identical-evidence model churn found in the first fresh pass is closed by the
-`cross-market-decision-canary-continuity-state-v1` gate; rejected attempts remain archived.
+아래 M12V 및 이전 단계는 역사적 결과이며 M12W 재실행 또는 운영 재개 승인이 아니다.
 
-The bounded state is `ENABLED_AWAITING_NATURAL_PROOF`, with open P0/material P1 `0/0`. Natural
-evidence is still KR `0/2` and US `0/2`, so expansion is `HOLD`. Do not manually run tasks or send
-production messages to manufacture proof. Wait for two ordinary cycles per market; genuine BUY
-live proof may remain pending until a natural BUY occurs.
+### 이전 M12V 결과
 
-## 0. Cross-Market Decision Quality Review Before Canary
+지시서 `f1da357`, architecture 결정 `2e50558`, 구현 `46ec85c` 순서로 동결했다.
+선택한 단일 실험 계약은 `INCREASED_FINITE_ABSOLUTE_WATCHDOG`: 1,800초에서 2,400초로
+한도를 늘리고 기존 lifecycle 관측기를 archive-only adapter에서 재사용했다. Wrapper retry 0,
+4종목/context를 유지했으며 기존 app/runtime 파일과 M12U 금융 의미·prompt·schema는 변경하지 않았다.
 
-Exact instruction commit `86829a52c4711e1fad632cc9f558a44c08cc2ddc` precedes review
-implementation `cd829ff8009759af7f5c73e487e43c06dc4b1a9c`. The review reused the exact
-canonical evidence SHA `7649e675...b938720b`, hid all baseline labels during the independent pass,
-and ran signed-in Codex CLI `gpt-5.6-sol` with `model_reasoning_effort="xhigh"`. Web enrichment,
-future outcomes, fixed scores, order language, production sends, and runtime mutation were zero.
+새 generation `20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8`은 첫 context에서
+2,400.062226초에 MODEL_TIMEOUT으로 종료됐다. 시작 09:29:20 KST, 종료 receipt 10:09:24 KST.
+stdout/최종 출력 0, CLI에 기록된 내부 retry 0, wrapper retry 0, orphan 0이다.
+나머지 5개 context는 NOT_RUN. 679개 동결 코드/계약 파일은 실행 후에도 동일하다.
+금융 semantic/core/formal/stance/delta 안정성은 NOT_MEASURED이며 PASS로 승격하지 않는다.
 
-The baseline `BUY 2 / HOLD 18 / SELL 0` became independent `BUY 2 / HOLD 13 / SELL 5`. All five
-HOLD-to-SELL disagreements were adjudicated on the same packets. CRCL and HUT returned to HOLD;
-RXRX, TSLA, and WULF remained SELL. Final review distribution is `BUY 2 / HOLD 15 / SELL 3`.
-Cross-market semantics pass, MACD alone owns no decision, and no class balance was forced.
+40분 finite tail tolerance로 충분하다는 가설은 이번 호출에서 입증되지 않았다.
+백엔드가 요청을 받았는지, 추론 중이었는지, 전송이 멈췄는지는 현재 관측으로 확정할 수 없다.
+다음 범위는 `ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW`이며 새 실행 승인은 별도다.
+현재 generation 재개, 자동 timeout 증가, 재시도, context 분할, 실종목 실험은 금지한다.
 
-The quality gate is `NOT_READY`: HOLD-default and SELL-suppression bias are `MATERIAL`, while
-confidence, timing, and decision-change-condition calibration need bounded repair. Open P0/material
-P1 are `0/4`. Production canary stays OFF and engine state stays `TEST_SINK_READY`. The next action
-is `BOUNDED_REPAIR`, followed by a fresh review; this report does not authorize a canary.
+집중 243/full local 3238 PASS, Ruff/diff PASS. 구현 hosted CI는 3233 PASS/기존 portability
+5 FAIL이며 M12V 신규 실패 0이다. P0 0/P1 2(runtime proof 실패, 기존 hosted CI backlog).
+예약 8개 PAUSED 유지, main merge/deploy/운영 변경 0. Fresh real 및 production NOT_READY.
+결과 근거: `docs/reports/20260910-m12v-completion.md`와 M12V reports 56/70/72/86.
 
-## 0.1 Cross-Market AI Decision Engine v1
+아래 M12U 및 이전 단계는 역사적 결과이며 M12V 재실행 또는 운영 재개 승인이 아니다.
 
-The exact instruction commit is `ec6ea8fa4449fd34961ecbbcf995064c46ff94a2`; implementation is
-`f28d4bb3b8eacebe7fb48a3ca7800094711793eb`. The new archive/shadow-only engine builds a canonical
-D/W/M OHLCV feature catalog, per-stock evidence packets, and AI-owned analytical BUY/HOLD/SELL
-classifications. Signed-in Codex CLI ran `gpt-5.6-sol` with `model_reasoning_effort="xhigh"`.
+### 이전 M12U 결과
 
-Current shadow decisions pass `20/20` with `54/54` automatic numeric bindings, zero unresolved
-numeric claims, and zero substantive cross-ticker repetition. The immutable temporal replay passes
-`200/200` with look-ahead leak and unexplained churn both zero; it remains honestly `PARTIAL_SAFE`
-because full historical D/W/M bars and forward 20/60/120 outcome diagnostics are not archived.
-The dedicated non-production sink received `20/20` exact payloads after a bounded 18+2 rate-limit
-continuation, with duplicate/orphan and production recipient send/intent all zero.
+지시서 `459af10`, 오프라인 계약 검토 `f73ce3a`, 구현 `551f98f` 순서로 동결했다.
+명시적 비적용의 명사 보어 표현을 generic classifier에서 허용하되 실제 적용/모순/산업재 anchor는 차단한다.
+서로 다른 evidence category가 곧 경제적으로 독립된 근거는 아니다. 미확인 재융자 부담에 의존한
+시장기대는 같은 위험의 중복 corroboration이므로 해당 패턴은 HOLD 4.5:5.5 SELL_LEAN이다.
+확인된 별도 위험과 독립된 현재 기대 불일치는 추가 근거가 될 수 있다. 숫자 threshold/증분/tie-break는 그대로다.
+한 문단 외 prompt, source, schema, selector, financial grounding, Daily Delta, Price-Timing, renderer 및 runtime은 동결했다.
 
-`DECISION_ENGINE_STATE=TEST_SINK_READY` and its original technical canary gate passed with open
-P0/material P1 `0/0`. The later independent decision-quality review above supersedes actual canary
-readiness as `NOT_READY`. Production packet consumption, scheduled prompts, fallback, DB,
-assessments, and automated trading remain unchanged.
+새 generation `20260910-m12u-fictional-20260909T231913Z-1e045065810d`의 첫 context가
+출력 없이 1,800.068784초 MODEL_TIMEOUT으로 종료됐다. 1회 시도/출력 0건, 이후 5개 context NOT_RUN.
+내부 retry/wrapper retry/orphan은 0. 실제 semantic/core/formal/stance/delta 안정성은 NOT_MEASURED이다.
+집중 186/full local 3225 PASS, Ruff/diff PASS. Hosted CI는 기존 portability 5건 실패, M12U 신규 실패 0.
+P0 0/P1 2(timeout 재발, 기존 hosted CI). 8개 예약 중단 유지, main/운영 변경 0.
+다음은 `ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW`. 현재 generation 재개/재시도/timeout 증가는 금지한다.
+결과 근거: `docs/reports/20260910-m12u-completion.md` 및 M12U reports 79/81/82.
 
-## 0. Latest One-Shot KR Close Live Proof
+아래 M12T 및 이전 단계는 역사적 결과이며, M12U 실행 안정성이나 운영 재개 승인을 뜻하지 않는다.
 
-The operator-authorized proof starts from exact instruction commit
-`a0d8f190a0dd2105925810bcf21eeb1d483e0277` on operating main
-`23b17c487a4c0ae7dc56935e9028cf62f2b00f2c`; the evidence implementation is
-`239db58958b1193a8fd591500618ee4e7940c994`. Preflight passed with a clean operating checkout,
-healthy API/OHLCV services, a completed 2026-08-28 XKRX target, seven active KR subjects, no active
-KR producer, no residual one-shot, and open P0/material P1 `0/0`.
+### 최신 M12T 결과
 
-Exactly one temporary LaunchAgent reused the regular KR close ProgramArguments and working
-directory. It was loaded at `18:39:55 KST`, ran once at the `+300s` boundary, exited `0`, and was
-removed before another interval. The normal `16:05/16:20/16:50` plist and SHA remained unchanged.
-The producer created packet `2026-08-28-kr-run-44-e4cf532e619b`, refreshed current Kiwoom market
-context with `42/42` successful requests, and held eight packet-owned intents. Because the regular
-17:10 deadline had already passed, the existing KR fallback command completed that same packet
-through the normal notification service without a second producer run or direct Telegram call.
-
-The production notifier sent one KR market message and seven stock messages `8/8`. Persisted
-rendered text and content SHA match the exact archived messages for all eight; duplicates, orphans,
-unowned retries, and pending deliveries are zero. The live KR market surface, all seven V3 stock
-messages, price labels, price-anchored major S/R, completed/provisional Bollinger roles, and
-validator ownership pass. For `000660`, the selected near support rendered and the unselected
-weekly dynamic resistance remained a materiality omission without reviving
-`fallback_dynamic_resistance_not_rendered`. `FINAL_V3_VALIDATOR_CONVERGENCE=LIVE_PASS` and the
-next default action is the still-pending natural US market/Price Structure review.
-
-## 0.1 Run-44 V3 Validator Convergence Baseline
-
-The task starts from exact instruction commit `1e8a008368ab79c44213545da192edbc5a545c98`
-on operating main `026df711fa151cc7816b2a57d9ed7d224c1b33cf`. Permanent controls were
-implemented at `aa5e7d4a799a1e2093bca6f87ff09f19c19e94a9`. The prior readiness
-metadata that ended at `d3a58c9` was stale only: `d3a58c9` is the direct parent of `026df71`, and
-the operating checkout and `origin/main` agreed at task start.
-
-Exact frozen replay of packet `2026-08-28-kr-run-44-4606feed1396` now passes on the latest runtime.
-For `000660`, V3 selects the structure close and near support with daily Bollinger confluence, while
-the weekly dynamic resistance is intentionally `OMITTED_BY_MATERIALITY`. The current fallback
-validator does not recreate that omitted obligation. Removing an actually selected standalone or
-confluence fact still fails, and V3-off legacy behavior is unchanged.
-
-KR `7/7`, US/foreign `13/13`, and the 22-message cross-market dedicated test-sink batch pass.
-Rendered, outbound, and received hashes match for all messages; production sends/intents,
-duplicates, and orphans are zero. The first 20-message batch hit Telegram rate limiting, and a
-bounded continuation sent only the two unsent messages. Runtime-visible diff is zero, so no runtime
-hotfix or restart is required. Open P0/material P1 is `0/0`. This retrospective state was
-`READY_NO_RUNTIME_CHANGE`; the operator-authorized live proof above has since closed the KR side as
-`LIVE_PASS`, while natural US proof remains pending.
-
-## 0A. Latest Major Structural S/R Reality Gate
-
-The repair starts from exact instruction commit `4a5702823da3f950b9f125bcbcfecd7c6cfa84df`
-and implementation `c5f1fbcb9c952c2d14ad0b178a9b33351d15b512`. The shared
-`major-sr-price-anchor-reality-gate-v1` contract requires confirmed Pivot, Balance Box, or verified
-equivalent observed-price provenance before any zone may render as `주요 구조 지지/저항`.
-Bollinger/Fibonacci/projection evidence remains available only as confluence after that anchor.
-
-One fixed adjusted-OHLCV capture was replayed against the old base and repaired code. The repaired
-result passed US `13/13` and KR `7/7`; visible dynamic-only major zones fell from 18 to zero, all 21
-remaining visible majors have anchor and basis provenance, and near-S/R was unchanged `20/20`.
-GOOGL's old monthly Bollinger-only support `$267.08~$268.43` is omitted and resistance
-`$424.82~$426.96` is replaced by an actual balance-box anchor.
-
-The dedicated non-production sink received 20 exact stock messages with zero production-recipient
-sends, duplicates, orphans, or delivery intents. Operating promotion, API/OHLCV health, and the
-post-deploy `13+7` replay pass. Open P0/material P1 are `0/0`. The gate is
-`DEPLOYED_AWAITING_NATURAL_PROOF`; do not manually run a task or production Telegram. Review the
-next natural stock messages read-only.
-
-## 0B. Latest US Macro Exact-Payload Quality Repair
-
-The bounded repair starts from instruction commit `e59c0e6a0574824bd512c1d4c06775b0afe1e468`
-and implementation commit `535855631890928a9dd9e798e12adbeabde74df2`. Run-43 exposed two
-independent defects: `market_sector_relative` escaped a negative macro exclusion and generated
-`변화 없음했습니다`, while the old quality report asserted absence without validating the
-received Telegram payload.
-
-The plan now positively selects verified macro Fact families, omits generic zero/no-material
-change, and lets the final renderer rebuild only specific, temporally bound macro prose from the
-canonical Fact. `us-morning-exact-payload-quality-v1` validates the Telegram response text and
-requires received/quality/report SHA parity. The immutable bad SHA fails as expected; one isolated
-market-only test message passed with stock sends, production sends/intents, duplicates, and orphans
-all zero. KR TOP3, KR Price Structure, and US Price Structure remain ON; AI mode is shadow and
-Production Assist is OFF.
-
-The repair is `DEPLOYED_AWAITING_NATURAL_PROOF`, with P0/material P1 `0/0`. Review the next natural
-US morning message read-only; do not manually run a task or send production Telegram.
-
-## 0C. Previous US Market And Price Structure Rollout
-
-The rollout starts from instruction commit `2ee201690787136780c7d5c8a046506d44227633`
-and implementation commit `1ba463571060a1fc9a5868afcdeab3de15f2bbe6`. The
-`us-morning-full-message-v1` renderer owns the deterministic SPY/QQQ/IWM/SOXX/RSP block,
-RSP participation, strongest/weakest sector evidence, and optional temporally safe night-futures
-or macro context. Adaptive refinement may replace only the bounded next check; stored legacy plans
-cannot promote market-relative facts to macro.
-
-The `us-price-structure-selective-rollout-v1` gate applies the existing Price Structure v3 engine
-to the active US/foreign universe without ticker allowlists. The 2026-08-27 completed-session replay
-passed all 13 subjects as `ELIGIBLE_SR_ONLY`: exact numeric binding, AI/fallback parity, current-vs-
-stored-rule separation, completed-bar safety, and USD listed-security identity all passed. One full
-market message and all 13 stock previews reached the dedicated non-production sink exactly once;
-production-recipient sends and production delivery intents were zero.
-
-US Price Structure is enabled independently of the existing KR flags. Post-enable replay remains
-13/13 PASS, API health is PASS, Production Assist remains OFF, and open P0/material P1 are `0/0`.
-The state is `ENABLED_AWAITING_NATURAL_PROOF`, not `LIVE_PASS`. Wait for the next naturally
-scheduled US morning market and stock cycle; do not run a task or production Telegram manually.
-
-## 0D. Latest KR Market Formatting State
-
-The bounded `📊 시장 내부` formatting repair starts from instruction commit
-`dd1b5eb712081c222bcfe1b4465d4fe0aac5f89a` and implementation
-`03a418ab1f616d0063becf3928a1327056dd2d66`. Canonical size, strong-sector, and weak-sector
-tuples now render as standalone KOSPI/KOSDAQ bullet rows in both adaptive and deterministic paths.
-Run-42 retains all values, TOP3 order, evidence selection, and numeric provenance.
-
-One production-equivalent market message reached the dedicated non-production sink exactly once;
-renderer, outbound, and received payload hashes matched. Stock test sends, production-recipient
-sends, delivery intents, duplicates, and orphans were zero. KR TOP3 and KR Price Structure remain
-ON; US Price Structure and Production Assist remain OFF. The state is
-`DEPLOYED_AWAITING_NATURAL_PROOF`, with open P0/material P1 `0/0`. Wait for the next natural KR
-market message; do not trigger a manual task or production Telegram.
-
-## 1. Project Mission
-
-Thesis Monitor is a daily investment-monitoring system, not a news or price-alert feed. It combines
-deterministic Facts, two bounded Knowledge references, AI reasoning, fail-closed validation, and an
-adaptive message. It monitors whether a stored thesis is being confirmed, weakened, or left
-unchanged without turning market movement into autonomous trading advice.
+M12E/M12F prompt와 schema는 generation ID 외 동일하고 격리·watchdog 결함은 발견되지 않았다.
+분류는 `TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY`이며 정확한 내부 원인은 미확정이다.
+지시서 `09f434f`, 구현 `695464f`를 동결한 새 generation은 두 호출 모두 321.70초/331.91초에 반환했다.
+timeout, CLI 내부 retry, wrapper retry는 모두 0이다. 그러나 FIC-FIN-05가 동결된 HOLD 4.5:5.5 대신
+입력의 market-expectation을 별도 부정 근거로 해석해 SELL 4:6을 선택했고, FIC-FIN-08의
+"일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다"가 false reject됐다.
+schema 8/8, 최종 gate 6/8; 이후 4개 context는 시작하지 않았다. 3회 안정성은 미측정이다.
+추가 모델 호출·수정·재시도·main merge·운영 변경은 0. 8개 예약 중단 유지.
+집중 140/full local 3179 PASS, Ruff/diff PASS. Hosted CI는 기존 portability 5건 실패 유지,
+M12T 신규 실패 0. P0 0/P1 3; fresh real 및 production NOT_READY.
+다음은 generic 명시적 비적용 범위와 leverage/기대 근거 독립성의 bounded repair이다.
+결과와 원본 구분은 `docs/reports/20260910-m12t-completion.md` 및 M12T report 62/63을 따른다.
 
 ```text
-Deterministic Facts + Knowledge + AI Reasoning + Validator + Adaptive Message
+사용자가 원하는 종목
+    ↓
+기업·거래주식 식별 / 기존 무료 데이터 경로 확인
+    ↓
+검증된 자료 수집 / 필수 근거 충족 여부 판단
+    ↓
+초기 분석과 절대 투자 판단
+    ↓
+사용자가 명시적으로 모니터링 등록 요청
+    ↓
+버전형 투자 논리 기준선 저장
+    ↓
+초기 자료 보강 / source sufficiency / monitoring readiness
+    ↓
+기준선 이후 새로운 사건에 대한 Daily Delta
+    ↓
+기존 투자 논리의 변화 + 현재 절대 판단 + 가격·타이밍을 구분한 메시지
 ```
 
-## 2. Responsibility Split
+여기서 반드시 구분한다.
 
-| Owner | Responsibility |
+| 질문 | 담당 |
 |---|---|
-| Backend | Facts, identity, calculations, official assessment, canonical values |
-| Knowledge | Investment and chart interpretation frameworks |
-| Codex | Bounded analyst interpretation of one immutable packet |
-| Validator | Numeric, lineage, scope, semantic, and message safety boundary |
-| Renderer | Assembly of already-validated content |
-| Receipt | Integrity binding for packet, output, and rendered payload set |
-| Work | Architecture decisions and direct human-quality review |
-| GitHub | Versioned source of truth for code, contracts, and review evidence |
-| Telegram | Final communication surface, never a source of truth |
+| 현재 사업·재무·가치평가 근거가 어떤 방향을 지지하는가? | Directional Core |
+| 실제 확보된 가격·기술적 자료에서 진입·재점검 조건은 어떤가? | Price-Timing |
+| 이전 기준선 이후 투자 논리를 바꿀 새 사실이 생겼는가? | Daily Delta |
+| 최종 행동 표현을 어떻게 일관되게 표시하는가? | Structured state + Renderer |
 
-## 3. Source of Truth
+좋은 기업, 유리한 주가, 오늘의 투자 논리 변화는 같은 판단이 아니다. `BUY/HOLD/SELL`은 매수·매도 주문을 실행하는 기능이 아니며, `BUY:SELL` 배점을 확률이나 수익률로 설명하지 않는다.
 
-Use this order when records disagree:
+---
 
-1. fetched Git refs and the clean checkout actually being used;
-2. operating runtime state and immutable archives for delivery/Pilot facts;
-3. `docs/project-state.json` for structured project state;
-4. this workflow, `PROJECT_HANDOFF.md`, and `NEXT_SESSION_PROMPT.md`;
-5. older reports and conversation history.
+## 2. 문서의 근거와 우선순위
 
-Never overwrite a natural runtime result to preserve a stale documented count. Reconcile the docs.
-
-## 4. New Session Startup Routine
-
-Run `git fetch origin`, `git status`, `git rev-parse HEAD`, and `git rev-parse origin/main`. Verify
-the operating checkout separately. Read `project-state.json`, this workflow, the handoff, the next
-session prompt, and the latest validation reports. Confirm Pilot, Production Assist, AI mode, all
-four Scheduled Tasks, policy/schema/contracts, Knowledge checksums, Public Action, operationId
-uniqueness, and migration state before editing.
-
-If a natural packet completes during work, inspect its validator, delivery, archive, and Pilot state
-read-only. Do not preserve an old count by editing documents or runtime data.
-
-## 5. Immutable Investment/Safety Principles
-
-- Missing data remains Unknown; it is never filled with model knowledge or zero.
-- Backend calculations are not repeated by AI or renderer.
-- Price, supply, and market context do not confirm a company thesis.
-- Modeled estimates are not consensus.
-- A good company is not automatically a good entry price.
-- Adjusted chart prices and unadjusted valuation prices remain distinct.
-- Telegram receives one AI-assisted set or one deterministic fallback set, never both.
-- Existing packets, assessments, notifications, deliveries, and archives are immutable.
-- Experimental Preview, operational Pilot success, human approval, main merge, deployment, and
-  Production Assist approval are separate states.
-
-## 6. Thesis vs Monitoring State
-
-`ThesisAssessment` is the official deterministic thesis result. `monitoring-state-v1` stores
-current, previous, and delta state for dynamic price structure, registered rules, supply, valuation,
-and peer availability. A monitoring delta can change while the business thesis remains unchanged.
-Registered levels are audit history; current dynamic structure is the decision context.
-
-## 7. Investment Knowledge
-
-Investment Knowledge v3.1 governs business, earnings, valuation, expectations, industry, macro,
-risk, and monitoring safety.
-
-SHA-256: `dc747fff856530e82477851cbd0bb16c5876770de514a9c02cfd5a26ac91c312`
-
-Canonical, upload, and runtime mirror files must remain byte-identical. Knowledge changes require a
-separate approved work order.
-
-## 8. Chart Knowledge
-
-Chart Knowledge v1.0 governs interpretation of backend-provided OHLCV structure and
-observer/holder price context.
-
-SHA-256: `beee64559831479168f1347c43d979391126926d73e2473ce837cefbf0ede19b`
-
-It never authorizes Codex to calculate indicators or convert chart invalidation into thesis
-invalidation.
-
-## 9. Financial Safety
-
-`financial-quality-taint-v2`, `financial-statement-basis-v1`, and
-`financial-amount-period-v1` are fail-closed. Filing period, statement period, amount period,
-comparison period, currency, and CFS/OFS basis are independent. Unsafe lineage taints only the
-direct or derived Fact that depends on it; a safe current amount may survive an unsafe comparison.
-
-## 10. Financial Lineage
-
-`financial-lineage-v2` records provider, receipt, report code, statement basis/type, exact account,
-amount scope, start/end dates, comparison lineage, currency, source type, and row identity.
-`opendart-authoritative-recovery-v1` proved archive-only recovery for seven active KR tickers:
-3,109 source rows, 37 safe direct Facts, 17 safe income-statement amounts, five margins, 17 safe
-YoY Facts, and six inventory Facts. XBRL is ambiguity-only and unique-match-only. OCF remains
-PARTIAL; CAPEX components are audit-only; FCF remains OPEN.
-
-## 11. Security Identity / ADR
-
-`security-identity-v2` separates issuer identity, listed-security identity, depositary status, ADR
-ratio, share basis, and currency basis. Verified ADS identity does not prove a current-security
-valuation denominator. Unknown or conflicting identity withholds dependent prose. TSM and WRD remain
-Unknown until authoritative ingestion is separately approved.
-
-## 12. Valuation Safety
-
-`typed-valuation-interpretation-v2` binds each exact interpretation occurrence to metric, Fact,
-numeric references, direction, basis, source, and economic scope.
-`semantic-scope-and-decision-hierarchy-v1` keeps ordinary PER/PBR at company/listed-security scope,
-blocks denied-Fact qualitative echo, and retains safe decision-relevant history.
-
-`valuation-context-wording-v1` records current/history/peer/forward availability and actual use. Its
-classes are `CURRENT_ONLY`, `CURRENT_PLUS_HISTORY`, `CURRENT_PLUS_PEER`,
-`CURRENT_PLUS_HISTORY_PLUS_PEER`, and `LIMITED_VALUATION`. A visible historical percentile cannot
-coexist with current-only wording. Peer missing is not peer zero, and a company multiple is not a
-segment multiple.
-
-## 13. OHLCV Structure
-
-`ohlcv-structure-v2` owns pivots, major swings, zones, boxes, ATR, tentative wave/Fibonacci context,
-dynamic invalidation, and risk/reward. Current-price RR and support-entry conditional RR have
-different semantic IDs and labels. A crossed confirmation is never automatically called support.
-
-## 14. Supply
-
-KR supply uses exact foreign/institution actor and 1/5/20-day horizon Facts. One actor or horizon
-cannot cover another. US stock positioning uses verified volume, relative volume, or an explicit US
-positioning Fact; KR investor-flow boilerplate is forbidden. Supply is positioning context only.
-
-## 15. Market Intelligence
-
-Market reasoning follows verified change, market structure, economic transmission, monitored
-portfolio relevance, and next confirmation. Index direction, breadth, concentration, sectors,
-flows, rates, FX, oil, VIX, and night futures retain separate semantics. Night futures are Korean
-opening context, not company-thesis evidence.
-
-## 16. US Breadth
-
-`market-cross-section-v1` and `market-breadth-v1` support a shadow Massive full-market daily
-cross-section with `massive-us-active-common-equities-v1`. The 2026-08-14 capability sample had
-12,424 raw rows and 5,461 eligible securities. Reference cache TTL is one trading session. Split-
-adjusted decimal volume and close-times-volume remain audit-only. Exact 08:05 KST readiness over
-3-5 normal sessions is still OPEN.
-
-## 17. KR Breadth Status
-
-KRX Open API is approved. Historical capability and breadth calculation pass, the common-share
-universe contract is closed, and publication-readiness/telemetry contracts pass. The provider role
-is time-slot specific: same-day 16:05, next-morning 08:05 and T+1 reconciliation are all
-`NOT_YET_PROVEN`; only historical retrieval is `SUPPORTED`. Current-session readiness is `PARTIAL`,
-sector coverage is `PARTIAL_PRICE_PROXY_ONLY`, market-wide investor flow is `UNSUPPORTED`, and
-production integration is `NOT YET`.
-
-`krx-exact-slot-capture-v1` is now operating as telemetry only. A dedicated LaunchAgent records the
-four core endpoint statuses, row counts, provider dates and payload hashes at natural 08:05 and
-16:05 KST slots. It has no market-packet, DB, AI or notification integration. Wrong-minute,
-weekend and XKRX-holiday launches stop before provider access. The T+1 role has no defined exact
-clock in the current contract, so it is not inferred from 08:05 and remains unconfigured.
-
-The 2026-08-18 core four endpoints returned HTTP 200 with zero rows at 20:27, 21:02 and 21:06 KST.
-That is `MARKET_COMPLETED_PROVIDER_PENDING`; first non-empty, first complete and observed-complete-by
-were not observed. This evidence does not prove that KRX is a late or T+1 provider. Authority is
-not same-day operational suitability. Close, morning, reconciliation and historical roles remain
-separate; 16:05 and 08:05 require 3-5 clean sessions and T+1 requires at least three.
-
-Kiwoom remains an unconfigured `bridge_shadow`; automatic fallback is disabled. Market-wide KR
-investor flow remains unavailable. For copyable official references, use the
-[KRX service list](https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd),
-[Korean terms](https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO002.jsp), and
-[English terms](https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO005.jsp).
-
-## 17A. Peer Valuation Status
-
-`peer-sector-valuation-v1` and `verified-profile-peers-v2` pass, including taxonomy selection,
-issuer deduplication, security basis, denominator safety, staleness, minimum sample, industry
-guardrails and numeric provenance. Phase 8.3 is finalized on the current roadmap as
-`SELECTIVE_OPTIONAL_CONTEXT`; its broad runtime value is `LOW_ROI` and operating integration is
-`NO`. The original Phase 8.3 branch includes KRX Git ancestry, while
-`codex/integration-phase-8-3-peer-only` reconstructs the peer contract from operating main without
-KRX code. Phase 8.3.2A and finalization start from that clean ancestry.
-
-Peer provider policy is permanently `FREE_ONLY` on the current roadmap. Paid/institutional research
-is retained as reference but the paid path is `CLOSED_BY_POLICY`. Historical peer PIT and forward
-peer consensus are `DEFERRED`; broad provider, forward and PIT expansion are stopped.
-
-The immutable free-source POC measures one `MEDIUM+` subject among 20 active stocks: 1/20 raw
-coverage and 1/15 among economically meaningful subjects. KR is 0/7; US is 1/13. TSLA alone has an
-exact automotive group and three clean PER issuers. Broad Technology, Media and semiconductor
-groups remain `LOW`, including MU because semiconductor is not a verified memory peer universe.
-The recommendation is selective optional context, not a broad runtime feature. Tooling, validators,
-statistics, audit artifacts and the clean peer-only branch are preserved. `LOW` remains audit-only,
-and `NOT_MEANINGFUL` is correct suppression rather than a coverage failure. Reopen only when exact
-taxonomy or free valuation coverage improves naturally, a safe new free source appears, a specific
-industry reliably has three clean issuers, or a natural operating-message review establishes a new
-peer need.
-
-The TSLA sample retains `MEDIUM` quality and the same four visible numeric claims, but user-facing
-wording now identifies the sample as a same-automotive-classification `기초 비교군`. Taxonomy and
-current-multiple eligibility do not prove full economic comparability, so the sentence explicitly
-limits direct peer-premium interpretation without adding unverified TSLA narratives.
-
-## 18. Numeric Provenance
-
-Every visible investment number follows:
+### S0 — 현재 권위 M4 결과
 
 ```text
-Fact -> fact_id -> field_path -> semantic_type -> canonical formatter
-     -> exact text_ref -> exact usage -> schema-4 numeric claim
+thesis-monitor-20260908-source-domain-enrichment-directional-specificity-design-review-report.zip
+
+실제 SHA-256:
+4e575e3b2b6881025285865be4c996d335f587c880dabe27b4166c2322802dc7
 ```
 
-Codex authors draft placeholders and references. The binder owns labels, values, rounding, units,
-period/basis phrases, Korean postpositions, and final claims. Unknown semantics, raw prose numbers,
-wrong zone roles, and partial occurrence coverage are rejected.
+M5 시작 시 M4 ZIP checksum과 unzip integrity를 재검산해 PASS를 확인했다. 실제 M4 final SHA는 `1f39271b6d7e161dc86bc11d71dd111b2b48937d`다. M4 `program-completion`의 `final_head_sha`/`report_commit=NOT_MEASURED`는 역사적 보고 누락으로 보존하며 의미 drift로 간주하지 않는다.
 
-## 19. Renderer / Message Architecture
+### S1 — 상위 실모델 실행 결과
 
-`delta-first-rendering-v1` plus `decision-material-delta-v1` selects verified decision relevance
-before section order. Phase 8.4.x closes integrated full messages, delta-first selection, adaptive
-suppression, scope, denied echo, history retention, valuation context wording, observer/holder,
-Unknown, and next-check foundations.
+```text
+thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume-report.zip
 
-The renderer assembles validated content; it does not calculate or repair meaning. The exact final
-Telegram text must pass `runtime-message-quality-v1`. Phase 8.4.1 Work review scores were Samsung
-17, POSCO 16, Hyundai Glovis 18, Korean Re 16, and SK hynix 17: average 16.8/20. Phase 8.4.1.1 fixes
-the one remaining valuation-context contradiction without reopening the architecture.
+실제 SHA-256:
+2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e
+```
 
-`industry-specific-reasoning-v1` now sits between verified Fact selection and adaptive rendering.
-It routes only from structured company classification, records confidence and missing drivers, and
-requires exact supporting Fact IDs for causal claims. Thesis and themes cannot replace the primary
-framework. The Phase 8.5 archive audit covers 20 active KR/US stocks: nine have high-confidence
-specialized routes and eleven correctly remain low-confidence `general`. The reasoning contract is
-implemented, while specialized taxonomy coverage remains a strong PARTIAL gap.
+첨부 체크섬과 일치한다. 전체 파일 2,008개, index 자체를 제외한 payload 2,007개의 hash·크기가 일치했다. 원본 출력 29개는 각각 동봉 schema 검증을 통과했다. 이는 문서 작성 시 로컬 산출물 검증이며 저장소 테스트나 현재 서버 조회가 아니다.
 
-Phase 8.5.3 adds two bounded runtime contracts without redesigning schema 4. The
-`runtime-message-specificity-v2` plan selects each stock's decision point, company evidence,
-industry driver, Unknown, and next confirmation before prose; methodology-only safety boilerplate is
-suppressed rather than paraphrased. The `current-price-context-v1` selector gives AI and deterministic
-fallback the same current price, dynamic support/resistance, current-price RR, chart invalidation,
-chart state, and registered-rule lifecycle. The selector performs no calculation. Crossed registered
-confirmations are history, never future triggers or automatically promoted support.
+### S2 — 기존 engineering handoff
 
-Phase 8.5.3.1 adds final Korean object-particle and actor-flow checks plus structured intra-message
-dedup. `priority_watch` owns ongoing drivers/risks, while `next_checks` owns time-bound confirmation
-events. Numeric repetition is audited by `fact_id` and `field_path`; the same exact Fact cannot be
-printed three or more times in one stock message. These checks extend `runtime-message-quality-v1`
-without changing its existing portfolio repetition threshold.
+`thesis-monitor-new-session-system-prompt-handoff-bundle(1).zip`의 다음 문서를 기반으로 했다.
 
-Phase 8.5.3.2 adds `valuation-comparison-label-v1`. Historical-distribution `current_value`,
-`historical_median`, `historical_mean`, percentile cut values, and current percentile retain
-distinct comparison roles through the numeric registry and binder. A legacy schema-4 packet is
-recovered from its exact field path. Different values with different roles cannot share one visible
-label in a stock message. RXRX now renders current PBR, historical PBR median, and historical PBR
-percentile distinctly without changing its biotech valuation boundary.
+- `00_START_HERE.md`, `01_SYSTEM_PROMPT_FULL.md`
+- `04_ARCHITECTURE_CONTRACTS.md`
+- `05_EXPERIMENT_AND_PROMOTION_PROTOCOL.md`
+- `06_MONITORING_BOOTSTRAP_AND_LIVE_ROADMAP.md`
 
-Phase 8.5.4 reconstructs natural US packet `2026-08-19-us-run-26-cd80a8e4d373`. The natural task
-delivered deterministic fallback 14/14 exactly once, but AI output was rejected. The six-error
-attempt had RXRX/WULF current-PBR ownership errors and CORZ typed valuation occurrence errors.
-Retrospective replay now binds visible current PBR to the base `price_to_book` Fact, keeps history
-statistics in historical roles, exactly covers the CORZ earnings-quality occurrence, and passes the
-full validator and runtime language gate with zero errors. This is retrospective evidence only.
+기존 roadmap의 “지금은 synthetic canary fixture repair”와 과거 untouched cohort 선언은 **역사적 상태로 남기고 현재 작업에서는 대체**한다.
 
-The same phase adds `night-futures-session-basis-v1`. The archived implementation compared DAY and
-NIGHT rows carrying the same KRX `BAS_DD`, but KRX assigns the overnight trading day by the 06:00
-end time. The same-date DAY close therefore occurs later and is not a valid night-session reference.
-The repaired contract requires verified instrument/contract, NIGHT session, immediately preceding
-DAY reference, dates, prices, source IDs and payload SHA before promotion. Run-26 cannot reproduce
-the required 2026-08-19 NIGHT row, so both night-futures changes are
-`UNAVAILABLE_BY_CONTRACT`, not corrected by an assumed value.
+### S3 — 투자·자료 안전 기준
 
-Fallback valuation wording now derives from the metrics actually rendered under
-`valuation-context-wording-v1`. Safe PE can no longer coexist with a generic “earnings excluded”
-tail. Selected support and resistance overlap also fails RR closed generically; run-26 HUT and WULF
-archive-only replays suppress the old 0.66x and 0.42x ratios without moving any zone.
+`Investment Thesis Analysis & Monitoring Knowledge Guide v3`.
 
-Phase 8.5.4.1 fast-forwarded the validated Phase 8.5.4 code through `3a6547e` to `main` and the clean
-operating checkout. The API was restarted and passed health; 430 operating smoke tests passed. A
-read-only live preflight found the expected 2026-08-19 KRX rows still pending, so KOSPI200 and
-KOSDAQ150 are currently unavailable rather than promoted from stale data. A stale but structurally
-valid 2026-08-14 NIGHT -> 2026-08-13 DAY same-contract pair proves the ordinary-session path. The
-collector still cannot bridge a multi-day holiday reference such as 2026-08-18 -> 2026-08-14;
-this is an availability debt, not a wrong-session safety opening. Natural proof is still required.
+### S4 — 이 대화의 최신 사용자 결정
 
-Phase 8.5.4.2 closes that availability debt retrospectively and is promoted to operating shadow at
-implementation commit `7e7ab5a`. Parser and canonical validation now share an XKRX previous-session
-lookup rather than calendar subtraction. The 2026-08-18 NIGHT rows resolve through the 2026-08-17
-holiday to 2026-08-14 DAY for matching September contracts. Backend-derived KOSPI200 -3.95 and
-KOSDAQ150 -10.20 changes agree with provider audit fields. The current 2026-08-19 response is still
-empty, so those historical pairs remain stale and user-visible current exposure remains zero.
-Same-date, future-session, rollover, raw-change-conflict and stale controls remain fail-closed.
+무료 데이터 경로만 사용, 새로운 무료 API 관리 게이트 개발은 후순위, US 실패로 KR의 안전한 독립 진단을 생략하지 않음, 기존 예약 일시 중단, 자동 재개 금지, 일곱 종목의 재무정보 활용 범위 논의는 나중에 판단 구조 검토에서 다시 다룸.
 
-Phase 8.5.5 reconstructs natural KR packet `2026-08-19-kr-run-27-63a064e837ff`. AI sent 0 and
-deterministic fallback delivered 8/8 exactly once. Korean Re's alleged depositary prose was a
-validator false positive: the optional depositary qualifier made `합산비율 ... 확인` match an ADR
-ratio expression even though canonical identity was verified non-depositary common stock. The
-repair requires an explicit ADR/ADS/depositary qualifier and suppresses depositary candidates before
-prose for domestic/non-depositary securities.
+관심사별 권위를 분리한다. 현재 단계 입력은 S0, 역사적 실모델 실행은 S1, 현재 코드는 실제 HEAD/worktree, 다음 변경 권한은 현재 작업지시서, 투자 안전은 S3, 운영 중단·비용 정책은 S4를 따른다. 보고서와 raw 실행이 충돌하면 원본은 수정하지 않고 별도 정정 기록을 남긴다.
 
-The same phase separates `chart_risk_reward` from industry frameworks. It is owned only by
-`price_context`; POSCO retains steel/materials reasoning and Hyundai Glovis retains
-transport/logistics reasoning. `runtime-reasoning-ownership-v1` and
-`runtime-message-specificity-v2` publish candidate owner, evidence, decision role, section,
-specificity key and suppression reason. The immutable replay automatically binds all 117 numeric
-references, has zero validator errors, reduces substantive/template repeats from 2/4 to 0/0, and
-passes the unchanged runtime-quality threshold and receipt verification. Average stock-message
-length falls 2.34%. This is retrospective proof only.
+검토한 첨부 안에는 독립적인 기존 `MASTER_WORKFLOW` 파일이 없었다. 이 문서는 기존 handoff roadmap을 최신 결과로 통합한 갱신본이다. 실행자는 저장소에 실제 canonical master가 있는지 확인해 그 문서에 반영하고, 없다면 하나의 경로를 정한다. 여러 master를 병행해 서로 다른 현재 상태를 만들지 않는다.
 
-Phase 8.5.5.1 reconstructs natural US packet `2026-08-20-us-run-28-9024def294e6`. Numeric,
-semantic and final-language validation passed, but the unchanged runtime quality gate rejected the
-AI candidate; AI sent 0 and deterministic fallback delivered 14/14 exactly once. The packet kept
-Phase 8.5.5 ownership, observer/holder, Unknown and next-check improvements, but a policy-level
-two-anchor quota copied valuation-source TTM EPS and BVPS into sparse `business_earnings` sections.
-The same portfolio scaffold began with `현재 확인된 핵심 숫자는`, while ten stocks repeated a
-standalone previous-RR/current-RR tuple.
+---
 
-`numeric-summary-ownership-v1` removes the numeric quota, keeps real earnings revenue/income/margin
-Facts, rejects valuation-owned business fillers, and permits a specific Unknown when direct business
-evidence is absent. `typed-template-skeleton-v1` preserves section, owner, numeric semantics,
-comparison relation and text shape. It therefore separates RR previous-to-current from PBR
-current-to-historical-percentile without allowing genuine same-role template repetition. RR deltas
-render only when an existing chart-state, confirmation, structure or availability transition makes
-them decision-relevant; no RR threshold or formula changed.
+## 3. 최신 상태 장부: 구현·실증·운영을 분리
 
-The immutable run-28 replay binds 149 numbers automatically with manual/rejected/unresolved 0,
-passes the full validator, final language, unchanged runtime gate and receipt, and reduces template
-skeletons 5 -> 0, generic numeric-summary families 1 -> 0 and business ownership violations 9 -> 0.
-Run-27 remains PASS. Average stock-message length falls 4.00%. Implementation `c915d44` passed
-GitHub Actions run `32319601429`, was fast-forwarded to main and operating, passed API health and
-291 operating smoke tests. This remains retrospective proof; Natural AI-Assisted Delivery is still
-`PARTIAL`.
+| 영역 | 근거가 있는 상태 | 아직 주장할 수 없는 것 |
+|---|---|---|
+| 무료 자료 기반 신규 기업 준비 | 최신 US 11개 검사 중 4개, KR 16개 중 12개 통과; 새 cohort/source lock 생성 | 모든 미국·한국 종목의 정상 등록·갱신 보장 |
+| 환경설정·runner/adapter·ID·namespace | 이전 결함 수리 후 최신 실제 29회 출력 생성, namespace 충돌 0 | 향후 모든 실행의 무장애 보장 |
+| Directional Core / Timing 역할 분리 | 최신 FIRST/A/B 전체 run의 hard gate PASS로 보고 | C 전체, 실종목 일반화 전체 PASS |
+| Unknown 교차필드 일관성 | 공통 invariant와 Core 조기 검사를 구현; NEON 원본은 Core에서 즉시 거절 | 수정 prompt의 실제 모델 출력 개선 |
+| Directional calibration | 수정된 계약과 과거 가상 반복 PASS 존재 | 실종목 경계 변동 해결 |
+| 메시지 품질 | FIRST/A/B 48개 전체 trace 완료; 기존 반복 advisory 유지 | Renderer ownership PASS를 메시지 내용 PASS로 확대 |
+| 기존 코드와 새 판단 경로 연결 | 기존 경계 10/10 재검증, lifecycle-qualified nonproduction adapter와 file-only renderer 검증 완료 | production 전체 연결이나 실등록 E2E 완성 |
+| Monitoring Bootstrap / Daily Delta 연결 | 격리 SQLite에서 canonical 등록·evidence·baseline·resume·daily monitor 실행, fixture lifecycle 12/12 PASS | production DB·실등록·실발송 검증 |
+| 재무 source-domain 설계 | 전년동기 비교, OCF, PPE-only cash conversion, debt/liquidity, working capital, non-operating effects 6/6 계약과 업종 적용성 동결 | source producer 활성화, packet extension 구현, prompt/모델 검증 |
+| 예약 운영 | M3 시작 관측에서 승인된 8개 중단, 변경 0 | 예약 재개나 현재 운영 activation |
+| 운영 반영 | 최신 작업의 live V2·등록·발송·production DB 변경 0 | 새 판단 구조의 live activation |
 
-Phase 8.5.5.2 reconstructs natural KR packet `2026-08-20-kr-run-29-6e8809e1e944`. The final AI
-candidate passed numeric, semantic, and language checks but failed runtime quality on three
-independent prose families: canonical 1/5/20-day supply rows were treated as prose templates, exact
-current RR appeared in both core and price, and common financial-basis/cash-conversion cautions
-repeated across stocks. AI sent 0; deterministic fallback delivered 8/8 exactly once.
+### 최신 실모델 실행 장부
 
-`canonical-supply-flow-tuple-v1` preserves stable foreign/institution actor-horizon rows while
-continuing to check adjacent interpretation. `numeric-primary-owner-v1` assigns exact current RR to
-`price_positioning.text` once and removes only safely identifiable secondary occurrences before
-binding. Common financial caution and inventory/CAPEX-to-FCF/ROIC candidates are suppressed when
-company-specific Unknowns and next checks already own the decision question. The immutable replay
-binds 112 numbers automatically with manual/rejected/unresolved 0, passes validation, language,
-runtime quality and receipt verification, and retains run-28/run-27 PASS. Average stock-message
-length falls 3.19%. No threshold, RR formula, support/resistance, denominator, fallback, KRX user
-integration, Telegram, task, Pilot, DB, archive, or receipt behavior changed.
+| Run | Core 원본 | Timing 원본 | 완전한 run gate |
+|---|---:|---:|---|
+| FIRST | 16행 | 16행 | Ownership / renderer / hard-safety PASS |
+| A | 16행 | 16행 | PASS |
+| B | 16행 | 16행 | PASS |
+| C | 16행 | 4행 | 부분 실행 후 중단; 전체 gate NOT_MEASURED |
 
-## 20. Phase History
+```text
+계획 context 32
+실제 호출·raw 문서 29
+Transport 출력 생성 성공 29
+Context 부분 의미 검사 PASS 28 / FAIL 1
+Core 원본 64행 / Timing 원본 52행
+고유 기업 16개
+완성된 조합 결과·메시지 각각 48개
+공식 안정성 NOT_MEASURED
+전체 일반화 NOT_ESTABLISHED
+```
 
-| Phase | Result |
+S1 최상단 `C = NOT_RUN`은 상세 실행과 맞지 않는다. 마스터의 현재 해석은 **C 5개 context 실행 후 부분 실패**다. 원본 최상단 값을 덮어쓰지 않고 다음 작업에서 정정 보고·생성 로직을 정리한다.
+
+`failed_real_contexts=0`도 transport 기준이다. 의미 검증 실패까지 0이라는 뜻이 아니다. 미측정 안정성의 0-filled counter는 PASS가 아니다.
+
+[S1: `completion.json`; `experiment/fresh-real-proof/model-contexts/`; `reports/fresh-real-internal/proofs/`; `reports/proofs/60-fresh-directional-core-stability.json`]
+
+---
+
+## 4. 현재 결함과 독립적인 후속 질문
+
+### 4.1 지금 수리할 결함: Unknown 표현과 조기 검사
+
+NEON C Core의 같은 항목에 다음이 함께 있다.
+
+```text
+treatment = CONFIRMATION_REQUIRED
+directional_negative_basis = ["E02"]
+```
+
+현재 계약상 이 조합은 `unknown_nonnegative_has_directional_basis`를 발생시킨다. E02는 실제 과거 공식 손실을 가리킨다. 문제는 “손실 사실”과 “현재 상황의 추가 확인 필요”를 동일 Unknown 처리 안에서 충돌하게 작성한 것이다.
+
+정상 구분:
+
+```text
+과거 손실이 확인됨 → 해당 사실·위험·매도 근거 필드에서 기간·한계를 보존
+현재도 지속되는지는 미확인 → Unknown/확인 필요로 별도 표현
+```
+
+유효한 손실 사실을 무조건 삭제하거나, 결측을 부정 근거로 바꾸거나, 모델 판단을 HOLD로 강제하지 않는다.
+
+이 충돌은 Core 원본에 존재했고 Core 직후에는 PASS, Timing 이후 조합 검사에서 FAIL이었다. 최신 증거는 **작성 계약과 검출 시점의 보완 필요**를 지지한다. Timing이 방향을 바꿨다는 증거는 아니다.
+
+[S1: C/Core/batch-01 `output.raw.json`, C/Timing/batch-01 `prompt.txt`, `partial_semantic_audit.json`]
+
+### 4.2 판단 안정성: 별도 분석 후 결정
+
+FIRST/A/B는 방향이 같았지만, C에서는 RMD·AA·TDW·014820·318060·106240·263750이 0.5점 차이로 분류 경계를 넘었다. 이는 원본의 **사후 기술적 비교**이며 공식 안정성 결과가 아니다.
+
+다음 분석은 canonical evidence identity, 현재성, Unknown, 근거 선택, 배점과 문장을 함께 비교한다. 같은 E02 alias를 다른 context의 같은 사실이라고 취급하지 않는다. 이전 cohort에서 확인했던 calibration 원인을 새 cohort에 자동 적용하지 않는다.
+
+다수결·평균·합격 run 선택·임계값 변경으로 결과를 안정돼 보이게 만드는 것은 금지한다.
+
+### 4.3 메시지 품질: 문장 다양화만의 문제가 아님
+
+완주한 세 run의 반복 문구 수는 FIRST 13, A 16, B 21이다. 당시에는 advisory였으며 사후에 hard gate로 바꾸지 않는다.
+
+다음에는 반복된 안전 헤더와 실질적인 종목 설명을 구분하고, 원인이 입력 압축인지 모델 설명인지 renderer인지 추적한다. 없는 정보를 넣거나 종목명만 바꿔 반복 탐지를 피하지 않는다.
+
+### 4.4 수집 원자료 → 판단 입력의 충분성
+
+일곱 종목 독립 검토에서 논의한 현금흐름·차입·전년 비교 등 원자료 활용 범위는 **사용자가 별도 판단 구조 논의로 미룬 항목**이다.
+
+중요도가 낮다는 뜻은 아니다. 상태는 `DEFERRED_EXPLICIT_DECISION_REQUIRED`다. 이번 필드 수리에 묶어 조용히 입력을 넓히지 않는다. 이후 메시지를 문장만 다듬어 개선됐다고 결론 내리기 전에, 이 입력 범위 문제를 다시 논의한다.
+
+---
+
+## 5. 갱신된 전체 진행 순서
+
+```text
+M0  자료·실행 기반과 실험 무결성 확보
+    [한정 범위의 완료 증거 유지]
+        ↓
+M1  Unknown 필드 일관성 / Core 조기 검사 수리
+    + 기존 64 Core·52 Timing·48 메시지 오프라인 분석
+    + 기존 코드 연결 경계 조사
+    [CODE + OFFLINE EVIDENCE REVIEW COMPLETE]
+        ↓
+M2  기존 코드와 발송 없는 통합 / 판단·메시지 품질 개선
+    [NONPRODUCTION INTEGRATION + OFFLINE DECISION COMPLETE]
+        ↓
+M3  명시적 신규 등록 → baseline → bootstrap → Daily Delta
+    격리된 환경에서 lifecycle 연결 검증
+    [COMPLETE: 운영 DB·실등록·발송 없음]
+        ↓
+M4  source-domain enrichment / Directional specificity 설계 검토
+    [COMPLETE: 6개 금융 도메인 계약과 구현 순서 동결]
+        ↓
+M5  DecisionEvidencePacket financial_context 확장
+    [COMPLETE: additive optional schema + hard validation]
+        ↓
+NEXT  Existing Canonical Financial Domain Adapter
+    기존 전년동기·OCF·PPE canonical Fact만 packet으로 연결
+        ↓
+LATER  추가 source mapping → Directional specificity → model/holdout
+    [각각 별도 승인과 검증]
+        ↓
+M6  사용자의 명시적 예약 재개 승인
+    통제된 US/KR 자연 실행 확인 → 일상 모니터링
+```
+
+M2와 M3의 저장소 조사·테스트 설계는 일부 병행할 수 있다. 하지만 **불확실한 판단 입력·규칙을 그대로 둔 채 최종 proof와 production readiness를 먼저 선언하지 않는다.** 큰 의미 변경이 정해지면 그 변경을 동결한 뒤 최종 검증한다.
+
+M1이 끝날 때마다 새 16종목·32호출을 자동 시작하지 않는다. 현재 단계의 실제 blocker를 보고 다음 한 작업을 결정한다.
+
+---
+
+## 6. 단계별 목적·산출물·종료 조건
+
+### M0 — 기존 기반: 다시 만들지 않을 범위
+
+범위: 기존 무료 source 경로, 기업/주식 identity, source sufficiency, 가격 선택자료 분리, protected env 연결, runner↔adapter, runtime identity, context namespace/workdir, 단일 watchdog, 즉시 출력 보존, issuer-level exclusion.
+
+상태: 과거와 최신 결과에서 각 수리 및 한정 실행 증거 확보.
+
+재개 조건: 새로운 직접 증거로 결함이 확인되거나 관련 코드가 변경됐을 때만 해당 경로를 재검증한다. “혹시 모르니” 모든 가상 probe·universe scan을 반복하지 않는다.
+
+Source PASS는 분석을 시작할 근거이지, 투자 매력이 충분하거나 모든 지표가 완전하다는 보장이 아니다. 가격자료의 `UNAVAILABLE_SAFE` 허용은 필수 재무근거 기준 완화가 아니다.
+
+### M1 — 완료: 좁은 수리 + 증거 분석
+
+실행 문서: `20260908-unknown-field-consistency-early-core-validation-offline-evidence-review.md`.
+
+허용:
+- Unknown producer 규칙·공통 검증기·Core 조기 검사 연결의 제한적 수리.
+- Exact NEON 실패 재현과 허용·거절 사례를 포함하는 offline 회귀.
+- 64 Core·52 Timing의 적용 가능한 감사.
+- 48 완성 메시지의 provenance·구체성·반복 원인 점검.
+- 실제 저장소에서 기존/공유/실험 전용 코드 경계 조사.
+- 마스터 현황과 다음 결정 갱신.
+
+호출 예산: **실제 모델 0 / 가상 모델 0 / AI judge 0 / provider 수집 0**.
+
+완료 근거:
+- 구현 커밋 `df8ffb7`: Unknown treatment/basis invariant를 공통 helper로 만들고 Core partial audit와 최종 validator가 공유한다.
+- exact NEON C Core는 `unknown_treatments[0].directional_negative_basis`에서 `unknown_nonnegative_has_directional_basis`로 조기 거절된다.
+- offline fixture 10/10 PASS. 유효한 `DIRECTIONAL_NEGATIVE`와 별도 확인 필요 Unknown은 보존한다.
+- 보존 자료 감사: Core 64/64, Timing 52/52, 완성 메시지 48/48. 예상된 NEON 계보 외 신규 의미 실패 0.
+- B→C 절대 방향 경계 이동 7개, 직접 BUY↔SELL 반전 0. C는 완성 run이 아니므로 공식 안정성은 `NOT_MEASURED`.
+- source registry 149개에 현재 16개 canonical issuer를 보고서 artifact에서 idempotent하게 합쳐 165개로 조정했고, 2차 적용 추가 0을 확인했다.
+- prompt 문구와 hash가 바뀌었으므로 model emission effectiveness는 `NOT_MEASURED`; 기존 calibration 결과를 새 prompt에 이전하지 않는다.
+- 모델/provider/DB/send/registration/main/deploy 변경은 모두 0이며 승인된 8개 예약 중단을 유지했다.
+
+종료 조건:
+- 원래 잘못된 raw는 조기 검사에서도 거절된다.
+- 유효한 사실과 Unknown을 바르게 나눈 fixture는 통과한다.
+- 기존 owner·accounting·security·source 안전 규칙을 약화하지 않는다.
+- 수정 효과는 `코드·offline 회귀 통과`로 한정하고 model emission은 미측정으로 남긴다.
+- 안정성·메시지 문제의 다음 변경 범위가 근거와 함께 정리된다.
+
+Prompt가 바뀌면 신규 hash·revision을 기록한다. Calibration ladder가 그대로라고 whole prompt hash까지 그대로라고 보고하지 않는다.
+
+### M2 — 완료: 공통 판단 경로와 메시지의 비운영 통합
+
+실행 문서: `20260908-nonproduction-integration-and-decision-message-quality-review.md`.
+
+M1의 module inventory를 바탕으로 기존 기능을 재사용했다. 새 판단 엔진을 legacy DB 상태 변경이나 발송 경로에 연결하지 않았다.
+
+주요 확인:
+- 기존 분석·모니터링 코드와 실험 runner 사이 실제 공유/중복 부분.
+- Absolute judgment와 Daily Delta 필드의 일관된 구분.
+- Unknown과 확인된 위험이 메시지에도 구분되는지.
+- 종목 고유 근거·다음 확인 항목이 출력에 남는지.
+- 메시지 반복이 입력 부족인지, 추론 일반화인지, renderer 중복인지.
+- 일곱 종목에서 제기한 raw-to-Core 정보 활용 범위의 재논의 필요성.
+
+완료 근거:
+- 기존 production/shared 경계 10/10을 현재 HEAD에서 다시 확인했다.
+- `INITIAL_ABSOLUTE`, `MONITORING_BASELINE`, `DAILY_DELTA`를 분리하는 pure nonproduction adapter를 추가했다.
+- 명시적 monitoring intent가 없으면 registration intent를 만들지 않고, onboarding 미완료는 monitoring-ready가 아님을 fixture로 확인했다.
+- bootstrap enrichment, missing refresh, price-only movement, Unknown을 각각 daily strengthened, no-material-change, fundamental delta, negative evidence로 바꾸는 경로를 차단했다.
+- 기존 DecisionEvidencePacket, Directional Core, Price-Timing, composition, validator, renderer 계약을 그대로 재사용했다. 모든 새 메시지는 `OFFLINE_NONPRODUCTION_DERIVATIVE`다.
+- 보존 16종목의 8개 domain을 source → normalized → packet → owned Core → rendered reasoning 순서로 감사했다. 보존 packet에서 Core로 떨어진 대상 domain은 0이다.
+- 기간 구분과 valuation-unavailable 맥락은 이미 Core에 공급된다. 전년 비교, OCF/PPE-CAPEX, debt/liquidity, working capital은 이 보존 cold-start archive에 없으며 Core drop으로 분류하지 않는다.
+- 명시적 non-operating/financial-income attribution은 operating income과 net income의 단순 차이로 만들 수 없어 별도 design decision으로 남겼다.
+- 48/48 보존 메시지와 반복 cluster 50개를 다시 추적했다. 실질 반복은 주로 model-owned 문장과 stable renderer wrapper 안의 model content이며, 희소·동형 입력이 함께 제약한다.
+- renderer가 종목별 재무 분석을 새로 쓰거나 synonym으로 반복을 숨기는 변경은 하지 않았다.
+- 실제/가상/judge model, provider, production DB, 등록, assessment, warning, queue, send, main merge, deploy, live V2, Night Futures, scheduler resume는 모두 0이다.
+
+일반 문장만 바꾸지 않는다. 입력/추론 변경이 필요하면 별도 bounded change로 결정한다. Stable output과 충분한 투자 근거는 별개의 합격 조건이다.
+
+종료 조건은 충족했다. 단, lifecycle bootstrap의 실제 격리 연결과 새 model emission은 각각 `NOT_MEASURED`다. 새 지시서 없이 M3, 실모델 proof, production 작업을 자동 실행하지 않는다.
+
+### M3 — 완료: 신규 편입과 기존 보유 종목의 lifecycle 연결
+
+실행 문서: `20260908-nonproduction-monitoring-bootstrap-and-daily-delta-lifecycle-integration.md`.
+
+격리된 SQLite와 fixture repository에서 다음 상태 전이를 검증했다.
+
+```text
+명시적 등록 → 저장된 투자 논리 버전
+→ 자료 보강 필요 / 준비 상태
+→ 유효 baseline 및 기준시점
+→ 기준선 이후 첫 새 사건
+→ Daily Delta
+```
+
+완료 근거:
+- 실제 `register_monitoring_item_with_continuation`, `build_initial_evidence`, `ensure_initial_baseline`, `resume_onboarding_subject`, `run_daily_monitor`를 인메모리 SQLite에서 fixture dependency로 실행했다.
+- 같은 명시적 등록의 thesis version 1개, baseline 1개, 다음 날짜 Daily Delta 1개, notification row 0개를 확인했다.
+- 12개 필수 fixture가 모두 통과했다. bootstrap·늦게 도착한 pre-baseline 사실은 Daily Delta로 승격되지 않았다.
+- refresh 누락은 `needs_review`이며 `no_material_change`로 바뀌지 않는다. price·supply·valuation만으로 business thesis delta를 만들지 않는다.
+- positive, negative, invalidation-candidate의 post-cutoff business evidence와 warning open/resolve, assessment 멱등성을 검증했다.
+- 신규·기존 종목이 같은 Directional Core / Price-Timing / validator / renderer 계약을 사용한다. 12개 메시지는 모두 file-only `OFFLINE_NONPRODUCTION_DERIVATIVE`다.
+- 모델·provider·production DB·실등록·warning persistence·notification queue·send·main merge·deploy·V2·Night Futures·scheduler resume는 모두 0이다.
+
+M3 완료는 lifecycle semantics의 비운영 증명이다. production readiness는 `NOT_READY`이며 예약 작업은 자동 재개하지 않는다.
+
+### M4 — 완료: source-domain enrichment / Directional specificity 설계
+
+무료·공식 source stack에서 전년동기 비교, OCF, PPE-only cash conversion, debt/liquidity, working capital, non-operating effects의 6개 도메인을 분류했다. `DecisionEvidenceRef`에 optional typed financial context가 먼저 필요하다는 결론과 `schema → existing canonical adapters → additional mappings → Directional specificity → sector gate review` 순서를 동결했다.
+
+M4는 설계 단계였다. 실제 packet schema, source producer, prompt, 모델, 실종목 holdout, production을 바꾸지 않았다.
+
+### M5 — 완료: DecisionEvidencePacket 금융 컨텍스트 확장
+
+`DecisionEvidenceRef.financial_context`에 다음을 typed metadata로 추가했다.
+
+```text
+canonical metric / verified financial currency / explicit unit scale
+QTD | YTD | FY | TTM | POINT_IN_TIME
+entity scope / statement basis / total-parent-common attribution
+DIRECT_REPORTED | DERIVED_SAFE
+verified | partial quality
+comparison lineage / derivation lineage / bounded limitations
+```
+
+기간 구조, inclusive duration, 통화 필요성, direct/derived 일관성, ordered input refs와 중복, 빈 식별자를 fail-closed한다. 회계 의미의 비교 가능성, debt component completeness, sector applicability, trade AR 범위와 attribution completeness는 다음 domain adapter validator 책임으로 남겼다.
+
+기존 14개 archived `DecisionEvidencePacket`은 모두 parse됐고 `financial_context`가 없는 canonical serialization SHA가 M5 전 기준과 같았다. 새 내부 JSON schema는 optional field를 포함하지만, M5 항목을 제거한 legacy projection SHA는 과거 frozen schema SHA와 일치한다. Public Action 0.4.5와 20개 operationId에는 이 내부 타입이 노출되지 않는다.
+
+생산 builder emission, compact AI context 소비, source sufficiency, Directional/Price-Timing prompt, provider, 모델, DB, queue, 발송, main/deploy, 예약 재개는 모두 0이다. production readiness는 `NOT_READY`다.
+
+### M6 — 완료: 기존 canonical 금융 도메인 adapter
+
+공유 `existing-canonical-financial-domain-adapter-v1`을 추가해 기존 `canonical_cash_flow_fact`만 M5의 optional `financial_context` envelope로 연결했다. 허용 범위는 전년동기 동일기간 비교 lineage, direct reported OCF, direct reported PPE-only 취득 현금유출, 그리고 동일 period/currency/unit/entity/statement/attribution의 기존 OCF·PPE Fact를 입력으로 갖는 `ocf_less_ppe_capex`다.
+
+보존된 Phase 9 canonical 606개 행에서 330개 context를 안전하게 구성했다. 구성은 OCF 122, PPE 104, OCF-PPE 104이며 130개에는 compatible prior-year comparison lineage가 붙었다. 나머지 276개는 projection에 완전한 derived-period metadata가 없어서 OCF 102, PPE 87, OCF-PPE 87을 그대로 fail-closed했다. 이는 source fact 손실이나 0 대체가 아니라 다음 mapping/projection subpackage의 명시적 backlog다.
+
+KR OpenDART OCF/PPE는 정확한 duration period가 없는 경우 계속 차단된다. 단위 scale 변환과 FX, maintenance capex 추론, management-defined FCF 명칭, debt/liquidity·working capital·non-operating 도메인은 추가하지 않았다. 새 SEC/OpenDART/provider mapping은 0개다.
+
+내부 packet instance에는 eligible `financial_context`가 생기지만 compact AI context는 before/after byte-equivalent다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, 모델 호출, provider fetch, DB·queue·발송·deploy·예약 상태는 변하지 않았다. focused 482개와 전체 2887개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
+
+### M7 — 완료: 금융 lineage와 KR duration-period projection
+
+`canonical-financial-lineage-projection-v1`을 추가해 선택된 canonical cash-flow Fact와 compatible prior-year Fact, 그리고 기존 derived Fact의 ordered input closure를 packet builder의 내부 adapter 입력으로 projection한다. support-only 행은 `ARCHIVE_ONLY`이고 prose·interpretation·numeric registry 및 compact AI context에는 노출되지 않는다. formula, derivation version, ordered input Fact/source ref, fiscal period, currency/unit, issuer/entity/statement basis와 source occurrence identity를 digest로 고정하며 누락·충돌·순서 불일치는 계속 fail-closed한다.
+
+보존된 Phase 9 canonical 606개 행을 새 source 계산 없이 재검증한 결과 606개 모두 typed context로 재현됐다. OCF 224, PPE 191, OCF-PPE 191이며 compatible prior-year comparison은 164개다. M6에서 차단됐던 derived-period OCF/PPE 189개와 그 입력 lineage가 필요했던 OCF-PPE 87개가 기존 formula/version/input identity projection으로 해소됐다. 새 derivation, SEC/OpenDART taxonomy mapping, ticker-specific 예외는 0개다.
+
+OpenDART duration mapper는 XBRL의 exact entity, taxonomy, amount, KRW unit, statement basis, duration start/end가 한 occurrence로 일치할 때만 기간을 채운다. 보고서 코드만으로 1월 1일이나 분기 시작일을 추정하던 경로는 제거했다. 비달력 결산을 포함한 synthetic contract fixture는 통과했지만 저장소에는 실제 KR canonical cash-flow Fact가 없으므로 issuer coverage는 여전히 `SOURCE_PRESENT_BUT_PERIOD_BLOCKED`다. KR OCF 7개와 보험 제외 PPE 6개의 실제 period block은 유지하며, 이는 mapper 기능과 시장 coverage를 분리한 결과다.
+
+compact AI context, Directional/Price-Timing prompt, source sufficiency, Daily Delta, renderer, model/provider, production DB·queue·send·deploy는 변하지 않았다. focused 252개와 전체 2920개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 승인된 8개 모니터링 경로는 중단 상태를 유지한다.
+
+### M8 — 완료: source-class financial mapping
+
+OpenDART CFS/OFS의 exact taxonomy·amount·KRW unit·entity·duration·statement-basis member·filing identity가 일치할 때만 canonical OCF/PPE fact를 승격한다. 실제 보존 KR 7종목에서 OCF 7개와 보험 제외 PPE 6개를 재현했다. HUT은 preserved PPE source occurrence 부족, SKHY는 issuer occurrence 부재로 ticker 예외 없이 defer했다.
+
+### M9 — 완료: interest-bearing debt와 liquidity mapping
+
+`interest-bearing-debt-liquidity-v1`은 direct `cash_and_cash_equivalents`, 명시적 current/non-current borrowings·bonds·notes·convertible debt, 별도 restricted cash와 lease-liability context를 POINT_IN_TIME fact로 만든다. `interest_bearing_debt_total`은 current와 non-current scope가 모두 있고 component가 non-overlapping이며 date/currency/unit/entity/statement/document가 호환되는 경우에만 생성한다. `net_debt`는 이 complete total에서 같은 기준의 cash and cash equivalents만 차감한다. restricted cash, marketable securities, price currency와 ADR ratio는 사용하지 않는다. 음수 net debt는 같은 공식의 유효한 결과다.
+
+기존 `FinancialSnapshot.debt`는 OpenDART `부채총계`를 담는 legacy ambiguous field로 확인됐다. M9 canonical bridge는 이를 사용하지 않으며 total/current/non-current liabilities semantic을 debt 입력으로 명시적으로 거부한다. lease liability는 `SEPARATE_CONTEXT_ONLY`, restricted cash는 `EXCLUDE_FROM_NET_DEBT_CASH_BASIS`로 동결했다. 은행·보험·재보험은 industrial net-debt 경로 대신 `SECTOR_FRAMEWORK_REQUIRED`로 분리한다.
+
+보존된 실제 KR archive에서는 비금융 6곳 중 5곳이 complete debt total과 net debt로 재현됐다. `010120`은 전환우선주부채 의미가 불명확해 PARTIAL로 차단됐고, `003690` 보험은 NOT_APPLICABLE이다. 보존된 US balance-sheet payload가 없어 US 실제 coverage는 0이며 synthetic SEC contract fixture만 별도로 통과했다. coverage를 늘리기 위한 fuzzy/ticker-specific mapping은 0이다.
+
+새 debt/liquidity context는 internal packet metadata까지만 도달하고 compact AI context에는 노출되지 않는다. Directional/Price-Timing prompt, source sufficiency, Daily Delta, warning, working capital, non-operating effects, model/provider, production DB·queue·send·deploy·scheduler는 변하지 않았다. M9 focused 295개와 전체 2950개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`이며 모니터링은 중단 상태를 유지한다.
+
+### M10 — 완료: inventory, receivables, working-capital component mapping
+
+`inventory-receivables-working-capital-v1`은 exact official taxonomy와 POINT_IN_TIME context가 일치할 때만 inventory aggregate/component, trade/broad receivables, trade/broad payables, current assets/liabilities, contract assets/liabilities를 canonical fact와 internal `financial_context`로 승격한다. aggregate inventory가 있으면 child component를 함께 합산하거나 중복 노출하지 않고 aggregate가 우선한다. trade와 broad, gross와 net, contract와 trade balance는 서로 다른 semantic scope로 유지한다.
+
+안전한 파생은 같은 metric·semantic·currency·unit·entity·statement·gross/net basis의 두 잔액에 대한 `balance_absolute_delta`뿐이다. `prior_year_comparable`과 `prior_year_end`를 별도 kind로 보존하며, 반기말 대 전기말은 YoY가 아니다. current assets minus current liabilities를 operating working capital로 부르는 공식과 DSO/DIO/DPO/CCC는 생성하지 않는다. 은행·보험·재보험은 `SECTOR_FRAMEWORK_REQUIRED`, SaaS/platform 등은 필요 시 `CONTEXT_ONLY`로 분리한다.
+
+보존된 실제 KR archive에서 비금융 6곳 모두 inventory/current asset/current liability를 exact OpenDART/XBRL instant context로 재현했다. trade AR/AP는 각각 5곳, 나머지 1곳은 broad receivable/payable context만 안전했다. contract assets와 contract liabilities는 각각 3곳이다. 38개 balance delta는 모두 `prior_year_end` 비교이며 실제 prior-year comparable은 보존 자료에 없다. Receivable delta는 8개로, 6개 issuer scope에 더해 POSCO와 LS ELECTRIC의 current/noncurrent trade receivable을 각각 분리한 결과이며 합산 Fact가 아니다. Payable delta는 6개다. 보험 `003690`의 generic working-capital emission은 0이다. 보존된 US balance-sheet payload는 계속 0이므로 실제 US coverage는 주장하지 않고 exact SEC source-class capability만 synthetic fixture로 검증했다.
+
+새 working-capital context는 internal packet metadata에만 존재하며 compact AI context, Directional/Price-Timing prompt, renderer, source sufficiency, Daily Delta, warning, debt/liquidity semantics를 바꾸지 않는다. M10 focused 339개와 전체 2970개 테스트, Ruff, diff check가 통과했다. production readiness는 `NOT_READY`, monitoring은 `PAUSED`를 유지한다.
+
+### 후속 — 명시적 재개와 일일 운영
+
+사용자가 재개를 요청할 때만 승인된 US/KR 예약을 다시 활성화한다.
+
+- 마지막 정상 평가·자료 기준시점을 확인.
+- 중단 기간을 “변화 없음”으로 처리하지 않음.
+- backlog의 이미 발송/미발송 상태와 중복 방지 확인.
+- 통제된 KR/US 자연 실행과 발송 결과 관찰.
+- 모니터링 등록·investment logic·history는 유지.
+
+새 판단 구조 검증 성공은 예약 재개의 자동 트리거가 아니다.
+
+---
+
+## 7. 변경하지 않는 판단·자료 계약
+
+```text
+BUY if buy >= 6.0
+SELL if sell >= 6.0
+otherwise HOLD
+BUY:SELL sum = 10
+increment = 0.5
+```
+
+HOLD의 5.5:4.5는 BUY_LEAN, 5.0:5.0은 NEUTRAL, 4.5:5.5는 SELL_LEAN이다. 별도 STRONG BUY output enum을 새로 가정하지 않는다.
+
+Directional Core는 비가격 issuer 근거로 방향·배점·HOLD lean·fundamental 관점·business invalidation을 소유한다. Price-Timing은 실제 제공된 가격·technical·supply로 타이밍만 담당한다.
+
+Price-Timing은 신규 관찰자의 판단을 더 보수적으로만 조정할 수 있고, 가격만으로 holder REDUCE나 사업 무효화를 만들 수 없다. Renderer는 주요 행동 표현을 소유하며 AI 추론은 실질 설명을 담당한다.
+
+유지하는 자료 안전:
+- 통화·기간·귀속·주식/ADR 기준이 맞을 때만 수치 비교.
+- 단일분기 EPS 임의 연율화·provider 배수에서 EPS/BVPS 역산 금지.
+- 잠정실적에 없는 현금흐름·BS 항목 생성 금지.
+- 없는 기술적 지표·지지선·목표가·손절가 생성 금지.
+- 가격·수급 변화를 fundamental delta로 복사하지 않음.
+- Unknown은 실제 부정적 사실과 구분하며 없는 정보를 추정해 채우지 않음.
+
+---
+
+## 8. 실험 자산·holdout 상태 관리
+
+세 상태를 별도로 관리한다.
+
+| 축 | 질문 |
 |---|---|
-| 7.x | Numeric provenance, security/financial quality, statement/amount basis, typed valuation, renderer quality, receipt/fallback integrity |
-| 8.0A/8.2 capability | Massive US breadth implemented in shadow; Kiwoom/KRX bridge architecture prepared |
-| 8.1 | `financial-lineage-v2` and exact XBRL fallback architecture |
-| 8.1.1 | Recent authoritative OpenDART recovery with safe direct Fact promotion |
-| 8.1.2 | Data/Safety PASS; financial-only message quality gap identified |
-| 8.4 | Integrated schema-4 delta-first full messages |
-| 8.4.1 | Economic scope, denied echo, decision hierarchy, history retention |
-| 8.4.1.1 | Valuation-context wording matrix and contradiction validator; Phase 8.4 foundation finalized |
-| 8.5 | Fact-dependent industry routing/causal guardrails; archive-only KR/US full-message evidence; specialized coverage strong PARTIAL |
-| 8.5.1 | Exchange-calendar session repair and exact current-price RR packet/numeric-path replay; natural-live proof pending |
-| 8.5.2 | Phase 8.5.1 linear ancestry promoted to main and the operating shadow checkout; API/task health verified; natural-live proof pending |
-| 8.5.3 | Natural US/KR quality failure reconstructed; AI specificity and fallback dynamic-price parity PASS; promoted with 8.5.3.1, natural AI delivery pending |
-| 8.5.3.1 | Korean language and intra-message dedup PASS; Phase 8.5.3 chain promoted to operating shadow; natural AI delivery pending |
-| 8.5.3.2 | Valuation comparison-role labels and collision validator PASS; targeted repair promoted to operating shadow; natural AI delivery pending |
-| 8.5.4 | Run-26 night-session, semantic binding, typed valuation, fallback parity and overlapping-zone RR repairs PASS retrospectively |
-| 8.5.4.1 | Phase 8.5.4 promoted to main and operating shadow; API/health/smoke PASS; latest night pair unavailable fail-closed; natural proof pending |
-| 8.5.4.2 | Holiday-aware XKRX preceding-DAY lookup PASS retrospectively and promoted to operating shadow; current provider row pending; natural proof pending |
-| 8.5.5 | Run-27 security/framework ownership and repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
-| 8.5.5.1 | Run-28 business numeric ownership, typed skeleton and RR-delta repetition repair PASS retrospectively and promoted to operating shadow; natural proof pending |
-| 8.5.5.2 | Run-29 canonical supply tuple, current-RR single owner and typed prose repetition repair PASS retrospectively; promoted to operating shadow; Phase Advancement Rule v1 applied |
-| 8.2A.x | KRX historical engine, universe and publication-state contracts PASS; exact 08:05/16:05 telemetry-only capture operating; user-visible integration 0; roles not yet proven |
-| 8.3 | Peer selection/safety/statistics contract PASS; capability strong PARTIAL; original measured coverage 0/20 |
-| 8.3.1/8.3.1.1 | Paid provider research completed; clean peer-only branch prepared; production provider gate not passed |
-| 8.3.2A | Policy changed to FREE_ONLY; current free-source POC measured 1/20 and recommends selective optional context; not merged or deployed |
-| 8.3 Finalization | Contract/safety PASS; broad expansion stopped at LOW_ROI; tooling retained as SELECTIVE_OPTIONAL_CONTEXT; not merged or deployed |
+| Output exposure | 실제 결과가 나왔는가, 몇 기업·단계까지인가? |
+| Semantic revelation | 판단·필드·안전 계약 결함이 실제로 드러났는가? |
+| Retirement | 앞으로 unseen 시험에 다시 사용할 수 있는가? |
 
-### Current Status Summary
+최신 cohort:
 
-| Area | Status |
+```text
+RMD / NEON / AA / TDW
+066900 / 079370 / 247540 / 183300
+014820 / 318060 / 106240 / 263750
+170900 / 039980 / 026960 / 251970
+```
+
+상태: `FULLY_EXPOSED / RETIRED_FOR_ARCHITECTURE_REPAIR`, future unseen reuse 0.
+
+S1 source lock:
+
+```text
+3023b419f6c385abbe734c0e3b97667767a2c6cf2fd598522fe83215fcc3ebac
+```
+
+이 source lock은 offline 원본 대조용이다. 새 unseen proof용으로 재사용하지 않는다. 현재 task의 offline regression fixture는 새로운 실모델 증거가 아니다.
+
+제외 registry는 보고된 149개를 현재 저장소 상태와 비교하고 최신 cohort 누락을 canonical issuer 단위로 추가한다. 단순 ticker 문자열만으로 share-class alias를 구분하지 않는다. 예상 합계 165를 검증 없이 강제하지 않는다.
+
+원본 raw·prompt·schema·receipt는 그대로 보존하고 모든 재검증·수정 fixture·재렌더링은 별도 파생물로 표시한다. C를 채워서 완주한 것처럼 만드는 replay나 selective continuation은 금지한다.
+
+---
+
+## 9. 운영·비용·실행환경 정책
+
+### 무료 외부 데이터
+
+기존 무료·공식 경로에서 가져올 수 있는 자료 안에서 운영한다. 유료 추가·tier upgrade·유료 fallback은 승인하지 않았다. 무료 API 요금제 전수 감사나 새 관리 게이트도 현재 우선순위가 아니다.
+
+실제 한도·자료 부재가 발생하면 기존 방식으로 명시하고, 중요한 값은 만들지 않는다. 지원 후보 universe와 실제 등록 완료, source PASS, investment attractiveness를 혼동하지 않는다.
+
+### 예약 중단
+
+마지막 기록에 있는 승인 객체는 다음 8개다.
+
+```text
+Thesis Monitor AI Review US Primary
+Thesis Monitor AI Review US Backup
+Thesis Monitor AI Review KR Primary
+Thesis Monitor AI Review KR Backup
+com.seungsoo.thesis-monitor.daily
+com.seungsoo.thesis-monitor.kr-close
+com.seungsoo.thesis-monitor.ai-review-fallback
+com.seungsoo.thesis-monitor.ai-review-delivery-retry
+```
+
+현재 실행자가 existing safe observation으로 상태를 확인한다. 승인된 객체가 이미 중단이면 변경 0, 예상 밖 재활성화가 확인되면 기존 승인 범위 안에서 중단 유지 후 실제 변경 건수를 기록한다. 다른 scheduler/Night Futures를 중단하거나 실행 중인 자연 작업을 강제 종료하지 않는다.
+
+### 모델/runtime
+
+미래의 승인된 proof 기본 설정은 현행 프로젝트 계약을 유지한다.
+
+```text
+gpt-5.6-sol / xhigh
+MODEL_CONTEXT_COUPLED / 4 subjects
+1800-second single watchdog
+per-context unique namespace / workdir / invocation
+```
+
+완료된 M1의 모델 호출은 0이다. Transport의 capacity·disconnect·내부 retry·watchdog를 서로 구분하고, 과거 회복 사례를 무장애 보증으로 표현하지 않는다. Wrapper 자동 retry·모델 변경·batch split·timeout 증가는 별도 근거와 승인 없이 하지 않는다.
+
+---
+
+## 10. 결과 보고의 공통 형식
+
+모든 다음 결과는 최소한 다음을 분리한다.
+
+```text
+Code / offline regression
+Source readiness
+Transport completion
+Schema / identity acceptance
+Core / Timing / combined semantic checks
+Run-level ownership / renderer / hard-safety
+Descriptive comparison
+Formal stability / generalization
+Message quality
+Bootstrap/integration readiness
+Production activation / scheduler state
+```
+
+`NOT_MEASURED`는 실패도 성공도 아니다. `0`에는 반드시 검사한 모집단·분모를 붙인다. raw output 수, 기업 수, stage row 수, 성공 run 수를 섞지 않는다.
+
+Master 갱신 때마다 기록:
+1. 읽은 최신 결과 파일명·실제 SHA.
+2. 완료·실패·미측정 변화와 해당 원본 artifact.
+3. 실제 코드 변경과 현재 저장소 상태.
+4. 사용자에게 승인받은 다음 범위와 금지 범위.
+5. 최신 운영 관측 시각과 운영 변경 유무.
+6. 후속 phase의 진입 조건.
+
+이 문서의 M0~M12 상태는 프로젝트 계획용이다. 공개 Action enum이나 production schema를 새로 만들라는 뜻이 아니다.
+
+---
+
+## 11. M11 결론과 다음 한 작업
+
+**완료한 작업:** M1 Unknown 계약 수리, M2 nonproduction 판단/메시지 통합 검토, M3 monitoring bootstrap·Daily Delta lifecycle 통합, M4 source-domain enrichment·Directional specificity 설계 검토, M5 `DecisionEvidencePacket` 금융 컨텍스트 확장, M6 기존 canonical 금융 adapter 구현, M7 compatible prior-year·derived-period lineage와 exact OpenDART duration projection 구현, M8 reusable source-class 분류와 exact-context canonical source promotion 구현, M9 interest-bearing debt/liquidity canonical mapping과 complete-scope derivation 구현, M10 inventory/receivables/payables와 명시적 balance-comparison mapping 구현, M11 non-operating/financial-income effects exact mapping과 bounded net-financial-effect derivation 구현.
+
+M8 source-class 판정:
+
+```text
+HUT PPE = SOURCE_EVIDENCE_INSUFFICIENT / DEFER_NO_TICKER_EXCEPTION
+SKHY OCF/PPE = GENERIC IFRS CLASS ALREADY SUPPORTED / ISSUER OCCURRENCE ABSENT
+KR OpenDART = GENERIC_SOURCE_CLASS_WITH_BOUNDED_VARIANT / IMPLEMENTED
+```
+
+HUT은 보존된 추출 결과에 OCF만 있고 원본 CompanyFacts concept set이나 미등록 PPE extension이 남아 있지 않아 안전한 alias를 만들 수 없다. SKHY는 TSM·WRD가 증명하는 issuer-level IFRS 20-F/6-K class를 이미 지원하지만, 보존 SKHY source에는 정식 현금흐름 occurrence가 0개이므로 역사적 gap은 그대로 fail-closed다.
+
+KR은 실제 7개 보존 OpenDART full-statement/XBRL cache에서 동일 원인을 확인했다. `ConsolidatedAndSeparateFinancialStatementsAxis`라는 축 이름 자체에 두 basis 단어가 함께 있어 이전 parser가 모호하다고 판단했지만, 실제 member는 각 context에서 `ConsolidatedMember` 또는 `SeparateMember`로 단일하다. M8은 basis member를 우선하고 exact taxonomy·amount·KRW unit·entity·duration·filing identity가 모두 일치할 때만 direct reported canonical fact로 승격한다. 7개 issuer의 OCF/PPE source fact는 exact YTD context로 재현됐고 ticker 분기는 0이다. 보험 1개는 source evidence 보존과 generic enterprise FCF applicability를 분리해 기존 N/A를 유지한다.
+
+M11 contract는 `non-operating-financial-income-effects-v1`이다. Direct source 금액의 부호와 official presentation을 보존하고 financial income, financial cost, interest income/expense, FX gain/loss, disposal·fair-value effect, broad other context, equity-method context, tax, continuing/discontinued result를 서로 다른 semantic으로 유지한다. 유일한 파생은 exact official aggregate finance income minus compatible aggregate finance cost이며, official direct net가 있으면 이를 우선한다. Child component만으로 total을 합성하거나 aggregate와 child를 이중 합산하지 않는다.
+
+보존된 실제 KR 자료에서는 비금융 6개 모두 finance income/cost와 tax direct fact가 있었고, safe net-financial-effect는 6개 issuer에서 확인됐다. 이 중 5개는 동일 document·period·currency·unit·entity·basis·attribution의 aggregate 두 입력에서 파생됐고 1개는 official direct net다. Interest income/expense는 각각 1개 issuer에서만 exact direct fact로 확인됐다. Aggregate/child overlap 8건은 parent precedence와 child descriptive preservation으로 처리했으며 합산 0, source conflict 0, sign-ambiguous derivation 0이다. 보험 1개는 `SECTOR_FRAMEWORK_REQUIRED`로 분리해 generic emission 0을 유지한다.
+
+보존된 US/foreign income-statement 원본은 0개이므로 M11은 실 US issuer coverage를 주장하지 않는다. SEC CompanyFacts adapter의 exact taxonomy capability는 fixture로만 검증하며 issuer별 실제 coverage와 구분한다. Broad other income/expense는 context-only이고 equity-method와 tax는 operating performance나 finance aggregate로 재분류하지 않는다. Universal non-operating total, reconstructed operating profit, adjusted/normalized earnings·EPS, ETR, recurrence/materiality score 파생은 모두 0이다.
+
+6개 financial domain의 model-free 검토 결과는 `READY_WITH_KNOWN_OPTIONAL_GAPS`다. 남은 공백은 US 실 archive와 sector-specific framework 같은 선택적 source/industry 범위이며, 다음 Directional specificity 구현을 막는 generic schema/semantic gap은 확인되지 않았다.
+
+**권장 다음 한 작업, 아직 미승인:** `DIRECTIONAL_FINANCIAL_CONTEXT_CONSUMPTION_AND_SPECIFICITY_IMPLEMENTATION`.
+- M5~M11 typed financial context 중 claim과 sector에 필요한 최소 evidence만 Directional Core에 공급한다.
+- data activation과 최종 real-model proof를 분리한다.
+- source-sufficiency gate, Daily Delta, warning, Price-Timing, renderer, production 활성화와 schedule resume는 계속 포함하지 않는다.
+- financial-sector capital framework와 `010120`의 ambiguous convertible preferred liability는 별도 문제로 유지한다.
+
+M4 source 지원 분류는 US `2 supported / 4 partial / 0 unsupported`, KR `1 supported / 5 partial / 0 unsupported`다. 이는 보편적 issuer coverage가 아니라 현재 parser·mapping·보존 fixture의 계약 수준 분류다. KR OCF/PPE period context, complete interest-bearing debt, trade AR/AP, generic non-operating bridge는 계속 fail-closed 또는 mapping-incomplete다.
+
+6개 도메인 모두 missing을 negative로 바꾸지 않는다. 새 universal source gate는 0개다. debt/liquidity만 financing-dependent sector/framework의 조건부 gate 후보이며, 실제 gate 변경 전 별도 coverage 검토가 필요하다. CCC·ROIC, maintenance capex, generic net debt, partial capex를 company FCF로 부르는 경로는 허용하지 않는다. M11 fact도 Directional Core, compact AI context, source sufficiency, Daily Delta 또는 warning에 아직 소비되지 않는다.
+
+**새로운 주요 판단·입력 변경이 정해지기 전에 매번 FIRST/A/B/C를 반복하는 개발 흐름은 중단한다.** 기존 증거로 결정할 수 있는 부분은 먼저 결정하고, 변경을 묶어 동결한 뒤 필요한 실모델 검증을 수행한다.
+
+---
+
+## 12. M12 결과와 다음 한 작업
+
+M12 구현 커밋 `72c28172949939b268806f5cb347ae4761a0d7f0`은 `directional-financial-decision-context-v1` selector, Directional Core 전용 compact context, cited-alias financial semantic validator를 추가했다. 최대 8개 입력 중 실제 fixture 선택은 최대 3개였고, 8/8 compact context가 의도적으로 변했으나 기존 non-financial evidence drop은 0이었다. financial block의 price/technical/supply ref는 모두 0이며 Price-Timing prompt hash는 이전과 동일하다.
+
+Phase A는 focused `561 passed`, full `3014 passed`, Ruff와 `git diff --check`를 포함해 전 항목 PASS했다. M11 bundle SHA와 53개 payload 무결성도 PASS했다. source lock은 `0da54da972b6cf6874486d9f47d461a72d11a3055152c6d9f35a0f19c2e7c40d`다.
+
+Fictional canary는 첫 context 4개 결과를 schema 4/4, transport 1/1로 받았다. invalid reference, FCF 오표현, prior-year-end YoY 오표현, debt completeness, normalized earnings, fixed score, price/technical/supply 침범은 모두 0이었다. FIC-FIN-03은 QTD 흑자와 YTD 손실 두 fact를 모두 인용하고 “분기”와 “누적”을 명시했으나 frozen case validator가 YTD 한국어 표현으로 `누계`만 인식해 `qtd_ytd_conflict_not_explicit` false reject를 냈다. 결과·validator·prompt를 수정하거나 선택 재실행하지 않고 1/6에서 fail-closed 중단했다.
+
+따라서 현재 상태는 `M12_DETERMINISTIC_COMPLETE_CANARY_BLOCKED`, fresh real proof와 production readiness는 `NOT_READY`다. 다음 한 작업은 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`: ticker 예외나 threshold 변경 없이 generic QTD/YTD 의미 validator가 `누계`와 `누적` 같은 정상 누적 표현을 동등하게 처리하도록 수리하고, 새 generation에서 fictional 6-context canary 전체를 다시 검증한다. 실 issuer proof는 그 뒤에만 진행한다.
+
+운영 변경은 0이다. 승인된 Codex 4개 automation은 PAUSED, launchd 4개 경로는 DISABLED이며 자동 재개하지 않았다. provider fetch, production DB/assessment/warning/notification/send, main merge, deploy도 모두 0이다.
+
+---
+
+## 12R. M12R validator repair와 fail-closed 결과
+
+M12R instruction commit은 `d01c02f3338093bf5ee380f65b8b5907ff5bbf25`, validator repair commit은 `5c26778d708d5c25fae2b2a2e9fb5433f174045e`, read-only schedule observation compatibility commit은 `ffc3fd557f056feac693e596cb48214a5e41aea3`다. formal generation은 `20260909-m12r-fictional-20260909T043009Z-ffc3fd557f05`, source lock은 `326d00b2dd12077427cc13b721e9d6287cfc68401d9d1b1f484765a79864f47d`다.
+
+Generic QTD/YTD validator는 같은 metric의 structured QTD/YTD evidence, 같은 claim의 양쪽 fact 인용, 제한된 분기·누계 표지와 명시적 대비 관계를 함께 요구한다. 정상 한국어 `누계`·`누적`·`연초 이후`, 영어 `YTD`·`year-to-date`·`cumulative`를 인식하되 무관한 `누적적으로`는 허용하지 않는다. 보존 M12 FIC-FIN-03 raw output은 이제 PASS했고 positive fixture `6/6`, negative fixture `10/10`이 각각 통과·거부됐다. historical root cause는 `QTD_YTD_VALIDATOR_KOREAN_CUMULATIVE_WORDING_FALSE_REJECT`로 닫혔다.
+
+Phase A는 focused `570 passed`, full `3022 passed`(warning 2), Ruff와 `git diff --check`까지 PASS했다. 새 model call 전 prompt, selector, fictional cases, schema, threshold와 calibration 변경은 0이었고 source sufficiency, Daily Delta, renderer, warning 의미 변경도 0이었다.
+
+새 fictional canary는 run-1/context-01이 PASS한 뒤 run-1/context-02의 FIC-FIN-06에서 `material_financial_anchor_not_used`와 `working_capital_checkpoint_not_used`가 발생해 규칙대로 즉시 중단했다. 해당 output은 재고·매출채권을 해석했지만 선택된 `canonical:fictional:FIC-FIN-06:inventory-current`와 `canonical:fictional:FIC-FIN-06:trade-receivables-current`를 인용하지 않았다. transport·schema는 정상이고 QTD/YTD false reject/accept 및 나머지 고위험 financial semantic 오류는 0이었다. 완료 호출은 `2/6`, 나머지 `4/6`은 NOT_RUN이며 retry, timeout, capacity failure, orphan은 모두 0이다. 후보·prompt·builder·validator·config는 model 시작 후 수정하지 않았다.
+
+따라서 M12R 상태는 `BLOCKED`, stability는 `NOT_MEASURED`, `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 scope는 `BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`이며 FIC-FIN-06의 canonical working-capital anchor 누락만 별도 bounded repair로 다룬다. fresh real proof, provider fetch, production DB/assessment/warning/notification/send, main merge, deploy는 수행하지 않는다.
+
+운영 중단은 그대로다. Codex automation 4개는 PAUSED, launchd 4개는 DISABLED로 관측됐고 scheduler mutation과 자동 재개는 0이다.
+
+---
+
+## 12G. M12G financial-anchor grounding repair와 fail-closed 결과
+
+M12G instruction commit은 `7e3fac6385760e3356213eab81c67e957d1c55d6`, initial implementation commit은 `b89aec98b59d38b9b1cfb6dfa946a1c47a52f53e`, 최종 frozen implementation commit은 `63aaf9f72cc7ee021c0bf70a746ba5ae5472b218`다. formal generation은 `20260909-m12g-fictional-20260909T054736Z-63aaf9f72cc7`, source lock은 `2a46c2abd2740b52a21799c5b3ed91a77061c7c79520eaef5e2adae30b1544ff`다. 첫 Phase A 시도는 모델 호출 0 상태에서 legacy 20KB prompt-size gate 두 건 때문에 중단했고 그 증거를 별도 보존했다. prompt 의미나 legacy threshold를 완화하지 않고 grounding 문구를 압축해 diagnostic `19,957 bytes`, sequential probes `19,985 / 19,997 / 19,997 bytes`로 기존 경계를 복구했다.
+
+Deterministic gate는 보존 FIC-FIN-03 PASS, 기존 FIC-FIN-06 FAIL 유지, typed inventory/AR refs를 relevant fields에 넣은 corrected FIC-FIN-06 PASS를 확인했다. positive grounding fixture `6/6`은 통과했고 narrative-only substitution, irrelevant typed ref, unrelated-field-only typed ref의 negative fixture `3/3`은 거부됐다. selected financial context가 없는 control에는 새 인용 의무를 만들지 않았다. selector, fictional case, schema, financial/QTD-YTD validator, calibration, Price-Timing, source sufficiency, Daily Delta, renderer와 warning semantic change는 모두 0이다. Phase A는 focused `578 passed`, full `3030 passed`(warning 2), Ruff와 `git diff --check`까지 PASS했다.
+
+새 canary는 run-1/context-01의 4개 subject가 PASS했고 selected/used typed financial refs는 `11/11`이었다. run-1/context-02는 transport PASS(`gpt-5.6-sol`, xhigh, return code 0, retry/timeout/capacity/orphan 0), schema `4/4`였지만 FIC-FIN-06이 선택된 `inventory-current`와 `trade-receivables-current` refs를 사용하지 않았다. 이에 `material_financial_anchor_not_used`, `working_capital_checkpoint_not_used`, `material_financial_anchor_grounding_failure`, `working_capital_grounding_failure`, `narrative_substitution_failure`가 발생했다. 해당 context의 나머지 3개 subject는 PASS했고, 규칙대로 `2/6`에서 즉시 중단해 나머지 `4/6`은 NOT_RUN이다. 새 model call 이후 candidate, prompt, builder, selector, validator, schema와 config 수정은 0이다.
+
+따라서 M12G deterministic repair는 완료됐지만 full fictional canary는 `PROMPT_GROUNDING_INSUFFICIENT`로 BLOCKED다. formal stability와 message-specificity는 `NOT_MEASURED`, `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 scope는 `FINANCIAL_CONTEXT_OUTPUT_GROUNDING_ARCHITECTURE_REVIEW`다. 이는 validator 완화나 ticker 예외 추가가 아니라, 선택된 typed financial anchor가 material claim/checkpoint output에 구조적으로 귀속되도록 하는 계약 검토여야 한다.
+
+실 issuer model call, provider fetch, production DB/assessment/warning/notification/send, main merge, deploy는 모두 0이다. 예약 중단은 유지하며 scheduler mutation과 자동 재개도 0이다.
+
+---
+
+## 12A. M12A financial-context output grounding architecture review
+
+M12A work-instruction commit은 `938569446f309376c3519dd63fd33d505c790e57`, offline review/prototype 최종 implementation commit은 `20e5fec5bf0b243e6205c48aa4f875c37b203164`다. authoritative M12G bundle SHA `69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68`를 다시 계산했고 indexed payload `160`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
+
+현재 grounding 흐름을 끝까지 추적한 결과 alias 체계 자체는 이미 하나다. `stage_alias_catalogs`는 narrative ref와 selector가 고른 typed financial ref를 동일 `EvidenceAliasCatalog`에 넣고, 기존 alias resolver와 output `evidence_refs`도 양쪽을 동일하게 해석할 수 있다. 실제 split은 모델 입력 직전 `scripts/directional_core_price_timing_holdout.py::_owned_context`에서 생긴다. 선택된 typed financial alias `15/15`는 catalog에 있지만 ordinary `evidence[]`에는 `0/15`이고, 별도 `financial_decision_context.evidence_items[]`에만 들어간다. typed alias의 catalog statement `15/15`도 `{"value":"..."}` 형태라 narrative alias보다 사람에게 보이는 의미가 약하다.
+
+보존된 완료 출력의 model-free replay 감사는 M12 `11 selected / 8 used`, M12R `15 / 12`, M12G `15 / 13`, 합계 `41 / 33`이었다. FIC-FIN-06은 M12R과 M12G 모두 working-capital 내용을 narrative로 올바르게 설명했지만 selected inventory/trade-AR typed ref를 전혀 쓰지 않아 narrative-substitution failure가 두 번 반복됐다. 현재 8개 fictional packet에서 selected typed item 15개 중 8개는 동일 사실을 요약하는 narrative row가 있었지만 producer-supplied backing lineage는 `0`이었다. text/topic 유사성은 분류 감사에만 썼고 lineage로 승격하지 않았다.
+
+Option A/B/C를 FIC-FIN-05와 FIC-FIN-06에 오프라인 직렬화했다. Option A는 기존 alias 번호와 canonical/source/comparison/derivation lineage를 그대로 두고 selector가 고른 typed item만 ordinary `evidence[]`에 한 번 추가한다. statement는 metric, period, comparison에서 결정적으로 만든 neutral 문장이고, value와 상세 period/basis는 structured metadata에 남는다. output schema, resolver, validator 의미, renderer를 바꿀 필요가 없다. Option B는 provenance-based `backing_financial_refs`가 있으면 안전하지만 현재 narrative producer의 실제 lineage가 0이므로 text matching 없이 문제를 해결할 수 없다. 기존 `metric_refs`는 checkpoint metric ownership이지 source provenance가 아니어서 재사용하지 않는다. Option C는 새 output field로 검사할 수 있지만 schema migration, legacy artifact, model compliance surface를 늘리면서 이미 가능한 ordinary `evidence_refs` 기능을 중복한다. 별도 proven problem이 없어 hybrid도 선택하지 않았다.
+
+따라서 preferred architecture는 `FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION`, 다음 bounded scope는 `FIRST_CLASS_TYPED_FINANCIAL_EVIDENCE_INDEX_IMPLEMENTATION`으로 동결했다. double-counting identity는 canonical ref다. 같은 typed fact가 `evidence[]` claim과 `financial_decision_context` detail metadata에 함께 보여도 하나의 anchor로만 센다. lineage 없는 narrative summary는 typed anchor로 세지 않으며, financial detail block은 두 번째 증거가 아니다. narrative는 사실의 의미, Unknown, sector interpretation을 계속 소유한다. raw financial dump와 unselected fact projection은 모두 0이다.
+
+과거 M12G FIC-FIN-06 output은 Option A와 B에서도 그대로 FAIL이고 Option C에서는 legacy/NOT_APPLICABLE이다. corrected FIC-FIN-06 fixture는 세 옵션 모두 표현 가능하지만 model result로 재분류하지 않았다. 이 review는 과거 실패를 소급 수정하지 않는다.
+
+검증은 focused `51 passed`, full `3040 passed`(기존 warning 2), Ruff PASS, `git diff --check` PASS다. model/provider 호출, production DB/assessment/warning/notification/send, monitoring registration, main merge, deploy는 모두 0이다. 8개 승인 중단 경로는 PAUSED/DISABLED 상태로 관측했고 scheduler mutation과 automatic resume도 0이다.
+
+M12A 상태는 `COMPLETE`지만 repaired architecture는 아직 실제 Directional runner에 구현하지 않았고 새 fictional canary도 실행하지 않았다. 따라서 `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다. 다음 작업은 동결한 Option A만 구현한 뒤 동일 8-subject x 3-repeat fictional canary를 새 generation으로 실행하는 것이다. 그 전체가 통과한 뒤에만 fresh-real financial-context generalization proof로 이동한다.
+
+---
+
+## 12B. M12B first-class typed financial evidence 구현과 fail-closed 결과
+
+M12B work-instruction commit은 `c92194414db5200cf30df1f912f9ebedc6036a43`, frozen implementation commit은 `746ef9ba1586973d84b49fd233e460660f5b91fa`다. authoritative M12A bundle SHA `cef338a297c6a04908d0255f845b3526f78eabb9aa8d8f5d6c12fdcb97e9b227`를 다시 계산했고 indexed payload `46`, missing/extra/hash/size/secret mismatch는 모두 0이었다.
+
+동결한 Option A `FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION`을 구현했다. selector가 선택한 typed financial item만 ordinary `evidence[]`에 기존 canonical alias와 catalog 순서 그대로 한 번 투영하고, `evidence_kind=TYPED_FINANCIAL` 및 compact financial semantics를 붙였다. metric·기간·비교관계에서 결정적으로 만든 neutral statement를 사용하면서 상세 lineage와 basis는 기존 `financial_decision_context`에 유지한다. 선택 15개는 first-class projection 15개와 정확히 일치했고 suppressed projection, alias renumber, duplicate alias, detail removal은 모두 0이었다. financial context가 없는 FIC-FIN-07과 sector-framework-only FIC-FIN-08은 ordinary context가 byte-equivalent였고 price/technical/supply leakage도 0이었다.
+
+기존 핵심 회귀는 그대로 보존했다. 과거 M12G FIC-FIN-06 raw output은 여전히 FAIL이고 corrected fixture는 PASS이며 FIC-FIN-03 QTD/YTD 회귀도 PASS다. selector, directional/Price-Timing prompt, financial/QTD-YTD validator semantics, output schema, renderer, calibration, source sufficiency, Daily Delta와 warning 의미 변경은 0이다. Phase A는 model call 전 전 항목 PASS했고 focused `594 passed`, full `3056 passed`(기존 warning 2), Ruff와 `git diff --check`도 PASS했다. source lock은 `5bfe8b8ed1f8878bc2d6787e81e34c3a35bc2c424aff80b137d6b44fc9300149`다.
+
+새 generation `20260909-m12b-fictional-20260909T085320Z-746ef9ba1586`은 동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh, 1800초 single watchdog으로 동결했다. run-1/context-01과 run-1/context-02는 모두 PASS했고, 첫 반복의 FIC-FIN-06도 first-class inventory/trade-AR 근거를 직접 사용해 PASS했다. run-2/context-01은 transport와 schema가 정상이고 4개 중 3개 subject가 PASS했으나 FIC-FIN-02에서 `working_capital_grounding_failure` 1건이 발생해 규칙대로 즉시 중단했다. 완료 호출은 `3/6`, 출력은 `12/24`, 나머지 `3/6`은 NOT_RUN이며 formal stability는 `NOT_MEASURED`다. retry, timeout, capacity failure, orphan process는 모두 0이고 model 시작 후 candidate, prompt, builder, selector, validator, schema 또는 config 수정은 0이다.
+
+FIC-FIN-02는 선택된 typed ref `3/3`을 출력 전체에서 모두 사용했고 material financial anchor와 narrative-substitution 검사도 통과했다. 그러나 `risk_context`의 “운전자본 흡수가 지속될 수 있다”는 claim은 narrative structural-risk와 remaining-unknown만 인용했고 typed inventory ref는 별도 Unknown treatment에서만 사용했다. 따라서 이는 source/transport/schema/QTD-YTD 문제가 아니라, 운전자본 claim과 checkpoint가 같은 typed 근거를 직접 소유해야 한다는 claim-level grounding 계약 실패다. 부분 표본 합계는 selected/first-class/used typed refs `26/26/26`, material-anchor failure `0`, working-capital grounding failure `1`, narrative-substitution failure `0`, irrelevant-ref failure `0`이다.
+
+따라서 M12B projection 구현은 완료됐지만 full fictional canary는 `BLOCKED`다. `fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 자동 gate의 다음 scope는 `DIRECTIONAL_OUTPUT_FINANCIAL_GROUNDING_SCHEMA_REVIEW_OR_IMPLEMENTATION`이다. 다음 작업은 validator 완화나 prompt-only 문구 추가가 아니라, typed working-capital evidence가 이를 주장하는 material claim/checkpoint에 구조적으로 귀속되는지 좁게 검토해야 한다. fresh real issuer proof와 production integration은 시작하지 않는다.
+
+실 issuer model call, judge call, provider fetch, production DB/assessment/warning/notification/send, monitoring registration, main merge와 deploy는 모두 0이다. Codex automation 4개는 PAUSED, launchd 4개는 DISABLED 상태를 유지하며 scheduler mutation과 automatic resume도 0이다.
+
+---
+
+## 12C. M12C materiality-scoped working-capital grounding repair와 fail-closed 결과
+
+M12C work-instruction commit은 `6a75e839fd05d7d8b095ae5d23180f621b7abb3a`,
+forensic freeze commit은 `d7ce2b7e24b3fee8373aa2daee5313242b3e325f`, 최종
+implementation commit은 `4f367e27588b030508ae4c9d4ad0181caf64d0de`다. M12B
+authoritative bundle SHA
+`66b53e4991ec46774f2000c871650d2a4390bd88505cc4ae802be0bbc17844cd`와
+indexed payload 112개의 missing/extra/hash/size/secret mismatch 0을 다시 확인했다.
+
+코드 변경 전 forensic은 M12B FIC-FIN-02 run-2 실패를
+`SELECTION_TRIGGERED_OVERREACH`로 동결했다. 선택된 inventory fact가 별도
+Unknown/context claim에서 직접 사용되고 cash-conversion typed anchor도 material claim에
+귀속됐지만, generic `운전자본` narrative가 checkpoint path에 있다는 이유만으로 기존
+validator가 inventory-specific checkpoint grounding을 요구했다. Branch A repair는 선택
+자체가 아니라 material checkpoint claim의 explicit inventory/trade-AR/trade-AP metric
+사용을 hard trigger로 만들고, 해당 metric과 일치하는 typed ref만 그 claim을 ground하도록
+좁혔다. ticker/case branch는 0이다.
+
+결정론적 회귀에서 M12B FIC-FIN-02 run-1/run-2와 M12B FIC-FIN-06 run-1은
+PASS, old M12G FIC-FIN-06 narrative substitution은 FAIL 유지, corrected FIC-FIN-06은
+PASS였다. positive fixture 4/4와 negative fixture 5/5가 기대대로 닫혔고 FIC-FIN-03
+QTD/YTD 역사 회귀도 PASS했다. first-class projection, selector, Directional/Price-Timing
+prompt, output schema, QTD/YTD 및 non-WC financial validator, calibration, source
+sufficiency, Daily Delta/lifecycle/warning, renderer 변경은 0이다. focused/full pytest,
+Ruff, `git diff --check`와 production side-effect firewall도 PASS했다. 최초 deterministic
+preflight는 model call 전에 report-builder field-name mismatch로 중단됐고, 산출물을
+분리 보존한 뒤 새 SHA와 새 generation으로 다시 동결했다. 이 preflight의 model call은
+0이다.
+
+formal generation은
+`20260909-m12c-fictional-20260909T101525Z-4f367e27588b`, source lock은
+`3b8ae0ec3b8b3fc9f8cfd82aab2919abc4c4a701f8e71022cba9fd10f7c44c9a`다.
+동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh,
+1800초 single watchdog, retry 0으로 실행했다. 첫 4개 context는 PASS했고
+run-3/context-01 transport와 schema도 정상이라 총 `5/6` model contexts와 `20/24`
+rows를 보존했다. material-anchor, true metric-specific WC grounding, narrative
+substitution, irrelevant financial ref, invalid ref, FCF/debt/normalized-earnings 및
+price/technical/supply 위반은 0이었다.
+
+run-3/context-01의 FIC-FIN-03만 `qtd_ytd_conflict_not_explicit`로 FAIL했다. 출력은
+QTD와 YTD operating-income typed ref를 모두 인용하고 `분기 영업흑자`와 `누적
+영업손실`을 `상충`, `기간별로 구분해 함께 반영`, `섞지 않는다`고 명시했다. 그러나
+frozen QTD/YTD validator의 relation matcher가 이 정상 관계 표현을 인식하지 않아
+linked claim 7개에도 explicit claim을 0개로 계산했다. 이는 M12C working-capital
+repair 실패가 아니라 별도의 generic QTD/YTD relation-language false reject다. 범위
+규칙대로 validator/prompt/candidate를 수정하거나 선택 재실행하지 않았고, 6번째 호출은
+NOT_RUN이다. formal stability와 message-specificity는 `NOT_MEASURED`다.
+
+따라서 `M12C_CANARY_FAIL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. 다음 한 작업은
+`BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_REPAIR`: ticker 예외나 threshold 완화 없이
+structured QTD/YTD 양쪽 ref를 인용한 claim의 일반적인 한국어 대비·구분 관계를
+bounded하게 인식하는지 검토하고 새 generation으로 전체 fictional canary를 다시
+증명한다. real issuer model call/provider fetch와 production
+DB/assessment/warning/notification/send, main merge, deploy는 모두 0이다. 승인된 8개
+monitoring 경로는 PAUSED/DISABLED 상태를 유지하며 scheduler mutation과 automatic
+resume도 0이다.
+
+---
+
+## 12D. M12D QTD/YTD plain-Korean validator repair와 stability fail-closed 결과
+
+M12D work-instruction commit은 `dd28946351e9a1517d1c50992c93265113efdba0`,
+forensic freeze commit은 `4b1b0417514b85b5c37a7ca61394ab98f522f099`,
+implementation commit은 `3ad040f73f7f159519cb5d47058571c101f1a6c3`다. M12C
+authoritative bundle SHA
+`2ce3b4e501743fb9e640b62807a96658e54b1f682298a486ea0d0c3dc32dd92e`와
+indexed payload 121개의 hash/size mismatch 0 및 secret-scan failure 0을 확인했다.
+
+구현 전 forensic은 M12C run-3 FIC-FIN-03 실패를
+`OTHER_BOUNDED_VALIDATOR_DEFECT:KOREAN_PERIOD_RELATION_MARKER_FALSE_REJECT`로
+동결했다. 기존 validator는 plain `분기` QTD와 `누적` YTD marker, 같은 metric의 양쪽
+typed evidence linkage를 이미 인식했지만, 두 기간 결과의 관계를 명시한 `상충`을
+relation marker로 인식하지 못했다. Branch A 구현은 QTD/YTD relation matcher에 일반
+한국어 marker `상충` 하나만 추가했다. fictional case, WC validator, first-class
+projection/selection, Directional·Price-Timing prompt, output schema, 다른 financial
+validator, threshold/increment/HOLD lean/calibration, source sufficiency, Daily
+Delta/lifecycle/warning, renderer 변경은 0이다.
+
+보존 M12C run-1/run-2/run-3 및 historical FIC-FIN-03 회귀, positive fixture와
+false-accept negative fixture, claim-path와 same-metric evidence-linkage 검사는 모두
+PASS했다. focused pytest는 625 passed, full pytest는 3087 passed, Ruff와
+`git diff --check`도 PASS했다. model-call gate 전 호출은 0이었다.
+
+formal generation은
+`20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f`, source lock은
+`b8f7a16ab2570b2d738a4891ca1d7d3f793a4686581da4cf6b5955367231ba67`다.
+동일 8개 fictional subject, 2개 context, 3회 반복, `gpt-5.6-sol` xhigh, single
+watchdog, retry 0으로 전체 6/6 context와 24/24 output을 완료했다. schema 24/24,
+hard financial semantic violation, QTD/YTD false reject/false accept/true semantic
+violation, working-capital/material-anchor grounding failure, narrative substitution,
+invalid financial ref와 opposite-direction reversal은 모두 0이다. model context는
+6/6 PASS했고 retry/timeout/capacity/orphan도 모두 0이다. 특히 세 반복의
+FIC-FIN-03은 QTD/YTD contract를 모두 PASS했다.
+
+그러나 formal stability는 STABLE 4, BOUNDARY_UNCERTAINTY 3, UNSTABLE 1로
+FAIL했다. FIC-FIN-02가 동일 동결 입력에서 `SELL -> HOLD(SELL_LEAN) -> SELL`로
+변해 `DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED`로 분류됐다. opposite-direction
+reversal은 0이고 hard semantics와 grounding은 전부 PASS이므로, 이는 이번 QTD/YTD
+repair의 재실패나 runtime failure가 아니라 별도의 material financial interpretation
+stability 문제다. 지시대로 threshold/calibration/prompt/candidate를 수정하거나
+선택 재실행하지 않았다.
+
+따라서 `M12D_CANARY_FAIL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`다. 다음 한 작업은
+`BOUNDED_DIRECTIONAL_FINANCIAL_CONTEXT_STABILITY_REVIEW`이며 FIC-FIN-02의 경계
+변동을 threshold-adjacent uncertainty와 material evidence interpretation variability로
+분리해 조사한다. real issuer model call, judge call, provider fetch, production
+DB/assessment/warning/notification/send, monitoring registration, main merge, deploy는
+모두 0이다. 승인된 8개 monitoring 경로는 PAUSED/DISABLED 상태를 유지하고 scheduler
+mutation과 automatic resume도 0이다.
+
+---
+
+## 12S. M12S financial-context stability root-cause review와 다음 수리 동결
+
+M12S work-instruction commit은 `1c50d011d9bb12665fb0b5075eff1077c5557ea4`,
+offline fingerprint tooling implementation commit은
+`8dfe7dadb5f90375d547bd55217437c6420658a2`다. M12D authoritative bundle SHA
+`b7eb58d997048799c499daa7b2be29a429791772781d1ab23c6540f03fa7a9a3`와 indexed
+payload 127개의 hash/size mismatch 0을 다시 확인하고, generation
+`20260909-m12d-fictional-20260909T113907Z-3ad040f73f7f`의 보존 output 24개만
+결정론적으로 fingerprint했다. 새 model/judge/provider call은 0이다.
+
+정규화한 fingerprint는 direction/balance/thesis/new-buyer/holder뿐 아니라 material 및
+dominant anchor, driver·Unknown·reevaluation·invalidation domain, 실제 사용된 typed
+financial metric과 operating/cash-conversion/debt-liquidity/working-capital/non-operating
+semantic polarity를 분리한다. 단순 ref 추가, claim field 이동, 동일 경제 사실의 공동
+인용 또는 0.5 balance 차이는 material interpretation delta로 승격하지 않는다. 24개
+pairwise 비교에서 명시적 polarity 반전이나 causal-domain 교체는 0이었고, stable control의
+anchor/thesis label 차이는 formal success를 고쳐 쓰지 않는 advisory로만 보존했다.
+
+비안정 4종목의 primary root cause는 다음과 같다. FIC-FIN-01은 같은 positive
+operating/cash-conversion/resilience 해석에서 6.0/6.5와 ATTRACTIVE/WAIT가 갈린
+`ADJACENT_BALANCE_BUCKET_CALIBRATION_AMBIGUITY`이고, new-buyer 차이는 독립 secondary
+ambiguity다. FIC-FIN-02는 같은 cash-conversion deterioration, healthy demand, 원인·가역성
+Unknown 아래 SELL 6.0과 HOLD SELL_LEAN 5.5가 갈린 같은 primary root cause다.
+FIC-FIN-04도 flat operations와 non-operating net-income support를 동일하게 해석하면서
+5.0/5.5가 갈렸다. FIC-FIN-05는 direction 4.0:6.0, WEAKENED, debt/liquidity anchors가
+동일한데 holder만 REVIEW/REDUCE로 갈린 `HOLDER_STANCE_CALIBRATION_AMBIGUITY`다.
+`true_semantic_variance_subject_count=0`이며 M12D의 STABLE 4,
+BOUNDARY_UNCERTAINTY 3, UNSTABLE 1과 전체 FAIL은 그대로 유지한다.
+
+현재 Directional contract는 5.0/5.5/6.0/6.5와 6.0 threshold, 0.5 increment,
+adjacent-fit 시 5.0 방향의 보수적 tie-break를 이미 명시한다. 그러나 shared-lineage cash
+metrics와 independent corroboration의 차이, corroboration과 limiting Unknown의 ordinal
+배치, flat operations와 non-operating support의 5.0/5.5 경계, valuation/persistence
+Unknown이 남을 때 6.0/6.5 경계가 financial context에 충분히 구체적이지 않다. 실제
+M12D 세 경계 case는 보수적 tie-break를 일관되게 적용하지 않았다. new-buyer와 holder
+enum도 각각 valuation/confirmation 및 fundamental REVIEW/REDUCE 경계를 명확히 닫지
+않지만 하나의 직접 결합 원인은 아니므로 primary repair에 함께 넣지 않는다. formal
+stability classifier는 실제 output instability를 올바르게 검출했으므로 `KEEP`이고 과거
+결과 재분류는 0이다.
+
+따라서 한정된 다음 repair는
+`BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR`로 동결한다. 다음 scope는
+`BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR_AND_FULL_FICTIONAL_CANARY`다.
+threshold/increment/HOLD lean은 바꾸지 않고 evidence sufficiency와 기존 tie-break의
+적용만 일반 계약으로 명확히 한 뒤, 새 generation에서 동일 8개 subject x 3회 전체
+fictional canary를 수행한다. new-buyer와 holder ambiguity는 독립 후속 검토로 남긴다.
+
+M12S는 review-only이므로 Directional prompt/calibration/new-buyer/holder/classifier,
+financial selector/source mapping, QTD/YTD·working-capital validator, schema,
+Price-Timing, renderer, production runtime 변경은 0이다. production DB/assessment/warning/
+notification/send, monitoring registration, main merge, deploy도 0이고 승인된 monitoring
+8개는 PAUSED/DISABLED 상태를 유지한다. `M12S_COMPLETE`,
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 repaired full
+fictional canary 전에는 fresh real proof나 monitoring resume를 시작하지 않는다.
+
+---
+
+## 12E. M12E boundary calibration repair와 부분 canary 종료
+
+작업지시서 commit은 `3dd15fdc9ef60ad14a120fa22bf03a7b79a6ac1a`, base는
+`67bdc56bcd0dba05d154c727fa1f819816b1a1f4`, frozen implementation은
+`44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630`이다. branch는
+`codex/20260909-bounded-financial-context-boundary-calibration-m12e`이며
+main `d18e68b1e944d7749d093b08797fcd9498412680`에 merge/deploy하지 않았다.
+M12S 권위 ZIP SHA `d9533246a23d7fc6eab6da6637f1254a8748f7e37aa45252840566df5602f3de`와
+payload 38개를 재검증했다. 기존 M12D source context는 내용 변경 없이 재사용했다.
+
+변경 owner는 `directional_balance_service.ORDINAL_CALIBRATION_PROMPT`의 일반 문단
+4개뿐이다. 같은 OCF/PPE residual lineage를 독립 근거로 중복 계산하지 않고,
+원인·가역성·지속성 Unknown을 negative evidence가 아닌 강도 제한으로 취급하며,
+flat operations와 non-operating support만으로 positive lean을 만들지 않고,
+최소 방향 6.0과 더 강한 6.5의 근거를 분리한다. threshold 6.0, increment 0.5,
+HOLD lean, 보수적 tie-break, buyer/holder, schema, selector, financial/QTD/WC validator,
+classifier, Price-Timing, renderer, source sufficiency, Daily Delta는 그대로다.
+
+모델 호출 전 focused 107/107, full pytest 3123/3123, Ruff 및 diff 검사가 PASS했다.
+초기 deterministic 실패 3건은 원본을 보존하고, historical 전체 파일 freeze를
+non-prompt AST freeze로 구분하며 역사적 transport 크기 fixture에 정확한 이전 prompt를
+사용하도록 테스트만 수리했다. transport 크기 제한은 그대로이고 실제 M12E canary는
+새 prompt를 사용했다. GitHub Actions implementation exact SHA는 **FAIL**이다:
+shallow checkout의 historical git object 부재 4건, hosted Linux에 local-only ZIP 부재
+1건이다. 이 중 2건은 신규 M12E history-dependent test이고 3건은 기존 테스트다.
+이를 CI PASS로 표시하지 않으며 frozen generation 이후 CI hotfix도 하지 않는다.
+
+초기 구현 authoring receipt는 Astra/ultra였음을 사용자에게 공개했다. 사용자의 모델
+설정 변경 후 Astra/xhigh turn receipt를 확인하고 frozen diff를 재검토했다. 실제
+investment canary 두 호출은 모두 `gpt-6-astra / xhigh`, CLI `0.153.4`로 확인됐다.
+모든 구현이 처음부터 xhigh였다고 주장하지 않는다.
+
+```text
+generation_id = 20260909-m12e-fictional-20260909T135434Z-60be4412b6eb
+source_lock_sha256 = f560bb1aa9ed648916d5a1b5c40ca2973c6cdd27a16297789195189b467666c6
+planned contexts = 6 (2 contexts x 3 repetitions)
+completed calls = 2; remaining 4 = NOT_RUN
+transport = 2/2 PASS; canary contexts = 1 PASS / 1 FAIL
+schema = 8/8 PASS; frozen semantic = 7/8 PASS
+frozen validator errors = 2; separate false-reject findings = 2
+selected / first-class / used typed refs = 15 / 15 / 15
+grounding failures = 0; QTD/YTD violations = 0
+full formal/core/stance repeated stability = NOT_MEASURED
+retry / timeout / capacity failure / orphan receipt count = 0
+```
+
+FIC-FIN-08은 보험업에 일반 영업기업의 순부채·운전자본 틀을 **적용하지 않는다**고
+명시했고 typed financial refs는 사용하지 않았다. 그러나 `순부채` 존재만 보는
+financial validator와 case audit이 각각 `net_debt_claim_without_complete_net_debt_evidence`,
+`financial_sector_generic_reasoning`을 발생시켰다. 소스 감사상 비적용 문장의 false
+reject 2건이며 해당 오류가 가리킨 실질적 부채 계산·금융업 일반화 위반은 확인되지
+않았다. 원본 후보와 frozen FAIL은 수정하지 않는다. 두 번째 호출 즉시 전체 generation을
+중단했으며 나머지 4회 호출·selective rerun·중간 hotfix는 0이다.
+
+목표 FIC-FIN-01/02/04의 첫 관측은 각각 BUY 6:4, HOLD 4.5:5.5 SELL_LEAN,
+HOLD 5:5 NEUTRAL로 계약에 부합했다. 단 한 번의 관측이므로 안정성 성공은 아니다.
+독립 회귀 관측 FIC-FIN-05는 기존 M12D의 SELL 4:6 / WEAKENED에서 이번에는
+HOLD 4.5:5.5 SELL_LEAN / UNCHANGED로 나타났다. complete interest-bearing debt와
+cash 근거를 인용했지만 재융자 조건·만기 집중 Unknown을 강도 제한으로 사용했다.
+계약 clarification이 독립 leverage 근거까지 과도하게 제한하는지 bounded review가
+필요하다. 모델도 Sol에서 Astra로 바뀌었으므로 prompt만의 인과 효과로 단정하지 않는다.
+buyer/holder summary의 literal `[E..]` alias 8건은 별도 메시지 품질 advisory다.
+
+`M12E=PARTIAL_STOPPED`, `P0 open=0`, `P1 open=2`이며 다음 scope는
+`BOUNDED_FINANCIAL_EXCLUSION_VALIDATOR_REPAIR_AND_LEVERAGE_BOUNDARY_REVIEW`다.
+이 scope는 다음 승인 작업의 제안이지 현재 frozen canary 수리 권한이 아니다.
+new-buyer/holder 독립 안정성 후속은 미측정 상태로 유지한다.
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`다.
+실종목·judge·provider 신규 호출, production DB/assessment/warning/notification/send,
+monitoring registration, scheduler 변경·자동 재개는 모두 0이다. 종료 관측에서도 승인된
+예약 8개는 PAUSED/DISABLED였다. 증거 및 세부 completion은
+[M12E reports](reports/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/59-program-completion.json)에 보존한다.
+
+---
+
+## 12F. 금융업 비적용 수리, 레버리지 계약 검토와 실행 시간초과 종료
+
+작업지시서 commit은 `a7029856c189599c96f6c357bb2c949a47af10a3`, base는
+`19b3dd7bc2353f418452e2db67c78e886a73cbc6`이다. 코드 구현은
+`dc80d2b67961d7e71983db91351657a4132f2e78`, 최종 사전 동결은
+`13d21ae25b9a61b95ab433bb5070d4cf8fb21666`이다. 첫 Phase A는 첨부 지시서 끝의
+빈 줄 하나로 diff 검사만 실패했다. 원본 FAIL과 모델 호출 0회를 보존한 뒤 공백만
+정리하고 focused 135/135, full pytest 3174/3174, Ruff, base 대비 diff를 재통과했다.
+M12E ZIP SHA와 payload 177개 무결성도 재확인했다.
+
+일반 helper는 `ASSERTION_OR_APPLICATION`, `EXPLICIT_EXCLUSION`,
+`UNCERTAIN_OR_AMBIGUOUS`를 구분한다. 명시적으로 지배되는 명사형 framework
+비적용만 허용하고, 다른 절·필드의 실제 적용이나 산업재 typed ref를 면제하지 않는다.
+기존 M12E FIC-FIN-08 원본의 별도 오프라인 replay는 PASS다. positive 12개와
+negative 20개 대조군, 혼합·모호한 문장 대조군을 확인했다. 원래 M12E FAIL은 유지한다.
+
+레버리지 root cause는 `ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT`다.
+이 사례의 complete debt와 cash는 같은 재무완충력 축의 구성요소이며 참조 수로
+독립 악재를 중복 계산하지 않는다. 영업이익이 안정적이고 차환·만기·상환 압력의
+심각성이 미확인인 경우 5.5 negative lean이 타당하다. Unknown은 호재가 아니라
+강도 제한이다. 실제 차환·상환 압력은 별도 최소 SELL 근거가 될 수 있지만 점수표나
+기계적 checklist는 만들지 않는다. baseline 대비 악화가 입력에 없으므로 UNCHANGED는
+타당하다. Sol의 과거 SELL/WEAKENED/AVOID를 Astra 필수 label로 삼지 않는다.
+따라서 Branch A를 선택했고 prompt·threshold·increment·lean·tie-break·buyer/holder는
+변경 0이다. selector·typed projection·WC/QTD·기타 financial validator·Price-Timing·
+renderer·source sufficiency·Daily Delta도 그대로다.
+
+```text
+generation = 20260909-m12f-fictional-20260909T150248Z-04f38944c4bf
+source_lock_sha256 = 7e8f87c4ae0c931e6d893206097ad03e2d4ccb1e481a34194e343ac653c78c19
+authoring / attempted runner = gpt-6-astra / xhigh
+planned = 6 contexts / 24 rows
+attempted = 2 contexts; remaining 4 NOT_RUN
+run-1/context-01 = PASS, 4/4 schema + semantic + grounding
+run-1/context-02 = MODEL_TIMEOUT at 1800 seconds, raw output absent
+completed selected / used typed refs = 11 / 11
+completed-row financial violations / grounding failures = 0 / 0
+wrapper retry = 0; CLI internal reconnect warnings = 2
+timeout = 1; observed capacity failure = 0; orphan = 0
+full formal/core/stance stability = NOT_MEASURED
+new FIC-FIN-05/08 result = NOT_MEASURED
+```
+
+첫 context는 약 1133.48초에 완료됐다. FIC-FIN-01/02/04의 첫 bucket은 각각
+BUY 6:4, HOLD 4.5:5.5, HOLD 5:5로 동결 계약과 부합했고 FIC-FIN-03의 QTD 흑자와
+YTD 손실도 구분했다. 단 한 번의 관측은 안정성 PASS가 아니다. 두 번째 context는
+WebSocket connection-reset 경고 뒤 완성 출력 없이 watchdog에서 SIGTERM 종료됐다.
+첫 context에도 내부 재연결 경고가 1건 있었으므로 총 2건을 명시한다. 원본 receipt의
+transport_attempt_count=1은 wrapper 호출 수이며 실제 내부 sampling 재시도 전체를
+뜻하지 않는다. backend request 총수는 미측정이다. timeout을 금융 validator 또는
+capacity 문제로 단정하지 않는다. 실패 receipt의 observed_runtime 후처리 누락은
+로그 header로 보완해 검증했으며 원본 receipt는 변경하지 않는다.
+
+GitHub hosted CI는 코드 구현 및 공백 정리 SHA에서 3169 PASS / 5 FAIL이다.
+historical Git object 부재 3건, 로컬 전용 ZIP 부재 2건이며 새 M12F 테스트의 ZIP
+의존 실패 1건도 포함된다. hosted lint는 test 실패로 SKIPPED다. 이를 CI PASS로
+표시하지 않는다. 생성 이후 662개 코드 파일과 4개 설정 파일의 해시 변경은 0이다.
+
+`P0 open=0`, `P1 open=2`는 실행 timeout의 원인 검토와 hosted CI portability다.
+`fresh_real_proof_readiness=NOT_READY`, `production_readiness=NOT_READY`이며 다음은
+`BOUNDED_ASTRA_TRANSPORT_TIMEOUT_REVIEW_BEFORE_NEW_FULL_FICTIONAL_CANARY`다.
+현재 결과를 보고 금융 계약을 다시 바꾸거나 즉시 재호출하지 않는다. 보존된 실행
+증거 검토 후 별도 승인과 새 generation이 필요하다. 전역 buyer/holder 수리 필요성은
+현재 표본으로 판단하지 않는다. 실종목·judge·provider 호출과 모든 운영 mutation은 0,
+종료 관측에서도 승인된 예약 8개는 PAUSED다. 원본과 세부 결과는
+[M12F reports](reports/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/71-program-completion.json)에 있다.
+
+---
+
+## 13. 이번 마스터 변경 이력
+
+| 이전 표현/흐름 | 이번 정리 |
 |---|---|
-| Phase 8.4 Message Intelligence | COMPLETE |
-| Phase 8.5 Industry-Specific Reasoning | STRONG PARTIAL |
-| Phase 8.5.1 RR Runtime | LIVE PATH PASS |
-| Phase 8.5.3 Runtime Specificity | PASS retrospective |
-| Phase 8.5.3.1 Language/Dedup | PASS |
-| RXRX valuation label repair | CLOSED |
-| Fallback dynamic price | CLOSED |
-| Natural AI-Assisted Delivery | PARTIAL |
-| Phase 8.5.5 reasoning ownership | LIVE_PASS on run-29 exercised security/framework routes |
-| Phase 8.5.5 natural repetition | repaired families LIVE_PASS; run-29 independent KR family CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.5.5 operating state | OPERATING_SHADOW |
-| Phase 8.5.5.1 US numeric-summary ownership | LIVE_PASS on run-29 exercised generic-summary/ownership audit |
-| Phase 8.5.5.1 typed repetition | LIVE_PASS on run-29; new KR tuple family handled separately |
-| Phase 8.5.5.1 operating state | OPERATING_SHADOW |
-| Phase 8.5.5.2 KR structured repetition | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.5.5.2 supply / RR ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.5.5.2 operating state | OPERATING_SHADOW |
-| Phase 8.5.4.2 calendar repair / operating | PASS retrospective / OPERATING_SHADOW |
-| Night-futures session basis | CLOSED_RETROSPECTIVE |
-| Preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL; current provider row pending |
-| Fallback valuation context parity | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Phase 8.3 Contract / Safety | PASS / PASS |
-| Phase 8.3 broad value / scope | LOW_ROI / SELECTIVE_OPTIONAL_CONTEXT |
-| KRX historical / universe / breadth | PASS / CLOSED / PASS |
-| KRX 16:05 / 08:05 / T+1 | NOT_YET_PROVEN / NOT_YET_PROVEN / NOT_YET_PROVEN |
-| KRX exact-slot capture | OPERATING_TELEMETRY_ONLY_PENDING_NATURAL; 08:05/16:05 active, T+1 clock undefined |
-| KRX user-visible integration | NO |
-| Production Assist / AI mode | OFF / shadow |
-| Phase 9.0A | ARCHITECTURE_CLOSED; runtime behavior change 0 |
-| Phase 9.0B readiness / scope | YES / SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE |
-
-## 21. Current Persistent Gaps
-
-| Gap | Status |
-|---|---|
-| Industry-specific investment reasoning | STRONG PARTIAL |
-| Structured specialized taxonomy coverage | PARTIAL |
-| Peer/sector valuation | CLOSED SCOPE: contract/safety PASS, SELECTIVE_OPTIONAL_CONTEXT, operating NO |
-| Peer provider policy | FREE_ONLY; paid path CLOSED_BY_POLICY |
-| Historical peer PIT | DEFERRED |
-| Forward peer consensus | DEFERRED |
-| KR market breadth | historical PASS; current readiness PARTIAL; operating integration NO |
-| KRX 16:05 / 08:05 / T+1 roles | NOT_YET_PROVEN |
-| KRX exact-slot telemetry capture | CLOSED_CONFIGURATION_PENDING_NATURAL_0805_1605; T+1 slot undefined |
-| KR market-wide flow | UNSUPPORTED |
-| Massive 08:05 readiness | OPEN |
-| OCF | ARCHITECTURE_CLOSED; 12/20 evidence-eligible, 7 partial, 1 blocked |
-| PPE CAPEX | ARCHITECTURE_CLOSED; 11/20 evidence-eligible, 6 partial, 2 blocked, 1 N/A |
-| FCF | ARCHITECTURE_CLOSED_SELECTIVE; 11/20 evidence-eligible, 8 blocked, 1 N/A |
-| Working-capital days / CCC | DEFERRED; no full safe CCC coverage |
-| Standard ROIC | DEFERRED; verified excess-cash policy absent |
-| Natural live validation of Phase 8 code | PARTIAL |
-| Current-price RR packet/numeric path | LIVE PATH PASS |
-| AI natural-live message quality | PARTIAL: retrospective PASS, natural AI delivery pending |
-| Reasoning ownership | LIVE_PASS_RUN29 |
-| Natural cross-ticker repetition | PRIOR_FAMILIES_LIVE_PASS; KR_STRUCTURED_FAMILY_CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| US numeric-summary ownership | LIVE_PASS_RUN29 |
-| Typed template repetition | LIVE_PASS_RUN29; KR_STRUCTURED_EXTENSION_PENDING_NATURAL |
-| Canonical supply tuple ownership | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Canonical current-RR owner | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Fallback dynamic-price lifecycle | CLOSED: retrospective PASS and operating code promoted |
-| Night-futures session-basis integrity | CLOSED_RETROSPECTIVE |
-| Night-futures preceding DAY calendar lookup | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| Fallback valuation context parity | CLOSED_RETROSPECTIVE_PENDING_NATURAL |
-| KRX Open API primary breadth | APPROVED, NOT INTEGRATED; experimental development authorized |
-| Human-approved Production Assist evidence | INSUFFICIENT |
-
-Closed engineering gaps include numeric provenance, canonical formatting, financial quality taint,
-security identity fail-closed, field-level financial lineage, unsafe growth blocking, integrated
-full messages, valuation scope, denied echo, decision-material delta, historical retention,
-valuation-context wording, observer/holder foundation, Unknown/next-check foundation, receipt
-integrity, fallback/retry, exactly-once accounting, and valuation comparison-label collisions.
-
-## 21A. Phase Advancement Rule v1
-
-Every newly observed blocker is classified before it can affect the roadmap:
-
-- **P0 Safety/Correctness**: wrong or unproved visible data, identity/basis/session errors,
-  fabricated calculations, invalid canonical RR, receipt/archive/exactly-once failure, or duplicate
-  delivery. Any open P0 blocks Phase 9.0A.
-- **P1 Analysis Integrity**: ownership/framework/meaning errors or structural repetition severe
-  enough to make analysis generic or prevent valid output. A bounded targeted repair plus
-  retrospective replay and CI PASS closes the roadmap gate; every P1 does not require a separate
-  natural delivery before architecture work may continue.
-- **P2 Quality/UX**: non-material wording, labeling, ordering, length, qualitative RR polish, or
-  unavailable optional integrations. P2 remains backlog and cannot block a major phase.
-
-Aggregate Natural AI-Assisted Delivery and individual repair proof are separate. A repair may be
-marked `LIVE_PASS` only when its behavior was exercised in a natural packet and did not recur; an
-unexercised repair remains `NOT_OBSERVED`. A different new P1 family does not reopen an already
-exercised repair. Natural runtime observation and major evidence-architecture design may proceed in
-parallel while Production Assist remains OFF. A new P0 interrupts Phase 9.0A work for targeted
-repair; material P1 is bounded and prioritized, and P2 never interrupts it. KRX publication timing
-is a parallel evidence track and does not block Phase 9.0A.
-
-## 21B. Phase 9.0A Cash-Flow Evidence Architecture
-
-`cash-flow-capital-efficiency-v1` extends the financial-lineage, financial-quality, and
-security-identity contracts. Reported facts remain occurrence-bound and every derived metric
-requires input fact IDs. Flow periods are explicit `QTD`, `YTD`, `FY`, or `TTM`; balances are
-`POINT_IN_TIME`. Q2/Q3 QTD and TTM derivations require compatible issuer, fiscal calendar,
-semantic, currency/unit, entity scope, statement basis, and restatement policy. Annualization is
-forbidden.
-
-Backend baseline FCF is OCF minus positive-magnitude PPE-only cash outflow. Intangibles,
-capitalized software, acquisitions, securities purchases, and total investing cash flow are not
-silently included. Management-defined FCF remains separate. The active-universe audit classifies
-20 stocks from the operating database: 11 have a same-accession/period/unit official SEC OCF/PPE
-pair. Seven KR subjects retain exact OpenDART rows but remain partial because the existing XBRL
-audit could not prove a unique cash-flow period context. Korean Re is excluded from generic
-corporate FCF.
-
-Raw inventory/trade AR/trade AP and comparable-date deltas precede DSO/CCC. Broad receivable or
-payable totals are partial, and full CCC coverage is zero. Standard ROIC is deferred because no
-verified excess-cash policy exists; total cash is never silently treated as excess cash. Foreign
-issuer-level cash-flow margins can remain eligible without an ADR ratio, while per-share, yield,
-EV, FX, and depositary-basis arithmetic remains blocked until security-level basis is verified.
-
-Open P0 and P1 are zero. `PHASE_9_0B_READY = YES`; scope is
-`SELECTIVE_ELIGIBLE_SUBSET_OCF_CAPEX_FCF_CORE`. Phase 9.0B may implement canonical core facts only
-for eligible evidence and must fail closed elsewhere. Working-capital days/CCC and ROIC are later
-phases. The one-file human report is
-[the Phase 9.0A complete bundle](reports/20260820-phase9-0a-complete-report-bundle.md).
-
-## 21C. Phase 9.0B Canonical OCF / PPE-CAPEX / FCF Core
-
-Phase 9.0B implements the `cash-flow-capital-efficiency-v1` canonical core without importing it
-into any runtime packet or public schema. The exact official-filing registry maps only operating
-activities cash flow and reviewed PPE-payment concepts. Reported Facts retain accession,
-occurrence, filing version, source semantic, period, currency/unit, entity/basis, source sign, and
-raw SHA. PPE payments normalize to positive outflow magnitude only after semantic validation.
-
-Interim cash-flow occurrences remain YTD. Q1 QTD, adjacent-YTD QTD, and three-input TTM Facts are
-typed `DERIVED_PERIOD`; FCF is typed `DERIVED_METRIC` and always contains the OCF and PPE-CAPEX Fact
-IDs. SEC comparative rows use the earliest official occurrence's economic fiscal context and the
-latest filing's authoritative value, preventing a later comparative column from changing the
-underlying fiscal year. Annualization remains prohibited.
-
-Stored official evidence reproduces the Phase 9.0A universe counts with no drift: OCF
-`12 eligible / 7 partial / 1 blocked`, PPE CAPEX `11 eligible / 6 partial / 2 blocked / 1 N/A`, and
-FCF `11 eligible / 8 blocked / 1 N/A`. All 191 generated FCF Facts pass input-lineage and exact
-arithmetic reproduction. KR non-financial Facts remain fail-closed on unresolved OpenDART period
-context, Korean Re remains outside generic enterprise FCF, and issuer-level foreign cash flow is
-kept separate from security-level yield/per-share arithmetic.
-
-Open P0 and P1 are zero. `PHASE_9_0C_READY = YES`; scope is
-`CASH_FLOW_SHADOW_CONSUMPTION_EARNINGS_QUALITY`. CCC and standard ROIC remain deferred. The
-OpenDART period-context gap is `MEDIUM_COMPLEXITY_FOLLOWUP`, not a prerequisite for selective
-shadow consumption. See the
-[Phase 9.0B complete bundle](reports/20260820-phase9-0b-complete-report-bundle.md).
-
-## 21D. Phase 9.0C Cash-Flow Shadow Consumption
-
-Phase 9.0C adds `cash-flow-shadow-consumption-v1` as an archive-only consumer of the canonical
-core. It never recalculates OCF, PPE CAPEX, or FCF. A Fact must first pass source-date point-in-time
-eligibility, formal-period freshness, comparable-period compatibility, industry applicability, and
-deterministic materiality. No arbitrary day threshold, annualization, mixed-period comparison, or
-old-period substitution is permitted.
-
-The 20-subject audit finds 10 current formal contexts, two formal-lagging-provisional contexts,
-seven blocked, and one not applicable. Twelve are consumption-eligible, but materiality renders
-only nine full-FCF contexts and one OCF-only context. All 10 exact numbers bind automatically to
-Phase 9.0B Fact IDs; manual, rejected, unresolved, semantic-error, future-fact, stale-as-current,
-and KR numeric-injection counts are zero. Eight of 17 prior cash-flow Unknowns resolve, eight remain
-valid, and Korean Re's generic enterprise-FCF Unknown is suppressed as not applicable.
-
-Run-28 before/after and the run-29 KR negative control pass final language, runtime quality, and
-receipt verification without threshold changes. Human review classifies 8 material improvements,
-4 minor improvements, 8 no meaningful changes, and 0 degraded. Open P0 and P1 are zero.
-`PHASE_9_0D_READY = YES` with scope `SELECTIVE_CASH_FLOW_RUNTIME_SHADOW_CANARY`. Cash-flow remains
-absent from the production packet, prompt, fallback, Public Action, and Telegram. See the
-[Phase 9.0C complete bundle](reports/20260820-phase9-0c-complete-report-bundle.md).
-
-## 21E. Phase 9.0D Cash-Flow Runtime Shadow Canary
-
-Phase 9.0D implements `cash-flow-runtime-shadow-canary-v1` from immutable instruction commit
-`a24e4f2210f944fa7c43d8dbf8be1d1a8e652164`. A terminal production AI-assisted or deterministic
-fallback result launches a detached child only after `delivery-result.json` is final. The parent
-keeps its original result and exit path; canary generation, validation, quality or archive failure
-cannot alter Telegram, fallback, backup, receipt, exactly-once, Pilot or assessment behavior.
-
-The child uses the exact packet plus Phase 9.0B Facts and Phase 9.0C PIT/freshness/comparison,
-industry and materiality contracts. Its manifest, sidecar, shadow output, numeric/semantic
-validation, quality receipt and completion marker live in a separate create-once namespace.
-Identity combines packet, consumption contract and canary policy, so primary/backup/retry
-processing produces one logical proof. The production candidate is never enriched or overwritten.
-
-Temporary run-28 replay passes with 10 automatic bindings and zero semantic, quality or production-
-influence errors. The run-29 KR negative control passes with zero cash-flow injection. These are
-retrospective deployment checks, not natural proof. Runtime state is
-`RUNTIME_CANARY_DEPLOYED_PENDING_NATURAL`; user-visible cash flow remains disabled and
-`PHASE_9_0E_READY = NO` until the first natural US canary is reviewed. See the
-[Phase 9.0D complete bundle](reports/20260820-phase9-0d-complete-report-bundle.md).
-
-## 21F. Phase 9.0D Natural Proof And Baseline Consistency
-
-Natural run `2026-08-21-us-run-30-5a3b7c1c4390` delivered deterministic fallback `14/14`
-exactly once, then launched canary `cf-canary-f5ce3f836df99c546cf6f696`. The canary completed with
-nine full-FCF subjects, one OCF-only subject, two formal-lagging-provisional suppressions, one
-blocked subject, 10 automatic numeric bindings, zero semantic/quality/PIT/lineage/arithmetic
-errors, and zero production influence. Phase 9.0D runtime behavior is therefore
-`LIVE_PASS_SELECTIVE_SUBSET`.
-
-Human cross-artifact review found that TSLA's saved version-5 `custom_gpt` thesis still asserted
-generic current `FCF 적자` and an implied turn-positive requirement. A prose-only warning backfill
-treated the thesis reference as confirmation, but no financial Fact, period, or scope supported the
-current claim. The same filing contains positive H1 YTD PPE-only FCF, negative Q2 QTD PPE-only FCF,
-and positive TTM PPE-only FCF; the legacy phrase cannot be assigned to any one of them. Its
-pre-repair severity is P0 because unsupported current financial state reached fallback.
-
-Phase 9.0D.1 adds `baseline-cash-flow-claim-consistency-v1`. AI packet and fallback paths suppress
-unsupported current-state prose without changing stored history or exposing canonical amounts.
-The detached canary now compares production qualitative claims and canonical current-formal
-context by rendered section. The 20-subject audit recognizes 21 occurrences: 13 consistent and 8
-suppressed occurrences of one TSLA root family. Repaired run-30 cross-artifact errors are zero;
-RXRX negative cash burn, WRD future watch ownership, HUT OCF-only, TSM/WRD lagging-formal, SKHY
-blocked, and insurance N/A controls remain intact.
-
-Open P0 and material P1 are zero. `PHASE_9_0E_READY = YES`; initial scope is
-`SELECTIVE_CURRENT_FORMAL_FULL_FCF_USER_VISIBLE_INTEGRATION`. User-visible cash-flow remains off
-until that separate phase. A second arbitrary natural run is not required for this bounded repair.
-
-## 21G. Phase 9.0E Selective User-Visible Cash Flow
-
-Phase 9.0E implements `cash-flow-user-visible-v1` from immutable instruction commit
-`309f5f1756d39d5972c5d4b48faaeab4862d8077`. The selector exposes at most one PPE-only FCF number
-under `business_earnings` when a US/foreign SEC subject is PIT-safe, current formal, full-FCF,
-industry-applicable, material, lineage-complete, and baseline-consistent. There is no ticker
-allowlist or numeric threshold. OCF-only, KR, insurance generic FCF, lagging-provisional, stale,
-blocked, management-FCF, security-level valuation, CCC, and ROIC remain excluded.
-
-Run-30 archive preview selects 9 of 13 subjects. All nine numbers bind automatically to canonical
-FCF Fact IDs; AI/fallback parity, semantic validation, final language, and runtime quality pass with
-zero repeated cash-flow sentence/skeleton blockers. HUT is OCF-only, SKHY is blocked, and TSM/WRD
-lag formal provisional periods. Run-29 injects zero KR cash-flow numbers. OFF injects zero and any
-invalid mode fails safe to OFF.
-
-Implementation SHA `cf3194981124de2a6f85fbe81b145ef06e1db08d` passed Actions run
-`32443322364`, was fast-forwarded to main/operating, and was enabled at 2026-08-21 12:31:47 KST
-after OFF health verification. API health and 396 operating focused tests pass; four AI tasks and
-KRX telemetry schedules are unchanged. No task or Telegram was run manually.
-
-State is `DEPLOYED_SELECTIVE_PENDING_NATURAL`. The next natural US run is the first user-visible
-proof; it can trigger the documented OFF kill switch if a P0 appears. Open P0/material P1 are zero,
-so Working Capital Canonical Core architecture may proceed in parallel. Broader cash-flow exposure
-still waits for natural proof.
-
-## 21H. Phase 9.1A Working-Capital Evidence Architecture
-
-Phase 9.1A implements the architecture-only `working-capital-evidence-v1` contract from immutable
-instruction commit `eaaadb1ac4fb5c9a7d3486ecc8274708c285ff79`. It extends existing canonical
-financial Facts with source availability, balance scope, and net/gross scope while remaining outside
-all production packet, prompt, renderer, fallback, Public Action, database, task, and delivery paths.
-
-Inventory means total inventory only. Exact trade AR/AP and broader AR/AP remain distinct metrics;
-current/noncurrent and issuer-reported net/gross scope are preserved without summation or renaming.
-The primary comparable is the same issuer fiscal quarter in the prior fiscal year with exact
-semantic, currency/unit, entity, statement basis, and source-version compatibility. Revenue and COGS
-relations use compatible filing periods, with YTD preferred for Q2/Q3. DSO, Inventory Days, DPO, and
-CCC remain deferred.
-
-The 20-subject audit records Inventory `11 eligible / 3 partial / 5 blocked / 1 N/A`; trade AR
-`6 / 1 / 12 / 1`; broad AR `9 / 3 / 7 / 1`; trade AP `8 / 1 / 10 / 1`; and broad AP
-`10 / 1 / 8 / 1`. Eligible cross-growth relations are AR/revenue 14, inventory/revenue 11,
-inventory/COGS 11, and AP/COGS 14. KR non-financial CFS balance-sheet evidence is independently safe
-despite the separate cash-flow period-context gap; Korean Re remains not applicable for generic
-industrial working capital.
-
-Implementation SHA `0d3b42715fc8964fe053d72e0ecc979fb78b14cc` passes Actions run
-`32447178183`, 1,288 full tests, Ruff, deterministic generator hashes, and all safety checks. Open P0
-and material P1 are zero. `PHASE_9_1B_READY = YES`; scope is
-`SELECTIVE_INVENTORY_AR_AP_CANONICAL_CORE`. Main/operating promotion is deferred until the separate
-KR natural-window review, not because of an architecture blocker.
-
-## 21I. Phase 9.1B Canonical Working-Capital Core
-
-Phase 9.1B starts from Phase 9.1A final SHA `d4a4daf08ff5f68bc1072cc065e69ca5de5da145`
-and immutable instruction commit `0952bee040133aa49a4ba494ecae76163e9a9511`. It preserves the
-`working-capital-evidence-v1` raw registry and adds derivation version
-`working-capital-evidence-v1:canonical-core-v1`.
-
-The core consumes only PIT-visible Phase 9.1A Facts. Each of Inventory, exact trade AR, separate
-broad AR, exact trade AP, and separate broad AP independently selects an exact prior-year
-same-fiscal-quarter comparable. Safe pairs emit canonical Decimal delta and YoY Facts; compatible
-Revenue/COGS pairs emit flow YoY Facts. Six structured relation families preserve the exact balance
-metric/semantic/scope, flow semantic, four raw input IDs, two YoY Fact IDs, direction, gap, formula,
-version, eligibility, and cautions. The canonical layer emits no quality verdict or causality.
-
-The 20-subject audit exactly reproduces Phase 9.1A metric coverage with zero newly blocked items. It
-contains 160 selected reported Facts, 44 delta, 44 balance YoY, 31 flow YoY Facts, and 53 eligible
-relations. Arithmetic, provenance, and idempotency errors are zero. Insurance remains N/A and KR
-non-financial balance-sheet support remains independent of the OpenDART cash-flow duration gap.
-
-The service is imported only by tests and the read-only evidence generator. User-visible runtime,
-AI packet, Telegram, fallback, Public Action 0.4.5, schema 4, DB, task, Pilot, and warning behavior
-change by zero. DSO, Inventory Days, DPO, CCC, ROIC, contract assets, inventory components, accrued
-liabilities, and prior-quarter lifecycle remain deferred. Open P0/material P1 are zero, so
-`PHASE_9_1C_READY = YES`; scope is
-`WORKING_CAPITAL_SHADOW_CONSUMPTION_EARNINGS_QUALITY`. Promotion remains deferred for the separate
-KR natural-window review.
-
-Implementation SHA `a35c615a77b44b37739d4f6a73aa9f0f290ba831` passed Actions run
-`32450301567` Test/Lint plus 1,301 full local tests. Final documentation resolves from Git so the
-committed artifact does not attempt to contain its own SHA.
-
-## 21J. Phase 9.1C Working-Capital Shadow Consumption
-
-Phase 9.1C starts from Phase 9.1B final SHA `2ea8c43c6ec5ef986c23ea15ea707b5e93a720f6`
-and immutable instruction commit `613d91d74d3a91c43ed61f98a13a2ca57b7a90ae`. The
-`working-capital-shadow-consumption-v1` sidecar consumes canonical 9.1B relations without
-recomputing balances, growth, or gaps.
-
-Every selected relation requires all six canonical input Facts to be available at the immutable
-packet cutoff and to match the latest validated formal balance date. Phase 9.0C freshness evidence
-keeps TSM formal-lagging-provisional and suppresses it from current reasoning. Insurance is N/A;
-biotech, special financial-like, cloud/software, HPC, broad AR/AP, and AP relations are not forced
-into prose when their incremental value is weak.
-
-The replay selects seven relations: five Inventory and two exact Trade AR. Each message owns at most
-one percentage-point relation in `business_earnings`; automatic binding is 7/7, manual/rejected/
-unresolved and relation arithmetic errors are zero. Exact Trade and Broad semantics remain distinct;
-contract assets and accrued liabilities do not leak; unsupported causal claims, DSO, Inventory
-Days, DPO, CCC, thesis/valuation/warning mutation, and Unknown contradictions are zero. Human review
-classifies seven material improvements, thirteen no-change subjects, and zero degraded subjects.
-
-`PHASE_9_1D_READY = YES` with scope
-`SELECTIVE_RUNTIME_SHADOW_CANARY_INVENTORY_EXACT_TRADE_AR`. Working-capital user-visible output
-remains disabled, Phase 9.0E remains `SELECTIVE_CURRENT_FORMAL_FULL_FCF`, and promotion remains
-deferred for the separate KR natural-window review.
-
-Implementation SHA `aba64e85c34db620416ea9ee5cae36c0fe6b31d0` passed Actions run
-`32454469417` Test/Lint plus 1,324 full local tests. The archive generator depends only on committed
-evidence; an initial CI-only local-SQLite dependency was removed before this passing implementation
-SHA was accepted.
-
-## 22. Phase 9.1D Working-Capital Runtime Shadow Canary
-
-Phase 9.1A architecture, 9.1B canonical core, and 9.1C archive consumption are promoted through
-main `d0dc76a2446ee5ef9188d1b06dcb241df004c143`. Phase 9.1D adds
-`working-capital-runtime-shadow-canary-v1` after terminal production delivery. Its detached archive
-is independent from production and from the cash-flow canary.
-
-The runtime scope is total Inventory and exact Trade AR only. The canary filters the canonical
-snapshot before reusing the Phase 9.1C PIT, latest-formal/provisional freshness, industry,
-materiality, one-insight, Unknown-resolution, renderer, and semantic/causal validator. Broad AR,
-all AP, inventory components, DSO, Inventory Days, DPO, and CCC are excluded. A newer formal period
-known by the production packet suppresses the older canonical relation instead of substituting it
-as current.
-
-The 20-subject parity replay selects the same five Inventory and two exact Trade AR relations with
-zero relation drift. Numeric binding is 7 automatic and zero manual/rejected/unresolved; semantic,
-causal, quality, and production-influence errors are zero. Implementation SHA
-`5316113062782b09595a495ec9a903a4973f9df5` passes 1,330 local tests. Natural proof remains separate:
-Inventory and exact Trade AR start at `NOT_OBSERVED`, while the canary state is
-`DEPLOYED_PENDING_NATURAL` after clean promotion.
-
-`PHASE_9_1E_ARCHITECTURE_READY = YES`. This is not user-visible enablement. Each metric family needs
-its own natural proof before a future user-visible decision.
-
-## 23. Current Roadmap
-
-The development state is `PHASE_9_1D_DEPLOYED_PENDING_NATURAL`. Open P0 and material P1 are zero.
-Phase 9.1E architecture may proceed in parallel with natural canary observation, but working-capital
-user-visible output remains disabled. Broad AR/AP, AP relations, low-value industries, and all
-advanced working-capital day ratios remain excluded or deferred. KR OpenDART cash-flow period
-recovery remains a medium follow-up rather than a blocker.
-
-In parallel, observe the next natural US/KR sessions for AI-assisted delivery, ownership,
-repetition, night-session integrity, fallback, language, receipt, archive, and exactly-once proof.
-Also let the telemetry-only LaunchAgent accumulate natural KRX 16:05 and 08:05 evidence. Do not run
-it manually, infer a T+1 slot, or integrate KRX breadth before the separate role gates close.
-
-## 23A. Night-Futures Publication Telemetry Repair
-
-The independent repair starts from instruction commit
-`b7cf6a2f413e309bb637e524aeb7c1436e4c5b1b`, then explicitly merges the Phase 9.1D main before
-implementation. It adds `night-futures-attempt-archive-v1` and
-`night-futures-publication-telemetry-v1` without changing `night-futures-session-basis-v1`.
-
-Each existing 08:05/10/15/20 production attempt now archives the expected NIGHT and preceding XKRX
-DAY, every returned `BAS_DD`, HTTP/row/SHA evidence, parser/canonicalization/cross-check state, and
-independent KOSPI200/KOSDAQ150 rejection/readiness. Telemetry writes are atomic, idempotent, and
-best-effort. The 08:30 backup remains query-free.
-
-A detached LaunchAgent observes only at 08:45 and 09:15, after the production/fallback lifecycle.
-It uses the same provider and pairing path, stops after readiness, and can write only telemetry.
-Readiness is expressed as an observed interval, never an exact inferred publication time. No
-production deadline, provider request, market summary, AI, fallback, Telegram, Public Action,
-schema, or DB behavior changes.
-
-Implementation is complete with 61 focused and 1,337 full tests. Natural publication evidence is
-still pending, so `P1_TELEMETRY_GAP = REPAIR_DEPLOYED_PENDING_NATURAL`,
-`DEADLINE_VERDICT = DEADLINE_UNPROVEN`, and `FAIL_CLOSED_SAFETY = PASS`.
-
-## 23B. KR Investor-Flow Reconciliation Repair
-
-Run-31 exposed a correctness gap between the visible foreign/institution/individual tuple and a
-prose attribution that treated those three participants as exhaustive. The official/free provider
-also reports other corporations and domestic foreigners as top-level participants; institution
-subclasses are diagnostics that sum to the institution total and must never be added again.
-
-`kr-investor-flow-participants-v1` and `kr-investor-flow-reconciliation-v1` preserve the public
-three-participant tuple while carrying complete internal 1d/5d/20d reconciliation, explicit signal
-basis, omitted-participant materiality, and fail-closed attribution safety. No residual category is
-derived. AI and fallback share this state, and unsafe absorber/leader prose is rejected. The run-31
-audit closes 21/21 windows and reduces unsupported attribution from two to zero. Public Action
-`0.4.5`, schema 4, supply scoring, task settings, Pilot, and production-assist state are unchanged.
-
-Instruction `e9d7c73cf6f25b2423b55a6899465e86441316d1` precedes implementation
-`47fc87e2a9189556a7206065fdb759f3603ce497`; Actions run `32480802390` passes Test/Lint. The
-bounded repair is `PASS` with open P0/P1 zero. Natural confirmation continues independently.
-
-## 23C. Phase 9.1E Working-Capital User-Visible Pre-Integration
-
-Phase 9.1E starts from immutable instruction commit
-`99f7e86f3ae40cc86a4865ef70dc89abf79d5a37` and explicitly reconciles the independently promoted
-KR investor-flow main before implementation. It adds `working-capital-user-visible-v1` and
-`working-capital-user-visible-enable-gate-v1` as preview-only contracts.
-
-The future modes are OFF, selective Inventory, selective exact Trade AR, and their combination.
-Missing/invalid config resolves OFF, and a mode request cannot bypass family-specific natural proof.
-Inventory and exact Trade AR remain `NOT_OBSERVED`, so effective operating mode is OFF. A clean
-preview is explicitly `PREVIEW_ONLY_NOT_ENABLEMENT_EVIDENCE`.
-
-The 20-subject audit preserves all seven Phase 9.1D candidates and selects five lower-noise future
-previews: three Inventory and two exact Trade AR. MU and TSLA are suppressed only because compatible
-Phase 9.0E cash-flow context already owns the point and the relation resolves no additional Unknown.
-Broad AR and AP selection, parity errors, semantic/causal errors, numeric binding errors, and
-production/user-visible diffs are zero. Exact numbers remain owned by `business_earnings`.
-
-`PHASE_9_1E_PREINTEGRATION_READY = YES`. Inventory and exact Trade AR enablement each remain
-`NO_PENDING_NATURAL`. After a family reaches natural `LIVE_PASS`, use a small enablement-only
-instruction for that family; no new broad architecture phase is required.
-
-## 23D. Phase 9.1E.1 Inventory-Only User-Visible Enablement
-
-Immutable instruction commit `880e7a9834439971f53b8a7bc0712d0ece26854d` precedes the explicit
-morning-evidence merge and implementation. Run-32 packet
-`2026-08-22-us-run-32-dde10ec6c9eb` selected MU and TSLA total Inventory in the detached 9.1D
-canary. Numeric binding was automatic 2/2, semantic and quality errors were zero, and production
-influence was zero. This independently upgrades Inventory to `LIVE_PASS`; TSM exact Trade AR was
-not selected and remains `NOT_OBSERVED`.
-
-Phase 9.1E.1 reuses `working-capital-user-visible-v1` and permits only
-`SELECTIVE_INVENTORY`. The selector is contract-driven, current-formal and PIT-safe, uses total
-Inventory only, applies industry materiality and Phase 9.0E cash-flow redundancy, and places one
-typed `%p` relation in `business_earnings`. It does not mutate thesis, warning, valuation, Pilot or
-DB state. AI and fallback share exact packet/context/relation/Fact/date/scope/direction identity.
-
-The 20-subject replay finds five Inventory candidates, selects KR `000660`, `005490`, and `005930`,
-and suppresses MU/TSLA because current cash-flow context already owns the point. Trade AR, broad AR
-and AP selected counts are zero. Feature-OFF packet/fallback output is byte-identical to prior main.
-`INVENTORY_ONLY_ROLLOUT_READY=YES`. Main/operating promotion and activation completed safely at
-12:16 KST with mode `SELECTIVE_INVENTORY`; Inventory is `ENABLED_PENDING_NATURAL`. Exact Trade AR
-cannot be enabled in this phase.
-
-## 23E. KR Non-Trading-Day Producer And Delivery Integrity
-
-The 2026-08-22 Saturday Stage A review found that downstream KRX and Codex reviewers safely no-op'd,
-but the independent KR producer still ran seven companies, called providers, and created delivery
-state before failing on an absent packet. Direct evidence lock corrected the report count: there
-were seven stock rows plus one KR digest marker, all unsent and packet-unbound.
-
-Instruction commit `2125562a863d858ee1ab62675c31c7c13be33506` precedes implementation
-`c26c9359b134df0a4cd697fd97e7616cc508e885`. The producer now resolves the shared
-`xkrx-role-target-v1` role `kr_daily_production` before any stateful work. Active-pilot KR analysis
-queues nothing until an immutable packet file exists; queued rows use
-`packet-bound-delivery-intent-v1` and remain non-deliverable until held. Retry/fallback selection
-requires matching packet ID, market and assessment date.
-
-The controlled `kr-orphan-delivery-reconciliation-v1` command terminalized the exact eight incident
-rows as existing status `failed` with reason `non_trading_day_orphan_no_packet`. Sent rows,
-`sent_at`, deletion, payload mutation, Telegram, provider recreation and ad hoc SQL were all zero.
-Implementation Actions run `32565412721` and the 1,406-test full suite pass.
-
-`KR_PRODUCER_REPAIR_READY = YES`; open P0/material P1 are zero. Deployment state is
-`DEPLOYED_PENDING_NATURAL`. A later natural weekend/holiday must prove analysis/provider/packet/
-notification/Telegram counts all zero; no manual run is proof. Inventory remains
-`ENABLED_PENDING_NATURAL`, exact Trade AR remains OFF, and the next action remains the first
-eligible Inventory packet review.
-
-## 23F. Macro Digest Temporal Eligibility
-
-The 2026-08-24 US fallback exposed a Branch B wiring gap: exact observation dates, provider
-freshness, and market-session state existed, but downstream digest logic treated source `fresh` as
-equivalent to a new daily signal. `macro-digest-temporal-eligibility-v1` now separates current
-observations, prior market sessions, reference-lagging observations, stale daily evidence, and
-unavailable evidence without a new DB truth store or universal day threshold.
-
-The immutable run-35 replay has zero current observations: 8/21 equity returns are explicit prior
-session context, while unchanged FRED/WTI/VIX and the ECOS collection-date USD/KRW item cannot
-create important changes, thesis daily signals, shocks, or ticker impacts. The long-term mixed
-regime remains valid background. The 8/22 normal after-close replay preserves real current price,
-rate, and volatility signals; holiday, mixed-timing, closed-session release, revision, and early-
-close fixtures pass. AI and fallback share one contract and the semantic validator rejects false
-current wording.
-
-The repair changes no provider, DB schema, Public Action, output schema, task schedule, night-
-futures logic, KRX integration, Inventory/Trade-AR mode, valuation, price/RR, Pilot, or Production
-Assist. State is `DEPLOYED_PENDING_NATURAL`; replay is not live proof. Observe the next natural US
-digest read-only and confirm temporal roles, wording, ticker transmission, receipt, and exactly-once
-delivery without a manual task or Telegram send.
-
-## 23G. KR Production Packet / Shadow Gate Separation
-
-Natural KR run 36 on 2026-08-24 completed seven of seven assessments on a valid XKRX production
-target, but the historical Shadow activation guard denied packet persistence because 210 internal
-investor-flow reconciliation numeric paths were not AI prose-registered. This was Branch C: the
-profile/numeric gate legitimately protected AI Shadow claims, but had become incorrectly coupled to
-the immutable production packet required by deterministic fallback.
-
-Instruction commit `7da8d8866a9b7aafc8c010424cdbc4192de46cbb` precedes implementation
-`64086c4af7735dcbe2fd3f5093f4167952a280e0`. `kr-production-packet-persistence-v1` now admits only
-a supported target, complete successful analysis, schema-valid packet, available fallback, and zero
-explicit production hard errors. `shadow-cohort-readiness-v1` separately owns profile/numeric AI
-claimability and records suppression or exceptions with production influence `none`.
-
-The repaired no-send replay persists one packet, binds digest plus seven stock intents, holds all
-eight for fallback, and remains idempotent with zero duplicate packet/intent. AI remains suppressed
-while the numeric gate is false. Inventory remains `SELECTIVE_INVENTORY`, Trade AR remains OFF,
-macro temporal and investor-flow behavior are unchanged, and Production Assist remains OFF.
-
-State is `DEPLOYED_PENDING_NATURAL`, not live pass. Wait for the first natural eligible KR packet to
-prove persistence, eight-message AI/fallback delivery, exactly-once behavior, and zero orphans.
-
-## 24. Codex Work Order Standard
-
-Every work order starts with exact repo/runtime preflight, states base/branch/scope/non-scope,
-classifies root cause, defines deterministic contracts, adds positive and negative fixtures,
-generates exact artifacts, runs focused and full validation, audits side effects, creates intentional
-commits, pushes without force, and verifies Actions for the exact final SHA. Never merge, deploy,
-run Scheduled Tasks, send Telegram, or mutate Pilot unless explicitly authorized.
-
-## 25. Human Review Standard
-
-Engineering PASS is not human-quality PASS. Review full final-renderer output for today relevance,
-quantitative grounding, comparison, investment meaning, industry fit, delta-first quality,
-observer/holder distinction, Unknown, next check, and readability. A wrong number, unsupported
-claim, scope error, denied echo, industry mismatch, fabricated threshold, or contradiction is HOLD
-regardless of score.
-
-## 26. Pilot / Delivery / Receipt
-
-Pilot is `ai-assisted-pilot-v3`, renderer v3, policy `daily-review-v3.10`, schema 4. Persisted state is
-KR 3/5 and US 3/5. `runtime-message-quality-receipt-v2` binds packet, validated output, rendered set,
-policy/schema/gate, counts, results, status, and timestamp; delivery metadata binds its whole-file
-SHA. Pre-send integrity failure leaves exactly one deterministic fallback eligible. Post-partial
-failure stops all further delivery and requires manual intervention.
-
-The natural 2026-08-17 KR packet `2026-08-17-kr-run-23-378ee562573e` was rejected pre-send because
-four stocks lacked the required current-price RR Fact and numeric path. Rejected AI sent: 0;
-fallback eligibility: preserved; the deterministic fallback later sent 8/8 at 17:10 KST; Pilot
-change: 0. This is a packet/numeric-path and Natural Live Validation gap, not a Phase 8.4 renderer
-failure.
-
-Phase 8.5.1 traces that failure to weekday-only KRX session handling. 2026-08-17 was an XKRX
-substitute holiday, so the actual 2026-08-14 chart was the latest completed session rather than
-stale. Exchange-calendar-aware reconstruction restores exact current-price RR Facts and registry
-paths for all four affected stocks; three unavailable controls remain unavailable by contract. The
-immutable source validation's eight RR missing-path errors fall to zero in replay.
-
-Phase 8.5.2 fast-forwarded the complete 31-commit Phase 8 chain from the prior main
-`aeb87a9d2aee0d4b840c0a8717319e01b375f5f5` to code commit
-`2cd78de4f87a1c875d8ee94d546bf6d4a48c8acf`; the final promotion documentation commit is
-`a8ebb02753e28795f36dbf72c9deb3520f75ed44`. The exact main Actions run passed Test and Lint, the
-operating checkout was clean and exact, the API was restarted and healthy, and operating smoke tests
-passed. All four Codex Scheduled Tasks remain ACTIVE at 08:15/08:30/16:15/16:55 KST, use policy
-v3.10/schema 4, and target the operating checkout. No task was run manually. This is an operating
-shadow promotion only: Production Assist remains OFF, AI mode remains shadow, Telegram sends and
-Pilot mutations from the promotion are zero, and Natural Live Validation remains OPEN.
-
-The promoted code then ran naturally on 2026-08-18. US packet
-`2026-08-18-us-run-24-487c07bde4e1` and KR packet
-`2026-08-18-kr-run-25-23b5e31dc20e` both kept numeric and semantic hard errors at zero, but their AI
-drafts failed `runtime-message-quality-v1`; deterministic fallback delivered 14/14 US and 8/8 KR.
-The KR packet contains complete canonical current-price RR paths for 005490, 010120, 012450, and
-086280, so the RR runtime path is now `LIVE PATH PASS`. Full natural AI delivery remains PARTIAL.
-
-Phase 8.5.3 reconstructs both quality failures from immutable archives. The bounded retrospective
-correction reduces US literal/skeleton duplicate groups from 3/7 to 0/0 and KR from 5/7 to 0/0,
-with no threshold relaxation and full validators PASS. The new deterministic fallback selector
-reduces crossed confirmations rendered as future triggers from nine to zero and preserves dynamic
-support, resistance, RR, and explicit unavailable reasons. This is archive-only evidence: no
-Telegram, task, Pilot, DB, assessment, or archive mutation occurred.
-
-Phase 8.5.3.1 then fixes the remaining Preview UX defects. Immutable replay reduces US Korean
-object-particle errors from six to zero, KR malformed actor-flow phrases from two to zero, US
-watch/next meaningless overlap from 13 stocks to zero, and KR exact RR Fact exposure at three or
-more occurrences from six stocks to zero. Both full validators, runtime quality, and final language
-PASS. The complete Phase 8.5.3/8.5.3.1 chain was fast-forwarded to main and the clean operating
-shadow checkout at implementation commit `e166aaf6a4c13f9009a3885737d3b48e34c895d5` after exact-SHA
-Actions Test/Lint PASS. API health and 154 operating smoke tests pass; all four Codex automations
-remain ACTIVE and were not run manually. Production Assist remains OFF and AI mode remains shadow.
-
-Phase 8.5.3.2 traces the RXRX display defect to a numeric registry mapping that collapsed the
-historical distribution's current value and historical median into one `historical_pb_multiple`
-label. Immutable replay now renders `현재 PBR 1.82배`, `역사적 PBR 중앙값 3.28배`, and
-`PBR 역사적 백분위 9.5%`. The same generic repair also closes one WULF legacy collision; portfolio
-same-label/different-role collisions are zero. Exact implementation commit
-`b3ad1ea82bdbd3fe003831d449b0dcaa7c6a2da2` passed Actions run `32126079970`, was
-fast-forwarded to main and operating shadow, and passed API health plus 74 operating focused tests.
-Natural AI-assisted delivery is still pending. Run-28 proved live fail-closed night-futures
-suppression when no completed current session pair was available; numeric NIGHT-to-preceding-DAY
-exposure remains pending natural evidence.
-
-## 27. Production Assist Approval Rules
-
-Production Assist remains OFF. Five operational Pilot successes are not enough. Approval requires
-exact-commit CI, full regression, direct human review of natural full messages, zero critical safety
-issues, current persistent docs, correct receipts and exactly-once behavior, and explicit user
-approval. Main merge and shadow deployment still do not authorize AI-assisted production delivery.
-
-## 28. Current Next Task
-
-Wait for the first natural eligible KR production packet and verify one persisted packet, eight
-packet-bound intents, AI or fallback delivery, exactly-once receipt, and zero duplicates/orphans;
-do not run a task or send Telegram manually. In parallel, continue the selected Inventory,
-macro-temporal, night-futures, investor-flow, and weekend/holiday observations without manufacturing
-evidence. Keep exact Trade AR OFF and do not
-implement DSO, Inventory Days, DPO, CCC, ROIC, broad/AP output, or KR cash-flow period recovery
-without separate authorization.
-
-## 29. New Session Bootstrap Prompt
-
-> First fetch and compare `origin/main`, the current experimental branch, and the operating
-> checkout. Read `docs/project-state.json`, `docs/PROJECT_HANDOFF.md`,
-> `docs/NEXT_SESSION_PROMPT.md`, `docs/MASTER_WORKFLOW.md`, and the latest validation reports.
-> Recover the actual repository, runtime Pilot, Scheduled Task, contract, and Production Assist
-> state. If the repository is newer than a commit or statement in this workflow, the repository and
-> immutable runtime win and the documentation must be reconciled. Confirm whether a later natural
-> US/KR AI-assisted delivery exists after the Phase 8.5.3.2 shadow promotion. Run-26 delivered
-> fallback 14/14 while AI was rejected; Phase 8.5.4 closes its blockers retrospectively and Phase
-> 8.5.4.2 closes holiday-aware preceding-DAY lookup retrospectively in operating shadow. Natural KR
-> run-27 then delivered fallback 8/8 while AI was rejected; Phase 8.5.5 closes its reasoning-owner
-> blockers retrospectively. Natural US run-28 delivered fallback 14/14 after the unchanged runtime
-> gate rejected generic numeric-summary and RR-delta repetition; Phase 8.5.5.1 closes those blockers
-> retrospectively and is operating shadow. Phase 8.3 is finalized as selective optional context
-> and must not be reopened without new evidence. Phase 9.0A is architecture-closed and Phase 9.0B
-> implements the selective canonical OCF/PPE-CAPEX/FCF core with zero user-visible behavior diff.
-> Phase 9.0C closes archive-only PIT/freshness/materiality consumption with zero semantic errors and
-> zero user-visible behavior diff. `PHASE_9_0D_READY = YES`. Read
-> `docs/architecture/CASH_FLOW_SHADOW_CONSUMPTION.md` and the one-file Phase 9.0C report bundle
-> before adding the delivery-isolated runtime canary. Natural AI and KRX exact-slot evidence
-> continue independently; do not make either a false prerequisite for 9.0D, and stop for any newly
-> observed P0.
-
-## 30. Legacy Macro And Shadow Registry Closure
-
-The 2026-08-24 19:34 KR rehearsal exposed two independent compatibility gaps. Legacy macro
-briefings without temporal metadata were fail-opened as current, while 210 exact investor-flow
-reconciliation numerics were unknown to the shadow registry. `macro-temporal-legacy-rehydration-v1`
-now derives a non-mutating, fail-closed view for legacy evidence and all relevant consumers share
-it. The numeric registry now classifies the exact 30 reconciliation paths per KR stock as internal
-derived, non-prose evidence; unknown paths still fail closed and production packet persistence
-remains independent.
-
-Immutable replay produces one packet, eight held intents, a validated eight-message AI bundle, and
-a complete eight-message fallback with zero duplicates, orphans, sends, false-current claims, or
-Inventory parity mismatches. This closes retrospective code readiness only. The next action remains
-the first natural eligible KR packet; no task or Telegram send may be manufactured for proof.
-
-## 31. Common AI Core v1 Production Integration
-
-The Free Analyst structured analysis, natural packet adapter, evidence-lock validator, and Adaptive
-Renderer are now integrated behind `free-analyst-adaptive-production-v1`. Work started from the
-immutable instruction commit `3df40de53cf35ff5c47d662e0a14fbf9e30be3f7`; implementation commit
-`4bcf117fa36d9a74c45e6f9c2626e38e07e52bd3` passed Actions run `32803786800` Test/Lint.
-
-The authoritative Production Assist control plane is type B: Production Assist is a governance
-approval state, while the existing Pilot gate is already enabled for validated current AI output.
-Free Analyst Adaptive is independently default OFF/current and cannot bypass the Pilot delivery
-gate. The bounded canary is at most one market message
-and two stock messages. Immutable US run-37 passes 14/14 and KR replay passes 8/8 with all hard
-safety counts at zero; the three-message canary simulation passes scoped runtime quality. Full
-cohort rollout remains disabled because two generic synthesis sentences form a broad-cohort P2.
-Open Research and Event Attribution production integration are zero.
-
-State is `COMMON_AI_CORE_V1=INTEGRATED_READY_NOT_ARMED`, open P0/material P1 are 0/0, Production
-Assist remains OFF, and the next action is a separate explicit canary enablement decision. Natural
-runtime evidence, KR packet proof, Inventory observation, and telemetry continue independently.
-
-## 32. Common AI Core v1 Limited Canary Enablement
-
-The explicit canary instruction is fixed at
-`73802b8849f674698bfdb3bfd7f3d0df89c236b2`. Preflight reran the immutable selector and selected
-one market plus two stock messages with scoped runtime quality PASS and zero hard safety errors.
-The operating Settings now use `FREE_ANALYST_ADAPTIVE_ENABLED=true` and
-`FREE_ANALYST_ADAPTIVE_MODE=free_analyst_adaptive_canary`, with hard maxima `1/2/3`.
-
-Production Assist governance remains OFF, the existing Pilot remains enabled and unchanged, and
-full Free Analyst mode remains OFF. Open Research/Event Attribution, exact Trade AR, Inventory,
-cash-flow, schedules, Public Action, schema, DB, and fallback were unchanged. State is
-`COMMON_AI_CORE_V1=INTEGRATED_CANARY_PENDING_NATURAL`. Do not run production manually; inspect the
-first eligible KR natural packet, then the next eligible US packet. Any delivered P0 disables only
-the new canary through its independent kill switch.
-
-## 33. Common KR/US Market Adapter v1
-
-Work instruction `c058839c5e63a08c096bd6a9a1b2139290d17eb0` first closed the run-38 KR
-valuation numeric-ref blocker on a separate track. The adapter implementation commit
-`7a210efe101547c1981b934fbf3dc867bc3e6426` then added `market-context-adapter-v1`,
-market-specific KR/US normalization, research seed hints, and an explicit production research
-connector boundary.
-
-The common contract, Fact boundary, schema parity, unit gates, temporal gates, and deterministic
-relation provenance pass. KR and US are both safe `PARTIAL`: KR run-38 has no local structured
-index/breadth/market-flow evidence, while US run-37 has SPY/QQQ/IWM, SOXX, and two verified
-relative relations but no breadth or participant flow. Missing remains Unknown. Neither replay
-receives provider recollection or a fabricated value.
-
-The structured adapter sidecar is production-pending-natural and does not change Public Action,
-output schema, fallback, Telegram shape, canary limits, or packet identity. A production Open
-Research connector is `NOT_AVAILABLE`, so `OPEN_RESEARCH_LIVE_CANARY=BLOCKED_CONNECTOR` and runtime
-research integration remains zero. The next action is the naturally scheduled 2026-08-26 US
-structured-adapter canary review; do not run a task or send Telegram manually.
-
-## 34. Structured Data Acquisition First And Message Quality v2
-
-Instruction commit `e04403c76abfd8d2f74ca91d438fccc54b479bad` supersedes the earlier
-message-only bounded repair. Implementation commit `1a6d2f411e7fa9ef414197a3fa5711b336a0d3e7`
-adds `structured-market-context-v1`, exact publication/session/freshness provenance, fail-closed KR
-cross-section capture, and a broader free US style/sector context. It also adds `message-quality-v2`
-without changing the existing `1/2/3` canary limits or enabling full mode.
-
-KR acquisition is safe `PARTIAL`: the exact 2026-08-25 KRX slot returned HTTP success but no rows,
-so the packet records publication pending and exposes no invented index, breadth, or market-flow
-number. The prior-session capability probe confirms KOSPI/KOSDAQ stock and index coverage, but its
-numbers are not substituted for the current session. US acquisition is safe `PARTIAL`: RSP and all
-11 sector SPDRs provide current structured style/sector evidence, while exchange breadth and
-participant flow remain unavailable.
-
-Immutable run-37/run-38 replays pass `14/14` and `8/8`. Generic synthesis lines fall from `36` to
-`0`, duplicate substantive messages from `18` to `0`, and all `245` numeric claims bind
-automatically with zero hard-safety errors. KR structured-context value-add is
-`NO_MATERIAL_VALUE` for the pending publication; US value-add is `PASS`. Both message-quality v2
-gates pass. Promotion keeps missing data Unknown, Production Assist OFF, Open Research integration
-at zero, and full Free Analyst mode OFF. The next proof is the naturally scheduled US structured
-quality-v2 canary, followed by KR when a complete publication exists; never manufacture either run.
-
-## 35. Kiwoom KR Market Context v1
-
-Instruction commit `f45c6c9d47253c0ad8cad9affcf0eb54be188117` adds an official Kiwoom REST
-integration on the existing `market-cross-section-v1`, `structured-market-context-v1`, and
-`market-context-adapter-v1` chain. Implementation commit
-`32178dc5b2cd4a5fd38af51514b4ac5d12d1cbd0` validates KOSPI/KOSDAQ index and breadth,
-KOSPI size, sector context, and six market-wide foreign/institution/retail flow Facts for the
-completed 2026-08-25 session.
-
-`ka10051` aggregate amounts normalize at KRW 100 million per source unit and fully paginated
-`ka10066` stock amounts at KRW 1 million per source unit. KOSDAQ reconciliation is within the
-aggregate representational unit and supports provenance-bound descriptive concentration. KOSPI
-reconciliation remains `UNRESOLVED_BASIS_OR_TAXONOMY`, so KOSPI concentration is blocked while its
-validated aggregate direction remains available.
-
-Immutable run-38 replay passes 8/8 with 123 existing automatic bindings, zero new exact numeric
-prose claims, zero semantic hard errors, and a material market-digest improvement. The production
-adapter is safe `PARTIAL`: collection failure cannot block packet creation, KRX telemetry remains
-independent, full mode remains OFF, canary remains 1/2/3, Open Research production remains zero,
-and Production Assist remains OFF. The next action is the first naturally scheduled eligible KR
-proof; no manual task or Telegram send may manufacture it.
-
-## 36. KR Post-Deployment Rehearsal And US Exchange Breadth v1
-
-Instruction commit `d7a01015617b3fbfb16f4194d1d02c41004a4197` fixes the exact work bundle before
-execution. The KR rehearsal independently recollected the completed 2026-08-25 session through the
-deployed Kiwoom path. A bounded session guard repair now compares the target with the
-calendar-derived latest completed regular session, allowing valid post-midnight recollection while
-still rejecting older/current incomplete sessions. All 42 calls succeeded, the source SHA exactly
-matched prior stable evidence, and immutable run-38 passed 8/8 with a 1/2/3 canary simulation and
-all hard safety counts at zero.
-
-US breadth extends the existing common market adapter with official NasdaqTrader year-to-date
-advances, declines, and unchanged counts under exact scope `NASDAQ_LISTED_ISSUES`. Derived net,
-shares, and A/D relations preserve source scope and provenance. Provider failure is supplemental
-and fail-open. The run-37 target session is 2026-08-24, but the retrieved official file is published
-only through 2026-08-20; run-37 therefore remains 14/14 with breadth suppressed and no historical
-substitution. The published 2026-08-20 row proves parser, arithmetic, adapter, and classification
-value separately. NYSE remains unavailable rather than derived from a partial universe.
-
-State is safe `PARTIAL` and production-ready with P0/material P1 at 0/0. Full Free Analyst remains
-OFF, canary limits remain 1/2/3, Open Research integration remains zero, Trade AR and Production
-Assist remain OFF. The next action is read-only natural KR proof plus the first US packet whose
-exact completed-session Nasdaq row is published; do not manufacture either observation.
-
-## 37. KR Digest Priority And US Entity-Specific Synthesis
-
-Instruction commit `8cf5226ca0c5ae5553fb06b24399462ea3cf6088` and implementation commit
-`f2326c39485e600bca2cee15747deeb8465c5c8a` close the final bounded message-quality repair before
-Open Research connector work.
-
-`kr-market-digest-quality-v1` keeps a rich completed-session KR context local-first through
-judgment, interpretation, and next check. Richness requires KOSPI/KOSDAQ indices, reconciled scoped
-breadth for both, and at least one of market flow, size/style, or sector evidence. Global context is
-retained only for material contradiction. KOSPI concentration remains blocked; safe KOSDAQ
-concentration is optional rather than mandatory.
-
-`entity-specific-synthesis-v1` and `cross-message-synthesis-specificity-v1` require supported
-drivers without ticker sentence hard-coding. Shared structure is allowed inside a real industry
-cohort; generic cross-industry reuse with available specific support is canary-ineligible per
-message. Immutable KR/US replays pass 8/8 and 14/14, cross-industry generic repetition is `4 -> 0`,
-and all hard safety counts are zero.
-
-Keep Free Analyst full mode OFF, canary `1/2/3`, Open Research production integration `0`, Trade AR
-OFF, and Production Assist OFF. Natural proof continues read-only and independently. With no new
-P0/P1, stop message-polishing iterations and continue to the Open Research production connector
-and selective event-attribution integration.
-
-## 38. Fibonacci Variable AI Anchor Bounded Closure
-
-Instruction commit `d9e6e2327f0f32256a1bd0d8caf2c0b0f1faf890` fixes the exact P1 closure
-scope. `price-only-ai-anchor-packet-v1` carries bounded completed OHLCV, deterministic candle
-features, canonical pivot/SR IDs, candidate neighborhoods, and swing segments with no prior anchor
-or precomputed Fibonacci. `variable-ai-swing-anchor-selection-v1` returns IDs only; backend
-validation, Decimal Fibonacci, confluence, and per-timeframe deterministic-SR fallback remain
-authoritative.
-
-The actual signed-in variable runtime executed five independent runs for the two-KR/two-US
-benchmark and three for every other active monitored packet. Egress, runtime availability,
-deterministic arithmetic, provenance, look-ahead, and KR/US schema pass with no user-visible change.
-However, material variation remains for monthly `3/20`, weekly `11/20`, and daily `10/20`; four
-timeframes also required semantic fail-closed rejection. Material full-debug candidate omission is
-zero, so rich packet coverage is bounded `PARTIAL`, not an information-loss failure.
-
-State remains `AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE=SHADOW` and
-`PRODUCTION_ENABLEMENT_READY=NO`. Open P0 is zero. The open material P1 is limited to variable
-higher-timeframe anchor/SR stability and ambiguous/insufficient output semantics. Do not widen
-canonical tolerances or arm production. A future bounded repair may separate variable Fibonacci
-anchor judgment from deterministic SR ownership and rerun the same frozen 5/3 protocol. This
-feature-local P1 does not block the independent Open Research roadmap or natural monitoring tracks.
-
-## 39. Fibonacci Anchor/SR Ownership And Consensus Closure
-
-Instruction commit `39cab7ed8b1cb3bebea1bd1240498caa454bd09a` fixes the final bounded P1 scope;
-implementation commit `0dfef76bba606f018893d6e68e7beaf410aa7438` adds the archive-only consensus
-core. `fibonacci-sr-ownership-v1` makes support/resistance deterministic backend property and
-removes SR from variable-AI output. The AI selects only backend-enumerated
-`canonical-swing-structure-candidate-v1` IDs or returns a typed valid abstention.
-
-The same frozen public-price universe ran with the prior 5/3 protocol through 17 actual signed-in
-runtime calls. Runtime and semantic failures are zero. Valid abstentions are 56 with zero wrongful
-rejections. Monthly/weekly/daily SR variation is `0/0/0`; stable Fib consensus remains selective at
-`10/7/11`, while 13 materially unstable and 19 insufficient timeframes are safely omitted. All 28
-eligible Fibonacci timeframes preserve deterministic arithmetic and provenance, and unstable
-user-visible eligibility is zero.
-
-`AI_FIBONACCI_MULTI_TIMEFRAME_STRUCTURE=INTEGRATED_READY_NOT_ARMED` and
-`PRODUCTION_ENABLEMENT_READY=YES`. This is permission for a separately instructed bounded
-multi-timeframe Fibonacci enablement, not activation. Production imports, Telegram, scheduled
-tasks, Public Action, assessment state, price rules, tolerances, and Production Assist remain
-unchanged. The independent Open Research and natural monitoring tracks continue under Phase
-Advancement Rule v1.
-
-## 40. Price Structure Wave Fibonacci Engine v3
-
-Exact instruction commit `5bcf2a1a73a10c73db12c37e93a51652983599d5` precedes implementation
-commit `63b3ce219f996ea23b0a2a254d842bbb579adef2`. The v3 archive-only core supersedes the
-generic per-timeframe Fib concept with completed adjusted OHLCV, monthly primary-wave candidates,
-weekly endpoint confirmation, independent monthly/weekly/daily SR maps, wave-owned Fibonacci
-families, and final cross-timeframe synthesis. AI makes ID-only selections and cannot calculate
-technical prices.
-
-The 20-stock frozen replay made 20 successful local provider calls. Weekly 600 passes for 12 and
-monthly 300 passes for eight; shorter listings remain explicit partial/fail. Daily 1200 is partial
-for all 20 because the current `/ohlcv` interface caps requests at 1000. The deterministic engine
-produces three confirmed primary hypotheses, 11 ambiguous results, and six valid no-impulse
-results. Seventeen signed-in archive-only model calls yield 14 stable selections and six stable
-abstentions with zero runtime failures, semantic rejections, or unstable Fib eligibility.
-
-The quoted SK hynix reference and v3 primary method materially disagree at W0-W2, while the user
-reference source archive itself was not supplied. Therefore `SK_HYNIX_REFERENCE` is
-`MATERIAL_METHOD_CONFLICT`, `PRICE_STRUCTURE_WAVE_FIB_V3=SHADOW`, and
-`PRODUCTION_ENABLEMENT_READY=NO`. Open P0 is zero; the two material P1s are the daily provider cap
-and the SK method conflict. Keep production SR, packets, Telegram, tasks, schema, assessment state,
-and Production Assist unchanged. The next action is a bounded feature-local repair, not live
-enablement.
-
-### 40.1 Temporal, History, Degree, And Feedback Bounded Repair
-
-Exact bounded-repair instruction commit `82cb04e2880d1ed7b0405e1ddd20c5f333305394` precedes
-implementation commit `bea877d3a6a9977c19832cbde28ed235676929d2`. The repair adds
-exchange-calendar `COMPLETE/PARTIAL` bar state, provider-native daily pagination with a canonical
-cache identity, separate grand/current/intermediate candidate sets, and strict variable-AI
-selection feedback into deterministic Fib, SR, confluence, and shadow rendering.
-
-SK hynix's August monthly bar is partial at the frozen observation time, so the June high and July
-low are provisional. The current-cycle set independently surfaces the 2023-01 W0 candidate; older
-2015/2016 candidates remain grand-cycle context. Fourteen signed-in archive-only calls have zero
-runtime/semantic rejection and zero selected-but-not-fed results. Seven subjects are stable, six
-safely abstain, and seven material-variation subjects remain shadow-only and user-visible
-ineligible.
-
-Provider-native continuation gives 1200 completed daily bars for 14 long-listed subjects; six
-short-listing histories are safe partial. Dedicated weekly/monthly coverage remains selective and
-is never fabricated. `PRICE_STRUCTURE_WAVE_FIB_V3=INTEGRATED_READY_NOT_ARMED` and selective
-`PRODUCTION_ENABLEMENT_READY=YES`, with open P0/material P1 at `0/0`. This permits only a separately
-instructed bounded enablement of stable eligible subjects. Current production SR, packet,
-Telegram, tasks, Public Action, assessment state, and Production Assist remain unchanged.
-
-### 40.2 Hypothesis Equivalence And Fibonacci Family Consensus
-
-Exact instruction commit `b0f81c8e16f588e314f93eb6097370e85f285241` precedes implementation
-commit `631e82f202b6f081866ef83c8b67b2138a8b51d8`. The repair adds deterministic
-`wave-hypothesis-equivalence-class-v1`, `fib-family-endpoint-dependency-v1`,
-`price-structure-v3-ambiguity-set-v1`, `fib-family-consensus-v1`, and
-`family-filtered-confluence-v1` contracts. Fibonacci stability is now evaluated only across the
-endpoints each family actually depends on. Unstable family sources are removed before confluence;
-the existing price tolerance and deterministic SR ownership remain unchanged.
-
-The original material cohort is `000660`, `003690`, `005490`, `005930`, `010120`, `TSLA`, and
-`TSM`. Eleven signed-in archive-only calls cover five material-cohort, three stable-control, and
-three abstention-control runs, totaling 74 ticker decisions with zero runtime or semantic failure.
-The 20-subject replay passes KR `7/7` and US/foreign `13/13`; prior stable regression, forced
-abstention selection, dependency mismatch, correlated-Fib inflation, and unstable confluence are
-all zero.
-
-SK hynix remains full-hypothesis `MATERIAL_VARIATION`, but six endpoint-dependent families are
-safe: current rebound and W3 retracement are exact invariant; primary-cycle retracement and two W5
-projection families are price equivalent; one additional W5 family is exact invariant. W1
-retracement remains material and is omitted. The supplied reference engine is retained byte-audited
-under `docs/reference/user-wave-engine/` as `REFERENCE_ONLY / NOT_PRODUCTION_RUNTIME`, and the
-endpoint/confirmation comparison is `REFERENCE_MATCH`. TSLA's true conflict and TSM's W3-dependent
-conflict remain material.
-
-`PRICE_STRUCTURE_V3_FAMILY_CONSENSUS=INTEGRATED_READY_NOT_ARMED`, code correctness is PASS, and
-selective production-enablement readiness is YES with open P0/material P1 `0/0`. This authorizes
-only a separately instructed bounded family-selective enablement. Production imports, SR, packet,
-Telegram, task schedules, Public Action, assessments, and Production Assist remain unchanged.
-
-### 40.3 Pre-Enablement Membership And Display Micro-Repair
-
-Exact instruction commit `38b5fbca8a7264e3b73ef78c121b6ed6758c3ad8` precedes implementation
-commit `84f8f549bc8fa0338309a84b23b2738f2e357646`. The
-`family-consensus-membership-audit-v1` contract limits the active family universe to hypotheses
-actually selected across runs or explicitly returned as `AMBIGUOUS` competitors. An alternative
-attached to `SELECTED` remains diagnostic unless another run promotes it through one of those
-active paths. Wrong-ticker, same-ID, unknown, and wrong-degree alternatives fail validation.
-
-The same immutable protocol runs 11 signed-in archive-only calls: three repeats for the exact
-seven-stock prior-stable cohort, five for the seven difficult controls, and three for valid
-abstentions. Runtime and semantic failures are zero. Stable baseline/evaluation is `7/7`, artificial
-regression is zero, and `012450` moves from family `FAIL` to `PASS` with diagnostic contamination
-zero. TSLA's true conflict, TSM's W3 conflict, and SK hynix's raw structural resistance remain
-unchanged.
-
-Investment Knowledge v3.1 synchronizes internal history defaults to daily 1200, weekly 600, and
-monthly 300 while preserving the compact Public Action/no-raw-OHLCV boundary. Technical-zone
-formatting is display-only: raw `Decimal` values and all calculations stay unchanged, while SK
-hynix's high-price KRW resistance renders as `약 186.9만~191.6만원`. State remains
-`INTEGRATED_READY_NOT_ARMED`; selective enablement readiness is YES with open P0/material P1
-`0/0`. No production import, Telegram, task, Public Action, assessment, or Production Assist state
-changes in this repair.
-
-### 40.4 Deterministic SR Completeness And Active Relevance
-
-Exact instruction commit `7267ca1d3e518d39986941bfda1d6447560db344` precedes final code
-implementation `176f3e73eb097fac99f4038a8987b610954804cc`. The shadow v3 core now uses
-`deterministic-sr-base-layer-v1` and `sr-proximity-relevance-gate-v1`: monthly, weekly, and daily
-base SR is selected before optional wave/Fib; nearest applies a quality floor then proximity;
-major applies active relevance then structural importance; current-zone and timeframe-fallback
-ownership are explicit.
-
-The immutable 20-subject replay passes KR `7/7` and US/foreign `13/13`. Remote historical
-cross-zones no longer displace local nearest SR for `010120`, `MU`, `TSM`, or no-wave `SNDK`.
-`003690` and `HUT` recover valid daily resistance that had been excluded when optional Fib occupied
-combined-map structural slots. SKHY remains a legitimate short-history monthly insufficiency. SK
-hynix's family-stable Fib/SR resistance remains `about KRW 1.869M-1.916M`, `012450` remains stable,
-and TSLA receives no unstable Fib.
-
-`PRICE_STRUCTURE_V3_SR_COMPLETENESS=INTEGRATED_READY_NOT_ARMED`, code correctness is PASS, and
-selective production-enablement readiness is YES with open P0/material P1 `0/0`. This authorizes
-only `BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`. Production imports, current
-messages, Telegram, tasks, Public Action, assessment state, price rules, tolerances, and Production
-Assist remain unchanged.
-
-### 40.5 Current-Data End-to-End Shadow Message Validation
-
-Exact instruction commit `688c17280a10e91214d4bd9888522fdc6f9bc0c5` precedes the archive-only
-validator implementation `ef586c3816ff76417d2620636975d054935533d4`. The active 20-subject
-universe was recollected read-only from the official free Kiwoom path. The completed-session gate
-uses KR `2026-08-26` and US `2026-08-25`; all 13 incomplete US `2026-08-26` daily stubs are
-excluded before analysis, and current weekly/monthly partial context is rebuilt only from completed
-daily observations.
-
-The exact candidate archive contains 20 baseline/candidate messages and numeric bindings for every
-new technical range. KR eligibility is `6 ELIGIBLE / 1 ELIGIBLE_SR_ONLY`; US/foreign is
-`4 ELIGIBLE / 9 ELIGIBLE_SR_ONLY`; omit and blocked counts are zero. Human review classifies 16
-material improvements, four minor improvements, no added-value regressions zero, and worse zero.
-All 10 mandatory controls pass. Wrong-session data, mixed-session structure, look-ahead, partial-bar
-pivot confirmation, remote-nearest promotion, fabricated fill, unstable Fib exposure, unregistered
-technical numbers, business-text change, and runtime-visible change are all zero.
-
-`PREENABLEMENT_CURRENT_DATA_VALIDATION=PASS` and the recommendation is `ENABLE_SELECTIVELY`, but
-this validation does not arm production. The only authorized next feature-local action remains
-`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT`; Telegram, tasks, Public Action,
-assessments, price rules, Production Assist, and current runtime imports remain unchanged.
-
-### 40.6 Renderer Ownership Integration Micro-Repair
-
-Exact instruction commit `2ac7eaaede9cb8d9047173bbec5f2bd99c665573` precedes implementation
-commit `4246efb4f8afa3516402d1df7864967c177ac6e7`. The pure
-`price-structure-v3-renderer-ownership-v1` contract preserves material Fib/SR range extensions,
-separates current completed-session structure from `chart:stored_price_rules`, and suppresses stale
-parallel technical prose without changing the surrounding business sentence.
-
-The same 20-subject current-data dataset replays with unchanged eligibility: KR
-`6 ELIGIBLE / 1 ELIGIBLE_SR_ONLY`, US/foreign `4 ELIGIBLE / 9 ELIGIBLE_SR_ONLY`, and zero blocked.
-SK hynix retains major resistance `about KRW 1.869M-1.879M` while displaying the full safe Fib/SR
-range `about KRW 1.869M-1.916M`. SNDK and TSM keep current SR and stored management rules under
-separate headings. MU retains its business thesis and removes only the stale 2026-08-12
-OHLCV/MACD sentence. TSLA remains SR-only and `012450` retains its stable family range.
-
-All renderer ownership, provenance, calculation-parity, business-parity, temporal, and isolation
-counters are zero. Human review remains 16 material improvements, four minor improvements, and
-zero worse. `PRICE_STRUCTURE_V3_RENDERER_INTEGRATION=INTEGRATED_READY_NOT_ARMED` and
-`PRODUCTION_ENABLEMENT_READY=YES`; only the separately instructed
-`BOUNDED_PRICE_STRUCTURE_V3_SR_AND_FAMILY_SELECTIVE_ENABLEMENT` may arm production.
-
-### 40.7 Legacy Technical Detector False-Positive Micro-Repair
-
-Exact instruction commit `97b65fc1d258339563b54961a83acd997867e11e` precedes implementation
-commit `3685aa991589ca0e7cc560104d4ebf8289e3f91d`. The
-`legacy-technical-token-detection-v1` contract replaces whole-message substring scanning with
-semantic-field classification, complete indicator-token boundaries, existing freshness checks,
-and sentence-level suppression. Company identity, status lines, and section headings are protected
-before lexical matching.
-
-The immutable 20-subject replay restores `🏢 Recursion Pharmaceuticals(RXRX)` and changes no other
-prior-renderer message text. Ordinary words produce zero technical matches, while RSI/MACD/OHLCV
-with Korean postpositions remain valid. MU still removes exactly one stale 2026-08-12 technical
-sentence and retains its business thesis.
-
-All entity, structure, nontechnical-suppression, SR/Fib, eligibility, provenance, temporal, and
-runtime-isolation counters are zero. State remains `INTEGRATED_READY_NOT_ARMED` with
-`PRODUCTION_ENABLEMENT_READY=YES`; a separate bounded selective-enablement task is still required.
-
-### 40.8 Master Market Validation Gate
-
-Exact master instruction commit `e76a7d6b5e8ddc110d3228cfd5e55f26dbdb1e1d` split the work into
-US pipeline repair, KR natural review, and conditionally gated Price Structure v3 enablement.
-Track A implementation `505a3a2c63390c683323192b7ca516513dfe7a24` closes stale pending-packet
-claim ownership, preserves level-only RSP without directional leakage, propagates current sector
-state, and binds release observations to their source dates. Its 2026-08-25 replay passes with
-natural reproof still pending. Combined validation repair `65196d2d2a54483143d23d1c61500f70d0e2325a`
-preserves legacy KR adapter payload compatibility.
-
-Track B observed natural KR run 40 and confirmed packet integrity, official Kiwoom breadth/flow,
-safe reconciliation suppression, and 8/8 exactly-once delivery. It also found two material P1s:
-the sent digest omitted same-session KR local market evidence, and 378 sector breadth numeric paths
-were absent from the AI registry. Open P0 is zero, but Track B is `MATERIAL_P1_FOUND_STOP`.
-
-The master gate therefore keeps Price Structure v3 `INTEGRATED_READY_NOT_ARMED`; Track C was not
-created and production was not armed. The next bounded task is
-`BOUNDED_KR_LOCAL_FIRST_AND_NUMERIC_REGISTRY_REPAIR`, followed by immutable run-40 replay and a new
-natural KR proof. Natural US reproof continues in parallel. Manual Telegram, scheduled-task,
-pilot, database, archive, and Production Assist mutations remain zero.
-
-### 40.9 Bounded KR Local-First and Numeric Registry Repair
-
-Exact instruction commit `f6ba660048d3fa520e3aeb43d04036c119764292` precedes Track A
-`3828c2093ede67ab2f61c6fceb13a670b22931db`, Track B
-`d6c766543205ee74f2c4023cd17a0bfd682b4a7f`, and integrated implementation
-`848eb80f6ce6504a9a855973b591ee0749167514`. The deterministic KR digest now consumes one shared
-local-first plan: KOSPI/KOSDAQ direction and breadth are the minimum sufficient primary block,
-aggregate investor flow is participant-owned, and size/sector leaders are bounded supplements.
-Prior/global context is explicitly secondary.
-
-The exact registry preserves listed, advance, decline, and unchanged sector counts as prose-safe
-semantics and keeps limit counts audit-only. No wildcard or inferred semantic is admitted. The
-integration also fixes cross-market same-name sector fact collisions by including taxonomy,
-market scope, and sector code in deterministic fact identity.
-
-Immutable run 40 replay changes numeric registration from `1583/1961` with 378 unsupported paths
-to `1961/1961` with zero unsupported paths. Final policy classifies 1,472 paths prose-allowed and
-489 denied; reconciliation remains `UNRESOLVED_BASIS_OR_TAXONOMY`, concentration claims remain
-suppressed, and the AI readiness gate passes with P0/material P1 `0/0`. State is
-`REPLAY_PASS_NATURAL_REPROOF_PENDING`: wait for the next natural KR close without a manual run.
-Track C remains `DO_NOT_START`, Price Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and
-Production Assist stays OFF.
-
-### 40.10 US Morning Natural Market Data Review
-
-Exact instruction commit `5377d5e4f15a82e01ac40b6d50d47eee9ef0a30c` governs the read-only
-review of natural US run 41 and packet `2026-08-27-us-run-41-ae4f42c23abc`. The run used the
-completed `2026-08-26` US regular session and delivered one market digest plus 13 stock messages
-exactly once. Packet claim, primary/backup lease transfer, temporal normalization, numeric
-registration, final validation, runtime receipt, Nasdaq exact-session publication boundary, and
-payload identity all pass.
-
-The packet contained current SPY, QQQ, IWM, SOXX, RSP, and 11 directional sector facts plus one
-XLC level-only fact. The AI market review selected only real yield, WTI, and nominal yield; the
-concise delivered digest selected only the date-labeled 8/25 real-yield observation. The
-deterministic fallback shares this omission. Seven required material rows are lost and the issue is
-`us_current_session_market_evidence_omitted_from_natural_digest`, a material P1. Track A is
-`BOUNDED_REPAIR_REQUIRED`; perform no repair inside the review. The next separately instructed task
-is `BOUNDED_US_MARKET_REPAIR`. Natural KR proof continues independently, Track C remains
-`DO_NOT_START`, v3 remains unarmed, and production safety settings remain unchanged.
-
-### 40.11 Bounded US Current-Session Market Evidence Repair
-
-Exact instruction commit `c17f67a5d385b51d1249aa7b3d5452207938f084` precedes independent
-Track A implementation `c4b02a10c2b7da0184c7dba26c7c1db39344f258`, Track B implementation
-`2f7d6853605541a81e430754d7b6fea98ccbbbea`, and integrated implementation
-`069f002437163bff1df7aa6e258918c1777d5dfa`.
-
-`us-market-digest-plan-v1` establishes one current-session-first evidence plan for structured AI
-and deterministic fallback. The semantic order is current market, RSP participation/style, sector
-dispersion, official breadth, then macro context. Near-flat SPY/QQQ/IWM/SOXX observations remain
-primary; RSP is never called exchange breadth; current directional sector leader/laggard ranking is
-calculated once in the backend plan; level-only sectors and unavailable breadth stay fail-closed.
-
-`market-evidence-utilization-validator-v1` checks plan slots, canonical refs, and structured
-interpretation refs without keyword scanning or numeric-dump requirements. On immutable run 41,
-the historical macro-only digest fails with core, RSP, sector, and macro-substitution errors. The
-repaired concise AI and fallback candidates share plan SHA
-`8761a2f65a3ae6b429f1d7feb0a4ab67bd5120ca0d27526ed9fc6f9b570ce8ef` and pass with all material
-loss counters zero.
-
-State is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, with open P0/material P1 `0/0`. Do not claim
-`LIVE_PASS` from replay. Wait for the next naturally scheduled US morning run and inspect its
-packet, shared plan, route, exact delivery, evidence utilization, receipt, and exactly-once state
-read-only. Natural KR reproof remains independent. `PRICE_STRUCTURE_TRACK_C=DO_NOT_START`, Price
-Structure v3 remains `INTEGRATED_READY_NOT_ARMED`, and Production Assist remains OFF.
-
-### 40.11.1 US Current-Session Repair Natural Reproof
-
-Exact instruction commit `18d36852f74a6a1609365cbcb5dc093feb293e71` governs the read-only
-review of natural US run 43. Operating SHA `910e2f7e78b3d5445e5caa46c605fa85a76c43b2`
-produced packet `2026-08-28-us-run-43-c086d78415ac` for the completed `2026-08-27` session.
-The `codex-us-primary` automation owned the sole claim, completed one permitted same-claim
-correction, and the backend dispatcher delivered one digest plus 13 stock messages `14/14`
-exactly once.
-
-The final digest consumes SPY, QQQ, IWM, SOXX, RSP, and the XLK/XLP sector extrema from the shared
-plan. Official Nasdaq exact-session breadth remains `PUBLICATION_PENDING`, with latest published
-source session `2026-08-25`; RSP is not substituted. Macro temporal roles pass, lagging WTI/FX/
-dollar facts are not phrased as current, and macro does not replace market structure. Archive,
-persisted delivery, and receipt-linked payload hashes match. Material information loss is zero,
-US Price Structure remains OFF with zero leakage, and open P0/material P1 are `0/0`.
-
-Therefore `US_MORNING_NATURAL=LIVE_PASS` and `US_TRACK_A=LIVE_PASS`. One non-rendered optional
-MACRO_CONTEXT label/mapping issue remains P2. Next action is `REVIEW_MASTER_GATES`; no bounded US
-market repair is open and Production Assist remains OFF.
-
-### 40.12 KR Afternoon Natural Market Reproof
-
-Exact instruction commit `107f40b0b6b7e794f420534e71b69af0c969e643` governs the read-only
-review of natural KR run 42. Operating SHA `a1fb1a7006109f8699e03997662bde27db5ad464`
-produced the final immutable packet `2026-08-27-kr-run-42-5d8d23e6fbd6` for the completed
-2026-08-27 XKRX session. The 16:55 backup claimed it, final validation and runtime quality passed,
-and the 17:10 dispatcher delivered one digest plus seven stock messages `8/8` exactly once.
-
-Kiwoom acquisition is complete at `42/42`: ka20001 preserves index-versus-breadth semantics,
-ka20003 preserves size/sector returns and component counts, ka10051 owns aggregate participant
-flow, and ka10066 completed 14 KOSPI pages plus 19 KOSDAQ pages without duplicate identities.
-Today's six aggregate-versus-paginated comparisons remain
-`UNRESOLVED_BASIS_OR_TAXONOMY`; concentration relations and prose remain zero. The packet numeric
-registry is `1989/1989` registered with zero unsupported paths. The required sector-count inventory
-is `252/252` registered supported paths plus 126 intentional internal-only paths.
-
-The exact AI digest is KR local-first: it consumes KOSPI/KOSDAQ direction, both breadth states, and
-all foreign/institution/retail directions. Size and sector detail are safely omitted from the
-concise message and retained by deterministic fallback. Archive, persisted delivery, and
-receipt-linked rendered payloads match; KRX official secondary publication remains pending with no
-stale injection. Open P0/material P1 are `0/0`, so `NATURAL_KR_REPROOF=PASS` and the bounded KR
-repair is independently `LIVE_PASS_RUN42`.
-
-This does not start Track C. The separate bounded US repair still requires one new natural US
-morning reproof, so `PRICE_STRUCTURE_TRACK_C=DO_NOT_START` and Price Structure v3 remains
-`INTEGRATED_READY_NOT_ARMED`. Production Assist stays OFF; review-triggered Telegram, Scheduled
-Task, DB, assessment, and production behavior changes are zero.
-
-### 40.13 KR Size / Sector Message Selection Bounded Repair
-
-Exact instruction commit `794c6f5d956d0928eac0113d658fede58b1266dc` precedes implementation
-commit `6a54db130e95e25969a5ca0a100648d4a12c3aa2`. The run-42 review proved the
-source, registry, and local-first path, but its prior brevity policy allowed safe same-session
-size/style and sector extrema to disappear. That historical `OMITTED_SAFE` conclusion is retained
-as an immutable observation but is no longer valid under the new user-facing selection policy.
-
-`KrMarketDigestPlan` now marks complete size/style and relative sector-extrema slots
-`SELECTED_REQUIRED`. It renders KOSPI large/mid/small, KOSDAQ100/MID300/SMALL, and at most one
-relative-strong and one relative-weak non-empty sector per available market. The backend owns
-selection, ranking, signs, formatting, and evidence refs. AI and deterministic fallback consume
-the same claims after index, breadth, and participant flow; global context yields first.
-
-Immutable run-42 replay makes the old message fail as expected and makes repaired AI/fallback pass
-with six size refs and four sector refs. Numeric registry policy, provider acquisition, flow
-reconciliation, concentration, US digest policy, Price Structure v3, business thesis, archives,
-Telegram, tasks, DB, assessments, and Production Assist are unchanged. Open P0/material P1 are
-`0/0`; state is `REPLAY_PASS_NATURAL_REPROOF_PENDING`, not `LIVE_PASS`. Wait for the next natural
-KR close and verify required detail, local-first ordering, provenance, receipt, duplicates, and
-orphans read-only. The separate US natural reproof remains pending and Track C remains
-`DO_NOT_START`.
-
-### 40.14 KR Market Pre-Enable Test-Send Gate
-
-Exact instruction commit `f161bc1c724cfd431efaaa458af61e02a378daeb` precedes audit-only
-implementation `7d2823c236c458cf76c77faae043c6288e46e65e`. The immutable production packet
-`2026-08-27-kr-run-42-5d8d23e6fbd6` remains the completed-session owner. Its stored 42/42 Kiwoom
-acquisition, 1,989/1,989 numeric registry, local-first plan, and repaired AI/fallback size-sector
-selection all replay PASS without an additional provider call.
-
-The operating environment and all thesis-monitor LaunchAgents expose only the production Telegram
-recipient; no dedicated test/staging/developer chat is configured. The safety gate therefore sets
-`TEST_SINK_AVAILABLE=NO`, `TEST_DELIVERY_COUNT=0`, and `ENABLEMENT_ACTION=DO_NOT_ENABLE`. Production
-Telegram, delivery intent, tasks, DB, assessments, archives, US policy, Price Structure v3, and
-Production Assist remain unchanged. The pre-existing size/sector policy is already active by code
-default and was neither re-armed nor reverted, so its state remains
-`ACTIVE_AWAITING_NATURAL_PROOF`.
-
-Open P0 is zero. The one material operational P1 is `dedicated_test_sink_not_configured`. The next
-bounded action is to configure one explicit test recipient that differs from production, then rerun
-this preflight exactly once. A production recipient must never substitute for that proof.
-
-### 40.15 KR TOP3 Sector and Price Structure Selective Pre-Enablement
-
-Exact instruction commit `0c95ddc9be319dbacc5ce1d824802e0c3c72fed1` precedes guarded
-implementation `a7de99c2d1d1211615e0fcbf4bd3eadc06d957fb`. Track A expands the backend-owned
-same-session sector ranking to strong/weak TOP3 per KOSPI and KOSDAQ with stable ties, no stale
-carry-forward, no duplicate fill, and explicit exclusion of KOSDAQ size, company-classification,
-KOSDAQ 150, and Global indexes. Track B wires the existing Price Structure v3 engine and renderer
-behind a default-OFF monitored-KR guard. Current SR remains separate from stored monitoring rules;
-Fib renders only after family-consensus safety.
-
-Run-42 replay selects KOSPI strong `전기/전자, 금속, 제조`, KOSPI weak
-`유통, 전기/가스, 음식료/담배`, KOSDAQ strong `금융, 전기/전자, 기계/장비`, and KOSDAQ weak
-`오락/문화, 출판/매체복제, 통신`. Current completed-session price evidence classifies all seven
-monitored KR subjects `ELIGIBLE_SR_ONLY`; no unstable Fib, target, stop, look-ahead, or partial-bar
-pivot leaks.
-
-Track C did not send because no dedicated non-production Telegram sink exists. Track D therefore
-did not start. Both new guards remain OFF, US Price Structure remains OFF, delivery and production
-intent counts are zero, and operating user-visible behavior is unchanged. Open P0 is zero; the one
-material P1 is `dedicated_test_sink_not_configured`. Configure exactly one isolated test sink and
-rerun Track C before any KR-only enablement.
-
-### 40.16 KR Daily History and Nearest-Semantics Bounded Repair
-
-Exact instruction commit `0a8dae7eeca7126844094f0aebcc7a7df0bea606` precedes independent
-Track A `da82d89c2e1c3bc125442128da1573d532263d74`, Track B
-`83f3d643bc2cb40d9039c1d965647d01a43769e2`, and integrated code
-`04fb7ad7646a55e03000134f50b3f402a6c49c87`. Track A proves the seven monitored-KR daily zero
-count came from requesting 1,200 bars from an `/ohlcv` endpoint capped at 1,000. The client now
-requests at most 1,000 while preserving the canonical 1,200-bar target and reports all seven daily
-series `PARTIAL/provider_limit`; it does not synthesize daily bars or substitute weekly/monthly
-data.
-
-Track B separates mathematical nearest-zone ownership from user-visible proximity. Only
-`NEAR/ACTIVE_NEAR` may render as `가까운`; `RELEVANT/ACTIVE_STRUCTURAL` renders as `주요 구조`,
-and `LONG_HORIZON/LONG_HORIZON_HISTORICAL` renders as `장기 구조`. One zone per side owns each
-primary user-visible semantic, while distinct near and structural zones remain allowed. The old
-000660 section fails the new provenance validator as expected; all seven repaired sections pass.
-The policy is an explicit KR rollout option, so existing US/shadow renderer callers retain their
-prior behavior.
-
-Read-only current-data replay returns daily/weekly/monthly evidence for all seven subjects, zero
-validator errors, zero look-ahead or partial-bar pivots, and no changes to TOP3 sector code, US
-Price Structure, market digest, business thesis, valuation, Telegram, tasks, DB, archives, or
-production flags. State is `REPLAY_PASS_READY_FOR_PREENABLE`, with open P0/material P1 `0/0`.
-Price Structure remains `INTEGRATED_READY_NOT_ARMED`; do not enable or send from this repair.
-Configure a dedicated non-production test sink and rerun the bounded pre-enable proof separately.
-
-### 40.17 KR Daily 1200 Extension or Verified Degradation
-
-Exact instruction commit `3e42f3fad2e32ff1b3cca47861cfb9704095ce28` precedes provider audit
-`c9e8fc1e25394857bd88d4652e3a8b1e88638011`, degradation implementation
-`d60b7b2a9edecbad0ed54c2151ecfba163478522`, and seven-ticker replay implementation
-`f957bea48e1bf8df23c6b8fe769812ade5663456`.
-
-Track A proves the supported thesis-monitor `/ohlcv` contract caps `count` at 1,000 and exposes no
-cursor, offset, date window, or continuation state. Unsupported `end_date` input is ignored and
-returns the latest overlapping window, while `count=1200` is rejected. The upstream Kiwoom adapter
-has private continuation mechanics, but they are not part of the supported consumer contract; the
-static 1,200-bar audit artifact is not a live cache. Capability is therefore
-`PROVIDER_HARD_LIMIT_NO_OLDER_WINDOW`.
-
-Track B preserves the canonical daily target at 1,200 and records long-listed provider-limited
-series as `PARTIAL_SAFE/provider_limit` at 1,000. `PARTIAL_SAFE` is explicitly not `PASS`; short
-listings remain `PARTIAL`, insufficient evidence remains `FAIL`, and the existing coverage-aware
-proximity/Fib/current-cycle gates remain authoritative. No second window, synthetic bar, alternate
-provider, weekly/monthly substitution, or adjusted/raw merge is admitted.
-
-The frozen 2026-08-27 replay returns 1,000 completed bars for all seven KR controls, zero actual
-session gaps, zero duplicates, ascending order, and seven `ELIGIBLE_SR_ONLY` results with zero
-renderer-validator errors. `2026-06-03` and `2026-07-17` are official KRX closures that the local
-calendar package overexpected; they are retained as diagnostics rather than counted as data gaps.
-The old 000660 section still fails as expected. Open P0/material P1 are `0/0`, and state is
-`REPLAY_PASS_READY_FOR_PREENABLE`.
-
-Price Structure remains `INTEGRATED_READY_NOT_ARMED`. This work changes no user-visible runtime,
-Telegram, task, DB, assessment, archive, TOP3 sector path, US path, production flag, or operating
-checkout. Next action is exactly `RERUN_KR_TOP3_PRICE_STRUCTURE_TEST_SINK_PREENABLEMENT` under a
-separate authorization.
-
-### 40.18 KR TOP3 / Price Structure Final Pre-Enable Stop
-
-Exact instruction commit `9f37cfad97487876d6dfa63c03750f4dab664dbf` precedes Track A audit
-commit `05b57901f7cf25086b580510aac6a6e72329cdfc`. The repository-native test routing contract
-accepts dedicated test, staging, or developer recipient secrets, but none is configured in the
-canonical or operating environment. The production recipient is present only as a one-way
-redacted alias and was not copied, queried, or used as a substitute.
-
-The strict sequence stopped at Track A with
-`KR_FINAL_PREENABLE=BLOCKED` and `BLOCKED_NO_TEST_SINK`. Track B data collection, current-universe
-resolution, market/stock generation, test delivery, and quality proof are `NOT_RUN` or `NOT_SENT`.
-Track C was not created or started: operating remains
-`43731f015901b96e2dee3af009b9e1d074382349`, both KR guards remain OFF, US Price Structure remains
-OFF, and no restart or smoke was performed. Telegram messages, production intents, manual tasks,
-DB/Pilot/archive mutations, and Production Assist changes are zero.
-
-Open P0 is zero. The sole material P1 is `dedicated_test_sink_not_configured`. Configure exactly
-one approved non-production destination through the existing secret/config mechanism, prove its
-isolation, and rerun Track A. Do not reinterpret prior replay evidence as this final test-send
-proof, and do not begin Track B or Track C until Track A passes.
-
-### 40.19 KR Test Sink Configuration Resume Stop
-
-Exact instruction commit `68ede1eae42315d94a89023fbc6c1f9be07fc99d` precedes blocked-resume
-evidence commit `69e4bd6bc15da2a654ab6dcb678263f0ea049d37`. The existing resolver was applied to
-the canonical and operating environment files, current process environment, and every
-thesis-monitor LaunchAgent environment key set. No approved test, staging, or developer Telegram
-recipient key exists. Only the production recipient has a redacted alias; it was never copied,
-queried, logged, or used.
-
-The explicit operator-secret boundary stopped the workflow before session resolution. Provider
-calls, market/stock candidate generation, Telegram payloads, receipts, operating promotion,
-service restart, smoke, and flag writes are zero. Operating remains
-`43731f015901b96e2dee3af009b9e1d074382349`; KR TOP3, KR Price Structure, and US Price Structure
-remain OFF; Production Assist stays OFF.
-
-State remains `KR_FINAL_PREENABLE=BLOCKED_NO_TEST_SINK` and `KR_ROLLOUT=NOT_ENABLED`, with open
-P0/material P1 `0/1`. The only next action is `OPERATOR_PROVIDE_DEDICATED_TEST_CHAT`. Once exactly
-one approved secret is externally configured, rerun the resolver and isolation proof before any
-data collection or send.
-
-### 40.20 KR Test Sink Resume PASS and Sequential Enablement
-
-The operator configured one dedicated private Telegram group through the canonical ignored secret
-key `TELEGRAM_TEST_CHAT_ID`. Exact instruction commit
-`68ede1eae42315d94a89023fbc6c1f9be07fc99d` precedes implementation
-`315081005198e7b5676e9383f10d4a52b3d3ca34`. The Settings model now accepts the test-only key, while
-the production notifier continues to own only `TELEGRAM_CHAT_ID`. Direct runtime equality proves
-the recipients differ; reports and receipts contain aliases only.
-
-Completed-session run 42 produced one TOP3 market message and seven monitored-KR stock messages.
-The isolated `TEST_ONLY_NON_PRODUCTION` sender delivered 8/8 once, and Telegram response text hashes
-match rendered and outbound hashes 8/8. Duplicate, orphan, retry, production-recipient send, and
-production delivery-intent counts are zero. All seven price sections are `ELIGIBLE_SR_ONLY` with
-zero unstable Fib, target, stop, look-ahead, partial-bar pivot, proximity, or ownership errors.
-
-Main and operating advanced linearly to the implementation SHA. Feature-off parity passed first;
-KR market TOP3 then passed with Price Structure OFF; KR Price Structure then passed 7/7 with the US
-negative control still blocked. Final state is `KR_ROLLOUT=ENABLED_AWAITING_NATURAL_PROOF`, not
-`LIVE_PASS`. Open P0/material P1 are `0/0`; Production Assist remains OFF. Wait for the next natural
-KR market and stock cycle and inspect it read-only.
-
-### 40.21 US Night-Futures Canonicalization and Current-Time E2E
-
-Exact instruction commit `f6ab0168d3ef0d8ce1e2b5980ea7aae147db0c75` precedes canonical
-implementation `df2e922bbb3ba554c9495408b64233661ff77c89`, generic US source-session
-guard `3325d8a8db84fec6c8ca5d4c70dc5b2210c4179f`, historical positive-fixture proof
-`fc6a53a944a9089eecc94d81f46b4602180b6b02`, and deployed implementation
-`f6bc769f823429426474a38f007dc8196b4e5f43`.
-
-`night_futures_gate` now exclusively owns compact-summary projection and full-message visibility.
-The current `2026-08-28` expected night session had no ready canonical products, so the current
-market message safely omitted it; one separately labeled `2026-08-27` historical fixture proved
-fixed Fact identity and value/session/state parity. Current-time market `1/1`, stock `13/13`, and
-fixture `1/1` test-sink deliveries matched exact received payloads with zero production sends.
-
-Twelve US/foreign subjects rendered current-session SR-only structure. WRD failed closed because
-its daily source ended one session before its declared `as_of`; no ticker exception was added.
-Local full pytest is `1841 PASS`, GitHub Actions Test/Lint PASS, API/OHLCV health PASS, and open
-P0/material P1 are `0/0`. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Do not manually trigger the
-US Scheduled Task; inspect the next natural market and stock messages read-only.
-
-### 40.22 Provisional Bollinger Expansion and Price Label Clarity v2
-
-Exact instruction commit `73286dd44135bbc30ef3a145e02f5db81aedbdea` precedes implementation
-`8c3bb493dc45a12c837053e08361f949ff771f00`. The existing price-anchored near/major layer and
-completed-bar dynamic Bollinger layer remain unchanged. Valid in-progress D/W/M bars now feed a
-separate `PROVISIONAL_BOLLINGER_SUPPORT/RESISTANCE` layer with observation timestamp, bar start,
-expected close, PARTIAL state, security/currency/adjustment basis, and explicit non-authority.
-
-The provisional layer cannot feed near/major S/R, stored rules, Fib, or wave anchors. The renderer
-allows at most one distinct provisional line per subject or one overlap annotation. It labels the
-line `잠정`, `진행중`, and `봉 마감 전 변동 가능`. Current quote and completed regular-session
-structure close have separate ownership; equal values collapse to `현재가(정규장 종가)`, while
-different values render both explicit labels.
-
-Current-time replay is US `13/13` plus KR `7/7` PASS. It produced 17 standalone provisional lines,
-two overlap annotations, one safe suppression, zero authority/major-SR leaks, and zero SNDK/WULF
-bypass. The dedicated test sink received the corrected immutable full-message set `20/20` with
-exact hashes, duplicates/orphans/production sends all zero. The first abbreviated-artifact attempt
-was test-only and is retained as a diagnostic failure. Full pytest is `1865 PASS`; implementation
-and evidence Actions Test/Lint PASS; open P0/material P1 are `0/0`. Main and operating advanced
-linearly to `d3a58c953c2dd6d100031421770be3a54d0328b5`; API/OHLCV health and post-deploy US `13/13`
-plus KR `7/7` frozen replay pass. State is `DEPLOYED_AWAITING_NATURAL_PROOF`. Natural
-provisional/price-label proof remains independently `PENDING` and must not be triggered manually.
-
-### 40.23 2026-08-29 US Morning Market Data and Natural Message Review
-
-Exact instruction commit `428836d4a997a10eb7dd1d1935acdea8ea469b54` precedes read-only
-evidence implementation `7fc982ecce30a0af261dcda198ef50280e707531`. The XNYS calendar and
-run-45 packet both resolve the latest completed regular session to `2026-08-28`. SPY, QQQ, IWM,
-SOXX, and RSP are current, all 11 supported sector proxies are current, and the deployed
-deterministic renderer reproduces the exact naturally delivered market message byte-for-byte.
-
-Official Nasdaq breadth is `PUBLICATION_PENDING`: the exact target row is absent and the latest
-official row is `2026-08-26`, so no stale breadth is promoted. The canonical night-futures target
-is the `2026-08-29` 06:00 end-date session; all four production-gate attempts found only the stale
-`2026-08-28` session, and the entire section is safely omitted. Macro evidence is temporally
-classified, but no item passes the existing additional-materiality selector.
-
-Natural monitor run 45 delivered one market and 13 stock messages `14/14` once through the
-deterministic production renderer. Market-message evidence parity is `PASS`; rejected AI output
-was never sent. The primary and backup AI full-stock candidates remain rejected, so the overall
-review is `PARTIAL_SAFE` with open P0/material P1 `0/1`. The P1 is bounded to AI validation and
-does not reopen current market-data, temporal-safety, renderer, or delivery proof. No Telegram,
-task, DB, assessment, scheduler, feature, or Production Assist mutation was performed by this
-review.
-
-### 40.24 US Friday/Saturday Night Futures and Run-45 AI Validator Repair
-
-Exact work-instruction commit `f8ca4fcb4557037468e35578a98a66aa9cb750b5` precedes
-implementation `f621b0ab253a3e9fc6752f7d7aff9ccdad06ca19`. Official KRX read-only evidence proves that
-`BAS_DD` is the night-session end business date: the `20260828` rows exactly reconcile the prior
-regular-session closes and provider changes. The Friday-night-to-Saturday target therefore requires
-`BAS_DD=20260829`; that official endpoint returned no rows. This is `UPSTREAM_NOT_PUBLISHED`, not a
-date-resolver defect. Existing current-session omission remains fail-closed with stale visible facts
-and raw-summary bypass both zero.
-
-The immutable run-45 primary and backup AI candidates move from `37 -> 0` and `4 -> 0` validation
-errors. The repair uses existing structured ownership contracts for selected US market slots,
-field-specific valuation interpretation, inventory relations, and canonical monitoring facts.
-Strict semantic, numeric, runtime-quality, and Price Structure gates are unchanged. Primary and
-backup replay pass; the isolated test sink received the production-equivalent market plus 13 stock
-messages `14/14` once with exact payload parity and zero duplicate, orphan, production-recipient
-send, or production delivery intent.
-
-Open P0/material P1 are `0/0`; Production Assist stays OFF. Main and operating were promoted
-linearly, API health and the post-deploy ownership smoke pass, and state is
-`DEPLOYED_AWAITING_NATURAL_PROOF`. Wait for the next natural US run and inspect AI routing, exact
-delivery, and the canonical night-futures section or safe omission read-only. Do not manually
-trigger a Scheduled Task or send a production Telegram message.
-
-### 40.25 Decision Calibration P1 Repair Before Canary
-
-Exact instruction commit `5ccc8aadc29644295164b612de163bbf06fbcf76` precedes taxonomy,
-timing/confidence, decision-change-condition, and adjudication implementation through
-`930952132077e8403bcec1a7e2c52d5732d8521a`. The same 20 canonical evidence packets were rerun
-blind with signed-in Codex CLI `gpt-5.6-sol / xhigh`; no web facts, future evidence, score, class
-target, or ticker outcome exception entered the pass.
-
-Nine material comparisons were adjudicated. Final distribution is BUY `0`, HOLD `17`, SELL `3`.
-RXRX, TSLA, and WULF remain SELL. HUT resolves to `HOLD / OPTIONALITY_OFFSETS_DOWNSIDE / LOW /
-UNFAVORABLE`; CRCL remains `HOLD / LOW / INSUFFICIENT`. All six timing and three confidence cases
-are closed, all 20 decisions own asymmetric evidence-linked upgrade/downgrade conditions, numeric
-binding is `60/60`, and repeated substantive spans are zero.
-
-An independent xhigh portfolio audit sets HOLD-default and SELL-suppression bias to `NONE` and all
-calibration/semantic gates to PASS. The dedicated non-production sink received the final set
-`20/20 exact` through an owned `17 + 3` rate-limit continuation, with zero duplicate, orphan,
-production-recipient send, or production delivery intent. Open P0/material P1 is `0/0` and
-`DECISION_CANARY_READINESS=PASS`, but production canary remains OFF. A separate bounded canary
-instruction is required before any runtime exposure.
-
-### 40.26 Decision Evidence Polarity Renderer P1 Repair
-
-Exact instruction commit `0bba7c9` precedes implementation
-`86b9fc44006c45431ccc1822131df3b4a74eb1ca`. Decision-relative support/opposition remains intact,
-while `decision-evidence-polarity-v1` independently owns BULLISH, BEARISH, and NEUTRAL claims.
-The production canary renderer and artifact validator consume the same structured plan; no
-free-form sentiment classifier or ticker exception exists.
-
-Fresh run-44/run-45 evidence reproduced the four accepted SHA values exactly and classifications
-remain 003690 HOLD, 000660 HOLD, GOOGL HOLD, RXRX SELL. GOOGL bullish evidence and RXRX neutral
-quality evidence no longer appear under SELL. Two historical BUY fixtures also pass the common
-polarity validator. The dedicated sink received all six payloads exactly once with zero production
-recipient send, intent, duplicate, or orphan.
-
-Local full pytest is `1903 PASS`; implementation Actions Test/Lint PASS. Main and operating were
-promoted linearly, the repaired continuity state was installed, and only the exact KR 2 + US 2
-canary was rearmed. Natural counts remain `0/2` per market. Open P0/material P1 are `0/0`; the next
-action is read-only natural canary review with no manual task or production Telegram proof.
-
-### 40.27 V2 Accepted Production Cutover
-
-Exact instruction commit `0eb8bad` precedes decision-aware wording `1a6488e`, accepted runtime
-`7f32c34`, and exact preflight convergence `6c429fc2f8afc4316b319494ca098c77594d0d2d`.
-The runtime consumes the complete packet inventory, uses signed-in Codex CLI
-`gpt-5.6-sol / xhigh`, requires final adjudication for material decision changes, and renders only
-`accepted_decision_plan`. Missing or non-final ownership suppresses that subject's decision block;
-raw candidates and silent V1 visible fallback are prohibited.
-
-Fresh KR run-44 plus US run-46 preflight produced `20/20 READY`, BUY/HOLD/SELL `1/16/3`, strict
-message quality PASS, and zero repeated substantive spans. Five subject-local validator repairs
-changed no top-level decision. The dedicated non-production sink received `20/20 exact` with zero
-retry, duplicate, orphan, production-recipient send, or production intent. Current code reproduces
-all 13 saved prompts and both accepted artifacts exactly.
-
-Main and operating advanced linearly to `2a30bb3dcaecb40f83ca53f59982de1e18dab0ee`. The visible
-selector is `V2_ACCEPTED`, full monitored coverage is targeted, V1 rollback remains available, and
-Production Assist remains OFF. Schedules and LaunchAgent checksums are unchanged; API and OHLCV
-health pass. State is `MERGED_ARMED_AWAITING_NATURAL_LIVE`, not LIVE_PASS. Review the normal KR
-2026-08-31 and US 2026-08-31 New York / 2026-09-01 KST cycles read-only. Do not manually trigger a
-task or send a production Telegram message for proof.
-
-### 40.28 Atomic Monitoring Onboarding and Scoped Readiness
-
-Exact instruction commit `8da71e7` precedes implementation `2c4b973`. Registration now records
-monitoring intent as `PENDING_ONBOARDING`; only the canonical readiness coordinator may promote a
-subject through `READY` to `ACTIVE`. The persisted invariant is
-`ACTIVE => onboarding_ready && production_eligible`, with identity, security master, official
-structured company profile, investment logic, initial evidence, baseline assessment, and decision
-readiness all evaluated subject by subject. Retry is idempotent and preserves thesis and assessment
-history.
-
-Production collection and AI packets use an immutable `production-packet-universe-v1` snapshot
-scoped by market, session, and cutoff. An incomplete subject excludes only itself; it cannot block
-ready peers or the other market. The 2026-08-31 incident replay passes, downstream numeric
-registries consume the frozen cohort, and activation after cutoff cannot mutate an in-flight packet.
-
-The full cloned operating-universe audit ends with `21` active, `21` ready-active, and `0` active
-incomplete subjects. Official read-only evidence makes 047810 `ACTIVE_READY` from the next eligible
-session. CPNG remains `PENDING_SAFE` because initial evidence, baseline assessment, and decision
-readiness are absent; none was fabricated. The isolated sink received all `22/22` exact messages
-through an identity-checked rate-limit continuation with zero duplicate, orphan, production send,
-or production intent. No scheduler, Price Structure, valuation, accepted-decision ownership, or
-2026-08-31 production replay changed.
-
-The first real operating reconciliation revealed a legacy-only selector issue: seven US subjects
-had an earliest provisional assessment followed by a final one. Bounded repair `6521d50` selects an
-explicit initial baseline first and otherwise the earliest final legacy assessment. Full regression
-is `1962 passed`; Actions run `33386496321` passes Test/Lint. Final operating reconciliation is
-`21/21/0`, API health passes, 047810 is active from `2026-09-01`, and CPNG remains pending with its
-three evidence blockers. This operational convergence changed no readiness threshold.
-
-### 40.29 Pending Onboarding Auto-Reconciler and Preflight Resume
-
-Exact instruction commit `c95e176` precedes final implementation
-`5e3820456ace797450b9403386edaa2fc6af6cf1`. Pending onboarding now has three bounded entry points:
-immediate registration continuation, a 30-minute generic background reconciler, and cached-only
-market preflight before packet-universe freeze. All three call the existing readiness coordinator;
-none can force-set active or allow a raw decision candidate to grant readiness.
-
-Generic KR and US registration, retry classification, idempotency, cross-market and same-market
-isolation, cutoff eligibility, and ready-peer continuation pass. The dedicated sink completed
-`22/22 exact` through a `20 + 2` identity-aware continuation with zero production send, intent,
-duplicate, or orphan. Existing market delivery schedules, accepted ownership, Price Structure, and
-valuation are unchanged.
-
-The deployed generic reconciler encountered CPNG without a ticker argument. It rebuilt canonical
-initial evidence, preserved the final baseline, produced accepted-v2 `HOLD`, and activated CPNG as
-`ACTIVE_READY` with first eligible session `2026-09-01`. Current counts are active-ready `22`,
-pending/retryable/review-required `0/0/0`. Manual CPNG resume and ticker bypass are zero. Open
-P0/material P1 are `0/0`; wait for the next natural US packet and do not replay the 2026-08-31
-production message.
-
-### 40.30 2026-09-01 US V2 Natural Live Read-Only Verification
-
-Exact instruction commit `e6c11cff168fa430d7ddc7095d8c407d80948553` precedes the immutable
-run-49 proof. The 2026-08-31 New York session froze all 14 eligible US/foreign subjects, including
-CPNG, and delivered market `1` plus stock `14` exactly once at 08:40 KST. Market-message quality,
-macro temporal safety, safe night-futures omission, Price Structure, valuation, exact payload, and
-delivery gates pass. No manual task, send, retry, recipient access, or production-state mutation
-occurred.
-
-V2 natural live itself is `FAIL`. Both natural primary and backup automations stopped in
-`accepted_decision_v2_runtime.prepare_context` when the local OHLCV request raised
-`httpcore.ConnectError`. No packet-bound candidate, adjudication, or accepted plan was created for
-any of the 14 subjects. The backup AI prose path then retained a false-positive
-`numbers_without_provenance:market_context.text:2000` rejection, so deterministic fallback was the
-terminal route. Explicit BUY/HOLD/SELL visibility is `0/14`; CPNG is
-`MISSING_UNEXPECTED`, CORZ is `FALLBACK_RENDERER_ROUTE`, and the prior GOOGL BUY plus three SELL
-controls are not visible as V2 decisions.
-
-Open P0/material P1/P2 are `0/2/0`. Do not replay or resend the completed cycle. The next action is
-`BOUNDED_DECISION_PIPELINE_REPAIR`, scoped to packet-bound V2 context availability/continuation and
-the independent `2000` validator false positive. Preserve all immutable proof artifacts.
-
-### 40.31 OHLCV Technical Context Resilience and Provenance Repair
-
-Exact instruction commit `1dd691a340b4961e105371af53142c76db7385d7` precedes canonical
-implementation `91180f3b00942d09d2c509e60a2a3d63c48d3951`, bounded retry cap
-`43638307a5c4b568047112fda28e4eb784ef180a`, and final generation-convergence code
-`1e0fb9cd6e4542474c623800a805026c236f2a53`. The run-49 ConnectError root cause is
-`PROCESS_NAMESPACE_MISMATCH`: the host LaunchAgent service was healthy, but the restricted decision
-process could not open loopback. Duplicate decision-stage HTTP acquisition and cohort-wide
-exception propagation amplified the incident.
-
-The repaired path validates and freezes `packet-owned-technical-context-v1` during canonical
-acquisition. V2 consumes that packet artifact without fresh local HTTP; retry/recovery is bounded,
-and malformed or missing contexts remain subject-local. Run-49 replay prepares and accepts all
-14 subjects with technical states FULL/PARTIAL_SAFE/UNAVAILABLE/INVALID `10/0/0/4`. The four
-INVALID subjects fail OHLC integrity rather than transport and do not block peers. KR run-48 is
-FULL `8/8`, including 047810 without a special case. Price Structure, valuation, decision policy,
-accepted ownership, Public Action, schedules, and fallback policy are unchanged.
-
-The numeric lexer now treats Korean particles after structural index names correctly while
-retaining exact unsupported-number rejection. Phantom `2000` is zero and real unsupported controls
-pass. The isolated signed-in xhigh replay is accepted-ready `14/14`; the dedicated sink received
-14/14 exact stock messages with zero production send or intent. Open P0/material P1 is `0/0`.
-This is `READY_FOR_MAIN`, not natural LIVE_PASS. After linear promotion, wait for the next natural
-US cycle and inspect OHLCV acquisition, technical-state counts, candidate/accepted counts,
-fallback, explicit decisions, and exactly-once delivery read-only.
-
-### 40.32 V2 Natural CLI Path and Product-Identifier Provenance Repair
-
-Exact instruction commit `b2c0a4af72c5eb060dcdacd8b281e30307c717f1` precedes implementation
-`b5be74439b2e8e769b1605e539599835abbc8a84`. The natural runtime no longer interprets configured
-relative schema, prompt, output, or log paths against the LaunchAgent working directory. It resolves
-them once against the canonical repository root, verifies the schema before calling Codex CLI, and
-keeps portable relative claim storage. Primary and backup use one resolver.
-
-Canonical evidence-owned product identifiers are now typed non-numeric spans. The exact identifier
-span is masked, while adjacent amounts, ratios, prices, ranges, signed values, dates, and unproven
-hyphen-number strings retain normal numeric validation. Run-50 KR natural-path replay is `8/8`, the
-production-equivalent US replay is `14/14`, and the dedicated test sink is `22/22 exact` with zero
-production send or intent. CPNG/HUT technical recovery, 000660 valuation, 005930 risk/reward, Price
-Structure, accepted ownership, schedules, and delivery boundaries remain unchanged.
-
-Open P0/material P1 is `0/0`; the repair passed `READY_FOR_MAIN` and was deployed by clean linear
-fast-forward through `26004d926247c4ef053e49b74dc8fb9654353199`. Branch/main Actions and API
-health pass. Natural proof is still pending and must come from the next ordinary KR and US cycles
-without a manual task or production resend.
-
-### 40.33 Run-51 Runtime State, Daily Review, and Night-Futures Repair
-
-Exact instruction commit `ff255fc710a3b86b0496cdedca505a7a4a5323e7` precedes runtime
-implementation `16fa1222136b300d900682904f8391ef5c4b482a`. The natural V2 failure is now
-classified correctly as a local pre-model app-server state failure. `codex-runtime-state-v1`
-provides owner-only, claim-scoped `CODEX_HOME`/`CODEX_SQLITE_HOME`, a read-only signed-in auth
-reference, and a real SQLite WAL preflight. The scheduler-context probe and immutable run-51 xhigh
-replay reach the model; accepted-ready and explicit decisions are `14/14`.
-
-The exact rejected daily-review candidate converges from 47 errors to zero with strict schema,
-numeric, valuation, semantic, final-language, and runtime quality gates unchanged. The repair adds
-in-memory legacy scope assignment, numeric-span synchronization, typed canonical repetition
-handling, and depositary-ratio identity precision. Result is 15/15 messages, numeric auto-binding
-`124`, and zero substantive/template repetition.
-
-Official KRX evidence proves that night `BAS_DD` is the completed session end date. XKRX calendar
-mapping expected `2026-09-02`, while the provider returned `2026-09-01`; run-51 therefore remains
-correctly `SOURCE_LIMITATION_SAFE` with ready/rendered `0/0`. No value was forced ready.
-
-Cross-market production-equivalent proof is KR `8/8` plus US `14/14`; the dedicated non-production
-sink received `22/22 exact` through a rate-limit-safe `20 + 2` continuation with zero duplicate,
-orphan, production send, or production intent. Full regression is `2062 passed`; implementation
-Actions Test/Lint pass. Open P0/material P1/P2 are `0/0/0`, and the bounded repair is
-`READY_FOR_MAIN`. This is not natural LIVE_PASS. Wait for the next ordinary US and KR cycles and
-inspect the repaired paths read-only.
-
-### 40.34 US Morning Previous-XKRX Night Reference Contract
-
-Exact instruction commit `46c6707325fe214a7d686095b940cabb55911006` precedes implementation
-`7efc07bb0a9c635b78bb63ec642b50656b01b0b4`. The US-morning product target now uses
-`us-morning-night-reference-date-v3`: for KST date `D`, the expected night reference is the latest
-valid XKRX business date strictly before `D`. US regular-session dates no longer own the product
-mapping; provider raw `BAS_DD` and the independent 06:00 finality gate remain explicit.
-
-Run-51 now expects `2026-09-01`, exactly matching both official provider rows. Date, instrument,
-same-contract DAY comparison, finality, and provenance gates pass at ready/rendered `2/2`. The
-renderer adds those two packet-owned facts with non-night numeric/selection diff `0/0`. Frozen V2
-accepted-ready remains `14/14`, daily-review quality passes, and KR/US production-equivalent proof
-remains `8/8 + 14/14`. Full regression is `2077 passed`; implementation Actions Test/Lint pass.
-
-Open P0/material P1/P2 are `0/0/0`. The next dependency is the next ordinary US morning cycle,
-reviewed read-only. Do not manually run a task, resend production, expose recipient values, or treat
-retrospective replay as natural proof. Production Assist remains OFF.
-
-### 40.35 Run-51 Official KRX Night OHLC History and Controlled Live Path
-
-Exact instruction commit `999d185a30afd64359bea793a270c9fd29d5e996` precedes implementation
-`4341d352b8402a16dcd66d34504fc39a17acc61b` on operating base
-`d0039e6c84ccb8fd74c743b0ceec033760499229`. Official KRX `fut_bydd_trd` now owns NIGHT daily
-OHLC raw preservation, normalized contract/date/session identity, data-driven near-month selection,
-and same-contract daily/weekly/monthly aggregation. Current week and month remain `IN_PROGRESS`;
-contract roll is partial rather than spliced.
-
-Run-51 binds to `2026-09-01`. KOSPI200 official daily O/H/L/C is
-`1067.00/1072.45/1053.80/1064.50`; KOSDAQ150 is
-`1440.00/1447.00/1415.50/1432.80`. The visual KOSPI200 screenshot is `NOT_COMPARABLE` because its
-provider/session/chart convention is unverified; official KRX remains machine authority. A bounded
-TEST/HISTORICAL backfill made `21/21` official requests, stored `78` valid bars, recorded `216`
-rejections without repair, used no post-cutoff date, and did not mutate the frozen packet.
-
-The US 10Y real-yield pair is `2.44%` on `2026-08-31` versus `2.42%` on `2026-08-28`, rendered as
-`+0.02%p (+2bp)`. Non-night market numeric and selection diff are `0/0`. Signed-in Codex CLI
-`gpt-5.6-sol / xhigh` produced `14/14 READY` with HOLD/SELL `11/3`, fallback `0`, and strict quality
-PASS. The atomic TEST-only delivery sent and acknowledged `15/15` exact payloads with zero retry,
-duplicate, orphan, production-recipient send, or production-state mutation.
-
-Open P0/material P1/P2 are `0/0/2`; the P2 items are screenshot convention reconciliation and
-optional rejection-report presentation polish. `RUN51_KRX_NIGHT_LIVE_PATH_ACTUAL_SEND = PASS`, but
-this controlled TEST proof is not natural LIVE_PASS. The next dependency remains the next ordinary
-US morning cycle, reviewed read-only. Production Assist remains OFF.
-
-### 40.36 Four-Track Network, Daily-Review, Market, and Renderer Stabilization
-
-Exact instruction commit `87887dbf9d42a841f27b6344694ce03bfe34c092` precedes four isolated
-implementation commits: network transport `20c80b6d968b5770947a6621fa4867d51967dbe0`, daily-review
-semantics `70d60e4ba100ad140b9aef6e26cfda0acf4f1a8f`, US market renderer
-`4407cd11a78579e11681b503b2d4e72ee3c3d60f`, and accepted-renderer consistency
-`ee4e4688816d35f7a5ade7630eac07e6edd215eb`.
-
-The natural failure is classified at the first boundary as `LOCAL_DNS_RESOLUTION_FAILURE`. The
-shared scheduler path now performs bounded DNS/TCP/TLS readiness and at most one Codex transport
-retry under the original deadline. No public DNS, hosts, TLS, root, credential, scheduler timing,
-or ownership workaround exists. The signed-in `gpt-5.6-sol / xhigh` host smoke passes.
-
-KR daily-review frozen errors converge without threshold changes. The US market renderer exposes
-same-contract NIGHT daily/weekly/monthly values with in-progress finality and a dated nominal
-3Y/5Y/10Y/30Y Treasury curve. The common V2 stock disclaimer is removed for KR/US BUY/HOLD/SELL,
-while accepted-plan authority and new evidence-fingerprint diagnostics prevent unexplained drift.
-
-Production-equivalent KR/US is `8/8 + 14/14`; the dedicated sink is `22/22 exact`, with zero
-duplicate, orphan, production send, intent, or production-state mutation. Full regression is
-`2119 passed`; integration Actions Test/Lint pass. Open P0/material P1 are `0/0`; two carried P2
-presentation items do not block promotion. Report/runtime commit
-`deab50a122075b5fc710e97b74d9fbb63f2ac1e4` passed Actions run `33629221858`, was promoted by clean
-linear fast-forward, synchronized to operating, and passed API health after a thesis-monitor-only
-restart. State is `DEPLOYED_AWAITING_NATURAL_KR_US_LIVE`, not natural `LIVE_PASS`. Wait for the next
-ordinary KR and US cycles and review them read-only. Production Assist remains OFF.
-
-### 40.37 Run-53 Packet AI Consumability Readiness Repair
-
-Exact instruction commit `57589eaaad8fd1916ad33cc4e3b66abc0c6af6a3` precedes implementation
-`c0964a31380f0bd7cb759e09f395d8c780c8b781` on base
-`c1c43070cd944e273c53f952c29a768a33fefdee`. Run-53 source monitoring completed `14/14`, but the
-legacy AI readiness gate treated all `2,057` packet numeric occurrences as stock-V2 input. Two
-standalone KRX NIGHT reference-price facts were canonical but outside the stock prompt, so the
-packet failed before network/model reach and delivered deterministic fallback `15/15`.
-
-`packet-fact-consumer-scope-v1` separates canonical storage, user visibility, and consumer
-eligibility. `STOCK_V2`, `DAILY_REVIEW`, `MARKET_RENDERER`, `ARCHIVE_ONLY`, and
-`NIGHT_FUTURES_MODULE` projections now share one explicit contract. Unknown facts remain strict;
-there is no semantic field/ticker/value allowlist and no validator threshold change. Frozen
-Run-53 preserves all `626` canonical facts, includes `1,987` stock-V2 numeric occurrences, excludes
-`70` standalone-market occurrences with explicit ownership, and has zero unsupported included
-numeric occurrences or prompt/readiness mismatch.
-
-Signed-in `gpt-5.6-sol / xhigh` production-equivalent replay reaches
-context/candidate/accepted/explicit `14/14/14/14`, fallback `0`, and strict final quality PASS.
-The accepted distribution is HOLD `9`, SELL `5`; GOOGL's adjudicated accepted plan remains final
-authority. Frozen KR regression remains `8/8`, and the dedicated test sink receives the exact KR8
-+ US14 accepted stock payloads `22/22` with zero duplicate, orphan, production send, or production
-intent. Focused/full tests are `187/2152 PASS`; Public Action remains `0.4.5` and operationIds
-remain `20/20` unique.
-
-Report/runtime commit `9d47c02fe638348df022a427ef147f0d4855d609` passed exact-SHA Actions runs
-`33702360623` and `33708265266`, advanced by clean linear fast-forward, synchronized to operating,
-and passed authenticated API health after a thesis-monitor-only restart. Open P0/material P1 are
-`0/0`; two inherited P2 presentation items remain. State is
-`DEPLOYED_AWAITING_NATURAL_US_LIVE`, not natural `LIVE_PASS`. The next action is read-only review of
-the next ordinary US cycle. Manual task invocation and production resend remain prohibited;
-Production Assist remains OFF.
-
-### 40.38 Run-54 KR Live V2 Delivery Orchestration Repair
-
-Exact instruction commit `20d052dee5f4ea0d6b2630a284434a98ca52596a` precedes implementation
-`d00741abbe227bd199c8383de0cad9bbd740ceeb` on operating base
-`5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The incident's final failure was not the initial
-candidate rejection. A corrected `9/9` candidate had passed quality and entered pending state, but
-a later analysis-reuse packet replaced its delivery ownership; retry discovery and execution then
-used incompatible state vocabularies and returned `no_pending_ai_delivery`.
-
-Analysis identity, content identity, and delivery-generation identity are now separate. AI-owned
-rows retain their packet owner across analysis reuse; pending, held, retry, fallback, terminal, and
-late-validation transitions have persistent machine receipts. Claim-bound accepted V2 generation
-also records stage completion so `V2_DECISION_SUPPRESSED_SAFE` is independently diagnosable.
-
-An isolated full-path rehearsal used the production entrypoint, signed-in Codex CLI
-`gpt-5.6-sol / xhigh`, real selector, persisted SQLite state, retry/fallback logic, and the real
-Telegram adapter pointed only at the dedicated test sink. It accepted market `1` plus stock V2
-`8`, recovered pending `9` in a new process, and sent `9/9` with fallback and duplicates `0/0`.
-Backup and post-send fallback sent `0`; the controlled unavailable-AI case sent fallback `9/9`.
-Production recipient send, production-state mutation, and main merge are all `0`. Full regression
-is `2161 passed`; open P0/material P1 are `0/0`. State is `READY_FOR_NATURAL_PROOF`, not natural
-`LIVE_PASS`. Observe the next ordinary KR cycle read-only; do not run or resend it manually.
-
-### 40.39 KR/US Monitoring Infrastructure Integration
-
-Exact instructions were committed first as `1091f531b1f13cbeff424fc71247c71f8b647912`
-on common base `5d5f3363d3a762b62698943b1feb4fa121d0d0f9`. The integration preserves KR repair
-`90cc52231c7343056c853c355ea90dfea10de25b` and US repair
-`deb4dc511aafa6e435b0af00436d690e2e498c0b` in one history. Runtime replay found one cross-branch
-semantic mismatch: strict US typed-valuation validation exposed six uniquely grounded legacy KR
-interpretations. Implementation `f23e973b8d874ae8eb156415c215df53870e05de` adds deterministic
-typed ownership only for exact historical/quality-unknown evidence and two exact neutral
-structures; ambiguous directional valuation prose remains rejected.
-
-Immutable KR Run-54 is `9/9 PASS` with zero accounting, valuation, provenance, supply, numeric,
-contradiction, or repetition errors. Real combined-branch signed-in `gpt-5.6-sol / xhigh` TEST E2Es
-pass KR market `1` plus stocks `8` and US market `1` plus stocks `14`. Both have fallback and
-duplicate `0/0`, healthy-primary backup reclaim `0`, fencing preserved, and production recipient,
-DB, and scheduler mutation `0/0/0`; US TLS UnknownIssuer is `0`.
-
-Focused/state-matrix/full regression is `498/15/2195 PASS`; Ruff and diff check pass; implementation
-Actions run `33835104414` passes. The infrastructure is `READY_FOR_MAIN`, with natural KR/US proof
-still independently pending. Structured Autonomy production mutation is zero. Its next separate
-phase begins at `005490_FUTURE_MODAL_METRIC_SEMANTIC_OWNERSHIP`, then requires new ALL22 generation
-and clean A/B/C. Production activation remains gated on both promotion readiness and sufficiently
-clean natural infrastructure proof. Production Assist remains OFF.
-
-### 40.40 Validation Policy Production Integration
-
-Exact work instructions were committed first as `35dab28b0a8c714b236a7ac36582461fcb4fbf67`
-on main/operating base `906b092749511dc42d5799ed335165819efee2ea`. The 2026-09-05 US Run-57
-failure is a related validation-policy root cause: monitoring completed `14/14`, but daily-review
-quality rejected the AI path and deterministic fallback delivered `15/15`. Natural V2 candidate,
-accepted, and explicit stock delivery remained zero.
-
-`source-owned-logical-condition-v1` makes the source tree the owner of `ANY_OF`/`ALL_OF`, severity,
-condition IDs, and coverage. `bounded-production-validation-policy-v1` keeps deterministic and
-semantic safety hard while classifying benign typed/renderer repetition as soft. A one-pass
-numeric language normalizer repairs redundant labels, Korean postpositions, and one uniquely
-identified legacy typed-span grammar corruption without changing numeric or interpretation
-identity. Material spam remains blocked.
-
-Production-equivalent dedicated-sink E2E passes KR market `1` plus explicit V2 stocks `8` and US
-market `1` plus explicit V2 stocks `14` using signed-in `gpt-5.6-sol / xhigh`. Pilot,
-compatibility, fallback, duplicate, UnknownIssuer, production recipient, production DB, and
-scheduler mutation are zero. The US finalization used a same-claim continuation after a pre-send
-validator repair and did not rerun the accepted 14-subject model output. Full regression is
-`2227 passed`; implementation Actions run `33949330754` passes pytest and Ruff. Documentation
-promotion Actions `33949976793` and main exact-SHA Actions `33950260247` also pass. Clean linear
-promotion and operating synchronization completed at `f031d72af76b408b90b1c9695a7143aeafad4c97`;
-the thesis-monitor-only restart and API health pass. Open P0/material P1 are `0/0`; state is
-`DEPLOYED_AWAITING_NATURAL_KR_US_PROOF`. Natural KR/US proof and Structured Autonomy promotion
-remain separate. Production Assist remains OFF.
+| Source/canary 준비와 새 holdout 반복이 사실상 현재 작업 | 공통 판단 필드·검사 수리와 보존 증거 분석을 현재 단계로 이동 |
+| 다음 scope `GENERIC_OWNERSHIP_ARCHITECTURE_REPAIR`만 존재 | 원본 label은 보존하되, 승인 범위는 Unknown contract/early Core validation으로 좁힘 |
+| C가 summary에서 NOT_RUN | raw 기준 부분 실행 후 실패로 명시; 정정 artifact 필요 |
+| Calibration 가상 PASS | 해당 prompt의 역사적 PASS로 유지; 실종목 안정성은 아직 미확립 |
+| Renderer ownership PASS | 메시지 구체성·입력 충분성과 별개로 기록 |
+| Ownership proof 다음 바로 bootstrap | 비운영 통합·판단/메시지 품질·lifecycle 검토 후 필요한 최종 proof/승격 순서 명시 |
+| Production scheduler 변경 무조건 0 | 사용자 승인 8개 중단 유지에 한정한 예외와 실제 건수 보고 |
+| 자동 live 재개 가능성 | 명시적 사용자 재개 승인 전까지 0 |
+| 새 기능 부족이면 universe부터 확대 | 새로운 직접 blocker가 확인되지 않으면 기존 기반 수리 반복 금지 |
+| M2에서 source-to-Core 누락을 가정 | 보존 8-domain 감사에서 packet→Core drop 0; archive 부재와 Core drop을 분리 |
+| 반복 문장을 renderer synonym으로 완화 | model-owned reasoning, wrapper, input equivalence를 분리하고 renderer ownership 유지 |
+| Initial/Baseline/Daily를 같은 change 필드로 표현 가능 | lifecycle mode와 baseline/cutoff/refresh provenance를 명시하고 잘못된 delta 승격 차단 |
+| M3 lifecycle이 계획 상태 | 격리 SQLite canonical 경계 실행과 12/12 fixture로 완료; production readiness는 유지 |
+| M3 뒤 즉시 최종 holdout 가능 | source-domain / Directional specificity 설계 판단을 먼저 수행 |
+| 6개 재무 도메인을 한 번에 production packet과 prompt에 추가 | typed packet 확장 → 기존 canonical adapter → 추가 source mapping → Directional specificity → model/holdout 순으로 분리 |
+| 총부채를 debt로 사용 가능 | interest-bearing debt scope가 아니므로 debt/liquidity 계약에서 명시적으로 차단 |
+| OCF-PPE 지출을 일반 FCF로 표시 | `OCF less PPE acquisition cash outflow` 또는 PPE-only 범위로 제한하고 management-defined FCF와 구분 |
+| 새 재무정보를 universal source gate로 추가 | universal gate 0; claim/sector 조건부 의미만 동결 |
+| M4가 제안한 optional financial context는 미구현 | M5에서 additive typed schema와 hard validator 구현; producer와 AI 소비는 계속 0 |
+| M5 envelope는 비어 있는 optional field | M6에서 기존 canonical OCF/PPE/OCF-PPE에만 shared adapter를 연결; compact AI context 소비는 계속 0 |
+| derived-period OCF/PPE도 input ID만 있으면 adapter가 신뢰 가능 | formula/version을 포함한 완전한 lineage projection이 없으므로 M6에서 fail-closed하고 다음 mapping backlog로 이동 |
+| M6의 derived-period 차단은 source fact 부재 | M7에서 보존된 189개 derived-period lineage와 87개 FCF input chain을 projection해 해소; 새 derivation은 0 |
+| KR period mapper 구현은 곧 KR 시장 지원 | exact-context mapper capability와 실제 issuer coverage를 분리; real cached canonical KR fact 부재로 실제 KR block 유지 |
+| OpenDART axis 이름에 consolidated/separate가 모두 있으므로 basis 불명 | axis label이 아니라 exact dimension member로 basis를 판별; real cache 7개에서 고유 duration context 승격 |
+| HUT/SKHY 역사적 gap이면 issuer 예외를 추가 가능 | HUT은 source evidence 부족으로 defer, SKHY는 generic IFRS class 지원과 issuer occurrence 부재를 분리; ticker branch 0 |
+| M8에서 새 금융 source가 생기면 모델 입력과 Daily Delta도 확장 | canonical/financial_context까지만 확장하고 compact AI context·source sufficiency·Daily Delta는 그대로 유지 |
+| legacy `FinancialSnapshot.debt`를 debt total로 재사용 가능 | 실제 source가 `부채총계`이므로 M9 canonical debt 입력에서 차단하고 legacy field를 재해석하지 않음 |
+| 알려진 debt component 합계를 total debt로 표시 | current/non-current completeness와 overlap·basis 검사를 모두 통과할 때만 total 및 net debt 생성 |
+| cash 또는 cash+restricted cash를 같은 liquidity basis로 차감 | net debt cash basis는 cash and cash equivalents only; restricted/combined cash는 별도 context 또는 차단 |
+| 금융업에도 industrial net debt 적용 | bank/insurance/reinsurance는 sector framework required로 분리 |
+| inventory·trade AR/AP와 broad/current/contract balance를 같은 working-capital 값으로 취급 | exact semantic class를 분리하고 aggregate·net precedence 및 overlap 차단 적용 |
+| 반기말과 전기말 차이를 YoY로 표현 가능 | `prior_year_end`로 명시하고 `prior_year_comparable`과 별도 lineage 유지 |
+| current assets minus current liabilities를 operating working capital로 사용 | M10에서 universal NWC/OWC 공식과 DSO/DIO/DPO/CCC 파생을 모두 금지 |
+| 전체 내부 packet schema SHA가 과거 실험 SHA와 달라지면 무조건 실패 | M5 필드를 제거한 legacy projection SHA가 과거 값과 같아야 하며 새 schema SHA는 별도 동결 |
+
+이번 갱신은 M11 non-operating/financial-income effects direct mapping, statement-presentation 보존, aggregate/child overlap 제어와 bounded net-financial-effect derivation을 반영한다. 완료 의미는 `M11_COMPLETE`이며 `financial_domain_coverage_readiness=READY_WITH_KNOWN_OPTIONAL_GAPS`, `model_emission_effectiveness=NOT_MEASURED`, `formal_current_cohort_stability=NOT_MEASURED`, `ownership_generalization=NOT_ESTABLISHED`, `production_readiness=NOT_READY`를 유지한다. compact AI context, Directional/Timing prompt, renderer, source sufficiency, Daily Delta·warning 의미 변경은 0이다. 모델 호출·provider fetch·production mutation·send·merge·deploy·scheduler resume도 모두 0이다.
+
+---
+
+## 2026-09-10 M12X Positive Stronger-Bucket Contract Review
+
+M12W의 FIC-FIN-01 `BUY 6.0` exact target은 generic contract보다 좁은 fixture 제약이었다.
+M12X는 production Directional prompt, threshold, increment, HOLD lean, tie-break, 금융 의미론,
+source packet을 바꾸지 않고 목표만 `BUY 6.5`로 바로잡았다. 영업 개선, reported QTD OCF 및
+현금전환 개선, 순현금 회복력은 서로 다른 지지 축이며 가치평가와 지속성 Unknown은 확신의
+한계이지 보편적인 6.5 상한이 아니다. 점수표나 evidence-count 규칙은 도입하지 않았다.
+
+새 generation `20260910-m12x-fictional-20260910T031958Z-a6c5d77c56d5`는 source lock
+`9b66dd9ac8eca70fc7cb9e7912f575d9014b3430fb725917269837f17136c2a8`로 동결했다.
+Sol/xhigh run-1 context-01은 4/4 PASS했고 FIC-FIN-01은 `BUY 6.5:3.5`로 새 계약과 일치했다.
+context-02는 transport 자체는 PASS했지만 FIC-FIN-05가 frozen `BUY 4.5` 대신 `4.0`,
+FIC-FIN-08이 보험 exclusion 문장에 대해 net-debt/financial-sector generic reasoning 오류를
+받아 FAIL했다. 전체 중단 규칙에 따라 run-2/3 네 context는 NOT_RUN이며 안정성은
+NOT_MEASURED다. 재호출, selective rerun, 중간 hotfix는 없었다.
+
+따라서 `M12X_PARTIAL_STOPPED`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`, 다음 scope는 `SOL_RUNTIME_REGRESSION_REVIEW`다. 다음 검토는
+보존 출력만으로 FIC-FIN-05 exact target의 정당성과 FIC-FIN-08의 명시적 exclusion 언어
+오탐 가능성을 분리해야 한다. 새 model call은 별도 승인과 새 generation 전까지 금지한다.
+실종목/model judge/provider/production send 및 모든 운영 mutation은 0이고, 시작과 종료 시
+예약 8개는 모두 PAUSED였다. 상세 결과는
+[M12X completion](reports/20260910-m12x-completion.md)과
+[program completion](reports/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/75-program-completion.json)에 있다.
+
+## 2026-09-10 M12AA Boundary-Band and Financial-Framework Application Scope
+
+M12AA는 canary 중단 조건을 runtime/schema/objective-semantic hard failure와 calibration,
+stance, confidence observation으로 분리했다. 같은 shared role classifier가 net-debt와
+financial-sector validation을 소유하며, 산업회사식 틀의 실제 적용과 명시적 비적용 또는
+대체 프레임 적용을 구분한다. M12Z의 FIC-FIN-08 보험 문장은 contrastive replacement로
+통과했고 실제 mixed application과 unresolved material use는 계속 fail-closed한다.
+
+새 generation `20260910-m12aa-fictional-20260910T065817Z-ba878001b3d4`는 source lock
+`bc882f77f32f2fe9a2448d71cf7ad30147a49bcfb2588a81d4013d35d7a2e37a` 아래
+`gpt-5.6-sol / xhigh` 6/6 context와 24/24 schema row를 완료했다. timeout, retry,
+capacity, orphan, runtime/schema/objective-semantic hard failure, invalid reference, grounding,
+financial-sector false reject/accept, business-delta failure는 모두 0이다. production prompt,
+threshold, increment, lean, tie-break, source selection, Daily Delta, Price-Timing, renderer와
+운영 동작은 변경하지 않았다.
+
+FIC-FIN-05는 `SELL 4.0:6.0`, `HOLD 4.5:5.5 SELL_LEAN`, `SELL 4.0:6.0`으로
+변동했다. frozen minimum-SELL tuple의 `lean=null`과 schema 출력의 `NOT_HOLD`가 달라 두
+SELL row는 exact comparator에서 `OUT_OF_BAND_OTHER`로 남는다. output 후 band/target을
+바꾸거나 PASS로 재해석하지 않았다. FIC-FIN-08은 balance가 5:5로 유지됐지만 holder
+stance가 REVIEW/HOLDABLE로 변했다. 최종 분류는 stable 6, boundary uncertainty 1,
+unstable 1이며 opposite-direction reversal은 0이다.
+
+따라서 `M12AA_COMPLETE`지만 `fresh_real_proof_readiness=NOT_READY`와
+`production_readiness=NOT_READY`다. P0는 0이고 P1은 frozen band shape mismatch와
+material stance instability 두 건이다. 다음 scope는
+`BOUNDED_NEW_BUYER_STANCE_CALIBRATION_REPAIR_GPT56_SOL`이며 새 모델 호출은 별도 승인이
+필요하다. 실종목/provider/judge 호출, production mutation/send, merge/deploy, scheduler
+변경과 자동 재개는 모두 0이고 예약 8개는 PAUSED 상태를 유지했다. 상세 결과는
+[M12AA completion](reports/20260910-m12aa-completion.md)과
+[program completion](reports/20260910-boundary-band-canary-policy-financial-framework-application-scope-full-sol-canary/81-program-completion.json)에 있다.
+
+## 2026-09-10 M12AB Leverage HOLD/SELL Boundary Resolution Architecture
+
+M12AB는 M12AA comparator의 non-HOLD `lean=null`, `NOT_HOLD`, not-applicable 표현을 같은
+canonical 상태로 정규화했다. 이에 따라 FIC-FIN-05의 M12AA 관측은 minimum SELL 2회,
+HOLD 4.5:5.5 SELL_LEAN 1회, out-of-band 0회이며 stable preference는
+`MIXED_BOUNDARY`로 정정됐다. M12AA 원본 ZIP은 변경하지 않았다.
+
+Options A-H 검토에서는 Option F를 유일하게 선택했다. AI가 raw core와 인접 경계 선언을
+소유하고, 별도 versioned experimental resolver가 선언된 두 인접 bucket 중 5.0에 가까운
+덜 방향적인 endpoint만 기계적으로 선택한다. raw와 resolved core를 모두 보존하며 majority
+vote, 평균, 고정 점수, evidence-count bucket, ticker-specific 규칙은 도입하지 않았다.
+production schema와 prompt, threshold, increment, tie-break, source semantics도 그대로다.
+
+새 generation `20260910-m12ab-fictional-20260910T092640Z-741ca9a40148`는 source lock
+`1018dd3213e9514f2ebe38f2b0223a3e3a88d096bbef31e2edf90d30edbe0adb` 아래
+`gpt-5.6-sol / xhigh`로 시작했다. run-1 context-01은 4/4 PASS했다. context-02는 transport,
+parse, schema 4/4는 PASS했지만 FIC-FIN-08 보험 문맥의 명시적 대체 프레임 문장
+"산업회사식 순부채와 운전자본 대신 보험 인수 규율과 규제자본 기준을 적용"을 기존
+validator가 generic framework 적용으로 오분류했다. 그 결과
+`net_debt_claim_without_complete_net_debt_evidence`와 `financial_sector_generic_reasoning`
+두 legitimate-exclusion false reject가 hard error로 발생했다. 규칙대로 2/6 calls,
+8/24 rows에서 즉시 중단했고 selective rerun, 중간 hotfix, 새 generation은 없었다.
+미실행 16 rows는 schema failure가 아니라 `NOT_RUN`이다.
+
+FIC-FIN-05의 유일한 관측은 raw/resolved 모두 `HOLD 4.5:5.5 SELL_LEAN`이었지만 boundary
+declaration은 없었다. 요구된 3회 boundary declaration 및 안정성은 측정 불가다. 따라서
+`M12AB_PARTIAL`, `fresh_real_proof_readiness=NOT_READY`,
+`production_readiness=NOT_READY`이며 다음 scope는
+`FINANCIAL_SECTOR_EXCLUSION_VALIDATOR_REGRESSION_REPAIR_GPT56_SOL`이다. 실종목/provider/judge 호출,
+production send/mutation, merge/deploy, scheduler 변경은 모두 0이고 시작과 종료 시 예약
+8개는 모두 PAUSED였다. 상세 결과는
+[M12AB completion](reports/20260910-m12ab-completion.md)과
+[program completion](reports/20260910-leverage-hold-sell-boundary-resolution-architecture-full-sol-canary/88-program-completion.json)에 있다.
+
+## 부록 A. 핵심 증거 위치
+
+모두 S1 ZIP 내부 상대 경로다.
+
+```text
+completion.json
+artifact-index.json
+
+experiment/fresh-real-proof/model-contexts/{FIRST,A,B,C}/DIRECTIONAL_CORE/batch-*/output.raw.json
+experiment/fresh-real-proof/model-contexts/{FIRST,A,B,C}/PRICE_TIMING/batch-*/output.raw.json
+experiment/fresh-real-proof/model-contexts/C/DIRECTIONAL_CORE/batch-01/partial_semantic_audit.json
+experiment/fresh-real-proof/model-contexts/C/PRICE_TIMING/batch-01/partial_semantic_audit.json
+
+experiment/fresh-real-proof/issuer-results/{FIRST,A,B}/{ticker}/composed-state.json
+experiment/fresh-real-proof/issuer-results/{FIRST,A,B}/{ticker}/rendered-message.txt
+experiment/fresh-real-proof/issuer-results/{FIRST,A,B}/{ticker}/renderer-input-lineage.json
+
+reports/proofs/60-fresh-directional-core-stability.json
+reports/proofs/61-fresh-price-timing-stability.json
+reports/proofs/65-fresh-message-quality-summary.json
+reports/proofs/69-next-scope-handoff.json
+experiment/fresh-real-proof/schedule-pause-observation.json
+```
+
+`{...}`와 `batch-*`는 path pattern이며 모든 조합이 존재한다는 뜻이 아니다. C Timing은 batch-01만 존재한다.
+
+## 부록 B. 읽는 순서
+
+새 세션에서는 이 master → M3 완료 보고서 → M3 작업지시서 → M2 완료 보고서 → 필요한 S1/S2/S3 순으로 프로젝트 상태를 확인한다. 다음 설계 검토와 모델 proof는 각각 별도 지시와 승인 후 시작하며, 옛 handoff의 현재 단계나 cohort를 복원해서 덮어쓰지 않는다.

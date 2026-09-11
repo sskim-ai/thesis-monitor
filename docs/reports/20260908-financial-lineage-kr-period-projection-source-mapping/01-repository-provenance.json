@@ -1,0 +1,11 @@
+{
+  "actual_m6_final_head": "92e5111f35499f43dcfc4fe76238b0c3e4a2442b",
+  "base_sha": "92e5111f35499f43dcfc4fe76238b0c3e4a2442b",
+  "branch": "codex/20260908-financial-lineage-kr-period-projection-source-mapping",
+  "contract": "m7-repository-provenance-v1",
+  "evidence_generation_head": "9442f406b0deae433ad25f4961daa93e15695587",
+  "implementation_commit": "9442f406b0deae433ad25f4961daa93e15695587",
+  "work_instruction_commit": "6a303ebeedd275d8109e6babfcf5f725798542d1",
+  "work_instruction_sha256": "0cbd4b5904a4b9c868f79e0a98dceb85fe08c2d751aa05c5e41c0b08bd84f64f",
+  "work_instruction_zip_sha256": "dfb40ee0a256fe62b60f94811a24d644f584c27c13d07d070258170e7b540c2e"
+}

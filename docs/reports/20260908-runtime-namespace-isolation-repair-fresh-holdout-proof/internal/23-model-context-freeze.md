@@ -1,0 +1,14 @@
+# 23 Model Context Freeze
+
+| Field | Value |
+| --- | --- |
+| context_groups | [["WYNN", "DOX", "NWS", "ASTI"], ["064850", "053270", "078860", "145720"], ["199730", "065510", "396470", "299900"], ["020180", "122310", "417200", "023910"]] |
+| contract | model-context-freeze-v1 |
+| expected_invocations_per_run | 8 |
+| expected_total_model_invocations | 32 |
+| market_grouping | ["US4", "KR4", "KR4", "KR4"] |
+| runs | ["first", "a", "b", "c"] |
+| stage_order | ["DIRECTIONAL_CORE", "PRICE_TIMING"] |
+| status | FROZEN |
+
+Machine proof: `proofs/23-model-context-freeze.json`.

@@ -1,0 +1,74 @@
+{
+  "contract": "m12a-architecture-risk-comparison-v1",
+  "criteria": {
+    "Hybrid": {
+      "backward_compatibility": "WEAK",
+      "double_counting_risk": "WEAK",
+      "failure_transparency": "WEAK",
+      "grounding_reliability": "ACCEPTABLE",
+      "implementation_complexity": "BLOCKING",
+      "model_ergonomics": "WEAK",
+      "prompt_complexity": "WEAK",
+      "provenance_integrity": "STRONG",
+      "real_production_generality": "WEAK",
+      "schema_migration_risk": "WEAK",
+      "sector_compatibility": "ACCEPTABLE",
+      "token_context_cost": "WEAK",
+      "validator_simplicity": "BLOCKING"
+    },
+    "Option A": {
+      "backward_compatibility": "STRONG",
+      "double_counting_risk": "ACCEPTABLE",
+      "failure_transparency": "STRONG",
+      "grounding_reliability": "STRONG",
+      "implementation_complexity": "ACCEPTABLE",
+      "model_ergonomics": "STRONG",
+      "prompt_complexity": "STRONG",
+      "provenance_integrity": "STRONG",
+      "real_production_generality": "STRONG",
+      "schema_migration_risk": "STRONG",
+      "sector_compatibility": "STRONG",
+      "token_context_cost": "ACCEPTABLE",
+      "validator_simplicity": "STRONG"
+    },
+    "Option B": {
+      "backward_compatibility": "ACCEPTABLE",
+      "double_counting_risk": "ACCEPTABLE",
+      "failure_transparency": "STRONG",
+      "grounding_reliability": "BLOCKING",
+      "implementation_complexity": "WEAK",
+      "model_ergonomics": "WEAK",
+      "prompt_complexity": "ACCEPTABLE",
+      "provenance_integrity": "STRONG",
+      "real_production_generality": "BLOCKING",
+      "schema_migration_risk": "ACCEPTABLE",
+      "sector_compatibility": "ACCEPTABLE",
+      "token_context_cost": "STRONG",
+      "validator_simplicity": "WEAK"
+    },
+    "Option C": {
+      "backward_compatibility": "WEAK",
+      "double_counting_risk": "WEAK",
+      "failure_transparency": "ACCEPTABLE",
+      "grounding_reliability": "ACCEPTABLE",
+      "implementation_complexity": "WEAK",
+      "model_ergonomics": "WEAK",
+      "prompt_complexity": "WEAK",
+      "provenance_integrity": "STRONG",
+      "real_production_generality": "ACCEPTABLE",
+      "schema_migration_risk": "BLOCKING",
+      "sector_compatibility": "ACCEPTABLE",
+      "token_context_cost": "ACCEPTABLE",
+      "validator_simplicity": "WEAK"
+    }
+  },
+  "decision": "FIRST_CLASS_TYPED_EVIDENCE_UNIFICATION",
+  "scale": [
+    "STRONG",
+    "ACCEPTABLE",
+    "WEAK",
+    "BLOCKING"
+  ],
+  "status": "PASS",
+  "weighted_total_score_used": false
+}

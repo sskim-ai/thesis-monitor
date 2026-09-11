@@ -1,0 +1,83 @@
+{
+  "baseline_incomplete": {
+    "baseline": {
+      "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+      "cutoff": "2026-09-08T00:00:00Z",
+      "established_at": "2026-09-08T00:00:00Z",
+      "historical_enrichment_ids": [],
+      "original_evidence_ids": [
+        "baseline-fact"
+      ],
+      "thesis_version": 1
+    },
+    "bootstrap_complete": false,
+    "evidence_ids": [
+      "baseline-fact"
+    ],
+    "monitoring_ready": false,
+    "monitoring_requested": true,
+    "onboarding_state": "PENDING_ONBOARDING",
+    "source_ready": false,
+    "subject_lifecycle": "NEW_ISSUER",
+    "thesis_versions": [
+      {
+        "created_at": "2026-09-07T21:00:00Z",
+        "logic_fingerprint": "logic-v1",
+        "status": "active",
+        "version": 1
+      }
+    ],
+    "ticker": "SYNTHETIC_M2_REVIEW"
+  },
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "pending": {
+    "baseline": null,
+    "bootstrap_complete": false,
+    "evidence_ids": [],
+    "monitoring_ready": false,
+    "monitoring_requested": true,
+    "onboarding_state": "PENDING_ONBOARDING",
+    "source_ready": false,
+    "subject_lifecycle": "NEW_ISSUER",
+    "thesis_versions": [
+      {
+        "created_at": "2026-09-07T21:00:00Z",
+        "logic_fingerprint": "logic-v1",
+        "status": "active",
+        "version": 1
+      }
+    ],
+    "ticker": "SYNTHETIC_M2_REVIEW"
+  },
+  "ready": {
+    "baseline": {
+      "baseline_ref": "2fd7143550227c9ba5443e7317feb8ca9a5538e017d26b8ad215afa2d626b251",
+      "cutoff": "2026-09-08T00:00:00Z",
+      "established_at": "2026-09-08T00:00:00Z",
+      "historical_enrichment_ids": [],
+      "original_evidence_ids": [
+        "baseline-fact"
+      ],
+      "thesis_version": 1
+    },
+    "bootstrap_complete": true,
+    "evidence_ids": [
+      "baseline-fact"
+    ],
+    "monitoring_ready": true,
+    "monitoring_requested": true,
+    "onboarding_state": "READY",
+    "source_ready": true,
+    "subject_lifecycle": "NEW_ISSUER",
+    "thesis_versions": [
+      {
+        "created_at": "2026-09-07T21:00:00Z",
+        "logic_fingerprint": "logic-v1",
+        "status": "active",
+        "version": 1
+      }
+    ],
+    "ticker": "SYNTHETIC_M2_REVIEW"
+  },
+  "status": "PASS"
+}

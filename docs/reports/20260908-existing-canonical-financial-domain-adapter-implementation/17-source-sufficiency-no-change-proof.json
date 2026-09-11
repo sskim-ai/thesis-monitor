@@ -1,0 +1,49 @@
+{
+  "after": {
+    "contract": "pre-model-source-sufficiency-v1",
+    "directional_model_eligible": true,
+    "framework": "standard_operating_company",
+    "hidden_weighted_score_used": 0,
+    "invalid_families": [],
+    "missing_required_families": [],
+    "price_direction_inputs_used": 0,
+    "reasons": [
+      "framework_required_current_evidence_present"
+    ],
+    "stale_families": [],
+    "status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+    "valid_families": [
+      "BUSINESS_CURRENT",
+      "EARNINGS_FINANCIAL_CURRENT",
+      "IDENTITY_SECURITY"
+    ]
+  },
+  "before": {
+    "contract": "pre-model-source-sufficiency-v1",
+    "directional_model_eligible": true,
+    "framework": "standard_operating_company",
+    "hidden_weighted_score_used": 0,
+    "invalid_families": [],
+    "missing_required_families": [],
+    "price_direction_inputs_used": 0,
+    "reasons": [
+      "framework_required_current_evidence_present"
+    ],
+    "stale_families": [],
+    "status": "SUFFICIENT_FOR_DIRECTIONAL_JUDGMENT",
+    "valid_families": [
+      "BUSINESS_CURRENT",
+      "EARNINGS_FINANCIAL_CURRENT",
+      "IDENTITY_SECURITY"
+    ]
+  },
+  "contract": "m6-source-sufficiency-no-change-proof-v1",
+  "module": {
+    "after_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "before_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "changed": false,
+    "path": "app/services/coldstart_fundamental_enrichment_service.py"
+  },
+  "outcome_equal": true,
+  "semantic_change_count": 0
+}

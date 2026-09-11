@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_business_delta_alias_balance_confidence_m12z.py",
+    "tests/test_sol_leverage_target_delta_m12y.py",
+    "tests/test_positive_stronger_bucket_m12x.py",
+    "tests/test_sol_restoration_m12w.py",
+    "tests/test_financial_exclusion_leverage_m12f.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_financial_boundary_calibration_m12e.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py"
+  ],
+  "finished_at": "2026-09-10T05:27:28.483240+00:00",
+  "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/focused.txt",
+  "output_sha256": "bbe649e562f82e1f5a0ebed3aef1a39899a8b2fc0b58dbf83e9151593a4556ac",
+  "returncode": 0,
+  "started_at": "2026-09-10T05:27:23.899161+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

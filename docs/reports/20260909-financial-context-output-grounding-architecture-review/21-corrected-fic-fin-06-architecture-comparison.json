@@ -1,0 +1,53 @@
+{
+  "contract": "m12a-corrected-fic-fin-06-architecture-comparison-v1",
+  "fixture_is_model_result": false,
+  "fixture_status": "PASS",
+  "options": {
+    "A": {
+      "backward_compatibility": "STRONG",
+      "duplicate_refs": 0,
+      "grounding_clarity": "STRONG",
+      "representation": "ordinary evidence_refs resolve directly",
+      "result": "PASS",
+      "schema_burden": "STRONG",
+      "validator_complexity": "STRONG"
+    },
+    "B": {
+      "backward_compatibility": "ACCEPTABLE",
+      "duplicate_refs": 0,
+      "grounding_clarity": "ACCEPTABLE",
+      "representation": "direct typed refs work without narrative bridge",
+      "result": "PASS",
+      "schema_burden": "ACCEPTABLE",
+      "validator_complexity": "WEAK"
+    },
+    "C": {
+      "backward_compatibility": "WEAK",
+      "duplicate_refs": 2,
+      "grounding_clarity": "ACCEPTABLE",
+      "representation": {
+        "fixture_projection_only": true,
+        "material_financial_evidence_refs": [
+          "E03",
+          "E04"
+        ]
+      },
+      "result": "PASS_REPRESENTABLE",
+      "schema_burden": "BLOCKING",
+      "validator_complexity": "WEAK"
+    }
+  },
+  "selected_typed_refs": [
+    "canonical:fictional:FIC-FIN-06:inventory-current",
+    "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+  ],
+  "status": "PASS",
+  "used_typed_aliases": [
+    "E03",
+    "E04"
+  ],
+  "used_typed_refs": [
+    "canonical:fictional:FIC-FIN-06:inventory-current",
+    "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+  ]
+}

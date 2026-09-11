@@ -1,0 +1,1206 @@
+{
+  "fingerprints": [
+    {
+      "business_invalidation_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "RISKS"
+      ],
+      "business_reevaluation_down_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "RISKS"
+      ],
+      "business_reevaluation_up_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "business_thesis_change": "STRENGTHENED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS",
+            "THESIS"
+          ]
+        },
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "CASH_CONVERSION"
+          ]
+        },
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "FINANCIAL_RESILIENCE"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "fictional:FIC-FIN-01:operating-evidence",
+        "canonical:fictional:FIC-FIN-01:ocf-current",
+        "canonical:fictional:FIC-FIN-01:net-debt"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "FINANCIAL_RESILIENCE"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-01:cash-conversion-current": [
+          "buy_driver:2",
+          "sector_interpretation",
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:3"
+        ],
+        "canonical:fictional:FIC-FIN-01:net-debt": [
+          "buy_driver:3",
+          "dominant_evidence",
+          "material_directional_anchor",
+          "risk_context"
+        ],
+        "canonical:fictional:FIC-FIN-01:ocf-current": [
+          "business_thesis_context",
+          "buy_driver:2",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-01:business-thesis": [
+          "business_thesis_context",
+          "buy_driver:1"
+        ],
+        "fictional:FIC-FIN-01:market-expectation": [
+          "market_expectation_context"
+        ],
+        "fictional:FIC-FIN-01:operating-evidence": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "market_expectation_context",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-01:remaining-unknown": [
+          "core_investment_judgment",
+          "earnings_estimate_context",
+          "new_buyer_confirmation",
+          "reevaluation_up:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-01:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-01:structural-risk": [
+          "holder_invalidation",
+          "reevaluation_down:1",
+          "risk_context",
+          "sell_driver:STRUCTURAL_RISK:1"
+        ],
+        "fictional:FIC-FIN-01:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "CASH_CONVERSION",
+        "FINANCIAL_RESILIENCE"
+      ],
+      "financial_context_metrics_actually_used": [
+        "net_debt",
+        "ocf_less_ppe_capex",
+        "operating_cash_flow"
+      ],
+      "fingerprint_sha256": "12506ea33b8fe52ecd430aa0269442bfe7e8c76bad1473b6292be2df8acdf3f1",
+      "fundamental_holder_stance": "HOLDABLE",
+      "fundamental_new_buyer_stance": "ATTRACTIVE",
+      "hold_lean": "NOT_HOLD",
+      "material_directional_anchor_basis": [
+        "fictional:FIC-FIN-01:operating-evidence",
+        "canonical:fictional:FIC-FIN-01:ocf-current",
+        "canonical:fictional:FIC-FIN-01:net-debt"
+      ],
+      "material_directional_anchor_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "FINANCIAL_RESILIENCE"
+      ],
+      "overall_direction": "BUY",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS_QUALITY"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "STRUCTURAL_RISK",
+          "domains": [
+            "RISKS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "POSITIVE",
+        "debt_liquidity": "POSITIVE",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-01",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "CASH_CONVERSION",
+        "THESIS",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_down_domains": [
+        "CASH_CONVERSION",
+        "RISKS",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_up_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS",
+        "UNKNOWN"
+      ],
+      "business_thesis_change": "WEAKENED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS",
+            "THESIS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "CASH_CONVERSION"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current": [
+          "dominant_evidence",
+          "sector_interpretation",
+          "sell_driver:DETERIORATION_SIGNAL:1",
+          "unknown:CONFIDENCE_LIMIT:3"
+        ],
+        "canonical:fictional:FIC-FIN-02:inventory-current": [
+          "risk_context",
+          "sector_interpretation",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "canonical:fictional:FIC-FIN-02:ocf-current": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "market_expectation_context",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "sell_driver:DETERIORATION_SIGNAL:1"
+        ],
+        "fictional:FIC-FIN-02:business-thesis": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "holder_invalidation"
+        ],
+        "fictional:FIC-FIN-02:market-expectation": [
+          "market_expectation_context"
+        ],
+        "fictional:FIC-FIN-02:operating-evidence": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "earnings_estimate_context",
+          "new_buyer_confirmation",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-02:remaining-unknown": [
+          "core_investment_judgment",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-02:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-02:structural-risk": [
+          "reevaluation_down:1",
+          "risk_context",
+          "sell_driver:STRUCTURAL_RISK:2"
+        ],
+        "fictional:FIC-FIN-02:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "CASH_CONVERSION",
+        "WORKING_CAPITAL"
+      ],
+      "financial_context_metrics_actually_used": [
+        "inventory",
+        "ocf_less_ppe_capex",
+        "operating_cash_flow"
+      ],
+      "fingerprint_sha256": "db43bd569d64643153de28970be9165e64158e46d86f0ac6849d325d513561e7",
+      "fundamental_holder_stance": "REVIEW",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "SELL_LEAN",
+      "material_directional_anchor_basis": [
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "material_directional_anchor_domains": [
+        "CASH_CONVERSION"
+      ],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "CASH_CONVERSION",
+        "EARNINGS_QUALITY",
+        "WORKING_CAPITAL"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "domains": [
+            "CASH_CONVERSION"
+          ]
+        },
+        {
+          "classification": "STRUCTURAL_RISK",
+          "domains": [
+            "RISKS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NEGATIVE",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "CONTEXT"
+      },
+      "ticker": "FIC-FIN-02",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "PERFORMANCE_TREND",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_down_domains": [
+        "PERFORMANCE_TREND",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_up_domains": [
+        "PERFORMANCE_TREND",
+        "UNKNOWN"
+      ],
+      "business_thesis_change": "UNRESOLVED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "PERFORMANCE_TREND",
+            "THESIS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "directional_confidence": "LOW",
+      "dominant_evidence_refs": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "PERFORMANCE_TREND"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "market_expectation_context",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "sector_interpretation",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "canonical:fictional:FIC-FIN-03:operating-profit-ytd": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sector_interpretation",
+          "sell_driver:OTHER_EVIDENCE:1"
+        ],
+        "fictional:FIC-FIN-03:business-thesis": [
+          "buy_driver:1",
+          "material_directional_anchor",
+          "sell_driver:OTHER_EVIDENCE:1"
+        ],
+        "fictional:FIC-FIN-03:market-expectation": [
+          "market_expectation_context"
+        ],
+        "fictional:FIC-FIN-03:remaining-unknown": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "market_expectation_context",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-03:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-03:structural-risk": [
+          "risk_context"
+        ],
+        "fictional:FIC-FIN-03:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "PERFORMANCE_TREND"
+      ],
+      "financial_context_metrics_actually_used": [
+        "operating_income"
+      ],
+      "fingerprint_sha256": "c23f2c184362556616aec4399b4ebd7b80dc86a4682a8cceb6ec001ed3b0e68e",
+      "fundamental_holder_stance": "REVIEW",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "BUY_LEAN",
+      "material_directional_anchor_basis": [
+        "canonical:fictional:FIC-FIN-03:operating-profit-qtd",
+        "fictional:FIC-FIN-03:business-thesis"
+      ],
+      "material_directional_anchor_domains": [
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "PERFORMANCE_TREND"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "OTHER_EVIDENCE",
+          "domains": [
+            "PERFORMANCE_TREND",
+            "THESIS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "MIXED",
+        "period_conflict_present": true,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-03",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "business_reevaluation_down_domains": [
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "business_reevaluation_up_domains": [
+        "PERFORMANCE_TREND",
+        "THESIS"
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "THESIS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "canonical:fictional:FIC-FIN-04:net-income-current",
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current",
+        "canonical:fictional:FIC-FIN-04:operating-profit-current"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "NON_OPERATING_EFFECT",
+        "PERFORMANCE_TREND"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-04:net-financial-effect-current": [
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "new_buyer_confirmation",
+          "risk_context",
+          "sector_interpretation",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "canonical:fictional:FIC-FIN-04:net-income-current": [
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context"
+        ],
+        "canonical:fictional:FIC-FIN-04:operating-profit-current": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-04:business-thesis": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "holder_invalidation",
+          "market_expectation_context",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-04:market-expectation": [
+          "market_expectation_context"
+        ],
+        "fictional:FIC-FIN-04:remaining-unknown": [
+          "risk_context",
+          "sell_driver:STRUCTURAL_RISK:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-04:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-04:structural-risk": [
+          "risk_context",
+          "sell_driver:STRUCTURAL_RISK:1"
+        ],
+        "fictional:FIC-FIN-04:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "NON_OPERATING_EFFECT",
+        "PERFORMANCE_TREND"
+      ],
+      "financial_context_metrics_actually_used": [
+        "net_financial_income_effect",
+        "net_income",
+        "operating_income"
+      ],
+      "fingerprint_sha256": "fbef99d6a30913bf1958bbc66601fb2b94cc78bfc631f9716412ad42286477be",
+      "fundamental_holder_stance": "HOLDABLE",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "NEUTRAL",
+      "material_directional_anchor_basis": [],
+      "material_directional_anchor_domains": [],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "NON_OPERATING_EFFECT",
+        "PERFORMANCE_TREND"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "STRUCTURAL_RISK",
+          "domains": [
+            "RISKS",
+            "UNKNOWN"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "CONTEXT",
+        "operating_trend": "CONTEXT",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-04",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "EARNINGS",
+        "FINANCIAL_RESILIENCE",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_down_domains": [
+        "EARNINGS",
+        "FINANCIAL_RESILIENCE",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_up_domains": [
+        "FINANCIAL_RESILIENCE",
+        "UNKNOWN"
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "FINANCIAL_RESILIENCE",
+        "RISKS"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-05:cash": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "holder_invalidation",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sector_interpretation",
+          "sell_driver:STRUCTURAL_RISK:1",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "canonical:fictional:FIC-FIN-05:complete-debt": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "holder_invalidation",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sector_interpretation",
+          "sell_driver:STRUCTURAL_RISK:1",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-05:business-thesis": [
+          "business_thesis_context"
+        ],
+        "fictional:FIC-FIN-05:market-expectation": [
+          "market_expectation_context",
+          "sell_driver:OTHER_EVIDENCE:2"
+        ],
+        "fictional:FIC-FIN-05:operating-evidence": [
+          "buy_driver:1",
+          "core_investment_judgment",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1"
+        ],
+        "fictional:FIC-FIN-05:remaining-unknown": [
+          "core_investment_judgment",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-05:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-05:structural-risk": [
+          "core_investment_judgment",
+          "dominant_evidence",
+          "material_directional_anchor",
+          "risk_context",
+          "sell_driver:STRUCTURAL_RISK:1"
+        ],
+        "fictional:FIC-FIN-05:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "FINANCIAL_RESILIENCE"
+      ],
+      "financial_context_metrics_actually_used": [
+        "cash_and_cash_equivalents",
+        "interest_bearing_debt_total"
+      ],
+      "fingerprint_sha256": "1db197bdd07e695f5e89ad04a0c74f219430f80c9d3f9871382a13d863292ce4",
+      "fundamental_holder_stance": "REVIEW",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "SELL_LEAN",
+      "material_directional_anchor_basis": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "material_directional_anchor_domains": [
+        "FINANCIAL_RESILIENCE",
+        "RISKS"
+      ],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "FINANCIAL_RESILIENCE"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "STRUCTURAL_RISK",
+          "domains": [
+            "FINANCIAL_RESILIENCE",
+            "RISKS"
+          ]
+        },
+        {
+          "classification": "OTHER_EVIDENCE",
+          "domains": [
+            "EXPECTATIONS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NEGATIVE",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-05",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "EARNINGS",
+        "UNKNOWN",
+        "WORKING_CAPITAL"
+      ],
+      "business_reevaluation_down_domains": [
+        "EARNINGS",
+        "UNKNOWN",
+        "WORKING_CAPITAL"
+      ],
+      "business_reevaluation_up_domains": [
+        "EARNINGS",
+        "UNKNOWN",
+        "WORKING_CAPITAL"
+      ],
+      "business_thesis_change": "STRENGTHENED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "fictional:FIC-FIN-06:operating-evidence"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "EARNINGS"
+      ],
+      "evidence_roles": {
+        "canonical:fictional:FIC-FIN-06:inventory-current": [
+          "core_investment_judgment",
+          "holder_invalidation",
+          "market_expectation_context",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sector_interpretation",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "canonical:fictional:FIC-FIN-06:trade-receivables-current": [
+          "core_investment_judgment",
+          "holder_invalidation",
+          "market_expectation_context",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sector_interpretation",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-06:business-thesis": [
+          "business_thesis_context",
+          "uncertainty_limit"
+        ],
+        "fictional:FIC-FIN-06:market-expectation": [
+          "market_expectation_context",
+          "sell_driver:OTHER_EVIDENCE:1"
+        ],
+        "fictional:FIC-FIN-06:operating-evidence": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "material_directional_anchor",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "uncertainty_limit"
+        ],
+        "fictional:FIC-FIN-06:remaining-unknown": [
+          "business_thesis_context",
+          "core_investment_judgment",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sell_driver:OTHER_EVIDENCE:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-06:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-06:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [
+        "WORKING_CAPITAL"
+      ],
+      "financial_context_metrics_actually_used": [
+        "inventory",
+        "trade_accounts_receivable"
+      ],
+      "fingerprint_sha256": "e823eeda98e0252a9e98187ba19c9a8435c914f34c22522a7d91d6143c406166",
+      "fundamental_holder_stance": "HOLDABLE",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "BUY_LEAN",
+      "material_directional_anchor_basis": [
+        "fictional:FIC-FIN-06:operating-evidence"
+      ],
+      "material_directional_anchor_domains": [
+        "EARNINGS"
+      ],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "WORKING_CAPITAL"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "OTHER_EVIDENCE",
+          "domains": [
+            "EXPECTATIONS",
+            "UNKNOWN"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "CONTEXT"
+      },
+      "ticker": "FIC-FIN-06",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS"
+      ],
+      "business_reevaluation_down_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS"
+      ],
+      "business_reevaluation_up_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS"
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS",
+            "THESIS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "fictional:FIC-FIN-07:business-thesis",
+        "fictional:FIC-FIN-07:operating-evidence"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "EARNINGS",
+        "THESIS"
+      ],
+      "evidence_roles": {
+        "fictional:FIC-FIN-07:business-thesis": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-07:market-expectation": [
+          "core_investment_judgment",
+          "market_expectation_context"
+        ],
+        "fictional:FIC-FIN-07:operating-evidence": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-07:remaining-unknown": [
+          "sector_interpretation",
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:1"
+        ],
+        "fictional:FIC-FIN-07:sector-context": [
+          "sector_interpretation",
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:1"
+        ],
+        "fictional:FIC-FIN-07:structural-risk": [
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sell_driver:OTHER_EVIDENCE:1"
+        ],
+        "fictional:FIC-FIN-07:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [],
+      "financial_context_metrics_actually_used": [],
+      "fingerprint_sha256": "c336b332afe312acffbb08041bbb2be624a66e3a5707f1e7f3af3f5610969846",
+      "fundamental_holder_stance": "HOLDABLE",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "NEUTRAL",
+      "material_directional_anchor_basis": [],
+      "material_directional_anchor_domains": [],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "UNKNOWN"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "OTHER_EVIDENCE",
+          "domains": [
+            "RISKS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-07",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIDENCE_LIMIT"
+      ],
+      "valuation_limitation_present": true
+    },
+    {
+      "business_invalidation_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_down_domains": [
+        "EARNINGS",
+        "RISKS",
+        "THESIS",
+        "UNKNOWN"
+      ],
+      "business_reevaluation_up_domains": [
+        "EARNINGS",
+        "EXPECTATIONS",
+        "THESIS",
+        "UNKNOWN"
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "buy_driver_classifications": [
+        {
+          "classification": "BUY_SUPPORT",
+          "domains": [
+            "EARNINGS"
+          ]
+        }
+      ],
+      "contract": "m12s-evidence-interpretation-fingerprint-v1",
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence_refs": [
+        "fictional:FIC-FIN-08:operating-evidence"
+      ],
+      "dominant_evidence_semantic_categories": [
+        "EARNINGS"
+      ],
+      "evidence_roles": {
+        "fictional:FIC-FIN-08:business-thesis": [
+          "business_thesis_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "sector_interpretation",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-08:market-expectation": [
+          "market_expectation_context",
+          "new_buyer_confirmation",
+          "reevaluation_up:1"
+        ],
+        "fictional:FIC-FIN-08:operating-evidence": [
+          "business_thesis_context",
+          "buy_driver:1",
+          "core_investment_judgment",
+          "dominant_evidence",
+          "earnings_estimate_context",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "risk_context",
+          "sell_driver:SECTOR_NORMAL:1"
+        ],
+        "fictional:FIC-FIN-08:remaining-unknown": [
+          "core_investment_judgment",
+          "holder_invalidation",
+          "new_buyer_confirmation",
+          "reevaluation_down:1",
+          "reevaluation_up:1",
+          "uncertainty_limit",
+          "unknown:CONFIRMATION_REQUIRED:1"
+        ],
+        "fictional:FIC-FIN-08:sector-context": [
+          "sector_interpretation"
+        ],
+        "fictional:FIC-FIN-08:structural-risk": [
+          "holder_invalidation",
+          "reevaluation_down:1",
+          "risk_context",
+          "sell_driver:SECTOR_NORMAL:1"
+        ],
+        "fictional:FIC-FIN-08:valuation-limit": [
+          "uncertainty_limit",
+          "unknown:CONFIDENCE_LIMIT:2",
+          "valuation_context"
+        ]
+      },
+      "financial_context_domains_actually_used": [],
+      "financial_context_metrics_actually_used": [],
+      "fingerprint_sha256": "f411024330966b223719d91779f530077dc0383593137cd5966417e4a7a1af19",
+      "fundamental_holder_stance": "HOLDABLE",
+      "fundamental_new_buyer_stance": "WAIT",
+      "hold_lean": "NEUTRAL",
+      "material_directional_anchor_basis": [],
+      "material_directional_anchor_domains": [],
+      "overall_direction": "HOLD",
+      "repetition": 1,
+      "sector_interpretation_domains": [
+        "EARNINGS_QUALITY",
+        "THESIS"
+      ],
+      "sell_driver_classifications": [
+        {
+          "classification": "SECTOR_NORMAL",
+          "domains": [
+            "EARNINGS",
+            "RISKS"
+          ]
+        }
+      ],
+      "semantic_flags": {
+        "cash_conversion": "NOT_USED",
+        "debt_liquidity": "NOT_USED",
+        "missing_data_confidence_limit": true,
+        "non_operating_effect": "NOT_USED",
+        "operating_trend": "POSITIVE",
+        "period_conflict_present": false,
+        "working_capital": "NOT_USED"
+      },
+      "ticker": "FIC-FIN-08",
+      "unknown_treatment_types": [
+        "CONFIDENCE_LIMIT",
+        "CONFIRMATION_REQUIRED"
+      ],
+      "valuation_limitation_present": true
+    }
+  ],
+  "status": "INCOMPLETE",
+  "subjects": []
+}

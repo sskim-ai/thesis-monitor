@@ -1,0 +1,15 @@
+# 13-dual-market-source-decision
+
+| Field | Value |
+| --- | --- |
+| contract | fresh-dual-market-source-coverage-summary-v1 |
+| dual_market_source_status | BOTH_PASS |
+| kr_attempted | 13 |
+| kr_source_sufficient | 12 |
+| kr_target | 12 |
+| market_failure_did_not_abort_other_market_diagnostic | 1 |
+| real_model_calls | 0 |
+| status | PASS |
+| us_attempted | 9 |
+| us_source_sufficient | 4 |
+| us_target | 4 |

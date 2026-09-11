@@ -1,0 +1,51 @@
+{
+  "contract": "m6-market-support-audit-v1",
+  "known_partial_us_cases": [
+    "HUT_PPE_MISSING",
+    "SKHY_CANONICAL_CASH_FLOW_MISSING"
+  ],
+  "rows": [
+    {
+      "domain": "same_period_comparison",
+      "market": "US_FOREIGN",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "domain": "same_period_comparison",
+      "market": "KR",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    },
+    {
+      "domain": "operating_cash_flow",
+      "market": "US_FOREIGN",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "domain": "operating_cash_flow",
+      "market": "KR",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    },
+    {
+      "domain": "ppe_capex",
+      "market": "US_FOREIGN",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "domain": "ppe_capex",
+      "market": "KR",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    },
+    {
+      "domain": "ocf_less_ppe_capex",
+      "market": "US_FOREIGN",
+      "status": "EMITS_FINANCIAL_CONTEXT"
+    },
+    {
+      "domain": "ocf_less_ppe_capex",
+      "market": "KR",
+      "status": "SOURCE_PRESENT_BUT_PERIOD_BLOCKED"
+    }
+  ],
+  "universal_market_coverage_claimed": false,
+  "us_existing_canonical_ticker_count": 12
+}

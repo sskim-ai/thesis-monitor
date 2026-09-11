@@ -1,0 +1,14 @@
+{
+  "contract": "m5-public-internal-schema-surface-audit-v1",
+  "current_public_action_canonical_sha256": "7943bdf66170f01edd96e49194abb2cfdc949f0cee0532bcd1f4af69393a0455",
+  "financial_context_exposed_in_public_action": false,
+  "internal_change": "additive optional financial_context",
+  "internal_packet_schema_changed": true,
+  "public_action_operation_id_count": 20,
+  "public_action_operation_id_unique_count": 20,
+  "public_action_schema_changed": false,
+  "public_action_version": "0.4.5",
+  "public_schema_backward_compatible": true,
+  "status": "PASS",
+  "stored_artifact_migration_required": false
+}

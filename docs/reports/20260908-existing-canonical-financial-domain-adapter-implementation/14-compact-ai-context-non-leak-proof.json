@@ -1,0 +1,33 @@
+{
+  "changed_count": 0,
+  "contract": "m6-compact-ai-context-non-leak-proof-v1",
+  "fixture_count": 4,
+  "fixtures": [
+    {
+      "fixture_id": "comparison",
+      "post_m6_compact_ai_context_sha256": "2bd8ae8744d4d25ced345f124836155f9febc2cc4b4a97227b440d721efae0a1",
+      "pre_m6_compact_ai_context_sha256": "2bd8ae8744d4d25ced345f124836155f9febc2cc4b4a97227b440d721efae0a1",
+      "semantic_input_unchanged": true
+    },
+    {
+      "fixture_id": "ocf",
+      "post_m6_compact_ai_context_sha256": "8c6e3565c744e74fd57aa2648dc5ed32f48208e83e2b2d13b8a61edbfddf048c",
+      "pre_m6_compact_ai_context_sha256": "8c6e3565c744e74fd57aa2648dc5ed32f48208e83e2b2d13b8a61edbfddf048c",
+      "semantic_input_unchanged": true
+    },
+    {
+      "fixture_id": "ppe",
+      "post_m6_compact_ai_context_sha256": "0f1c21e9e00913fd4b8dcf91fdefb838f6d8b60c082b20899450023b7fb9ec9e",
+      "pre_m6_compact_ai_context_sha256": "0f1c21e9e00913fd4b8dcf91fdefb838f6d8b60c082b20899450023b7fb9ec9e",
+      "semantic_input_unchanged": true
+    },
+    {
+      "fixture_id": "ocf_less_ppe",
+      "post_m6_compact_ai_context_sha256": "d0677b76e61dd245c67e565f34967a7152f1927d183bd5eed591f5006b4fae77",
+      "pre_m6_compact_ai_context_sha256": "d0677b76e61dd245c67e565f34967a7152f1927d183bd5eed591f5006b4fae77",
+      "semantic_input_unchanged": true
+    }
+  ],
+  "model_semantic_input_unchanged": true,
+  "unchanged_count": 4
+}

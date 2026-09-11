@@ -1,0 +1,234 @@
+{
+  "assembled_count": 11,
+  "contract": "preflight11-source-assembly-fixtures-v1",
+  "final_unseen_eligibility": 0,
+  "fixture_only": 1,
+  "judgment_model_calls": 0,
+  "objective_failure_count": 0,
+  "program_generation_id": "20260906-unseen-source-coldstart-20260906T045044Z-f6ba15029561",
+  "rows": [
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "2a9fc1edcef3a9da2827740e4f60468288ba9f5883b935dbc611b335d981b168",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "94de4e32589aa3cc48670580c5868ec197f8224807fbb1ff1e6a5c37126aaad6",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "010140",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "c2549fe92ad0cc61df62fe07f9f767a8f8f1ffd8c2eac2c7be27f17bcee57b6b",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "ceff67afe9d03830a305b5a396a7b656cb6abb9d3e429f66e39a75e57abe1072",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "011200",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "87bcf12aaea5ed7389cf16ce4949552766595c23eb9cd1ca02adc4f2fb873f72",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "5e2c7f4139ba733745b263728ea208c95b4a73dc21b129afec7983be9abea326",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "017800",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "e011237cd7450f81c2c100c250cd826483eb13c5821c4750d6d9678ce57070b6",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "a5ae6b0ecb977a47c283f4f682ea97eaa1563ebe3d78c42baf814f7a3dfc25e5",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "021240",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "28e13e40a2dc87a3fe0b20b2c06d5dcf47a58c18fe5aaa5271a8c3735914a54d",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "31ab8957c7e5885de65c6ecd6276011ca340d50b99e7eacb1d5e73739b927b9e",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "024110",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "a80ab6b0e38dbd752be7585a017ac3fd0a128c5aad9aa2f5baed3777686eb6a6",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "e634ee3b0015ce8c81f3ce5a73f29c218485004b0f13598035f09cca8fff1b48",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "035420",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "09d1dde183aac9c577fcad54bcbab6ad924cefe352235429c71bc25f9ae41393",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "daae153463f7a4df658e52784cac1911ad71fff8876d05b449f2dc28513c7eff",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "051160",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "e7d19e050d70060c910daf4343a9c3e5e3a814c5a7912904879ffc8cbaff5af8",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "96bc6b779d36bf432ddfbeccf7290d930bcc33af96c6b16c502fe2d7adfd7306",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "055550",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "90998777065c0fe8bde02bd51bf444bd4c4628c52fad5451adcf3d473045dcc8",
+      "market": "kr",
+      "monitoring_registration": 0,
+      "packet_sha256": "e1fdf42796daf51cc5d0f6cbbdcbbc8d7ccbea6bb2069118d60303bfa2da5d9a",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "FULL"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "443060",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "29ddcba8bdfdb0168d1971c4bd315d1c0dfe8be55c4654874b077611ec28d9d3",
+      "market": "us",
+      "monitoring_registration": 0,
+      "packet_sha256": "575737e656fff736e6fdc2fc5f1e39fe8abc6c939c7c1049dd87062e512a09a9",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "MSFT",
+      "validation_errors": []
+    },
+    {
+      "ai_judgment_calls": 0,
+      "cautions": [],
+      "deterministic_base_context_sha256": "d0e5f9993936ecd17bba5f996724219f8b90c6d076f9eb360fd7b724fa51b732",
+      "market": "us",
+      "monitoring_registration": 0,
+      "packet_sha256": "d445e8eca0a9ce0ab87d423cae4bfe7692407029e6c6102ae820bbd3c2dbd9ca",
+      "production_db_mutation": 0,
+      "provider_audit": {
+        "identity": "success",
+        "ohlcv": "success",
+        "price_cache_use_count": 0,
+        "price_request_count": 3,
+        "price_success_count": 3,
+        "technical_context": "PARTIAL_SAFE"
+      },
+      "status": "ASSEMBLED",
+      "ticker": "NVDA",
+      "validation_errors": []
+    }
+  ],
+  "status_counts": {
+    "ASSEMBLED": 11
+  }
+}

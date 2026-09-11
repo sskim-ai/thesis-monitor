@@ -1,0 +1,79 @@
+{
+  "complete": false,
+  "holder_stance_variance_subject_count": "NOT_MEASURED",
+  "new_buyer_stance_variance_subject_count": "NOT_MEASURED",
+  "rows": [
+    {
+      "holder": [
+        "HOLDABLE"
+      ],
+      "new_buyer": [
+        "ATTRACTIVE"
+      ],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "holder": [
+        "REVIEW"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "holder": [
+        "REVIEW"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "holder": [
+        "HOLDABLE"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "holder": [
+        "REDUCE"
+      ],
+      "new_buyer": [
+        "AVOID"
+      ],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "holder": [
+        "HOLDABLE"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "holder": [
+        "HOLDABLE"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "holder": [
+        "REVIEW"
+      ],
+      "new_buyer": [
+        "WAIT"
+      ],
+      "ticker": "FIC-FIN-08"
+    }
+  ]
+}

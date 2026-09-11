@@ -1,0 +1,15 @@
+# 04 New Holdout Exclusion Set
+
+| Field | Value |
+| --- | --- |
+| canonical_alphabet_share_class_fence | ["GOOG", "GOOGL"] |
+| contract | new-holdout-exclusion-set-v1 |
+| deduplicated_exclusion_count | 70 |
+| excluded_tickers | ["000660", "003690", "005490", "005930", "010120", "011090", "012030", "012450", "014790", "016600", "027970", "032860", "033920", "047810", "058860", "060570", "060980", "061970", "067280", "071320", "079810", "086280", "092460", "093370", "095570", "096240", "099520", "104480", "225190", "245620", "246960", "309930", "397810", "403870", "446070", "462520", "AAPL", "AMD", "AMZN", "AVGO", "CORZ", "CPNG", "CRCL", "CRM", "DIS", "GOOG", "GOOGL", "HUT", "IBM", "KO", "LLY", "MA", "MCD", "META", "MU", "NFLX", "NKE", "ORCL", "PFE", "PLTR", "RXRX", "SKHY", "SNDK", "TSLA", "TSM", "UNH", "V", "WRD", "WULF", "XOM"] |
+| known_consumed_regression | ["PLTR", "V", "MA", "AMZN", "XOM", "DIS", "NKE", "MCD", "033920", "104480", "071320", "096240", "032860", "060570", "016600", "462520"] |
+| known_retired_partial | ["ORCL", "UNH", "KO", "AVGO", "095570", "058860", "246960", "099520", "403870", "014790", "079810", "060980", "061970", "012030", "225190", "245620"] |
+| new_holdout_exclusion_count | 70 |
+| prior_exposure_tickers | ["000660", "003690", "005490", "005930", "010120", "011090", "012450", "016600", "027970", "032860", "033920", "047810", "058860", "060570", "067280", "071320", "086280", "092460", "093370", "095570", "096240", "099520", "104480", "246960", "309930", "397810", "446070", "462520", "AAPL", "AMD", "AMZN", "AVGO", "CORZ", "CPNG", "CRCL", "CRM", "DIS", "GOOG", "GOOGL", "HUT", "IBM", "KO", "LLY", "MA", "MCD", "META", "MU", "NFLX", "NKE", "ORCL", "PFE", "PLTR", "RXRX", "SKHY", "SNDK", "TSLA", "TSM", "UNH", "V", "WRD", "WULF", "XOM"] |
+| status | PASS |
+
+Machine proof: `proofs/04-new-holdout-exclusion-set.json`.

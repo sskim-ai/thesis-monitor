@@ -1,0 +1,8 @@
+{
+  "contract": "bounded-contrastive-left-right-span-v1",
+  "left": "forbidden industrial framework cluster",
+  "local_scope_only": true,
+  "marker": "bounded contrast marker",
+  "right": "sector-valid replacement plus application predicate",
+  "status": "PASS"
+}

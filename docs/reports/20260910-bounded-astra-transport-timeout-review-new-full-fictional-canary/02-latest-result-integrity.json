@@ -1,0 +1,22 @@
+{
+  "M12E": {
+    "duplicate_member_count": 0,
+    "extra": [],
+    "hash_mismatches": [],
+    "indexed_payload_count": 177,
+    "missing": [],
+    "sha256": "2cfab9aa676cc61af733198bddadb18971fcb631ca22b17e4735c05a9734484e",
+    "size_mismatches": [],
+    "status": "PASS"
+  },
+  "M12F": {
+    "duplicate_member_count": 0,
+    "extra": [],
+    "hash_mismatches": [],
+    "indexed_payload_count": 202,
+    "missing": [],
+    "sha256": "e04c88c992cdf7e13415e2d0fb945d343c404a8e6cc620e00f26a91a3bb20383",
+    "size_mismatches": [],
+    "status": "PASS"
+  }
+}

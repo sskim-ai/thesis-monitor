@@ -1,0 +1,12 @@
+{
+  "rows": [
+    {
+      "base_sha256": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+      "changed": false,
+      "current_sha256": "7b6ba0bec4a48bddd2084ab0db4cdc86256cab38d9a09c061785d9925345bf77",
+      "path": "scripts/business_delta_alias_balance_confidence_m12z.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

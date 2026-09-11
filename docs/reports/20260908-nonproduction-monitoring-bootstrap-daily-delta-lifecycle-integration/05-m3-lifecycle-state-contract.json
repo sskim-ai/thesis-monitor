@@ -1,0 +1,12 @@
+{
+  "absolute_decision_is_daily_delta": false,
+  "bootstrap_is_daily_delta": false,
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "states": {
+    "BASELINE_BOOTSTRAP_INCOMPLETE": "baseline exists; no Daily Delta",
+    "DAILY_EVALUABLE": "monitoring-ready + known post-cutoff refresh state",
+    "MONITORING_READY": "baseline + bootstrap + source readiness",
+    "REGISTERED_NOT_READY": "PENDING_ONBOARDING; no Daily Delta"
+  },
+  "status": "PASS"
+}

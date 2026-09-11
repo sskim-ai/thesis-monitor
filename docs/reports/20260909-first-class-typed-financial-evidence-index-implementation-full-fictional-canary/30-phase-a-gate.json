@@ -1,0 +1,74 @@
+{
+  "checks": {
+    "alias_ordering": "PASS",
+    "calibration_unchanged": "PASS",
+    "core_prompt_unchanged": "PASS",
+    "corrected_fic_fin_06": "PASS",
+    "daily_delta_unchanged": "PASS",
+    "fic_fin_03_qtd_ytd": "PASS",
+    "fic_fin_06_projection": "PASS",
+    "financial_validator_unchanged": "PASS",
+    "focused_tests": "PASS",
+    "full_tests": "PASS",
+    "git_diff_check": "PASS",
+    "latest_result_integrity": "PASS",
+    "legacy_byte_equivalence": "PASS",
+    "neutral_statements": "PASS",
+    "non_leak": "PASS",
+    "old_fic_fin_06": "PASS",
+    "output_schema_unchanged": "PASS",
+    "price_timing_unchanged": "PASS",
+    "production_side_effect_firewall": "PASS",
+    "projection": "PASS",
+    "qtd_ytd_validator_unchanged": "PASS",
+    "renderer_unchanged": "PASS",
+    "repository_scope": "PASS",
+    "ruff": "PASS",
+    "schedule_pause": "PASS",
+    "selected_only": "PASS",
+    "selector_unchanged": "PASS",
+    "source_sufficiency_unchanged": "PASS",
+    "suppressed_negative_control": "PASS",
+    "warning_unchanged": "PASS"
+  },
+  "contract": "m12b-phase-a-gate-v1",
+  "generation_id": "20260909-m12b-fictional-20260909T085320Z-746ef9ba1586",
+  "implementation_commit": "746ef9ba1586973d84b49fd233e460660f5b91fa",
+  "model_calls_before_gate": 0,
+  "model_inputs": {
+    "contexts": [
+      {
+        "context": 1,
+        "prompt_path": "artifacts/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/frozen-contexts/context-01/prompt.txt",
+        "prompt_sha256": "c170ff13f3971861e1e1746c9961664a52453458b395d8a897cff32e5250c078",
+        "schema_path": "artifacts/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/frozen-contexts/context-01/schema.json",
+        "schema_sha256": "09f1fdcb01131d3069bcc9306251896ad3aa4da3970303c2edba586158e06581",
+        "tickers": [
+          "FIC-FIN-01",
+          "FIC-FIN-02",
+          "FIC-FIN-03",
+          "FIC-FIN-04"
+        ]
+      },
+      {
+        "context": 2,
+        "prompt_path": "artifacts/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/frozen-contexts/context-02/prompt.txt",
+        "prompt_sha256": "e54cef2ddfd1c165c162f35719f083c26be6b885e1fdfc6d88a3e82872205cb4",
+        "schema_path": "artifacts/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/frozen-contexts/context-02/schema.json",
+        "schema_sha256": "78a337b5278f130c10bd309e3ea8b72608a8a193be3953bea63a3768a7ef8274",
+        "tickers": [
+          "FIC-FIN-05",
+          "FIC-FIN-06",
+          "FIC-FIN-07",
+          "FIC-FIN-08"
+        ]
+      }
+    ],
+    "contract": "m12-frozen-model-inputs-v1",
+    "generation_id": "20260909-m12b-fictional-20260909T085320Z-746ef9ba1586",
+    "status": "FROZEN"
+  },
+  "source_lock_sha256": "5bfe8b8ed1f8878bc2d6787e81e34c3a35bc2c424aff80b137d6b44fc9300149",
+  "status": "PASS",
+  "stop_reason": null
+}

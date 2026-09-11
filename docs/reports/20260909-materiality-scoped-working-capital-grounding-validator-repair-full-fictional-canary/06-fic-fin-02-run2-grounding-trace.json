@@ -1,0 +1,56 @@
+{
+  "contract": "m12c-financial-grounding-trace-v1",
+  "source": "M12B run-2/context-01",
+  "ticker": "FIC-FIN-02",
+  "focal_domain": "CASH_CONVERSION",
+  "selected_metrics_by_ref": {
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current": "ocf_less_ppe_capex",
+    "canonical:fictional:FIC-FIN-02:inventory-current": "inventory",
+    "canonical:fictional:FIC-FIN-02:ocf-current": "operating_cash_flow"
+  },
+  "used_typed_refs": [
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+    "canonical:fictional:FIC-FIN-02:inventory-current",
+    "canonical:fictional:FIC-FIN-02:ocf-current"
+  ],
+  "material_anchor_refs": [
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+    "canonical:fictional:FIC-FIN-02:ocf-current"
+  ],
+  "inventory_context_use": {
+    "path": "unknown_treatments[0]",
+    "text": "현금 사용의 원인과 가역성이 알려지지 않았으며 재고 증가는 맥락 자료로만 취급한다.",
+    "matching_typed_refs": [
+      "canonical:fictional:FIC-FIN-02:inventory-current"
+    ],
+    "material_checkpoint": false
+  },
+  "working_capital_specific_checkpoint_claims": [],
+  "generic_working_capital_claims": [
+    {
+      "path": "risk_context",
+      "text": "운전자본 흡수가 지속될 수 있으나 그 원인과 가역성은 확인되지 않았다.",
+      "refs": [
+        "fictional:FIC-FIN-02:remaining-unknown",
+        "fictional:FIC-FIN-02:structural-risk"
+      ],
+      "checkpoint": true
+    },
+    {
+      "path": "sell_drivers[2]",
+      "text": "운전자본 흡수가 지속될 가능성이 있다.",
+      "refs": [
+        "fictional:FIC-FIN-02:structural-risk"
+      ],
+      "checkpoint": true
+    }
+  ],
+  "working_capital_checkpoint_count": 2,
+  "grounded_working_capital_checkpoint_count": 0,
+  "current_trigger": "selected WORKING_CAPITAL family exists AND generic WORKING_CAPITAL-token claim appears in a checkpoint path",
+  "errors": [
+    "working_capital_grounding_failure"
+  ],
+  "replay_status": "FAIL",
+  "status": "PASS"
+}

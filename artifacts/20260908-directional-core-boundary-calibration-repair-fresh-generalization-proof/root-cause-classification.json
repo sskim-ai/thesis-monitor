@@ -1,0 +1,31 @@
+{
+  "adjacent_calibration_count": 8,
+  "all_nonstable_adjacent_calibration_count": 12,
+  "all_subject_classification_counts": {
+    "ADJACENT_BALANCE_CALIBRATION_AMBIGUITY": 12,
+    "CONFIDENCE_ONLY_VARIANCE": 1,
+    "MATERIAL_EVIDENCE_SELECTION_VARIANCE": 0,
+    "MIXED": 0,
+    "OPPOSING_EVIDENCE_INTERPRETATION_VARIANCE": 0,
+    "STABLE": 3,
+    "TRUE_SEMANTIC_REASONING_DIVERGENCE": 0
+  },
+  "buy_sell_reversal_count": 0,
+  "contract": "directional-instability-root-cause-classification-v1",
+  "material_evidence_variance_count": 0,
+  "nonstable_count": 12,
+  "root_cause_result": "GENERIC_DIRECTIONAL_CALIBRATION_ROOT_CAUSE_CONFIRMED",
+  "status": "PASS",
+  "true_semantic_divergence_count": 0,
+  "unstable_count": 8,
+  "unstable_tickers": [
+    "020180",
+    "023910",
+    "053270",
+    "064850",
+    "122310",
+    "145720",
+    "396470",
+    "NWS"
+  ]
+}

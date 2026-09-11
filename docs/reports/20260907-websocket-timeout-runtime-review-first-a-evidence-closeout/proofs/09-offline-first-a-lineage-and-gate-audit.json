@@ -1,0 +1,516 @@
+{
+  "composed_and_rendered_row_count": 32,
+  "contract": "offline-first-a-lineage-gate-rerun-v1",
+  "freshly_rerun": [
+    "actual per-context JSON schema validation",
+    "prompt/schema/output hash binding",
+    "receipt and output identity binding",
+    "alias resolution",
+    "raw-to-normalized-to-summary lineage",
+    "Core and Price-Timing partial semantic audits",
+    "composition and renderer output equality",
+    "ownership, renderer and current hard-safety aggregate gates",
+    "message-quality evaluator"
+  ],
+  "hard_defect_confirmed_in_offline_scope": false,
+  "inherited_not_freshly_reconstructed": [
+    "numeric provenance implementation history",
+    "accounting attribution implementation history",
+    "ADR/security-basis implementation history",
+    "official provisional-earnings implementation history"
+  ],
+  "raw_output_file_count": 16,
+  "raw_stage_row_count": 64,
+  "run_results": {
+    "a": {
+      "alias_selection_count": 757,
+      "context_checks": [
+        {
+          "batch": "01",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/DIRECTIONAL_CORE/batch-01",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "NU",
+            "LNG",
+            "TCI",
+            "WMG"
+          ]
+        },
+        {
+          "batch": "02",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/DIRECTIONAL_CORE/batch-02",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "043100",
+            "025000",
+            "131030",
+            "372910"
+          ]
+        },
+        {
+          "batch": "03",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/DIRECTIONAL_CORE/batch-03",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "130740",
+            "045340",
+            "006910",
+            "288980"
+          ]
+        },
+        {
+          "batch": "04",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/DIRECTIONAL_CORE/batch-04",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "023440",
+            "064820",
+            "001440",
+            "073490"
+          ]
+        },
+        {
+          "batch": "01",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/PRICE_TIMING/batch-01",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "NU",
+            "LNG",
+            "TCI",
+            "WMG"
+          ]
+        },
+        {
+          "batch": "02",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/PRICE_TIMING/batch-02",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "043100",
+            "025000",
+            "131030",
+            "372910"
+          ]
+        },
+        {
+          "batch": "03",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/PRICE_TIMING/batch-03",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "130740",
+            "045340",
+            "006910",
+            "288980"
+          ]
+        },
+        {
+          "batch": "04",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/A/PRICE_TIMING/batch-04",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "023440",
+            "064820",
+            "001440",
+            "073490"
+          ]
+        }
+      ],
+      "context_count": 8,
+      "context_schema_identity_pass_count": 8,
+      "core_partial_audit_pass_count": 4,
+      "message_quality_status": "FAIL",
+      "raw_to_normalized_to_summary_lineage": "PASS",
+      "repeated_substantive_span_count": 9,
+      "rerun_gate_status": {
+        "hard": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS"
+      },
+      "status": "PASS",
+      "summary_row_count": 16,
+      "timing_partial_audit_pass_count": 4
+    },
+    "first": {
+      "alias_selection_count": 748,
+      "context_checks": [
+        {
+          "batch": "01",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-01",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "NU",
+            "LNG",
+            "TCI",
+            "WMG"
+          ]
+        },
+        {
+          "batch": "02",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-02",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "043100",
+            "025000",
+            "131030",
+            "372910"
+          ]
+        },
+        {
+          "batch": "03",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-03",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "130740",
+            "045340",
+            "006910",
+            "288980"
+          ]
+        },
+        {
+          "batch": "04",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/DIRECTIONAL_CORE/batch-04",
+          "schema_errors": [],
+          "stage": "DIRECTIONAL_CORE",
+          "status": "PASS",
+          "subjects": [
+            "023440",
+            "064820",
+            "001440",
+            "073490"
+          ]
+        },
+        {
+          "batch": "01",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/PRICE_TIMING/batch-01",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "NU",
+            "LNG",
+            "TCI",
+            "WMG"
+          ]
+        },
+        {
+          "batch": "02",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/PRICE_TIMING/batch-02",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "043100",
+            "025000",
+            "131030",
+            "372910"
+          ]
+        },
+        {
+          "batch": "03",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/PRICE_TIMING/batch-03",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "130740",
+            "045340",
+            "006910",
+            "288980"
+          ]
+        },
+        {
+          "batch": "04",
+          "checks": {
+            "output_identity": true,
+            "prompt_manifest_hash": true,
+            "prompt_receipt_hash": true,
+            "raw_manifest_bytes": true,
+            "raw_manifest_hash": true,
+            "receipt_identity": true,
+            "runtime_generation": true,
+            "schema_manifest_hash": true,
+            "schema_receipt_hash": true,
+            "schema_validation": true,
+            "source_generation": true,
+            "source_lock": true,
+            "subject_order": true
+          },
+          "context": "experiment/model-contexts/FIRST/PRICE_TIMING/batch-04",
+          "schema_errors": [],
+          "stage": "PRICE_TIMING",
+          "status": "PASS",
+          "subjects": [
+            "023440",
+            "064820",
+            "001440",
+            "073490"
+          ]
+        }
+      ],
+      "context_count": 8,
+      "context_schema_identity_pass_count": 8,
+      "core_partial_audit_pass_count": 4,
+      "message_quality_status": "FAIL",
+      "raw_to_normalized_to_summary_lineage": "PASS",
+      "repeated_substantive_span_count": 14,
+      "rerun_gate_status": {
+        "hard": "PASS",
+        "ownership": "PASS",
+        "renderer": "PASS"
+      },
+      "status": "PASS",
+      "summary_row_count": 16,
+      "timing_partial_audit_pass_count": 4
+    }
+  },
+  "runtime_generation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe",
+  "semantic_validator_rerun_scope": "FIRST_AND_A_COMPLETED_RUNS_ONLY",
+  "source_generation_id": "20260907-fresh-issuer-source-20260907T090500Z-2b1e0d043243",
+  "status": "PASS"
+}

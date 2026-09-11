@@ -1,0 +1,11 @@
+{
+  "contract": "strengthening-severity-writer-v1",
+  "fallbacks": [
+    "FUTURE_VALIDATION_OR_OBSERVE",
+    "NEUTRAL_INTERPRETATION",
+    "OMIT"
+  ],
+  "judgment_tuning": 0,
+  "strengthen_requires_selected_strengthening_evidence": "PASS",
+  "unowned_strengthening_relabel": 0
+}

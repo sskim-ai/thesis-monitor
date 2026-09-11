@@ -1,0 +1,17 @@
+# 04 Runner Adapter Binding Preflight
+
+| Field | Value |
+| --- | --- |
+| actual_runner_path_exercised | 1 |
+| adapter_parameters_observed | ["cwd", "log", "output", "prompt", "schema", "state_namespace", "timeout"] |
+| codex_binary_identity_verified | 1 |
+| contract | real-holdout-runner-adapter-binding-preflight-v1 |
+| missing_adapter_parameters | [] |
+| model_invocation_count | 0 |
+| result | REAL_HOLDOUT_RUNNER_ADAPTER_BINDING_PREFLIGHT_PASS |
+| runner_owned_parameters_consumed | ["codex_bin"] |
+| runner_supplied_parameters | ["codex_bin", "prompt", "output", "log", "schema", "cwd", "timeout", "state_namespace"] |
+| status | PASS |
+| unexpected_adapter_parameters | [] |
+
+Machine proof: `proofs/04-runner-adapter-binding-preflight.json`.

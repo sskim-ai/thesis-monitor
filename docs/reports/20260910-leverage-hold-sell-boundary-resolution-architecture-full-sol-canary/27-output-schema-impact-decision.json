@@ -1,0 +1,7 @@
+{
+  "impact": "ADDITIVE_OPTIONAL_EXPERIMENTAL",
+  "legacy_output_parse_required": true,
+  "production_activation": false,
+  "status": "PASS",
+  "versioned_contract_required": true
+}

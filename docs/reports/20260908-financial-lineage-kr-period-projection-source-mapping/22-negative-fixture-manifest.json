@@ -1,0 +1,119 @@
+{
+  "cases": [
+    {
+      "fixture_id": "prior_metric_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_currency_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_entity_scope_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_statement_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_attribution_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_fiscal_period_incompatible",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_wrong_issuer_identity",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_duplicate_candidate_ambiguity",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "prior_missing_compatible_fact",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_formula_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_version_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_input_refs_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_input_order_invalid",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_period_start_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_period_end_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_currency_basis_missing_or_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_entity_scope_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_statement_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_missing_source_ref",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_report_label_without_start_date",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_quarter_without_fiscal_start",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_noncalendar_label_only_ambiguity",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_ocf_known_ppe_unknown",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_ppe_known_ocf_unknown",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_current_prior_period_mixed",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_statement_basis_incompatible",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "ticker_specific_hut_skhy_mapping_not_added",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "higher_risk_financial_domain_not_emitted",
+      "status": "REJECTED_OR_SUPPRESSED"
+    }
+  ],
+  "contract": "m7-negative-fixture-manifest-v1",
+  "fixture_count": 28,
+  "rejected_count": 28
+}

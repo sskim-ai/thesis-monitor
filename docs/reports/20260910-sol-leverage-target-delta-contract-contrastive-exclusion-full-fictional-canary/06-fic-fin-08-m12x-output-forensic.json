@@ -1,0 +1,158 @@
+{
+  "status": "FROZEN_FAILURE",
+  "source": "artifacts/20260910-positive-stronger-bucket-contract-review-full-sol-fictional-canary/model-calls/run-1/context-02/output.raw.json",
+  "candidate": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "E04",
+          "E06",
+          "E07"
+        ],
+        "text": "불리한 손해 전개가 현실화되고 규제자본 적정성이 약화되면 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "E03",
+          "E04",
+          "E07"
+        ],
+        "text": "언더라이팅 규율이 유지되고 규제자본 적정성 추세가 양호하면 상향 재평가한다."
+      }
+    ],
+    "business_thesis_change": "UNCHANGED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "E03",
+        "E04"
+      ],
+      "text": "언더라이팅 결과는 안정적이지만 손해 변동성이 커 사업 논리는 유지 수준이다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "E04"
+        ],
+        "text": "언더라이팅 결과가 안정적으로 유지되고 있다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "E04",
+        "E06",
+        "E07"
+      ],
+      "text": "안정적 언더라이팅과 손해 변동성 위험이 맞서며 규제자본 추세 부재로 방향성이 없다."
+    },
+    "directional_balance": {
+      "buy": 5,
+      "sell": 5
+    },
+    "directional_confidence": "LOW",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "E04",
+        "E06"
+      ],
+      "text": "안정적 언더라이팅과 잠재적 불리한 손해 전개가 균형을 이룬다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "E04"
+      ],
+      "text": "언더라이팅 결과는 안정적이지만 손해 변동성은 여전히 크다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "불리한 손해 전개가 실제로 나타나 언더라이팅 경제성과 규제자본을 훼손하는 경우다.",
+      "business_invalidation_condition_refs": [
+        "E04",
+        "E06",
+        "E07"
+      ],
+      "stance": "REVIEW",
+      "summary": "안정적 언더라이팅은 유지되지만 손해 변동성과 자본 적정성을 점검해야 한다."
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "가격 규율의 지속성과 양호한 규제자본 적정성 추세가 확인돼야 한다.",
+      "confirmation_business_condition_refs": [
+        "E02",
+        "E03",
+        "E07"
+      ],
+      "stance": "WAIT",
+      "summary": "보험업 핵심 자본 정보가 없어 신규 판단은 대기가 적절하다."
+    },
+    "hold_lean": "NEUTRAL",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "E02",
+        "E07"
+      ],
+      "text": "기대 충족에는 가격 규율과 충분한 규제자본 확인이 필요하다."
+    },
+    "material_directional_anchor_basis": [],
+    "overall_direction": "HOLD",
+    "risk_context": {
+      "evidence_refs": [
+        "E06",
+        "E07"
+      ],
+      "text": "불리한 손해 전개 가능성과 규제자본 추세 부재가 핵심 불확실성이다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "E05",
+        "E03"
+      ],
+      "text": "보험사이므로 산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "STRUCTURAL_RISK",
+        "evidence_refs": [
+          "E06"
+        ],
+        "text": "불리한 손해 전개는 보험 경제성을 약화시킬 수 있다."
+      }
+    ],
+    "ticker": "FIC-FIN-08",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "E07",
+        "E01"
+      ],
+      "text": "규제자본 적정성 추세와 안전한 가치평가 정보 부재로 방향 판단이 제한된다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "E07"
+        ],
+        "summary": "보험업 핵심인 규제자본 적정성 추세는 확인이 필요하다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "E01"
+        ],
+        "summary": "안전한 현재 가치평가 배수 부재는 확신을 제한한다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "E01"
+      ],
+      "text": "안전한 현재 가치평가 배수가 없어 가치평가 방향을 정할 수 없다."
+    }
+  },
+  "validator_errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "industrial_framework_actual_application_observed": false
+}

@@ -1,0 +1,20 @@
+{
+  "focused_receipt": "31-focused-test-results.json",
+  "status": "PASS",
+  "tests": [
+    "tests/test_adaptive_renderer_selector.py",
+    "tests/test_astra_runtime_m12v.py",
+    "tests/test_codex_network_transport_service.py",
+    "tests/test_codex_runtime_state_service.py",
+    "tests/test_codex_transport_lifecycle_service.py",
+    "tests/test_directional_balance_ordinal_calibration.py",
+    "tests/test_directional_financial_context_service.py",
+    "tests/test_financial_exclusion_expectation_m12u.py",
+    "tests/test_financial_exclusion_m12f.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py",
+    "tests/test_materiality_scoped_working_capital_grounding_m12c.py",
+    "tests/test_price_structure_v3_renderer_service.py",
+    "tests/test_qtd_ytd_plain_korean_period_validator_m12d.py",
+    "tests/test_sol_restoration_m12w.py"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "contract": "m12a-source-sufficiency-no-change-proof-v1",
+  "source_freeze": {
+    "after_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "before_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "changed": false,
+    "path": "app/services/coldstart_fundamental_enrichment_service.py",
+    "semantic_change_count": 0,
+    "semantic_owner": "source_sufficiency",
+    "status": "PASS"
+  },
+  "source_sufficiency_semantic_change_count": 0,
+  "status": "PASS"
+}

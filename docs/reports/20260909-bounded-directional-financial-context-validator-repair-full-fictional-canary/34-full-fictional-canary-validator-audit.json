@@ -1,0 +1,146 @@
+{
+  "contract": "m12r-full-fictional-canary-validator-audit-v1",
+  "qtd_ytd_conflict_violation_count": 0,
+  "rows": [
+    {
+      "context": 1,
+      "repetition": 1,
+      "ticker": "FIC-FIN-01",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 1,
+      "repetition": 1,
+      "ticker": "FIC-FIN-02",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 1,
+      "repetition": 1,
+      "ticker": "FIC-FIN-03",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 2,
+        "linked_claim_count": 8,
+        "qtd_evidence_ref_count": 1,
+        "required": true,
+        "required_metrics": [
+          "operating_income"
+        ],
+        "valid": true,
+        "ytd_evidence_ref_count": 1
+      }
+    },
+    {
+      "context": 1,
+      "repetition": 1,
+      "ticker": "FIC-FIN-04",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 2,
+      "repetition": 1,
+      "ticker": "FIC-FIN-05",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 2,
+      "repetition": 1,
+      "ticker": "FIC-FIN-06",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 2,
+      "repetition": 1,
+      "ticker": "FIC-FIN-07",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    },
+    {
+      "context": 2,
+      "repetition": 1,
+      "ticker": "FIC-FIN-08",
+      "validation": {
+        "contract": "directional-financial-qtd-ytd-validator-v1",
+        "errors": [],
+        "explicit_claim_count": 0,
+        "linked_claim_count": 0,
+        "qtd_evidence_ref_count": 0,
+        "required": false,
+        "required_metrics": [],
+        "valid": true,
+        "ytd_evidence_ref_count": 0
+      }
+    }
+  ],
+  "status": "FAIL",
+  "validator_false_accept_count": 0,
+  "validator_false_reject_count": 0,
+  "validator_pass_count_by_repetition": {
+    "run-1": {
+      "pass_count": 1,
+      "required_count": 1,
+      "violation_count": 0
+    }
+  }
+}

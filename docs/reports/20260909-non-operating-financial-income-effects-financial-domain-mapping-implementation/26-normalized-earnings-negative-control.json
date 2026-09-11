@@ -1,0 +1,11 @@
+{
+  "adjusted_net_income_derivation_count": 0,
+  "contract": "m11-normalized-earnings-negative-control-v1",
+  "materiality_scoring_rule_count": 0,
+  "normalized_eps_derivation_count": 0,
+  "normalized_net_income_derivation_count": 0,
+  "policy": "NO_ADJUSTED_OR_NORMALIZED_EARNINGS",
+  "recurring_earnings_score_count": 0,
+  "universal_non_operating_total_formula_count": 0,
+  "universal_non_operating_total_policy": "NO_UNIVERSAL_NON_OPERATING_TOTAL"
+}

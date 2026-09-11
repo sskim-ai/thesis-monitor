@@ -1,0 +1,159 @@
+{
+  "contract": "fresh-kr-source-failure-detail-v1",
+  "failure_count": 3,
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 1,
+      "canonical_issuer_key": "opendart:corp:00149646",
+      "canonical_security_id": "kr:kospi:024110",
+      "diagnostic_packet_sha256": "30a9ecd99a3bcd9d9cc604c600b24109522f4393c52ec6ac9d3f769c82b13638",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT",
+        "validated_current_opendart_revenue_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "bank_or_insurer",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 1,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 1,
+        "statement_successes": 1
+      },
+      "rank": 1,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "4d395313a81f1ef2785c48b979066ff1feffb239e18e35d2bbcc535884779c74",
+      "source_quality": "partial",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00149646",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814004009",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "ticker": "024110"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 9,
+      "canonical_issuer_key": "opendart:corp:00533191",
+      "canonical_security_id": "kr:kosdaq:082800",
+      "diagnostic_packet_sha256": "f9c255912c194412c716db8ca5ab8b6fa5a8169dacf56b54288489b5412ee1c9",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "CLINICAL_REGULATORY_CURRENT",
+        "LIQUIDITY_CASHFLOW_CURRENT"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "pre_profit_biotech",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 1,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 1,
+        "statement_successes": 1
+      },
+      "rank": 9,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "e8b06e80c9d3e94ac2cc3280f4931c2da8ae7cb718b5a9c29f27bfed55abf083",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00533191",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814002976",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "082800"
+    },
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 13,
+      "canonical_issuer_key": "opendart:corp:01110474",
+      "canonical_security_id": "kr:kosdaq:298060",
+      "diagnostic_packet_sha256": "d800ce920aadaff45b6a77f23a07a46ca131c3cb99d5aec368dedb82f2da6d93",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "BUSINESS_CURRENT",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "CLINICAL_REGULATORY_CURRENT",
+        "LIQUIDITY_CASHFLOW_CURRENT"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "pre_profit_biotech",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 1,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 1,
+        "statement_successes": 1
+      },
+      "rank": 13,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "ce75866448e18954412f00270b30352cfdd27f59d275ff471b59ab6e0e87401f",
+      "source_quality": "current",
+      "source_request_lineage": [
+        {
+          "issuer_id": "01110474",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814001708",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "INSUFFICIENT_FUNDAMENTAL_EVIDENCE",
+      "ticker": "298060"
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE"
+}

@@ -1,0 +1,18 @@
+{
+  "activated": [
+    "exact_balance_semantic_registry",
+    "opendart_exact_instant_promotion",
+    "sec_exact_source_class_extractor",
+    "canonical_lineage_projection",
+    "internal_financial_context_adapter"
+  ],
+  "contract": "m10-source-mapping-activation-surface-v1",
+  "not_activated": [
+    "directional_core",
+    "price_timing",
+    "renderer",
+    "source_sufficiency",
+    "monitoring_lifecycle",
+    "notification"
+  ]
+}

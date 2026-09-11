@@ -1,0 +1,13 @@
+{
+  "all_unrelated_files_byte_identical": true,
+  "allowed_changes": [
+    "app/services/financial_framework_claim_service.py",
+    "app/services/directional_balance_service.py",
+    "tests/test_financial_boundary_calibration_m12e.py",
+    "tests/test_financial_exclusion_leverage_m12f.py",
+    "tests/test_first_class_typed_financial_evidence_m12b.py"
+  ],
+  "schema_source_renderer_runtime_changes": 0,
+  "scope": "03-m12u-scope-freeze.json",
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+{
+  "contract": "m4-required-source-sufficiency-change-decision-v1",
+  "future_gate_condition": "separate coverage proof for financing-dependent sector/framework claims",
+  "sector_conditional_candidate_domains": [
+    "debt_liquidity"
+  ],
+  "source_sufficiency_change_required_now": false,
+  "status": "NO_CURRENT_GATE_CHANGE",
+  "universal_gate_added_count": 0
+}

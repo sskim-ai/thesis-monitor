@@ -1,0 +1,203 @@
+{
+  "boundary_count": 10,
+  "contract": "m2-existing-boundary-revalidation-v1",
+  "drift_count": 0,
+  "rows": [
+    {
+      "boundary": "explicit registration and versioned thesis",
+      "current_caller": "app/api/routes_monitoring.py::register_monitoring",
+      "existing_tests": [
+        "tests/test_monitoring.py",
+        "tests/test_onboarding_readiness_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "register_monitoring_item_with_continuation",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "preserve explicit intent and pending readiness gates",
+      "input_output": "MonitoringItemCreate -> MonitoringItemRead",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/monitoring_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "explicit DB registration/versioning; onboarding continuation"
+    },
+    {
+      "boundary": "initial read-only/acquired evidence preparation",
+      "current_caller": "app/services/onboarding_reconciler_service.py::resume_onboarding_subject",
+      "existing_tests": [
+        "tests/test_onboarding_readiness_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "build_initial_evidence",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "adapter test must distinguish source preparation from registration",
+      "input_output": "WatchlistItem + as_of/acquire -> initial evidence dict",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/onboarding_evidence_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "acquire=True may collect; acquire=False reopens stored baseline"
+    },
+    {
+      "boundary": "versioned initial absolute baseline",
+      "current_caller": "app/services/onboarding_reconciler_service.py::resume_onboarding_subject",
+      "existing_tests": [
+        "tests/test_thesis_evaluation.py",
+        "tests/test_onboarding_reconciler_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "ensure_initial_baseline",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "prove initial_baseline is never rendered as Daily Delta",
+      "input_output": "validated initial evidence -> idempotent ThesisAssessment baseline",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/onboarding_evidence_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "DB assessment insert only when baseline absent"
+    },
+    {
+      "boundary": "bootstrap readiness and activation",
+      "current_caller": "registration continuation and reconcile_pending_onboarding",
+      "existing_tests": [
+        "tests/test_onboarding_reconciler_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "resume_onboarding_subject",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "stored-but-incomplete remains non-production-eligible",
+      "input_output": "pending WatchlistItem -> staged readiness/activation result",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/onboarding_reconciler_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "idempotent staged DB state transitions"
+    },
+    {
+      "boundary": "daily event/earnings comparison and persistence",
+      "current_caller": "app/jobs/monitor_daily.py::_run_market_job",
+      "existing_tests": [
+        "tests/test_daily_monitor.py",
+        "tests/test_daily_accuracy_regressions.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "run_daily_monitor",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "missing refresh must not be reclassified as no material change",
+      "input_output": "eligible universe/run cutoff -> assessments and deliveries",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/daily_monitor_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "collection, assessments, warnings, optional queue/dispatch"
+    },
+    {
+      "boundary": "accepted V2 context and output validation",
+      "current_caller": "same runtime CLI main and monitor job claim path",
+      "existing_tests": [
+        "tests/test_accepted_decision_v2_runtime.py",
+        "tests/test_v2_wait_ownership.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "prepare_context / validate_output / generate",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "future integration must use accepted claim/lease lifecycle",
+      "input_output": "packet claim -> prepared context -> validated artifact",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/jobs/accepted_decision_v2_runtime.py",
+      "shared_or_experiment": "PRODUCTION_RUNTIME_GATED",
+      "side_effects": "runtime artifact state; model call only in generate"
+    },
+    {
+      "boundary": "Directional Core and Price-Timing ownership/composition",
+      "current_caller": "experiment runners; no production activation in this task",
+      "existing_tests": [
+        "tests/test_direction_timing_ownership_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "build_owned_evidence_packet / compose_decision / validate_ownership",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "adapt lifecycle inputs without collapsing baseline and delta",
+      "input_output": "canonical packet + Core + Timing -> composed decision",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/direction_timing_ownership_service.py",
+      "shared_or_experiment": "SHARED_CONTRACT_EXPERIMENT_CONSUMER",
+      "side_effects": "none"
+    },
+    {
+      "boundary": "structured validator and renderer",
+      "current_caller": "shadow experiment timing audit",
+      "existing_tests": [
+        "tests/test_structured_autonomy_shadow_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "validate_structured_autonomy_candidate / render_structured_autonomy_message",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "production adapter requires separate canary and delivery decision",
+      "input_output": "packet + composed decision -> validation/rendered shadow message",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/structured_autonomy_shadow_service.py",
+      "shared_or_experiment": "SHARED_SHADOW_CONTRACT",
+      "side_effects": "none"
+    },
+    {
+      "boundary": "assessment/warning persistence",
+      "current_caller": "app/api/routes_monitoring.py::record_thesis_assessment",
+      "existing_tests": [
+        "tests/test_monitoring.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "record_assessment",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "initial absolute judgment must not overwrite prior versions/warnings",
+      "input_output": "versioned assessment payload -> ThesisAssessmentRead",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/monitoring_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "DB assessment, warning and export state"
+    },
+    {
+      "boundary": "fallback, queue and Telegram send ownership",
+      "current_caller": "daily monitor and monitor_daily job",
+      "existing_tests": [
+        "tests/test_notification_service.py"
+      ],
+      "file_exists": true,
+      "file_exists_at_m2": true,
+      "function": "queue_daily_stock_notification / dispatch_pending_notifications",
+      "function_tokens_present": true,
+      "function_tokens_present_at_m2": true,
+      "future_requirement": "prove idempotent delivery and keep experiment output detached",
+      "input_output": "assessment/delivery row -> channel dispatch receipt",
+      "inspection_status": "VERIFIED",
+      "m2_status": "VERIFIED",
+      "module": "app/services/notification_service.py",
+      "shared_or_experiment": "PRODUCTION_SHARED",
+      "side_effects": "notification DB state and external send when enabled"
+    }
+  ],
+  "status": "PASS",
+  "verified_count": 10
+}

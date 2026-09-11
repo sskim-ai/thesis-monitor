@@ -1,0 +1,60 @@
+{
+  "changed_count": 0,
+  "contract": "m7-compact-ai-context-non-leak-proof-v1",
+  "fixture_count": 5,
+  "fixtures": [
+    {
+      "fixture_id": "prior_year_projection",
+      "post_m7_compact_ai_context_sha256": "cd972beebc126e468127a0ec8038acbbbf791082222fb476c65588ee3fde1d52",
+      "pre_m7_compact_ai_context_sha256": "cd972beebc126e468127a0ec8038acbbbf791082222fb476c65588ee3fde1d52",
+      "projected_row_count": 6,
+      "semantic_input_unchanged": true,
+      "support_only_row_count": 5,
+      "support_rows_emitted_as_evidence": false,
+      "visible_evidence_ref_count": 1
+    },
+    {
+      "fixture_id": "derived_ocf_lineage",
+      "post_m7_compact_ai_context_sha256": "24e44f2bbacfcbf05899bca6a3f3e98212fdfb4ff4ea2654946ab86b23282b01",
+      "pre_m7_compact_ai_context_sha256": "24e44f2bbacfcbf05899bca6a3f3e98212fdfb4ff4ea2654946ab86b23282b01",
+      "projected_row_count": 2,
+      "semantic_input_unchanged": true,
+      "support_only_row_count": 1,
+      "support_rows_emitted_as_evidence": false,
+      "visible_evidence_ref_count": 1
+    },
+    {
+      "fixture_id": "derived_ppe_lineage",
+      "post_m7_compact_ai_context_sha256": "4dee06b53754cc472d888f8820fa34a41282b8f9768a7db1a3d49f804fd4cb32",
+      "pre_m7_compact_ai_context_sha256": "4dee06b53754cc472d888f8820fa34a41282b8f9768a7db1a3d49f804fd4cb32",
+      "projected_row_count": 2,
+      "semantic_input_unchanged": true,
+      "support_only_row_count": 1,
+      "support_rows_emitted_as_evidence": false,
+      "visible_evidence_ref_count": 1
+    },
+    {
+      "fixture_id": "derived_fcf_lineage",
+      "post_m7_compact_ai_context_sha256": "e3d542029b109b30466ce9fc7fbf8c200cff745d34bdc92527eade9bc9255510",
+      "pre_m7_compact_ai_context_sha256": "e3d542029b109b30466ce9fc7fbf8c200cff745d34bdc92527eade9bc9255510",
+      "projected_row_count": 5,
+      "semantic_input_unchanged": true,
+      "support_only_row_count": 4,
+      "support_rows_emitted_as_evidence": false,
+      "visible_evidence_ref_count": 1
+    },
+    {
+      "fixture_id": "kr_exact_period_synthetic_contract",
+      "post_m7_compact_ai_context_sha256": "a611772836807fab2a8a3009eb6d318258d30210e5749d7e01cd7cfecd316e9c",
+      "pre_m7_compact_ai_context_sha256": "a611772836807fab2a8a3009eb6d318258d30210e5749d7e01cd7cfecd316e9c",
+      "projected_row_count": 3,
+      "semantic_input_unchanged": true,
+      "support_only_row_count": 0,
+      "support_rows_emitted_as_evidence": false,
+      "visible_evidence_ref_count": 3
+    }
+  ],
+  "model_semantic_input_unchanged": true,
+  "support_row_leak_count": 0,
+  "unchanged_count": 5
+}

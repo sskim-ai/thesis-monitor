@@ -1,0 +1,225 @@
+{
+  "a_to_b_sequence": {
+    "a_last_completed_at": "2026-09-07T10:27:24.110484+00:00",
+    "a_pass_receipt_count": 8,
+    "a_terminal_receipt_count": 8,
+    "b_requested_invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+    "b_started_after_a_seconds": 0.317574,
+    "b_started_at": "2026-09-07T10:27:24.428058+00:00",
+    "status": "PASS_SEQUENTIAL_AFTER_A_COMPLETE"
+  },
+  "attempted_contexts": 17,
+  "contract": "first-a-b-c-execution-reconciliation-v1",
+  "core_attempts": 9,
+  "core_successes": 8,
+  "deterministic_composed_rows": 32,
+  "distinct_session_id_count": 17,
+  "expected_count_mismatches": {},
+  "failed_contexts": 1,
+  "receipts": [
+    {
+      "batch": "01",
+      "elapsed_to_exit_seconds": 214.238843,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:DIRECTIONAL_CORE:01",
+      "output_bytes": 15008,
+      "run": "a",
+      "session_id": "01a07b4d-01a0-7813-a6ab-f631a6ed8d24",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "02",
+      "elapsed_to_exit_seconds": 291.239514,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:DIRECTIONAL_CORE:02",
+      "output_bytes": 15889,
+      "run": "a",
+      "session_id": "01a07b50-4274-7193-b6f4-a941010e9399",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "03",
+      "elapsed_to_exit_seconds": 265.946703,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:DIRECTIONAL_CORE:03",
+      "output_bytes": 16003,
+      "run": "a",
+      "session_id": "01a07b54-b4b1-7a33-b9a3-a04961e32c5f",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "04",
+      "elapsed_to_exit_seconds": 228.575862,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:DIRECTIONAL_CORE:04",
+      "output_bytes": 14073,
+      "run": "a",
+      "session_id": "01a07b58-c411-7ff1-a876-f7b38257a24a",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "01",
+      "elapsed_to_exit_seconds": 222.786214,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:PRICE_TIMING:01",
+      "output_bytes": 6223,
+      "run": "a",
+      "session_id": "01a07b5c-445a-7dc1-a491-e38fab5291fc",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "02",
+      "elapsed_to_exit_seconds": 173.286903,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:PRICE_TIMING:02",
+      "output_bytes": 6098,
+      "run": "a",
+      "session_id": "01a07b5f-a855-7ff1-ab47-911115a23ab8",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "03",
+      "elapsed_to_exit_seconds": 232.251877,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:PRICE_TIMING:03",
+      "output_bytes": 6713,
+      "run": "a",
+      "session_id": "01a07b62-4df9-7eb0-8d2d-960f2cd1f5ce",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "04",
+      "elapsed_to_exit_seconds": 176.558921,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:a:PRICE_TIMING:04",
+      "output_bytes": 6342,
+      "run": "a",
+      "session_id": "01a07b65-da03-7ff0-88f6-7c66f66eafa4",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "01",
+      "elapsed_to_exit_seconds": 1800.056758,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:b:DIRECTIONAL_CORE:01",
+      "output_bytes": 0,
+      "run": "b",
+      "session_id": "01a07b68-9181-7061-8047-e7cd362985dd",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "TIMEOUT"
+    },
+    {
+      "batch": "01",
+      "elapsed_to_exit_seconds": 235.449649,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:DIRECTIONAL_CORE:01",
+      "output_bytes": 15722,
+      "run": "first",
+      "session_id": "01a07b32-f108-7363-82a0-ecbb8399e065",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "02",
+      "elapsed_to_exit_seconds": 269.346149,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:DIRECTIONAL_CORE:02",
+      "output_bytes": 15403,
+      "run": "first",
+      "session_id": "01a07b36-8716-7ad1-b3d2-215f78c9e751",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "03",
+      "elapsed_to_exit_seconds": 210.030811,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:DIRECTIONAL_CORE:03",
+      "output_bytes": 14347,
+      "run": "first",
+      "session_id": "01a07b3a-a405-7782-b57d-bfad85b92ec1",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "04",
+      "elapsed_to_exit_seconds": 239.492121,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:DIRECTIONAL_CORE:04",
+      "output_bytes": 13240,
+      "run": "first",
+      "session_id": "01a07b3d-d8f2-79d0-b955-9ae3b2dc02ca",
+      "stage": "DIRECTIONAL_CORE",
+      "status": "PASS"
+    },
+    {
+      "batch": "01",
+      "elapsed_to_exit_seconds": 158.67481,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:PRICE_TIMING:01",
+      "output_bytes": 6055,
+      "run": "first",
+      "session_id": "01a07b41-84c0-7e62-b653-bfd46d6f48e3",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "02",
+      "elapsed_to_exit_seconds": 159.992065,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:PRICE_TIMING:02",
+      "output_bytes": 6540,
+      "run": "first",
+      "session_id": "01a07b43-edb8-75d1-8aa3-2c1099600b1e",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "03",
+      "elapsed_to_exit_seconds": 212.598706,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:PRICE_TIMING:03",
+      "output_bytes": 6482,
+      "run": "first",
+      "session_id": "01a07b46-5f5a-72c1-9320-1e12b4cc0e0d",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    },
+    {
+      "batch": "04",
+      "elapsed_to_exit_seconds": 220.475096,
+      "invocation_id": "20260907-fresh-issuer-proof-20260907T090500Z-2fc43e587bfe:first:PRICE_TIMING:04",
+      "output_bytes": 6305,
+      "run": "first",
+      "session_id": "01a07b49-9e8f-7571-80a5-4f85460f0b4e",
+      "stage": "PRICE_TIMING",
+      "status": "PASS"
+    }
+  ],
+  "recorded_session_id_count": 17,
+  "rendered_message_rows": 32,
+  "runs": {
+    "A": "16/16",
+    "B": "FAILED_0/16",
+    "C": "NOT_RUN",
+    "FIRST": "16/16"
+  },
+  "status": "PASS",
+  "successful_output_contexts": 16,
+  "successful_raw_output_files": 16,
+  "successful_stage_rows": 64,
+  "terminal_receipts": 17,
+  "timing_attempts": 8,
+  "timing_successes": 8,
+  "unique_exposed_issuers": 16,
+  "unique_exposed_tickers": [
+    "001440",
+    "006910",
+    "023440",
+    "025000",
+    "043100",
+    "045340",
+    "064820",
+    "073490",
+    "130740",
+    "131030",
+    "288980",
+    "372910",
+    "LNG",
+    "NU",
+    "TCI",
+    "WMG"
+  ]
+}

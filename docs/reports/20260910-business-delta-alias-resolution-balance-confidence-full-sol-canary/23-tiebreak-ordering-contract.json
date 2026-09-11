@@ -1,0 +1,9 @@
+{
+  "direction": "toward 5.0",
+  "ordering": [
+    "evaluate current evidence strength",
+    "classify limits as confidence-only or direct challenge",
+    "apply tie-break only to genuine adjacent ambiguity"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,16 @@
+{
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+      "current_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+      "path": "app/services/direction_timing_ownership_service.py"
+    },
+    {
+      "base_sha256": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+      "current_sha256": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+      "path": "app/services/structured_autonomy_alias_service.py"
+    }
+  ],
+  "status": "PASS"
+}

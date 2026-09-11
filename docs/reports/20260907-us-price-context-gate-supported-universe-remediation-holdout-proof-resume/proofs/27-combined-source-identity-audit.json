@@ -1,0 +1,136 @@
+{
+  "contract": "combined-source-identity-audit-v1",
+  "duplicate_issuer_count": 0,
+  "prior_exposure_overlap_count": 0,
+  "rows": [
+    {
+      "canonical_issuer_key": "0001045810",
+      "company_name": "NVDA",
+      "market": "us",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "NVDA"
+    },
+    {
+      "canonical_issuer_key": "0000019617",
+      "company_name": "JPM",
+      "market": "us",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "JPM"
+    },
+    {
+      "canonical_issuer_key": "0000104169",
+      "company_name": "WMT",
+      "market": "us",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "WMT"
+    },
+    {
+      "canonical_issuer_key": "0001067983",
+      "company_name": "BRK-B",
+      "market": "us",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "BRK-B"
+    },
+    {
+      "canonical_issuer_key": "00879020",
+      "company_name": "유니트론텍",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "142210"
+    },
+    {
+      "canonical_issuer_key": "00367695",
+      "company_name": "에이전트AI",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "060900"
+    },
+    {
+      "canonical_issuer_key": "00140566",
+      "company_name": "한탑",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "002680"
+    },
+    {
+      "canonical_issuer_key": "00266961",
+      "company_name": "NAVER",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "035420"
+    },
+    {
+      "canonical_issuer_key": "00819073",
+      "company_name": "인크로스",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "216050"
+    },
+    {
+      "canonical_issuer_key": "00362201",
+      "company_name": "세운메디칼",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "100700"
+    },
+    {
+      "canonical_issuer_key": "00118345",
+      "company_name": "디아이동일",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "001530"
+    },
+    {
+      "canonical_issuer_key": "01565364",
+      "company_name": "폴레드",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "487580"
+    },
+    {
+      "canonical_issuer_key": "00287812",
+      "company_name": "에코심플렉스",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "038870"
+    },
+    {
+      "canonical_issuer_key": "01428948",
+      "company_name": "오아",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "342870"
+    },
+    {
+      "canonical_issuer_key": "00363510",
+      "company_name": "제이케이시냅스",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "060230"
+    },
+    {
+      "canonical_issuer_key": "01540815",
+      "company_name": "스튜디오삼익",
+      "market": "kr",
+      "previously_exposed": false,
+      "source_identity_valid": true,
+      "ticker": "415380"
+    }
+  ],
+  "status": "PASS"
+}

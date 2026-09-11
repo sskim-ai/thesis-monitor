@@ -1,0 +1,32 @@
+{
+  "contract": "m12r-directional-prompt-freeze-proof-v1",
+  "directional_prompt_change_count": 0,
+  "function_freeze": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "f50b5a6aac4017f232927c3ffba98759f7dca0f5b6f4fe50b7f3b35937260251",
+        "before_sha256": "f50b5a6aac4017f232927c3ffba98759f7dca0f5b6f4fe50b7f3b35937260251",
+        "changed": false,
+        "function": "_core_prompt"
+      }
+    ],
+    "path": "scripts/directional_core_price_timing_holdout.py",
+    "status": "PASS"
+  },
+  "normalized_model_input_rows": [
+    {
+      "after_normalized_sha256": "1499ea09fc767e53d83f8357545e219ca5f707a568831ce29c5c962e408c0fd1",
+      "before_normalized_sha256": "1499ea09fc767e53d83f8357545e219ca5f707a568831ce29c5c962e408c0fd1",
+      "changed": false,
+      "context": 1
+    },
+    {
+      "after_normalized_sha256": "b34dfb2ac1b095ee9ca7f735d7fbdec8d41706a21570ea531b60937a4afdd4c7",
+      "before_normalized_sha256": "b34dfb2ac1b095ee9ca7f735d7fbdec8d41706a21570ea531b60937a4afdd4c7",
+      "changed": false,
+      "context": 2
+    }
+  ],
+  "status": "PASS"
+}

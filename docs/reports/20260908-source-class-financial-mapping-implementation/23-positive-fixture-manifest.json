@@ -1,0 +1,23 @@
+{
+  "cases": [
+    "mixed_scope_axis_consolidated_member_parsing",
+    "mixed_scope_axis_separate_member_parsing",
+    "exact_kr_ocf_context_promotion",
+    "exact_kr_ppe_context_promotion",
+    "cfs_precedence_over_ofs",
+    "direct_reported_fact_identity",
+    "existing_m6_m7_downstream_projection",
+    "idempotent_repeated_promotion",
+    "foreign_ifrs_20f_ocf",
+    "foreign_ifrs_20f_ppe",
+    "tsm_repository_source_standard_example",
+    "wrd_repository_source_standard_example",
+    "compact_ai_context_non_leak",
+    "seven_real_kr_cache_replays"
+  ],
+  "contract": "m8-positive-fixture-manifest-v1",
+  "fixture_count": 14,
+  "pass_count": 14,
+  "repository_evidence_case_count": 4,
+  "synthetic_fixture_count": 10
+}

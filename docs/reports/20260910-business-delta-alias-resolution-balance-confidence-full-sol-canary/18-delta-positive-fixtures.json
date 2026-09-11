@@ -1,0 +1,145 @@
+{
+  "rows": [
+    {
+      "alias": "E01",
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "canonical:fix:operating-improvement",
+            "selected_ref": "canonical:fix:operating-improvement",
+            "statement": "Comparable-period operating performance improved.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "canonical:fix:operating-improvement"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "candidate_ref": "canonical:fix:operating-improvement",
+      "expected": "PASS",
+      "id": "DELTA-POS-01",
+      "observed": "STRENGTHENED",
+      "observed_status": "PASS",
+      "statement": "Comparable-period operating performance improved.",
+      "status": "PASS",
+      "ticker": "FIX-POS-01"
+    },
+    {
+      "alias": "E01",
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "canonical:fix:ocf-deterioration",
+            "selected_ref": "canonical:fix:ocf-deterioration",
+            "statement": "Operating cash flow is lower than the prior-year comparable period.",
+            "supported_directions": [
+              "WEAKENED"
+            ]
+          }
+        ],
+        "observed": "WEAKENED",
+        "selected_refs": [
+          "canonical:fix:ocf-deterioration"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "WEAKENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "candidate_ref": "canonical:fix:ocf-deterioration",
+      "expected": "PASS",
+      "id": "DELTA-POS-02",
+      "observed": "WEAKENED",
+      "observed_status": "PASS",
+      "statement": "Operating cash flow is lower than the prior-year comparable period.",
+      "status": "PASS",
+      "ticker": "FIX-POS-02"
+    },
+    {
+      "alias": "E01",
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "canonical:fix:recent-rebound",
+            "selected_ref": "canonical:fix:recent-rebound",
+            "statement": "A recent operating rebound is visible versus the prior state.",
+            "supported_directions": [
+              "STRENGTHENED"
+            ]
+          }
+        ],
+        "observed": "STRENGTHENED",
+        "selected_refs": [
+          "canonical:fix:recent-rebound"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [
+          "STRENGTHENED"
+        ],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "candidate_ref": "canonical:fix:recent-rebound",
+      "expected": "PASS",
+      "id": "DELTA-POS-03",
+      "observed": "STRENGTHENED",
+      "observed_status": "PASS",
+      "statement": "A recent operating rebound is visible versus the prior state.",
+      "status": "PASS",
+      "ticker": "FIX-POS-03"
+    },
+    {
+      "alias": "E01",
+      "audit": {
+        "alias_resolution_failure_count": 0,
+        "errors": [],
+        "frozen_target": null,
+        "linked_evidence": [
+          {
+            "alias": "E01",
+            "canonical_ref": "canonical:fix:flat-state",
+            "selected_ref": "canonical:fix:flat-state",
+            "statement": "Current operating performance is broadly flat.",
+            "supported_directions": []
+          }
+        ],
+        "observed": "UNCHANGED",
+        "selected_refs": [
+          "canonical:fix:flat-state"
+        ],
+        "status": "PASS",
+        "supported_change_directions": [],
+        "unsupported_absolute_state_to_delta_count": 0
+      },
+      "candidate_ref": "canonical:fix:flat-state",
+      "expected": "PASS",
+      "id": "DELTA-POS-04",
+      "observed": "UNCHANGED",
+      "observed_status": "PASS",
+      "statement": "Current operating performance is broadly flat.",
+      "status": "PASS",
+      "ticker": "FIX-POS-04"
+    }
+  ],
+  "status": "PASS"
+}

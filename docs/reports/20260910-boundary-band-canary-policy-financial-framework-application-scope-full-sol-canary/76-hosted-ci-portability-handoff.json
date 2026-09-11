@@ -1,0 +1,21 @@
+{
+  "classification": "KNOWN_HISTORICAL_CI_PORTABILITY_FAILURES",
+  "contract": "m12aa-hosted-ci-observation-v1",
+  "failed": 5,
+  "head_sha": "d29b96a21ff2146bb1a446a2a60ce8e076f5fce9",
+  "historical_portability_failure_count": 5,
+  "lint_executed": false,
+  "new_m12aa_failure_count": 0,
+  "observed_failures": [
+    "test_historical_transport_prompt_is_exact_prior_text",
+    "test_full_offline_replay_closes_exclusion_without_rewriting_history",
+    "test_frozen_semantic_surfaces_remain_unchanged",
+    "test_authoritative_m12a_bundle_remains_integrity_clean",
+    "test_m12c_genericity_and_validator_scope_are_bounded"
+  ],
+  "passed": 3314,
+  "run_id": 34447250960,
+  "run_url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34447250960",
+  "skipped": 1,
+  "status": "FAIL_HISTORICAL_PORTABILITY_ONLY"
+}

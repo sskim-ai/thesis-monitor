@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "raw_receipt_log_prompt_schema_output_hash_mismatches": [],
+  "historical_M12E_M12F_extracted_byte_mismatches": [],
+  "code_file_count": 664,
+  "config_file_count": 6,
+  "post_generation_code_config_drift": [],
+  "required_report_count": 62,
+  "observed_raw_schema_source": "Frozen runner scope checks and DirectionalCoreCandidate/Batch Pydantic validation; 8 rows",
+  "additional_jsonschema_library_check": "NOT_RUN: jsonschema not installed in selected local Python; no dependency/environment change made",
+  "optional_workspace_dependency_lookup": "Stopped after no response; no model call or canary process was stopped",
+  "final_git_diff_check": "PASS",
+  "orphan_count": 0,
+  "original_failed_run_document_preserved": true,
+  "source_packet_refetches": 0
+}

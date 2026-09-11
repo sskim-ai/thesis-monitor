@@ -1,0 +1,11 @@
+{
+  "contract": "m12s-preferred-next-repair-decision-v1",
+  "reason": "three adjacent-bucket cases include the sole formal UNSTABLE direction threshold crossing; core direction/balance stability precedes stance repair",
+  "rejected": {
+    "COMBINED_DIRECTIONAL_STANCE_CALIBRATION_REPAIR": "buyer and holder ambiguities are not one coupled cause",
+    "FORMAL_STABILITY_CLASSIFIER_REPAIR": "classifier correctly detected output instability",
+    "TRUE_FINANCIAL_INTERPRETATION_VARIANCE_REPAIR": "no material economic interpretation delta"
+  },
+  "selected": "BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR",
+  "status": "FROZEN"
+}

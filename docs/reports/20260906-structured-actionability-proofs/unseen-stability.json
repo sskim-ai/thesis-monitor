@@ -1,0 +1,10 @@
+{
+  "boundary_uncertainty_count": "NOT_MEASURED",
+  "contract": "unseen-stability-v1",
+  "majority_vote": 0,
+  "reason": "UNSEEN_COLDSTART_NOT_EXECUTABLE_SOURCE_COVERAGE",
+  "stable_count": "NOT_MEASURED",
+  "status": "NOT_MEASURED",
+  "unseen_generation_id": "20260906-unseen-action-coldstart-20260906T031722Z-e7085b421624",
+  "unstable_count": "NOT_MEASURED"
+}

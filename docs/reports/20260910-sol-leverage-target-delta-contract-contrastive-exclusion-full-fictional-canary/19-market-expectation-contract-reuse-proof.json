@@ -1,0 +1,8 @@
+{
+  "status": "FROZEN_UNCHANGED",
+  "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+  "evidence_ref": "E07",
+  "independent_negative_axis": false,
+  "contract_change_count": 0,
+  "target_6_0_does_not_depend_on_e07": true
+}

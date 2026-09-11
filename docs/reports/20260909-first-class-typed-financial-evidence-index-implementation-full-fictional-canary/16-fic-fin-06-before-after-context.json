@@ -1,0 +1,377 @@
+{
+  "after": {
+    "assessment_date": "2026-09-09",
+    "company_name": "Fictional Financial Case 06",
+    "evidence": [
+      {
+        "alias": "E01",
+        "as_of": "2026-09-09",
+        "category": "risks",
+        "domain": "STRUCTURAL_RISK",
+        "label": "structural-risk",
+        "metric_refs": [],
+        "statement": "Inventory and trade receivables have risen since year-end.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E02",
+        "as_of": "2026-09-09",
+        "category": "expectations",
+        "domain": "MARKET_EXPECTATIONS",
+        "label": "market-expectation",
+        "metric_refs": [],
+        "statement": "Expectations assume balance growth converts into billed demand and cash.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E03",
+        "as_of": "2026-06-30",
+        "category": "earnings_quality",
+        "domain": "SECTOR_OPERATING_CURRENT",
+        "evidence_kind": "TYPED_FINANCIAL",
+        "financial_semantics": {
+          "comparison_kind": "prior_year_end",
+          "evidence_status": "DIRECT_REPORTED",
+          "metric": "trade_accounts_receivable",
+          "period_type": "POINT_IN_TIME",
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL"
+        },
+        "label": "trade_accounts_receivable",
+        "metric_refs": [],
+        "statement": "Reported trade accounts receivable balance as of 2026-06-30 is higher than the prior year-end balance.",
+        "unit": null,
+        "value": "260"
+      },
+      {
+        "alias": "E04",
+        "as_of": "2026-06-30",
+        "category": "earnings_quality",
+        "domain": "SECTOR_OPERATING_CURRENT",
+        "evidence_kind": "TYPED_FINANCIAL",
+        "financial_semantics": {
+          "comparison_kind": "prior_year_end",
+          "evidence_status": "DIRECT_REPORTED",
+          "metric": "inventory",
+          "period_type": "POINT_IN_TIME",
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL"
+        },
+        "label": "inventory",
+        "metric_refs": [],
+        "statement": "Reported inventory balance as of 2026-06-30 is higher than the prior year-end balance.",
+        "unit": null,
+        "value": "300"
+      },
+      {
+        "alias": "E05",
+        "as_of": "2026-09-09",
+        "category": "valuation",
+        "domain": "VALUATION_SAFE",
+        "label": "valuation-limit",
+        "metric_refs": [],
+        "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E06",
+        "as_of": "2026-09-09",
+        "category": "thesis",
+        "domain": "BUSINESS_CURRENT",
+        "label": "business-thesis",
+        "metric_refs": [],
+        "statement": "Sales growth is intact, with working-capital quality needing confirmation.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E07",
+        "as_of": "2026-09-09",
+        "category": "unknown",
+        "domain": "DATA_QUALITY_LIMIT",
+        "label": "remaining-unknown",
+        "metric_refs": [],
+        "statement": "Demand quality and collection timing are not established by balances alone.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E08",
+        "as_of": "2026-09-09",
+        "category": "earnings_quality",
+        "domain": "SECTOR_OPERATING_CURRENT",
+        "label": "sector-context",
+        "metric_refs": [],
+        "statement": "Inventory and receivables are confirmation points, not automatic negatives.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E09",
+        "as_of": "2026-09-09",
+        "category": "earnings",
+        "domain": "EARNINGS_FINANCIAL_CURRENT",
+        "label": "operating-evidence",
+        "metric_refs": [],
+        "statement": "Sales and operating profit increased in the latest comparable period.",
+        "unit": null,
+        "value": null
+      }
+    ],
+    "financial_decision_context": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 4,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "180",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "E04",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "inventory",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+          "unit_scale": 1000000,
+          "value": "300"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "150",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "E03",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "trade_accounts_receivable",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+          "unit_scale": 1000000,
+          "value": "260"
+        }
+      ],
+      "limitations": [],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 2,
+      "unavailable_or_not_applicable": []
+    },
+    "market": "us",
+    "ticker": "FIC-FIN-06"
+  },
+  "before": {
+    "assessment_date": "2026-09-09",
+    "company_name": "Fictional Financial Case 06",
+    "evidence": [
+      {
+        "alias": "E01",
+        "as_of": "2026-09-09",
+        "category": "risks",
+        "domain": "STRUCTURAL_RISK",
+        "label": "structural-risk",
+        "metric_refs": [],
+        "statement": "Inventory and trade receivables have risen since year-end.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E02",
+        "as_of": "2026-09-09",
+        "category": "expectations",
+        "domain": "MARKET_EXPECTATIONS",
+        "label": "market-expectation",
+        "metric_refs": [],
+        "statement": "Expectations assume balance growth converts into billed demand and cash.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E05",
+        "as_of": "2026-09-09",
+        "category": "valuation",
+        "domain": "VALUATION_SAFE",
+        "label": "valuation-limit",
+        "metric_refs": [],
+        "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E06",
+        "as_of": "2026-09-09",
+        "category": "thesis",
+        "domain": "BUSINESS_CURRENT",
+        "label": "business-thesis",
+        "metric_refs": [],
+        "statement": "Sales growth is intact, with working-capital quality needing confirmation.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E07",
+        "as_of": "2026-09-09",
+        "category": "unknown",
+        "domain": "DATA_QUALITY_LIMIT",
+        "label": "remaining-unknown",
+        "metric_refs": [],
+        "statement": "Demand quality and collection timing are not established by balances alone.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E08",
+        "as_of": "2026-09-09",
+        "category": "earnings_quality",
+        "domain": "SECTOR_OPERATING_CURRENT",
+        "label": "sector-context",
+        "metric_refs": [],
+        "statement": "Inventory and receivables are confirmation points, not automatic negatives.",
+        "unit": null,
+        "value": null
+      },
+      {
+        "alias": "E09",
+        "as_of": "2026-09-09",
+        "category": "earnings",
+        "domain": "EARNINGS_FINANCIAL_CURRENT",
+        "label": "operating-evidence",
+        "metric_refs": [],
+        "statement": "Sales and operating profit increased in the latest comparable period.",
+        "unit": null,
+        "value": null
+      }
+    ],
+    "financial_decision_context": {
+      "contract": "directional-financial-decision-context-v1",
+      "eligible_input_count": 4,
+      "evidence_items": [
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "180",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:inventory-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "E04",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "inventory",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:inventory-current",
+          "unit_scale": 1000000,
+          "value": "300"
+        },
+        {
+          "comparison": {
+            "comparison_period": {
+              "duration_days": null,
+              "end": "2025-12-31",
+              "start": null,
+              "type": "POINT_IN_TIME"
+            },
+            "comparison_value": "150",
+            "input_source_refs": [
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+              "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-prior"
+            ],
+            "kind": "prior_year_end"
+          },
+          "currency": "USD",
+          "derivation_formula": null,
+          "derivation_input_source_refs": [],
+          "evidence_id": "E03",
+          "evidence_status": "DIRECT_REPORTED",
+          "limitations": [],
+          "metric": "trade_accounts_receivable",
+          "period": {
+            "duration_days": null,
+            "end": "2026-06-30",
+            "start": null,
+            "type": "POINT_IN_TIME"
+          },
+          "quality": "verified",
+          "semantic_category": "WORKING_CAPITAL",
+          "source_ref": "stock.fact_catalog.fictional:FIC-FIN-06:trade-receivables-current",
+          "unit_scale": 1000000,
+          "value": "260"
+        }
+      ],
+      "limitations": [],
+      "sector_framework": "standard_operating_company",
+      "selected_input_count": 2,
+      "selected_item_cap": 8,
+      "suppressed_input_count": 2,
+      "unavailable_or_not_applicable": []
+    },
+    "market": "us",
+    "ticker": "FIC-FIN-06"
+  },
+  "contract": "m12b-fic-fin-06-before-after-v1",
+  "narrative_aliases_retained": true,
+  "required_aliases_present": true,
+  "status": "PASS",
+  "ticker": "FIC-FIN-06"
+}

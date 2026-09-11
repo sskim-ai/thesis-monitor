@@ -1,0 +1,13 @@
+{
+  "actual_m5_final_head": "29fb88be197c50b0da0eead886c89f27e823d3b4",
+  "actual_m5_report_commit_if_identifiable": "29fb88be197c50b0da0eead886c89f27e823d3b4",
+  "base_sha": "29fb88be197c50b0da0eead886c89f27e823d3b4",
+  "branch": "codex/20260908-existing-canonical-financial-domain-adapter-implementation",
+  "contract": "m6-repository-provenance-v1",
+  "evidence_generation_head": "bcad2ae16836a12ff208a110856575931bfbeb08",
+  "historical_precommit_reporting_state": "M5_REPORTED_FINAL_SHA_NOT_MEASURED",
+  "implementation_commit": "bcad2ae16836a12ff208a110856575931bfbeb08",
+  "work_instruction_commit": "35da4e7f1dd57194c3f5f6532ff91a13994f2448",
+  "work_instruction_sha256": "915af36a7dcb407c4837fecc903d201387eeea5e0706370d0252b6ffcf0580e8",
+  "work_instruction_zip_sha256": "b5b280f71988cc0efe59e94d59a99357efbb4ea6b3f0dfc3fc8259c539ab9b28"
+}

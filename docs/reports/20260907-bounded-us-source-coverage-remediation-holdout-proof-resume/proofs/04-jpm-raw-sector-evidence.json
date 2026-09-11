@@ -1,0 +1,47 @@
+{
+  "contract": "us-bank-insurer-raw-sector-evidence-v1",
+  "current_period_suitability": "PASS",
+  "payload_sha256": "446944cc53bbe032ec5fef84994ee9353d619e3b94026a053ba6dbdb515b472a",
+  "raw_occurrences": [
+    {
+      "accession_number": "0001628280-26-008131",
+      "concept": "InterestIncomeExpenseNet",
+      "duration_days": 364,
+      "filing_date": "2026-02-13",
+      "fiscal_period": "FY",
+      "fiscal_year": 2025,
+      "form": "10-K",
+      "frame": "CY2025",
+      "label": "Interest Income (Expense), Net",
+      "period_end": "2025-12-31",
+      "period_start": "2025-01-01",
+      "taxonomy": "us-gaap",
+      "unit": "USD",
+      "value": 95443000000
+    },
+    {
+      "accession_number": "0001628280-26-008131",
+      "concept": "NoninterestIncome",
+      "duration_days": 364,
+      "filing_date": "2026-02-13",
+      "fiscal_period": "FY",
+      "fiscal_year": 2025,
+      "form": "10-K",
+      "frame": "CY2025",
+      "label": "Noninterest Income",
+      "period_end": "2025-12-31",
+      "period_start": "2025-01-01",
+      "taxonomy": "us-gaap",
+      "unit": "USD",
+      "value": 87004000000
+    }
+  ],
+  "selected_financial_currency": "USD",
+  "selected_financial_filing_date": "2026-02-13",
+  "selected_financial_period": "2025-FY",
+  "selected_financial_period_end": "2025-12-31",
+  "standard_taxonomy_only": 1,
+  "status": "PASS",
+  "subframework": "bank",
+  "ticker": "JPM"
+}

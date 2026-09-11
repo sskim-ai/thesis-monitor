@@ -1,0 +1,21 @@
+{
+  "contract": "financial-domain-materiality-v1-design",
+  "fixed_score": false,
+  "material_when_may_change": [
+    "investment thesis strength",
+    "earnings quality",
+    "financial resilience",
+    "valuation interpretation without creating valuation evidence",
+    "warning or invalidation logic"
+  ],
+  "missing_is_negative": false,
+  "selection": "select only decision-relevant domains; no mention-all requirement",
+  "states": [
+    "MATERIAL",
+    "SUPPORTIVE",
+    "CONTEXT_ONLY",
+    "NOT_APPLICABLE",
+    "UNAVAILABLE"
+  ],
+  "status": "FROZEN_DESIGN"
+}

@@ -1,0 +1,12 @@
+{
+  "input_validation": [
+    "sum 10",
+    "0.5 increments",
+    "range 0..10",
+    "direction consistent",
+    "hold lean consistent"
+  ],
+  "malformed_repair": false,
+  "mapper": "derive_directional_threshold_zone",
+  "status": "PASS"
+}

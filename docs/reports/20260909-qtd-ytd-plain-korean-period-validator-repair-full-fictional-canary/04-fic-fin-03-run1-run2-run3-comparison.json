@@ -1,0 +1,42 @@
+{
+  "contract": "m12d-fic-fin-03-preserved-comparison-v1",
+  "rows": [
+    {
+      "explicit_claim_count": 4,
+      "label": "M12R historical",
+      "linked_claim_count": 7,
+      "source": "docs/reports/20260909-bounded-directional-financial-context-validator-repair-full-fictional-canary/08-historical-raw-output-regression.json",
+      "status": "PASS",
+      "text": "분기 흑자는 긍정적이지만 누적 손실과 지속성 미확인이 맞서 방향 근거가 균형적이다."
+    },
+    {
+      "explicit_claim_count": 2,
+      "label": "M12C run-1 context-01",
+      "linked_claim_count": 5,
+      "source": "docs/reports/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/34-run-1-context-01.json",
+      "status": "PASS",
+      "text": "최근 분기 영업흑자와 누적 영업손실이 공존해 어느 방향도 충분히 우세하지 않다."
+    },
+    {
+      "explicit_claim_count": 3,
+      "label": "M12C run-2 context-01",
+      "linked_claim_count": 8,
+      "source": "docs/reports/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/36-run-2-context-01.json",
+      "status": "PASS",
+      "text": "최근 분기 흑자는 긍정적 앵커지만 연초 이후 누적 영업손실과 충돌해 약한 긍정 기울기에 그친다."
+    },
+    {
+      "errors": [
+        "qtd_ytd_conflict_not_explicit"
+      ],
+      "explicit_claim_count": 0,
+      "label": "M12C run-3 context-01",
+      "linked_claim_count": 7,
+      "source": "docs/reports/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/38-run-3-context-01.json",
+      "status": "FAIL",
+      "text": "분기 영업흑자와 누적 영업손실이 상충해 어느 방향의 충분성도 확보되지 않았다."
+    }
+  ],
+  "source_outputs_modified": false,
+  "status": "FROZEN"
+}

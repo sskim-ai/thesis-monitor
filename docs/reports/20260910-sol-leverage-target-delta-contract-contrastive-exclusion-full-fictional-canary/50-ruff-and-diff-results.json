@@ -1,0 +1,33 @@
+{
+  "diff": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "0651fe2387049c27b81e273260b99e8cfe7e9b5d"
+    ],
+    "finished_at": "2026-09-10T04:27:07.853266+00:00",
+    "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/diff.txt",
+    "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "returncode": 0,
+    "started_at": "2026-09-10T04:27:07.831750+00:00",
+    "status": "PASS",
+    "timed_out": false
+  },
+  "ruff": {
+    "command": [
+      "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/ruff",
+      "check",
+      "app",
+      "scripts",
+      "tests"
+    ],
+    "finished_at": "2026-09-10T04:27:07.831686+00:00",
+    "output_path": "artifacts/20260910-sol-leverage-target-delta-contract-contrastive-exclusion-full-fictional-canary/validation/ruff.txt",
+    "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "returncode": 0,
+    "started_at": "2026-09-10T04:27:07.817841+00:00",
+    "status": "PASS",
+    "timed_out": false
+  }
+}

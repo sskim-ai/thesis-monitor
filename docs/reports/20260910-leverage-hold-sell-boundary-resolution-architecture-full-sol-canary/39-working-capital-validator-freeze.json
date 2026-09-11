@@ -1,0 +1,12 @@
+{
+  "rows": [
+    {
+      "base_sha256": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+      "changed": false,
+      "current_sha256": "e8e9b8c05d68b66a1e13746fbe4f8dcc534c5e3229381da4e0b69b85f444b1a6",
+      "path": "scripts/materiality_scoped_working_capital_grounding_m12c.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

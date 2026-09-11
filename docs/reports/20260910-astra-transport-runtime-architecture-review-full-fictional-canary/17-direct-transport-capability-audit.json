@@ -1,0 +1,4 @@
+{
+  "reason": "Existing InvestmentNarrativeGenerator uses API-key Responses HTTP, low effort and narrative fallback, not the same signed-in account/entitlement/schema path. No supported direct Astra/xhigh saved-account transport is established. No credentials copied or API integration added.",
+  "status": "UNSUPPORTED"
+}

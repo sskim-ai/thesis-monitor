@@ -1,0 +1,53 @@
+{
+  "canonical_fact_counts": {
+    "operating_cash_flow": 33
+  },
+  "classification": "SOURCE_EVIDENCE_INSUFFICIENT",
+  "contract": "m8-hut-historical-gap-diagnostic-v1",
+  "decision": "HUT_GAP_DEFERRED_NO_TICKER_EXCEPTION",
+  "generic_rule_id": null,
+  "historical_example": "HUT",
+  "new_alias_or_taxonomy_mapping_count": 0,
+  "phase9_status": {
+    "capex_ppe": {
+      "fact_id": null,
+      "reason": "missing_ppe_capex",
+      "status": "BLOCKED"
+    },
+    "fcf": {
+      "fact_id": null,
+      "reason": "compatible_ocf_capex_pair_missing",
+      "status": "BLOCKED"
+    },
+    "ocf": {
+      "fact_id": "cashflow-reported:d046f43a5cbb928c6aa1fdd1",
+      "reason": "official_occurrence_canonicalized",
+      "status": "ELIGIBLE"
+    }
+  },
+  "reported_source_cache_currently_present": false,
+  "reported_source_cache_path": "/private/tmp/thesis-phase9-sec/CIK0001964789.json",
+  "resolved_by_generic_rule": false,
+  "source_audit": {
+    "canonical_reported_facts": 18,
+    "derivation_fiscal_year_lookback": 2,
+    "derivation_window_reported_facts": 18,
+    "derived_fcf_facts": 0,
+    "derived_period_facts": 15,
+    "exact_duplicates_suppressed": 0,
+    "extracted_occurrences": 26,
+    "source_conflicts": 0,
+    "source_denials": [
+      {
+        "reason": "period_context_unresolved",
+        "source_occurrence_id": "sec-occurrence:8aecb5089d870f917675cf50",
+        "source_semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+      },
+      {
+        "reason": "period_context_unresolved",
+        "source_occurrence_id": "sec-occurrence:8137a097c15aacad0665a7fa",
+        "source_semantic": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+      }
+    ]
+  }
+}

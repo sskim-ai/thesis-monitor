@@ -1,0 +1,37 @@
+[
+  {
+    "function": "first_class_typed_financial_evidence_m12b.run_canary",
+    "layer": "canary",
+    "role": "ordered 2 contexts x3; stop on runtime/semantic/target failure"
+  },
+  {
+    "function": "directional_financial_context_m12._single_attempt_model_call",
+    "layer": "prior adapter",
+    "role": "one subprocess; merged regular-file stdout/stderr; no readers; absolute wait1800"
+  },
+  {
+    "function": "astra_runtime_adapter_m12v.single_attempt",
+    "layer": "M12V adapter",
+    "role": "same CLI arguments and isolation; delegates existing lifecycle with2400; no retries"
+  },
+  {
+    "function": "prepare_codex_runtime_state / CodexRuntimeIsolationRegistry.claim",
+    "layer": "namespace",
+    "role": "unique namespace/workdir; existing saved-auth reference; WAL/isolation audits"
+  },
+  {
+    "function": "codex exec v0.153.4",
+    "layer": "CLI",
+    "role": "openai Astra/xhigh; internal retry owner; session header observable; backend progress not established"
+  },
+  {
+    "function": "invoke_instrumented_codex",
+    "layer": "lifecycle",
+    "role": "raw stdout/stderr readers; one monotonic deadline; groupTERM/KILL; cleanup and parse receipts"
+  },
+  {
+    "function": "existing M12U grounding/calibration/formal classifier",
+    "layer": "semantics",
+    "role": "unchanged facts, prompts, schemas, thresholds and stop logic"
+  }
+]

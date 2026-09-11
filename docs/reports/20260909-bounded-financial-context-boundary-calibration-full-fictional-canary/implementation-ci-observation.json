@@ -1,0 +1,32 @@
+{
+  "head_sha": "44ce3a5894a4cf1086cb9b0c21c9f5d5b8dac630",
+  "url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34360935376",
+  "result": "FAIL",
+  "pytest": {
+    "passed": 3118,
+    "failed": 5
+  },
+  "lint": "SKIPPED_AFTER_TEST_FAILURE",
+  "causes": [
+    {
+      "count": 4,
+      "reason": "actions/checkout shallow history does not contain git show baselines",
+      "tests": [
+        "test_calibration_preserves_nonprompt_code_and_other_owners",
+        "test_historical_transport_prompt_is_exact_prior_text",
+        "test_frozen_semantic_surfaces_remain_unchanged",
+        "test_m12c_genericity_and_validator_scope_are_bounded"
+      ]
+    },
+    {
+      "count": 1,
+      "reason": "Historical M12A artifact ZIP is only at local macOS absolute path, absent on hosted Linux",
+      "test": "test_authoritative_m12a_bundle_remains_integrity_clean"
+    }
+  ],
+  "preexisting_failures": 3,
+  "new_m12e_history_dependent_failures": 2,
+  "local_full_test_pass": 3123,
+  "ci_pass_claim": false,
+  "ci_repair_in_this_frozen_generation": 0
+}

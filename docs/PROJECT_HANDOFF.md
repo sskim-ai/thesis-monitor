@@ -1,5 +1,69 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-10 M12W Nonproduction Closeout
+
+M12W: M12W_CANARY_FAIL. Read `docs/reports/20260910-m12w-completion.md` and
+`docs/reports/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/69-program-completion.json`.
+Work instruction `e8441e0543054534566e99c19fbdcd6c0722462c`; frozen implementation
+`538cb761e1c10754cd74dd66b22d3e2f803561ac`. The proof-critical runtime was restored to
+`gpt-5.6-sol / xhigh`, 1800 seconds, four subjects/context, no wrapper retry or fallback.
+M12U semantics, targets, fictional source, prompt and schema stayed frozen.
+
+Generation `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`, source lock
+`ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa`, stopped after
+the first context. Transport returned a parsed 4-row output in 407.720583s with Sol/xhigh
+identity and timeout/capacity/internal retry/wrapper retry/orphan all zero. FIC-FIN-01 failed the
+frozen ordinal target: expected BUY 6.0, observed 6.5. FIC-FIN-02/03/04 passed; five later
+contexts are NOT_RUN. Do not resume, selectively rerun, stitch, hotfix or change thresholds in
+this generation. Full core/formal/stance/delta stability remains NOT_MEASURED.
+
+Local focused/full 260/3255 PASS, Ruff/diff PASS. Hosted CI is 3250 PASS with the same five
+historical portability failures and zero new M12W failures. Eight schedules remain PAUSED;
+real/judge/provider calls, sends, persistence, merge and deployment are zero. Fresh real and
+production remain NOT_READY. Next scope: `BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`.
+
+The M12V and older sections below are historical and are not execution authorization.
+
+## 2026-09-10 M12V Nonproduction Closeout
+
+M12V: M12V_RUNTIME_PROOF_FAIL. Read `docs/reports/20260910-m12v-completion.md` and
+`docs/reports/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/86-program-completion.json`.
+Instruction f1da357, architecture 2e50558, implementation 46ec85c were committed before execution.
+The single selected experiment increased the finite watchdog from 1800 to 2400 seconds,
+reusing the existing lifecycle observer in an archive-only adapter. No existing app/runtime
+file or M12U semantic/source/prompt/schema contract changed. Wrapper retry 0, four subjects/context.
+Generation `20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8` stopped after its first call:
+2400.062226s to watchdog exit, no stdout/final output, logged CLI retry 0, wrapper retry 0,
+orphan 0. Five later contexts NOT_RUN. All 679 frozen code/contract hashes remain unchanged.
+Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. Do not retry or resume this generation.
+Local focused/full 243/3238 PASS; implementation hosted CI 3233 PASS/5 old portability FAIL,
+new M12V failures 0. Eight schedules remain PAUSED; production/main/deployment changes 0.
+Fresh real and production NOT_READY. Next scope: ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW.
+The failed sufficiency hypothesis is finite 2400-second tail tolerance, not a proven backend cause.
+Further execution, timeout increases, retries, context splitting or real issuers require a new task scope.
+
+The M12U and older sections below are historical; their next actions are not current authorization.
+
+## 2026-09-10 M12U Nonproduction Closeout
+
+M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.
+
+The M12T and older sections below are historical. They do not authorize retries or production resumption.
+
+## 2026-09-10 M12T Nonproduction Closeout
+
+M12T: PARTIAL_STOPPED. Read `docs/reports/20260910-m12t-completion.md` and
+`docs/reports/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/62-program-completion.json`.
+Frozen implementation: `695464f2b122bfe6e5378476b066cd945415eb61`.
+Transport returned 2/2 in 321.70s/331.91s with timeout/internal retry/wrapper retry 0.
+New generation emitted 8 schema-valid rows, but final acceptance was 6/8: FIC-FIN-08
+explicit non-applicability false reject and FIC-FIN-05 frozen 5.5/6.0 leverage boundary violation.
+Remaining four contexts were NOT_RUN; full stability is NOT_MEASURED.
+Next: bounded generic exclusion-scope repair and full-source leverage/market-expectation
+independence review, no current-generation hotfix or retry. CI retains the same five portability
+failures; new M12T failures 0. Fresh real and production NOT_READY. Eight schedules remain PAUSED.
+This nonproduction state does not supersede or deploy changes to the historical live implementation.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and
@@ -2572,3 +2636,25 @@ Observe the next ordinary KR and US cycles read-only. Do not replay Run-57, manu
 Scheduled Task, resend production, expose recipient values, or treat TEST evidence as natural
 proof. Structured Autonomy may resume as a separate shadow/promotion program; production mutation
 remains zero and Production Assist remains OFF.
+
+## 2026-09-10 M12X Positive Stronger-Bucket Handoff
+
+Start with `docs/reports/20260910-m12x-completion.md`, then read reports 46, 47, 53, 54, 60,
+69, 73, and 75 in the M12X report directory. The exact work-instruction commit is
+`239b799a1361b8ad8168aef2310f03eaf8fc641e`; implementation/runtime identity commit is
+`7b1407eab18182defc3bafc261064008a65e20c1`.
+
+The contract review closed FIC-FIN-01 at `BUY 6.5`: the previous exact 6.0 fixture target was
+over-constrained. Production Directional semantics, prompt, thresholds, tie-breaks, evidence
+selection, and financial validators were not changed. In the new frozen Sol/xhigh generation,
+run-1 context-01 passed 4/4 and FIC-FIN-01 reproduced 6.5. Run-1 context-02 returned a complete,
+transport-valid output but failed at FIC-FIN-05 (`BUY 4.0` versus frozen 4.5) and FIC-FIN-08
+(insurance exclusion wording flagged as net-debt/generic-financial reasoning). The runner stopped
+after 2/6 calls; four contexts were never attempted. No rerun or hotfix occurred.
+
+Status is `M12X_PARTIAL_STOPPED`; full stability and stance variance are `NOT_MEASURED`, fresh real
+proof is `NOT_READY`, and the next bounded scope is `SOL_RUNTIME_REGRESSION_REVIEW`. Review the
+preserved outputs first. Do not reopen FIC-FIN-01, alter code/config from this generation based on
+its outputs, selectively rerun failed subjects, call a new model, or start real issuer proof without
+a separate instruction. Eight approved schedules remain PAUSED and must not be resumed implicitly.
+Production calls, sends, persistence, merges, and deployments are zero.

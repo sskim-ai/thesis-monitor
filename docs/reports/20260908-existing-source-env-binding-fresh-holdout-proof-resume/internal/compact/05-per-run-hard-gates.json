@@ -1,0 +1,38 @@
+{
+  "contract": "risk-carried-per-run-hard-gate-summary-v1",
+  "rows": [
+    {
+      "execution": "FAILED",
+      "hard_safety": "NOT_MEASURED",
+      "ownership": "NOT_MEASURED",
+      "renderer": "NOT_MEASURED",
+      "run": "first",
+      "validation_pass_count": 0
+    },
+    {
+      "execution": "NOT_RUN",
+      "hard_safety": "NOT_RUN",
+      "ownership": "NOT_RUN",
+      "renderer": "NOT_RUN",
+      "run": "a",
+      "validation_pass_count": null
+    },
+    {
+      "execution": "NOT_RUN",
+      "hard_safety": "NOT_RUN",
+      "ownership": "NOT_RUN",
+      "renderer": "NOT_RUN",
+      "run": "b",
+      "validation_pass_count": null
+    },
+    {
+      "execution": "NOT_RUN",
+      "hard_safety": "NOT_RUN",
+      "ownership": "NOT_RUN",
+      "renderer": "NOT_RUN",
+      "run": "c",
+      "validation_pass_count": null
+    }
+  ],
+  "status": "INCOMPLETE_OR_FAILED"
+}

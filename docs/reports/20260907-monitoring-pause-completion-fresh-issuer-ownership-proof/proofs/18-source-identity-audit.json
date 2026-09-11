@@ -1,0 +1,104 @@
+{
+  "contract": "fresh-final-source-identity-audit-v1",
+  "duplicate_issuer_count": 0,
+  "prior_exposure_overlap_count": 0,
+  "rows": [
+    {
+      "canonical_issuer_key": "sec:cik:0001691493",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "NU"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0000003570",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "LNG"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0000733590",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "TCI"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0001319161",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "WMG"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00220109",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "043100"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00191472",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "025000"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00831428",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "131030"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00534598",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "372910"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00578538",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "130740"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00355089",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "045340"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00267881",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "006910"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:01423837",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "288980"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00148531",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "023440"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00152437",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "064820"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00113207",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "001440"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00462121",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "073490"
+    }
+  ],
+  "status": "PASS"
+}

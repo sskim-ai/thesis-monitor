@@ -1,0 +1,16 @@
+{
+  "classification": "NOT_ADDITIONAL_NEGATIVE_CORROBORATION",
+  "facts": [
+    "high complete debt and thin cash",
+    "expectations already allow for stress"
+  ],
+  "id": "LEV-MKT-04",
+  "limitation": "no extra negative expectation corroboration; severity unresolved",
+  "rule": "already_reflected",
+  "selected_buy": 4.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4,
+    4.5
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "cases": [
+    {
+      "fixture_id": "us_qtd_prior_year_comparison",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_ytd_prior_year_comparison",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_fy_prior_year_comparison",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "point_in_time_prior_year_comparison",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_ocf_direct_ytd",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_ocf_direct_fy",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "kr_ocf_direct_explicit_period",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_ppe_direct_ytd",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "us_ppe_direct_fy",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "kr_ppe_direct_explicit_period",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "ocf_less_ppe_safe_ytd",
+      "status": "PASS"
+    },
+    {
+      "fixture_id": "ocf_less_ppe_safe_fy",
+      "status": "PASS"
+    }
+  ],
+  "contract": "m6-positive-fixture-manifest-v1",
+  "fixture_count": 12,
+  "pass_count": 12,
+  "unit_scale_normalization_fixture": "NOT_APPLICABLE_NO_CANONICAL_HELPER"
+}

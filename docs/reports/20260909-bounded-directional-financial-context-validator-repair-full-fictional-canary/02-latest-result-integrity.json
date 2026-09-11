@@ -1,0 +1,13 @@
+{
+  "actual_sha256": "0df2b7117ac262cc45792fe10a1b92f33bd1853d1d0545318e953f4d5a791471",
+  "artifact_hash_mismatch_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "checksum_match": true,
+  "contract": "m12r-latest-result-integrity-v1",
+  "expected_sha256": "0df2b7117ac262cc45792fe10a1b92f33bd1853d1d0545318e953f4d5a791471",
+  "indexed_payload_count": 95,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation-report.zip",
+  "status": "PASS",
+  "zip_test_errors": []
+}

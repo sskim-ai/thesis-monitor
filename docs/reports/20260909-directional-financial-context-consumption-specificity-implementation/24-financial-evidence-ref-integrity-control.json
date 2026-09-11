@@ -1,0 +1,18 @@
+{
+  "contract": "m12-financial-evidence-ref-integrity-control-v1",
+  "status": "PASS",
+  "unknown_ref_probe": {
+    "contract": "directional-financial-semantic-validator-v1",
+    "errors": [
+      "invalid_financial_evidence_reference"
+    ],
+    "financial_sector_generic_financial_context_leak_count": 0,
+    "fixed_financial_score_rule_count": 0,
+    "invalid_financial_reference_count": 1,
+    "normalized_earnings_claim_violation_count": 0,
+    "partial_capex_called_fcf_count": 0,
+    "partial_debt_total_claim_count": 0,
+    "valid": false,
+    "year_end_as_yoy_count": 0
+  }
+}

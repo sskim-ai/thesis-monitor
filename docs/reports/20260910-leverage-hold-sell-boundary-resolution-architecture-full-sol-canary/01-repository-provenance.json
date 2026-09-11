@@ -1,0 +1,9 @@
+{
+  "base_sha": "95addf0a6a484e7ea307a7b8cb63c175e71332e2",
+  "branch": "codex/20260910-leverage-hold-sell-boundary-m12ab",
+  "head": "96377fedd6f575f10b97a30db564fa71cde8e766",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "work_instruction_commit": "96377fedd6f575f10b97a30db564fa71cde8e766",
+  "working_tree": "?? docs/architecture/M12AB_LEVERAGE_HOLD_SELL_BOUNDARY.json\n?? fixtures/leverage_hold_sell_boundary_m12ab.json\n?? scripts/leverage_hold_sell_boundary_m12ab.py\n?? tests/test_leverage_hold_sell_boundary_m12ab.py"
+}

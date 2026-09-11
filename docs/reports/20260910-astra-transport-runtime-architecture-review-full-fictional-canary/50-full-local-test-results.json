@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T00:24:35.649759+00:00",
+  "output_path": "artifacts/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/validation/full.txt",
+  "output_sha256": "2da3759b4d28e86ab3d37667a560286b5c5fb5ef2a2a616a3ae6c6f67899e58c",
+  "returncode": 0,
+  "started_at": "2026-09-10T00:23:20.116960+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

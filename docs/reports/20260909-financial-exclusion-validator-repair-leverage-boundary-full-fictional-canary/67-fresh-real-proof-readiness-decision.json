@@ -1,0 +1,13 @@
+{
+  "fresh_real_proof_readiness": "NOT_READY",
+  "production_readiness": "NOT_READY",
+  "reason": "MODEL_TIMEOUT in run-1/context-02; only four of 24 planned outputs, no full repetition or FIC-FIN-05/08 new observation",
+  "next_scope": "BOUNDED_ASTRA_TRANSPORT_TIMEOUT_REVIEW_BEFORE_NEW_FULL_FICTIONAL_CANARY",
+  "scope_limits": [
+    "Read preserved transport/runtime evidence first",
+    "No automatic retry or larger timeout",
+    "No fallback, target remains Astra/xhigh",
+    "New full generation only after separate authorization and bounded runtime review"
+  ],
+  "separate_engineering_followup": "Hosted CI archive/history portability, including one new M12F local-ZIP-dependent test"
+}

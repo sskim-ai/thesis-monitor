@@ -1,0 +1,10 @@
+{
+  "contract": "fundamental-holder-stance-v1",
+  "fic_fin_05_target": "REVIEW",
+  "observed": [
+    "REVIEW",
+    "REVIEW",
+    "REVIEW"
+  ],
+  "status": "PASS"
+}

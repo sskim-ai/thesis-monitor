@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "ticker": "FIC-FIN-01",
+  "model": "gpt-5.6-sol",
+  "effort": "xhigh",
+  "source_context_sha256": "33aca8f5cd505bb48f1a6cb09882a7d6899569622126eb246b081ca848870018",
+  "observations": [
+    {"phase": "M12W", "generation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a", "balance": "6.5:3.5", "confidence": "MEDIUM"},
+    {"phase": "M12X", "generation_id": "20260910-m12x-fictional-20260910T031958Z-a6c5d77c56d5", "balance": "6.5:3.5", "confidence": "MEDIUM"},
+    {"phase": "M12Y", "generation_id": "20260910-m12y-fictional-20260910T043154Z-2761aab01862", "balance": "6.0:4.0", "confidence": "MEDIUM"}
+  ],
+  "cross_model_drift": false,
+  "adjacent_bucket_variation": true
+}

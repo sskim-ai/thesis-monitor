@@ -1,0 +1,8 @@
+{
+  "contract": "nonproduction-monitoring-bootstrap-daily-delta-lifecycle-integration-v1",
+  "next_scope": "SOURCE_DOMAIN_ENRICHMENT_AND_DIRECTIONAL_SPECIFICITY_DESIGN_REVIEW",
+  "reason": "M3 lifecycle semantics pass, while M2 decision-quality evidence still shows source-domain limitations that require a separately frozen design.",
+  "selected_path": "PATH_A",
+  "semantic_change_required": true,
+  "status": "DECIDED"
+}

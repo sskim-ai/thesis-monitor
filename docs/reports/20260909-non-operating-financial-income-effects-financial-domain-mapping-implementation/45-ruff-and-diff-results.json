@@ -1,0 +1,5 @@
+{
+  "contract": "m11-static-validation-results-v1",
+  "git_diff_check": "PASS",
+  "ruff": "PASS"
+}

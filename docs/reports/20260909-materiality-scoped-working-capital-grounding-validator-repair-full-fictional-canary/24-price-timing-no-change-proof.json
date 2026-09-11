@@ -1,0 +1,19 @@
+{
+  "change_count": 0,
+  "contract": "m12b-price-technical-supply-non-leak-v1",
+  "financial_sector_generic_financial_context_leak_count": 0,
+  "functions": [
+    {
+      "after_sha256": "9f59c816c2f467ba0e98e73cdd3667da5eab0bae7aa13a49fd1415d0dd8815c7",
+      "before_sha256": "9f59c816c2f467ba0e98e73cdd3667da5eab0bae7aa13a49fd1415d0dd8815c7",
+      "changed": false,
+      "function": "_timing_prompt"
+    }
+  ],
+  "path": "scripts/directional_core_price_timing_holdout.py",
+  "price_timing_prompt_change_count": 0,
+  "status": "PASS",
+  "typed_financial_price_ref_count": 0,
+  "typed_financial_supply_ref_count": 0,
+  "typed_financial_technical_ref_count": 0
+}

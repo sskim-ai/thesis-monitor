@@ -1,0 +1,10 @@
+# 37 Run A Renderer Gate
+
+| Field | Value |
+| --- | --- |
+| contract | new-issuer-holdout-not-run-v1 |
+| reason | SemanticStop:runtime_context_gate_failed:first:DIRECTIONAL_CORE:2 |
+| run | a |
+| status | NOT_RUN |
+
+Machine proof: `proofs/37-run-a-renderer-gate.json`.

@@ -1,0 +1,88 @@
+{
+  "alias_sha256": {
+    "FIC-FIN-01": "7d147efc23ab640bd2d728c3fa17de04fb9b9059547be949c8105f570e1cf73c",
+    "FIC-FIN-02": "6c2f9c975350a99644d15f78095395b3568a4a9fcda21b268c4ea6ec087e3d33",
+    "FIC-FIN-03": "d0f523cab080f0c5d704418566a64ca2ffde7f17d97685be3f9bf59637ee86bb",
+    "FIC-FIN-04": "089f51202914dbcd2439f492d814667fa520e3dee134c5a18c2ea2e05879ae03",
+    "FIC-FIN-05": "704e3b9331c1151a7e6369fe33fb3d318fbe3c26d3d1cb6e356b69ef12168719",
+    "FIC-FIN-06": "fc95875a670ad3d3760e93ff95fe92fe1ef9e15f311c80aa26737426fd3b801e",
+    "FIC-FIN-07": "aed451eab44f1608af66a7bde7fa602f825d0d126a80086a029af3fcbf00d050",
+    "FIC-FIN-08": "07f69c63f78fd3b440cd6475e781aa5519ed0c049718e2c38ed093b45519f049"
+  },
+  "batch_split": 0,
+  "context_sha256": {
+    "FIC-FIN-01": "242ef2169c882c1c7cfa6c48b1d91230f13ca997151bac738bae7623e1bf3bbf",
+    "FIC-FIN-02": "df2511bdf97ee1fbf8ff0ada4d999c1928073853bb85da8b0eb3f546986138d0",
+    "FIC-FIN-03": "bca000b81efa2d5330c11ddbc21eb446609b010796e6e884ea083da3cc3ec6f3",
+    "FIC-FIN-04": "fc3ebac9fd933a96028c665807a70ba18bb2494b5bd822489b86ac5d1c4fb5c0",
+    "FIC-FIN-05": "49aab3c926b1a84c6ff0371ade3ad77b2431414a5555027aff6172bffa7a5356",
+    "FIC-FIN-06": "68366fbaf2fa672a89bd3da083b8e1cc02d2099b5dfb4002903f1592ac4a53da",
+    "FIC-FIN-07": "52a473451efd8d74ae4a85daf932e89141bd9b25460b637dd3cd46b9799f4316",
+    "FIC-FIN-08": "ddb51e449e8f86e5a1a74153e501acb62741fdb59ecb68b2feda437b7a92e0cd"
+  },
+  "contract": "m12-fictional-source-lock-v1",
+  "generation_id": "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb",
+  "historical_source_comparison": [
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "historical_context_equal": true,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "model": "gpt-6-astra",
+  "owned_sha256": {
+    "FIC-FIN-01": "2ff7ccc12bcb8a6a6c029e42cb4efa4cb6f4841d0f9ab0e8c15abfd32d061f0a",
+    "FIC-FIN-02": "9b2439149dc15022bf3a06a81d56dbeef99d55ad4e7c93aa909bc2902cb2369f",
+    "FIC-FIN-03": "c23512a802a32101c0328b0130cdce22ffa14f046f6f136f5d40c3963721b7f4",
+    "FIC-FIN-04": "b0cda8da74507f4bb5da842b7402eadf5b3b9116b5658ac80f6708d8ea2138d3",
+    "FIC-FIN-05": "2ed4c9d306ed39b4ab34c938242ed1dde1a35413e564d9ee0cde97b686e4b1fe",
+    "FIC-FIN-06": "b8ac9b5073acfd9c659536e6a385fca6195e483324393543475cae15579d84d6",
+    "FIC-FIN-07": "50ce8a3ce12056af5072aed21fbfa0eaca05b24973026c917513696870f09131",
+    "FIC-FIN-08": "a7d2819000fff67bfed43981a21343ddfe3230938b5ae5a7f68e0fafbb3d119f"
+  },
+  "packet_sha256": {
+    "FIC-FIN-01": "8265386b53ef86c7401f2cb09bb7bf35d27c273e7810c7e9987c1d819b65ad58",
+    "FIC-FIN-02": "396a293b43f1683f9b3b309116b941d0dc3e8d03a936578248055c6481dfb8a1",
+    "FIC-FIN-03": "cdef6a13c82956cdf38e13042a1e593a7fac58aa229985da16f714b773f66b0f",
+    "FIC-FIN-04": "c9448a861b1030330de1739abbd0933ee05bfff72190e33164771d7a93ca4b64",
+    "FIC-FIN-05": "ddde65afd9357fe5d92282d6f0dd78f37160876dc3fa0b2a5fea57198d959ee5",
+    "FIC-FIN-06": "5c0df3f553bd8a15da7185241050363d78efcf0832adb93a15a43ed3e7566f05",
+    "FIC-FIN-07": "70905bea1bd05e73ad41421917c5252e080ef7a75ef02f67ffa152edfa31dfda",
+    "FIC-FIN-08": "15e825d01fe9d0c057fdf84e159eb26dd22d59e801b2d8e81db29eb8434963ca"
+  },
+  "provider_source_fetches": 0,
+  "real_issuer_model_exposure_count": 0,
+  "reasoning_effort": "xhigh",
+  "runtime_mode": "MODEL_CONTEXT_COUPLED",
+  "source_lock_sha256": "f560bb1aa9ed648916d5a1b5c40ca2973c6cdd27a16297789195189b467666c6",
+  "subjects_per_shared_context": 4,
+  "timeout_seconds": 1800,
+  "wrapper_auto_retry": 0
+}

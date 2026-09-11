@@ -1,0 +1,16 @@
+{
+  "allowed": [
+    "qualify confidence in a denominator",
+    "state conditions for future multiple expansion/compression interpretation"
+  ],
+  "contract": "financial-domain-valuation-boundary-v1-design",
+  "forbidden": [
+    "invent EPS/BVPS/FCF denominator",
+    "infer a market multiple or price target",
+    "combine issuer cash flow with ADR/security price without verified basis",
+    "treat PPE-only residual as company-defined FCF"
+  ],
+  "invariant": "earnings quality and financial condition are not valuation",
+  "status": "FROZEN_DESIGN",
+  "valuation_unavailable_remains_unavailable": true
+}

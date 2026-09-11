@@ -1,0 +1,38 @@
+{
+  "activated_in_m12s": false,
+  "allowed_contract_clarifications": [
+    "distinguish shared-lineage metrics from independent corroboration",
+    "state how corroborating facts and limiting Unknowns map to adjacent buckets",
+    "clarify 5.0 versus 5.5 for flat operations plus non-operating support",
+    "clarify 6.0 versus 6.5 when valuation or persistence remains unknown"
+  ],
+  "balance_averaging_allowed": false,
+  "balance_increment": 0.5,
+  "buy_sell_threshold": 6.0,
+  "contract": "m12s-frozen-next-repair-contract-v1",
+  "fixed_scorecard_allowed": false,
+  "holder_contract_in_primary_repair": false,
+  "increment_change_allowed": false,
+  "independent_followups": [
+    "BOUNDED_NEW_BUYER_STANCE_CALIBRATION_REVIEW",
+    "BOUNDED_HOLDER_STANCE_CALIBRATION_REPAIR"
+  ],
+  "majority_vote_allowed": false,
+  "new_buyer_contract_in_primary_repair": false,
+  "next_scope": "BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR_AND_FULL_FICTIONAL_CANARY",
+  "preferred_next_repair": "BOUNDED_FINANCIAL_CONTEXT_BOUNDARY_CALIBRATION_REPAIR",
+  "proposed_generic_text": [
+    "Corroboration is independent only when it adds a distinct economic fact; multiple metrics sharing the same underlying cash-flow inputs do not automatically satisfy independent corroboration.",
+    "When corroborating operating evidence and an unresolved causal or persistence limit leave adjacent buckets reasonably supportable, apply the existing tie-break toward 5.0.",
+    "A non-operating boost with broadly flat operations is context, not by itself sufficient support for a positive lean.",
+    "A 6.5-or-stronger bucket needs evidence beyond minimum direction support that establishes stronger persistence, quality, visibility, or valuation support."
+  ],
+  "repair_fields": [
+    "directional_balance ordinal evidence-sufficiency guidance",
+    "overall_direction as existing threshold-derived output",
+    "hold_lean as existing balance-derived output"
+  ],
+  "status": "FROZEN",
+  "threshold_change_allowed": false,
+  "ticker_specific_exception_allowed": false
+}

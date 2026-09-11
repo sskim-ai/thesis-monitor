@@ -1,0 +1,249 @@
+{
+  "actual_industrial_framework_misuse_count": 0,
+  "current_row": {
+    "ai_imperative_primary_action_count": 0,
+    "core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "불리한 보험금 전개가 인수 손익과 규제자본 여력을 실제로 약화시킬 경우 판단이 하향될 수 있다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:market-expectation",
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "규율 있는 가격책정과 충분한 규제자본이 확인되면서 안정적인 인수 성과가 이어질 경우 판단이 상향될 수 있다."
+        }
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis"
+        ],
+        "text": "인수 규율과 규제자본이 사업 판단의 핵심 틀이다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "인수 손익은 현재 안정적이다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "안정적인 인수 손익과 상당한 보험금 변동 위험이 맞서며 규제자본 추세도 없어 방향은 중립이다."
+      },
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "LOW",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk"
+        ],
+        "text": "안정적인 인수 손익과 불리한 보험금 전개 위험이 균형을 이룬다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "인수 손익은 안정적이지만 보험금 변동성은 여전히 상당하다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "불리한 보험금 전개가 인수 경제성과 규제자본 여력을 실제로 약화시키는 경우다.",
+        "business_invalidation_condition_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "REVIEW",
+        "summary": "인수 손익은 안정적이지만 보험금 변동성과 규제자본 추세 부재로 사업 검토가 필요하다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "규율 있는 가격책정과 충분한 규제자본이 확인되고 안정적인 인수 성과가 유지되는 경우다.",
+        "confirmation_business_condition_refs": [
+          "fictional:FIC-FIN-08:market-expectation",
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "WAIT",
+        "summary": "핵심 보험 사업 지표가 엇갈리고 자본 적정성 추세가 없어 추가 확인이 필요하다."
+      },
+      "hold_lean": "NEUTRAL",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:market-expectation",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "기대는 규율 있는 가격책정과 충분한 규제자본을 요구하지만 자본 적정성 추세는 제공되지 않았다."
+      },
+      "material_directional_anchor_basis": [],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "보험금 변동성과 불리한 손해 전개 가능성이 중요하지만 현재 악화나 자본 훼손은 확인되지 않았다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "STRUCTURAL_RISK",
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk"
+          ],
+          "text": "상당한 보험금 변동성과 불리한 손해 전개 가능성이 보험 경제성을 약화시킬 수 있다."
+        }
+      ],
+      "ticker": "FIC-FIN-08",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:valuation-limit",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "안전한 가치평가와 자본 적정성 추세가 없어 안정적인 인수 결과의 지속성과 완충력을 판단하기 어렵다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "summary": "보험사 판단의 핵심인 규제자본 적정성 추세가 확인되지 않았다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:valuation-limit"
+          ],
+          "summary": "안전한 현재 가치평가가 없어 방향 판단의 확신이 제한된다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:valuation-limit"
+        ],
+        "text": "안전한 현재 가치평가 배수가 없어 가치평가의 지지나 부담을 판단할 수 없다."
+      }
+    },
+    "errors": [],
+    "financial_anchor_count": 0,
+    "financial_grounding": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounded_claim_count": 0,
+      "grounded_working_capital_checkpoint_count": 0,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 0,
+      "material_financial_anchor_refs": [],
+      "material_grounding_required": false,
+      "narrative_only_duplicate_refs": [],
+      "narrative_substitution_failure_count": 0,
+      "relevant_claim_count": 0,
+      "selected_financial_refs": [],
+      "status": "PASS",
+      "used_financial_refs": [],
+      "valid": true,
+      "working_capital_checkpoint_count": 0,
+      "working_capital_grounding_failure_count": 0,
+      "working_capital_grounding_required": false
+    },
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 0,
+      "valid": true,
+      "year_end_as_yoy_count": 0
+    },
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "qtd_ytd_semantics": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 0,
+      "linked_claim_count": 0,
+      "qtd_evidence_ref_count": 0,
+      "required": false,
+      "required_metrics": [],
+      "valid": true,
+      "ytd_evidence_ref_count": 0
+    },
+    "selected_financial_refs": [],
+    "status": "PASS",
+    "ticker": "FIC-FIN-08",
+    "used_financial_refs": []
+  },
+  "historical_errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "historical_raw_output_rewritten": false,
+  "reference_roles": [
+    {
+      "evidence_refs": [
+        "fictional:FIC-FIN-08:business-thesis",
+        "fictional:FIC-FIN-08:sector-context"
+      ],
+      "field_path": "sector_interpretation.text",
+      "framework": "net_debt",
+      "kind": "EXPLICIT_EXCLUSION",
+      "role": "CONTRASTIVE_REPLACEMENT",
+      "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다"
+    },
+    {
+      "evidence_refs": [
+        "fictional:FIC-FIN-08:business-thesis",
+        "fictional:FIC-FIN-08:sector-context"
+      ],
+      "field_path": "sector_interpretation.text",
+      "framework": "working_capital",
+      "kind": "EXPLICIT_EXCLUSION",
+      "role": "CONTRASTIVE_REPLACEMENT",
+      "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다"
+    }
+  ],
+  "status": "PASS"
+}

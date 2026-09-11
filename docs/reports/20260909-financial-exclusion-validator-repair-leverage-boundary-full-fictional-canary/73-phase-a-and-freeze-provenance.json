@@ -1,0 +1,33 @@
+{
+  "status": "FROZEN_BEFORE_FIRST_MODEL_CALL",
+  "code_implementation_commit": "dc80d2b67961d7e71983db91351657a4132f2e78",
+  "final_freeze_commit": "13d21ae25b9a61b95ab433bb5070d4cf8fb21666",
+  "initial_phase_a": {
+    "status": "FAIL",
+    "reason": "One blank line at EOF in imported instruction document",
+    "model_calls": 0,
+    "preserved_receipt": "experiment/phase-a-initial-preserved/phase-a-receipt.json"
+  },
+  "correction": {
+    "scope": "Remove one trailing blank line from instruction; no text/contract/prompt/code semantics changed.",
+    "implementation_or_prompt_change": false
+  },
+  "second_phase_a": {
+    "status": "PASS",
+    "focused_passed": 135,
+    "full_passed": 3174,
+    "ruff": "PASS",
+    "diff_check": "PASS"
+  },
+  "generation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf",
+  "source_lock_sha256": "7e8f87c4ae0c931e6d893206097ad03e2d4ccb1e481a34194e343ac653c78c19",
+  "post_generation_code_config_change_count": 0,
+  "frozen_commit_hosted_ci": {
+    "status": "FAIL",
+    "passed": 3169,
+    "failed": 5,
+    "lint": "SKIPPED",
+    "url": "https://github.com/sskim-ai/thesis-monitor/actions/runs/34367612738",
+    "summary": "pytest\tTest\t2026-09-09T15:06:15.8221884Z FAILED tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text - subprocess.CalledProcessError: Command '['git', 'show', '67bdc56bcd0dba05d154c727fa1f819816b1a1f4:app/services/directional_balance_service.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:06:15.8224236Z FAILED tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history - FileNotFoundError: [Errno 2] No such file or directory: '/Users/sskim/Documents/Codex/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-full-fictional-canary-report.zip'\npytest\tTest\t2026-09-09T15:06:15.8226309Z FAILED tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged - subprocess.CalledProcessError: Command '['git', 'show', 'efd31109b0f52bd7151f37cebef03820e40eb2ef:scripts/directional_core_price_timing_holdout.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:06:15.8229028Z FAILED tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean - FileNotFoundError: [Errno 2] No such file or directory: '/Users/sskim/Documents/Codex/thesis-monitor-20260909-financial-context-output-grounding-architecture-review-report.zip'\npytest\tTest\t2026-09-09T15:06:15.8231030Z FAILED tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded - subprocess.CalledProcessError: Command '['git', 'show', '0615ea399f295476c2bf47d66ac441eef04ec0d8:scripts/directional_financial_context_m12g.py']' returned non-zero exit status 128.\npytest\tTest\t2026-09-09T15:06:15.8232405Z ============ 5 failed, 3169 passed, 2 warnings in 189.91s (0:03:09) ============\n"
+  }
+}

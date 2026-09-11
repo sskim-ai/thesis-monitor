@@ -1,0 +1,18 @@
+{
+  "status": "DESCRIPTIVE_ONLY",
+  "observed_models": [
+    {
+      "model": "gpt-6-astra",
+      "direction": "SELL",
+      "buy": 4,
+      "sell": 6
+    },
+    {
+      "model": "gpt-5.6-sol",
+      "direction": "SELL",
+      "buy": 4,
+      "sell": 6
+    }
+  ],
+  "ground_truth_from_model_agreement": false
+}

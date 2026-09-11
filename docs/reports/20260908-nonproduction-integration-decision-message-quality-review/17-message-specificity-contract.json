@@ -1,0 +1,17 @@
+{
+  "contract": "m2-message-specificity-contract-v1",
+  "criteria": [
+    "name the specific supplied anchor when evidence differs",
+    "separate confirmed facts from Unknown",
+    "state issuer-specific upward and downward checkpoints when support exists",
+    "keep new-buyer and holder reasoning distinct",
+    "keep Price-Timing separate from fundamental direction",
+    "state Daily Delta only for post-baseline refreshed evidence"
+  ],
+  "forbidden_repairs": [
+    "random synonym variation",
+    "renderer-invented issuer analysis",
+    "invented detail for sparse or equivalent evidence"
+  ],
+  "status": "FROZEN"
+}

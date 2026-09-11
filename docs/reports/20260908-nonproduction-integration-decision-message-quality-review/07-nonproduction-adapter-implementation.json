@@ -1,0 +1,10 @@
+{
+  "contract": "m2-nonproduction-adapter-implementation-v1",
+  "module": "app/services/nonproduction_lifecycle_decision_service.py",
+  "production_importer_count": 0,
+  "status": "PASS",
+  "test_module": "tests/test_nonproduction_lifecycle_decision_service.py",
+  "uses_existing_candidate_validator_renderer": true,
+  "uses_existing_compose": true,
+  "uses_existing_ownership_validator": true
+}

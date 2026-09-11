@@ -1,0 +1,22 @@
+{
+  "architecture_semantic_drift": 0,
+  "base_sha": "be78b8e0a40b2e63d3522487a1482b47b6efe271",
+  "branch": "codex/20260908-existing-source-env-binding-fresh-holdout-proof-resume",
+  "changed_paths_since_latest_result": [
+    "docs/work-instructions/20260908-existing-source-env-binding-and-fresh-holdout-proof-resume.md",
+    "scripts/existing_source_env_binding_fresh_holdout_resume.py",
+    "tests/test_existing_source_env_binding_fresh_holdout_resume.py"
+  ],
+  "contract": "repository-provenance-v1",
+  "implementation_commit": "895b8891bbd628ba804c1d639c926fbcc220dc7b",
+  "implementation_tree": "8ffc4d8b420f3aeb83c820e4cacb5c6611bef3ce",
+  "latest_result_final_head_is_ancestor": true,
+  "model_semantic_input_drift": 0,
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "prompt_semantic_drift": 0,
+  "schema_semantic_drift": 0,
+  "status": "PASS",
+  "transport_topology_mutation": 0,
+  "unexpected_semantic_paths": [],
+  "work_instruction_commit": "12c482b7971dac2532d93912b6c51ed323df88ea"
+}

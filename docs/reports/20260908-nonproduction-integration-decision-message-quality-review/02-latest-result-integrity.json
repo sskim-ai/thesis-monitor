@@ -1,0 +1,10 @@
+{
+  "actual_sha256": "319e4ae9447e439ecb882e974146d2eaf6565f51147e859993e6ce956162c2e0",
+  "contract": "m2-latest-result-integrity-v1",
+  "expected_sha256": "319e4ae9447e439ecb882e974146d2eaf6565f51147e859993e6ce956162c2e0",
+  "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-unknown-field-consistency-early-core-validation-offline-evidence-review-report.zip",
+  "source_archive_actual_sha256": "2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e",
+  "source_archive_expected_sha256": "2a58b8e8dbfcc6e3aa7cb4900bec2d16d29f149b69160e8fd0c5b0522f6a798e",
+  "source_archive_path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-authoritative-result-identity-reconciliation-us-source-expansion-proof-resume-report.zip",
+  "status": "PASS"
+}

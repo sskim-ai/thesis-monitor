@@ -1,0 +1,14 @@
+{
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+      "current_sha256": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+      "path": "app/services/current_price_context_service.py",
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
+    }
+  ],
+  "status": "PASS"
+}

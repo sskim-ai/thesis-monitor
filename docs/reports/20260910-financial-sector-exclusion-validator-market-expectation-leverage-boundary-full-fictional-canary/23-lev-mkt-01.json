@@ -1,0 +1,17 @@
+{
+  "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+  "facts": [
+    "high complete debt and thin cash",
+    "stable operating profit",
+    "expectation assumes benign refinancing"
+  ],
+  "id": "LEV-MKT-01",
+  "limitation": "refinancing severity and persistence unresolved; no distinct established current pricing risk",
+  "rule": "conditional_expectation",
+  "selected_buy": 4.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    4,
+    4.5
+  ]
+}

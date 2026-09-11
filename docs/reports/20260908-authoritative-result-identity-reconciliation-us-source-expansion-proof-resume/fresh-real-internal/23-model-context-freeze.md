@@ -1,0 +1,14 @@
+# 23 Model Context Freeze
+
+| Field | Value |
+| --- | --- |
+| context_groups | [["RMD", "NEON", "AA", "TDW"], ["066900", "079370", "247540", "183300"], ["014820", "318060", "106240", "263750"], ["170900", "039980", "026960", "251970"]] |
+| contract | model-context-freeze-v1 |
+| expected_invocations_per_run | 8 |
+| expected_total_model_invocations | 32 |
+| market_grouping | ["US4", "KR4", "KR4", "KR4"] |
+| runs | ["first", "a", "b", "c"] |
+| stage_order | ["DIRECTIONAL_CORE", "PRICE_TIMING"] |
+| status | FROZEN |
+
+Machine proof: `proofs/23-model-context-freeze.json`.

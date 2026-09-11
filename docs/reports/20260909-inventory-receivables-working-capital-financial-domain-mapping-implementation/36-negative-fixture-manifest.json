@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "case": "year_end_to_half_year_labeled_yoy",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "inventory_aggregate_plus_children_double_count",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "gross_current_receivables_vs_net_prior",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "broad_receivables_as_trade",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "loan_receivable_as_trade",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "total_current_assets_as_inventory",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "total_current_liabilities_as_trade_payables",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "contract_asset_merged_into_trade_receivables",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "contract_liability_subtracted_into_universal_nwc",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "current_assets_minus_current_liabilities_as_owc",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "dso_from_ending_ar_and_quarter_revenue",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "inventory_days_from_ending_inventory_and_incomplete_cogs",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "ccc_with_missing_dpo_or_average_balances",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "different_balance_sheet_dates",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "currency_mismatch",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "entity_scope_mismatch",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "statement_basis_mismatch",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "financial_sector_generic_emission",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "ticker_specific_source_mapping",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "opendart_fuzzy_account_name_mapping",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    },
+    {
+      "case": "price_currency_copied_to_financial_fact",
+      "result": "REJECTED_OR_ABSENT_AS_REQUIRED"
+    }
+  ],
+  "contract": "m10-negative-fixture-manifest-v1",
+  "fixture_count": 21,
+  "rejected_count": 21
+}

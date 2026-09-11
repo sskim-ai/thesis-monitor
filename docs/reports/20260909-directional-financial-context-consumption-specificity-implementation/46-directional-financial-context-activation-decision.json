@@ -1,0 +1,10 @@
+{
+  "contract": "m12-directional-financial-context-activation-decision-v1",
+  "deterministic_implementation": "PASS",
+  "fictional_model_canary": "FAIL_VALIDATOR_FALSE_REJECT",
+  "directional_financial_context_consumption_status": "IMPLEMENTED_NONPRODUCTION_CANARY_BLOCKED",
+  "fresh_real_activation": "BLOCKED",
+  "production_activation": "NOT_ALLOWED",
+  "reason": "FROZEN_CASE_VALIDATOR_DID_NOT_RECOGNIZE_VALID_KOREAN_YTD_WORDING",
+  "status": "BLOCKED"
+}

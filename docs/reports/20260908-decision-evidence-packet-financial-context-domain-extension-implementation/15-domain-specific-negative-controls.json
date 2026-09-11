@@ -1,0 +1,24 @@
+{
+  "contract": "m5-domain-specific-negative-controls-v1",
+  "generic_schema_accounting_engine_added": false,
+  "rows": [
+    {
+      "case": "total_liabilities_is_not_interest_bearing_debt",
+      "domain_adapter_role": "must verify component completeness and non-overlap before emission",
+      "future_contract_test_required": true,
+      "generic_schema_role": "records typed metric only; forbids ad hoc completeness flag",
+      "implemented_in_m5": false,
+      "status": "RESPONSIBILITY_SEPARATED"
+    },
+    {
+      "case": "ocf_ytd_plus_ppe_fy_is_not_safe_cash_conversion",
+      "domain_adapter_role": "must compare every input period, currency, entity, and statement basis",
+      "future_contract_test_required": true,
+      "generic_schema_role": "requires period structure and ordered derivation lineage",
+      "implemented_in_m5": false,
+      "status": "RESPONSIBILITY_SEPARATED"
+    }
+  ],
+  "status": "PASS",
+  "unsafe_semantic_self_attestation_field_added": false
+}

@@ -1,0 +1,15 @@
+{
+  "contract": "m11-us-source-support-audit-v1",
+  "provider_source_fetches": 0,
+  "real_archive_status": "NO_REAL_US_ARCHIVE_COVERAGE_CLAIM",
+  "synthetic_exact_source_class_capability": "PASS",
+  "us_financial_cost_direct_count": 0,
+  "us_financial_income_direct_count": 0,
+  "us_fx_direct_count": 0,
+  "us_interest_expense_direct_count": 0,
+  "us_interest_income_direct_count": 0,
+  "us_nonfinancial_candidate_count": 13,
+  "us_other_income_expense_context_count": 0,
+  "us_safe_net_financial_effect_count": 0,
+  "us_tax_direct_count": 0
+}

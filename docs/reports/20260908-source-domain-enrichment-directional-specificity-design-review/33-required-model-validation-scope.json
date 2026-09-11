@@ -1,0 +1,13 @@
+{
+  "contract": "m4-required-model-validation-scope-v1",
+  "model_calls_in_m4": 0,
+  "required": true,
+  "requirements": [
+    "fresh generation ID",
+    "same frozen source/model/effort/schema/validator/renderer contract",
+    "period/sector/missing-data negative controls",
+    "no selective rerun or in-run hotfix"
+  ],
+  "status": "FUTURE_REQUIRED",
+  "timing": "after packet, adapters, and Directional contract are separately frozen"
+}

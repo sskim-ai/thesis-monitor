@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "model_cache_advertised": true,
+  "runtime_mode": "MODEL_CONTEXT_COUPLED",
+  "subjects_per_context": 4,
+  "timeout_seconds": 1800,
+  "wrapper_retry_count": 0,
+  "batch_split": 0,
+  "fallback_model": null,
+  "observed_paused_schedule_count": 8,
+  "scheduler_mutation_count": 0
+}

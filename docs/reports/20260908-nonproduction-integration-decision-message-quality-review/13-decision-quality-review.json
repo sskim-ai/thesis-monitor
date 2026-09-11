@@ -1,0 +1,1148 @@
+{
+  "cashflow_claim_count": 0,
+  "contract": "preserved-directional-core-decision-quality-review-v1",
+  "core_row_count": 64,
+  "decision_quality_review_status": "COMPLETE_WITH_INPUT_LIMITATION",
+  "expected_historical_unknown_failure": "C/NEON",
+  "expected_historical_unknown_failure_count": 1,
+  "findings": [
+    {
+      "area": "material_anchor_specificity",
+      "finding": "Anchors are present, but repeated issuer-class language shows that stable schema acceptance is not sufficient reasoning quality."
+    },
+    {
+      "area": "period_currentness",
+      "finding": "Period scope is supplied in evidence JSON; Core prose often compresses it into generic latest-official-period language."
+    },
+    {
+      "area": "cashflow_balance_sheet",
+      "finding": "No target cash-flow, debt/liquidity, or working-capital facts exist in this preserved cold-start archive; omission is not a Core drop."
+    },
+    {
+      "area": "valuation_limit",
+      "finding": "The lack of safe valuation evidence is carried as an explicit Unknown."
+    }
+  ],
+  "formal_current_cohort_stability": "NOT_MEASURED",
+  "new_buyer_holder_not_distinct_count": 0,
+  "period_detail_in_core_prose_count": 4,
+  "repeated_substantive_text_by_field": {
+    "business_reevaluation_down": [
+      {
+        "count": 3,
+        "text": "세부 사업 KPI와 향후 실행은 아직 확인되지 않았다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출 기반이나 영업·순이익의 흑자 기조가 훼손되면 하향 재평가가 필요하다."
+      },
+      {
+        "count": 3,
+        "text": "세부 사업 KPI와 향후 실행이 확인되지 않아 실적 지속성 평가는 제한된다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 영업흑자가 사라지거나 매출 기반이 약화되면 하향 재평가한다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 실적에서 매출 기반이나 이익 창출이 약화되고 핵심 사업 KPI도 부진할 경우 하향 재평가한다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출 기반과 영업흑자가 함께 훼손되고 회복 근거도 확인되지 않으면 하향 재평가가 필요하다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출 기반과 순이익 창출력이 함께 약화되고 핵심 사업 KPI에서도 회복 근거가 확인되지 않을 때 하향 재평가한다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기에서 영업손실과 순손실이 함께 확인돼 현재 수익성 평가가 약하다."
+      },
+      {
+        "count": 2,
+        "text": "후속 공시에서 매출 기반이 약화되고 영업·순이익이 적자로 전환되면 하향 재평가가 필요하다."
+      },
+      {
+        "count": 2,
+        "text": "영업·순손실이 이어지고 핵심 사업 KPI에서도 개선 근거가 확인되지 않으면 추가 하향 요인이다."
+      },
+      {
+        "count": 2,
+        "text": "세부 사업 KPI와 향후 실행이 확인되지 않아 이익의 지속성은 아직 검증되지 않았다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 연결 실적에서 영업손실과 순손실이 함께 확인됐다."
+      },
+      {
+        "count": 2,
+        "text": "영업·순손실이 이어지고 매출 기반까지 약화되는 것이 확인되면 하향 재평가한다."
+      },
+      {
+        "count": 2,
+        "text": "후속 공식 공시에서 매출 기반 약화와 손익 적자 전환이 확인되면 사업 판단을 하향 재평가한다."
+      },
+      {
+        "count": 2,
+        "text": "후속 공식 공시에서 손실이 지속되고 매출 기반 약화가 확인되면 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출과 영업·순이익의 지속성이 재확인되고 세부 사업 KPI가 뒷받침되면 상향 재평가할 수 있다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출과 흑자의 지속성 및 핵심 사업 KPI 실행이 확인되면 상향 재평가한다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 실적에서 매출과 이익의 지속성이 핵심 사업 KPI로 확인될 경우 상향 재평가한다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 실적에서도 매출과 이익 창출이 이어지고 세부 사업 KPI가 뒷받침되면 상향 재평가할 수 있다."
+      },
+      {
+        "count": 3,
+        "text": "후속 공식 공시에서 매출과 이익의 지속성 및 핵심 사업 KPI 개선이 함께 확인될 때 상향 재평가한다."
+      },
+      {
+        "count": 3,
+        "text": "영업·순이익의 지속성과 세부 사업 KPI 개선이 후속 공시에서 확인되면 상향 재평가할 수 있다."
+      },
+      {
+        "count": 2,
+        "text": "최신 공식 공시에서 매출 기반과 흑자가 함께 확인됐다."
+      },
+      {
+        "count": 2,
+        "text": "공식 매출 기반은 확인되지만 수익성 손실을 상쇄할 개선 근거는 아직 없다."
+      },
+      {
+        "count": 2,
+        "text": "최신 공식 분기 실적에서 매출 기반과 이익 창출이 함께 확인됐다."
+      },
+      {
+        "count": 2,
+        "text": "매출과 흑자 수익성이 이어지고 세부 사업 KPI가 확인되면 추가 상향 근거가 된다."
+      },
+      {
+        "count": 2,
+        "text": "영업·순손익이 흑자로 전환되고 핵심 사업 KPI가 확인되면 상향 재평가가 가능하다."
+      },
+      {
+        "count": 2,
+        "text": "공식 연결 매출은 확인됐지만 수익성 회복을 입증하지는 않는다."
+      },
+      {
+        "count": 2,
+        "text": "매출이 영업·순이익으로 연결되고 세부 사업 지표로 지속성이 확인되면 상향 재평가한다."
+      },
+      {
+        "count": 2,
+        "text": "후속 공식 공시에서 영업 및 순이익 흑자가 지속되고 핵심 사업 KPI가 뒷받침되면 상향 재평가한다."
+      },
+      {
+        "count": 2,
+        "text": "후속 공식 공시에서 영업 및 순이익이 흑자로 전환되고 핵심 사업 KPI가 뒷받침되면 상향 재평가한다."
+      }
+    ],
+    "core_investment_judgment": [
+      {
+        "count": 3,
+        "text": "최근 흑자 실적은 긍정적 기업 단위 앵커지만 지속성, 세부 KPI와 밸류에이션 확인 전에는 긍정 방향을 확정하기 부족하다."
+      },
+      {
+        "count": 3,
+        "text": "현재 실적의 긍정적 결합은 최소 긍정 방향을 지지하지만, 밸류에이션과 세부 KPI 부재가 강도를 제한한다."
+      },
+      {
+        "count": 3,
+        "text": "현재 분기 실적은 긍정적이나 지속성, 핵심 KPI와 밸류에이션 근거가 없어 긍정 기울기의 관망이 적절하다."
+      },
+      {
+        "count": 3,
+        "text": "최신 공식 실적은 약한 긍정 앵커지만 지속성, 세부 KPI, 밸류에이션 근거가 부족해 긍정 방향 확정에는 이르다."
+      },
+      {
+        "count": 2,
+        "text": "현재 매출과 이익 근거는 긍정적이지만 밸류에이션과 세부 사업 KPI 부재로 강한 방향까지는 어렵다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기의 영업손실과 순손실이 부정 방향의 핵심 근거다. 다만 지속성과 원인 자료가 없어 부정 강도는 제한한다."
+      },
+      {
+        "count": 2,
+        "text": "현재 매출과 흑자 실적은 긍정 방향을 지지하지만 KPI 지속성과 밸류에이션은 추가 확인이 필요하다."
+      },
+      {
+        "count": 2,
+        "text": "매출 기반은 존재하지만 영업손실과 순손실이 함께 확인돼 부정 방향이 우세하다."
+      },
+      {
+        "count": 2,
+        "text": "매출은 확인되지만 최근 영업손실과 순손실이 방향 판단에서 우세하다."
+      },
+      {
+        "count": 2,
+        "text": "현재 수익성이 긍정적이고 공시가 최신이어서 최소한의 긍정 방향은 충족한다."
+      },
+      {
+        "count": 2,
+        "text": "현재 매출에도 영업·순손실이 함께 나타나 최소한의 부정 방향이 성립한다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 실적은 긍정적 사업 기반을 보여주지만 지속성, 핵심 KPI, 밸류에이션 확인이 부족해 긍정 방향까지는 이르지 못한다."
+      },
+      {
+        "count": 2,
+        "text": "매출이 발생하는 가운데 영업·순손실이 함께 확인돼 부정적 방향이 우세하나, 지속성과 세부 원인은 미확인이다."
+      },
+      {
+        "count": 2,
+        "text": "현재 흑자는 긍정적인 발행사 앵커지만 지속성, 핵심 KPI와 밸류에이션 근거가 없어 매수 방향까지는 부족하다."
+      },
+      {
+        "count": 2,
+        "text": "현재 영업 및 순손실은 부정적인 발행사 앵커지만 지속성, 사업 KPI와 밸류에이션이 없어 매도 방향까지는 부족하다."
+      }
+    ],
+    "dominant_evidence": [
+      {
+        "count": 3,
+        "text": "가장 중요한 근거는 최근 공식 분기에서 매출과 영업·순이익 흑자가 함께 확인된 점이다."
+      },
+      {
+        "count": 3,
+        "text": "최신 공식 분기 공시에서 매출과 영업·순이익이 함께 확인된 점이 핵심 근거다."
+      },
+      {
+        "count": 3,
+        "text": "공식 연결 기준으로 확인된 최근 매출과 영업·순이익이 핵심 근거다."
+      },
+      {
+        "count": 3,
+        "text": "가장 중요한 근거는 최근 공식 공시에서 매출과 순이익이 함께 확인된 점이다."
+      },
+      {
+        "count": 3,
+        "text": "가장 중요한 근거는 최근 공식 연결 공시에서 매출과 영업·순이익이 함께 확인된 점이다."
+      },
+      {
+        "count": 2,
+        "text": "최신 공식 매출과 흑자가 핵심 방향 근거다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기에서 영업손실과 순손실이 함께 확인된 점이 지배적이다."
+      },
+      {
+        "count": 2,
+        "text": "가장 중요한 근거는 최신 공식 분기 매출과 이익의 동시 확인이다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기에서 매출과 영업·순이익 흑자가 함께 확인됐다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기에서 영업손실과 순손실이 함께 확인됐다."
+      },
+      {
+        "count": 2,
+        "text": "최신 공식 매출과 순이익의 동시 확인이 가장 중요한 방향 근거다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 실적에서 영업손실과 순손실이 함께 확인된 점이 핵심 부정 근거다."
+      },
+      {
+        "count": 2,
+        "text": "공식 연결 실적의 영업·순이익 확인이 핵심 긍정 근거다."
+      },
+      {
+        "count": 2,
+        "text": "공식 연결 실적의 영업·순손실 확인이 핵심 부정 근거다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 분기의 영업손실과 순손실이 핵심 부정 근거다."
+      },
+      {
+        "count": 2,
+        "text": "현재 공식 손익이 영업과 순이익 모두 흑자라는 점이 지배적 근거다."
+      },
+      {
+        "count": 2,
+        "text": "최근 공식 공시에서 영업손실과 순손실이 함께 확인된 점이 지배적 근거다."
+      }
+    ],
+    "uncertainty_limit": [
+      {
+        "count": 3,
+        "text": "기존 논리, 안전한 밸류에이션과 세부 사업 KPI가 없어 확신이 제한된다."
+      },
+      {
+        "count": 3,
+        "text": "밸류에이션, 이전 논지, 세부 KPI가 없어 긍정 방향 이상의 강한 확신은 어렵다."
+      },
+      {
+        "count": 3,
+        "text": "기존 논리, 밸류에이션, 핵심 KPI가 없어 확신을 제한한다."
+      },
+      {
+        "count": 3,
+        "text": "비교 추세, 시장 기대, 세부 KPI, 밸류에이션 근거가 없어 현재 실적의 지속성을 확정할 수 없다."
+      },
+      {
+        "count": 3,
+        "text": "선행 논지, 밸류에이션, 핵심 사업 KPI가 없어 긍정 근거의 지속성과 매력도를 확정할 수 없다."
+      },
+      {
+        "count": 3,
+        "text": "기존 논지와 비교 자료가 없고 최근 공식 실적만 있어 변화 방향과 지속성을 판별하기 어렵다."
+      },
+      {
+        "count": 2,
+        "text": "제공된 공식 실적만으로 이익과 매출의 지속성 및 세부 사업 동인을 확정할 수 없다."
+      },
+      {
+        "count": 2,
+        "text": "가치평가, 시장 기대, 핵심 사업 지표와 선행 투자 논리가 없어 부정 판단의 추가 확대는 제한된다."
+      },
+      {
+        "count": 2,
+        "text": "비교 추세, 세부 KPI, 시장 기대와 밸류에이션 근거의 부재로 긍정 방향을 더 강화하지 않는다."
+      },
+      {
+        "count": 2,
+        "text": "현재 손실은 부정 방향을 지지하지만 원인, 지속성, 핵심 KPI와 밸류에이션 근거가 없어 부정 강도를 더 높이지 않는다."
+      },
+      {
+        "count": 2,
+        "text": "밸류에이션, 세부 사업 KPI, 기존 모니터링 논제가 없어 부정 판단의 강도를 제한한다."
+      },
+      {
+        "count": 2,
+        "text": "기존 논지와 사업 KPI, 밸류에이션, 시장 기대가 없어 실적의 지속성과 기대 대비 매력을 판단하기 어렵다."
+      },
+      {
+        "count": 2,
+        "text": "사업 KPI와 밸류에이션, 시장 기대가 없어 손실의 지속성과 회복 가능성을 충분히 판단할 수 없다."
+      },
+      {
+        "count": 2,
+        "text": "기존 논지, 세부 사업 KPI, 향후 실행과 안전한 밸류에이션 근거가 없어 더 강한 방향 판정은 제한된다."
+      },
+      {
+        "count": 2,
+        "text": "가치평가, 핵심 사업 KPI, 선행 논지가 없어 손실의 지속성과 회복 가능성은 미확인이다."
+      },
+      {
+        "count": 2,
+        "text": "기존 논거, 세부 KPI, 밸류에이션과 시장 기대가 없어 더 강한 방향은 어렵다."
+      },
+      {
+        "count": 2,
+        "text": "기존 논거, 세부 KPI, 밸류에이션과 시장 기대가 없어 부정 방향의 강도를 높이기 어렵다."
+      },
+      {
+        "count": 2,
+        "text": "밸류에이션, 세부 사업 지표, 기존 논거가 없어 손실의 지속성과 가격 매력도는 판단할 수 없다."
+      },
+      {
+        "count": 2,
+        "text": "최신 재무는 확보됐지만 비교 추세, 사업 세부지표와 밸류에이션이 없어 긍정 앵커의 지속성을 검증하지 못했다."
+      },
+      {
+        "count": 2,
+        "text": "현재 손실은 명확하지만 비교 추세, 핵심 사업 KPI와 밸류에이션이 없어 부정 앵커의 지속성을 검증하지 못했다."
+      }
+    ]
+  },
+  "rows": [
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": true,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "RMD",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "NEON",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "AA",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "TDW",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "066900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "079370",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 3,
+      "ticker": "247540",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "183300",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "014820",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "318060",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "106240",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "263750",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "170900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "039980",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "026960",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "FIRST",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "251970",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": true,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "RMD",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "NEON",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "AA",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "TDW",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "066900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "079370",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 3,
+      "ticker": "247540",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "183300",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "014820",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "318060",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "106240",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "263750",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "170900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 0,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "039980",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "026960",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "A",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "251970",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": true,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "RMD",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "NEON",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "AA",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "TDW",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "066900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "079370",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 0,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "247540",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "183300",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "014820",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "318060",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "106240",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "263750",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "170900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 0,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "039980",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "026960",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "B",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "251970",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": true,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "RMD",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "NEON",
+      "unknown_consistency_issue_count": 1
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "AA",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "TDW",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "066900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "SELL",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "079370",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "247540",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "BUY",
+      "material_anchor_count": 2,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "183300",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "014820",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "318060",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "106240",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "263750",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "170900",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "039980",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "026960",
+      "unknown_consistency_issue_count": 0
+    },
+    {
+      "available_nonprice_core_ref_count": 5,
+      "cashflow_claim_present": false,
+      "decision": "HOLD",
+      "material_anchor_count": 1,
+      "new_buyer_holder_text_distinct": true,
+      "period_detail_in_core_prose": false,
+      "run": "C",
+      "selected_nonprice_core_ref_count": 4,
+      "ticker": "251970",
+      "unknown_consistency_issue_count": 0
+    }
+  ],
+  "run_counts": {
+    "A": 16,
+    "B": 16,
+    "C": 16,
+    "FIRST": 16
+  },
+  "status": "COMPLETE",
+  "unexpected_unknown_failure_count": 0,
+  "unknown_consistency_failure_count": 1
+}

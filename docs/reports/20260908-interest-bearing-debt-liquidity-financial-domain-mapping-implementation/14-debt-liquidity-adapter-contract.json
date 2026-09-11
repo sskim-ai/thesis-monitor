@@ -1,0 +1,42 @@
+{
+  "adapter_revalidates": [
+    "ordered input refs",
+    "point-in-time date",
+    "currency and unit",
+    "entity and statement basis",
+    "source document",
+    "component completeness and overlap",
+    "cash restriction basis",
+    "derived arithmetic"
+  ],
+  "compact_ai_exposure": false,
+  "contract": "m9-debt-liquidity-adapter-contract-v1",
+  "derived_formula_versions": [
+    "interest-bearing-debt-liquidity-v1"
+  ],
+  "derived_metrics": [
+    "interest_bearing_debt_total",
+    "net_debt"
+  ],
+  "direct_metrics": [
+    "bonds_payable_current",
+    "bonds_payable_noncurrent",
+    "cash_and_cash_equivalents",
+    "cash_and_restricted_cash",
+    "convertible_debt_current",
+    "convertible_debt_noncurrent",
+    "current_interest_bearing_debt",
+    "current_portion_of_long_term_debt",
+    "lease_liabilities_current",
+    "lease_liabilities_noncurrent",
+    "long_term_borrowings",
+    "notes_payable_current",
+    "notes_payable_noncurrent",
+    "restricted_cash_current",
+    "restricted_cash_noncurrent",
+    "short_term_borrowings"
+  ],
+  "implementation_contract": "interest-bearing-debt-liquidity-v1",
+  "real_financial_context_emission_count": 39,
+  "source_contract": "canonical_financial_fact"
+}

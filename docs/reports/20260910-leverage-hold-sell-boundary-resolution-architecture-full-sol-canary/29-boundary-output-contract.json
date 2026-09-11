@@ -1,0 +1,6 @@
+{
+  "contract": "directional-core-boundary-output-v1",
+  "legacy_contract": "directional-core-output-v1",
+  "optional_for_legacy": true,
+  "status": "IMPLEMENTED_EXPERIMENTAL"
+}

@@ -1,0 +1,56 @@
+{
+  "contract": "monitoring-pause-transition-ledger-v1",
+  "historical_held_packet": {
+    "packet_id": "2026-09-07-kr-run-60-4ec80c93055c",
+    "state_at_2026-09-07T16:30:35+09:00": {
+      "held_or_pending": 9,
+      "sent": 0
+    }
+  },
+  "natural_fallback_transition": {
+    "task_initiated": false,
+    "trigger_kst": "2026-09-07T17:10:00+09:00",
+    "completed_through_kst": "2026-09-07T17:10:18+09:00",
+    "job": "com.seungsoo.thesis-monitor.ai-review-fallback",
+    "result": "FALLBACK_DELIVERED",
+    "delivery_mode": "deterministic_fallback",
+    "delivery_item_count": 9,
+    "sent_count": 9,
+    "pending_count": 0,
+    "attempt_count_per_item": 1,
+    "delivery_row_ids": [566, 567, 568, 569, 570, 571, 572, 573, 574],
+    "tickers": [
+      "__DAILY_DIGEST_KR__",
+      "000660",
+      "003690",
+      "005490",
+      "005930",
+      "010120",
+      "012450",
+      "047810",
+      "086280"
+    ],
+    "evidence": [
+      "read-only notificationdelivery ledger",
+      "ai-review-fallback.out.log final result"
+    ],
+    "interpretation": "the natural 17:10 fallback consumed the held backlog before the current task disabled and unloaded the fallback job"
+  },
+  "state_after_transition": {
+    "observed_at": "2026-09-07T17:42:54+09:00",
+    "same_day_sent_count": 24,
+    "same_day_pending_count": 0,
+    "historical_kr_packet_sent_count": 9,
+    "historical_kr_packet_pending_count": 0,
+    "in_flight_relevant_process_count": 0
+  },
+  "preservation": {
+    "delivery_rows_deleted": 0,
+    "delivery_rows_requeued": 0,
+    "delivery_rows_manually_marked_sent": 0,
+    "investment_history_rewritten": 0,
+    "task_initiated_database_mutation": 0,
+    "task_initiated_telegram_send": 0
+  },
+  "status": "PASS_WITH_NATURAL_TRANSITION_DELIVERY"
+}

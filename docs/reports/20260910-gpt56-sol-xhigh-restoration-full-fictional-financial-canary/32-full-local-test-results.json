@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T01:58:52.317478+00:00",
+  "output_path": "artifacts/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/validation/full.txt",
+  "output_sha256": "8183cd84acaa1bf1168254ec256f86f0a24226d173320917dc48f64563efb90d",
+  "returncode": 0,
+  "started_at": "2026-09-10T01:57:35.258806+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

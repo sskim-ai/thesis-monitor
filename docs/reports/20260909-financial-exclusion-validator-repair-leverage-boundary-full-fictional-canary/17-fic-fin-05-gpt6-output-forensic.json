@@ -1,0 +1,272 @@
+{
+  "original_status_unchanged": true,
+  "preserved_row": {
+    "ai_imperative_primary_action_count": 0,
+    "core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:operating-evidence",
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "text": "현금 완충력이 더 약해지거나 차환 부담이 안정적 수익성을 훼손하는 것으로 확인되면 부정적 판단이 강화된다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash",
+            "fictional:FIC-FIN-05:remaining-unknown"
+          ],
+          "text": "차환 조건과 만기 분포가 감당 가능한 부담을 보여주고 현금 완충력이 개선되면 재무 제약에 대한 평가가 완화된다."
+        }
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:business-thesis",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "text": "수익성을 유지하는 사업 논거와 재무 탄력성에 따른 선택지 제약이 병존한다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:operating-evidence"
+          ],
+          "text": "영업이익 흑자와 안정적 흐름은 사업의 수익성 유지를 뒷받침한다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:structural-risk",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash",
+          "fictional:FIC-FIN-05:operating-evidence",
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "text": "높은 부채 부담과 얇은 현금 완충력은 부정적 근거다. 안정적 영업이익과 미확인 차환 조건·만기 집중도를 함께 고려하면 부정적 기울기까지가 타당하다."
+      },
+      "directional_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:structural-risk",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "text": "같은 시점의 완전한 이자부채 총액과 현금및현금성자산 잔액이 재무 완충력 제약을 뒷받침한다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:operating-evidence"
+        ],
+        "text": "현재 영업이익은 흑자이며 대체로 안정적이다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "차환 부담이나 현금 완충력 약화가 지속적 수익성 유지 능력을 훼손하는 것으로 확인되는 경우.",
+        "business_invalidation_condition_refs": [
+          "fictional:FIC-FIN-05:operating-evidence",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash",
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "stance": "REVIEW",
+        "summary": "수익성은 유지되지만 재무 완충력 제약으로 보유 논거 점검이 필요하다. [E01, E03, E05, E06]"
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "차환 조건과 만기 분포가 영업 수익성과 현금 완충력에 비춰 감당 가능한 수준임이 확인되는 경우.",
+        "confirmation_business_condition_refs": [
+          "fictional:FIC-FIN-05:operating-evidence",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash",
+          "fictional:FIC-FIN-05:remaining-unknown"
+        ],
+        "stance": "WAIT",
+        "summary": "재무 제약이 확인된 가운데 차환 부담의 구체적 검증이 남아 있다. [E03, E05, E06, E08]"
+      },
+      "hold_lean": "SELL_LEAN",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:market-expectation"
+        ],
+        "text": "기대는 차환 부담의 장기화를 충분히 반영하지 않는 것으로 보인다."
+      },
+      "material_directional_anchor_basis": [
+        "fictional:FIC-FIN-05:structural-risk",
+        "canonical:fictional:FIC-FIN-05:complete-debt",
+        "canonical:fictional:FIC-FIN-05:cash"
+      ],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:structural-risk",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "text": "높은 이자부채 부담에 비해 현금 완충력이 얇아 재무 대응 여력이 제약된다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:sector-context",
+          "canonical:fictional:FIC-FIN-05:complete-debt",
+          "canonical:fictional:FIC-FIN-05:cash"
+        ],
+        "text": "일반 영업기업의 부채·유동성 틀을 적용한다. 부채 집계는 리스부채를 제외하며 현금 범위는 현금및현금성자산이다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "STRUCTURAL_RISK",
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:structural-risk",
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash"
+          ],
+          "text": "높은 이자부채 총액과 얇은 현금 완충력이 재무 탄력성을 낮춘다."
+        },
+        {
+          "classification": "OTHER_EVIDENCE",
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:market-expectation"
+          ],
+          "text": "차환 부담이 장기화될 경우 현재 기대와의 괴리가 나타날 여지가 있다."
+        }
+      ],
+      "ticker": "FIC-FIN-05",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:remaining-unknown",
+          "fictional:FIC-FIN-05:valuation-limit"
+        ],
+        "text": "차환 조건과 만기 집중도가 없어 부담의 강도·지속성 판단이 제한된다. 현재 가치평가도 확인되지 않는다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:remaining-unknown",
+            "canonical:fictional:FIC-FIN-05:complete-debt",
+            "canonical:fictional:FIC-FIN-05:cash"
+          ],
+          "summary": "차환 조건과 만기 집중도는 확인 과제이며, 정보 공백 자체가 추가 악화 근거는 아니다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-05:valuation-limit"
+          ],
+          "summary": "현재 가치평가 배수의 부재는 판단의 확신을 제한한다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-05:valuation-limit"
+        ],
+        "text": "안전하게 사용할 현재 가치평가 배수가 없어 저평가·고평가 판단은 유보된다."
+      }
+    },
+    "errors": [],
+    "financial_anchor_count": 2,
+    "financial_grounding": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounded_claim_count": 5,
+      "grounded_working_capital_checkpoint_count": 0,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 0,
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "material_grounding_required": true,
+      "narrative_only_duplicate_refs": [],
+      "narrative_substitution_failure_count": 0,
+      "relevant_claim_count": 5,
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "status": "PASS",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-05:cash",
+        "canonical:fictional:FIC-FIN-05:complete-debt"
+      ],
+      "valid": true,
+      "working_capital_checkpoint_count": 0,
+      "working_capital_grounding_failure_count": 0,
+      "working_capital_grounding_required": false
+    },
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 0,
+      "valid": true,
+      "year_end_as_yoy_count": 0
+    },
+    "first_class_typed_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:complete-debt",
+      "canonical:fictional:FIC-FIN-05:cash"
+    ],
+    "material_financial_anchor_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "narrative_duplicate_refs": [
+      "fictional:FIC-FIN-05:structural-risk"
+    ],
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "qtd_ytd_semantics": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 0,
+      "linked_claim_count": 0,
+      "qtd_evidence_ref_count": 0,
+      "required": false,
+      "required_metrics": [],
+      "valid": true,
+      "ytd_evidence_ref_count": 0
+    },
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "selected_typed_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "status": "PASS",
+    "ticker": "FIC-FIN-05",
+    "used_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ],
+    "used_typed_financial_refs": [
+      "canonical:fictional:FIC-FIN-05:cash",
+      "canonical:fictional:FIC-FIN-05:complete-debt"
+    ]
+  }
+}

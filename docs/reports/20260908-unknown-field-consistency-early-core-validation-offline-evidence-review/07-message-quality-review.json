@@ -1,0 +1,1020 @@
+{
+  "candidate_rewrite_performed": false,
+  "complete_trace_count": 48,
+  "conclusion_alignment_failure_count": 0,
+  "contract": "preserved-message-quality-offline-review-v1",
+  "daily_delta_label_count": 0,
+  "message_count": 48,
+  "message_quality_original_advisory": "RECORDED",
+  "message_quality_review_completion": "COMPLETE",
+  "original_advisory_path": "advisory-message-quality-summary.json",
+  "original_advisory_sha256": "711b8ebf1566462ef8f416e547c605f61f058975d4199ebccdd9592653d4218c",
+  "original_advisory_status_preserved": true,
+  "original_repeated_substantive_span_counts": {
+    "a": 16,
+    "b": 21,
+    "c": null,
+    "first": 13
+  },
+  "renderer_rewrite_performed": false,
+  "repeated_findings": [
+    {
+      "locations": [
+        {
+          "line": 23,
+          "ticker": "AA"
+        },
+        {
+          "line": 23,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "FIRST",
+      "span": "BUY 쪽: 최신 공식 공시에서 매출 기반과 흑자가 함께 확인됐다."
+    },
+    {
+      "locations": [
+        {
+          "line": 24,
+          "ticker": "026960"
+        },
+        {
+          "line": 23,
+          "ticker": "170900"
+        },
+        {
+          "line": 24,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "FIRST",
+      "span": "BUY 쪽: 후속 공식 공시에서 매출과 영업·순이익의 지속성이 재확인되고 세부 사업 KPI가 뒷받침되면 상향 재평가할 수 있다."
+    },
+    {
+      "locations": [
+        {
+          "line": 25,
+          "ticker": "026960"
+        },
+        {
+          "line": 24,
+          "ticker": "170900"
+        },
+        {
+          "line": 25,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "FIRST",
+      "span": "SELL 쪽: 후속 공식 공시에서 매출 기반이나 영업·순이익의 흑자 기조가 훼손되면 하향 재평가가 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "026960"
+        },
+        {
+          "line": 14,
+          "ticker": "170900"
+        },
+        {
+          "line": 14,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "FIRST",
+      "span": "긍정적 실적 앵커는 있으나 사업 지속성과 밸류에이션 근거가 부족하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "106240"
+        },
+        {
+          "line": 10,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "최근 공식 분기의 영업손실과 순손실이 부정 방향의 핵심 근거다. 다만 지속성과 원인 자료가 없어 부정 강도는 제한한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 11,
+          "ticker": "026960"
+        },
+        {
+          "line": 11,
+          "ticker": "170900"
+        },
+        {
+          "line": 11,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "FIRST",
+      "span": "최근 흑자 실적은 긍정적 기업 단위 앵커지만 지속성, 세부 KPI와 밸류에이션 확인 전에는 긍정 방향을 확정하기 부족하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 19,
+          "ticker": "026960"
+        },
+        {
+          "line": 19,
+          "ticker": "170900"
+        },
+        {
+          "line": 19,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "FIRST",
+      "span": "최근 흑자 실적을 근거로 조건부 보유 논리는 유지 가능하지만 지속성 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "AA"
+        },
+        {
+          "line": 10,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "현재 매출과 이익 근거는 긍정적이지만 밸류에이션과 세부 사업 KPI 부재로 강한 방향까지는 어렵다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "106240"
+        },
+        {
+          "line": 13,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "현재 손실 구조가 확인돼 신규 관점에서는 수익성 회복 전까지 사업 근거가 부족하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 18,
+          "ticker": "106240"
+        },
+        {
+          "line": 18,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "현재 손실 상태는 보유 논리를 약화시키며 사업 수익성 회복의 공식 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 18,
+          "ticker": "014820"
+        },
+        {
+          "line": 18,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "현재 수익 창출 상태로 보유 논리는 유지 가능하지만 후속 실적과 사업 KPI 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "014820"
+        },
+        {
+          "line": 13,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "FIRST",
+      "span": "현재 흑자는 긍정적이지만 지속성과 밸류에이션이 확인되기 전에는 신규 관점의 확신이 제한된다."
+    },
+    {
+      "locations": [
+        {
+          "line": 15,
+          "ticker": "026960"
+        },
+        {
+          "line": 15,
+          "ticker": "170900"
+        },
+        {
+          "line": 15,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "FIRST",
+      "span": "후속 공식 공시에서 매출과 이익의 지속성 및 세부 사업 KPI가 확인되는 경우다."
+    },
+    {
+      "locations": [
+        {
+          "line": 22,
+          "ticker": "014820"
+        },
+        {
+          "line": 23,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "A",
+      "span": "BUY 쪽: 매출과 흑자 수익성이 이어지고 세부 사업 KPI가 확인되면 추가 상향 근거가 된다."
+    },
+    {
+      "locations": [
+        {
+          "line": 23,
+          "ticker": "106240"
+        },
+        {
+          "line": 22,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "A",
+      "span": "BUY 쪽: 영업·순손익이 흑자로 전환되고 핵심 사업 KPI가 확인되면 상향 재평가가 가능하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 23,
+          "ticker": "AA"
+        },
+        {
+          "line": 23,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "A",
+      "span": "BUY 쪽: 최신 공식 분기 실적에서 매출 기반과 이익 창출이 함께 확인됐다."
+    },
+    {
+      "locations": [
+        {
+          "line": 24,
+          "ticker": "026960"
+        },
+        {
+          "line": 23,
+          "ticker": "170900"
+        },
+        {
+          "line": 24,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "A",
+      "span": "BUY 쪽: 후속 공식 공시에서 매출과 흑자의 지속성 및 핵심 사업 KPI 실행이 확인되면 상향 재평가한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 23,
+          "ticker": "014820"
+        },
+        {
+          "line": 24,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "A",
+      "span": "SELL 쪽: 후속 공시에서 매출 기반이 약화되고 영업·순이익이 적자로 전환되면 하향 재평가가 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 25,
+          "ticker": "026960"
+        },
+        {
+          "line": 24,
+          "ticker": "170900"
+        },
+        {
+          "line": 25,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "A",
+      "span": "SELL 쪽: 후속 공식 공시에서 영업흑자가 사라지거나 매출 기반이 약화되면 하향 재평가한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "106240"
+        },
+        {
+          "line": 10,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "매출 기반은 존재하지만 영업손실과 순손실이 함께 확인돼 부정 방향이 우세하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "014820"
+        },
+        {
+          "line": 13,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "사업 방향은 긍정적이나 신규 판단에는 지속성과 사업 세부 근거가 더 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "106240"
+        },
+        {
+          "line": 14,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "영업·순손익의 흑자 전환과 핵심 사업 KPI 개선이 공식 근거로 확인되는 것이다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "014820"
+        },
+        {
+          "line": 10,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "현재 매출과 흑자 실적은 긍정 방향을 지지하지만 KPI 지속성과 밸류에이션은 추가 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 11,
+          "ticker": "026960"
+        },
+        {
+          "line": 11,
+          "ticker": "170900"
+        },
+        {
+          "line": 11,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "A",
+      "span": "현재 분기 실적은 긍정적이나 지속성, 핵심 KPI와 밸류에이션 근거가 없어 긍정 기울기의 관망이 적절하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "106240"
+        },
+        {
+          "line": 13,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "현재 수익구조가 개선됐다는 근거가 나오기 전에는 신규 관점이 취약하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "AA"
+        },
+        {
+          "line": 10,
+          "ticker": "RMD"
+        },
+        {
+          "line": 10,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "A",
+      "span": "현재 실적의 긍정적 결합은 최소 긍정 방향을 지지하지만, 밸류에이션과 세부 KPI 부재가 강도를 제한한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "014820"
+        },
+        {
+          "line": 14,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "A",
+      "span": "후속 공시에서 매출과 흑자 수익성의 지속성 및 세부 사업 KPI가 확인되는 것이다."
+    },
+    {
+      "locations": [
+        {
+          "line": 15,
+          "ticker": "026960"
+        },
+        {
+          "line": 15,
+          "ticker": "170900"
+        },
+        {
+          "line": 15,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "A",
+      "span": "후속 공식 공시에서 매출과 영업흑자의 지속성 및 핵심 사업 KPI 실행이 확인되는 경우"
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "AA"
+        },
+        {
+          "line": 14,
+          "ticker": "RMD"
+        },
+        {
+          "line": 14,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "A",
+      "span": "후속 공식 실적에서 이익 지속성과 핵심 사업 KPI가 확인되고 안전한 밸류에이션 근거가 보강되는 경우다."
+    },
+    {
+      "locations": [
+        {
+          "line": 23,
+          "ticker": "AA"
+        },
+        {
+          "line": 23,
+          "ticker": "RMD"
+        },
+        {
+          "line": 23,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "B",
+      "span": "BUY 쪽: 후속 공식 실적에서 매출과 이익의 지속성이 핵심 사업 KPI로 확인될 경우 상향 재평가한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 24,
+          "ticker": "026960"
+        },
+        {
+          "line": 23,
+          "ticker": "170900"
+        },
+        {
+          "line": 24,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "B",
+      "span": "BUY 쪽: 후속 공식 실적에서도 매출과 이익 창출이 이어지고 세부 사업 KPI가 뒷받침되면 상향 재평가할 수 있다."
+    },
+    {
+      "locations": [
+        {
+          "line": 24,
+          "ticker": "106240"
+        },
+        {
+          "line": 23,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 2
+      },
+      "run": "B",
+      "span": "SELL 쪽: 최근 공식 연결 실적에서 영업손실과 순손실이 함께 확인됐다."
+    },
+    {
+      "locations": [
+        {
+          "line": 24,
+          "ticker": "AA"
+        },
+        {
+          "line": 24,
+          "ticker": "RMD"
+        },
+        {
+          "line": 24,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 3
+      },
+      "run": "B",
+      "span": "SELL 쪽: 후속 공식 실적에서 매출 기반이나 이익 창출이 약화되고 핵심 사업 KPI도 부진할 경우 하향 재평가한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "014820"
+        },
+        {
+          "line": 13,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "긍정적인 현재 실적에도 사업 세부 지표와 밸류에이션 확인이 선행돼야 한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "066900"
+        },
+        {
+          "line": 10,
+          "ticker": "079370"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "매출은 확인되지만 최근 영업손실과 순손실이 방향 판단에서 우세하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "AA"
+        },
+        {
+          "line": 13,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "사업 방향은 긍정적이지만 지속성, 세부 KPI와 가격 매력도 근거가 아직 부족하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "106240"
+        },
+        {
+          "line": 14,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "영업·순손익 회복이 후속 공식 공시에서 지속되고 세부 사업 KPI로 뒷받침돼야 한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 16,
+          "ticker": "026960"
+        },
+        {
+          "line": 16,
+          "ticker": "039980"
+        },
+        {
+          "line": 16,
+          "ticker": "170900"
+        },
+        {
+          "line": 16,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 4,
+      "ownership_counts": {
+        "RENDERER_INTRODUCED_OR_UNRESOLVED": 4
+      },
+      "run": "B",
+      "span": "이유: 검증된 눌림 구간과 확인선이 없어 가격 기준 진입 모드는 비활성이다."
+    },
+    {
+      "locations": [
+        {
+          "line": 19,
+          "ticker": "026960"
+        },
+        {
+          "line": 19,
+          "ticker": "170900"
+        },
+        {
+          "line": 19,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "B",
+      "span": "최신 공식 실적은 보유 논리를 일부 지지하지만 지속성 검증이 더 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 11,
+          "ticker": "026960"
+        },
+        {
+          "line": 11,
+          "ticker": "170900"
+        },
+        {
+          "line": 11,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "B",
+      "span": "최신 공식 실적은 약한 긍정 앵커지만 지속성, 세부 KPI, 밸류에이션 근거가 부족해 긍정 방향 확정에는 이르다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "106240"
+        },
+        {
+          "line": 10,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 매출에도 영업·순손실이 함께 나타나 최소한의 부정 방향이 성립한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 18,
+          "ticker": "066900"
+        },
+        {
+          "line": 18,
+          "ticker": "079370"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 손실은 재검토 사유지만 지속성 자료가 부족해 추가 사업 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "066900"
+        },
+        {
+          "line": 13,
+          "ticker": "079370"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 손실이 확인됐고 회복 근거와 가치평가 자료가 부족하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 18,
+          "ticker": "RMD"
+        },
+        {
+          "line": 18,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 수익 창출이 확인돼 보유 논리는 유지 가능하나 세부 실행 확인이 필요하다."
+    },
+    {
+      "locations": [
+        {
+          "line": 13,
+          "ticker": "106240"
+        },
+        {
+          "line": 13,
+          "ticker": "318060"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 수익성 상태와 개선 근거 부족으로 신규 편입 매력이 확인되지 않는다."
+    },
+    {
+      "locations": [
+        {
+          "line": 10,
+          "ticker": "014820"
+        },
+        {
+          "line": 10,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "현재 수익성이 긍정적이고 공시가 최신이어서 최소한의 긍정 방향은 충족한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "026960"
+        },
+        {
+          "line": 14,
+          "ticker": "170900"
+        },
+        {
+          "line": 14,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "B",
+      "span": "현재 실적만으로는 사업의 반복성과 밸류에이션을 함께 확인하기 어렵다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "014820"
+        },
+        {
+          "line": 14,
+          "ticker": "263750"
+        }
+      ],
+      "occurrence_count": 2,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 2
+      },
+      "run": "B",
+      "span": "후속 공시에서 영업이익의 지속성과 세부 사업 KPI 실행이 확인되고 밸류에이션 근거가 확보돼야 한다."
+    },
+    {
+      "locations": [
+        {
+          "line": 15,
+          "ticker": "026960"
+        },
+        {
+          "line": 15,
+          "ticker": "170900"
+        },
+        {
+          "line": 15,
+          "ticker": "251970"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "B",
+      "span": "후속 공식 실적에서 매출과 영업·순이익의 지속성이 확인되고 세부 사업 KPI와 밸류에이션 근거가 보완되는 경우다."
+    },
+    {
+      "locations": [
+        {
+          "line": 14,
+          "ticker": "AA"
+        },
+        {
+          "line": 14,
+          "ticker": "RMD"
+        },
+        {
+          "line": 14,
+          "ticker": "TDW"
+        }
+      ],
+      "occurrence_count": 3,
+      "ownership_counts": {
+        "MODEL_OWNED_SUBSTANTIVE": 3
+      },
+      "run": "B",
+      "span": "후속 공식 실적에서 매출과 이익의 지속성이 핵심 사업 KPI로 확인되는 것이다."
+    }
+  ],
+  "safe_repeated_headers": [
+    "판단 확신도",
+    "사업 논리 상태",
+    "신규 관찰자",
+    "보유자",
+    "핵심 판단",
+    "재평가 조건"
+  ],
+  "source_not_supplied_to_core_finding": "DEFERRED_INPUT_COVERAGE_DECISION",
+  "status": "COMPLETE_WITH_ADVISORY_FINDINGS"
+}

@@ -1,0 +1,24 @@
+{
+  "contract": "financial-period-specificity-v1-design",
+  "forbidden": [
+    "interim annualization",
+    "QTD/YTD or YTD/FY comparison",
+    "year-end/interim balance movement labeled YoY",
+    "generic recent-results wording that hides a material period conflict"
+  ],
+  "period_types": [
+    "QTD",
+    "YTD",
+    "FY",
+    "TTM",
+    "POINT_IN_TIME"
+  ],
+  "rules": [
+    "single-quarter, cumulative YTD, annual, and point-in-time remain explicit",
+    "prior comparison must share period type and compatible duration",
+    "QTD reconstruction requires canonical same-year YTD compatibility",
+    "TTM requires prior FY + current YTD - prior comparable YTD",
+    "late pre-baseline facts cannot become current Daily Delta"
+  ],
+  "status": "FROZEN_DESIGN"
+}

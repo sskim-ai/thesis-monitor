@@ -1,0 +1,14 @@
+{
+  "base_sha": "079213d7ff730c1d9eb60fca3b06b404ff34f0e5",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+      "current_sha256": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+      "path": "app/services/coldstart_source_assembly_service.py",
+      "unchanged": true,
+      "verification_mode": "EXACT_BASE_GIT_OBJECT"
+    }
+  ],
+  "status": "PASS"
+}

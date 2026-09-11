@@ -1,0 +1,16 @@
+{
+  "actual_sha256": "69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68",
+  "artifact_extra_count": 0,
+  "artifact_hash_mismatch_count": 0,
+  "artifact_missing_count": 0,
+  "artifact_secret_scan_failure_count": 0,
+  "artifact_size_mismatch_count": 0,
+  "checksum_match": true,
+  "contract": "m12a-latest-result-integrity-v1",
+  "duplicate_member_count": 0,
+  "expected_sha256": "69fc255d836d3dd886882754c21a233d82541c86ff627a5a5c8342249012aa68",
+  "indexed_payload_count": 160,
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260909-bounded-directional-financial-anchor-grounding-repair-full-fictional-canary-report.zip",
+  "status": "PASS",
+  "zip_test_failure": null
+}

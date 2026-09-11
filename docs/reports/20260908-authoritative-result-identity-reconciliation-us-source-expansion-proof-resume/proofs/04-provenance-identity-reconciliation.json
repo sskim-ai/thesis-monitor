@@ -1,0 +1,9 @@
+{
+  "authoritative_calibration_result_sha256": "ab330fa13a53775ecdd162f36f4f7afeda42415db03bd0c766c48bf3a2eaddac",
+  "contract": "authoritative-result-identity-reconciliation-v1",
+  "erroneous_hash_classification": "ERRONEOUS_PRIOR_INSTRUCTION_EXPECTED_HASH",
+  "erroneous_prior_expected_sha256": "f0a41371e12127a891165860f3c44ce6af7d1b8dcd13d0c5b93570618a075e6a",
+  "latest_stop_result_sha256": "e2f0c5f84e637ca10a18211c7fa8a4c061232eac5d15ca4874ceccf2930a7fc0",
+  "provenance_identity_reconciliation_status": "PASS",
+  "status": "PASS"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PARTIAL_TRANSPORT_RECOVERY_OBSERVED",
+  "attempted": 2,
+  "returned": 2,
+  "required_full": 6,
+  "elapsed_seconds": [
+    321.69846,
+    331.906627
+  ],
+  "timeouts": 0,
+  "cli_internal_retry_events": 0,
+  "wrapper_retry_count": 0,
+  "full_transport_proof_complete": false,
+  "inference": "Same-size workload returned near M12E latency without configuration change, supporting transient degradation; exact M12F backend/CLI cause remains unknown."
+}

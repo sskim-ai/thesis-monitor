@@ -1,0 +1,4 @@
+{
+  "reason": "Finite-cap/no-retry integrity retained; reliability is observational, not a guarantee. No exposed-cohort retry permitted.",
+  "status": "NOT_READY"
+}

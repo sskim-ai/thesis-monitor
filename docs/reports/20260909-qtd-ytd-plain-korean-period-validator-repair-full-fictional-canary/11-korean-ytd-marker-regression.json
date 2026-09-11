@@ -1,0 +1,47 @@
+{
+  "contract": "m12d-korean-ytd-marker-regression-v1",
+  "registry_changed": false,
+  "rows": [
+    {
+      "detected": true,
+      "marker": "YTD"
+    },
+    {
+      "detected": true,
+      "marker": "year-to-date"
+    },
+    {
+      "detected": true,
+      "marker": "cumulative"
+    },
+    {
+      "detected": true,
+      "marker": "누계"
+    },
+    {
+      "detected": true,
+      "marker": "누적"
+    },
+    {
+      "detected": true,
+      "marker": "누적 기준"
+    },
+    {
+      "detected": true,
+      "marker": "연초 이후"
+    },
+    {
+      "detected": true,
+      "marker": "연초부터"
+    },
+    {
+      "detected": true,
+      "marker": "연초 이후 누적"
+    },
+    {
+      "detected": true,
+      "marker": "연초부터 누적"
+    }
+  ],
+  "status": "PASS"
+}

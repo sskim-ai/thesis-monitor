@@ -1,0 +1,19 @@
+{
+  "complexity": "LOW",
+  "conservative_tiebreak_compatibility": "LOW_OR_NONE",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "REJECTED",
+  "deterministic_numeric_semantics": "LOW",
+  "faithfulness_to_ai_economic_judgment": "HIGH",
+  "hidden_scorecard_risk": "NONE",
+  "holdout_proof_integrity": "PRESERVED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "RAW_SINGLE_POINT",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "A",
+  "output_schema_impact": "NONE",
+  "reason": "The same economics can change the primary HOLD/SELL meaning.",
+  "renderer_impact": "NONE",
+  "single_call_stability": "LOW",
+  "valuation_price_ownership_impact": "NONE"
+}

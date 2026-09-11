@@ -1,0 +1,294 @@
+{
+  "allowed_statuses": [
+    "DIRECT_REPORTED",
+    "DERIVED_SAFE"
+  ],
+  "contract": "direct-vs-derived-financial-evidence-v1-design",
+  "derived_metric_count": 13,
+  "derived_metrics": [
+    {
+      "domain": "same_period_prior_year_comparison",
+      "failure_conditions": [
+        "any comparability mismatch"
+      ],
+      "formula": "current - prior comparable",
+      "inputs": 2,
+      "name": "same_period_absolute_delta",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "same_period_prior_year_comparison",
+      "failure_conditions": [
+        "zero/negative base percentage request"
+      ],
+      "formula": "signed relation without negative-base growth percentage",
+      "inputs": 2,
+      "name": "same_period_direction_relation",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "same_period_prior_year_comparison",
+      "failure_conditions": [
+        "fiscal year or basis mismatch"
+      ],
+      "formula": "current YTD - previous-quarter YTD",
+      "inputs": 2,
+      "name": "qtd_from_compatible_ytd",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "operating_cash_flow",
+      "failure_conditions": [
+        "period or source-version mismatch"
+      ],
+      "formula": "current YTD OCF - prior-quarter YTD OCF",
+      "inputs": 2,
+      "name": "ocf_qtd",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "operating_cash_flow",
+      "failure_conditions": [
+        "missing or incompatible component"
+      ],
+      "formula": "prior FY + current YTD - prior comparable YTD",
+      "inputs": 3,
+      "name": "ocf_ttm",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "ppe_capex_simple_cash_conversion",
+      "failure_conditions": [
+        "unverified investing semantic"
+      ],
+      "formula": "semantic-aware sign normalization to positive magnitude",
+      "inputs": 1,
+      "name": "ppe_capex_positive_outflow",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "ppe_capex_simple_cash_conversion",
+      "failure_conditions": [
+        "period, currency, entity, or basis mismatch"
+      ],
+      "formula": "OCF - PPE acquisition cash outflow",
+      "inputs": 2,
+      "name": "ocf_less_ppe_capex",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "debt_liquidity",
+      "failure_conditions": [
+        "component overlap or incomplete scope"
+      ],
+      "formula": "sum verified non-overlapping short/long/current debt components",
+      "inputs": "2+",
+      "name": "interest_bearing_debt_total",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "debt_liquidity",
+      "failure_conditions": [
+        "cash/debt scope or period mismatch"
+      ],
+      "formula": "complete interest-bearing debt - compatible cash basis",
+      "inputs": 2,
+      "name": "net_debt",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "failure_conditions": [
+        "balance scope mismatch"
+      ],
+      "formula": "current point-in-time balance - compatible prior balance",
+      "inputs": 2,
+      "name": "balance_absolute_delta",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "failure_conditions": [
+        "year-end comparator mislabeled YoY"
+      ],
+      "formula": "directional relation to prior-year comparable balance",
+      "inputs": 2,
+      "name": "balance_yoy_relation",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "failure_conditions": [
+        "period or semantic mismatch"
+      ],
+      "formula": "compare compatible balance and revenue directions",
+      "inputs": "3+",
+      "name": "balance_vs_revenue_relation",
+      "status": "DERIVED_SAFE"
+    },
+    {
+      "domain": "non_operating_financial_income_effects",
+      "failure_conditions": [
+        "incomplete bridge or sector semantic mismatch"
+      ],
+      "formula": "signed sum of complete, non-overlapping mapped components",
+      "inputs": "2+",
+      "name": "verified_non_operating_component_sum",
+      "status": "DERIVED_SAFE"
+    }
+  ],
+  "derived_requirements": [
+    "registered formula",
+    "ordered input source IDs",
+    "period/currency/entity/attribution compatibility",
+    "explicit failure conditions"
+  ],
+  "forbidden_derivation_count": 36,
+  "forbidden_derivations": [
+    {
+      "derivation": "QTD vs YTD",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "quarter vs FY",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "different duration or fiscal basis",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "different attribution or consolidation basis",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "incompatible currency arithmetic",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "annualization of interim results",
+      "domain": "same_period_prior_year_comparison"
+    },
+    {
+      "derivation": "EBITDA, operating income, or net income as OCF proxy",
+      "domain": "operating_cash_flow"
+    },
+    {
+      "derivation": "interim annualization",
+      "domain": "operating_cash_flow"
+    },
+    {
+      "derivation": "cumulative YTD labeled as a single quarter",
+      "domain": "operating_cash_flow"
+    },
+    {
+      "derivation": "industrial interpretation for a financial institution",
+      "domain": "operating_cash_flow"
+    },
+    {
+      "derivation": "missing OCF converted to zero",
+      "domain": "operating_cash_flow"
+    },
+    {
+      "derivation": "generic investing cash flow as capex",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "business acquisitions as PPE capex",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "securities purchases as PPE capex",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "automatic intangible or capitalized-software inclusion",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "maintenance-capex inference",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "partial capex subtraction labeled as company-defined FCF",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "different-period OCF and capex arithmetic",
+      "domain": "ppe_capex_simple_cash_conversion"
+    },
+    {
+      "derivation": "total liabilities substituted for debt",
+      "domain": "debt_liquidity"
+    },
+    {
+      "derivation": "net debt from incomplete debt components",
+      "domain": "debt_liquidity"
+    },
+    {
+      "derivation": "price currency copied to financial facts",
+      "domain": "debt_liquidity"
+    },
+    {
+      "derivation": "ordinary industrial net-debt logic for banks or insurers",
+      "domain": "debt_liquidity"
+    },
+    {
+      "derivation": "missing debt detail treated as bearish evidence",
+      "domain": "debt_liquidity"
+    },
+    {
+      "derivation": "other receivables as trade AR",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "other payables as trade AP",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "year-end to interim balance called YoY",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "DSO without average trade AR and compatible revenue",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "inventory days without average inventory and compatible COGS",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "DPO without explicit denominator policy",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "CCC with any missing component",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "missing working-capital data treated as negative",
+      "domain": "inventory_receivables_working_capital"
+    },
+    {
+      "derivation": "pretax income minus operating income called complete non-operating income",
+      "domain": "non_operating_financial_income_effects"
+    },
+    {
+      "derivation": "unmapped residual normalized by invention",
+      "domain": "non_operating_financial_income_effects"
+    },
+    {
+      "derivation": "bank interest income labeled non-operating",
+      "domain": "non_operating_financial_income_effects"
+    },
+    {
+      "derivation": "tax effect attributed without direct evidence",
+      "domain": "non_operating_financial_income_effects"
+    },
+    {
+      "derivation": "net-income improvement equated with operating improvement",
+      "domain": "non_operating_financial_income_effects"
+    }
+  ],
+  "status": "FROZEN_DESIGN"
+}

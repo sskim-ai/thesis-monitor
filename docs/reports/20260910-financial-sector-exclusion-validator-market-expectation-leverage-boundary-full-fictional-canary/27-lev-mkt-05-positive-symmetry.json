@@ -1,0 +1,17 @@
+{
+  "classification": "NOT_ADDITIONAL_POSITIVE_CORROBORATION",
+  "facts": [
+    "strong balance sheet",
+    "already elevated expectations",
+    "no other positive operating or valuation support"
+  ],
+  "id": "LEV-MKT-05",
+  "limitation": "resilience anchor alone does not reach minimum BUY",
+  "rule": "positive_symmetry",
+  "selected_buy": 5.5,
+  "status": "PASS",
+  "supportable_buy_buckets": [
+    5.5,
+    6
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "contract": "m12g-m12r-failure-reproduction-v1",
+  "errors": [
+    "material_financial_anchor_not_used",
+    "working_capital_checkpoint_not_used",
+    "material_financial_anchor_grounding_failure",
+    "working_capital_grounding_failure",
+    "narrative_substitution_failure"
+  ],
+  "selected_financial_refs": [
+    "canonical:fictional:FIC-FIN-06:inventory-current",
+    "canonical:fictional:FIC-FIN-06:trade-receivables-current"
+  ],
+  "status": "PASS",
+  "ticker": "FIC-FIN-06",
+  "used_financial_refs": []
+}

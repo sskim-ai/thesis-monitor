@@ -1,0 +1,13 @@
+{
+  "after": {
+    "function": "astra_runtime_adapter_m12v.single_attempt",
+    "layer": "M12V adapter",
+    "role": "same CLI arguments and isolation; delegates existing lifecycle with2400; no retries"
+  },
+  "before": {
+    "function": "directional_financial_context_m12._single_attempt_model_call",
+    "layer": "prior adapter",
+    "role": "one subprocess; merged regular-file stdout/stderr; no readers; absolute wait1800"
+  },
+  "saved_auth_or_command_semantics_changed": false
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-09T11:40:59.354584+00:00",
+  "output_path": "artifacts/20260909-qtd-ytd-plain-korean-period-validator-repair-full-fictional-canary/validation/full-tests.txt",
+  "output_sha256": "1b2b7328b7ed8361e06607b43fe72b576bf8f9a61906fcd5580da0dc7b6fdef2",
+  "returncode": 0,
+  "started_at": "2026-09-09T11:39:44.946092+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

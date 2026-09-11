@@ -1,0 +1,19 @@
+{
+  "status": "NOT_MEASURED",
+  "reason": "Existing full-canary advisory requires complete six-call sample.",
+  "partial_observation": {
+    "financial_refs_grounded": 15,
+    "period_conflict_required": 1,
+    "period_conflict_explicit_and_valid": 1,
+    "inline_evidence_alias_in_stance_summary_count": 8,
+    "affected_subjects": [
+      "FIC-FIN-05",
+      "FIC-FIN-06",
+      "FIC-FIN-07",
+      "FIC-FIN-08"
+    ],
+    "classification": "P2_PRESENTATION_ADVISORY",
+    "source": "Both new-buyer and holder summaries in context 2 include bracketed E aliases; unmodified raw output retained."
+  },
+  "message_rewrite_count": 0
+}

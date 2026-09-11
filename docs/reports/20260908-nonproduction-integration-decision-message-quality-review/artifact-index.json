@@ -1,0 +1,478 @@
+{
+  "contract": "m2-artifact-index-v1",
+  "hash_mismatch_count": 0,
+  "payload_count": 39,
+  "rows": [
+    {
+      "bytes": 569,
+      "path": "01-repository-provenance.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8f11c13ac8a521d52235d1d6dc68ece3dc13817101020a97f874b6616c7c8593"
+    },
+    {
+      "bytes": 875,
+      "path": "02-latest-result-integrity.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a7d5b8e8721dc36e109d02967dcd8c070763215939c2aaeb2dfc45a11e531824"
+    },
+    {
+      "bytes": 348,
+      "path": "03-m2-scope-freeze.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "54d0f344954aa22ea684433e2cd4e2aaa8851c2435935f945265848510861126"
+    },
+    {
+      "bytes": 9047,
+      "path": "04-existing-boundary-revalidation.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d159d3348402c6cb60c7da2c76ae315f62092057a1da7a650ad34d059c70d96d"
+    },
+    {
+      "bytes": 487,
+      "path": "05-nonproduction-integration-design.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "553f3fe217cac5eb63f29307f102ec9082875f82bffe2bef6aac37b406d2101e"
+    },
+    {
+      "bytes": 667,
+      "path": "06-lifecycle-mode-contract.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "7c55d0f6ab8c3ccbd1d189dba10748798a7d09a86db7ddb9da60106bceae546b"
+    },
+    {
+      "bytes": 396,
+      "path": "07-nonproduction-adapter-implementation.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "1b07df54158bb773d6434cc56d9a7c6c10cd577498d89494532f2f1b9ac7152a"
+    },
+    {
+      "bytes": 457,
+      "path": "08-idempotency-and-side-effect-audit.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "d62db816a17ae8eac59163a6e9e5d0eaf964bbeda23843905a19dc2579be696d"
+    },
+    {
+      "bytes": 17260,
+      "path": "09-file-only-rendering-harness.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "3bc9b7426ae9def32e06ab6d751162befaede49c3cc28527b170bebce2855b28"
+    },
+    {
+      "bytes": 621,
+      "path": "10-lifecycle-integration-test-results.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "1bdf9ab06d241fffc2c679b20b2f54ef43ff952bf822a482df96ca413f2783ed"
+    },
+    {
+      "bytes": 65386,
+      "path": "11-source-to-core-domain-coverage.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "6ba3f469f7f26724cf67581aba2cee03beef3b3f4bd25e8cf64ef47638bf2e2d"
+    },
+    {
+      "bytes": 457,
+      "path": "12-source-to-core-drop-lineage.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "6a1e75c0a21cc947758b17b6bed66d0f7c1b6553c9df2eeb9c296c46befadf84"
+    },
+    {
+      "bytes": 40125,
+      "path": "13-decision-quality-review.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "22064aebb2d00d32ad449969b240cdaaa26381e909b7b3fca894d64af386e0e0"
+    },
+    {
+      "bytes": 417,
+      "path": "14-boundary-stability-context-note.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "86c5c4f68073fb25e854bdacb8ae9984f1a176f45e39940b14cf35bd85148c7c"
+    },
+    {
+      "bytes": 575,
+      "path": "15-input-coverage-change-decision.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "2c3e41ae0f35846b04115fe4cd00414f36300a03b0f1c9079e8e7a607af8d7f1"
+    },
+    {
+      "bytes": 26664,
+      "path": "16-message-repetition-root-cause.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "1600e726c3ffd51f8bc5c763de54a031ee5ee631c2d4579ceacd15aa856cc31f"
+    },
+    {
+      "bytes": 625,
+      "path": "17-message-specificity-contract.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "1bcb79ae4d687257e1b015b749d0684bc8178a2f303444fad71c05bb80540fc3"
+    },
+    {
+      "bytes": 577,
+      "path": "18-renderer-vs-model-content-ownership-review.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "f11d0cc6d1aab9ac28ca8e5737f916d9696073dc44b9da27c12dad2bf639ebf8"
+    },
+    {
+      "bytes": 16314,
+      "path": "19-file-only-message-comparison.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "fb47188678c48935356f97ed7263d7784893eb80027f9eedf5d49eba3bae9c31"
+    },
+    {
+      "bytes": 380,
+      "path": "20-daily-delta-message-contract.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "85c637188dcd24e69c73bbfadff7fd6595d5ee3c65eb5821209e50b9ddcfe8f7"
+    },
+    {
+      "bytes": 1235,
+      "path": "20260908-nonproduction-integration-decision-message-quality-review.md",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "1f80e018db948e97786f99f9c5a1a42f71ed914da9496fd17f1242e8e131d47e"
+    },
+    {
+      "bytes": 403,
+      "path": "21-message-quality-change-decision.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "06fa08b7c9067d584f8740c8e8b57069ced821a45aae6c171543d43e23676b43"
+    },
+    {
+      "bytes": 3378,
+      "path": "22-candidate-change-decision-record.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "99b8f9fce79f82d056c2312cf8373eab1c064d52a7ece66d0aa4e79427ffcbb9"
+    },
+    {
+      "bytes": 385,
+      "path": "23-required-next-model-validation-scope.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "0d0e5c064bcaa0e9e5a3c00d7f18bcf4c453a8129a80897319784b50b56b25a1"
+    },
+    {
+      "bytes": 388,
+      "path": "24-production-no-change.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "dd85872aeac287ae0ad9f6d51db88090fe88419e4e2c2d8a820f71e29bff1b8d"
+    },
+    {
+      "bytes": 2276,
+      "path": "25-schedule-pause-observation.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "374a3be73cad340b162b9090f60fb9eaf6a6f123d2c51dea5d4107e5f16e9bba"
+    },
+    {
+      "bytes": 277,
+      "path": "26-master-workflow-update.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a7988cfbd0ac272a919bde1cd94edc33bc61e62150e5be6a0c69cdfdb1eb3c7a"
+    },
+    {
+      "bytes": 3165,
+      "path": "27-program-completion.json",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "251dd1a0257ab8cb26f8082898123bc970e211b6cb2b2823d10e77c1ee6870b3"
+    },
+    {
+      "bytes": 1402,
+      "path": "messages/daily-no-material-change.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "4181661c3af085a56cb52b4d6fc9954743c304a12822febf72e0723412390145"
+    },
+    {
+      "bytes": 1391,
+      "path": "messages/daily-price-only.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "60e0d847612f1d1cf3486767049c854b9334c31ac98b523635ebbfc819e0b4fa"
+    },
+    {
+      "bytes": 1378,
+      "path": "messages/daily-refresh-missing.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "a8f294393aae2d89d09bde41bbadd4095a9d9fa67cd92238bd8010a8de56c83c"
+    },
+    {
+      "bytes": 1384,
+      "path": "messages/daily-strengthened.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "bb463d568cef096b86aec1f3fb52a9d4efb22b22fab077c26329403426c59205"
+    },
+    {
+      "bytes": 1380,
+      "path": "messages/daily-weakened.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "0b03766c11b898cf9c0ead2f427b2a08ae8bad47ff4f338c81a152760c11edce"
+    },
+    {
+      "bytes": 1257,
+      "path": "messages/initial-absolute-new-issuer.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8e86831a646f5325720ec97fc289ee9ca98ededeee2a257a3e4d88d5df61e208"
+    },
+    {
+      "bytes": 1257,
+      "path": "messages/initial-confirmed-risk.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8e86831a646f5325720ec97fc289ee9ca98ededeee2a257a3e4d88d5df61e208"
+    },
+    {
+      "bytes": 1257,
+      "path": "messages/initial-price-unavailable.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8e86831a646f5325720ec97fc289ee9ca98ededeee2a257a3e4d88d5df61e208"
+    },
+    {
+      "bytes": 1257,
+      "path": "messages/initial-unknown-confidence-limit.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "8e86831a646f5325720ec97fc289ee9ca98ededeee2a257a3e4d88d5df61e208"
+    },
+    {
+      "bytes": 1258,
+      "path": "messages/monitoring-baseline-existing-issuer.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "3856306af66d9ed290c0ca7c82096dba26a87af5a6cd5206665d1e2f6fc2baf3"
+    },
+    {
+      "bytes": 1259,
+      "path": "messages/monitoring-baseline-new-issuer.txt",
+      "secret_category_counts": {
+        "bearer_token": 0,
+        "named_secret": 0,
+        "openai_key": 0,
+        "telegram_bot_token": 0
+      },
+      "secret_scan_status": "PASS",
+      "sha256": "880ad13e66f61db0180c6755973b2cddac3acd2da27c879ffaf99579266848b0"
+    }
+  ],
+  "secret_scan_failure_count": 0,
+  "size_mismatch_count": 0,
+  "status": "PASS"
+}

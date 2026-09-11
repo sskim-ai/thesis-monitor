@@ -1,0 +1,16 @@
+{
+  "backend_progress_heartbeat": false,
+  "cli_events": [
+    "thread.started",
+    "turn.started",
+    "turn.completed",
+    "turn.failed",
+    "item.*",
+    "error"
+  ],
+  "first_last_local_bytes": true,
+  "jsonl_supported": true,
+  "request_response_ids": "NOT_MEASURED",
+  "source": "https://learn.chatgpt.com/docs/non-interactive-mode",
+  "why_no_event_aware": "CLI lifecycle notifications are not a documented recurring backend sampling heartbeat; local preamble/liveness cannot reset a deadline."
+}

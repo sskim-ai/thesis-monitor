@@ -1,0 +1,54 @@
+{
+  "business_delta_variance": "NOT_MEASURED",
+  "no_forced_weakened": true,
+  "rows": [
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "business_delta": [],
+      "holder": [],
+      "new_buyer": [],
+      "ticker": "FIC-FIN-08"
+    }
+  ]
+}

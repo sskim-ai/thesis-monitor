@@ -1,0 +1,72 @@
+{
+  "context": 2,
+  "contract": "m12b-fictional-canary-context-run-v1",
+  "error": "m12_model_context_failed:20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02:MODEL_TIMEOUT",
+  "generation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf",
+  "receipt": {
+    "batch_split": 0,
+    "contract": "m12-single-attempt-model-receipt-v1",
+    "failure_type": "MODEL_TIMEOUT",
+    "finished_at": "2026-09-09T15:52:09.821574+00:00",
+    "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02",
+    "log_sha256": "b95247a35b9edd0fdf4c563816d258e77f49baa582434706a72169b8dda88209",
+    "model": "gpt-6-astra",
+    "model_process_spawned": true,
+    "network_readiness": {
+      "attempts": 1,
+      "contract": "codex-network-readiness-v1",
+      "failure_type": null,
+      "ready": true,
+      "resolved_address_count": 4
+    },
+    "orphan_process_count": 0,
+    "output_exists": false,
+    "output_sha256": null,
+    "output_size": 0,
+    "prompt_sha256": "ae2a8292680f6f4ea130219ea34ad52bf162d4163d70d821f7fcf370f9b8ccb7",
+    "raw_diagnostic_token": null,
+    "reasoning_effort": "xhigh",
+    "returncode": -15,
+    "runtime_isolation": {
+      "base_namespace_hash": "e23856e1315ce0253986b424",
+      "contract": "codex-model-context-runtime-isolation-v1",
+      "execution_isolation_valid": true,
+      "invocation_id": "20260909-m12f-fictional-20260909T150248Z-04f38944c4bf:run-1:context-02",
+      "invocation_identity_unique": true,
+      "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+      "runtime_state_namespace_hash": "3d34170739880127f328c031",
+      "runtime_state_namespace_unique": true,
+      "working_directory_identity": "bdf00f2eed2fde19a1e9036383c38fefbb53adc59a7a93296765a779fc34a0ff",
+      "working_directory_unique": true
+    },
+    "runtime_state": {
+      "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/3d34170739880127f328c031/home",
+      "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+      "contract": "codex-runtime-state-v1",
+      "mode": "0700",
+      "namespace_hash": "3d34170739880127f328c031",
+      "ownership": "uid:501",
+      "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+      "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-financial-exclusion-leverage-boundary-m12f/artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/runtime-state/3d34170739880127f328c031/sqlite",
+      "sqlite_wal_probe": "PASS"
+    },
+    "schema_sha256": "d42a0940e84aeb734c01197e4eab6635d7f1f7fbb82fef3011cfbe88997d71f2",
+    "single_authoritative_watchdog": true,
+    "started_at": "2026-09-09T15:22:09.811639+00:00",
+    "status": "FAIL",
+    "timed_out": true,
+    "timeout_count": 1,
+    "timeout_seconds": 1800,
+    "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+    "transport_attempt_count": 1,
+    "wrapper_retry_count": 0
+  },
+  "repetition": 1,
+  "status": "FAIL",
+  "tickers": [
+    "FIC-FIN-05",
+    "FIC-FIN-06",
+    "FIC-FIN-07",
+    "FIC-FIN-08"
+  ]
+}

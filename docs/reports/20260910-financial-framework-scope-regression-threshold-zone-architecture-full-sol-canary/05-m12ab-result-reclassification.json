@@ -1,0 +1,13 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "m12ab_status": "M12AB_PARTIAL",
+  "transport_status": "PASS_2_OF_2_COMPLETED_CONTEXTS",
+  "model_calls_fictional": 2,
+  "output_rows": 8,
+  "objective_semantic_failures": 2,
+  "legitimate_exclusion_false_rejects": 2,
+  "true_financial_sector_misuse": 0,
+  "corrected_classification": "VALIDATOR_FALSE_REJECT_NOT_MODEL_SEMANTIC_FAILURE"
+}

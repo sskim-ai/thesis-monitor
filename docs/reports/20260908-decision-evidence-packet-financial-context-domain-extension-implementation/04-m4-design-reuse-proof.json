@@ -1,0 +1,23 @@
+{
+  "contract": "m5-m4-design-reuse-proof-v1",
+  "domain_count": 6,
+  "domains": [
+    "same_period_prior_year_comparison",
+    "operating_cash_flow",
+    "ppe_capex_simple_cash_conversion",
+    "debt_liquidity",
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects"
+  ],
+  "frozen_implementation_order": [
+    "B_PACKET_FINANCIAL_CONTEXT_EXTENSION",
+    "A_EXISTING_CANONICAL_DOMAIN_ADAPTERS",
+    "A_ADDITIONAL_SOURCE_MAPPING_SUBPACKAGES",
+    "C_DIRECTIONAL_SPECIFICITY_CONTRACT",
+    "D_SECTOR_GATE_REVIEW_IF_COVERAGE_PROVES_REQUIRED"
+  ],
+  "implemented_order_position": 1,
+  "m4_contract_reinterpreted": false,
+  "schema_extension_decision": "ADDITIVE_OPTIONAL_FINANCIAL_CONTEXT_REQUIRED",
+  "status": "PASS"
+}

@@ -1,0 +1,42 @@
+{
+  "contract": "m12c-materiality-claim-trigger-v1",
+  "explicit_metric_use_required": true,
+  "matching_typed_ref_required": true,
+  "material_paths": [
+    "core_investment_judgment",
+    "dominant_evidence",
+    "risk_context",
+    "business_reevaluation_up",
+    "business_reevaluation_down",
+    "fundamental_new_buyer.confirmation_business_condition",
+    "fundamental_holder.business_invalidation_condition",
+    "buy_drivers",
+    "sell_drivers"
+  ],
+  "metric_registry": {
+    "inventory": [
+      "inventory",
+      "inventories",
+      "재고"
+    ],
+    "trade_accounts_payable": [
+      "trade payable",
+      "trade accounts payable",
+      "accounts payable",
+      "payable",
+      "payables",
+      "매입채무"
+    ],
+    "trade_accounts_receivable": [
+      "trade receivable",
+      "trade accounts receivable",
+      "accounts receivable",
+      "receivable",
+      "receivables",
+      "매출채권"
+    ]
+  },
+  "selected_metric_required": true,
+  "status": "PASS",
+  "unknown_or_context_use_is_valid": true
+}

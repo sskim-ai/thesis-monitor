@@ -1,0 +1,192 @@
+{
+  "root_cause_freeze": {
+    "authoring": {
+      "effort": "xhigh",
+      "model": "gpt-6-astra",
+      "target_match": true,
+      "timestamp": "2026-09-09T14:34:33.045Z"
+    },
+    "base_sha": "19b3dd7bc2353f418452e2db67c78e886a73cbc6",
+    "before_replay": {
+      "rows": [
+        {
+          "errors": [],
+          "status": "PASS",
+          "ticker": "FIC-FIN-05"
+        },
+        {
+          "errors": [],
+          "status": "PASS",
+          "ticker": "FIC-FIN-06"
+        },
+        {
+          "errors": [],
+          "status": "PASS",
+          "ticker": "FIC-FIN-07"
+        },
+        {
+          "errors": [
+            "net_debt_claim_without_complete_net_debt_evidence",
+            "financial_sector_generic_reasoning"
+          ],
+          "status": "FAIL",
+          "ticker": "FIC-FIN-08"
+        }
+      ],
+      "status": "FAIL"
+    },
+    "contract": "m12f-offline-root-cause-freeze-v1",
+    "cross_model_same_runtime_claim_count": 0,
+    "descriptive_policy": "CROSS_MODEL_DESCRIPTIVE_ONLY",
+    "exclusion": {
+      "classification": [
+        "ASSERTION_OR_APPLICATION",
+        "EXPLICIT_EXCLUSION",
+        "UNCERTAIN_OR_AMBIGUOUS"
+      ],
+      "root_cause": "TOKEN_PRESENCE_IGNORES_EXPLICIT_NON_APPLICATION_SCOPE",
+      "rule": "Only a metric occurrence governed by an explicit framework-exclusion predicate is exempt. Each occurrence and candidate field is inspected independently. Ambiguity fails closed; exclusions never legalize typed industrial evidence or actual application elsewhere.",
+      "unsupported_grammar": "Not a general NLP classifier: unrecognized negation, double negative, conditional and mixed clauses do not receive exemption."
+    },
+    "integrity": {
+      "duplicate_member_count": 0,
+      "extra": [],
+      "hash_mismatches": [],
+      "indexed_payload_count": 177,
+      "missing": [],
+      "sha256": "2cfab9aa676cc61af733198bddadb18971fcb631ca22b17e4735c05a9734484e",
+      "size_mismatches": [],
+      "status": "PASS"
+    },
+    "leverage": {
+      "case_change_semantics": "CURRENT_ABSOLUTE_CONDITION_WITHOUT_EXPLICIT_BASELINE_DETERIORATION",
+      "case_data_change": 0,
+      "debt_cash_independence": "CONTEXT_DEPENDENT; here components of one financial-resilience dimension, not two independent negative confirmations merely because there are two refs.",
+      "historical_comparison": "Prior Sol SELL/WEAKENED/AVOID remains historical, not a mandatory Astra output.",
+      "holder": "REVIEW observed; contract unchanged.",
+      "lev01_expected": {
+        "buy": 4.5,
+        "hold_lean": "SELL_LEAN",
+        "overall_direction": "HOLD",
+        "sell": 5.5
+      },
+      "minimum_sell_pattern": "A material negative resilience anchor plus sufficiently current/independent evidence that establishes actual severity, persistence or financing/debt-service pressure can support minimum SELL. No mandatory checklist, new numeric cutoff or evidence-count rule.",
+      "new_buyer": "WAIT is defensible with unresolved severity/confirmation. Do not impose SELL->AVOID or globally change stance policy.",
+      "positive_symmetry": "Low debt and ample cash do not by themselves create minimum BUY. Resilience can corroborate a separate material business/value anchor; do not count cash and debt components twice.",
+      "prompt_change": 0,
+      "root_cause": "ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT",
+      "secondary_finding": "HISTORICAL_WEAKENED_EXPECTATION_HAS_NO_EXPLICIT_BASELINE_CHANGE_IN_FROZEN_CASE",
+      "sell_lean_pattern": "High complete debt/thin compatible cash plus stable operating support and unresolved refinancing, maturity and debt-service severity supports the conservative 5.5 negative lean. Missing details limit strength, never create bullish evidence.",
+      "support": "Complete interest-bearing debt and cash are contemporaneous, no prior comparison. Narrative risk restates these same economics. Stable operating profit is an offset. Conditional refinancing expectation is not confirmed financing stress.",
+      "thesis_change": "UNCHANGED is defensible; WEAKENED requires supplied baseline-relative deterioration, not absolute negative balance-sheet state."
+    },
+    "leverage_fixtures": [
+      {
+        "expected": "HOLD_SELL_LEAN_5_5",
+        "id": "LEV-01",
+        "pattern": "complete high debt + thin cash + stable operating profit + refinancing/maturity unknown",
+        "selected_buy": 4.5,
+        "supportable_buy_buckets": [
+          4,
+          4.5
+        ]
+      },
+      {
+        "expected": "MINIMUM_SELL_MAY_BE_SUPPORTED_WITH_DISTINCT_NEGATIVE_CONFIRMATION",
+        "id": "LEV-02",
+        "pattern": "same leverage plus confirmed refinancing or debt-service stress"
+      },
+      {
+        "expected": "NO_AUTOMATIC_MINIMUM_SELL",
+        "id": "LEV-03",
+        "pattern": "high debt with strong compatible liquidity and stable operations"
+      },
+      {
+        "expected": "NO_TOTAL_OR_NET_DEBT_CONCLUSION",
+        "id": "LEV-04",
+        "pattern": "partial debt components only"
+      },
+      {
+        "expected": "INDUSTRIAL_LEVERAGE_NOT_APPLICABLE",
+        "id": "LEV-05",
+        "pattern": "bank insurance reinsurance"
+      },
+      {
+        "expected": "NO_AUTOMATIC_MINIMUM_BUY",
+        "id": "LEV-POSITIVE",
+        "pattern": "low debt and ample cash without distinct business/value support"
+      }
+    ],
+    "prohibitions": [
+      "no threshold increment lean tie-break changes",
+      "no prompt change under Branch A",
+      "no global buyer/holder change",
+      "no historical verdict rewrite",
+      "no real issuer model calls",
+      "no provider fetch",
+      "no production side effects or schedule resume",
+      "no model call before Phase A",
+      "no retry or post-generation code edits"
+    ],
+    "schedule_start": {
+      "automatic_monitoring_resume": 0,
+      "contract": "m12s-schedule-pause-observation-v1",
+      "launchctl_returncode": 0,
+      "observed_at": "2026-09-09T14:36:39.803848+00:00",
+      "observed_paused_schedule_count": 8,
+      "rows": [
+        {
+          "id": "thesis-monitor-ai-review-us-primary",
+          "path_exists": true,
+          "status": "PAUSED"
+        },
+        {
+          "id": "thesis-monitor-ai-review-us-backup",
+          "path_exists": true,
+          "status": "PAUSED"
+        },
+        {
+          "id": "thesis-monitor-ai-review-kr-primary",
+          "path_exists": true,
+          "status": "PAUSED"
+        },
+        {
+          "id": "thesis-monitor-ai-review-kr-backup",
+          "path_exists": true,
+          "status": "PAUSED"
+        },
+        {
+          "id": "com.seungsoo.thesis-monitor.daily",
+          "status": "PAUSED"
+        },
+        {
+          "id": "com.seungsoo.thesis-monitor.kr-close",
+          "status": "PAUSED"
+        },
+        {
+          "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+          "status": "PAUSED"
+        },
+        {
+          "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+          "status": "PAUSED"
+        }
+      ],
+      "scheduler_mutation_count": 0,
+      "status": "PASS"
+    },
+    "selected_branch": "A",
+    "work_instruction_commit": "a7029856c189599c96f6c357bb2c949a47af10a3"
+  },
+  "scope": {
+    "all_unapproved_ast_unchanged": {
+      "app/services/directional_financial_context_service.py": true,
+      "scripts/directional_financial_context_m12.py": true
+    },
+    "production_validator_fictional_branch_count": 0,
+    "prompt_change_count": 0,
+    "status": "PASS",
+    "unchanged_python_count": 654,
+    "unexpected_file_changes": []
+  }
+}

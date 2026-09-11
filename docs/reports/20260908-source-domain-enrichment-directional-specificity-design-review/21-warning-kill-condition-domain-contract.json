@@ -1,0 +1,74 @@
+{
+  "contract": "financial-domain-warning-kill-condition-v1-design",
+  "one_period_automatic_kill": false,
+  "rows": [
+    {
+      "domain": "same_period_prior_year_comparison",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "NOT_FROM_ONE_PERIOD_DOMAIN_FACT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    },
+    {
+      "domain": "operating_cash_flow",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "CONDITIONAL_PERSISTENT_CONTEXT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    },
+    {
+      "domain": "ppe_capex_simple_cash_conversion",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "NOT_FROM_ONE_PERIOD_DOMAIN_FACT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    },
+    {
+      "domain": "debt_liquidity",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "CONDITIONAL_PERSISTENT_CONTEXT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    },
+    {
+      "domain": "inventory_receivables_working_capital",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "CONDITIONAL_PERSISTENT_CONTEXT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    },
+    {
+      "domain": "non_operating_financial_income_effects",
+      "early_warning": "CONDITIONAL",
+      "kill_condition": "NOT_FROM_ONE_PERIOD_DOMAIN_FACT",
+      "requirements": [
+        "validated source",
+        "materiality",
+        "persistence or explicit structural context",
+        "existing thesis metric linkage"
+      ]
+    }
+  ],
+  "status": "FROZEN_DESIGN",
+  "warning_mutations_in_m4": 0
+}

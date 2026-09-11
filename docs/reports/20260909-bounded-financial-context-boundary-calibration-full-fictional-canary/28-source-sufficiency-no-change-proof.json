@@ -1,0 +1,11 @@
+{
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+      "current_sha256": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+      "path": "app/services/coldstart_fundamental_enrichment_service.py"
+    }
+  ],
+  "status": "PASS"
+}

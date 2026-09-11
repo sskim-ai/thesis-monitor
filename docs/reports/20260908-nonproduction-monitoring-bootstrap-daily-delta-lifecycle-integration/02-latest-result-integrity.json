@@ -1,0 +1,21 @@
+{
+  "checks": {
+    "final_head": true,
+    "index_status": true,
+    "next_scope": true,
+    "payload_count": true,
+    "recomputed_hash_mismatch": true,
+    "recomputed_size_mismatch": true,
+    "reported_hash_mismatch": true,
+    "reported_secret_failure": true,
+    "reported_size_mismatch": true,
+    "status": true
+  },
+  "contract": "m3-latest-result-integrity-v1",
+  "hash_mismatches": [],
+  "indexed_payload_count": 39,
+  "path": "/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Thesis Monitor Reports/thesis-monitor-20260908-nonproduction-integration-decision-message-quality-review-report.zip",
+  "sha256": "3ca97b17511605c3ead9da46292d1bf151782189ccddf25cd83d3fbcc0939422",
+  "size_mismatches": [],
+  "status": "PASS"
+}

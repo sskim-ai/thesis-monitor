@@ -1,0 +1,7 @@
+{
+  "contract": "m7-ruff-and-diff-results-v1",
+  "git_diff_check": "PASS",
+  "ruff_command": "shared-venv/bin/ruff check .",
+  "ruff_result": "PASS",
+  "whitespace_error_count": 0
+}

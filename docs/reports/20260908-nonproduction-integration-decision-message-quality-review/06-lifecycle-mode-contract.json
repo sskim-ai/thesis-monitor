@@ -1,0 +1,26 @@
+{
+  "contract": "m2-lifecycle-mode-contract-v1",
+  "explicit_registration_required": true,
+  "incomplete_onboarding_monitoring_ready": false,
+  "modes": {
+    "DAILY_DELTA": {
+      "missing_refresh_semantic": "UNAVAILABLE",
+      "price_only_semantic": "PRICE_ONLY_CONTEXT",
+      "requires": [
+        "baseline_ref",
+        "baseline_cutoff",
+        "refresh_state"
+      ]
+    },
+    "INITIAL_ABSOLUTE": {
+      "delta": "NOT_APPLICABLE",
+      "directional_delta_forbidden": true
+    },
+    "MONITORING_BASELINE": {
+      "delta": "NOT_APPLICABLE",
+      "render_as_daily_delta": false
+    }
+  },
+  "status": "PASS",
+  "unknown_is_automatic_negative": false
+}

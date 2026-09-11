@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-09T13:54:34.334943+00:00",
+  "output_path": "artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/validation/full.txt",
+  "output_sha256": "716612c79b31e8100bf3afb788eab8e18a665d2b4b6f8847f6bf26f4f7a6ac21",
+  "returncode": 0,
+  "started_at": "2026-09-09T13:53:10.122220+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

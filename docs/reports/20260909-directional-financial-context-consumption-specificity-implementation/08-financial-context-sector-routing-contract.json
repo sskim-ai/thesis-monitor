@@ -1,0 +1,19 @@
+{
+  "financial_sector": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 3,
+    "evidence_items": [],
+    "limitations": [
+      "generic_industrial_financial_context_disabled"
+    ],
+    "sector_framework": "bank_or_insurer",
+    "selected_input_count": 0,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 3,
+    "unavailable_or_not_applicable": [
+      "SECTOR_FRAMEWORK_REQUIRED"
+    ]
+  },
+  "financial_sector_generic_financial_context_leak_count": 0,
+  "status": "PASS"
+}

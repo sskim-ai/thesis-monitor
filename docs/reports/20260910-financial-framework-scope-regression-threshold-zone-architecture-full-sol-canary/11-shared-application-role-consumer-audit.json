@@ -1,0 +1,25 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "current_classifier": "candidate_financial_framework_claims",
+  "consumers": [
+    {
+      "name": "net_debt_completeness_validator",
+      "location": "validate_directional_financial_semantics",
+      "current_behavior": "ROLE_BASED"
+    },
+    {
+      "name": "financial_sector_generic_framework_validator",
+      "location": "validate_directional_financial_semantics",
+      "current_behavior": "ROLE_BASED"
+    },
+    {
+      "name": "working_capital_sector_validator",
+      "location": "validate_directional_financial_semantics",
+      "current_behavior": "SHARED_FINANCIAL_SECTOR_ROLE_GATE"
+    }
+  ],
+  "required_consistency": "SAME_ROLE_SET_HELPER",
+  "independent_lexical_override_allowed": false
+}

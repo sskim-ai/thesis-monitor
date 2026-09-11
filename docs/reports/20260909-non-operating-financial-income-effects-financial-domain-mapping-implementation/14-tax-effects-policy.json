@@ -1,0 +1,28 @@
+{
+  "contract": "m11-tax-effects-policy-v1",
+  "effective_tax_rate_derivation_count": 0,
+  "normalized_after_tax_earnings_count": 0,
+  "policy": "SEPARATE_BELOW_PRETAX_CONTEXT",
+  "rows": [
+    {
+      "canonical_metric": "income_tax_expense",
+      "continuity_scope": "continuing_operations",
+      "economic_role": "TAX_EFFECT",
+      "financial_effect_scope": "income_tax_expense_continuing_operations",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "ifrs-full:IncomeTaxExpenseContinuingOperations"
+    },
+    {
+      "canonical_metric": "income_tax_expense",
+      "continuity_scope": "continuing_operations",
+      "economic_role": "TAX_EFFECT",
+      "financial_effect_scope": "income_tax_expense_benefit",
+      "parent_scope": null,
+      "presentation_type": "DIRECT_AGGREGATE",
+      "priority": 100,
+      "source_semantic": "us-gaap:IncomeTaxExpenseBenefit"
+    }
+  ]
+}

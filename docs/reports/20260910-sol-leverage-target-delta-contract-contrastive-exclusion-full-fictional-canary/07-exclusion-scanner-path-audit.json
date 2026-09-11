@@ -1,0 +1,11 @@
+{
+  "status": "FROZEN",
+  "net_debt": "validate_directional_financial_semantics -> financial_framework_claims",
+  "financial_sector": "validate_directional_financial_semantics -> candidate_financial_framework_claims -> financial_framework_claims",
+  "working_capital": "candidate_financial_framework_claims -> financial_framework_claims",
+  "shared_classifier": "financial_framework_claims",
+  "candidate_wide_collector": "candidate_financial_framework_claims",
+  "x_instead_of_y_reaches_classifier": true,
+  "classified_before": "ASSERTION_OR_APPLICATION",
+  "both_errors_share_same_root": true
+}

@@ -1,0 +1,16 @@
+{
+  "contract": "m12-scope-freeze-v1",
+  "directional_only": true,
+  "effort": "xhigh",
+  "fictional_model_calls": 6,
+  "judge_model_calls": 0,
+  "model": "gpt-5.6-sol",
+  "price_timing_change_allowed": false,
+  "production_side_effects_allowed": false,
+  "provider_source_fetches": 0,
+  "real_model_calls": 0,
+  "renderer_substantive_change_allowed": false,
+  "source_sufficiency_change_allowed": false,
+  "status": "FROZEN",
+  "timeout_seconds": 1800
+}

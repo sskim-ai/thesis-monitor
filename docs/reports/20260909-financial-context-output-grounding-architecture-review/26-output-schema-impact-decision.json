@@ -1,0 +1,8 @@
+{
+  "contract": "m12a-output-schema-impact-decision-v1",
+  "legacy_output_migration": null,
+  "new_output_reference_field": null,
+  "output_schema_change_required": false,
+  "reason": "existing evidence_refs already accepts the selected aliases and the resolver already maps them to canonical typed refs",
+  "status": "PASS"
+}

@@ -1,0 +1,36 @@
+{
+  "contract": "m12d-run3-fic-fin-03-regression-v1",
+  "expected_result": "PASS",
+  "label": "M12C run-3 context-01",
+  "replayed_validation": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [],
+    "explicit_claim_count": 1,
+    "linked_claim_count": 7,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": true,
+    "ytd_evidence_ref_count": 1
+  },
+  "source_modified": false,
+  "source_path": "docs/reports/20260909-materiality-scoped-working-capital-grounding-validator-repair-full-fictional-canary/38-run-3-context-01.json",
+  "source_validation": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [
+      "qtd_ytd_conflict_not_explicit"
+    ],
+    "explicit_claim_count": 0,
+    "linked_claim_count": 7,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": false,
+    "ytd_evidence_ref_count": 1
+  },
+  "status": "PASS"
+}

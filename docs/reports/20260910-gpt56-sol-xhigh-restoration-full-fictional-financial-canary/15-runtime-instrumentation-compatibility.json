@@ -1,0 +1,10 @@
+{
+  "backend_progress_heartbeat": false,
+  "contract": "codex-transport-lifecycle-v1",
+  "first_last_local_byte_timing": true,
+  "process_group_cleanup": true,
+  "semantic_change_count": 0,
+  "status": "RETAIN_MODEL_NEUTRAL",
+  "unique_runtime_namespace": true,
+  "unique_working_directory": true
+}

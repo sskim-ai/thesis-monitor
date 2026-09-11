@@ -1,0 +1,20 @@
+{
+  "base_sha": "3ac2359a16c8b6e03a146ecc32676005e1589db4",
+  "branch": "codex/20260908-source-class-financial-mapping-implementation",
+  "contract": "m8-repository-provenance-v1",
+  "final_head_sha": "NOT_MEASURED",
+  "head_at_report_generation": "00a8663c1adbd32b487f4672fea4011d159ee945",
+  "implementation_commit": "00a8663c1adbd32b487f4672fea4011d159ee945",
+  "report_commit": "NOT_MEASURED",
+  "work_instruction_commit": "86f361fb92431c8725087e082bf06b83a399480d",
+  "working_tree_changes_at_report_generation": [
+    "app/services/official_cash_flow_service.py",
+    "app/services/opendart_xbrl_service.py",
+    "app/services/source_class_financial_mapping_service.py",
+    "docs/MASTER_WORKFLOW.md",
+    "docs/reports/20260908-source-class-financial-mapping-implementation/05-source-class-gap-classification.json",
+    "docs/work-instructions/20260908-source-class-financial-mapping-implementation.md",
+    "tests/test_opendart_xbrl_service.py",
+    "tests/test_source_class_financial_mapping_service.py"
+  ]
+}

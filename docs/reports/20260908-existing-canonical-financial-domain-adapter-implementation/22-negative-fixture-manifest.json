@@ -1,0 +1,100 @@
+{
+  "cases": [
+    {
+      "fixture_id": "comparison_qtd_vs_ytd",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "comparison_metric_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "comparison_currency_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "comparison_entity_scope_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "comparison_statement_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "comparison_attribution_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "us_ocf_duration_start_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_ocf_period_ambiguous",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "kr_ppe_period_ambiguous",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_ytd_vs_fy",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_currency_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_entity_scope_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_statement_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_attribution_basis_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_source_ref_missing",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_input_order_invalid",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derived_period_input_lineage_incomplete",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_arithmetic_mismatch",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_input_capex_scope_not_ppe_only",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "derivation_output_scope_not_ppe_only",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "negative_ppe_not_reinterpreted",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "noncanonical_unit_scale_not_converted",
+      "status": "REJECTED_OR_SUPPRESSED"
+    },
+    {
+      "fixture_id": "non_m6_financial_domain_not_emitted",
+      "status": "REJECTED_OR_SUPPRESSED"
+    }
+  ],
+  "contract": "m6-negative-fixture-manifest-v1",
+  "fixture_count": 23,
+  "idempotency_and_required_limitation_checks": "PASS_SEPARATE_INVARIANTS",
+  "rejected_count": 23
+}

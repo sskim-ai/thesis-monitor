@@ -1,0 +1,11 @@
+{
+  "affected_decision_fields": [],
+  "available_but_dropped_row_count": 0,
+  "caution": "Absence from the preserved archive is not evidence of provider absence. It cannot be repaired as a packet drop without separate source design.",
+  "conclusion": "NO_TARGET_DOMAIN_DROP_DETECTED_IN_PRESERVED_PACKET_TO_CORE_PATH",
+  "contract": "source-to-core-drop-lineage-v1",
+  "drop_locations": [],
+  "generic_fix_candidates": [],
+  "rows": [],
+  "status": "PASS"
+}

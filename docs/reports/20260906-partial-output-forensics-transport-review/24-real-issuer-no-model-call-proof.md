@@ -1,0 +1,51 @@
+# 24 Real Issuer No Model Call Proof
+
+Contract: `real-issuer-no-model-call-proof-v1`
+
+Status: `PASS`
+
+```json
+{
+  "consumed_regression": [
+    "PLTR",
+    "V",
+    "MA",
+    "AMZN",
+    "XOM",
+    "DIS",
+    "NKE",
+    "MCD",
+    "033920",
+    "104480",
+    "071320",
+    "096240",
+    "032860",
+    "060570",
+    "016600",
+    "462520"
+  ],
+  "contract": "real-issuer-no-model-call-proof-v1",
+  "historical_output_model_recall_count": 0,
+  "new_real_holdout_selection_count": 0,
+  "new_real_issuer_model_call_count": 0,
+  "retired_holdout": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520",
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620"
+  ],
+  "status": "PASS"
+}
+```

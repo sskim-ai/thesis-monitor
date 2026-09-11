@@ -1,0 +1,39 @@
+{
+  "contract": "m12s-scope-freeze-v1",
+  "model_calls": 0,
+  "model_free": true,
+  "production_module_freeze": {
+    "change_count": 0,
+    "rows": [
+      {
+        "base_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+        "changed": false,
+        "current_sha256": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+        "path": "app/services/directional_balance_service.py"
+      },
+      {
+        "base_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+        "changed": false,
+        "current_sha256": "320e1b93bb42654512a88934a5025d56ab0e5057bf9cc988f7e6e061d979b742",
+        "path": "app/services/direction_timing_ownership_service.py"
+      },
+      {
+        "base_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+        "changed": false,
+        "current_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+        "path": "app/services/directional_financial_context_service.py"
+      },
+      {
+        "base_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+        "changed": false,
+        "current_sha256": "291cb010c284dca27fa9f27836e2e991407da8ab9b339a85d1556da3b917b0cf",
+        "path": "scripts/directional_core_price_timing_holdout.py"
+      }
+    ],
+    "status": "PASS"
+  },
+  "production_side_effects": 0,
+  "provider_calls": 0,
+  "source": "preserved M12D bundle only",
+  "status": "FROZEN"
+}

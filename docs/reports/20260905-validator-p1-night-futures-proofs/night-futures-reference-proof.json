@@ -1,0 +1,22 @@
+{
+  "contract": "night-futures-reference-basis-proof-v1",
+  "cross_contract_raw_return": "FORBIDDEN",
+  "dual_reference_false_conflict": 0,
+  "header": {
+    "change": "41.40",
+    "change_pct": "3.93",
+    "reference_price": "1052.5",
+    "reference_type": "UNKNOWN",
+    "source_ref": "fixture.header_change",
+    "source_semantic_explicit": false
+  },
+  "header_reference_type_unknown": "PASS",
+  "prior_night": {
+    "change": "44.85",
+    "change_pct": "4.28",
+    "reference_price": "1049.05",
+    "reference_type": "PRIOR_NIGHT_CLOSE",
+    "source_ref": "fixture.prior_night_close",
+    "source_semantic_explicit": true
+  }
+}

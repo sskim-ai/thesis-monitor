@@ -1,0 +1,57 @@
+{
+  "attribution_basis": [
+    "total",
+    "parent",
+    "common",
+    null
+  ],
+  "comparison_kinds": [
+    "prior_year_comparable",
+    "prior_year_end",
+    "none"
+  ],
+  "contract": "decision-evidence-financial-context-v1",
+  "currency": "verified ISO-like three-letter financial currency; null only for registered non-currency metrics",
+  "derivation": [
+    "formula",
+    "input_source_refs",
+    "version"
+  ],
+  "entity_scope": "bounded canonical identifier",
+  "evidence_status": [
+    "DIRECT_REPORTED",
+    "DERIVED_SAFE"
+  ],
+  "extra_fields": "forbid",
+  "fields": [
+    "metric",
+    "currency",
+    "unit_scale",
+    "period",
+    "entity_scope",
+    "statement_basis",
+    "attribution_basis",
+    "evidence_status",
+    "quality",
+    "comparison",
+    "derivation",
+    "limitations"
+  ],
+  "frozen": true,
+  "limitations": "bounded unique canonical identifiers",
+  "metric": "bounded lower_snake_case canonical identifier",
+  "period_types": [
+    "QTD",
+    "YTD",
+    "FY",
+    "TTM",
+    "POINT_IN_TIME"
+  ],
+  "quality": [
+    "verified",
+    "partial"
+  ],
+  "statement_basis": "bounded canonical identifier",
+  "status": "PASS",
+  "unit_scale": "positive integer, explicit"
+}

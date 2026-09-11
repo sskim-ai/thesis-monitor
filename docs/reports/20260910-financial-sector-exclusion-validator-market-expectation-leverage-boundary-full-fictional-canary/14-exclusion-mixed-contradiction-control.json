@@ -1,0 +1,644 @@
+{
+  "fixtures": {
+    "false_accept": 0,
+    "false_reject": 0,
+    "fixture_role": "Authored economic proposition review plus existing ordinal tie-break; not automated economic inference",
+    "leverage": [
+      {
+        "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+        "facts": [
+          "high complete debt and thin cash",
+          "stable operating profit",
+          "expectation assumes benign refinancing"
+        ],
+        "id": "LEV-MKT-01",
+        "limitation": "refinancing severity and persistence unresolved; no distinct established current pricing risk",
+        "rule": "conditional_expectation",
+        "selected_buy": 4.5,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          4,
+          4.5
+        ]
+      },
+      {
+        "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+        "facts": [
+          "confirmed refinancing stress",
+          "independently established expectations assume benign financing"
+        ],
+        "id": "LEV-MKT-02",
+        "limitation": "minimum downside supported; no stronger persistence proof",
+        "rule": "independent_expectation",
+        "selected_buy": 4,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          4
+        ]
+      },
+      {
+        "classification": "NO_EXPECTATION_AXIS",
+        "facts": [
+          "high complete debt and thin cash",
+          "stable profit",
+          "no expectation evidence"
+        ],
+        "id": "LEV-MKT-03",
+        "limitation": "refinancing severity unresolved",
+        "rule": "limiting_unknown",
+        "selected_buy": 4.5,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          4,
+          4.5
+        ]
+      },
+      {
+        "classification": "NOT_ADDITIONAL_NEGATIVE_CORROBORATION",
+        "facts": [
+          "high complete debt and thin cash",
+          "expectations already allow for stress"
+        ],
+        "id": "LEV-MKT-04",
+        "limitation": "no extra negative expectation corroboration; severity unresolved",
+        "rule": "already_reflected",
+        "selected_buy": 4.5,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          4,
+          4.5
+        ]
+      },
+      {
+        "classification": "NOT_ADDITIONAL_POSITIVE_CORROBORATION",
+        "facts": [
+          "strong balance sheet",
+          "already elevated expectations",
+          "no other positive operating or valuation support"
+        ],
+        "id": "LEV-MKT-05",
+        "limitation": "resilience anchor alone does not reach minimum BUY",
+        "rule": "positive_symmetry",
+        "selected_buy": 5.5,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          5.5,
+          6
+        ]
+      },
+      {
+        "classification": "INDEPENDENT_MARKET_EXPECTATION_AXIS",
+        "facts": [
+          "balance sheet resilience constraint",
+          "confirmed persistent loss of a distinct customer economics source",
+          "expectations independently assume customer economics remain intact"
+        ],
+        "id": "LEV-MKT-06",
+        "limitation": "distinct confirmed risk supports minimum downside, not stronger bucket without more support",
+        "rule": "independent_risk_axis",
+        "selected_buy": 4,
+        "status": "PASS",
+        "supportable_buy_buckets": [
+          4
+        ]
+      }
+    ],
+    "rows": [
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "순부채 틀은 적용하지 않는다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "순부채 틀은 적용하지 않는다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "보험사에는 일반 기업의 순부채 틀이 적용 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "보험사에는 일반 기업의 순부채 틀이 적용 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "일반 사업회사의 부채·운전자본 틀은 적용 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "순부채는 평가 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "순부채는 평가 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "운전자본은 사용 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "운전자본은 사용 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "순부채는 해당 기준의 적용 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "순부채는 해당 기준의 적용 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "순부채는 일반 영업기업 기준의 대상이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "순부채는 일반 영업기업 기준의 대상이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "운전자본 기준은 이 업종의 핵심 평가틀이 아니다"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "운전자본 기준은 이 업종의 핵심 평가틀이 아니다.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Net debt is not applicable"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "Net debt is not applicable.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Working capital does not apply"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "Working capital does not apply.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Net debt is not an applicable framework"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "Net debt is not an applicable framework.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Working capital is not the relevant framework"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "Working capital is not the relevant framework.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "We do not apply net debt"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "We do not apply net debt.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Net debt and working capital are not applicable to insurers"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "Net debt and working capital are not applicable to insurers"
+          }
+        ],
+        "errors": [],
+        "expected": "positive",
+        "status": "PASS",
+        "text": "Net debt and working capital are not applicable to insurers.",
+        "valid": true
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "text": "보험사의 순부채가 높아 SELL 근거다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "보험사의 순부채가 높아 SELL 근거다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "text": "운전자본 악화가 투자 위험이다"
+          }
+        ],
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "운전자본 악화가 투자 위험이다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채 틀은 적용 대상이 아니지만 순부채가 높아 부정 판단을 강화한다"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채 틀은 적용 대상이 아니지만 순부채가 높아 부정 판단을 강화한다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채 틀은 적용 대상이 아니지만 순부채가 높아 부정 판단을 강화한다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "EXPLICIT_EXCLUSION",
+            "text": "순부채 틀은 적용 대상이 아니다"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "text": "운전자본이 악화해 부정적이다"
+          }
+        ],
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채 틀은 적용 대상이 아니다. 운전자본이 악화해 부정적이다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채 틀은 적용 대상이 아닌 것은 아니다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채 틀은 적용 대상이 아닌 것은 아니다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채 틀은 적용 대상이 아니라고 볼 수 없다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채 틀은 적용 대상이 아니라고 볼 수 없다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채가 높고 관련 계약은 적용 대상이 아니다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채가 높고 관련 계약은 적용 대상이 아니다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "순부채 틀이 적용 대상이 아니라면 보수적으로 판단한다"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "순부채 틀이 적용 대상이 아니라면 보수적으로 판단한다.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "Net debt is not inapplicable"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "Net debt is not inapplicable.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "It is not true that net debt is not applicable"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "It is not true that net debt is not applicable.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "We do not deny that working capital is not applicable"
+          }
+        ],
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "We do not deny that working capital is not applicable.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "Net debt does not apply, but net debt supports a negative conclusion"
+          },
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "Net debt does not apply, but net debt supports a negative conclusion"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "Net debt does not apply, but net debt supports a negative conclusion.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "working_capital",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "If working capital does not apply"
+          }
+        ],
+        "errors": [
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "If working capital does not apply.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "ASSERTION_OR_APPLICATION",
+            "text": "Net debt is high"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "Net debt is high; unrelated regulation is not applicable.",
+        "valid": false
+      },
+      {
+        "claims": [
+          {
+            "evidence_refs": [],
+            "field_path": "",
+            "framework": "net_debt",
+            "kind": "UNCERTAIN_OR_AMBIGUOUS",
+            "text": "Net debt is not the relevant framework unless liquidity falls"
+          }
+        ],
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "expected": "negative",
+        "status": "PASS",
+        "text": "Net debt is not the relevant framework unless liquidity falls.",
+        "valid": false
+      }
+    ],
+    "status": "PASS"
+  },
+  "tests": "tests/test_financial_exclusion_expectation_m12u.py"
+}

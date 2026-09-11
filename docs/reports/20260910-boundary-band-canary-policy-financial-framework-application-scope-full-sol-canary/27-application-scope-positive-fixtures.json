@@ -1,0 +1,192 @@
+{
+  "false_accept_count": 0,
+  "false_reject_count": 0,
+  "rows": [
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다"
+        }
+      ],
+      "expected_role": "CONTRASTIVE_REPLACEMENT",
+      "id": "APP-01",
+      "status": "PASS",
+      "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다"
+        },
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다"
+        }
+      ],
+      "expected_role": "CONTRASTIVE_REPLACEMENT",
+      "id": "APP-02",
+      "status": "PASS",
+      "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "일반기업 순부채 틀은 적용 대상이 아니다"
+        }
+      ],
+      "expected_role": "EXPLICIT_NON_APPLICATION",
+      "id": "APP-03",
+      "status": "PASS",
+      "text": "일반기업 순부채 틀은 적용 대상이 아니다.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "net_debt",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "CONTRASTIVE_REPLACEMENT",
+          "text": "Use regulatory capital rather than industrial net debt"
+        }
+      ],
+      "expected_role": "CONTRASTIVE_REPLACEMENT",
+      "id": "APP-P04",
+      "status": "PASS",
+      "text": "Use regulatory capital rather than industrial net debt.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "sector_interpretation.text",
+          "framework": "working_capital",
+          "kind": "EXPLICIT_EXCLUSION",
+          "role": "EXPLICIT_NON_APPLICATION",
+          "text": "Industrial working capital is not the applicable framework"
+        }
+      ],
+      "expected_role": "EXPLICIT_NON_APPLICATION",
+      "id": "APP-P05",
+      "status": "PASS",
+      "text": "Industrial working capital is not the applicable framework.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    },
+    {
+      "claims": [
+        {
+          "evidence_refs": [],
+          "field_path": "historical_context.text",
+          "framework": "net_debt",
+          "kind": "ASSERTION_OR_APPLICATION",
+          "role": "CONTEXT_ONLY_MENTION",
+          "text": "The historical discussion mentioned industrial net debt without applying it to the decision"
+        }
+      ],
+      "expected_role": "CONTEXT_ONLY_MENTION",
+      "field": "historical_context",
+      "id": "APP-07",
+      "status": "PASS",
+      "text": "The historical discussion mentioned industrial net debt without applying it to the decision.",
+      "validation": {
+        "contract": "directional-financial-semantic-validator-v1",
+        "errors": [],
+        "financial_sector_generic_financial_context_leak_count": 0,
+        "fixed_financial_score_rule_count": 0,
+        "invalid_financial_reference_count": 0,
+        "normalized_earnings_claim_violation_count": 0,
+        "partial_capex_called_fcf_count": 0,
+        "partial_debt_total_claim_count": 0,
+        "valid": true,
+        "year_end_as_yoy_count": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

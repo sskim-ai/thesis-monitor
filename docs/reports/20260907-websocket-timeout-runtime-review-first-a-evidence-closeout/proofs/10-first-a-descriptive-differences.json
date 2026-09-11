@@ -1,0 +1,2515 @@
+{
+  "cohort_count": 16,
+  "comparison_status": "POST_HOC_TWO_RUN_DESCRIPTIVE_COMPARISON",
+  "contract": "post-hoc-two-run-descriptive-comparison-v1",
+  "different_counts": {
+    "directional_balance": 9,
+    "entry_mode": 0,
+    "fundamental_holder_stance": 1,
+    "fundamental_new_buyer_stance": 3,
+    "holder_price_review": 3,
+    "overall_direction": 7,
+    "technical_state": 3,
+    "timing_new_buyer_modifier": 1
+  },
+  "direct_buy_sell_flip_count": 0,
+  "direction_change_count": 7,
+  "direction_changes": [
+    {
+      "a": "SELL",
+      "a_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:TCI:earnings_financial_current:5f6f1120a5043bd5cb9d"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:TCI:earnings_financial_current:5f6f1120a5043bd5cb9d"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "first": "HOLD",
+      "first_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "ticker": "TCI",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2b15a0662bbf30ead5fc"
+            ],
+            "summary": "안전한 가치평가 근거가 없어 가격 매력도는 미확인이다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5af0a4b4fabc652b42e9"
+            ],
+            "summary": "저장된 선행 논거가 없어 변화 판단이 제한된다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ab73e39046d5a2c006f6"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5af0a4b4fabc652b42e9"
+            ],
+            "summary": "기존 모니터링 논리가 없어 논리 변화 판단의 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ab73e39046d5a2c006f6"
+            ],
+            "summary": "세부 운영 KPI와 향후 실행은 후속 공시에서 확인해야 한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2b15a0662bbf30ead5fc"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 매력도 판단을 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "BUY",
+      "a_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:025000:earnings_financial_current:5b9a513e6020e76cf97e"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:025000:earnings_financial_current:5b9a513e6020e76cf97e"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "first": "HOLD",
+      "first_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "ticker": "025000",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:71af9bdc1c37802517e5"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b70549de551d112ef956"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:f21e02189fd24cedcaf4"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a2d8c9634a5490aa1a35"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2e4f4aa4f312a215be7c"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:71af9bdc1c37802517e5"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b70549de551d112ef956"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "BUY",
+      "a_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:131030:earnings_financial_current:308c526f51f662419137"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:131030:earnings_financial_current:308c526f51f662419137"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "first": "HOLD",
+      "first_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "ticker": "131030",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae849c9de49aa98f1d4f"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:3118ef664fb78ac016a4"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:fd5e4fd084aa7067abf7"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d78fe5b935e95f6bb0a9"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:9264a549e2ed39c794b0"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae849c9de49aa98f1d4f"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:3118ef664fb78ac016a4"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "BUY",
+      "a_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:372910:earnings_financial_current:eca7ad1a31db678985f0"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:372910:earnings_financial_current:eca7ad1a31db678985f0"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "first": "HOLD",
+      "first_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "ticker": "372910",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5ccd79d458363b66d5fb"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:208d8fdb2e96b0139fbd"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:1b0043d7a6618ce7e6bb"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d48f3a1aad164d274aa4"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:eaff97f58512815e373a"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5ccd79d458363b66d5fb"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:208d8fdb2e96b0139fbd"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "HOLD",
+      "a_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:045340:business_current:a9af01fcd0d23eb9e952",
+          "canonical:fundamental:045340:earnings_financial_current:8b18e9087bbe806b4f83"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:045340:business_current:a9af01fcd0d23eb9e952"
+        ],
+        "first": [
+          "canonical:fundamental:045340:earnings_financial_current:8b18e9087bbe806b4f83"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "first": "BUY",
+      "first_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "ticker": "045340",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:7d242320fc8c0751b89c"
+            ],
+            "summary": "기존 모니터링 논거 부재는 판단 연속성의 한계이며 부정 신호는 아니다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a4f57cbffc0bcfcdac36"
+            ],
+            "summary": "가치 근거 부재는 매력도 확인이 필요한 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b77c98d18da49c59a39c"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 흑자 지속성 검증을 요구한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a4f57cbffc0bcfcdac36"
+            ],
+            "summary": "밸류에이션 부재는 가격 매력도 확인 조건으로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:63802567c641aa8becbb",
+              "decision-evidence:7d242320fc8c0751b89c",
+              "decision-evidence:b77c98d18da49c59a39c"
+            ],
+            "summary": "사업 지표, 시장 기대, 기존 투자 논리의 공백은 확신의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "HOLD",
+      "a_balance": {
+        "buy": 5.5,
+        "sell": 4.5
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:006910:business_current:a711f7239ff8be8cf5ab",
+          "canonical:fundamental:006910:earnings_financial_current:95d55c7f166b649c6673"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:006910:business_current:a711f7239ff8be8cf5ab"
+        ],
+        "first": [
+          "canonical:fundamental:006910:earnings_financial_current:95d55c7f166b649c6673"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "first": "BUY",
+      "first_balance": {
+        "buy": 6.0,
+        "sell": 4.0
+      },
+      "ticker": "006910",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:94fee0abb5bb07d87a9c"
+            ],
+            "summary": "기존 모니터링 논거 부재는 판단 연속성의 한계이며 부정 신호는 아니다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:676bcfc12ab66c40d2ff"
+            ],
+            "summary": "가치 근거 부재는 매력도 확인이 필요한 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:69741d1d9fab1b7ca4ab"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 흑자 지속성 검증을 요구한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:676bcfc12ab66c40d2ff"
+            ],
+            "summary": "밸류에이션 부재는 가격 매력도 확인 조건으로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:69741d1d9fab1b7ca4ab",
+              "decision-evidence:94fee0abb5bb07d87a9c",
+              "decision-evidence:ecf153908251762bc376"
+            ],
+            "summary": "사업 지표, 시장 기대, 기존 투자 논리의 공백은 확신의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      }
+    },
+    {
+      "a": "HOLD",
+      "a_balance": {
+        "buy": 4.5,
+        "sell": 5.5
+      },
+      "anchors": {
+        "a": [
+          "canonical:fundamental:023440:business_current:ab36b07f61a92e7b39d0",
+          "canonical:fundamental:023440:earnings_financial_current:1935806b9f1ff5d61e3b"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:023440:business_current:ab36b07f61a92e7b39d0"
+        ],
+        "first": [
+          "canonical:fundamental:023440:earnings_financial_current:1935806b9f1ff5d61e3b"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "first": "SELL",
+      "first_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "ticker": "023440",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:307b1a6bb9b761fe6778",
+              "decision-evidence:6d7634a73ca80d34c42b",
+              "decision-evidence:ac7343c57775e6b7cfe0"
+            ],
+            "summary": "밸류에이션, 시장 기대와 선행 논리의 공백은 방향성 음수가 아니라 확신 한계로 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d2f6fc4ead4af8aa5e7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ac7343c57775e6b7cfe0"
+            ],
+            "summary": "밸류에이션 근거 부재로 가격 매력도는 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d2f6fc4ead4af8aa5e7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행의 미확인은 방향보다 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      }
+    }
+  ],
+  "direction_changes_with_half_point_buy_shift": 7,
+  "expected_count_mismatches": {},
+  "formal_generalization_status": "NOT_ESTABLISHED",
+  "formal_stability_status": "NOT_MEASURED",
+  "identical_counts": {
+    "directional_balance": 7,
+    "entry_mode": 16,
+    "fundamental_holder_stance": 15,
+    "fundamental_new_buyer_stance": 13,
+    "holder_price_review": 13,
+    "overall_direction": 9,
+    "technical_state": 13,
+    "timing_new_buyer_modifier": 15
+  },
+  "not_an_official_reliability_rate": true,
+  "rows": [
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:NU:business_current:08dce37cbd081ce2d6b2",
+          "canonical:fundamental:NU:earnings_financial_current:65343f0ed46c1774e8fa"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:NU:business_current:08dce37cbd081ce2d6b2",
+          "canonical:fundamental:NU:earnings_financial_current:65343f0ed46c1774e8fa"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [],
+      "classification_boundary_crossed": false,
+      "ticker": "NU",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:e313e8b80b9169ab848b"
+            ],
+            "summary": "안전한 가치평가 근거가 없어 가격 매력도는 미확인이다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:c6992486ccaeadd31cea"
+            ],
+            "summary": "저장된 선행 논거가 없어 변화 판단이 제한된다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:389611517c14a3d1ff28"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:e313e8b80b9169ab848b"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 매력도 판단을 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:c6992486ccaeadd31cea"
+            ],
+            "summary": "기존 모니터링 논리가 없어 변화 판단의 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:389611517c14a3d1ff28"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 공시에서 확인해야 한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:LNG:business_current:4bed7c17b16c4c9b6861",
+          "canonical:fundamental:LNG:earnings_financial_current:0f7328449208ce898663"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:LNG:business_current:4bed7c17b16c4c9b6861",
+          "canonical:fundamental:LNG:earnings_financial_current:0f7328449208ce898663"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [],
+      "classification_boundary_crossed": false,
+      "ticker": "LNG",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae3c2922af3010d94372"
+            ],
+            "summary": "안전한 가치평가 근거가 없어 가격 매력도는 미확인이다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bde4845915e062ca4231"
+            ],
+            "summary": "저장된 선행 논거가 없어 변화 판단이 제한된다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bda55b46378dd7d67e80"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bde4845915e062ca4231"
+            ],
+            "summary": "기존 모니터링 논리가 없어 논리 변화 판단의 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae3c2922af3010d94372"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 매력도 판단을 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bda55b46378dd7d67e80"
+            ],
+            "summary": "세부 운영 KPI와 향후 실행은 후속 공시에서 확인해야 한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:TCI:earnings_financial_current:5f6f1120a5043bd5cb9d"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:TCI:earnings_financial_current:5f6f1120a5043bd5cb9d"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance",
+        "fundamental_new_buyer_stance"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "TCI",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2b15a0662bbf30ead5fc"
+            ],
+            "summary": "안전한 가치평가 근거가 없어 가격 매력도는 미확인이다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5af0a4b4fabc652b42e9"
+            ],
+            "summary": "저장된 선행 논거가 없어 변화 판단이 제한된다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ab73e39046d5a2c006f6"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5af0a4b4fabc652b42e9"
+            ],
+            "summary": "기존 모니터링 논리가 없어 논리 변화 판단의 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ab73e39046d5a2c006f6"
+            ],
+            "summary": "세부 운영 KPI와 향후 실행은 후속 공시에서 확인해야 한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2b15a0662bbf30ead5fc"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 매력도 판단을 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "first": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "AVOID",
+          "first": "WAIT",
+          "identical": false
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "SELL",
+          "first": "HOLD",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "ADVERSE",
+          "first": "ADVERSE",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:WMG:business_current:d600ea46280c390d804c",
+          "canonical:fundamental:WMG:earnings_financial_current:f1089a6dbc0fb8e76b3d"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:WMG:business_current:d600ea46280c390d804c",
+          "canonical:fundamental:WMG:earnings_financial_current:f1089a6dbc0fb8e76b3d"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [
+        "technical_state",
+        "timing_new_buyer_modifier",
+        "holder_price_review"
+      ],
+      "classification_boundary_crossed": false,
+      "ticker": "WMG",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:41ade568d56d41c752c2"
+            ],
+            "summary": "안전한 가치평가 근거가 없어 가격 매력도는 미확인이다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d1e9463c5ab183a5fb1f"
+            ],
+            "summary": "저장된 선행 논거가 없어 변화 판단이 제한된다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5f2b4f4d47b674f4eb7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:41ade568d56d41c752c2"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 매력도 판단을 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d1e9463c5ab183a5fb1f"
+            ],
+            "summary": "기존 모니터링 논리가 없어 논리 변화 판단의 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5f2b4f4d47b674f4eb7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 공시에서 확인해야 한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "REVIEW",
+          "identical": false
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "ADVERSE",
+          "identical": false
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "AVOID",
+          "identical": false
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:043100:earnings_financial_current:cc065930c9b5d4aab9af"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:043100:earnings_financial_current:cc065930c9b5d4aab9af"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "changed_fields": [
+        "directional_balance"
+      ],
+      "classification_boundary_crossed": false,
+      "ticker": "043100",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:867db9bd719607ca8f39"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bf56bd9f9dd12e2c12fb"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:f5c6608c2bd5d13033b2"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:77c24521d22ab57da399"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:140dfffb488a76a67861"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:867db9bd719607ca8f39"
+            ],
+            "summary": "사업 KPI와 실행 성과는 후속 확인이 필요하며 자동 하방으로 보지 않는다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:bf56bd9f9dd12e2c12fb"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 3.5,
+            "sell": 6.5
+          },
+          "first": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REDUCE",
+          "first": "REDUCE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "SELL",
+          "first": "SELL",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "ADVERSE",
+          "first": "ADVERSE",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:025000:earnings_financial_current:5b9a513e6020e76cf97e"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:025000:earnings_financial_current:5b9a513e6020e76cf97e"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance",
+        "holder_price_review"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "025000",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:71af9bdc1c37802517e5"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b70549de551d112ef956"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:f21e02189fd24cedcaf4"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a2d8c9634a5490aa1a35"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2e4f4aa4f312a215be7c"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:71af9bdc1c37802517e5"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b70549de551d112ef956"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "NONE",
+          "identical": false
+        },
+        "overall_direction": {
+          "a": "BUY",
+          "first": "HOLD",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:131030:earnings_financial_current:308c526f51f662419137"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:131030:earnings_financial_current:308c526f51f662419137"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "131030",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae849c9de49aa98f1d4f"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:3118ef664fb78ac016a4"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:fd5e4fd084aa7067abf7"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d78fe5b935e95f6bb0a9"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:9264a549e2ed39c794b0"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ae849c9de49aa98f1d4f"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:3118ef664fb78ac016a4"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "BUY",
+          "first": "HOLD",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "ADVERSE",
+          "first": "ADVERSE",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:372910:earnings_financial_current:eca7ad1a31db678985f0"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:372910:earnings_financial_current:eca7ad1a31db678985f0"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance",
+        "technical_state"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "372910",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5ccd79d458363b66d5fb"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 추가 확인이 필요하다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:208d8fdb2e96b0139fbd"
+            ],
+            "summary": "안전한 밸류에이션 근거가 없어 가치 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:1b0043d7a6618ce7e6bb"
+            ],
+            "summary": "시장 기대 자료가 비어 있어 기대 대비 판단은 유보한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d48f3a1aad164d274aa4"
+            ],
+            "summary": "시장 전달 자료가 비어 있어 거시 영향은 방향에 반영하지 않았다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:eaff97f58512815e373a"
+            ],
+            "summary": "선행 논지 부재는 변화 판단의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5ccd79d458363b66d5fb"
+            ],
+            "summary": "사업 KPI 미확인은 흑자 지속성에 대한 확인 과제로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:208d8fdb2e96b0139fbd"
+            ],
+            "summary": "밸류에이션 미확인은 가격 매력도 판단을 보류하는 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "first": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "BUY",
+          "first": "HOLD",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "ADVERSE",
+          "identical": false
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:130740:business_current:fde495ebf35d21677a96",
+          "canonical:fundamental:130740:earnings_financial_current:c49a6c1c22d27b644118"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:130740:business_current:fde495ebf35d21677a96",
+          "canonical:fundamental:130740:earnings_financial_current:c49a6c1c22d27b644118"
+        ],
+        "first": [],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [
+        "holder_price_review"
+      ],
+      "classification_boundary_crossed": false,
+      "ticker": "130740",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:0fc9831b7c3f3eccf92c"
+            ],
+            "summary": "기존 모니터링 논거 부재는 방향 근거가 아니라 판단 연속성의 한계다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:1087e715eb048ba61bbe"
+            ],
+            "summary": "가치 근거 부재는 매력도 확인이 필요한 사안이며 자동적인 부정 신호는 아니다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:84c83e0ff038ce461afe"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 후속 검증이 필요한 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:0fc9831b7c3f3eccf92c"
+            ],
+            "summary": "기존 투자 논리 부재는 변화 판정의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:1087e715eb048ba61bbe",
+              "decision-evidence:84c83e0ff038ce461afe"
+            ],
+            "summary": "밸류에이션과 사업 지표 공백은 추가 확인 대상으로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "first": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "REVIEW",
+          "identical": false
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:045340:business_current:a9af01fcd0d23eb9e952",
+          "canonical:fundamental:045340:earnings_financial_current:8b18e9087bbe806b4f83"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:045340:business_current:a9af01fcd0d23eb9e952"
+        ],
+        "first": [
+          "canonical:fundamental:045340:earnings_financial_current:8b18e9087bbe806b4f83"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "045340",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:7d242320fc8c0751b89c"
+            ],
+            "summary": "기존 모니터링 논거 부재는 판단 연속성의 한계이며 부정 신호는 아니다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a4f57cbffc0bcfcdac36"
+            ],
+            "summary": "가치 근거 부재는 매력도 확인이 필요한 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:b77c98d18da49c59a39c"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 흑자 지속성 검증을 요구한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a4f57cbffc0bcfcdac36"
+            ],
+            "summary": "밸류에이션 부재는 가격 매력도 확인 조건으로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:63802567c641aa8becbb",
+              "decision-evidence:7d242320fc8c0751b89c",
+              "decision-evidence:b77c98d18da49c59a39c"
+            ],
+            "summary": "사업 지표, 시장 기대, 기존 투자 논리의 공백은 확신의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "BUY",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:006910:business_current:a711f7239ff8be8cf5ab",
+          "canonical:fundamental:006910:earnings_financial_current:95d55c7f166b649c6673"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:006910:business_current:a711f7239ff8be8cf5ab"
+        ],
+        "first": [
+          "canonical:fundamental:006910:earnings_financial_current:95d55c7f166b649c6673"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": -0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "006910",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:94fee0abb5bb07d87a9c"
+            ],
+            "summary": "기존 모니터링 논거 부재는 판단 연속성의 한계이며 부정 신호는 아니다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:676bcfc12ab66c40d2ff"
+            ],
+            "summary": "가치 근거 부재는 매력도 확인이 필요한 사안이다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:69741d1d9fab1b7ca4ab"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 흑자 지속성 검증을 요구한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:676bcfc12ab66c40d2ff"
+            ],
+            "summary": "밸류에이션 부재는 가격 매력도 확인 조건으로 처리한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:69741d1d9fab1b7ca4ab",
+              "decision-evidence:94fee0abb5bb07d87a9c",
+              "decision-evidence:ecf153908251762bc376"
+            ],
+            "summary": "사업 지표, 시장 기대, 기존 투자 논리의 공백은 확신의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "BUY",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:288980:earnings_financial_current:fec53a28125087e1cabb"
+        ],
+        "added_in_a": [],
+        "first": [
+          "canonical:fundamental:288980:earnings_financial_current:fec53a28125087e1cabb"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [],
+      "classification_boundary_crossed": false,
+      "ticker": "288980",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2a7a892bc880d7f442b1"
+            ],
+            "summary": "기존 모니터링 논거 부재는 판단 연속성을 제한하지만 별도 부정 근거로 사용하지 않는다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:df4cd387cf291e117742"
+            ],
+            "summary": "가치 근거 부재는 추가 확인 사안이며 현재 손실 근거와 구분한다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:eb269a8f590e8cd33d36"
+            ],
+            "summary": "사업 KPI와 향후 실행의 미확인은 회복 가능성 판단을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:df4cd387cf291e117742"
+            ],
+            "summary": "밸류에이션 부재는 가격 매력도 확인 조건으로 처리하며 하향 근거로 사용하지 않는다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:2a7a892bc880d7f442b1",
+              "decision-evidence:d0c92614738d33223178",
+              "decision-evidence:eb269a8f590e8cd33d36"
+            ],
+            "summary": "기존 투자 논리, 사업 지표, 시장 기대의 공백은 확신의 한계로만 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 3.5,
+            "sell": 6.5
+          },
+          "first": {
+            "buy": 3.5,
+            "sell": 6.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REDUCE",
+          "first": "REDUCE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "SELL",
+          "first": "SELL",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "ADVERSE",
+          "first": "ADVERSE",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:023440:business_current:ab36b07f61a92e7b39d0",
+          "canonical:fundamental:023440:earnings_financial_current:1935806b9f1ff5d61e3b"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:023440:business_current:ab36b07f61a92e7b39d0"
+        ],
+        "first": [
+          "canonical:fundamental:023440:earnings_financial_current:1935806b9f1ff5d61e3b"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "changed_fields": [
+        "overall_direction",
+        "directional_balance",
+        "fundamental_new_buyer_stance",
+        "fundamental_holder_stance"
+      ],
+      "classification_boundary_crossed": true,
+      "ticker": "023440",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:307b1a6bb9b761fe6778",
+              "decision-evidence:6d7634a73ca80d34c42b",
+              "decision-evidence:ac7343c57775e6b7cfe0"
+            ],
+            "summary": "밸류에이션, 시장 기대와 선행 논리의 공백은 방향성 음수가 아니라 확신 한계로 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d2f6fc4ead4af8aa5e7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ac7343c57775e6b7cfe0"
+            ],
+            "summary": "밸류에이션 근거 부재로 가격 매력도는 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:d2f6fc4ead4af8aa5e7a"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행의 미확인은 방향보다 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "first": {
+            "buy": 4.0,
+            "sell": 6.0
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REVIEW",
+          "first": "REDUCE",
+          "identical": false
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "AVOID",
+          "identical": false
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "SELL",
+          "identical": false
+        },
+        "technical_state": {
+          "a": "ADVERSE",
+          "first": "ADVERSE",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "AVOID",
+          "first": "AVOID",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:064820:business_current:2bffcf64f6648bc7054c",
+          "canonical:fundamental:064820:earnings_financial_current:10df8caa47be798c3059"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:064820:business_current:2bffcf64f6648bc7054c",
+          "canonical:fundamental:064820:earnings_financial_current:10df8caa47be798c3059"
+        ],
+        "first": [],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.5,
+      "changed_fields": [
+        "directional_balance",
+        "technical_state"
+      ],
+      "classification_boundary_crossed": false,
+      "ticker": "064820",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:047040addbe85a9d3d96",
+              "decision-evidence:6d28ec7f03f3dc6e1867",
+              "decision-evidence:ad5b446cf105be73c45d"
+            ],
+            "summary": "시장 기대, 선행 논리와 밸류에이션의 공백은 방향성 음수가 아니라 확신 한계로 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:e68aa4b6e7045b3d2e09"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ad5b446cf105be73c45d"
+            ],
+            "summary": "밸류에이션 근거 부재로 가격 매력도는 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:e68aa4b6e7045b3d2e09"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행의 미확인은 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 5.5,
+            "sell": 4.5
+          },
+          "first": {
+            "buy": 5.0,
+            "sell": 5.0
+          },
+          "identical": false
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "ADVERSE",
+          "identical": false
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:001440:business_current:1316a79eb0039400de8b",
+          "canonical:fundamental:001440:earnings_financial_current:fb36d3b1c676a707a927"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:001440:business_current:1316a79eb0039400de8b",
+          "canonical:fundamental:001440:earnings_financial_current:fb36d3b1c676a707a927"
+        ],
+        "first": [],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [],
+      "classification_boundary_crossed": false,
+      "ticker": "001440",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:5fc696aaf3be27447935",
+              "decision-evidence:c17b0821f1c91d59d1bb",
+              "decision-evidence:caf68b207facb5f04d0a"
+            ],
+            "summary": "선행 논리, 시장 기대와 밸류에이션의 공백은 방향성 음수가 아니라 확신 한계로 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ed140240a11044125d14"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:c17b0821f1c91d59d1bb"
+            ],
+            "summary": "밸류에이션 근거 부재로 가격 매력도는 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:ed140240a11044125d14"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행의 미확인은 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "first": {
+            "buy": 4.5,
+            "sell": 5.5
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "HOLD",
+          "first": "HOLD",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    },
+    {
+      "anchors": {
+        "a": [
+          "canonical:fundamental:073490:business_current:82cd8b2bc6348d47f62e",
+          "canonical:fundamental:073490:earnings_financial_current:01654facd6b34aaaf82a"
+        ],
+        "added_in_a": [
+          "canonical:fundamental:073490:business_current:82cd8b2bc6348d47f62e"
+        ],
+        "first": [
+          "canonical:fundamental:073490:earnings_financial_current:01654facd6b34aaaf82a"
+        ],
+        "removed_in_a": []
+      },
+      "buy_balance_delta_a_minus_first": 0.0,
+      "changed_fields": [
+        "fundamental_new_buyer_stance"
+      ],
+      "classification_boundary_crossed": false,
+      "ticker": "073490",
+      "unknown_treatments": {
+        "a": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:6bea9e9476eae212f441",
+              "decision-evidence:a3dd464c962357218067",
+              "decision-evidence:c96fedd9000cb8eb4bb5"
+            ],
+            "summary": "선행 논리, 시장 기대와 밸류에이션의 공백은 방향성 음수가 아니라 확신 한계로 처리한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:27ad373057646cb14504"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행은 후속 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          }
+        ],
+        "first": [
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:a3dd464c962357218067"
+            ],
+            "summary": "밸류에이션 근거 부재로 가격 매력도는 확인이 필요하다.",
+            "treatment": "CONFIRMATION_REQUIRED"
+          },
+          {
+            "directional_negative_basis": [],
+            "evidence_refs": [
+              "decision-evidence:27ad373057646cb14504"
+            ],
+            "summary": "세부 사업 KPI와 향후 실행의 미확인은 확신을 제한한다.",
+            "treatment": "CONFIDENCE_LIMIT"
+          }
+        ],
+        "identical": false
+      },
+      "values": {
+        "directional_balance": {
+          "a": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "first": {
+            "buy": 6.0,
+            "sell": 4.0
+          },
+          "identical": true
+        },
+        "entry_mode": {
+          "a": "NONE",
+          "first": "NONE",
+          "identical": true
+        },
+        "fundamental_holder_stance": {
+          "a": "HOLDABLE",
+          "first": "HOLDABLE",
+          "identical": true
+        },
+        "fundamental_new_buyer_stance": {
+          "a": "WAIT",
+          "first": "ATTRACTIVE",
+          "identical": false
+        },
+        "holder_price_review": {
+          "a": "REVIEW",
+          "first": "REVIEW",
+          "identical": true
+        },
+        "overall_direction": {
+          "a": "BUY",
+          "first": "BUY",
+          "identical": true
+        },
+        "technical_state": {
+          "a": "CAUTION",
+          "first": "CAUTION",
+          "identical": true
+        },
+        "timing_new_buyer_modifier": {
+          "a": "WAIT",
+          "first": "WAIT",
+          "identical": true
+        }
+      }
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,10 @@
+# 46 Core Stability
+
+| Field | Value |
+| --- | --- |
+| contract | directional-core-stability-audit-v1 |
+| counts | {"BOUNDARY_UNCERTAINTY": 0, "STABLE": 0, "UNSTABLE": 0} |
+| reason | SemanticStop:core_output_semantic_failure:first:1 |
+| status | NOT_MEASURED |
+
+Machine proof: `proofs/46-core-stability.json`.

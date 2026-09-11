@@ -1,0 +1,17 @@
+{
+  "contract": "m9-scope-freeze-v1",
+  "excluded_domains": [
+    "inventory_receivables_working_capital",
+    "non_operating_financial_income_effects",
+    "directional_core_financial_context_consumption",
+    "source_sufficiency_gate_changes",
+    "model_proof",
+    "real_holdout",
+    "production_deployment",
+    "schedule_resume"
+  ],
+  "included_domain": "interest_bearing_debt_and_liquidity",
+  "model_calls": 0,
+  "provider_source_fetches": 0,
+  "status": "FROZEN"
+}

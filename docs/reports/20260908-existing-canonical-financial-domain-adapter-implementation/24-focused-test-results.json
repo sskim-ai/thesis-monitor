@@ -1,0 +1,10 @@
+{
+  "command": ".venv/bin/pytest -q tests/test_decision_evidence_financial_context.py tests/test_financial_context_adapter_service.py tests/test_cross_market_decision_engine.py tests/test_cash_flow_user_visible_service.py tests/test_cash_flow_user_visible_integration.py tests/test_coldstart_fundamental_enrichment_service.py tests/test_nonproduction_monitoring_lifecycle_service.py tests/test_nonproduction_lifecycle_decision_service.py tests/test_direction_timing_ownership_service.py tests/test_structured_autonomy_shadow_service.py",
+  "contract": "m6-focused-test-results-v1",
+  "duration_seconds": 1.28,
+  "failed": 0,
+  "model_calls": 0,
+  "passed": 482,
+  "provider_calls": 0,
+  "result": "PASS"
+}

@@ -1,0 +1,5 @@
+{
+  "expected": "NO_TOTAL_OR_NET_DEBT_CONCLUSION",
+  "id": "LEV-04",
+  "pattern": "partial debt components only"
+}

@@ -1,0 +1,6 @@
+{
+  "correct": "LEVERAGE_HOLD_SELL_BOUNDARY_RESOLUTION_ARCHITECTURE",
+  "reason": "new-buyer variance is coupled to the primary core HOLD/SELL variance",
+  "reported": "BOUNDED_NEW_BUYER_STANCE_CALIBRATION_REPAIR_GPT56_SOL",
+  "status": "CORRECTED"
+}

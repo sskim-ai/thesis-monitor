@@ -1,0 +1,104 @@
+{
+  "contract": "fresh-final-source-identity-audit-v1",
+  "duplicate_issuer_count": 0,
+  "prior_exposure_overlap_count": 0,
+  "rows": [
+    {
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "RMD"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0000087050",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "NEON"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0001675149",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "AA"
+    },
+    {
+      "canonical_issuer_key": "sec:cik:0000098222",
+      "market": "us",
+      "status": "PASS",
+      "ticker": "TDW"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00303192",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "066900"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00442570",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "079370"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:01160363",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "247540"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00997812",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "183300"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00132637",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "014820"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:01565054",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "318060"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00755739",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "106240"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:01152470",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "263750"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00956930",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "170900"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00369213",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "039980"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00144395",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "026960"
+    },
+    {
+      "canonical_issuer_key": "opendart:corp:00761059",
+      "market": "kr",
+      "status": "PASS",
+      "ticker": "251970"
+    }
+  ],
+  "status": "PASS"
+}

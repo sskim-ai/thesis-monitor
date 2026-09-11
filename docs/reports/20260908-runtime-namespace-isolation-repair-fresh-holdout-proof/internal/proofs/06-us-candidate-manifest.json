@@ -1,0 +1,158 @@
+{
+  "bounded_candidate_count": 13,
+  "candidate_rows": [
+    {
+      "candidate_rank": 1,
+      "canonical_issuer_key": "sec:cik:0001566044",
+      "canonical_security_id": "us:nd:YARW",
+      "company_name": "Yarrow Bioscience, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "YARW"
+    },
+    {
+      "candidate_rank": 2,
+      "canonical_issuer_key": "sec:cik:0002040475",
+      "canonical_security_id": "us:nd:DMII",
+      "company_name": "Drugs Made In America Acquisition II Corp.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "DMII"
+    },
+    {
+      "candidate_rank": 3,
+      "canonical_issuer_key": "sec:cik:0001997377",
+      "canonical_security_id": "us:na:ISOU",
+      "company_name": "IsoEnergy Ltd.",
+      "exchange": "NA",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "ISOU"
+    },
+    {
+      "candidate_rank": 4,
+      "canonical_issuer_key": "sec:cik:0002104879",
+      "canonical_security_id": "us:nd:SHOT",
+      "company_name": "RMG ML Sports Holdings",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "SHOT"
+    },
+    {
+      "candidate_rank": 5,
+      "canonical_issuer_key": "sec:cik:0001657677",
+      "canonical_security_id": "us:nd:PBLS",
+      "company_name": "Parabilis Medicines, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "PBLS"
+    },
+    {
+      "candidate_rank": 6,
+      "canonical_issuer_key": "sec:cik:0001174922",
+      "canonical_security_id": "us:nd:WYNN",
+      "company_name": "WYNN RESORTS LTD",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "WYNN"
+    },
+    {
+      "candidate_rank": 7,
+      "canonical_issuer_key": "sec:cik:0001062579",
+      "canonical_security_id": "us:nd:DOX",
+      "company_name": "AMDOCS LTD",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "DOX"
+    },
+    {
+      "candidate_rank": 8,
+      "canonical_issuer_key": "sec:cik:0001843974",
+      "canonical_security_id": "us:ny:DXYZ",
+      "company_name": "Destiny Tech100 Inc.",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "DXYZ"
+    },
+    {
+      "candidate_rank": 9,
+      "canonical_issuer_key": "sec:cik:0001564708",
+      "canonical_security_id": "us:nd:NWS",
+      "company_name": "NEWS CORP",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "NWS"
+    },
+    {
+      "candidate_rank": 10,
+      "canonical_issuer_key": "sec:cik:0001350102",
+      "canonical_security_id": "us:nd:ASTI",
+      "company_name": "Ascent Solar Technologies, Inc.",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "ASTI"
+    },
+    {
+      "candidate_rank": 11,
+      "canonical_issuer_key": "sec:cik:0000943819",
+      "canonical_security_id": "us:ny:RMD",
+      "company_name": "RESMED INC",
+      "exchange": "NY",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "RMD"
+    },
+    {
+      "candidate_rank": 12,
+      "canonical_issuer_key": "sec:cik:0001885827",
+      "canonical_security_id": "us:nd:VRAX",
+      "company_name": "Virax Biolabs Group Ltd",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "ordinary_share",
+      "ticker": "VRAX"
+    },
+    {
+      "candidate_rank": 13,
+      "canonical_issuer_key": "sec:cik:0000789019",
+      "canonical_security_id": "us:nd:MSFT",
+      "company_name": "MICROSOFT CORP",
+      "exchange": "ND",
+      "routing_support_status": "ROUTING_SUPPORTED",
+      "security_type": "common_stock",
+      "ticker": "MSFT"
+    }
+  ],
+  "contract": "risk-carried-fresh-us-candidate-manifest-v1",
+  "exclusion_registry_count": 133,
+  "initial_candidates": [
+    "YARW",
+    "DMII",
+    "ISOU",
+    "SHOT"
+  ],
+  "market": "us",
+  "model_calls": 0,
+  "ordered_reserve": [
+    "PBLS",
+    "WYNN",
+    "DOX",
+    "DXYZ",
+    "NWS",
+    "ASTI",
+    "RMD",
+    "VRAX",
+    "MSFT"
+  ],
+  "status": "FROZEN",
+  "target_count": 4
+}

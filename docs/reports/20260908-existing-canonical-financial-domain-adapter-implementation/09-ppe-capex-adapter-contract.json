@@ -1,0 +1,10 @@
+{
+  "contract": "m6-ppe-capex-adapter-v1",
+  "existing_archive_direct_emission_count": 104,
+  "limitation": "growth_vs_maintenance_capex_unknown",
+  "management_fcf_label_allowed": false,
+  "metric": "ppe_capex_cash_outflow",
+  "required_scope": "ppe_only",
+  "required_value_basis": "nonnegative_positive_outflow",
+  "source_fact_type": "cash_flow_ppe_capex"
+}

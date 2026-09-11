@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "trace": [
+    "model output cites per-ticker alias",
+    "resolve_candidate_aliases maps alias to canonical_ref",
+    "DirectionalCoreCandidate stores canonical_ref",
+    "M12Y business_delta_audit reads those canonical refs",
+    "M12Y business_delta_audit indexes context evidence by alias",
+    "direct canonical_ref versus alias comparison yields no links"
+  ],
+  "observed_linked_evidence_count": 0,
+  "expected_linked_evidence_count_minimum": 1,
+  "affected_tickers": ["FIC-FIN-01", "FIC-FIN-02", "FIC-FIN-03"],
+  "unaffected_control": "FIC-FIN-04 UNCHANGED does not require directional change support"
+}

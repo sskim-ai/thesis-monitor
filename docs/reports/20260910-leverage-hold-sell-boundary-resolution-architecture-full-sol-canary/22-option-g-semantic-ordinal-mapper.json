@@ -1,0 +1,19 @@
+{
+  "complexity": "MEDIUM",
+  "conservative_tiebreak_compatibility": "LOW_OR_NONE",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "REJECTED",
+  "deterministic_numeric_semantics": "HIGH",
+  "faithfulness_to_ai_economic_judgment": "MEDIUM",
+  "hidden_scorecard_risk": "HIGH",
+  "holdout_proof_integrity": "PRESERVED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "SEMANTIC_ORDINAL_MAPPER",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "G",
+  "output_schema_impact": "BROAD",
+  "reason": "A deterministic mapper risks moving economic judgment into a brittle hidden scorecard.",
+  "renderer_impact": "MEDIUM",
+  "single_call_stability": "POTENTIALLY_HIGH",
+  "valuation_price_ownership_impact": "NONE"
+}

@@ -1,0 +1,66 @@
+{
+  "contrastive_positive": [
+    {
+      "id": "KO-COPULA-01",
+      "text": "산업회사식 순부채·운전자본 틀이 아니라 인수 규율과 규제자본으로 판단한다.",
+      "frameworks": ["net_debt", "working_capital"]
+    },
+    {
+      "id": "KO-COPULA-02",
+      "text": "순부채 틀이 아닌 규제자본 기준을 적용한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "KO-COPULA-03",
+      "text": "순부채보다는 규제자본을 본다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "EN-CONTRAST-01",
+      "text": "not industrial net debt but regulatory capital",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "EN-CONTRAST-02",
+      "text": "use regulatory capital rather than industrial net debt",
+      "frameworks": ["net_debt"]
+    }
+  ],
+  "holder_profiles": [
+    {
+      "id": "HOLD-01",
+      "profile": {"material_confirmed_fundamental_risk": false},
+      "expected": "HOLDABLE"
+    },
+    {
+      "id": "HOLD-02",
+      "profile": {"material_confirmed_fundamental_risk": true, "critical_severity_persistence_or_reversibility_unknown": true, "material_counterevidence": true},
+      "expected": "REVIEW"
+    },
+    {
+      "id": "HOLD-03",
+      "profile": {"material_confirmed_fundamental_risk": true, "confirmed_structural_impairment_or_severe_financial_stress": true},
+      "expected": "REDUCE"
+    },
+    {
+      "id": "HOLD-04",
+      "profile": {"material_confirmed_fundamental_risk": false, "price_or_technical_only": true},
+      "expected": "HOLDABLE"
+    },
+    {
+      "id": "HOLD-05",
+      "profile": {"material_confirmed_fundamental_risk": false, "price_or_technical_only": true},
+      "expected": "HOLDABLE"
+    },
+    {
+      "id": "HOLD-06",
+      "profile": {"material_confirmed_fundamental_risk": true, "critical_severity_persistence_or_reversibility_unknown": true},
+      "expected": "REVIEW"
+    },
+    {
+      "id": "FIC-FIN-05",
+      "profile": {"material_confirmed_fundamental_risk": true, "confirmed_structural_impairment_or_severe_financial_stress": false, "critical_severity_persistence_or_reversibility_unknown": true, "material_counterevidence": true},
+      "expected": "REVIEW"
+    }
+  ]
+}

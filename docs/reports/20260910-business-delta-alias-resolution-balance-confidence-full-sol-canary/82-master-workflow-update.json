@@ -1,0 +1,9 @@
+{
+  "m12z_status": "M12Z_PARTIAL_STOPPED",
+  "next_scope": "LEVERAGE_DIRECTIONAL_CONTRACT_REVIEW_GPT56_SOL",
+  "report_commit": "e54d75eec5761f3e1616caceef950a96ed25920d",
+  "status": "DOCUMENTED",
+  "stop_summary": "Run 1 context 2 stopped the generation: FIC-FIN-05 emitted SELL_LEAN 4.5 instead of frozen minimum SELL 4.0, and FIC-FIN-08 explicit insurance exclusion was rejected by two financial semantic checks.",
+  "delta_alias_resolution": "PASS_OFFLINE_AND_OBSERVED_8_OF_8_FULL_PROOF_INCOMPLETE",
+  "new_model_call_authorized": false
+}

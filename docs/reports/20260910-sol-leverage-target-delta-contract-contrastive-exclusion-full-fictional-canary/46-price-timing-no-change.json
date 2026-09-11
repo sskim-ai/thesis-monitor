@@ -1,0 +1,13 @@
+{
+  "base_sha": "0651fe2387049c27b81e273260b99e8cfe7e9b5d",
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+      "current_sha256": "9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f",
+      "path": "app/services/current_price_context_service.py",
+      "unchanged": true
+    }
+  ],
+  "status": "PASS"
+}

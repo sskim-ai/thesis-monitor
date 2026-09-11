@@ -1,0 +1,54 @@
+{
+  "business_delta_variance_subject_count": "NOT_MEASURED",
+  "complete": false,
+  "rows": [
+    {
+      "ticker": "FIC-FIN-01",
+      "values": [
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-02",
+      "values": [
+        "WEAKENED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-03",
+      "values": [
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-04",
+      "values": [
+        "UNCHANGED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-05",
+      "values": [
+        "WEAKENED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-06",
+      "values": [
+        "STRENGTHENED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-07",
+      "values": [
+        "UNCHANGED"
+      ]
+    },
+    {
+      "ticker": "FIC-FIN-08",
+      "values": [
+        "UNCHANGED"
+      ]
+    }
+  ]
+}

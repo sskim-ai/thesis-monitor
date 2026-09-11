@@ -1,0 +1,216 @@
+{
+  "alias_rows": [
+    {
+      "after_normalized_sha256": "67e1fa8d34c27481ea78785d18c9dcb3a2bd41086ea96abc3bd839b7b44c24fe",
+      "artifact": "alias",
+      "before_normalized_sha256": "67e1fa8d34c27481ea78785d18c9dcb3a2bd41086ea96abc3bd839b7b44c24fe",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after_normalized_sha256": "0c774df39c84198b1ba792a34d5c242382994c74d5774ef66a507e461cada615",
+      "artifact": "alias",
+      "before_normalized_sha256": "0c774df39c84198b1ba792a34d5c242382994c74d5774ef66a507e461cada615",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after_normalized_sha256": "5c55378646e085444a0bb13943af80d106ae9af352a1a81610de3d29fe666151",
+      "artifact": "alias",
+      "before_normalized_sha256": "5c55378646e085444a0bb13943af80d106ae9af352a1a81610de3d29fe666151",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after_normalized_sha256": "0be7959bee6f18e07429b8dd4e623d5de3e1ff7e624f0723036d038695488f47",
+      "artifact": "alias",
+      "before_normalized_sha256": "0be7959bee6f18e07429b8dd4e623d5de3e1ff7e624f0723036d038695488f47",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after_normalized_sha256": "b3ac5e45a722b286edf25093bc7a230d29e646403b1b37244214d93fed3f927b",
+      "artifact": "alias",
+      "before_normalized_sha256": "b3ac5e45a722b286edf25093bc7a230d29e646403b1b37244214d93fed3f927b",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after_normalized_sha256": "600f243d6aff6988385a85eddf05404f8b9d95176bb3a51fafdf35528ca77ee2",
+      "artifact": "alias",
+      "before_normalized_sha256": "600f243d6aff6988385a85eddf05404f8b9d95176bb3a51fafdf35528ca77ee2",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after_normalized_sha256": "cd63d7ac2a1246231efa906cc1e9325f4e0547a7066f428a9dd67b56d70aa7f3",
+      "artifact": "alias",
+      "before_normalized_sha256": "cd63d7ac2a1246231efa906cc1e9325f4e0547a7066f428a9dd67b56d70aa7f3",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after_normalized_sha256": "8fb509003e295a002d137f8e615da6a2114ee70b3180fd0c2c8479749034ea1f",
+      "artifact": "alias",
+      "before_normalized_sha256": "8fb509003e295a002d137f8e615da6a2114ee70b3180fd0c2c8479749034ea1f",
+      "changed": false,
+      "derived_identity_hash_changed": true,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "contract": "m12g-fictional-case-freeze-proof-v1",
+  "fictional_case_change_count": 0,
+  "function_freeze": {
+    "change_count": 0,
+    "functions": [
+      {
+        "after_sha256": "adc411bd279ea7bf373eb3619d9dee2b791bc55ee9363ac367cae6c9abbe55c3",
+        "before_sha256": "adc411bd279ea7bf373eb3619d9dee2b791bc55ee9363ac367cae6c9abbe55c3",
+        "changed": false,
+        "function": "_period"
+      },
+      {
+        "after_sha256": "bdc816773d4fdd1e55037d3ace2770b8fc4d02fcff40bfcda74430381d1e8d07",
+        "before_sha256": "bdc816773d4fdd1e55037d3ace2770b8fc4d02fcff40bfcda74430381d1e8d07",
+        "changed": false,
+        "function": "_financial_ref"
+      },
+      {
+        "after_sha256": "a50023429316f6ed21883520cf7e35e3c640995779401fa7ae84952004c55a8e",
+        "before_sha256": "a50023429316f6ed21883520cf7e35e3c640995779401fa7ae84952004c55a8e",
+        "changed": false,
+        "function": "_financial_pair"
+      },
+      {
+        "after_sha256": "7ec1e27ce928c4f11a735913783408b3791beebe69eb0a203eb68f6f828de7e6",
+        "before_sha256": "7ec1e27ce928c4f11a735913783408b3791beebe69eb0a203eb68f6f828de7e6",
+        "changed": false,
+        "function": "_generic_ref"
+      },
+      {
+        "after_sha256": "8d006a8b3e2c3fce6d6e17a47cb8e2937fe43bf13921afb6c2217c9cbb44dc9e",
+        "before_sha256": "8d006a8b3e2c3fce6d6e17a47cb8e2937fe43bf13921afb6c2217c9cbb44dc9e",
+        "changed": false,
+        "function": "_technical_ref"
+      },
+      {
+        "after_sha256": "029f66721d5f4d46f526f8bf08c4301a8662b82b85833c7dfd8f2b3ec99386c6",
+        "before_sha256": "029f66721d5f4d46f526f8bf08c4301a8662b82b85833c7dfd8f2b3ec99386c6",
+        "changed": false,
+        "function": "_common_refs"
+      },
+      {
+        "after_sha256": "d5a7ad187fe8770f7a4155e926ae82d34fd3a3b676438ad1514ea64761ad5dd2",
+        "before_sha256": "d5a7ad187fe8770f7a4155e926ae82d34fd3a3b676438ad1514ea64761ad5dd2",
+        "changed": false,
+        "function": "_case_refs"
+      },
+      {
+        "after_sha256": "7a5ae964e92b711c1643fcc338aa924aa3f757db61bead1d1488f34ab5cf5a60",
+        "before_sha256": "7a5ae964e92b711c1643fcc338aa924aa3f757db61bead1d1488f34ab5cf5a60",
+        "changed": false,
+        "function": "_family_for_ref"
+      },
+      {
+        "after_sha256": "b33e5e212f798c39320cf7d843d76777a0028ccad7f8cf98379f79453ed8d0b5",
+        "before_sha256": "b33e5e212f798c39320cf7d843d76777a0028ccad7f8cf98379f79453ed8d0b5",
+        "changed": false,
+        "function": "fictional_inputs"
+      },
+      {
+        "after_sha256": "9609814c159c6373c91ef2f4d0461361ed64d52db31391e591c5a2106b0ea390",
+        "before_sha256": "9609814c159c6373c91ef2f4d0461361ed64d52db31391e591c5a2106b0ea390",
+        "changed": false,
+        "function": "fictional_manifest"
+      },
+      {
+        "after_sha256": "d2df109a5d25284d99bd6ba39314e504c634406c4a569d060aac318769279db2",
+        "before_sha256": "d2df109a5d25284d99bd6ba39314e504c634406c4a569d060aac318769279db2",
+        "changed": false,
+        "function": "_source_lock"
+      },
+      {
+        "after_sha256": "f250c43c6b9312f29f7f06005622cb2a779e1dbc1d22b01c5ed4d586a28b7b11",
+        "before_sha256": "f250c43c6b9312f29f7f06005622cb2a779e1dbc1d22b01c5ed4d586a28b7b11",
+        "changed": false,
+        "function": "_write_frozen_model_inputs"
+      }
+    ],
+    "path": "scripts/directional_financial_context_m12.py",
+    "status": "PASS"
+  },
+  "packet_rows": [
+    {
+      "after_normalized_sha256": "72a24e3bdd74839f5012756da4235877eb454fad26cdcf9ee4591685cfae4b63",
+      "artifact": "packet",
+      "before_normalized_sha256": "72a24e3bdd74839f5012756da4235877eb454fad26cdcf9ee4591685cfae4b63",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-01"
+    },
+    {
+      "after_normalized_sha256": "050167416d0bf2d6120ed2d00ba5cb362e75938711e6b097767432d7a0e36c5c",
+      "artifact": "packet",
+      "before_normalized_sha256": "050167416d0bf2d6120ed2d00ba5cb362e75938711e6b097767432d7a0e36c5c",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-02"
+    },
+    {
+      "after_normalized_sha256": "cf522043ec0e9d5e4cd1343bb89eff71e27a6dc87cc1cd7b05d7053a76bdedd7",
+      "artifact": "packet",
+      "before_normalized_sha256": "cf522043ec0e9d5e4cd1343bb89eff71e27a6dc87cc1cd7b05d7053a76bdedd7",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-03"
+    },
+    {
+      "after_normalized_sha256": "9583842c74a24927fe977465b8a967f9a6e55122cb2bf101ce6234b58d960145",
+      "artifact": "packet",
+      "before_normalized_sha256": "9583842c74a24927fe977465b8a967f9a6e55122cb2bf101ce6234b58d960145",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-04"
+    },
+    {
+      "after_normalized_sha256": "78c4499eac36cea354f4fd4f2cac162b2a4bd8d56689df67858d35ac2df41c17",
+      "artifact": "packet",
+      "before_normalized_sha256": "78c4499eac36cea354f4fd4f2cac162b2a4bd8d56689df67858d35ac2df41c17",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-05"
+    },
+    {
+      "after_normalized_sha256": "645f1ea21ab89f9a8478cedde329715ae8e34aa7ccbc6dd6b3e9ad2c4be5339a",
+      "artifact": "packet",
+      "before_normalized_sha256": "645f1ea21ab89f9a8478cedde329715ae8e34aa7ccbc6dd6b3e9ad2c4be5339a",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-06"
+    },
+    {
+      "after_normalized_sha256": "e2eedd4c1a86948eaf62c195aa78bdbfa48cc980a3e59211ab09d0d5c238589f",
+      "artifact": "packet",
+      "before_normalized_sha256": "e2eedd4c1a86948eaf62c195aa78bdbfa48cc980a3e59211ab09d0d5c238589f",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-07"
+    },
+    {
+      "after_normalized_sha256": "b36f8652888663dc1761063c8594950177ec49e5cc6693ca488cca979c9e1a0d",
+      "artifact": "packet",
+      "before_normalized_sha256": "b36f8652888663dc1761063c8594950177ec49e5cc6693ca488cca979c9e1a0d",
+      "changed": false,
+      "derived_identity_hash_changed": false,
+      "ticker": "FIC-FIN-08"
+    }
+  ],
+  "status": "PASS"
+}

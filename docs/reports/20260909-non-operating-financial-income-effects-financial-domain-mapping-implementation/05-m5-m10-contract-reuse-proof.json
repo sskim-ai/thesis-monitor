@@ -1,0 +1,35 @@
+{
+  "canonical_financial_fact_reused": true,
+  "contract": "m11-m5-m10-contract-reuse-v1",
+  "financial_context_reused": true,
+  "frozen_semantic_modules": [
+    {
+      "after_sha256": "2c1a20a1a4dbc29a00a3dd9340b3a2d5d72790cbcf5ae31d4113fff6f31a43ce",
+      "before_sha256": "2c1a20a1a4dbc29a00a3dd9340b3a2d5d72790cbcf5ae31d4113fff6f31a43ce",
+      "changed": false,
+      "path": "app/services/debt_liquidity_financial_mapping_service.py"
+    },
+    {
+      "after_sha256": "e002c4944caa854285815769dfcf500182895d7d6f5bbf49869de0a5144cdf5b",
+      "before_sha256": "e002c4944caa854285815769dfcf500182895d7d6f5bbf49869de0a5144cdf5b",
+      "changed": false,
+      "path": "app/services/working_capital_financial_mapping_service.py"
+    },
+    {
+      "after_sha256": "29b214c187495a67f6640ab6be3c8ca2e4859bb66d628605dddc67f8de04b857",
+      "before_sha256": "29b214c187495a67f6640ab6be3c8ca2e4859bb66d628605dddc67f8de04b857",
+      "changed": false,
+      "path": "app/services/source_class_financial_mapping_service.py"
+    },
+    {
+      "after_sha256": "4b3f1e8446e3da6eadbee15e38a7539c9dce1ba820d124d6db01b6e8ffc66c27",
+      "before_sha256": "4b3f1e8446e3da6eadbee15e38a7539c9dce1ba820d124d6db01b6e8ffc66c27",
+      "changed": false,
+      "path": "app/services/opendart_xbrl_service.py"
+    }
+  ],
+  "lineage_projection_reused": true,
+  "m9_m10_semantic_change_count": 0,
+  "opendart_exact_duration_reconciliation_reused": true,
+  "parallel_truth_store_created": false
+}

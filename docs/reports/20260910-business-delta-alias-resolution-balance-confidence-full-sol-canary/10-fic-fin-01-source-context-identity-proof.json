@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "ticker": "FIC-FIN-01",
+  "expected_sha256": "33aca8f5cd505bb48f1a6cb09882a7d6899569622126eb246b081ca848870018",
+  "m12w_context_sha256": "33aca8f5cd505bb48f1a6cb09882a7d6899569622126eb246b081ca848870018",
+  "m12x_context_sha256": "33aca8f5cd505bb48f1a6cb09882a7d6899569622126eb246b081ca848870018",
+  "m12y_context_sha256": "33aca8f5cd505bb48f1a6cb09882a7d6899569622126eb246b081ca848870018",
+  "source_value_change_count": 0,
+  "alias_renumbering_count": 0
+}

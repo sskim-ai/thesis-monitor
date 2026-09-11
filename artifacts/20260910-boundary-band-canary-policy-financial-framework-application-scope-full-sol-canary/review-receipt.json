@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "application_negative": true,
+    "application_positive": true,
+    "boundary_band": true,
+    "delta_alias_regression": true,
+    "directional_prompt_unchanged": true,
+    "fic_fin_08_replay": true,
+    "frozen_surfaces": true,
+    "latest_result_integrity": true,
+    "root_cause_identity": true,
+    "root_frozen": true,
+    "stop_taxonomy": true,
+    "work_instruction_identity": true
+  },
+  "status": "PASS"
+}

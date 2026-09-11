@@ -1,0 +1,202 @@
+{
+  "integrity": {
+    "duplicate_member_count": 0,
+    "extra": [],
+    "hash_mismatches": [],
+    "indexed_payload_count": 177,
+    "missing": [],
+    "sha256": "2cfab9aa676cc61af733198bddadb18971fcb631ca22b17e4735c05a9734484e",
+    "size_mismatches": [],
+    "status": "PASS"
+  },
+  "rows": [
+    {
+      "backend_sampling_request_count": "NOT_MEASURED",
+      "cli_internal_retry_event_count": 0,
+      "cli_internal_retry_events": [],
+      "cli_version": "OpenAI Codex v0.153.4",
+      "context": 1,
+      "elapsed_seconds": 371.474332,
+      "network_readiness": {
+        "attempts": 1,
+        "contract": "codex-network-readiness-v1",
+        "failure_type": null,
+        "ready": true,
+        "resolved_address_count": 4
+      },
+      "observed_effort": "xhigh",
+      "observed_model": "gpt-6-astra",
+      "output_bytes": 21657,
+      "prompt_bytes": 28025,
+      "receipt": {
+        "batch_split": 0,
+        "contract": "m12-single-attempt-model-receipt-v1",
+        "failure_type": null,
+        "finished_at": "2026-09-09T14:02:53.108133+00:00",
+        "invocation_id": "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-01",
+        "log_sha256": "b97de2c1496c9edf9a56f989150531c9a1994088f72c8eb6def3bb9f60f349ae",
+        "model": "gpt-6-astra",
+        "model_process_spawned": true,
+        "network_readiness": {
+          "attempts": 1,
+          "contract": "codex-network-readiness-v1",
+          "failure_type": null,
+          "ready": true,
+          "resolved_address_count": 4
+        },
+        "observed_runtime": {
+          "effort": "xhigh",
+          "model": "gpt-6-astra"
+        },
+        "orphan_process_count": 0,
+        "output_exists": true,
+        "output_sha256": "afec31dfd68db1f561eb70399fe87bc9e608dcd51d31651e36efdce4f99c5a9f",
+        "output_size": 21657,
+        "prompt_sha256": "371510633828dcbfe2286503bc1bfc456af4b16655e838a8452b4b8b0a3495f7",
+        "raw_diagnostic_token": null,
+        "reasoning_effort": "xhigh",
+        "returncode": 0,
+        "runtime_isolation": {
+          "base_namespace_hash": "9ed8bd3b3bb0ef3880efddce",
+          "contract": "codex-model-context-runtime-isolation-v1",
+          "execution_isolation_valid": true,
+          "invocation_id": "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-01",
+          "invocation_identity_unique": true,
+          "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+          "runtime_state_namespace_hash": "6723fb46c2434d096495e673",
+          "runtime_state_namespace_unique": true,
+          "working_directory_identity": "f2221f5f2c778f3d76d75d6f9990bde9d5415e8feca99f1fe98358cfa33fb5b3",
+          "working_directory_unique": true
+        },
+        "runtime_state": {
+          "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/6723fb46c2434d096495e673/home",
+          "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+          "contract": "codex-runtime-state-v1",
+          "mode": "0700",
+          "namespace_hash": "6723fb46c2434d096495e673",
+          "ownership": "uid:501",
+          "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+          "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/6723fb46c2434d096495e673/sqlite",
+          "sqlite_wal_probe": "PASS"
+        },
+        "schema_sha256": "db2678000d020574153c61397fb2623888a7002ea89c7a45e1125a2276ac3ad8",
+        "single_authoritative_watchdog": true,
+        "started_at": "2026-09-09T13:56:41.633801+00:00",
+        "status": "PASS",
+        "timed_out": false,
+        "timeout_count": 0,
+        "timeout_seconds": 1800,
+        "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+        "transport_attempt_count": 1,
+        "wrapper_retry_count": 0
+      },
+      "receipt_sha256": "b7d17fcd8e225f20bcd2ef662ccebad8e58a498d238ef2acd23acdd90d4758d7",
+      "run_document_status": "PASS",
+      "runtime_mode": "MODEL_CONTEXT_COUPLED",
+      "schema_bytes": 44296,
+      "session_id": "01a08674-e676-7db1-a28c-86bace9e7ebe",
+      "subject_order": [
+        "FIC-FIN-01",
+        "FIC-FIN-02",
+        "FIC-FIN-03",
+        "FIC-FIN-04"
+      ],
+      "timeout": false,
+      "wrapper_retry_count": 0
+    },
+    {
+      "backend_sampling_request_count": "NOT_MEASURED",
+      "cli_internal_retry_event_count": 0,
+      "cli_internal_retry_events": [],
+      "cli_version": "OpenAI Codex v0.153.4",
+      "context": 2,
+      "elapsed_seconds": 329.525223,
+      "network_readiness": {
+        "attempts": 1,
+        "contract": "codex-network-readiness-v1",
+        "failure_type": null,
+        "ready": true,
+        "resolved_address_count": 4
+      },
+      "observed_effort": "xhigh",
+      "observed_model": "gpt-6-astra",
+      "output_bytes": 19287,
+      "prompt_bytes": 19420,
+      "receipt": {
+        "batch_split": 0,
+        "contract": "m12-single-attempt-model-receipt-v1",
+        "failure_type": null,
+        "finished_at": "2026-09-09T14:08:22.679562+00:00",
+        "invocation_id": "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-02",
+        "log_sha256": "1ee0f287d50e077791c78c4419e8a4a7e2037db0e762ddee4112282fb987ebe1",
+        "model": "gpt-6-astra",
+        "model_process_spawned": true,
+        "network_readiness": {
+          "attempts": 1,
+          "contract": "codex-network-readiness-v1",
+          "failure_type": null,
+          "ready": true,
+          "resolved_address_count": 4
+        },
+        "observed_runtime": {
+          "effort": "xhigh",
+          "model": "gpt-6-astra"
+        },
+        "orphan_process_count": 0,
+        "output_exists": true,
+        "output_sha256": "30bf9ea0d477c3c59c48b96ba51acc27dee9c1911e644182406c175a2cdc8e95",
+        "output_size": 19287,
+        "prompt_sha256": "19efd19cc4fc2018f94afdae6d69d3dac7e3681783b9513868c99fe69dfc8ea9",
+        "raw_diagnostic_token": null,
+        "reasoning_effort": "xhigh",
+        "returncode": 0,
+        "runtime_isolation": {
+          "base_namespace_hash": "9ed8bd3b3bb0ef3880efddce",
+          "contract": "codex-model-context-runtime-isolation-v1",
+          "execution_isolation_valid": true,
+          "invocation_id": "20260909-m12e-fictional-20260909T135434Z-60be4412b6eb:run-1:context-02",
+          "invocation_identity_unique": true,
+          "policy": "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE",
+          "runtime_state_namespace_hash": "cf5a577dd0fa0333df5b98fc",
+          "runtime_state_namespace_unique": true,
+          "working_directory_identity": "da5345b25afa1774a66595101d2569cba3c5aea0fce3b052403915acf2ce97d5",
+          "working_directory_unique": true
+        },
+        "runtime_state": {
+          "codex_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/cf5a577dd0fa0333df5b98fc/home",
+          "codex_home_behavior": "isolated_with_read_only_signed_in_auth_reference",
+          "contract": "codex-runtime-state-v1",
+          "mode": "0700",
+          "namespace_hash": "cf5a577dd0fa0333df5b98fc",
+          "ownership": "uid:501",
+          "signed_in_auth_reference": "READ_ONLY_SYMLINK",
+          "sqlite_home": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-bounded-financial-context-boundary-calibration-m12e/artifacts/20260909-bounded-financial-context-boundary-calibration-full-fictional-canary/runtime-state/cf5a577dd0fa0333df5b98fc/sqlite",
+          "sqlite_wal_probe": "PASS"
+        },
+        "schema_sha256": "d0c29b51d6b96d25e2e14ad9e5dca70ff277a3017b6238d5c36c47bcc7fd747e",
+        "single_authoritative_watchdog": true,
+        "started_at": "2026-09-09T14:02:53.154339+00:00",
+        "status": "PASS",
+        "timed_out": false,
+        "timeout_count": 0,
+        "timeout_seconds": 1800,
+        "tls_trust_source": "ROOT_OWNED_SYSTEM_CA_BUNDLE",
+        "transport_attempt_count": 1,
+        "wrapper_retry_count": 0
+      },
+      "receipt_sha256": "3fcb1058145f08f3625474c3471ac83b58fa8dc8620de6b67948bde8ad22b432",
+      "run_document_status": "FAIL",
+      "runtime_mode": "MODEL_CONTEXT_COUPLED",
+      "schema_bytes": 44191,
+      "session_id": "01a0867a-8f4a-79b2-9ad3-a76ce9f75498",
+      "subject_order": [
+        "FIC-FIN-05",
+        "FIC-FIN-06",
+        "FIC-FIN-07",
+        "FIC-FIN-08"
+      ],
+      "timeout": false,
+      "wrapper_retry_count": 0
+    }
+  ]
+}

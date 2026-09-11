@@ -1,0 +1,11 @@
+{
+  "after": {
+    "model": "gpt-5.6-sol",
+    "timeout_seconds": 1800
+  },
+  "before": {
+    "model": "gpt-6-astra",
+    "timeout_seconds": 2400
+  },
+  "increase_sol_timeout_preemptively": false
+}

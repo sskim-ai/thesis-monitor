@@ -1,0 +1,11 @@
+{
+  "status": "FROZEN",
+  "rule": "STRENGTHENED or WEAKENED requires supplied meaningful change relative to a prior or baseline state; an absolute current condition alone maps to UNCHANGED unless another supplied fact establishes change.",
+  "valid_combinations": [
+    "SELL + UNCHANGED",
+    "BUY + UNCHANGED",
+    "HOLD + WEAKENED",
+    "HOLD + STRENGTHENED"
+  ],
+  "mechanical_mapping_forbidden": true
+}

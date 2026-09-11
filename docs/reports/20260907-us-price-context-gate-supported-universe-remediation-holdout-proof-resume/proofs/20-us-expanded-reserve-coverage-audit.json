@@ -1,0 +1,7 @@
+{
+  "attempted_count": 0,
+  "contract": "us-expanded-reserve-coverage-audit-v1",
+  "frozen_reserve_order": [],
+  "reserve_not_needed_after_original_order": true,
+  "status": "PASS"
+}

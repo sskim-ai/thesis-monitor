@@ -1,0 +1,5 @@
+{
+  "status": "NOT_MEASURED",
+  "followup_priority": "AFTER_NEW_BUYER_IF_BOTH_REMAIN",
+  "reason": "Only one repetition; no stance variance inference."
+}

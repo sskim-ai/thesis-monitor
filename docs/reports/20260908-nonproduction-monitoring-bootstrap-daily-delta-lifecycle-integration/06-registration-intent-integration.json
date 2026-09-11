@@ -1,0 +1,115 @@
+{
+  "changed": {
+    "registration_allowed": true,
+    "registration_intent_created": true,
+    "request_kind": "EXPLICIT_MONITORING",
+    "subject": {
+      "baseline": null,
+      "bootstrap_complete": false,
+      "evidence_ids": [],
+      "monitoring_ready": false,
+      "monitoring_requested": true,
+      "onboarding_state": "PENDING_ONBOARDING",
+      "source_ready": false,
+      "subject_lifecycle": "NEW_ISSUER",
+      "thesis_versions": [
+        {
+          "created_at": "2026-09-08T00:00:00Z",
+          "logic_fingerprint": "logic-v1",
+          "status": "superseded",
+          "version": 1
+        },
+        {
+          "created_at": "2026-09-08T00:02:00Z",
+          "logic_fingerprint": "logic-v2",
+          "status": "active",
+          "version": 2
+        }
+      ],
+      "ticker": "SYNTHETIC_M2_REVIEW"
+    },
+    "thesis_version_created": true
+  },
+  "checks": {
+    "changed_logic_new_version": true,
+    "changed_logic_returns_pending": true,
+    "explicit_registration_allowed": true,
+    "history_preserved": true,
+    "identical_registration_idempotent": true,
+    "nonexplicit_never_registers": true
+  },
+  "first": {
+    "registration_allowed": true,
+    "registration_intent_created": true,
+    "request_kind": "EXPLICIT_MONITORING",
+    "subject": {
+      "baseline": null,
+      "bootstrap_complete": false,
+      "evidence_ids": [],
+      "monitoring_ready": false,
+      "monitoring_requested": true,
+      "onboarding_state": "PENDING_ONBOARDING",
+      "source_ready": false,
+      "subject_lifecycle": "NEW_ISSUER",
+      "thesis_versions": [
+        {
+          "created_at": "2026-09-08T00:00:00Z",
+          "logic_fingerprint": "logic-v1",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "ticker": "SYNTHETIC_M2_REVIEW"
+    },
+    "thesis_version_created": true
+  },
+  "nonexplicit": [
+    {
+      "registration_allowed": false,
+      "registration_intent_created": false,
+      "request_kind": "INITIAL_ANALYSIS",
+      "subject": null,
+      "thesis_version_created": false
+    },
+    {
+      "registration_allowed": false,
+      "registration_intent_created": false,
+      "request_kind": "READ_ONLY_SNAPSHOT",
+      "subject": null,
+      "thesis_version_created": false
+    },
+    {
+      "registration_allowed": false,
+      "registration_intent_created": false,
+      "request_kind": "CURRENT_THESIS_REVIEW",
+      "subject": null,
+      "thesis_version_created": false
+    }
+  ],
+  "repeat": {
+    "registration_allowed": true,
+    "registration_intent_created": false,
+    "request_kind": "EXPLICIT_MONITORING",
+    "subject": {
+      "baseline": null,
+      "bootstrap_complete": false,
+      "evidence_ids": [],
+      "monitoring_ready": false,
+      "monitoring_requested": true,
+      "onboarding_state": "PENDING_ONBOARDING",
+      "source_ready": false,
+      "subject_lifecycle": "NEW_ISSUER",
+      "thesis_versions": [
+        {
+          "created_at": "2026-09-08T00:00:00Z",
+          "logic_fingerprint": "logic-v1",
+          "status": "active",
+          "version": 1
+        }
+      ],
+      "ticker": "SYNTHETIC_M2_REVIEW"
+    },
+    "thesis_version_created": false
+  },
+  "status": "PASS"
+}

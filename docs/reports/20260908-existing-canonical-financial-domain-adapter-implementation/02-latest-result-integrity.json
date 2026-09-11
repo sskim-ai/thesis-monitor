@@ -1,0 +1,10 @@
+{
+  "actual_sha256": "3c099c405892a2269e1dac8d94100f4d3c52880d1bf07f0a00e1b7c09df76b60",
+  "bundle": "thesis-monitor-20260908-decision-evidence-packet-financial-context-domain-extension-implementation-report.zip",
+  "contract": "m6-latest-result-integrity-v1",
+  "expected_sha256": "3c099c405892a2269e1dac8d94100f4d3c52880d1bf07f0a00e1b7c09df76b60",
+  "m5_next_scope": "EXISTING_CANONICAL_FINANCIAL_DOMAIN_ADAPTER_IMPLEMENTATION",
+  "m5_production_readiness": "NOT_READY",
+  "m5_status": "M5_COMPLETE",
+  "status": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "after": {
+    "generic_working_capital_narrative_alone": "NOT_A_HARD_TRIGGER",
+    "grounding": "matching metric-specific typed canonical ref",
+    "trigger": "explicit selected inventory/AR/AP metric language in a material checkpoint path"
+  },
+  "before": {
+    "failure_mode": "context-only inventory selection could force a checkpoint grounding requirement",
+    "trigger": "selected WC family plus generic WC token in checkpoint path"
+  },
+  "contract": "m12c-working-capital-grounding-before-after-v1",
+  "root_cause": "SELECTION_TRIGGERED_OVERREACH",
+  "status": "PASS"
+}

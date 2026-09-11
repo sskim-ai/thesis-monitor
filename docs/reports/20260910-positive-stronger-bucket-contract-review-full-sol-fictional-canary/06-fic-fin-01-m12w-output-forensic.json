@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "generation_id": "20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a",
+  "source_lock_sha256": "ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa",
+  "report_sha256": "8940cec02f9bc6d60d73e6c8273f762bd020f2f86747f670b03574e9247f978e",
+  "observed": {
+    "direction": "BUY",
+    "buy": 6.5,
+    "sell": 3.5,
+    "confidence": "MEDIUM",
+    "new_buyer": "ATTRACTIVE",
+    "holder": "HOLDABLE",
+    "business_thesis_change": "STRENGTHENED"
+  },
+  "material_anchor_basis": [
+    "fictional:FIC-FIN-01:operating-evidence",
+    "canonical:fictional:FIC-FIN-01:ocf-current",
+    "canonical:fictional:FIC-FIN-01:net-debt"
+  ],
+  "limitations_acknowledged": [
+    "valuation unavailable",
+    "durability unproven",
+    "competition risk",
+    "elevated execution expectations"
+  ],
+  "overlap_double_counted": false,
+  "hallucinated_support": false,
+  "missing_risk": false,
+  "only_error": "frozen_ordinal_contract_inconsistent",
+  "previous_expected_buy": 6.0
+}

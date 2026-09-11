@@ -1,0 +1,458 @@
+{
+  "audit": {
+    "contract": "directional-financial-anchor-grounding-audit-v1",
+    "errors": [],
+    "financial_checkpoint_refs": [],
+    "grounded_claim_count": 11,
+    "grounded_working_capital_checkpoint_count": 0,
+    "irrelevant_financial_ref_grounding_failure_count": 0,
+    "material_financial_anchor_grounding_failure_count": 0,
+    "material_financial_anchor_refs": [
+      "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+      "canonical:fictional:FIC-FIN-02:ocf-current"
+    ],
+    "material_grounding_required": true,
+    "narrative_only_duplicate_refs": [
+      "fictional:FIC-FIN-02:remaining-unknown",
+      "fictional:FIC-FIN-02:structural-risk",
+      "fictional:FIC-FIN-02:valuation-limit"
+    ],
+    "narrative_substitution_failure_count": 0,
+    "relevant_claim_count": 14,
+    "selected_financial_refs": [
+      "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+      "canonical:fictional:FIC-FIN-02:inventory-current",
+      "canonical:fictional:FIC-FIN-02:ocf-current"
+    ],
+    "status": "PASS",
+    "used_financial_refs": [
+      "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+      "canonical:fictional:FIC-FIN-02:inventory-current",
+      "canonical:fictional:FIC-FIN-02:ocf-current"
+    ],
+    "valid": true,
+    "working_capital_checkpoint_count": 0,
+    "working_capital_grounding_failure_count": 0,
+    "working_capital_grounding_required": false
+  },
+  "cash_conversion_anchor_preserved": true,
+  "inventory_context_used": true,
+  "inventory_specific_checkpoint_claim_count": 0,
+  "run1_control": {
+    "audit": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [],
+      "financial_checkpoint_refs": [
+        "canonical:fictional:FIC-FIN-02:inventory-current"
+      ],
+      "grounded_claim_count": 11,
+      "grounded_working_capital_checkpoint_count": 2,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 0,
+      "material_financial_anchor_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "material_grounding_required": true,
+      "narrative_only_duplicate_refs": [
+        "fictional:FIC-FIN-02:remaining-unknown",
+        "fictional:FIC-FIN-02:structural-risk",
+        "fictional:FIC-FIN-02:valuation-limit"
+      ],
+      "narrative_substitution_failure_count": 0,
+      "relevant_claim_count": 14,
+      "selected_financial_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "status": "PASS",
+      "used_financial_refs": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:inventory-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "valid": true,
+      "working_capital_checkpoint_count": 2,
+      "working_capital_grounding_failure_count": 0,
+      "working_capital_grounding_required": true
+    },
+    "selected_metrics_by_ref": {
+      "canonical:fictional:FIC-FIN-02:cash-conversion-current": "ocf_less_ppe_capex",
+      "canonical:fictional:FIC-FIN-02:inventory-current": "inventory",
+      "canonical:fictional:FIC-FIN-02:ocf-current": "operating_cash_flow"
+    },
+    "source_core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "fictional:FIC-FIN-02:structural-risk",
+            "canonical:fictional:FIC-FIN-02:ocf-current"
+          ],
+          "text": "누적 영업현금흐름과 현금 전환 대용치의 부진이 다음 보고기간에도 지속돼 성장의 자금 부담을 높이는 경우다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "text": "재고 사용 원인이 가역적인 것으로 확인되고 영업현금흐름과 현금 전환 대용치가 비교기간 개선으로 전환되는 경우다."
+        }
+      ],
+      "business_thesis_change": "WEAKENED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:business-thesis",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "fictional:FIC-FIN-02:operating-evidence"
+        ],
+        "text": "수요와 회계상 이익은 개선됐지만 성장이 현금으로 전환되는 정도가 약해져 사업 논리가 훼손됐다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:business-thesis"
+          ],
+          "text": "수요는 여전히 건강한 것으로 제시됐다."
+        },
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:operating-evidence"
+          ],
+          "text": "비교기간 매출과 회계상 이익이 개선됐다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "fictional:FIC-FIN-02:operating-evidence",
+          "fictional:FIC-FIN-02:remaining-unknown"
+        ],
+        "text": "매출과 회계상 이익 개선에도 누적 영업현금흐름과 현금 전환 대용치가 전년 동기보다 낮아 부정 방향이 우세하다. 다만 원인과 가역성은 확인되지 않았다."
+      },
+      "directional_balance": {
+        "buy": 4.0,
+        "sell": 6.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "canonical:fictional:FIC-FIN-02:ocf-current"
+        ],
+        "text": "누적 영업현금흐름과 영업현금흐름에서 유형자산 취득 현금유출을 뺀 대용치가 함께 전년 동기보다 낮아진 점이 핵심이다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "fictional:FIC-FIN-02:operating-evidence"
+        ],
+        "text": "매출과 회계상 이익 개선이 현금 창출 개선으로 이어지지 않아 이익의 사업적 확인력이 제한된다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "현금 전환 부진이 다음 보고기간에도 지속되고 성장에 필요한 자금 부담이 확대되는 경우다.",
+        "business_invalidation_condition_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "fictional:FIC-FIN-02:structural-risk",
+          "fictional:FIC-FIN-02:market-expectation",
+          "canonical:fictional:FIC-FIN-02:ocf-current"
+        ],
+        "stance": "REVIEW",
+        "summary": "수요와 회계상 이익은 버팀목이지만 현금 전환 약화 때문에 기존 사업 논리를 재검토할 필요가 있다."
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "건강한 수요가 영업현금흐름 회복으로 연결되고 운전자본 사용의 가역성이 확인되는 경우다.",
+        "confirmation_business_condition_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "fictional:FIC-FIN-02:business-thesis",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "fictional:FIC-FIN-02:remaining-unknown"
+        ],
+        "stance": "AVOID",
+        "summary": "현재는 성장의 현금 전환이 충분히 확인되지 않아 신규 사업 관점의 근거가 부족하다."
+      },
+      "hold_lean": "NOT_HOLD",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "fictional:FIC-FIN-02:market-expectation",
+          "canonical:fictional:FIC-FIN-02:ocf-current"
+        ],
+        "text": "시장은 추가 자금 부담 없는 성장을 기대하지만 현재 누적 현금 전환은 그 기대와 충돌한다."
+      },
+      "material_directional_anchor_basis": [
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "overall_direction": "SELL",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:structural-risk",
+          "canonical:fictional:FIC-FIN-02:inventory-current",
+          "fictional:FIC-FIN-02:remaining-unknown"
+        ],
+        "text": "재고는 전년 말보다 늘었지만 이것만으로 악화를 입증하지는 않는다. 운전자본 사용의 원인과 지속성이 핵심 위험이다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:sector-context",
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "canonical:fictional:FIC-FIN-02:ocf-current"
+        ],
+        "text": "일반 영업회사 관점에서 회계상 성장보다 누적 현금 전환의 동행 여부를 우선한다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "DETERIORATION_SIGNAL",
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "canonical:fictional:FIC-FIN-02:ocf-current"
+          ],
+          "text": "누적 영업현금흐름과 현금 전환 대용치가 모두 전년 동기보다 낮다."
+        },
+        {
+          "classification": "STRUCTURAL_RISK",
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:structural-risk"
+          ],
+          "text": "운전자본 흡수가 지속될 수 있다."
+        }
+      ],
+      "ticker": "FIC-FIN-02",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:valuation-limit",
+          "fictional:FIC-FIN-02:remaining-unknown"
+        ],
+        "text": "가치평가 근거가 없고 운전자본 사용의 원인과 가역성도 확인되지 않았다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+            "canonical:fictional:FIC-FIN-02:inventory-current",
+            "canonical:fictional:FIC-FIN-02:ocf-current",
+            "fictional:FIC-FIN-02:remaining-unknown"
+          ],
+          "summary": "재고 증가와 현금 전환 약화의 인과관계 및 가역성은 다음 보고자료로 확인해야 한다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-02:valuation-limit"
+          ],
+          "summary": "현재 가치평가 배수의 부재는 확신을 제한할 뿐 추가 부정 근거가 아니다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:valuation-limit"
+        ],
+        "text": "안전한 현재 가치평가 배수가 없어 현금 전환 약화가 평가에 반영됐는지 판단할 수 없다."
+      }
+    },
+    "source_generation_id": "20260909-m12b-fictional-20260909T085320Z-746ef9ba1586",
+    "source_modified": false,
+    "source_report": "docs/reports/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/33-run-1-context-01.json",
+    "status": "PASS",
+    "ticker": "FIC-FIN-02"
+  },
+  "selected_metrics_by_ref": {
+    "canonical:fictional:FIC-FIN-02:cash-conversion-current": "ocf_less_ppe_capex",
+    "canonical:fictional:FIC-FIN-02:inventory-current": "inventory",
+    "canonical:fictional:FIC-FIN-02:ocf-current": "operating_cash_flow"
+  },
+  "source_core": {
+    "business_reevaluation_down": [
+      {
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+          "fictional:FIC-FIN-02:structural-risk"
+        ],
+        "text": "영업현금흐름 약화와 현금 전환 부담이 지속되는 것으로 확인되면 하향 재평가한다."
+      }
+    ],
+    "business_reevaluation_up": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:business-thesis",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+        ],
+        "text": "건강한 수요가 영업현금흐름 회복과 현금 전환 개선으로 이어지면 상향 재평가한다."
+      }
+    ],
+    "business_thesis_change": "WEAKENED",
+    "business_thesis_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:business-thesis",
+        "fictional:FIC-FIN-02:operating-evidence",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "text": "수요와 회계이익은 개선됐지만 영업현금흐름 약화로 성장의 현금 전환 논리가 약해졌다."
+    },
+    "buy_drivers": [
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:business-thesis"
+        ],
+        "text": "수요는 여전히 건강하다."
+      },
+      {
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:operating-evidence"
+        ],
+        "text": "비교기간 매출과 회계이익이 개선됐다."
+      }
+    ],
+    "core_investment_judgment": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:operating-evidence",
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "fictional:FIC-FIN-02:remaining-unknown"
+      ],
+      "text": "회계상 성장과 달리 현금 전환이 약화됐지만 원인과 가역성이 확인되지 않아 부정적 기울기에 그친다."
+    },
+    "directional_balance": {
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    "directional_confidence": "MEDIUM",
+    "dominant_evidence": {
+      "evidence_refs": [
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+      ],
+      "text": "영업현금흐름 약화가 핵심이며, 설비취득 지출 차감 대리치도 같은 현금 전환 부담을 보여준다."
+    },
+    "earnings_estimate_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:operating-evidence",
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+      ],
+      "text": "매출과 회계이익 개선에도 현금 전환이 약화돼 이익 개선의 재무적 뒷받침은 불완전하다."
+    },
+    "fundamental_holder": {
+      "business_invalidation_condition": "현금 전환 약화가 지속되고 성장에 따른 자금 부담이 커지는 것으로 확인되면 보유 논리가 훼손된다.",
+      "business_invalidation_condition_refs": [
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current",
+        "fictional:FIC-FIN-02:market-expectation"
+      ],
+      "stance": "REVIEW",
+      "summary": "수요와 회계이익은 견조하지만 현금 전환 약화에 대한 점검이 필요하다(E06, E10, E08)."
+    },
+    "fundamental_new_buyer": {
+      "confirmation_business_condition": "수요 성장이 영업현금흐름 회복과 현금 전환 개선으로 연결되는지 확인한다.",
+      "confirmation_business_condition_refs": [
+        "fictional:FIC-FIN-02:business-thesis",
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+      ],
+      "stance": "WAIT",
+      "summary": "건강한 수요보다 현금 전환 약화와 원인 불확실성이 우선 확인 대상이다(E06, E08, E09)."
+    },
+    "hold_lean": "SELL_LEAN",
+    "market_expectation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:market-expectation",
+        "canonical:fictional:FIC-FIN-02:ocf-current"
+      ],
+      "text": "추가 자금 부담 없는 성장을 전제한 기대와 영업현금흐름 약화 사이에 간극이 생겼다."
+    },
+    "material_directional_anchor_basis": [
+      "canonical:fictional:FIC-FIN-02:ocf-current"
+    ],
+    "overall_direction": "HOLD",
+    "risk_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:structural-risk",
+        "fictional:FIC-FIN-02:remaining-unknown"
+      ],
+      "text": "운전자본 흡수가 지속될 수 있으나 그 원인과 가역성은 확인되지 않았다."
+    },
+    "sector_interpretation": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:sector-context",
+        "canonical:fictional:FIC-FIN-02:ocf-current",
+        "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+      ],
+      "text": "운영회사 현금 전환 틀에서 영업현금흐름을 중심에 두며, 설비취득 지출 차감치는 보조 대리치로만 사용한다."
+    },
+    "sell_drivers": [
+      {
+        "classification": "DETERIORATION_SIGNAL",
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:ocf-current"
+        ],
+        "text": "누적 영업현금흐름이 전년 동기보다 약화됐다."
+      },
+      {
+        "classification": "DETERIORATION_SIGNAL",
+        "evidence_refs": [
+          "canonical:fictional:FIC-FIN-02:cash-conversion-current"
+        ],
+        "text": "누적 설비취득 지출 차감 대리치도 전년 동기보다 약화됐다."
+      },
+      {
+        "classification": "STRUCTURAL_RISK",
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:structural-risk"
+        ],
+        "text": "운전자본 흡수가 지속될 가능성이 있다."
+      }
+    ],
+    "ticker": "FIC-FIN-02",
+    "uncertainty_limit": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:remaining-unknown",
+        "fictional:FIC-FIN-02:valuation-limit"
+      ],
+      "text": "현금 사용의 원인과 가역성 및 현재 가치평가가 확인되지 않아 부정적 방향을 확정하기 어렵다."
+    },
+    "unknown_treatments": [
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:remaining-unknown",
+          "canonical:fictional:FIC-FIN-02:ocf-current",
+          "canonical:fictional:FIC-FIN-02:inventory-current"
+        ],
+        "summary": "현금 사용의 원인과 가역성이 알려지지 않았으며 재고 증가는 맥락 자료로만 취급한다.",
+        "treatment": "CONFIRMATION_REQUIRED"
+      },
+      {
+        "directional_negative_basis": [],
+        "evidence_refs": [
+          "fictional:FIC-FIN-02:valuation-limit"
+        ],
+        "summary": "안전한 현재 가치평가 지표가 없어 가치평가 판단은 유보한다.",
+        "treatment": "CONFIDENCE_LIMIT"
+      }
+    ],
+    "valuation_context": {
+      "evidence_refs": [
+        "fictional:FIC-FIN-02:valuation-limit"
+      ],
+      "text": "안전한 현재 가치평가 배수가 없어 현금 전환 약화가 가치평가에 반영됐는지는 판단할 수 없다."
+    }
+  },
+  "source_generation_id": "20260909-m12b-fictional-20260909T085320Z-746ef9ba1586",
+  "source_modified": false,
+  "source_report": "docs/reports/20260909-first-class-typed-financial-evidence-index-implementation-full-fictional-canary/35-run-2-context-01.json",
+  "status": "PASS",
+  "ticker": "FIC-FIN-02",
+  "working_capital_grounding_required": false
+}

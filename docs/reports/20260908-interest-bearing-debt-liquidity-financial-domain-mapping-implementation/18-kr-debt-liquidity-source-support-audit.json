@@ -1,0 +1,1401 @@
+{
+  "contract": "m9-kr-debt-liquidity-source-support-audit-v1",
+  "kr_cash_direct_count": 6,
+  "kr_complete_debt_total_count": 5,
+  "kr_debt_component_direct_count": 17,
+  "kr_net_debt_count": 5,
+  "kr_nonfinancial_candidate_count": 6,
+  "new_opendart_exact_mapping_count": 12,
+  "new_opendart_fuzzy_mapping_count": 0,
+  "real_cache_fixture_count": 7,
+  "rows": [
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 7,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "4916d9212f7d9656a5fedafb00efab9b496e727bdeee676de5ea4c1484fbcc9b",
+      "compact_ai_context_before_sha256": "4916d9212f7d9656a5fedafb00efab9b496e727bdeee676de5ea4c1484fbcc9b",
+      "compact_ai_context_unchanged": true,
+      "completeness": "COMPLETE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003509",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003509",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003509",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        }
+      ],
+      "derived_fact_count": 2,
+      "direct_fact_count": 5,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 8,
+      "facts": [
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:274863d5ba5241bf882f4ce0",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-occurrence:036e07f8367257ace5cc0b83",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "26835986000000"
+        },
+        {
+          "balance_scope": "current_borrowings_aggregate",
+          "cautions": [
+            "current_borrowings_aggregate"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:3135b14fa8dbc78ab237693a",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "current_interest_bearing_debt",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-occurrence:9228e31a3191fb9f7cd5c216",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "5858873000000"
+        },
+        {
+          "balance_scope": "lease_liability_current",
+          "cautions": [
+            "lease_liability_current",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:f5c6eae664df97d183a3b70b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_current",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-occurrence:ad4bd480dc4298e7dadf2c83",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "526461000000"
+        },
+        {
+          "balance_scope": "lease_liability_noncurrent",
+          "cautions": [
+            "lease_liability_noncurrent",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:fdbcfab177eab48443ab7258",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_noncurrent",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-occurrence:a42522768f8ea266fe8e1f61",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "2000044000000"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:d0e5f35056bc7f9e67fa87d5",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-occurrence:df27ee17ba955eee41af1a67",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:LongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "12727761000000"
+        },
+        {
+          "balance_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:562ae7ccd381a70579664218",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-reported:3135b14fa8dbc78ab237693a",
+            "debt-liquidity-reported:d0e5f35056bc7f9e67fa87d5"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-derivation:cd39b9fa569ee6b12e52553f",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "18586634000000"
+        },
+        {
+          "balance_scope": "complete_debt_less_cash_and_cash_equivalents",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "restricted_cash_not_netted"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "net_debt",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:779393560d7c2a2f7d21f454",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-derived:562ae7ccd381a70579664218",
+            "debt-liquidity-reported:274863d5ba5241bf882f4ce0"
+          ],
+          "metric": "net_debt",
+          "net_gross_scope": "net",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003509",
+          "source_occurrence_id": "debt-liquidity-derivation:65218cf5aabf1e4bae3b7bd7",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "-8249352000000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "memory_semiconductor",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 8,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "a81c0357d155c3bdd21ff3cf67375934f72dd6ca8cac3030c05cc381c35930cf",
+        "OFS.json": "0a469ec3624ac30916ab2bae9ee4cc6e305d602a96d8096e5dce462cab8fe759",
+        "xbrl.zip": "593776c29024f37910aafe5500390a135bdad0d8542288f5e81e61016c4f41b6"
+      },
+      "ticker": "000660",
+      "xbrl_context_count": 1505,
+      "xbrl_fact_count": 5095
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 0,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "insurance",
+      "compact_ai_context_after_sha256": "db1e0498394728d87cad318c62b56d37ce203b1fb9136ae6525e81860147ab10",
+      "compact_ai_context_before_sha256": "db1e0498394728d87cad318c62b56d37ce203b1fb9136ae6525e81860147ab10",
+      "compact_ai_context_unchanged": true,
+      "completeness": "NOT_APPLICABLE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "exact_xbrl_instant_context_unresolved",
+          "source_document_id": "20260814003862",
+          "source_semantic": "dart:HybridBonds"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "interest_bearing_debt_total",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "",
+          "source_semantic": ""
+        }
+      ],
+      "derived_fact_count": 0,
+      "direct_fact_count": 0,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 2,
+      "facts": [],
+      "financial_type": "financial",
+      "idempotent": true,
+      "industry": "insurance_reinsurance",
+      "sector_route": "SECTOR_FRAMEWORK_REQUIRED",
+      "source_candidates": 3,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "068b876e7cb65e4714ccb8c0d8471d02078012c6c37bc46b81e2ff8514b0e8d1",
+        "OFS.json": "a652c0f4addd40a532da21339c8559cfb9136ee3415c1a0ee5570b07f691da22",
+        "xbrl.zip": "a4d27fd7fc1602bc491977206f4871f9e60b934361eef9047b8fd9bf5e18021d"
+      },
+      "ticker": "003690",
+      "xbrl_context_count": 3716,
+      "xbrl_fact_count": 11779
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 5,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "442db93d6f37ce9a81e6d6d65c4c783c764e38c8586fd3959e7eb805b1deb770",
+      "compact_ai_context_before_sha256": "442db93d6f37ce9a81e6d6d65c4c783c764e38c8586fd3959e7eb805b1deb770",
+      "compact_ai_context_unchanged": true,
+      "completeness": "COMPLETE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814000957",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814000957",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814000957",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        }
+      ],
+      "derived_fact_count": 2,
+      "direct_fact_count": 3,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 6,
+      "facts": [
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:46ba85dc92716af6a3908cad",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "debt-liquidity-occurrence:35ab21b1ef3bde50dcde3062",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "6346927761598"
+        },
+        {
+          "balance_scope": "current_borrowings_aggregate",
+          "cautions": [
+            "current_borrowings_aggregate"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:c26a8c9cedd6f96be376149b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "current_interest_bearing_debt",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "debt-liquidity-occurrence:f3a07a994f3998c045898217",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentBorrowingsAndCurrentPortionOfNoncurrentBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "11107218041911"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:ef58d4af260e6b5735fba01a",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "debt-liquidity-occurrence:e213b63af7648d2acaa78c27",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:LongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "19296703604979"
+        },
+        {
+          "balance_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:53a23bbd110f886a548fc3e2",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-reported:c26a8c9cedd6f96be376149b",
+            "debt-liquidity-reported:ef58d4af260e6b5735fba01a"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "debt-liquidity-derivation:b0280d4e7549f2ad540958b7",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "30403921646890"
+        },
+        {
+          "balance_scope": "complete_debt_less_cash_and_cash_equivalents",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "restricted_cash_not_netted"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "net_debt",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:5b5f4b4a6bfd4b07c5366679",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-derived:53a23bbd110f886a548fc3e2",
+            "debt-liquidity-reported:46ba85dc92716af6a3908cad"
+          ],
+          "metric": "net_debt",
+          "net_gross_scope": "net",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814000957",
+          "source_occurrence_id": "debt-liquidity-derivation:c3ac6c7574275ea31f0b7905",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "24056993885292"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "steel_materials",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 6,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "f1ddb2d6e5ce1c606b766d246d556beee7a4084dd0369bf9a7c032e5e46c69fa",
+        "OFS.json": "226158c5ef882cb397271547fea6eb72e8da83fc31aeca85364cbac0280dd0cc",
+        "xbrl.zip": "709fe577d0e3637f63bde9844b1a4c7b016273bbd7721e36212b55c10115c9b7"
+      },
+      "ticker": "005490",
+      "xbrl_context_count": 1557,
+      "xbrl_fact_count": 6022
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 7,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "3ff5ccb37ccb86077dce5886cc738810ab0f518aeeeb286e960a26d3df232b97",
+      "compact_ai_context_before_sha256": "3ff5ccb37ccb86077dce5886cc738810ab0f518aeeeb286e960a26d3df232b97",
+      "compact_ai_context_unchanged": true,
+      "completeness": "COMPLETE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003699",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003699",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003699",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        }
+      ],
+      "derived_fact_count": 2,
+      "direct_fact_count": 5,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 8,
+      "facts": [
+        {
+          "balance_scope": "bonds_payable_noncurrent",
+          "cautions": [
+            "bonds_payable_noncurrent"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:236b0b2a7325ed8c08513b63",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "bonds_payable_noncurrent",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-occurrence:2dbb504dd8df656023decb77",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentBondsIssued",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "7668000000"
+        },
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:a550d454972916c2fc8778ae",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-occurrence:e8de6d01b752aafb1547dc06",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "92916382000000"
+        },
+        {
+          "balance_scope": "current_portion_long_term_debt",
+          "cautions": [
+            "current_portion_long_term_debt"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:3460bdf26056b81f51657db4",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "current_portion_of_long_term_debt",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-occurrence:83bb2d0fca0accf90e4f9326",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentPortionOfLongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "1205829000000"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:074ce8b5d4fd9c1cf67cb09b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-occurrence:96074ca17346baf4c82300cd",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentLoansReceived",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "7485103000000"
+        },
+        {
+          "balance_scope": "short_term_borrowings",
+          "cautions": [
+            "short_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:be3428704c9daa4a322ea87b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "short_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-occurrence:9dd4c3c312efaa4f326066d6",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "dart:CurrentLoansReceived",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "13710121000000"
+        },
+        {
+          "balance_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:a4ab50286c6ffb8a98c02a84",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-reported:be3428704c9daa4a322ea87b",
+            "debt-liquidity-reported:3460bdf26056b81f51657db4",
+            "debt-liquidity-reported:074ce8b5d4fd9c1cf67cb09b",
+            "debt-liquidity-reported:236b0b2a7325ed8c08513b63"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-derivation:1d94fafcda94e964c8c020a9",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "22408721000000"
+        },
+        {
+          "balance_scope": "complete_debt_less_cash_and_cash_equivalents",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "restricted_cash_not_netted"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "net_debt",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:14577f482f2aaed7c5ea1785",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-derived:a4ab50286c6ffb8a98c02a84",
+            "debt-liquidity-reported:a550d454972916c2fc8778ae"
+          ],
+          "metric": "net_debt",
+          "net_gross_scope": "net",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003699",
+          "source_occurrence_id": "debt-liquidity-derivation:f35f157b435be4f2bd02c045",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "-70507661000000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "memory_semiconductor",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 8,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "ad329ffd4c111576bb0bab7c5a8424f2821195eb9b501aa3182b85eaa36c6fc5",
+        "OFS.json": "48055a9b9063fa8365dc0c7bc776fcd9e47e92d715b8d5ad526304c6069e0be7",
+        "xbrl.zip": "95504ab7d7b3bb213428329a2b455ae2d2d7c36190b8308bebffb322c3dce427"
+      },
+      "ticker": "005930",
+      "xbrl_context_count": 1074,
+      "xbrl_fact_count": 3932
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 6,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "a395853d5476958cee7d836c419fcfa8f669cfb18b2e4cedfca1b3342e9db10a",
+      "compact_ai_context_before_sha256": "a395853d5476958cee7d836c419fcfa8f669cfb18b2e4cedfca1b3342e9db10a",
+      "compact_ai_context_unchanged": true,
+      "completeness": "PARTIAL",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003088",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "unsupported_component_semantic",
+          "source_document_id": "20260814003088",
+          "source_semantic": "dart:CurrentPortionOfConvertibleRedeemablePreferredStockLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003088",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003088",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        },
+        {
+          "metric": "interest_bearing_debt_total",
+          "reason": "unsupported_component_semantic",
+          "source_document_id": "",
+          "source_semantic": ""
+        }
+      ],
+      "derived_fact_count": 0,
+      "direct_fact_count": 6,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 10,
+      "facts": [
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:8cce8334259d54414dd36a33",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:5bdbdbe9b5934e6a2379929e",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "672434030273"
+        },
+        {
+          "balance_scope": "current_portion_long_term_debt",
+          "cautions": [
+            "current_portion_long_term_debt"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:c36233b121f87df270628e1b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "current_portion_of_long_term_debt",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:ecf53b2be2141e2fec4238fb",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentPortionOfLongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "169010946559"
+        },
+        {
+          "balance_scope": "lease_liability_current",
+          "cautions": [
+            "lease_liability_current",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:d7d52cfe34c5363d00d333de",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_current",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:537a58bb37525c12996e6efc",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "25280326882"
+        },
+        {
+          "balance_scope": "lease_liability_noncurrent",
+          "cautions": [
+            "lease_liability_noncurrent",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:45aee678cce7dc79ec80706c",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_noncurrent",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:1acbaf92672d0e8d53a12ec0",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "15460281045"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:e614deac21d8e8527be07398",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:01f12c057fee5a9c1c7adbea",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:LongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "736627672116"
+        },
+        {
+          "balance_scope": "short_term_borrowings",
+          "cautions": [
+            "short_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:01ff5520cc463c80a9f35670",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "short_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003088",
+          "source_occurrence_id": "debt-liquidity-occurrence:346d669adae46db93736c520",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "dart:CurrentLoansReceived",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "572320288978"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "industrial_epc",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 10,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "9e2f62581e549f5b47a1cf4044fcb98b8630479e81563ee30e344707b21202c6",
+        "OFS.json": "a90fc9cacef0c6937c8cd570671bbe55a09978d92fb1c7c4fdd4cd7b7abef907",
+        "xbrl.zip": "9ad26c59baa23d18cef1f4f216d26d8ee7b398aabd95513b44ee6e006b24cba0"
+      },
+      "ticker": "010120",
+      "xbrl_context_count": 2688,
+      "xbrl_fact_count": 6943
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 7,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "1f9d00e34bba9f3afc7d110fd6f1a3ad70bb0df3fd5b33c1c90bb35bdd46ec9f",
+      "compact_ai_context_before_sha256": "1f9d00e34bba9f3afc7d110fd6f1a3ad70bb0df3fd5b33c1c90bb35bdd46ec9f",
+      "compact_ai_context_unchanged": true,
+      "completeness": "COMPLETE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003198",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003198",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814003198",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        }
+      ],
+      "derived_fact_count": 2,
+      "direct_fact_count": 5,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 8,
+      "facts": [
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:7f3c0c81373617e6d4b26c74",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-occurrence:2af3833c699919c6f74d1879",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "8048209509000"
+        },
+        {
+          "balance_scope": "lease_liability_current",
+          "cautions": [
+            "lease_liability_current",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:cdf073e8a1b7de58af9d7fab",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_current",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-occurrence:15aea77f28af7c959a3d65cd",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "94601198000"
+        },
+        {
+          "balance_scope": "lease_liability_noncurrent",
+          "cautions": [
+            "lease_liability_noncurrent",
+            "lease_liabilities_separate_context_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:b6b29e155b8b5875106290bf",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "lease_liabilities_noncurrent",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-occurrence:e7edf5637b5ab026bc9c1801",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentLeaseLiabilities",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "361798382000"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:37123571c15bef1762d8bb0b",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-occurrence:66735c0100abc3415d4abba7",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:LongtermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "5899495516000"
+        },
+        {
+          "balance_scope": "short_term_borrowings",
+          "cautions": [
+            "short_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:7a733d4fe8d4f19b07cef049",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "short_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-occurrence:77dc25d51e899a52d9f75688",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:ShorttermBorrowings",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "9545325863000"
+        },
+        {
+          "balance_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:7fc6909a36e117b3400a19c1",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-reported:7a733d4fe8d4f19b07cef049",
+            "debt-liquidity-reported:37123571c15bef1762d8bb0b"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-derivation:9494f02f92cf2f8242ba7587",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "15444821379000"
+        },
+        {
+          "balance_scope": "complete_debt_less_cash_and_cash_equivalents",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "restricted_cash_not_netted"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "net_debt",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:e6254b0e5bc3cac3b385e541",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-derived:7fc6909a36e117b3400a19c1",
+            "debt-liquidity-reported:7f3c0c81373617e6d4b26c74"
+          ],
+          "metric": "net_debt",
+          "net_gross_scope": "net",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814003198",
+          "source_occurrence_id": "debt-liquidity-derivation:33afe64326e08533bc17564c",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "7396611870000"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "aerospace_epc",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 8,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "da4731d6d78f72ef9355bbbdc96ba75a626b0dd8d501621d502b2513e69c35d1",
+        "OFS.json": "7ce442b972372eaa491edd0fbc5d0f4835dd078ba340694a373deee491a11b11",
+        "xbrl.zip": "b7d9528b2f1e26960a2f93d3859259d3483bad194a510f9d9e0b36ed7baf560a"
+      },
+      "ticker": "012450",
+      "xbrl_context_count": 2835,
+      "xbrl_fact_count": 8524
+    },
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 7,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "standard_operating_company",
+      "compact_ai_context_after_sha256": "5e6e1a50ae2f6d901d9257a85eba65963814dbdf5f8d41dc56701768fa02b363",
+      "compact_ai_context_before_sha256": "5e6e1a50ae2f6d901d9257a85eba65963814dbdf5f8d41dc56701768fa02b363",
+      "compact_ai_context_unchanged": true,
+      "completeness": "COMPLETE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814002854",
+          "source_semantic": "ifrs-full:CurrentLiabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814002854",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "total_liabilities_not_interest_bearing_debt",
+          "source_document_id": "20260814002854",
+          "source_semantic": "ifrs-full:NoncurrentLiabilities"
+        }
+      ],
+      "derived_fact_count": 2,
+      "direct_fact_count": 5,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 8,
+      "facts": [
+        {
+          "balance_scope": "bonds_payable_current",
+          "cautions": [
+            "bonds_payable_current"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:584135bed8aca50e85bcf245",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "bonds_payable_current",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-occurrence:d69fdbf4386988d0e59630d1",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "dart:CurrentPortionOfNoncurrentBondsIssued",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "109949078745"
+        },
+        {
+          "balance_scope": "bonds_payable_noncurrent",
+          "cautions": [
+            "bonds_payable_noncurrent"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:4ea8e194090037c1f7bc7f7e",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "bonds_payable_noncurrent",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-occurrence:f86cbfc36fd50f9695336ddb",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentBondsIssued",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "299296754384"
+        },
+        {
+          "balance_scope": "cash_and_cash_equivalents_only",
+          "cautions": [
+            "cash_and_cash_equivalents_only"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:71f1394adb5f730e8d6dac07",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "cash_and_cash_equivalents",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-occurrence:5d4f299fc49314e99e132d23",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "2404414104988"
+        },
+        {
+          "balance_scope": "current_borrowings_aggregate",
+          "cautions": [
+            "current_borrowings_aggregate"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:962e37fb088d7f107b4bcf93",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "current_interest_bearing_debt",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-occurrence:aa0c7d63f0793b5d627462d6",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:CurrentLoansReceivedAndCurrentPortionOfNoncurrentLoansReceived",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "979363870550"
+        },
+        {
+          "balance_scope": "long_term_borrowings",
+          "cautions": [
+            "long_term_borrowings"
+          ],
+          "currency": "KRW",
+          "derivation_formula": null,
+          "derivation_version": null,
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-reported:e9e0bed08d6840211845e7d9",
+          "fact_type": "REPORTED",
+          "input_fact_ids": [],
+          "metric": "long_term_borrowings",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-occurrence:4e08fe5abdf8d84a7caaa457",
+          "source_provider": "opendart_xbrl",
+          "source_semantic": "ifrs-full:NoncurrentPortionOfNoncurrentLoansReceived",
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "190234356900"
+        },
+        {
+          "balance_scope": "complete_borrowings_bonds_convertibles_excluding_lease_liabilities",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "interest_bearing_debt_total",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:8285fb72386490c0afd21079",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-reported:962e37fb088d7f107b4bcf93",
+            "debt-liquidity-reported:584135bed8aca50e85bcf245",
+            "debt-liquidity-reported:e9e0bed08d6840211845e7d9",
+            "debt-liquidity-reported:4ea8e194090037c1f7bc7f7e"
+          ],
+          "metric": "interest_bearing_debt_total",
+          "net_gross_scope": "gross",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-derivation:e8d6db5b3abeb1283876d2b1",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "1578844060579"
+        },
+        {
+          "balance_scope": "complete_debt_less_cash_and_cash_equivalents",
+          "cautions": [
+            "lease_liabilities_excluded_from_debt_scope",
+            "restricted_cash_not_netted"
+          ],
+          "currency": "KRW",
+          "derivation_formula": "net_debt",
+          "derivation_version": "interest-bearing-debt-liquidity-v1",
+          "entity_scope": "issuer_level",
+          "fact_id": "debt-liquidity-derived:680dfc36995ec6dc5f937134",
+          "fact_type": "DERIVED_METRIC",
+          "input_fact_ids": [
+            "debt-liquidity-derived:8285fb72386490c0afd21079",
+            "debt-liquidity-reported:71f1394adb5f730e8d6dac07"
+          ],
+          "metric": "net_debt",
+          "net_gross_scope": "net",
+          "period_end": "2026-06-30",
+          "period_start": null,
+          "period_type": "POINT_IN_TIME",
+          "source_document_id": "20260814002854",
+          "source_occurrence_id": "debt-liquidity-derivation:405e38eaf997bdbd06a10785",
+          "source_provider": "canonical_derivation",
+          "source_semantic": null,
+          "statement_basis": "consolidated",
+          "unit": "KRW",
+          "value": "-825570044409"
+        }
+      ],
+      "financial_type": "non_financial",
+      "idempotent": true,
+      "industry": "transport_logistics",
+      "sector_route": "GENERIC_OPERATING_COMPANY",
+      "source_candidates": 8,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "d5a4e14fc102f5f0e832926430e4681d1270fdab5149609f4864180dfbf16703",
+        "OFS.json": "203bc9d1fcf3b07232a86f8080ff7d9172eca4c7671eddb820ef00495a0da5c3",
+        "xbrl.zip": "f5ad1f4baa12fbe4a8507ede98acb693080533ab7a15b31c72ad1895ce84eda7"
+      },
+      "ticker": "086280",
+      "xbrl_context_count": 1512,
+      "xbrl_fact_count": 5756
+    }
+  ],
+  "ticker_specific_mapping_count": 0
+}

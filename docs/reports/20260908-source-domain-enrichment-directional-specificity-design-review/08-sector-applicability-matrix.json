@@ -1,0 +1,164 @@
+{
+  "contract": "m4-sector-applicability-matrix-v1",
+  "rows": [
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "SECONDARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "standard_operating_company"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "PRIMARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "semiconductor_memory"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "PRIMARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "automotive"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "SECTOR_FRAMEWORK",
+        "inventory_receivables_working_capital": "NOT_APPLICABLE",
+        "non_operating_financial_income_effects": "PRIMARY_CORE_ECONOMICS",
+        "operating_cash_flow": "CONTEXT_ONLY",
+        "ppe_capex_simple_cash_conversion": "NOT_APPLICABLE",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "bank"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "SECTOR_FRAMEWORK",
+        "inventory_receivables_working_capital": "NOT_APPLICABLE",
+        "non_operating_financial_income_effects": "PRIMARY_CORE_ECONOMICS",
+        "operating_cash_flow": "CONTEXT_ONLY",
+        "ppe_capex_simple_cash_conversion": "NOT_APPLICABLE",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "insurance_reinsurance"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "SECONDARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "shipping_transport"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "CONTEXT_ONLY",
+        "non_operating_financial_income_effects": "PRIMARY",
+        "operating_cash_flow": "SECONDARY",
+        "ppe_capex_simple_cash_conversion": "CONTEXT_ONLY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "holding_company"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "PRIMARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "SECONDARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "consumer"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "PRIMARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "SECONDARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "epc_construction"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "SECONDARY",
+        "inventory_receivables_working_capital": "SECONDARY_RECEIVABLES_ONLY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "CONTEXT_ONLY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "saas_recurring_revenue"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "SECONDARY",
+        "inventory_receivables_working_capital": "CONTEXT_ONLY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "cloud_platform"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "CONTEXT_ONLY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "SECONDARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "biotech"
+    },
+    {
+      "domain_applicability": {
+        "debt_liquidity": "PRIMARY",
+        "inventory_receivables_working_capital": "SECONDARY",
+        "non_operating_financial_income_effects": "SECONDARY",
+        "operating_cash_flow": "PRIMARY",
+        "ppe_capex_simple_cash_conversion": "PRIMARY",
+        "same_period_prior_year_comparison": "PRIMARY"
+      },
+      "generic_domain_required_for_all_issuers": false,
+      "sector_family": "preprofit_robotaxi_like"
+    }
+  ],
+  "sector_count": 13,
+  "status": "FROZEN_DESIGN",
+  "universal_domain_requirement": false
+}

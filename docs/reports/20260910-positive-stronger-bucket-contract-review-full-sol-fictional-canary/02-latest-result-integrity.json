@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "path": "/Users/sskim/Documents/Codex/thesis-monitor-20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary-report.zip",
+  "expected_sha256": "2e3d3c49081443d2b3646ba078460391db4aceea5b8656a721bcb609b4cb0700",
+  "sha256": "2e3d3c49081443d2b3646ba078460391db4aceea5b8656a721bcb609b4cb0700",
+  "indexed_payload_count": 120,
+  "missing": [],
+  "extra": [],
+  "hash_mismatches": [],
+  "size_mismatches": [],
+  "duplicate_member_count": 0
+}

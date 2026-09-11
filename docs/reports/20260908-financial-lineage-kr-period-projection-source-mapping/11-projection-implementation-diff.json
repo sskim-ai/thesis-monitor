@@ -1,0 +1,18 @@
+{
+  "changed_paths": [
+    "M\tapp/services/cash_flow_user_visible_service.py",
+    "M\tapp/services/cross_market_decision_engine_service.py",
+    "M\tapp/services/financial_context_adapter_service.py",
+    "A\tapp/services/financial_lineage_projection_service.py",
+    "M\tapp/services/opendart_financial_recovery_service.py",
+    "M\tapp/services/opendart_xbrl_service.py",
+    "A\ttests/test_financial_lineage_projection_service.py",
+    "M\ttests/test_opendart_financial_recovery_service.py"
+  ],
+  "contract": "m7-projection-implementation-diff-v1",
+  "new_raw_taxonomy_mapping_count": 0,
+  "prompt_change_count": 0,
+  "range": "6a303ebeedd275d8109e6babfcf5f725798542d1..9442f406b0deae433ad25f4961daa93e15695587",
+  "renderer_change_count": 0,
+  "scheduler_change_count": 0
+}

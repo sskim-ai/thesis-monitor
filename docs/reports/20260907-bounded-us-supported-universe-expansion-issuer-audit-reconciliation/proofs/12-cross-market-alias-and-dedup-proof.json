@@ -1,0 +1,10 @@
+{
+  "ambiguous_identity_quarantine_count": 6033,
+  "cross_market_identity_only_when_authoritative_mapping_exists": true,
+  "goog_googl_same_issuer": true,
+  "issuer_retirement_fences_all_supported_share_classes": true,
+  "multiple_security_issuer_count": 0,
+  "status": "PASS",
+  "us_canonical_issuer_count": 52,
+  "us_canonical_security_count": 52
+}

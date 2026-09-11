@@ -1,0 +1,9 @@
+{
+  "command": "shared-venv/bin/pytest -q",
+  "contract": "m7-full-test-results-v1",
+  "duration_seconds": 70.44,
+  "failed": 0,
+  "passed": 2920,
+  "result": "PASS",
+  "warnings": 2
+}

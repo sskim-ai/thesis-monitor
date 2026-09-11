@@ -1,0 +1,256 @@
+{
+  "before": {
+    "rows": [
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "FIC-FIN-05"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "FIC-FIN-06"
+      },
+      {
+        "errors": [],
+        "status": "PASS",
+        "ticker": "FIC-FIN-07"
+      },
+      {
+        "errors": [
+          "net_debt_claim_without_complete_net_debt_evidence",
+          "financial_sector_generic_reasoning"
+        ],
+        "status": "FAIL",
+        "ticker": "FIC-FIN-08"
+      }
+    ],
+    "status": "FAIL"
+  },
+  "preserved_row": {
+    "ai_imperative_primary_action_count": 0,
+    "core": {
+      "business_reevaluation_down": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "불리한 손해 추이가 보험영업을 지속적으로 훼손하거나 규제자본 적정성 약화가 확인되면 평가가 낮아진다."
+        }
+      ],
+      "business_reevaluation_up": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:market-expectation",
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "text": "보험료 책정 규율이 지속적인 보험영업 개선으로 이어지고 적정한 규제자본 추세가 확인되면 긍정 판단이 강화된다."
+        }
+      ],
+      "business_thesis_change": "UNCHANGED",
+      "business_thesis_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "보험 인수 규율과 규제자본을 중심으로 평가하며 보험영업 실적은 안정적이다."
+      },
+      "buy_drivers": [
+        {
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence"
+          ],
+          "text": "안정적인 보험영업 실적이 기존 사업의 유지 근거다."
+        }
+      ],
+      "core_investment_judgment": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "text": "보험영업 안정성과 큰 보험금 변동성이 병존해 중립이다. 자본 적정성 추세의 공백은 확신을 제한한다."
+      },
+      "directional_balance": {
+        "buy": 5.0,
+        "sell": 5.0
+      },
+      "directional_confidence": "MEDIUM",
+      "dominant_evidence": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "보험영업 실적은 안정적이지만 보험금 변동성이 여전히 크다."
+      },
+      "earnings_estimate_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence"
+        ],
+        "text": "확인된 실적 상태는 안정적 보험영업과 유의미한 보험금 변동성이다."
+      },
+      "fundamental_holder": {
+        "business_invalidation_condition": "불리한 손해 추이가 보험영업 실적을 지속적으로 훼손하거나 규제자본 적정성 약화가 확인되는 경우.",
+        "business_invalidation_condition_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "HOLDABLE",
+        "summary": "보험영업 안정성이 보유 논거를 지지하며 자본 적정성 추세는 확인이 필요하다. [E04, E07]"
+      },
+      "fundamental_new_buyer": {
+        "confirmation_business_condition": "보험료 책정 규율이 안정적인 보험영업 성과로 이어지고 규제자본 적정성이 유지되는 추세가 확인되는 경우.",
+        "confirmation_business_condition_refs": [
+          "fictional:FIC-FIN-08:market-expectation",
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:remaining-unknown"
+        ],
+        "stance": "WAIT",
+        "summary": "안정적인 보험영업에 더해 보험료 책정 규율과 자본 적정성 확인이 필요하다. [E02, E04, E07]"
+      },
+      "hold_lean": "NEUTRAL",
+      "market_expectation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:market-expectation"
+        ],
+        "text": "기대는 규율 있는 보험료 책정과 적정한 규제자본을 전제로 한다."
+      },
+      "material_directional_anchor_basis": [],
+      "overall_direction": "HOLD",
+      "risk_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:operating-evidence",
+          "fictional:FIC-FIN-08:structural-risk"
+        ],
+        "text": "보험금 변동성이 크며 불리한 손해 추이가 발생하면 보험영업의 경제성이 약화될 수 있다."
+      },
+      "sector_interpretation": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:business-thesis",
+          "fictional:FIC-FIN-08:sector-context"
+        ],
+        "text": "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다."
+      },
+      "sell_drivers": [
+        {
+          "classification": "SECTOR_NORMAL",
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:operating-evidence",
+            "fictional:FIC-FIN-08:structural-risk"
+          ],
+          "text": "보험금 변동성은 위험 요인이지만 불리한 손해 추이의 현실화가 확인된 것은 아니다."
+        }
+      ],
+      "ticker": "FIC-FIN-08",
+      "uncertainty_limit": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:remaining-unknown",
+          "fictional:FIC-FIN-08:valuation-limit"
+        ],
+        "text": "보험사에 맞는 자본 적정성 추세와 현재 가치평가가 없어 판단의 확신이 제한된다."
+      },
+      "unknown_treatments": [
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:business-thesis",
+            "fictional:FIC-FIN-08:remaining-unknown"
+          ],
+          "summary": "자본 적정성 추세는 핵심 확인 과제이며 미제공 자체가 자본 부족을 뜻하지 않는다.",
+          "treatment": "CONFIRMATION_REQUIRED"
+        },
+        {
+          "directional_negative_basis": [],
+          "evidence_refs": [
+            "fictional:FIC-FIN-08:valuation-limit"
+          ],
+          "summary": "현재 가치평가 배수의 부재는 확신을 제한한다.",
+          "treatment": "CONFIDENCE_LIMIT"
+        }
+      ],
+      "valuation_context": {
+        "evidence_refs": [
+          "fictional:FIC-FIN-08:valuation-limit"
+        ],
+        "text": "현재 가치평가 배수가 없어 가치평가 매력은 판단하기 어렵다."
+      }
+    },
+    "errors": [
+      "net_debt_claim_without_complete_net_debt_evidence",
+      "financial_sector_generic_reasoning"
+    ],
+    "financial_anchor_count": 0,
+    "financial_grounding": {
+      "contract": "directional-financial-anchor-grounding-audit-v1",
+      "errors": [],
+      "financial_checkpoint_refs": [],
+      "grounded_claim_count": 0,
+      "grounded_working_capital_checkpoint_count": 0,
+      "irrelevant_financial_ref_grounding_failure_count": 0,
+      "material_financial_anchor_grounding_failure_count": 0,
+      "material_financial_anchor_refs": [],
+      "material_grounding_required": false,
+      "narrative_only_duplicate_refs": [],
+      "narrative_substitution_failure_count": 0,
+      "relevant_claim_count": 0,
+      "selected_financial_refs": [],
+      "status": "PASS",
+      "used_financial_refs": [],
+      "valid": true,
+      "working_capital_checkpoint_count": 0,
+      "working_capital_grounding_failure_count": 0,
+      "working_capital_grounding_required": false
+    },
+    "financial_semantics": {
+      "contract": "directional-financial-semantic-validator-v1",
+      "errors": [
+        "net_debt_claim_without_complete_net_debt_evidence"
+      ],
+      "financial_sector_generic_financial_context_leak_count": 0,
+      "fixed_financial_score_rule_count": 0,
+      "invalid_financial_reference_count": 0,
+      "normalized_earnings_claim_violation_count": 0,
+      "partial_capex_called_fcf_count": 0,
+      "partial_debt_total_claim_count": 1,
+      "valid": false,
+      "year_end_as_yoy_count": 0
+    },
+    "first_class_typed_financial_refs": [],
+    "material_financial_anchor_refs": [],
+    "narrative_duplicate_refs": [],
+    "ownership": {
+      "buy_without_nonprice_material_anchor": 0,
+      "contract": "direction-timing-ownership-validator-v1",
+      "directional_core_price_technical_refs": 0,
+      "directional_core_supply_refs": 0,
+      "directional_core_unknown_refs": 0,
+      "errors": [],
+      "sell_without_nonprice_material_anchor": 0,
+      "valid": true
+    },
+    "qtd_ytd_semantics": {
+      "contract": "directional-financial-qtd-ytd-validator-v1",
+      "errors": [],
+      "explicit_claim_count": 0,
+      "linked_claim_count": 0,
+      "qtd_evidence_ref_count": 0,
+      "required": false,
+      "required_metrics": [],
+      "valid": true,
+      "ytd_evidence_ref_count": 0
+    },
+    "selected_financial_refs": [],
+    "selected_typed_financial_refs": [],
+    "status": "FAIL",
+    "ticker": "FIC-FIN-08",
+    "used_financial_refs": [],
+    "used_typed_financial_refs": []
+  },
+  "status": "REPRODUCED_BEFORE_REPAIR"
+}

@@ -1,0 +1,6 @@
+{
+  "exact_raw_diagnostics_preserved": true,
+  "policy": "directional-decision-material-stability-v1",
+  "same_direction_half_point_nonblocking": true,
+  "status": "PASS"
+}

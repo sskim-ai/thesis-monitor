@@ -1,0 +1,57 @@
+{
+  "contract": "fresh-kr-source-failure-detail-v1",
+  "failure_count": 1,
+  "rows": [
+    {
+      "base_provider_audit": {},
+      "candidate_rank": 4,
+      "canonical_issuer_key": "opendart:corp:00149646",
+      "canonical_security_id": "kr:kospi:024110",
+      "diagnostic_packet_sha256": "f8463ac0d2f970e266802c6fe1bec3e2274aee318e806f9d556f00e826e82083",
+      "eligible_for_final_holdout": false,
+      "evidence_families": [
+        "IDENTITY_SECURITY",
+        "EARNINGS_FINANCIAL_CURRENT"
+      ],
+      "failure_reasons": [
+        "REGULATORY_CAPITAL_CURRENTORSECTOR_OPERATING_CURRENT",
+        "validated_current_opendart_revenue_unavailable"
+      ],
+      "final_diagnostic_eligibility": "FUNDAMENTAL_SOURCE_INSUFFICIENT",
+      "framework": "bank_or_insurer",
+      "full_packet_sha256": null,
+      "full_packet_status": "NOT_RUN_SOURCE_INSUFFICIENT",
+      "fundamental_source_sufficient": false,
+      "model_calls": 0,
+      "packet_path": null,
+      "price_timing_input_readiness": "NOT_ATTEMPTED_SOURCE_GATE",
+      "provider_audit": {
+        "cache_hits": 0,
+        "profile_requests": 1,
+        "profile_successes": 1,
+        "statement_requests": 3,
+        "statement_successes": 1
+      },
+      "rank": 4,
+      "security_accounting_basis_status": "PASS",
+      "selected": false,
+      "source_payload_sha256": "4d395313a81f1ef2785c48b979066ff1feffb239e18e35d2bbcc535884779c74",
+      "source_quality": "partial",
+      "source_request_lineage": [
+        {
+          "issuer_id": "00149646",
+          "source": "opendart_company",
+          "status": "success"
+        },
+        {
+          "source": "opendart_formal_statement",
+          "source_document_id": "20260814004009",
+          "status": "success"
+        }
+      ],
+      "source_sufficiency_status": "SUFFICIENT_FOR_LIMITED_RESEARCH_ONLY",
+      "ticker": "024110"
+    }
+  ],
+  "status": "DIAGNOSTIC_COMPLETE"
+}

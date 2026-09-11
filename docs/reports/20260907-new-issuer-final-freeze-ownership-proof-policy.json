@@ -1,0 +1,92 @@
+{
+  "batch_semantics": "MODEL_CONTEXT_COUPLED",
+  "context_groups": [
+    [
+      "NVMI",
+      "SKYH",
+      "WKSP",
+      "EROC"
+    ],
+    [
+      "373160",
+      "452200",
+      "389470",
+      "380550"
+    ],
+    [
+      "008970",
+      "047080",
+      "068270",
+      "475830"
+    ],
+    [
+      "033160",
+      "079940",
+      "103140",
+      "278280"
+    ]
+  ],
+  "cost_policy": {
+    "all_routes_verified_free_claimed": 0,
+    "existing_configured_data_routes_only": true,
+    "new_free_api_gate_project": 0,
+    "new_paid_data_dependency": 0
+  },
+  "expected_invocations_per_run": 8,
+  "expected_total_model_invocations": 32,
+  "model": "gpt-5.6-sol",
+  "model_timeout_owner_count": 1,
+  "model_timeout_seconds": 1800,
+  "ordered_cohort": [
+    "NVMI",
+    "SKYH",
+    "WKSP",
+    "EROC",
+    "373160",
+    "452200",
+    "389470",
+    "380550",
+    "008970",
+    "047080",
+    "068270",
+    "475830",
+    "033160",
+    "079940",
+    "103140",
+    "278280"
+  ],
+  "reasoning_effort": "xhigh",
+  "review_exclusion_registry_sha256": "f91ec0a8ea6a224a5da3375da28d83f01b46c518e8b94a8da0df23398a3f2415",
+  "review_manifest_sha256": "6bba480d63661967c80192af6d80287bb3bb9c4d9cf31084eaeeb6a45358b99c",
+  "review_result_zip_sha256": "b2233e37113ac84def1e974e81c413e39f9f378a84182167ca9ae4b24c75bce0",
+  "review_selection_policy_sha256": "c66583d78dc9155e454df172730691040778a25f5c8e4ab33da63919a172d574",
+  "retry_count": 0,
+  "run_order": [
+    "first",
+    "a",
+    "b",
+    "c"
+  ],
+  "stage_order": [
+    "DIRECTIONAL_CORE",
+    "PRICE_TIMING"
+  ],
+  "stability_acceptance": {
+    "accepted_categories": [
+      "STABLE",
+      "BOUNDARY_UNCERTAINTY"
+    ],
+    "all_four_runs_required": true,
+    "difficult_issuer_exclusion_after_output": 0,
+    "threshold_change_after_output": 0,
+    "unstable_subject_count_max": 0
+  },
+  "status": "FROZEN_PRE_FIRST",
+  "stop_rules": {
+    "continue_only_after_complete_prior_run_gates": true,
+    "hotfix_after_real_output": 0,
+    "selective_context_or_ticker_rerun": 0,
+    "stop_on_first_required_gate_failure": true
+  },
+  "subjects_per_shared_context": 4
+}

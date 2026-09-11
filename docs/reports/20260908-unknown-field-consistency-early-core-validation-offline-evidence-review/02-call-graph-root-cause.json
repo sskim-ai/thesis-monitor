@@ -1,0 +1,14 @@
+{
+  "alias_expansion": "structured_autonomy_alias_service.resolve_candidate_aliases",
+  "composer": "direction_timing_ownership_service.compose_decision",
+  "contract": "unknown-field-actual-call-graph-root-cause-v1",
+  "core_acceptance": "new_issuer_holdout_selection_ownership_proof.core_partial_audit",
+  "early_stop": "execute_run checks core_partial_audit before entering the Price-Timing loop",
+  "historical_failure_code": "unknown_nonnegative_has_directional_basis",
+  "historical_failure_path": "unknown_treatments[0].directional_negative_basis",
+  "late_validation": "structured_autonomy_shadow_service.validate_structured_autonomy_candidate",
+  "missing_invariant_before_repair": "core_partial_audit did not apply Unknown treatment/basis consistency",
+  "producer": "scripts/directional_core_price_timing_holdout.py::_core_prompt",
+  "repair": "unknown_treatment_consistency_issues is shared by Core and final validation",
+  "status": "ROOT_CAUSE_CONFIRMED_AND_BOUNDED_REPAIR_IMPLEMENTED"
+}

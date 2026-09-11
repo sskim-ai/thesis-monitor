@@ -1,0 +1,9 @@
+{
+  "contract": "m2-master-workflow-update-v1",
+  "m1_status": "COMPLETE",
+  "m2_status": "COMPLETE",
+  "m3_status": "NOT_AUTHORIZED",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "sha256": "670cf4aad18481e173fbaa95503e474523e538b325607505e64aea0e6d83084b",
+  "status": "RECORDED"
+}

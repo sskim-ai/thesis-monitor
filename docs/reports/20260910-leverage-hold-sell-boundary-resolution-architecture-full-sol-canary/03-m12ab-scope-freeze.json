@@ -1,0 +1,5 @@
+{
+  "contract": "m12ab-leverage-hold-sell-boundary-architecture-v1",
+  "selected_architecture": "BOUNDARY_DECLARATION_PLUS_CONSERVATIVE_RESOLUTION",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION"
+}

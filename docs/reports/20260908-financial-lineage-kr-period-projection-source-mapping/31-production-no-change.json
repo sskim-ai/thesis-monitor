@@ -1,0 +1,18 @@
+{
+  "assessment_persistence_mutations": 0,
+  "automatic_monitoring_resume": 0,
+  "contract": "m7-production-no-change-v1",
+  "deployments": 0,
+  "live_v2_changes": 0,
+  "main_merges": 0,
+  "model_calls_fictional": 0,
+  "model_calls_judge": 0,
+  "model_calls_real": 0,
+  "monitoring_registrations": 0,
+  "night_futures_changes": 0,
+  "notification_queue_writes": 0,
+  "production_db_mutations": 0,
+  "production_sends": 0,
+  "provider_source_fetches": 0,
+  "warning_mutations": 0
+}

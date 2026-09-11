@@ -1,0 +1,11 @@
+{
+  "base_sha": "7eb9243f27ec0b15d7bb847c07c42299286f6892",
+  "branch": "codex/20260908-nonproduction-integration-decision-message-quality-review",
+  "contract": "m2-repository-provenance-v1",
+  "head_at_report_generation": "c20e1e00838b8d023755c75479e98ef727a5fa93",
+  "implementation_commit": "c20e1e00838b8d023755c75479e98ef727a5fa93",
+  "origin_main": "d18e68b1e944d7749d093b08797fcd9498412680",
+  "status": "PASS",
+  "tree_at_report_generation": "3f1529120604003b1790904b5c5ca6eb618d6ff7",
+  "work_instruction_commit": "265d3866b5885458da89e01dfe994c426c7f342f"
+}

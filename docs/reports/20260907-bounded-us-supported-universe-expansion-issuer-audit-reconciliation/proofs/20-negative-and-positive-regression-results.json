@@ -1,0 +1,87 @@
+{
+  "historical_case_classification": "17 retained regression cases include a positive control; not all are negative",
+  "historical_cases": [
+    {
+      "case": "old_schema_runtime_prompt",
+      "status": "PASS"
+    },
+    {
+      "case": "runtime_schema_old_prompt",
+      "status": "PASS"
+    },
+    {
+      "case": "validator_expected_id_differs",
+      "status": "PASS"
+    },
+    {
+      "case": "adapter_schema_path_stale",
+      "status": "PASS"
+    },
+    {
+      "case": "timing_schema_stale",
+      "status": "PASS"
+    },
+    {
+      "case": "abc_or_resume_binding_stale",
+      "status": "PASS"
+    },
+    {
+      "case": "wrong_output_contract",
+      "status": "PASS"
+    },
+    {
+      "case": "wrong_subject_order_or_alias",
+      "status": "PASS"
+    },
+    {
+      "case": "cross_run_receipt_swap",
+      "status": "PASS"
+    },
+    {
+      "case": "unexpected_output_id",
+      "status": "PASS"
+    },
+    {
+      "case": "missing_or_corrupt_binding_lock",
+      "status": "PASS"
+    },
+    {
+      "case": "normalization_nonidentity_change",
+      "status": "PASS"
+    },
+    {
+      "case": "source_identity_overwrite",
+      "status": "PASS"
+    },
+    {
+      "case": "guard_unobservable_fail_closed",
+      "status": "PASS"
+    },
+    {
+      "case": "prespawn_failure_no_receipt",
+      "status": "PASS"
+    },
+    {
+      "case": "postspawn_preservation_stops_advancement",
+      "status": "PASS"
+    },
+    {
+      "case": "positive_runtime_differs_from_source",
+      "status": "PASS"
+    }
+  ],
+  "historical_regression_case_count": 17,
+  "new_reference_and_market_tests": [
+    "explicit KR market remains KR",
+    "missing/invalid/conflicting market fails closed",
+    "multiple US share classes map to one CIK",
+    "issuer retirement fences alternate share classes",
+    "ambiguous CIK identity quarantined",
+    "listed unsupported security quarantined",
+    "OpenDART corp_code owns KR issuer identity",
+    "overlapping exclusions use set union",
+    "provider route requires us_stock_list_code"
+  ],
+  "real_model_calls": 0,
+  "status": "PASS"
+}

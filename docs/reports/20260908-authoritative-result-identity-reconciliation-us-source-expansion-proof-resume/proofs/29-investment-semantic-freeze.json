@@ -1,0 +1,43 @@
+{
+  "architecture_hashes": {
+    "alias_fencing": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "authoritative_result_source_expansion_orchestrator": "1715ecc0551d506686ac756ba9a727b7edf8de3687b8d6b3b4ee508895c80367",
+    "directional_balance": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "directional_balance_service": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+    "directional_calibration_real_proof_orchestrator": "1a14be61b56c0f7ce97db3d9c3e230a93a16c414911284083c98ef2212c396bc",
+    "directional_core_candidate_schema_owner": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+    "directional_core_prompt_owner": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061",
+    "experiment_runner": "4c29cc1545518f448180e0b8adf6efa2e3472ae64b4b2f95003965b0d4320713",
+    "frozen_runner": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061",
+    "ownership_service": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+    "pause_completion_orchestrator": "1fa8dc01ca2a983d7ee5ef366e950e4d407f10ef78bcb0e34a347321bbc1d110",
+    "risk_carried_orchestrator": "427f5ca5a63d6a9b4017b0904a018a8b4b94bedbf9943f0c5af8095bdeb81264",
+    "source_assembly": "4b4e9563767dab2df1440a46a04d53d29d041c95b2cabc02e769a7673ac60594",
+    "source_enrichment": "43a2873b44f83cf0b17dbfa78c6d26f6a0da712e9127bf67f09a44fe5cd090da",
+    "stability_classifier": "e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188",
+    "transport_adapter": "cfc9e4843956349601392ee1e4c5f0fe4ef937f251c657914f6e0d30c72ddcbb",
+    "transport_lifecycle": "247367b23d731b947c4169c86ecf7871768934d858e8477092a0b26fb6f37774",
+    "validator_renderer": "ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f"
+  },
+  "calibration_freeze_seal_sha256": "8214ee6e7fbc5fa29e5569dac5c01ab466744e4f343bab4a9d689231cdc6837d",
+  "contract": "architecture-semantic-freeze-v1",
+  "directional_calibration_gate": {
+    "calibration_architecture_hashes": {
+      "directional_balance_service": "6ef58109fe57f04047760b5db035d3b2584203da80b6c97fbddd29bbc794edfa",
+      "directional_core_candidate_schema_owner": "8cba5d93801833ad3b004a97cefe30e2ab71c7caee75be76c93123bec0b3273a",
+      "directional_core_prompt_owner": "a69420eae5e55ce954f8cdf9d3e3af1567b1cf0e246b4b73c49445caa01bd061"
+    },
+    "calibration_contract_sha256": "3443dc0f7505d01bc5ba965fa0f20128f12f2678d5e16d5f883ce41f47067d33",
+    "calibration_freeze_seal_sha256": "8214ee6e7fbc5fa29e5569dac5c01ab466744e4f343bab4a9d689231cdc6837d",
+    "contract": "directional-calibration-frozen-architecture-gate-v1",
+    "failures": [],
+    "fictional_calibration_unstable_count": 0,
+    "fictional_model_invocation_count": 6,
+    "observed_program_state": "FRESH_REAL_PROOF_STOPPED",
+    "status": "PASS"
+  },
+  "directional_threshold_changed": 0,
+  "investment_decision_threshold_mutation": 0,
+  "price_timing_semantic_mutation": 0,
+  "status": "FROZEN"
+}

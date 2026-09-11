@@ -1,0 +1,33 @@
+{
+  "architecture_hashes_unchanged": 1,
+  "batch_grouping_changed": 0,
+  "cohort": [
+    "ORCL",
+    "UNH",
+    "KO",
+    "AVGO",
+    "095570",
+    "058860",
+    "246960",
+    "099520",
+    "403870",
+    "014790",
+    "079810",
+    "060980",
+    "061970",
+    "012030",
+    "225190",
+    "245620"
+  ],
+  "contract": "current-holdout-reuse-gate-v1",
+  "current_holdout_reuse_allowed": 0,
+  "model_unchanged": 1,
+  "pre_lock_directional_model_calls": 0,
+  "prior_model_output_exists": 0,
+  "prompt_schema_semantics_unchanged": 1,
+  "reasoning_effort_unchanged": 1,
+  "source_lock_unchanged": 1,
+  "source_sufficiency_policy_unchanged": 1,
+  "status": "FAIL",
+  "transport_canary_status": "FAIL"
+}

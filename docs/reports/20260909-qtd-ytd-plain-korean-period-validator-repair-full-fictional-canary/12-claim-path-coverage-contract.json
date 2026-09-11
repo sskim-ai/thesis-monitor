@@ -1,0 +1,32 @@
+{
+  "arbitrary_path_added": false,
+  "audited_paths": [
+    "core_investment_judgment",
+    "dominant_evidence",
+    "earnings_estimate_context",
+    "business_thesis_context",
+    "buy_drivers",
+    "sell_drivers",
+    "business_reevaluation_up",
+    "business_reevaluation_down",
+    "fundamental_new_buyer",
+    "fundamental_holder",
+    "sector_interpretation"
+  ],
+  "contract": "m12d-qtd-ytd-claim-path-coverage-v1",
+  "expected_linked_claim_count": 11,
+  "status": "PASS",
+  "validation": {
+    "contract": "directional-financial-qtd-ytd-validator-v1",
+    "errors": [],
+    "explicit_claim_count": 11,
+    "linked_claim_count": 11,
+    "qtd_evidence_ref_count": 1,
+    "required": true,
+    "required_metrics": [
+      "operating_income"
+    ],
+    "valid": true,
+    "ytd_evidence_ref_count": 1
+  }
+}

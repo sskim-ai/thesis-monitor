@@ -1,0 +1,8 @@
+{
+  "existing_direct_api_owner": "app/services/analysis_report_service.py:InvestmentNarrativeGenerator",
+  "help_returncode": 0,
+  "help_sha256": "e504bac5a6364566fbe408132dec7993639def9258ece34e8352f51f8d43687c",
+  "json_supported": true,
+  "official_docs": "https://learn.chatgpt.com/docs/non-interactive-mode",
+  "output_schema_supported": true
+}

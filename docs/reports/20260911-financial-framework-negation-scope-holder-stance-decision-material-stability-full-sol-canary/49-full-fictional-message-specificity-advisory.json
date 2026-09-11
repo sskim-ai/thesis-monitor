@@ -1,0 +1,202 @@
+{
+  "contract": "m12-fictional-canary-message-specificity-advisory-v1",
+  "generic_substantive_repetition_count": 14,
+  "period_basis_specificity": "PASS",
+  "renderer_introduced_repetition_count": 0,
+  "rows": [
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-01",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-02",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-03",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-04",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-05",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-06",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-07",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-08",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-01",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-02",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-03",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-04",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-05",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-06",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-07",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-08",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-01",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-02",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-03",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 3,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-04",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-05",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 2,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": true,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-06",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-07",
+      "within_1_to_3_anchor_target": true
+    },
+    {
+      "financial_anchor_count": 0,
+      "issuer_specific_checkpoint_present": true,
+      "material_financial_evidence": false,
+      "specific_financial_anchor_present": true,
+      "ticker": "FIC-FIN-08",
+      "within_1_to_3_anchor_target": true
+    }
+  ],
+  "specific_anchor_pass_count": 24,
+  "status": "PASS"
+}

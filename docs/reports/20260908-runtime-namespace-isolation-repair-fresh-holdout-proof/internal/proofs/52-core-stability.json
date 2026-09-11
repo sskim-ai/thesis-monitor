@@ -1,0 +1,532 @@
+{
+  "contract": "directional-core-stability-audit-v1",
+  "counts": {
+    "BOUNDARY_UNCERTAINTY": 4,
+    "STABLE": 4,
+    "UNSTABLE": 8
+  },
+  "majority_vote": 0,
+  "rows": [
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "WYNN",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "reasons": [
+        "CORE_FIELD_VARIANCE_WITHOUT_DIRECTION_REVERSAL"
+      ],
+      "ticker": "DOX",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "NWS",
+      "values": {
+        "a": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "ATTRACTIVE",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "reasons": [
+        "CORE_FIELD_VARIANCE_WITHOUT_DIRECTION_REVERSAL"
+      ],
+      "ticker": "ASTI",
+      "values": {
+        "a": [
+          "SELL",
+          2.5,
+          7.5,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "b": [
+          "SELL",
+          3.0,
+          7.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "c": [
+          "SELL",
+          3.5,
+          6.5,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "064850",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "053270",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "reasons": [
+        "CORE_FIELD_VARIANCE_WITHOUT_DIRECTION_REVERSAL"
+      ],
+      "ticker": "078860",
+      "values": {
+        "a": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "b": [
+          "SELL",
+          3.5,
+          6.5,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "c": [
+          "SELL",
+          3.5,
+          6.5,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "145720",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "199730",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "065510",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "396470",
+      "values": {
+        "a": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "STABLE",
+      "reasons": [],
+      "ticker": "299900",
+      "values": {
+        "a": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "b": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ],
+        "c": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REDUCE"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "020180",
+      "values": {
+        "a": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "WAIT",
+          "REDUCE"
+        ],
+        "b": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "SELL",
+          4.0,
+          6.0,
+          "NOT_HOLD",
+          "AVOID",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "122310",
+      "values": {
+        "a": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ]
+      }
+    },
+    {
+      "classification": "BOUNDARY_UNCERTAINTY",
+      "reasons": [
+        "CORE_FIELD_VARIANCE_WITHOUT_DIRECTION_REVERSAL"
+      ],
+      "ticker": "417200",
+      "values": {
+        "a": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ],
+        "b": [
+          "HOLD",
+          4.5,
+          5.5,
+          "SELL_LEAN",
+          "WAIT",
+          "REVIEW"
+        ],
+        "c": [
+          "HOLD",
+          5.0,
+          5.0,
+          "NEUTRAL",
+          "WAIT",
+          "REVIEW"
+        ]
+      }
+    },
+    {
+      "classification": "UNSTABLE",
+      "reasons": [
+        "DIRECTION_OR_OPPOSING_HOLD_LEAN_CHANGED"
+      ],
+      "ticker": "023910",
+      "values": {
+        "a": [
+          "BUY",
+          6.5,
+          3.5,
+          "NOT_HOLD",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "b": [
+          "HOLD",
+          5.5,
+          4.5,
+          "BUY_LEAN",
+          "WAIT",
+          "HOLDABLE"
+        ],
+        "c": [
+          "BUY",
+          6.0,
+          4.0,
+          "NOT_HOLD",
+          "ATTRACTIVE",
+          "HOLDABLE"
+        ]
+      }
+    }
+  ],
+  "status": "REVIEW"
+}

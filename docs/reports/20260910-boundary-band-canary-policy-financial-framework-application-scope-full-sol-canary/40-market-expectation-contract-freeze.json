@@ -1,0 +1,13 @@
+{
+  "rows": [
+    {
+      "base_sha256": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+      "changed": false,
+      "current_sha256": "0b809c2ec8580dd90b38cc2eb54b6a555c086e1a8fd3864997c2a33c393b399f",
+      "expected_changed": false,
+      "path": "scripts/financial_exclusion_expectation_m12u.py",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

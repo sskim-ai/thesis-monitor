@@ -1,0 +1,41 @@
+{
+  "contract": "us-reference-expansion-focused-validation-v1",
+  "rows": [
+    {
+      "command": [
+        "/Users/sskim/Codex/thesis-monitor/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_reference_universe_audit_service.py",
+        "tests/test_directional_core_boundary_fresh_generalization_proof.py"
+      ],
+      "name": "focused_pytest",
+      "output_tail": [
+        ".............                                                            [100%]",
+        "13 passed in 0.54s"
+      ],
+      "returncode": 0,
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "/Users/sskim/Codex/thesis-monitor/.venv/bin/ruff",
+        "check",
+        "app/services/reference_universe_audit_service.py",
+        "scripts/authoritative_result_identity_reconciliation_us_source_expansion_proof_resume.py",
+        "scripts/directional_core_boundary_fresh_generalization_proof.py",
+        "tests/test_reference_universe_audit_service.py",
+        "tests/test_directional_core_boundary_fresh_generalization_proof.py"
+      ],
+      "name": "focused_ruff",
+      "output_tail": [
+        "All checks passed!"
+      ],
+      "returncode": 0,
+      "status": "PASS"
+    }
+  ],
+  "source_or_model_calls": 0,
+  "status": "PASS"
+}

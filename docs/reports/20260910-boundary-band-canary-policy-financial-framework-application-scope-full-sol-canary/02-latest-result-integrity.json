@@ -1,0 +1,13 @@
+{
+  "duplicate_member_count": 0,
+  "extra": [],
+  "hash_mismatches": [],
+  "indexed_payload_count": 192,
+  "known_empty_scanner_marker_literals": 0,
+  "missing": [],
+  "secret_scan_failures": [],
+  "sha256": "6c6c6c02dcc9b6b144af43c3903e328bbc185a6bf4a4edbf78932500bfdd0c39",
+  "size_mismatches": [],
+  "status": "PASS",
+  "zip_entry_count": 193
+}

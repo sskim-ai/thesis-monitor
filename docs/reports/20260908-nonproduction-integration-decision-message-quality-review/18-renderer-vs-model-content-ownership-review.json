@@ -1,0 +1,20 @@
+{
+  "contract": "m2-renderer-model-content-ownership-review-v1",
+  "decision": "PRESERVE_RENDERER_OWNERSHIP",
+  "historical_ownership_counts": {
+    "MODEL_CONTENT_WITH_RENDERER_WRAPPER": 33,
+    "MODEL_OWNED_SUBSTANTIVE": 85,
+    "RENDERER_INTRODUCED_OR_UNRESOLVED": 4
+  },
+  "renderer_must_not": [
+    "invent issuer financial analysis",
+    "paraphrase to hide repetition"
+  ],
+  "renderer_owner": [
+    "ordering",
+    "canonical labels",
+    "primary action wording"
+  ],
+  "status": "PASS",
+  "substantive_reasoning_owner": "DIRECTIONAL_CORE_OR_SHARED_DECISION_OUTPUT"
+}

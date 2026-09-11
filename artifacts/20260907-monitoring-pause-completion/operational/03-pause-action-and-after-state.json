@@ -1,0 +1,85 @@
+{
+  "contract": "authorized-schedule-pause-verification-v1",
+  "timezone": "Asia/Seoul",
+  "transition_window": {
+    "definition_backups_created_at": "2026-09-07T17:34:46+09:00",
+    "after_verified_at": "2026-09-07T17:35:19+09:00"
+  },
+  "prior_task": {
+    "changed_scheduler_object_count": 6,
+    "objects": [
+      "com.seungsoo.thesis-monitor.daily",
+      "com.seungsoo.thesis-monitor.kr-close",
+      "thesis-monitor-ai-review-us-primary",
+      "thesis-monitor-ai-review-us-backup",
+      "thesis-monitor-ai-review-kr-primary",
+      "thesis-monitor-ai-review-kr-backup"
+    ],
+    "current_state_reverified": "PAUSED"
+  },
+  "current_task": {
+    "newly_changed_scheduler_object_count": 2,
+    "objects": [
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "before": {
+          "disable_override": false,
+          "loaded": true,
+          "state": "not running",
+          "runs": 8,
+          "last_exit_code": 0
+        },
+        "mutation": "launchctl disable followed by bootout only after inactive-process verification",
+        "after": {
+          "disable_override": true,
+          "loaded": false,
+          "launchctl_print_exit_code": 113,
+          "effective_next_trigger": null
+        },
+        "forced_termination": false
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "before": {
+          "disable_override": false,
+          "loaded": true,
+          "state": "not running",
+          "runs": 24,
+          "last_exit_code": 0
+        },
+        "mutation": "launchctl disable followed by bootout only after inactive-process verification",
+        "after": {
+          "disable_override": true,
+          "loaded": false,
+          "launchctl_print_exit_code": 113,
+          "effective_next_trigger": null
+        },
+        "forced_termination": false
+      }
+    ]
+  },
+  "current_effective_states": {
+    "launchd_disabled_and_unloaded": [
+      "com.seungsoo.thesis-monitor.daily",
+      "com.seungsoo.thesis-monitor.kr-close",
+      "com.seungsoo.thesis-monitor.ai-review-fallback",
+      "com.seungsoo.thesis-monitor.ai-review-delivery-retry"
+    ],
+    "codex_automations_paused": [
+      "thesis-monitor-ai-review-us-primary",
+      "thesis-monitor-ai-review-us-backup",
+      "thesis-monitor-ai-review-kr-primary",
+      "thesis-monitor-ai-review-kr-backup"
+    ],
+    "relevant_process_count": 0
+  },
+  "authorized_logical_schedule_count": 2,
+  "total_paused_scheduler_object_count": 8,
+  "us_pause_status": "PAUSED_COMPLETE",
+  "kr_pause_status": "PAUSED_COMPLETE",
+  "operational_pause_status": "PAUSED_COMPLETE",
+  "remaining_automatic_send_path_through_these_schedules": 0,
+  "restoration_requires_new_explicit_user_request": true,
+  "auto_resume_configured": false,
+  "status": "PASS"
+}

@@ -1,0 +1,9 @@
+{
+  "contract": "m7-m6-contract-reuse-proof-v1",
+  "m6_adapter_contract": "existing-canonical-financial-domain-adapter-v1",
+  "m6_financial_context_schema_sha256": "144252265a64d99a017a3d3cfddfc0d221089b8232a4efe73bca892f0893df92",
+  "m7_adapter_contract": "existing-canonical-financial-domain-adapter-v1",
+  "m7_financial_context_schema_sha256": "144252265a64d99a017a3d3cfddfc0d221089b8232a4efe73bca892f0893df92",
+  "schema_fields_added": 0,
+  "schema_identical": true
+}

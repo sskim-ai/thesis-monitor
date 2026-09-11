@@ -1,0 +1,12 @@
+# 10 Context Preservation Error Propagation
+
+| Field | Value |
+| --- | --- |
+| context_preservation_secondary_failure_count | 0 |
+| contract | context-preservation-error-propagation-v1 |
+| not_required_before_spawn | ["model output", "stdout", "stderr", "receipt"] |
+| preserved | ["prompt", "schema", "context manifest", "root exception"] |
+| root_exception_masked | 0 |
+| status | PASS |
+
+Machine proof: `proofs/10-context-preservation-error-propagation.json`.

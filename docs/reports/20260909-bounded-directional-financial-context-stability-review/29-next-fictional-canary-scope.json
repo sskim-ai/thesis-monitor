@@ -1,0 +1,14 @@
+{
+  "contexts_per_repetition": 2,
+  "contract": "m12s-next-fictional-canary-scope-v1",
+  "fingerprint_audit_required": true,
+  "fresh_real_issuer_allowed": false,
+  "full_run_only": true,
+  "new_generation_required": true,
+  "repetitions": 3,
+  "required": true,
+  "same_eight_fictional_subjects": true,
+  "same_model_effort_schema_validator_renderer_required": true,
+  "selective_rerun_allowed": false,
+  "status": "FROZEN"
+}

@@ -1,0 +1,68 @@
+{
+  "contract": "m9-financial-sector-routing-audit-v1",
+  "financial_sector_candidate_count": 1,
+  "financial_sector_generic_net_debt_emission_count": 0,
+  "real_rows": [
+    {
+      "adapter_denials": [],
+      "adapter_emission_count": 0,
+      "aggregate_precedence_count": 0,
+      "analysis_framework": "insurance",
+      "compact_ai_context_after_sha256": "db1e0498394728d87cad318c62b56d37ce203b1fb9136ae6525e81860147ab10",
+      "compact_ai_context_before_sha256": "db1e0498394728d87cad318c62b56d37ce203b1fb9136ae6525e81860147ab10",
+      "compact_ai_context_unchanged": true,
+      "completeness": "NOT_APPLICABLE",
+      "denials": [
+        {
+          "metric": "debt_liquidity",
+          "reason": "exact_xbrl_instant_context_unresolved",
+          "source_document_id": "20260814003862",
+          "source_semantic": "dart:HybridBonds"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:CashAndCashEquivalents"
+        },
+        {
+          "metric": "debt_liquidity",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "20260814003862",
+          "source_semantic": "ifrs-full:Liabilities"
+        },
+        {
+          "metric": "interest_bearing_debt_total",
+          "reason": "financial_sector_not_applicable",
+          "source_document_id": "",
+          "source_semantic": ""
+        }
+      ],
+      "derived_fact_count": 0,
+      "direct_fact_count": 0,
+      "exact_duplicates_suppressed": 0,
+      "exact_occurrence_count": 2,
+      "facts": [],
+      "financial_type": "financial",
+      "idempotent": true,
+      "industry": "insurance_reinsurance",
+      "sector_route": "SECTOR_FRAMEWORK_REQUIRED",
+      "source_candidates": 3,
+      "source_conflict_count": 0,
+      "source_file_sha256": {
+        "CFS.json": "068b876e7cb65e4714ccb8c0d8471d02078012c6c37bc46b81e2ff8514b0e8d1",
+        "OFS.json": "a652c0f4addd40a532da21339c8559cfb9136ee3415c1a0ee5570b07f691da22",
+        "xbrl.zip": "a4d27fd7fc1602bc491977206f4871f9e60b934361eef9047b8fd9bf5e18021d"
+      },
+      "ticker": "003690",
+      "xbrl_context_count": 3716,
+      "xbrl_fact_count": 11779
+    }
+  ],
+  "route_result": "SECTOR_FRAMEWORK_REQUIRED",
+  "synthetic_frameworks_tested": [
+    "bank",
+    "insurance",
+    "reinsurance"
+  ]
+}

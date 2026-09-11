@@ -1,0 +1,12 @@
+{
+  "attempted_contexts": 1,
+  "contract": "m12r-m12-failure-reproduction-v1",
+  "focal_ticker": "FIC-FIN-03",
+  "hard_financial_semantic_violation_count": 0,
+  "reported_errors": [
+    "qtd_ytd_conflict_not_explicit"
+  ],
+  "schema_valid_row_count": 4,
+  "status": "REPRODUCED",
+  "transport_success_count": 1
+}

@@ -1,0 +1,15 @@
+{
+  "prohibited": [
+    "majority_vote",
+    "balance_averaging",
+    "threshold_change",
+    "Astra"
+  ],
+  "scope": [
+    "Korean contrastive-copular framework exclusion",
+    "holder REVIEW/REDUCE contract",
+    "decision-material stability",
+    "one full 8x3 Sol canary"
+  ],
+  "status": "FROZEN"
+}

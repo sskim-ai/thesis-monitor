@@ -1,0 +1,12 @@
+{
+  "before_replay": {
+    "errors": [
+      "financial_sector_generic_reasoning"
+    ],
+    "status": "FAIL",
+    "ticker": "FIC-FIN-08"
+  },
+  "repair": "Extend directly governed nominal non-applicability predicates; preserve clause/field/anchor independence and conditional/double-negative fail-closed behavior.",
+  "root_cause": "EXPLICIT_NON_APPLICABILITY_NOMINAL_COMPLEMENT_NOT_RECOGNIZED",
+  "vocabulary": "Reuse UNCERTAIN_OR_AMBIGUOUS for AMBIGUOUS_OR_CONTRADICTORY; no schema rename."
+}

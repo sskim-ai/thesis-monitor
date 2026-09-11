@@ -1,0 +1,55 @@
+{
+  "compact_ai_context_changed_count": 0,
+  "contract": "m11-compact-ai-non-leak-v1",
+  "fixture_rows": [
+    {
+      "after_sha256": "5bd10c08ab60736d147793af75bad7798b87301940ecd4677832bbe950804ed7",
+      "before_sha256": "5bd10c08ab60736d147793af75bad7798b87301940ecd4677832bbe950804ed7",
+      "ticker": "000660",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "434de60b6563c46e22e286f3161aee4356a95a908b35fa09ea8406ba4186991a",
+      "before_sha256": "434de60b6563c46e22e286f3161aee4356a95a908b35fa09ea8406ba4186991a",
+      "ticker": "003690",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "12824a7eb446580eeba0b8135ea96ffce78a60f7662defeb17dfebd399080fbc",
+      "before_sha256": "12824a7eb446580eeba0b8135ea96ffce78a60f7662defeb17dfebd399080fbc",
+      "ticker": "005490",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "763ac87e4495f1621c0c8ad0c940e2bdaafa222e348ae25d9570a17991611909",
+      "before_sha256": "763ac87e4495f1621c0c8ad0c940e2bdaafa222e348ae25d9570a17991611909",
+      "ticker": "005930",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "fb29bb77be7373bd42290b2de7c81873cb9f9d238442c2245d84ff0b2f95d0c5",
+      "before_sha256": "fb29bb77be7373bd42290b2de7c81873cb9f9d238442c2245d84ff0b2f95d0c5",
+      "ticker": "010120",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "1f372ffb0a01e4d7575b8c4517500495bd86106e343473b6d6344e416307b183",
+      "before_sha256": "1f372ffb0a01e4d7575b8c4517500495bd86106e343473b6d6344e416307b183",
+      "ticker": "012450",
+      "unchanged": true
+    },
+    {
+      "after_sha256": "c3ac9f5e41bff28172e87fbd5d637553de3d4a1a2f925daf166101cfa8906fde",
+      "before_sha256": "c3ac9f5e41bff28172e87fbd5d637553de3d4a1a2f925daf166101cfa8906fde",
+      "ticker": "086280",
+      "unchanged": true
+    }
+  ],
+  "function_hash": {
+    "after_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "before_sha256": "021f3e59dde82175217c4af428d4c30a9e23061b953e8f1452bb0f77299057a6",
+    "changed": false,
+    "function": "compact_ai_context",
+    "path": "app/services/cross_market_decision_engine_service.py"
+  }
+}

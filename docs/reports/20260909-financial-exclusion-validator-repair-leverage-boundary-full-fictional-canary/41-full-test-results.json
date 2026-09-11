@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260909-directional-financial-context-consumption-specificity-implementation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-09T15:02:48.182284+00:00",
+  "output_path": "artifacts/20260909-financial-exclusion-validator-repair-leverage-boundary-full-fictional-canary/validation/full.txt",
+  "output_sha256": "b560643a5f207a9b8f39991ea6e85c1a7876c87153db54ee28b084af4ba81b2d",
+  "returncode": 0,
+  "started_at": "2026-09-09T15:01:31.682622+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

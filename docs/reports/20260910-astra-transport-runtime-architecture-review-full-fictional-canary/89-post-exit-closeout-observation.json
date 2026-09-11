@@ -1,0 +1,21 @@
+{
+  "contract": "m12v-post-exit-closeout-observation-v1",
+  "observed_at": "2026-09-10T01:12:18+00:00",
+  "source": "read-only ps and immutable lifecycle-receipt.json",
+  "pids_checked": [
+    16080,
+    16085
+  ],
+  "ps_returncode": 1,
+  "ps_output_bytes": 0,
+  "checked_pids_remaining": 0,
+  "lifecycle_orphan_model_process_count": 0,
+  "lifecycle_receipt_sha256": "2234d461c3f15ca3cee4b5257977a8f909c835f01bfcf49413f4daf31431c908",
+  "raw_final_output_status": "NOT_PRODUCED",
+  "stdout_bytes": 0,
+  "stderr_bytes": 29652,
+  "additional_model_calls": 0,
+  "remaining_contexts": "NOT_RUN",
+  "backend_root_cause": "NOT_MEASURED",
+  "deadline_increase_performed_after_generation": false
+}

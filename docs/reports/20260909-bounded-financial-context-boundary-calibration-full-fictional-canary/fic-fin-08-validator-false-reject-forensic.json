@@ -1,0 +1,38 @@
+{
+  "contract": "m12e-frozen-validator-false-reject-forensic-v1",
+  "ticker": "FIC-FIN-08",
+  "field": "sector_interpretation.text",
+  "exact_text": "보험 인수 규율과 규제자본으로 평가하는 보험사이며 일반 영업기업의 순부채·운전자본 틀은 적용하지 않는다.",
+  "linked_refs": [
+    "fictional:FIC-FIN-08:business-thesis",
+    "fictional:FIC-FIN-08:sector-context"
+  ],
+  "selected_typed_financial_refs": [],
+  "used_typed_financial_refs": [],
+  "frozen_errors": [
+    "net_debt_claim_without_complete_net_debt_evidence",
+    "financial_sector_generic_reasoning"
+  ],
+  "code_paths": [
+    {
+      "file": "app/services/directional_financial_context_service.py",
+      "line": 854,
+      "mechanism": "net_debt_language is true on the substring 순부채; absent net_debt metric then produces an error, without distinguishing assertion from explicit non-applicability."
+    },
+    {
+      "file": "scripts/directional_financial_context_m12.py",
+      "line": 2113,
+      "mechanism": "FIC-FIN-08 forbidden token tuple includes 순부채, and scans all text without claim-polarity scope."
+    }
+  ],
+  "finding": "EXPLICIT_NOT_APPLICABLE_CLAIM_FALSE_REJECT",
+  "finding_count": 2,
+  "substantive_generic_financial_use_in_triggering_claim": false,
+  "net_debt_numeric_claim_in_triggering_claim": false,
+  "original_verdict": "FAIL",
+  "original_verdict_preserved": true,
+  "candidate_modified": false,
+  "validator_modified_after_generation": false,
+  "rerun_count": 0,
+  "next_repair_boundary": "Distinguish assertion/application from explicit exclusion in claim semantics; preserve rejection of unsupported debt claims and actual insurance misuse. No ticker exceptions or narrow Korean phrase regex patch."
+}

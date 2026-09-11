@@ -1,0 +1,50 @@
+{
+  "rows": [
+    {
+      "confidence": "MEDIUM",
+      "current_support": "STRONGER",
+      "direction": "SELL",
+      "expected_buy": 3.5,
+      "id": "NEG-STAB-01",
+      "observed_buy": 3.5,
+      "persistence_limit": "FUTURE_DURABILITY_NOT_YET_PROVEN",
+      "status": "PASS",
+      "valuation": "MISSING"
+    },
+    {
+      "confidence": "MEDIUM",
+      "current_support": "STRONGER",
+      "direction": "SELL",
+      "expected_buy": 4.0,
+      "id": "NEG-STAB-02",
+      "observed_buy": 4.0,
+      "persistence_limit": "CURRENT_IMPROVEMENT_DIRECTLY_CHALLENGED",
+      "status": "PASS",
+      "valuation": "AVAILABLE"
+    },
+    {
+      "confidence": "MEDIUM",
+      "current_support": "STRONGER",
+      "direction": "SELL",
+      "expected_buy": 3.5,
+      "id": "NEG-STAB-03",
+      "observed_buy": 3.5,
+      "persistence_limit": "NONE",
+      "status": "PASS",
+      "valuation": "MISSING"
+    },
+    {
+      "confidence": "HIGH",
+      "current_support": "MINIMUM",
+      "direction": "SELL",
+      "expected_buy": 4.0,
+      "id": "NEG-STAB-04",
+      "observed_buy": 4.0,
+      "persistence_limit": "NONE",
+      "status": "PASS",
+      "valuation": "AVAILABLE"
+    }
+  ],
+  "status": "PASS",
+  "symmetry": "PASS"
+}

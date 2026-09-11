@@ -1,0 +1,64 @@
+{
+  "cases": [
+    {
+      "case": "us_cash_short_term_and_long_term_debt_complete",
+      "result": "PASS"
+    },
+    {
+      "case": "us_current_portion_and_noncurrent_debt_non_overlapping",
+      "result": "PASS"
+    },
+    {
+      "case": "sec_companyfacts_exact_semantics",
+      "result": "PASS"
+    },
+    {
+      "case": "kr_exact_cash_borrowings_and_bonds",
+      "result": "PASS"
+    },
+    {
+      "case": "point_in_time_same_date",
+      "result": "PASS"
+    },
+    {
+      "case": "canonical_unit_scale_normalization",
+      "result": "PASS"
+    },
+    {
+      "case": "negative_net_debt_allowed",
+      "result": "PASS"
+    },
+    {
+      "case": "holding_company_basis_and_caution_preserved",
+      "result": "PASS"
+    },
+    {
+      "case": "lease_liabilities_separate_context",
+      "result": "PASS"
+    },
+    {
+      "case": "aggregate_debt_precedence_over_children",
+      "result": "PASS"
+    },
+    {
+      "case": "direct_reported_point_in_time_shape",
+      "result": "PASS"
+    },
+    {
+      "case": "derived_input_lineage_revalidated",
+      "result": "PASS"
+    },
+    {
+      "case": "legacy_direct_cash_plus_optional_financial_context",
+      "result": "PASS"
+    },
+    {
+      "case": "repeated_mapping_deterministic",
+      "result": "PASS"
+    }
+  ],
+  "contract": "m9-positive-fixture-manifest-v1",
+  "fixture_count": 14,
+  "pass_count": 14,
+  "synthetic_and_real_labeled_separately": true
+}

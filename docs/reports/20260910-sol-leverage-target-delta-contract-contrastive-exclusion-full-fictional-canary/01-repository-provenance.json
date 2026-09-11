@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "actual_branch": "codex/20260910-sol-leverage-target-delta-m12y",
+  "base_sha": "0651fe2387049c27b81e273260b99e8cfe7e9b5d",
+  "work_instruction_commit": "68d00f9d413565a44ddb3e3306f6cfe036ce85c7",
+  "remote_branch_sha": "68d00f9d413565a44ddb3e3306f6cfe036ce85c7",
+  "working_tree_state_at_start": "CLEAN",
+  "origin_main_at_start": "d18e68b1e944d7749d093b08797fcd9498412680"
+}

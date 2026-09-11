@@ -1,0 +1,13 @@
+{
+  "boundary_default": {
+    "evidence_refs": [],
+    "less_directional_balance": null,
+    "more_directional_balance": null,
+    "reason": null,
+    "status": "NONE"
+  },
+  "legacy_candidate_schema_changed": false,
+  "legacy_contract": "directional-core-output-v1",
+  "legacy_parse": true,
+  "status": "PASS"
+}

@@ -1,0 +1,80 @@
+{
+  "cases": [
+    {
+      "case": "manufacturing_inventory_aggregate_direct_fact",
+      "result": "PASS"
+    },
+    {
+      "case": "inventory_children_separate_without_aggregate",
+      "result": "PASS"
+    },
+    {
+      "case": "inventory_prior_year_comparable",
+      "result": "PASS"
+    },
+    {
+      "case": "inventory_prior_year_end",
+      "result": "PASS"
+    },
+    {
+      "case": "trade_receivables_direct",
+      "result": "PASS"
+    },
+    {
+      "case": "broad_receivables_separate_context",
+      "result": "PASS"
+    },
+    {
+      "case": "trade_payables_direct",
+      "result": "PASS"
+    },
+    {
+      "case": "broad_payables_separate_context",
+      "result": "PASS"
+    },
+    {
+      "case": "current_assets_direct_context",
+      "result": "PASS"
+    },
+    {
+      "case": "current_liabilities_direct_context",
+      "result": "PASS"
+    },
+    {
+      "case": "contract_asset_separate_context",
+      "result": "PASS"
+    },
+    {
+      "case": "contract_liability_separate_context",
+      "result": "PASS"
+    },
+    {
+      "case": "kr_exact_opendart_inventory_context",
+      "result": "PASS"
+    },
+    {
+      "case": "kr_exact_opendart_trade_receivables_context",
+      "result": "PASS"
+    },
+    {
+      "case": "us_exact_sec_source_class_synthetic",
+      "result": "PASS"
+    },
+    {
+      "case": "balance_absolute_delta_prior_year_comparable",
+      "result": "PASS"
+    },
+    {
+      "case": "balance_absolute_delta_prior_year_end",
+      "result": "PASS"
+    },
+    {
+      "case": "same_input_rerun_idempotent",
+      "result": "PASS"
+    }
+  ],
+  "contract": "m10-positive-fixture-manifest-v1",
+  "fixture_count": 18,
+  "pass_count": 18,
+  "synthetic_and_real_labeled_separately": true
+}

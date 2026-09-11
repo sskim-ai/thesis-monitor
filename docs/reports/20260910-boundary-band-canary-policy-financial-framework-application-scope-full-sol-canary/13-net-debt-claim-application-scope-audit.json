@@ -1,0 +1,6 @@
+{
+  "assertion_requires_complete_net_debt": true,
+  "non_application_triggers_completeness_error": false,
+  "shared_role_classifier": true,
+  "status": "PASS"
+}

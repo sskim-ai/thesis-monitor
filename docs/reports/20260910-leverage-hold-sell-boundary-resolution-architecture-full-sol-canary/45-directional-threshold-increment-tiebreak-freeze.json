@@ -1,0 +1,18 @@
+{
+  "buy_threshold": 6.0,
+  "evidence_count_bucket_rule_count": 0,
+  "fixed_score_rule_count": 0,
+  "increment": 0.5,
+  "rows": [
+    {
+      "base_sha256": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+      "changed": false,
+      "current_sha256": "568f6b1701e13c01a2872881f0341e829f9d2f64b588aca98c789ebf84dde481",
+      "path": "app/services/directional_balance_service.py",
+      "status": "PASS"
+    }
+  ],
+  "sell_threshold": 6.0,
+  "status": "PASS",
+  "tie_break": "TOWARD_5_0"
+}

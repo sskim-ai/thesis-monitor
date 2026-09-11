@@ -1,0 +1,18 @@
+{
+  "pairs": [
+    {
+      "core": "SELL",
+      "new_buyer": "AVOID"
+    },
+    {
+      "core": "HOLD",
+      "new_buyer": "WAIT"
+    },
+    {
+      "core": "SELL",
+      "new_buyer": "AVOID"
+    }
+  ],
+  "repair_priority": "CORE_FIRST",
+  "status": "COUPLED"
+}

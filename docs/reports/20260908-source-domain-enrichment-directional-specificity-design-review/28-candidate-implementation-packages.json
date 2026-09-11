@@ -1,0 +1,84 @@
+{
+  "contract": "m4-candidate-implementation-packages-v1",
+  "package_count": 5,
+  "rows": [
+    {
+      "affected_modules": [
+        "app/services/cross_market_decision_engine_service.py",
+        "packet validators and tests"
+      ],
+      "fresh_real_holdout_required": false,
+      "model_revalidation_required": false,
+      "package": "B_PACKET_FINANCIAL_CONTEXT_EXTENSION",
+      "required_tests": [
+        "backward compatibility",
+        "typed metadata hard failures"
+      ],
+      "scope": "add optional typed financial_context and validation; no producer activation",
+      "semantic_risk": "MEDIUM"
+    },
+    {
+      "affected_modules": [
+        "new bounded packet adapter",
+        "canonical lineage tests"
+      ],
+      "fresh_real_holdout_required": false,
+      "model_revalidation_required": false,
+      "package": "A_EXISTING_CANONICAL_DOMAIN_ADAPTERS",
+      "required_tests": [
+        "period/basis lineage",
+        "PPE label",
+        "missing semantics"
+      ],
+      "scope": "bridge same-period comparison and existing OCF/PPE facts into packet",
+      "semantic_risk": "MEDIUM"
+    },
+    {
+      "affected_modules": [
+        "SEC/OpenDART normalization adapters"
+      ],
+      "fresh_real_holdout_required": false,
+      "model_revalidation_required": false,
+      "package": "A_ADDITIONAL_SOURCE_MAPPING_SUBPACKAGES",
+      "required_tests": [
+        "component completeness",
+        "sector routing",
+        "offline fixtures"
+      ],
+      "scope": "separate debt/liquidity, working-capital, and non-operating mappings",
+      "semantic_risk": "HIGH"
+    },
+    {
+      "affected_modules": [
+        "Directional Core prompt/validator",
+        "semantic audits"
+      ],
+      "fresh_real_holdout_required": true,
+      "model_revalidation_required": true,
+      "package": "C_DIRECTIONAL_SPECIFICITY_CONTRACT",
+      "required_tests": [
+        "period specificity",
+        "correlation",
+        "missing nonnegative"
+      ],
+      "scope": "use frozen enriched input for 1-3 independent issuer-specific anchors",
+      "semantic_risk": "HIGH"
+    },
+    {
+      "affected_modules": [
+        "source-sufficiency contract only if separately approved"
+      ],
+      "fresh_real_holdout_required": true,
+      "model_revalidation_required": true,
+      "package": "D_SECTOR_GATE_REVIEW_IF_COVERAGE_PROVES_REQUIRED",
+      "required_tests": [
+        "coverage impact",
+        "sector applicability",
+        "fail-closed behavior"
+      ],
+      "scope": "separate decision before any debt/liquidity source-sufficiency gate",
+      "semantic_risk": "HIGH"
+    }
+  ],
+  "status": "FROZEN_DESIGN"
+}

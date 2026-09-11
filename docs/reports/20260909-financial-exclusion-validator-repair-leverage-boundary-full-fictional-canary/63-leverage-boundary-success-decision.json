@@ -1,0 +1,10 @@
+{
+  "status": "OFFLINE_CONTRACT_CLOSED_NEW_CANARY_NOT_MEASURED",
+  "root_cause": "ASTRA_OUTPUT_CONSISTENT_WITH_CURRENT_5_5_CONTRACT",
+  "fic_fin_05_case_change_semantics": "CURRENT_ABSOLUTE_CONDITION_WITHOUT_EXPLICIT_BASELINE_DETERIORATION",
+  "frozen_lev01": "HOLD 4.5:5.5 SELL_LEAN",
+  "old_astra_replay": "CONTRACT_CONSISTENT",
+  "new_observations": 0,
+  "prompt_changes": 0,
+  "old_sol_expected_label_forced": false
+}

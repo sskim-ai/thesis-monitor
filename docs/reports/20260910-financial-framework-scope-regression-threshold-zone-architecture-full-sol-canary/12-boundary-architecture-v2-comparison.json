@@ -1,0 +1,42 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "method": "QUALITATIVE_NO_WEIGHTED_SCORE",
+  "options": [
+    {
+      "architecture": "OPTION_F_SELF_DECLARED_BOUNDARY",
+      "self_declaration_reliability": "FAILED_FIRST_EMPIRICAL_TARGET",
+      "model_prompt_interference": "PRESENT",
+      "deterministic": false,
+      "schema_complexity": "ADDITIVE_MODEL_SCHEMA",
+      "raw_state_preserved": true,
+      "fic_fin_05_detection": "MISSED",
+      "decision": "REJECT"
+    },
+    {
+      "architecture": "DETERMINISTIC_THRESHOLD_ZONE",
+      "self_declaration_reliability": "NOT_REQUIRED",
+      "model_prompt_interference": "NONE",
+      "deterministic": true,
+      "schema_complexity": "POST_VALIDATION_SHADOW_METADATA",
+      "raw_state_preserved": true,
+      "fic_fin_05_detection": "DETERMINISTIC",
+      "decision": "SELECT"
+    },
+    {
+      "architecture": "NO_BOUNDARY_LAYER",
+      "self_declaration_reliability": "NOT_APPLICABLE",
+      "model_prompt_interference": "NONE",
+      "deterministic": true,
+      "schema_complexity": "NONE",
+      "raw_state_preserved": true,
+      "fic_fin_05_detection": "ABSENT",
+      "decision": "REJECT"
+    }
+  ],
+  "majority_vote_rule_count": 0,
+  "balance_averaging_rule_count": 0,
+  "fixed_score_rule_count": 0,
+  "evidence_count_bucket_rule_count": 0
+}

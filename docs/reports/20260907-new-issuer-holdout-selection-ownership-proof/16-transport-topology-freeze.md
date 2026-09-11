@@ -1,0 +1,16 @@
+# 16 Transport Topology Freeze
+
+| Field | Value |
+| --- | --- |
+| contract | transport-topology-freeze-v1 |
+| model | gpt-5.6-sol |
+| real_model_invocation_count | 0 |
+| reasoning_effort | xhigh |
+| status | NOT_EXERCISED_SOURCE_FAILURE |
+| timeout_increase_this_task | 0 |
+| timeout_owner_count | 1 |
+| timeout_seconds | 1800 |
+| transport_grouping_mode | MODEL_CONTEXT_COUPLED |
+| transport_topology_mutation | 0 |
+
+Machine proof: `proofs/16-transport-topology-freeze.json`.

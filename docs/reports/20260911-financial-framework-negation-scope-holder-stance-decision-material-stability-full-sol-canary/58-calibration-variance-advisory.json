@@ -1,0 +1,6 @@
+{
+  "confidence_variance_subject_count": 0,
+  "same_direction_calibration_variance_subject_count": 1,
+  "status": "ADVISORY",
+  "threshold_zone_variance_subject_count": 1
+}

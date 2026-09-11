@@ -1,0 +1,64 @@
+{
+  "contract": "m10-trade-payables-taxonomy-v1",
+  "interest_bearing_debt_reclassification_count": 0,
+  "rows": [
+    {
+      "balance_scope": "trade_payables_current",
+      "canonical_metric": "trade_accounts_payable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "TRADE_PAYABLE",
+      "source_semantic": "us-gaap:AccountsPayableTradeCurrent"
+    },
+    {
+      "balance_scope": "trade_payables_total",
+      "canonical_metric": "trade_accounts_payable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 105,
+      "role": "TRADE_PAYABLE",
+      "source_semantic": "ifrs-full:TradePayables"
+    },
+    {
+      "balance_scope": "trade_payables_current",
+      "canonical_metric": "trade_accounts_payable",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "TRADE_PAYABLE",
+      "source_semantic": "ifrs-full:TradeAndOtherCurrentPayablesToTradeSuppliers"
+    },
+    {
+      "balance_scope": "broad_payables_current",
+      "canonical_metric": "accounts_payable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "BROAD_PAYABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsPayableCurrent"
+    },
+    {
+      "balance_scope": "broad_payables_current",
+      "canonical_metric": "accounts_payable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 90,
+      "role": "BROAD_PAYABLE_CONTEXT",
+      "source_semantic": "us-gaap:AccountsPayableAndAccruedLiabilitiesCurrent"
+    },
+    {
+      "balance_scope": "broad_payables_current",
+      "canonical_metric": "accounts_payable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 100,
+      "role": "BROAD_PAYABLE_CONTEXT",
+      "source_semantic": "ifrs-full:TradeAndOtherCurrentPayables"
+    },
+    {
+      "balance_scope": "broad_payables_total",
+      "canonical_metric": "accounts_payable_broad",
+      "net_gross_scope": "issuer_reported",
+      "priority": 95,
+      "role": "BROAD_PAYABLE_CONTEXT",
+      "source_semantic": "ifrs-full:TradeAndOtherPayables"
+    }
+  ],
+  "total_current_liabilities_as_trade_payables_count": 0,
+  "trade_and_broad_are_distinct": true
+}

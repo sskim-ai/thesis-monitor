@@ -1,0 +1,21 @@
+{
+  "status": "FROZEN",
+  "previous": {
+    "direction": "HOLD",
+    "buy": 4.5,
+    "sell": 5.5,
+    "hold_lean": "SELL_LEAN"
+  },
+  "target": {
+    "direction": "SELL",
+    "buy": 4,
+    "sell": 6,
+    "hold_lean": "NOT_HOLD"
+  },
+  "stronger_direction_blockers": [
+    "refinancing_terms_unknown",
+    "maturity_concentration_unknown",
+    "stable_operating_profit_counterevidence"
+  ],
+  "directional_prompt_change_authorized": false
+}

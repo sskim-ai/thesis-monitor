@@ -1,0 +1,37 @@
+{
+  "contract": "m12c-fic-fin-06-grounding-control-v1",
+  "focal_domain": "WORKING_CAPITAL",
+  "m12b_run1": {
+    "selected_typed_ref_count": 2,
+    "used_typed_ref_count": 2,
+    "material_anchor_ref_count": 2,
+    "working_capital_checkpoint_count": 8,
+    "grounded_working_capital_checkpoint_count": 6,
+    "errors": [],
+    "replay_status": "PASS"
+  },
+  "old_m12g": {
+    "selected_typed_ref_count": 2,
+    "used_typed_ref_count": 0,
+    "working_capital_specific_checkpoint_claim_count": 8,
+    "grounded_working_capital_checkpoint_count": 0,
+    "errors": [
+      "material_financial_anchor_grounding_failure",
+      "working_capital_grounding_failure",
+      "narrative_substitution_failure"
+    ],
+    "replay_status": "FAIL",
+    "expected_regression": "FAIL"
+  },
+  "corrected_fixture": {
+    "selected_typed_ref_count": 2,
+    "used_typed_ref_count": 2,
+    "working_capital_checkpoint_count": 7,
+    "grounded_working_capital_checkpoint_count": 3,
+    "errors": [],
+    "replay_status": "PASS",
+    "expected_regression": "PASS"
+  },
+  "preserves_need_for_metric_specific_working_capital_grounding": true,
+  "status": "PASS"
+}

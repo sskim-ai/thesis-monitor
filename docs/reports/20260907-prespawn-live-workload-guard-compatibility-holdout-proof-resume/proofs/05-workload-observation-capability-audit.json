@@ -1,0 +1,12 @@
+{
+  "contract": "workload-observation-capability-audit-v1",
+  "model_execution_observable": true,
+  "model_execution_registry": "lsof open /codex_runtime_state/ paths",
+  "model_execution_signal": "open /codex_runtime_state/ files",
+  "natural_job_observable": true,
+  "natural_job_registry": "LaunchAgent ProgramArguments + launchctl state",
+  "natural_job_signal": "loaded LaunchAgent state",
+  "protected_window_observable": true,
+  "ps_dependency": false,
+  "status": "PASS"
+}

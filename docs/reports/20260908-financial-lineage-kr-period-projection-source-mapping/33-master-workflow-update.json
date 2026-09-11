@@ -1,0 +1,10 @@
+{
+  "contract": "m7-master-workflow-update-v1",
+  "m6_status": "COMPLETE",
+  "m7_status": "COMPLETE",
+  "monitoring_state": "PAUSED",
+  "next_scope": "SOURCE_CLASS_FINANCIAL_MAPPING_IMPLEMENTATION",
+  "path": "docs/MASTER_WORKFLOW.md",
+  "production_readiness": "NOT_READY",
+  "sha256": "bcbc63217b00fbab4bb181dc1a8ec2c47636f2f55c20ac7d4b7e0af5283a2c34"
+}

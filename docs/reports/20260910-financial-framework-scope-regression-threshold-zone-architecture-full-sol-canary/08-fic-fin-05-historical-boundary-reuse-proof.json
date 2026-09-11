@@ -1,0 +1,37 @@
+{
+  "phase": "M12AC",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T11:07:44.229Z",
+  "source": "M12AA_COMPLETE_SAMPLE",
+  "raw_values": [
+    {
+      "overall_direction": "SELL",
+      "buy": 4,
+      "sell": 6,
+      "hold_lean": "NOT_HOLD"
+    },
+    {
+      "overall_direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "hold_lean": "SELL_LEAN"
+    },
+    {
+      "overall_direction": "SELL",
+      "buy": 4,
+      "sell": 6,
+      "hold_lean": "NOT_HOLD"
+    }
+  ],
+  "minimum_sell_count": 2,
+  "hold_sell_lean_count": 1,
+  "out_of_band_count": 0,
+  "non_hold_lean_normalization_change_count": 0,
+  "raw_formal_class": "UNSTABLE",
+  "derived_zone_values": [
+    "NEGATIVE_THRESHOLD_ZONE",
+    "NEGATIVE_THRESHOLD_ZONE",
+    "NEGATIVE_THRESHOLD_ZONE"
+  ],
+  "derived_zone_class": "ZONE_STABLE"
+}

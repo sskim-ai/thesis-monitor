@@ -1,0 +1,22 @@
+{
+  "contract": "m10-scope-freeze-v1",
+  "implemented": [
+    "inventory",
+    "trade_and_broad_receivables",
+    "trade_and_broad_payables",
+    "current_asset_liability_context",
+    "contract_asset_liability_context",
+    "balance_absolute_delta",
+    "explicit_comparison_kind"
+  ],
+  "not_implemented": [
+    "non_operating_effects",
+    "directional_consumption",
+    "source_sufficiency_change",
+    "warnings",
+    "DSO_DIO_DPO_CCC",
+    "model_or_holdout",
+    "production_or_scheduler_resume"
+  ],
+  "provider_source_fetches": 0
+}

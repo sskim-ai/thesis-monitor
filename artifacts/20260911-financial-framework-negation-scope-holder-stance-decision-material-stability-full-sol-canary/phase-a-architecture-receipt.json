@@ -1,0 +1,24 @@
+{
+  "fic_fin_05_holder_target": "REVIEW",
+  "financial_framework_negation_root_cause": "KOREAN_REPLACEMENT_JUDGMENT_PREDICATE_NOT_RECOGNIZED",
+  "latest_result_integrity": "PASS",
+  "m12ac_row_count": 24,
+  "model_calls": 0,
+  "reports": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "status": "PASS"
+}

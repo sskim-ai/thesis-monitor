@@ -1,0 +1,6 @@
+{
+  "id": "D",
+  "reason": "No existing same-account supported direct Astra transport; API-key narrative route is not equivalent.",
+  "selected": false,
+  "status": "UNSUPPORTED"
+}

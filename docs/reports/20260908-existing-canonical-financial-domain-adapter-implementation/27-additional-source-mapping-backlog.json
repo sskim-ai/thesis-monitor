@@ -1,0 +1,52 @@
+{
+  "contract": "m6-additional-source-mapping-backlog-v1",
+  "count": 9,
+  "items": [
+    {
+      "item": "compatible_prior_year_fact_projection",
+      "reason": "selected packet catalogs often carry only the current cash-flow tuple",
+      "sequence": 1
+    },
+    {
+      "item": "derived_period_lineage_projection",
+      "reason": "formula and derivation version are absent from the current fact-catalog projection",
+      "sequence": 2
+    },
+    {
+      "item": "kr_opendart_ocf_duration_period",
+      "reason": "period context remains unresolved and fail-closed",
+      "sequence": 3
+    },
+    {
+      "item": "kr_opendart_ppe_duration_period",
+      "reason": "period context remains unresolved and fail-closed",
+      "sequence": 4
+    },
+    {
+      "item": "hut_ppe_source_mapping",
+      "reason": "Phase 9 archive has OCF but no eligible PPE source",
+      "sequence": 5
+    },
+    {
+      "item": "skhy_ocf_ppe_source_mapping",
+      "reason": "Phase 9 archive has no existing canonical cash-flow source",
+      "sequence": 6
+    },
+    {
+      "item": "interest_bearing_debt_and_liquidity",
+      "reason": "frozen M4 higher-risk mapping package",
+      "sequence": 7
+    },
+    {
+      "item": "inventory_receivables_working_capital",
+      "reason": "frozen M4 higher-risk mapping package",
+      "sequence": 8
+    },
+    {
+      "item": "non_operating_financial_income_effects",
+      "reason": "frozen M4 higher-risk mapping package",
+      "sequence": 9
+    }
+  ],
+  "recommended_next_scope": "ADDITIONAL_FINANCIAL_SOURCE_MAPPING_SUBPACKAGES"
+}

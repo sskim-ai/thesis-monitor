@@ -1,0 +1,19 @@
+{
+  "complexity": "LOW",
+  "conservative_tiebreak_compatibility": "LOW_OR_NONE",
+  "daily_delta_impact": "NONE_WHILE_EXPERIMENTAL",
+  "decision": "REJECTED",
+  "deterministic_numeric_semantics": "LOW",
+  "faithfulness_to_ai_economic_judgment": "MEDIUM",
+  "hidden_scorecard_risk": "LOW",
+  "holdout_proof_integrity": "WEAKENED",
+  "monitoring_lifecycle_impact": "NONE_WHILE_EXPERIMENTAL",
+  "name": "PROMPT_FORCE",
+  "new_buyer_holder_consistency": "AUDIT_REQUIRED",
+  "option": "B",
+  "output_schema_impact": "NONE",
+  "reason": "Prior bounded wording already produced both adjacent states.",
+  "renderer_impact": "NONE",
+  "single_call_stability": "UNPROVEN",
+  "valuation_price_ownership_impact": "NONE"
+}

@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "case": "bank_interest_income_generic_non_operating",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "insurer_investment_income_generic_non_operating",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "financial_sector_finance_cost_generic_route",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "qtd_income_ytd_cost_netted",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "currency_mismatch",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "consolidated_separate_basis_mismatch",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "aggregate_children_double_counted",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "other_income_labeled_financial_income",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "other_income_labeled_one_off",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "equity_method_labeled_financial_income",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "disposal_gain_normalized_net_income",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "tax_benefit_reconstructed_operating_profit",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "net_income_attribution_mismatch",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "continuing_discontinued_mixed",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "universal_non_operating_total",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "normalized_eps",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "effective_tax_rate",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "ticker_specific_mapping",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "opendart_fuzzy_account_name_mapping",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "sec_fuzzy_concept_mapping",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    },
+    {
+      "case": "price_currency_copied_to_financial_fact",
+      "status": "REJECTED_OR_NOT_DERIVED"
+    }
+  ],
+  "contract": "m11-negative-fixture-manifest-v1",
+  "count": 21,
+  "rejected_count": 21
+}

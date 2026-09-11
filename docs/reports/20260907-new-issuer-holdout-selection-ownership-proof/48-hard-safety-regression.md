@@ -1,0 +1,10 @@
+# 48 Hard Safety Regression
+
+| Field | Value |
+| --- | --- |
+| contract | hard-safety-regression-v1 |
+| known_hard_safety_regression | 0 |
+| reason | NO_REAL_MODEL_OUTPUT |
+| status | NOT_MEASURED |
+
+Machine proof: `proofs/48-hard-safety-regression.json`.

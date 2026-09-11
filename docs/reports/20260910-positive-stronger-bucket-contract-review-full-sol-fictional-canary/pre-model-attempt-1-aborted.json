@@ -1,0 +1,16 @@
+{
+  "status": "ABORTED_PRE_SPAWN",
+  "generation_id": "20260910-m12x-fictional-20260910T031211Z-f8ca364b8103",
+  "source_lock_sha256": "8b0be11469286325605026834e57c497560fe5aef88d577b9e3bd6447cb13ca3",
+  "failed_invocation": "20260910-m12x-fictional-20260910T031211Z-f8ca364b8103:run-1:context-01",
+  "failure_type": "M12_PHASE_SPECIFIC_FICTIONAL_IDENTITY_GUARD",
+  "error": "m12w_fictional_invocation_required",
+  "model_process_spawned": false,
+  "model_calls_fictional": 0,
+  "transport_attempt_count": 0,
+  "output_row_count": 0,
+  "candidate_observed": false,
+  "target_changed_after_observation": false,
+  "generation_reuse_allowed": false,
+  "required_action": "Freeze the phase-neutral fictional identity repair and start a new full generation."
+}

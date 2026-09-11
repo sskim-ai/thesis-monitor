@@ -5,11 +5,20 @@ import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal, TypeAlias
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    StringConstraints,
+    model_serializer,
+    model_validator,
+)
 
 from app.services.ohlcv_feature_engine_service import MultiTimeframeFeaturePacket
 from app.services.packet_owned_technical_context_service import (
@@ -22,12 +31,20 @@ from app.services.fact_consumer_scope_service import (
     project_fact_catalog_for_consumer,
 )
 from app.services.logical_condition_service import (
+    CheckpointMetric,
     ClaimLogicalCondition,
     LogicalSeverity,
     SourceLogicalCondition,
+    checkpoint_metric_refs,
     logical_condition_errors,
+    logical_expression_is_composite,
+    source_checkpoint_metric_refs,
     source_logical_condition,
 )
+from app.services.financial_context_adapter_service import (
+    adapt_fact_catalog_financial_context,
+)
+from app.services.financial_lineage_projection_service import adapter_projection_rows
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -97,6 +114,184 @@ class FrozenModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
+CanonicalFinancialMetric: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[a-z][a-z0-9_]*$",
+    ),
+]
+CanonicalFinancialIdentifier: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[A-Za-z][A-Za-z0-9_.:-]*$",
+    ),
+]
+CanonicalFinancialFormula: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=80,
+        pattern=r"^[a-z][a-z0-9_]*$",
+    ),
+]
+SafeFinancialSourceRef: TypeAlias = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=240,
+        pattern=r"^\S+$",
+    ),
+]
+FinancialCurrency: TypeAlias = Annotated[
+    str,
+    StringConstraints(pattern=r"^[A-Z]{3}$"),
+]
+
+
+class FinancialPeriodType(StrEnum):
+    QTD = "QTD"
+    YTD = "YTD"
+    FY = "FY"
+    TTM = "TTM"
+    POINT_IN_TIME = "POINT_IN_TIME"
+
+
+class FinancialAttributionBasis(StrEnum):
+    TOTAL = "total"
+    PARENT = "parent"
+    COMMON = "common"
+
+
+class FinancialEvidenceStatus(StrEnum):
+    DIRECT_REPORTED = "DIRECT_REPORTED"
+    DERIVED_SAFE = "DERIVED_SAFE"
+
+
+class FinancialEvidenceQuality(StrEnum):
+    VERIFIED = "verified"
+    PARTIAL = "partial"
+
+
+class FinancialComparisonKind(StrEnum):
+    PRIOR_YEAR_COMPARABLE = "prior_year_comparable"
+    PRIOR_YEAR_END = "prior_year_end"
+    NONE = "none"
+
+
+class FinancialPeriod(FrozenModel):
+    type: FinancialPeriodType
+    start: date | None = None
+    end: date
+    duration_days: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def validate_period_structure(self) -> FinancialPeriod:
+        if self.type == FinancialPeriodType.POINT_IN_TIME:
+            if self.start is not None:
+                raise ValueError("financial_point_in_time_start_forbidden")
+            if self.duration_days is not None:
+                raise ValueError("financial_point_in_time_duration_forbidden")
+            return self
+
+        if self.start is None:
+            raise ValueError("financial_duration_period_start_required")
+        if self.end < self.start:
+            raise ValueError("financial_period_end_before_start")
+        if self.duration_days is not None:
+            inclusive_days = (self.end - self.start).days + 1
+            if self.duration_days != inclusive_days:
+                raise ValueError("financial_period_duration_mismatch")
+        return self
+
+
+class FinancialComparison(FrozenModel):
+    kind: FinancialComparisonKind
+    compatibility_status: Literal["PASS"] = "PASS"
+    input_source_refs: tuple[SafeFinancialSourceRef, ...] = Field(
+        default=(),
+        max_length=8,
+    )
+
+    @model_validator(mode="after")
+    def validate_comparison_lineage(self) -> FinancialComparison:
+        if len(set(self.input_source_refs)) != len(self.input_source_refs):
+            raise ValueError("financial_comparison_duplicate_source_ref")
+        if self.kind == FinancialComparisonKind.NONE:
+            if self.input_source_refs:
+                raise ValueError("financial_comparison_refs_forbidden_for_none")
+        elif not self.input_source_refs:
+            raise ValueError("financial_comparison_refs_required")
+        return self
+
+
+class FinancialDerivation(FrozenModel):
+    formula: CanonicalFinancialFormula
+    input_source_refs: tuple[SafeFinancialSourceRef, ...] = Field(
+        min_length=1,
+        max_length=16,
+    )
+    version: CanonicalFinancialIdentifier
+
+    @model_validator(mode="after")
+    def validate_derivation_lineage(self) -> FinancialDerivation:
+        if len(set(self.input_source_refs)) != len(self.input_source_refs):
+            raise ValueError("financial_derivation_duplicate_source_ref")
+        return self
+
+
+_NON_CURRENCY_FINANCIAL_METRICS = frozenset(
+    {
+        "capex_intensity_ppe",
+        "cash_conversion_cycle",
+        "days_payables_outstanding",
+        "days_sales_outstanding",
+        "financial_flow_yoy_growth",
+        "free_cash_flow_margin_ppe",
+        "inventory_days",
+        "operating_cash_flow_margin",
+        "operating_cash_flow_to_net_income",
+        "return_on_invested_capital",
+        "working_capital_balance_yoy_growth",
+    }
+)
+
+
+class FinancialContext(FrozenModel):
+    metric: CanonicalFinancialMetric
+    currency: FinancialCurrency | None
+    unit_scale: int = Field(gt=0)
+    period: FinancialPeriod
+    entity_scope: CanonicalFinancialIdentifier
+    statement_basis: CanonicalFinancialIdentifier
+    attribution_basis: FinancialAttributionBasis | None = None
+    evidence_status: FinancialEvidenceStatus
+    quality: FinancialEvidenceQuality
+    comparison: FinancialComparison | None = None
+    derivation: FinancialDerivation | None = None
+    limitations: tuple[CanonicalFinancialMetric, ...] = Field(default=(), max_length=16)
+
+    @model_validator(mode="after")
+    def validate_financial_context(self) -> FinancialContext:
+        if self.currency is None and self.metric not in _NON_CURRENCY_FINANCIAL_METRICS:
+            raise ValueError("financial_currency_required")
+        if len(set(self.limitations)) != len(self.limitations):
+            raise ValueError("duplicate_financial_limitation")
+        if self.evidence_status == FinancialEvidenceStatus.DIRECT_REPORTED:
+            if self.derivation is not None:
+                raise ValueError("direct_reported_derivation_forbidden")
+        elif self.derivation is None:
+            raise ValueError("derived_safe_derivation_required")
+        return self
+
+
 class DecisionEvidenceRef(FrozenModel):
     ref_id: str
     category: EvidenceCategory
@@ -107,7 +302,19 @@ class DecisionEvidenceRef(FrozenModel):
     unit: str | None = None
     source_ref: str
     numeric_prose_eligible: bool = False
+    metric_refs: tuple[CheckpointMetric, ...] = ()
     logical_condition: SourceLogicalCondition | None = None
+    financial_context: FinancialContext | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_legacy_compatible(
+        self,
+        handler: SerializerFunctionWrapHandler,
+    ) -> dict[str, object]:
+        serialized = handler(self)
+        if self.financial_context is None:
+            serialized.pop("financial_context", None)
+        return serialized
 
 
 class DecisionEvidencePacket(FrozenModel):
@@ -254,6 +461,25 @@ def _category_for_fact(row: Mapping[str, object]) -> EvidenceCategory:
     return EvidenceCategory.EARNINGS_QUALITY
 
 
+_FACT_TYPE_CHECKPOINT_METRICS = {
+    "cash_flow_ocf": (CheckpointMetric.OCF,),
+    "cash_flow_ppe_capex": (CheckpointMetric.PPE_CAPEX,),
+    "cash_flow_fcf_ppe": (CheckpointMetric.FCF,),
+}
+
+
+def _checkpoint_metrics_for_fact(
+    row: Mapping[str, object],
+) -> tuple[CheckpointMetric, ...]:
+    fact_type = str(row.get("fact_type") or "").lower()
+    structured = _FACT_TYPE_CHECKPOINT_METRICS.get(fact_type)
+    if structured is not None:
+        return structured
+    return checkpoint_metric_refs(
+        f"{row.get('fact_type') or ''} {_compact(row.get('fields') or {})}"
+    )
+
+
 def _add_text_refs(
     refs: list[DecisionEvidenceRef],
     *,
@@ -281,6 +507,7 @@ def _add_text_refs(
                 statement=_compact(value),
                 as_of=as_of,
                 source_ref=source_ref,
+                metric_refs=source_checkpoint_metric_refs(_compact(value)),
                 logical_condition=(
                     source_logical_condition(
                         subject=ticker,
@@ -402,27 +629,49 @@ def build_decision_evidence_packet(
         source_ref="stock.market_transmission",
         as_of=assessment_date,
     )
+    current_price_context = stock.get("current_price_context")
+    current_price_context = (
+        current_price_context if isinstance(current_price_context, Mapping) else {}
+    )
+    price_availability = str(current_price_context.get("availability") or "").lower()
     _add_text_refs(
         refs,
         ticker=ticker,
-        category=EvidenceCategory.PRICE_STRUCTURE,
-        label="가격 구조",
-        values=stock.get("current_price_context") or {},
+        category=(
+            EvidenceCategory.QUALITY
+            if price_availability in {"unavailable", "price_only"}
+            else EvidenceCategory.PRICE_STRUCTURE
+        ),
+        label=(
+            "가격 컨텍스트 품질"
+            if price_availability in {"unavailable", "price_only"}
+            else "가격 구조"
+        ),
+        values=current_price_context,
         source_ref="stock.current_price_context",
         as_of=assessment_date,
     )
 
     fact_catalog = stock.get("fact_catalog")
     if isinstance(fact_catalog, list):
+        catalog_rows = [row for row in fact_catalog if isinstance(row, Mapping)]
         scoped_facts = project_fact_catalog_for_consumer(
-            [row for row in fact_catalog if isinstance(row, Mapping)],
+            catalog_rows,
             FactConsumer.STOCK_V2,
             default_scopes=STOCK_CONTEXT_CONSUMER_SCOPES,
+        )
+        financial_adapter_facts = adapter_projection_rows(
+            catalog_rows,
+            scoped_facts,
         )
         for row in scoped_facts:
             fact_id = str(row.get("fact_id") or "")
             if not fact_id:
                 continue
+            adapted_financial = adapt_fact_catalog_financial_context(
+                row,
+                financial_adapter_facts,
+            )
             refs.append(
                 DecisionEvidenceRef(
                     ref_id=f"canonical:{fact_id}",
@@ -431,6 +680,12 @@ def build_decision_evidence_packet(
                     statement=_compact(row.get("fields") or {}),
                     as_of=str(row.get("as_of_date") or assessment_date),
                     source_ref=f"stock.fact_catalog.{fact_id}",
+                    metric_refs=_checkpoint_metrics_for_fact(row),
+                    financial_context=(
+                        FinancialContext.model_validate(adapted_financial.context)
+                        if adapted_financial.context is not None
+                        else None
+                    ),
                 )
             )
 
@@ -550,6 +805,7 @@ def compact_ai_context(packet: DecisionEvidencePacket) -> dict[str, object]:
                 "value": str(ref.value) if ref.value is not None else None,
                 "unit": ref.unit,
                 "numeric_prose_eligible": ref.numeric_prose_eligible,
+                "metric_refs": ref.metric_refs,
                 "logical_condition": (
                     ref.logical_condition.model_dump(mode="json")
                     if ref.logical_condition is not None
@@ -638,7 +894,9 @@ def validate_decision_candidate(
             if ref_id in refs and refs[ref_id].logical_condition is not None
         )
         composite_sources = tuple(
-            item for item in source_conditions if item is not None and item.expression.children
+            item
+            for item in source_conditions
+            if item is not None and logical_expression_is_composite(item.expression)
         )
         if composite_sources or condition_claim.logical_condition is not None:
             errors.extend(

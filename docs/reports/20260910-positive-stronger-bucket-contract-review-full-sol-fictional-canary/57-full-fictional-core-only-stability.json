@@ -1,0 +1,101 @@
+{
+  "complete": false,
+  "rows": [
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-01",
+      "values": [
+        [
+          "BUY",
+          6.5,
+          "NOT_HOLD"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-02",
+      "values": [
+        [
+          "HOLD",
+          4.5,
+          "SELL_LEAN"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-03",
+      "values": [
+        [
+          "HOLD",
+          5.5,
+          "BUY_LEAN"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-04",
+      "values": [
+        [
+          "HOLD",
+          5.0,
+          "NEUTRAL"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-05",
+      "values": [
+        [
+          "SELL",
+          4.0,
+          "NOT_HOLD"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-06",
+      "values": [
+        [
+          "HOLD",
+          5.5,
+          "BUY_LEAN"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-07",
+      "values": [
+        [
+          "HOLD",
+          5.0,
+          "NEUTRAL"
+        ]
+      ]
+    },
+    {
+      "directional_balance_unique_count": "NOT_MEASURED",
+      "observed_count": 1,
+      "ticker": "FIC-FIN-08",
+      "values": [
+        [
+          "HOLD",
+          5.0,
+          "NEUTRAL"
+        ]
+      ]
+    }
+  ]
+}

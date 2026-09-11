@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-20260910-business-delta-alias-resolution-m12z/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "finished_at": "2026-09-10T05:28:46.130114+00:00",
+  "output_path": "artifacts/20260910-business-delta-alias-resolution-balance-confidence-full-sol-canary/validation/full.txt",
+  "output_sha256": "e1107845742fc306b57d039ef8a4cb0aadbae60d66ab7f4cf49dbc0ab55bcdf6",
+  "returncode": 0,
+  "started_at": "2026-09-10T05:27:28.483323+00:00",
+  "status": "PASS",
+  "timed_out": false
+}

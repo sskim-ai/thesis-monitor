@@ -1,0 +1,267 @@
+{
+  "assessment_date": "2026-09-09",
+  "company_name": "Fictional Financial Case 04",
+  "evidence": [
+    {
+      "alias": "E01",
+      "as_of": "2026-09-09",
+      "category": "earnings_quality",
+      "domain": "SECTOR_OPERATING_CURRENT",
+      "label": "sector-context",
+      "metric_refs": [],
+      "statement": "Operating and non-operating attribution must remain separate.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E02",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_comparable",
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "net_income",
+        "period_type": "QTD",
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND"
+      },
+      "label": "net_income",
+      "metric_refs": [],
+      "statement": "Reported net income for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+      "unit": null,
+      "value": "90"
+    },
+    {
+      "alias": "E03",
+      "as_of": "2026-09-09",
+      "category": "expectations",
+      "domain": "MARKET_EXPECTATIONS",
+      "label": "market-expectation",
+      "metric_refs": [],
+      "statement": "Expectations assume reported net-income strength becomes operationally durable.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E04",
+      "as_of": "2026-09-09",
+      "category": "risks",
+      "domain": "STRUCTURAL_RISK",
+      "label": "structural-risk",
+      "metric_refs": [],
+      "statement": "Non-operating support may not repeat.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E05",
+      "as_of": "2026-09-09",
+      "category": "unknown",
+      "domain": "DATA_QUALITY_LIMIT",
+      "label": "remaining-unknown",
+      "metric_refs": [],
+      "statement": "Recurrence of the financial effect is not established.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E06",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_comparable",
+        "evidence_status": "DERIVED_SAFE",
+        "metric": "net_financial_income_effect",
+        "period_type": "QTD",
+        "quality": "verified",
+        "semantic_category": "NON_OPERATING_EFFECT"
+      },
+      "label": "net_financial_income_effect",
+      "metric_refs": [],
+      "statement": "Safely derived net financial income effect for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+      "unit": null,
+      "value": "38"
+    },
+    {
+      "alias": "E07",
+      "as_of": "2026-06-30",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "evidence_kind": "TYPED_FINANCIAL",
+      "financial_semantics": {
+        "comparison_kind": "prior_year_comparable",
+        "evidence_status": "DIRECT_REPORTED",
+        "metric": "operating_income",
+        "period_type": "QTD",
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND"
+      },
+      "label": "operating_income",
+      "metric_refs": [],
+      "statement": "Reported operating income for QTD ending 2026-06-30 is higher than the prior-year comparable period.",
+      "unit": null,
+      "value": "52"
+    },
+    {
+      "alias": "E08",
+      "as_of": "2026-09-09",
+      "category": "valuation",
+      "domain": "VALUATION_SAFE",
+      "label": "valuation-limit",
+      "metric_refs": [],
+      "statement": "No safe current valuation multiple is supplied; valuation remains an Unknown.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E09",
+      "as_of": "2026-09-09",
+      "category": "earnings",
+      "domain": "EARNINGS_FINANCIAL_CURRENT",
+      "label": "operating-evidence",
+      "metric_refs": [],
+      "statement": "Operating result is broadly flat while reported net income improved.",
+      "unit": null,
+      "value": null
+    },
+    {
+      "alias": "E10",
+      "as_of": "2026-09-09",
+      "category": "thesis",
+      "domain": "BUSINESS_CURRENT",
+      "label": "business-thesis",
+      "metric_refs": [],
+      "statement": "The operating franchise is stable but has not shown material acceleration.",
+      "unit": null,
+      "value": null
+    }
+  ],
+  "financial_decision_context": {
+    "contract": "directional-financial-decision-context-v1",
+    "eligible_input_count": 6,
+    "evidence_items": [
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": 91,
+            "end": "2025-06-30",
+            "start": "2025-04-01",
+            "type": "QTD"
+          },
+          "comparison_value": "45",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+            "stock.fact_catalog.fictional:FIC-FIN-04:net-income-prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E02",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "net_income",
+        "period": {
+          "duration_days": 91,
+          "end": "2026-06-30",
+          "start": "2026-04-01",
+          "type": "QTD"
+        },
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-income-current",
+        "unit_scale": 1000000,
+        "value": "90"
+      },
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": 91,
+            "end": "2025-06-30",
+            "start": "2025-04-01",
+            "type": "QTD"
+          },
+          "comparison_value": "50",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+            "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation_formula": null,
+        "derivation_input_source_refs": [],
+        "evidence_id": "E07",
+        "evidence_status": "DIRECT_REPORTED",
+        "limitations": [],
+        "metric": "operating_income",
+        "period": {
+          "duration_days": 91,
+          "end": "2026-06-30",
+          "start": "2026-04-01",
+          "type": "QTD"
+        },
+        "quality": "verified",
+        "semantic_category": "PERFORMANCE_TREND",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:operating-profit-current",
+        "unit_scale": 1000000,
+        "value": "52"
+      },
+      {
+        "comparison": {
+          "comparison_period": {
+            "duration_days": 91,
+            "end": "2025-06-30",
+            "start": "2025-04-01",
+            "type": "QTD"
+          },
+          "comparison_value": "4",
+          "input_source_refs": [
+            "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+            "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-prior"
+          ],
+          "kind": "prior_year_comparable"
+        },
+        "currency": "USD",
+        "derivation_formula": "net_financial_income_effect",
+        "derivation_input_source_refs": [
+          "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current.input"
+        ],
+        "evidence_id": "E06",
+        "evidence_status": "DERIVED_SAFE",
+        "limitations": [
+          "recurrence_not_determined",
+          "not_normalized_earnings"
+        ],
+        "metric": "net_financial_income_effect",
+        "period": {
+          "duration_days": 91,
+          "end": "2026-06-30",
+          "start": "2026-04-01",
+          "type": "QTD"
+        },
+        "quality": "verified",
+        "semantic_category": "NON_OPERATING_EFFECT",
+        "source_ref": "stock.fact_catalog.fictional:FIC-FIN-04:net-financial-effect-current",
+        "unit_scale": 1000000,
+        "value": "38"
+      }
+    ],
+    "limitations": [
+      "recurrence_not_determined",
+      "not_normalized_earnings"
+    ],
+    "sector_framework": "standard_operating_company",
+    "selected_input_count": 3,
+    "selected_item_cap": 8,
+    "suppressed_input_count": 3,
+    "unavailable_or_not_applicable": []
+  },
+  "market": "us",
+  "ticker": "FIC-FIN-04"
+}

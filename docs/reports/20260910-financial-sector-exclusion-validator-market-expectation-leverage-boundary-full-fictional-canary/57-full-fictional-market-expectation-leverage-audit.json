@@ -1,0 +1,39 @@
+{
+  "complete": false,
+  "contract": {
+    "all_target_buys": {
+      "FIC-FIN-01": 6,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5,
+      "FIC-FIN-05": 4.5
+    },
+    "boundary": {
+      "evidence_count_rule": false,
+      "increment": 0.5,
+      "scorecard": false,
+      "threshold": 6,
+      "tie_break": "toward 5.0"
+    },
+    "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+    "outcome": "LEV_EXPECTATION_CONTEXT_DEPENDENT_WITH_EXPLICIT_RULE",
+    "prompt_change_required": true,
+    "reasoning": [
+      "E07 is supplied, not hallucinated. It describes expectation exposure to prolonged refinancing burden, while E08 leaves severity and persistence unresolved.",
+      "Complete debt and thin cash establish current low resilience, not actual refinancing failure or debt-service stress. E07 supplies no distinct current pricing fact establishing a separate downside axis.",
+      "Source-category independence is not economic independence. Same lineage can nevertheless contain distinct established propositions.",
+      "Adopt conditional-expectation rule: a second category conditional on the same unresolved premise does not automatically meet minimum-direction corroboration.",
+      "Adopt independent-expectation positive control: confirmed financing stress plus independently established benign expectations may support minimum SELL.",
+      "No safe valuation multiple is supplied. Expectation asymmetry may be evaluated qualitatively, but expensive/cheap or a fabricated multiple cannot be inferred.",
+      "A separate established current expectation/pricing risk may support direction without a numeric multiple; missing valuation is a limit, not a universal veto.",
+      "No explicit baseline deterioration: UNCHANGED remains valid. New-buyer/holder semantics unchanged."
+    ],
+    "target": {
+      "buy": 4.5,
+      "direction": "HOLD",
+      "lean": "SELL_LEAN",
+      "sell": 5.5
+    },
+    "target_pattern": "High complete debt + thin cash + stable profitable operations + unresolved refinancing severity/maturity + expectation conditional on that same unresolved downside, without distinct established pricing or other corroboration."
+  },
+  "rows": []
+}

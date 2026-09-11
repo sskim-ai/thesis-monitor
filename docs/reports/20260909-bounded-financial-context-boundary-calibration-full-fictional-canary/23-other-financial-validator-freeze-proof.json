@@ -1,0 +1,16 @@
+{
+  "change_count": 0,
+  "rows": [
+    {
+      "base_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+      "current_sha256": "b56e500c3c3a79ec24ff05c58516f458e1c9524f6ce59e10dd53fa8fb0e9d15f",
+      "path": "app/services/directional_financial_context_service.py"
+    },
+    {
+      "base_sha256": "c55fdba65ec9dd00445c99438466bf4f8ee1816c340beae00e849ae4cfe2a90a",
+      "current_sha256": "c55fdba65ec9dd00445c99438466bf4f8ee1816c340beae00e849ae4cfe2a90a",
+      "path": "scripts/directional_financial_context_m12.py"
+    }
+  ],
+  "status": "PASS"
+}
