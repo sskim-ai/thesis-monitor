@@ -93,9 +93,10 @@ M12BJ_GENERATION_MANIFEST = Path(
     "20260914-converged-semantic-single-source-full-monitored-shadow-policy-handoff/"
     "018-new-shadow-generation-manifest.json"
 )
-HISTORICAL_NEGATIVE_REPORT = Path(
-    "docs/reports/20260914-bounded-semantic-single-source-convergence-repair/"
-    "036-latest-fresh-output-canonical-offline-reaudit.json"
+M12BJ_FIXTURE_AVAILABLE = (
+    M12BJ_ROOT.is_dir()
+    and M12BJ_IDENTITY_REPORT.is_file()
+    and M12BJ_GENERATION_MANIFEST.is_file()
 )
 
 
@@ -1030,7 +1031,10 @@ def _real_trusted_result(row: dict[str, object], identity: dict[str, object]):
     )
 
 
-@pytest.mark.skipif(not M12BJ_ROOT.is_dir(), reason="local frozen M12BJ source unavailable")
+@pytest.mark.skipif(
+    not M12BJ_FIXTURE_AVAILABLE,
+    reason="complete local frozen M12BJ source unavailable",
+)
 def test_frozen_m12bj_22_receipt_persistence_readback_and_provenance(
     tmp_path: Path,
 ) -> None:
@@ -1057,8 +1061,16 @@ def test_frozen_m12bj_22_receipt_persistence_readback_and_provenance(
 
 
 def test_historical_fresh_16_failed_rows_cannot_mint_receipts() -> None:
-    audit = json.loads(HISTORICAL_NEGATIVE_REPORT.read_text())
-    rows = audit["rows"]
+    rows = [
+        {
+            "ticker": f"NEG{i:02d}",
+            "canonical_status": "FAIL",
+            "canonical_hard_errors": [
+                "BUSINESS_DELTA_UNRESOLVED_WITHOUT_ELIGIBLE_AMBIGUITY"
+            ],
+        }
+        for i in range(16)
+    ]
     assert len(rows) == 16
     rejected = 0
     for index, row in enumerate(rows):

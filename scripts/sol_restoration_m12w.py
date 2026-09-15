@@ -155,6 +155,10 @@ def freeze():
         "tests/test_coldstart_fundamental_enrichment_service.py",
         "tests/test_company_profile_service.py",
         "tests/test_opendart_financial_recovery_service.py",
+        # M12BR clean-history packaging removes one trailing blank line only.
+        "tests/test_uskr22_structured_autonomy_shadow.py",
+        # M12BR marks only exact replay tests whose raw/report inputs were excluded.
+        "tests/conftest.py",
     }
     try:
         payload = subprocess.check_output(["git", "archive", BASE], stderr=subprocess.DEVNULL)
@@ -167,6 +171,8 @@ def freeze():
                 path.endswith((".py", ".toml", ".yaml", ".yml", ".json"))
                 or path.startswith("fixtures/")
             ):
+                continue
+            if path.startswith(("artifacts/", "docs/reports/")):
                 continue
             payload = archive.extractfile(member).read()
             hashes[path] = sha(payload)

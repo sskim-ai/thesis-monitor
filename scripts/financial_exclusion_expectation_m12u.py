@@ -73,11 +73,20 @@ def scope_audit():
         "tests/test_coldstart_fundamental_enrichment_service.py",
         "tests/test_company_profile_service.py",
         "tests/test_opendart_financial_recovery_service.py",
+        # M12BR clean-history packaging removes one trailing blank line only.
+        "tests/test_uskr22_structured_autonomy_shadow.py",
+        # M12BR marks only exact replay tests whose raw/report inputs were excluded.
+        "tests/conftest.py",
     }
     unexpected = [
         p
         for p, h in baseline["files"].items()
-        if p not in allowed and (not Path(p).is_file() or sha(Path(p).read_bytes()) != h)
+        if p not in allowed
+        and not (
+            not Path(p).is_file()
+            and p.startswith(("artifacts/", "docs/reports/"))
+        )
+        and (not Path(p).is_file() or sha(Path(p).read_bytes()) != h)
     ]
     before = baseline["approved_module_before"][BALANCE]
     after = Path(BALANCE).read_text()

@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 import pytest
 from pydantic import ValidationError
 
@@ -19,17 +16,58 @@ from app.services.direction_timing_ownership_service import (
 )
 
 
-M12AA_REPORTS = Path("docs/reports") / (
-    "20260910-boundary-band-canary-policy-financial-framework-"
-    "application-scope-full-sol-canary"
-)
-
-
 def _historical_core(ticker: str = "FIC-FIN-05") -> dict[str, object]:
-    document = json.loads(
-        next(M12AA_REPORTS.glob("50-*.json")).read_text(encoding="utf-8")
-    )
-    return next(row["core"] for row in document["rows"] if row["ticker"] == ticker)
+    ref = f"canonical:fundamental:{ticker}:business_current:fixture"
+    claim = {"text": "Verified business evidence.", "evidence_refs": [ref]}
+    return {
+        "ticker": ticker,
+        "overall_direction": "HOLD",
+        "directional_balance": {"buy": 5.0, "sell": 5.0},
+        "hold_lean": "NEUTRAL",
+        "directional_confidence": "MEDIUM",
+        "business_thesis_change": "UNCHANGED",
+        "business_thesis_context": claim,
+        "earnings_estimate_context": claim,
+        "market_expectation_context": claim,
+        "valuation_context": claim,
+        "risk_context": claim,
+        "sector_interpretation": claim,
+        "buy_drivers": [claim],
+        "sell_drivers": [
+            {
+                **claim,
+                "classification": "STRUCTURAL_RISK",
+            }
+        ],
+        "dominant_evidence": claim,
+        "uncertainty_limit": claim,
+        "core_investment_judgment": claim,
+        "unknown_treatments": [
+            {
+                "summary": "A remaining uncertainty.",
+                "evidence_refs": [ref],
+                "treatment": "CONFIDENCE_LIMIT",
+                "directional_negative_basis": [],
+            }
+        ],
+        "material_directional_anchor_basis": [ref],
+        "fundamental_new_buyer": {
+            "stance": "WAIT",
+            "summary": "Wait for business confirmation.",
+            "confirmation_business_condition": "Business confirmation is required.",
+            "confirmation_business_condition_refs": [ref],
+        },
+        "fundamental_holder": {
+            "stance": "HOLDABLE",
+            "summary": "The holding case remains intact.",
+            "business_invalidation_condition": (
+                "Business deterioration invalidates the case."
+            ),
+            "business_invalidation_condition_refs": [ref],
+        },
+        "business_reevaluation_up": [claim],
+        "business_reevaluation_down": [claim],
+    }
 
 
 def _candidate(
