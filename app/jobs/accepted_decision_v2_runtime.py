@@ -40,7 +40,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
-    validate_accepted_v2_candidate_ownership,
+    validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
     v2_accepted_production_armed,
     validate_accepted_v2_production_output,
@@ -69,11 +69,6 @@ from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
     packet_owned_context_for_stock,
 )
-from app.services.preconfirmation_decision_v2_service import (
-    validate_preconfirmation_candidate,
-)
-
-
 V2_REASONING_BATCH_SIZE = 3
 V2_BATCH_SCHEMA_REPAIR_LIMIT = 1
 V2_TRANSPORT_ATTEMPT_LIMIT = 2
@@ -1088,17 +1083,13 @@ async def _generate_claim_owned(
             raise ValueError("v2_production_duplicate_batch_adjudication")
         packets = {row.ticker: row for row in context.evidence_packets}
         for ticker in subjects:
-            validation = validate_preconfirmation_candidate(
-                packets[ticker], batch_candidates[ticker]
-            )
-            ownership_errors = validate_accepted_v2_candidate_ownership(
+            validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
                 batch_candidates[ticker],
                 cores_by_ticker[ticker],
                 ownership[ticker],
             )
-            combined_errors = tuple(
-                dict.fromkeys((*validation.errors, *ownership_errors))
-            )
+            combined_errors = validation.errors
             if not combined_errors:
                 continue
             repair_prompt = paths["prompt"].with_name(
@@ -1158,26 +1149,18 @@ async def _generate_claim_owned(
                 or tuple(repaired.fundamental_cores) != (cores_by_ticker[ticker],)
             ):
                 raise ValueError("v2_production_repair_identity_or_scope_mismatch")
-            repaired_validation = validate_preconfirmation_candidate(
-                packets[ticker], repaired.candidates[0]
-            )
-            repaired_ownership_errors = validate_accepted_v2_candidate_ownership(
+            repaired_validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
                 repaired.candidates[0],
                 cores_by_ticker[ticker],
                 ownership[ticker],
             )
-            if not repaired_validation.valid or repaired_ownership_errors:
+            if not repaired_validation.valid:
                 raise ValueError(
                     "v2_production_bounded_repair_failed:"
                     + ticker
                     + ":"
-                    + ",".join(
-                        tuple(
-                            dict.fromkeys(
-                                (*repaired_validation.errors, *repaired_ownership_errors)
-                            )
-                        )
-                    )
+                    + ",".join(repaired_validation.errors)
                 )
             batch_candidates[ticker] = repaired.candidates[0]
             candidate_repair_count += 1

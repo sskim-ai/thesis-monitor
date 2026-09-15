@@ -34,7 +34,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_stage2_output_schema,
     accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
-    validate_accepted_v2_candidate_ownership,
+    validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_production_output,
 )
@@ -45,9 +45,6 @@ from app.services.cross_market_decision_engine_service import (
 from app.services.decision_canary_service import insert_decision_canary_block
 from app.services.packet_owned_technical_context_service import (
     packet_owned_context_for_stock,
-)
-from app.services.preconfirmation_decision_v2_service import (
-    validate_preconfirmation_candidate,
 )
 from scripts.kr_final_preenable_test_delivery import deliver_test_messages
 from scripts.kr_market_preenable_evidence import audit_test_sink, load_env_values
@@ -259,17 +256,13 @@ def _codex_batch(
             raise ValueError(f"preflight_duplicate_adjudication:{batch_number}")
         packets = {row.ticker: row for row in context.evidence_packets}
         for ticker in subjects:
-            validation = validate_preconfirmation_candidate(
-                packets[ticker], batch_candidates[ticker]
-            )
-            ownership_errors = validate_accepted_v2_candidate_ownership(
+            validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
                 batch_candidates[ticker],
                 cores_by_ticker[ticker],
                 ownership[ticker],
             )
-            combined_errors = tuple(
-                dict.fromkeys((*validation.errors, *ownership_errors))
-            )
+            combined_errors = validation.errors
             if not combined_errors:
                 continue
             repair_prompt = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.txt"
@@ -320,24 +313,16 @@ def _codex_batch(
                 or tuple(repaired.fundamental_cores) != (cores_by_ticker[ticker],)
             ):
                 raise ValueError(f"preflight_repair_scope_mismatch:{ticker}")
-            repaired_validation = validate_preconfirmation_candidate(
-                packets[ticker], repaired.candidates[0]
-            )
-            repaired_ownership_errors = validate_accepted_v2_candidate_ownership(
+            repaired_validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
                 repaired.candidates[0],
                 cores_by_ticker[ticker],
                 ownership[ticker],
             )
-            if not repaired_validation.valid or repaired_ownership_errors:
+            if not repaired_validation.valid:
                 raise ValueError(
                     f"preflight_bounded_repair_failed:{ticker}:"
-                    + ",".join(
-                        tuple(
-                            dict.fromkeys(
-                                (*repaired_validation.errors, *repaired_ownership_errors)
-                            )
-                        )
-                    )
+                    + ",".join(repaired_validation.errors)
                 )
             batch_candidates[ticker] = repaired.candidates[0]
             batch_adjudications.pop(ticker, None)

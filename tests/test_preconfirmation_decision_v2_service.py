@@ -29,9 +29,11 @@ from app.services.preconfirmation_decision_v2_service import (
     PostconfirmationHoldExplanation,
     PreconfirmationBuyExplanation,
     PreconfirmationDecisionCandidate,
+    preconfirmation_stage2_field_ownership_inventory,
     preconfirmation_message_quality,
     render_preconfirmation_shadow,
     validate_preconfirmation_candidate,
+    validate_preconfirmation_stage2_owned_semantics,
 )
 from app.services.scenario_asymmetry_service import (
     Asymmetry,
@@ -66,10 +68,12 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionContext,
     accepted_v2_fundamental_core_from_candidate,
     accepted_v2_fundamental_core_sha256,
+    accepted_v2_stage2_validation_scope_manifest,
     build_accepted_v2_production_context,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_production_output,
+    validate_accepted_v2_stage2_candidate,
 )
 from app.services.expectation_valuation_interaction_service import interaction_from_packet
 from app.services.accepted_decision_consistency_service import (
@@ -946,6 +950,130 @@ def test_googl_like_price_timing_evidence_cannot_enter_fundamental_core() -> Non
 
     assert "price_timing_in_fundamental_core:ref:price" in core_errors
     assert "price_timing_stage_mutated_fundamental_core" in candidate_errors
+
+
+def _stage2_ownership(
+    packet: DecisionEvidencePacket,
+    ticker: str = "TEST",
+) -> AcceptedV2EvidenceOwnership:
+    return AcceptedV2EvidenceOwnership(
+        ticker=ticker,
+        core_ref_ids=tuple(
+            row.ref_id
+            for row in packet.evidence
+            if row.category not in {EvidenceCategory.PRICE_STRUCTURE, EvidenceCategory.MARKET}
+        ),
+        timing_ref_ids=tuple(
+            row.ref_id
+            for row in packet.evidence
+            if row.category in {EvidenceCategory.PRICE_STRUCTURE, EvidenceCategory.MARKET}
+        ),
+        expectation_valuation=interaction_from_packet(packet),
+    )
+
+
+def test_stage2_field_ownership_inventory_covers_complete_candidate_schema() -> None:
+    inventory = preconfirmation_stage2_field_ownership_inventory()
+    manifest = accepted_v2_stage2_validation_scope_manifest()
+
+    assert {row["field_path"].removeprefix("$.") for row in inventory} == set(
+        PreconfirmationDecisionCandidate.model_fields
+    )
+    assert {
+        row["field_path"]
+        for row in inventory
+        if row["owner_stage"] == "FUNDAMENTAL_CORE"
+    } == {
+        "$.ticker",
+        "$.decision",
+        "$.holder_axis",
+        "$.directional_balance",
+        "$.buy_drivers",
+        "$.sell_drivers",
+        "$.balance_summary",
+        "$.confidence",
+        "$.decisive_reason",
+    }
+    assert manifest["unsupported_metric_scope_after_trust"] == "STAGE2_OWNED_FIELDS_ONLY"
+    assert manifest["fields"] == list(inventory)
+
+
+def test_stage2_trusts_exact_copied_core_prospective_roic_condition() -> None:
+    packet = _packet()
+    prospective = _claim(
+        "ref:risks",
+        "AI 투자가 FCF와 ROIC의 구조적 악화로 이어지는지 확인해야 합니다.",
+    )
+    candidate = _candidate().model_copy(
+        update={
+            "sell_drivers": (prospective,),
+            "holder_axis": HolderDecisionAxis(stance="HOLDABLE", reason=prospective),
+        }
+    )
+    candidate = _candidate_with_current_core_sha(candidate)
+    core = _core(candidate)
+
+    assert "unsupported_metric_or_inference" in validate_preconfirmation_candidate(
+        packet, candidate
+    ).errors
+    assert validate_preconfirmation_stage2_owned_semantics(packet, candidate).valid is True
+    assert validate_accepted_v2_stage2_candidate(
+        packet, candidate, core, _stage2_ownership(packet)
+    ).valid is True
+
+
+def test_stage2_owned_roic_remains_hard_failure() -> None:
+    packet = _packet()
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_axis": NewBuyerDecisionAxis(
+                stance="WAIT",
+                reason=_claim(
+                    "ref:thesis",
+                    "ROIC 개선이 확인되면 신규 진입을 다시 검토합니다.",
+                ),
+            )
+        }
+    )
+    core = _core(candidate)
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, candidate, core, _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "unsupported_metric_or_inference" in validation.errors
+
+
+def test_mutated_core_roic_fails_before_frozen_core_trust() -> None:
+    packet = _packet()
+    original = _candidate()
+    core = _core(original)
+    mutated = original.model_copy(
+        update={
+            "holder_axis": HolderDecisionAxis(
+                stance="HOLDABLE",
+                reason=_claim("ref:thesis", "ROIC 개선을 보유 근거로 새로 사용합니다."),
+            )
+        }
+    )
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, mutated, core, _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "price_timing_stage_mutated_fundamental_core" in validation.errors
+
+
+def test_clean_stage2_candidate_regression_passes_scoped_validator() -> None:
+    packet = _packet()
+    candidate = _candidate()
+
+    assert validate_accepted_v2_stage2_candidate(
+        packet,
+        candidate,
+        _core(candidate),
+        _stage2_ownership(packet),
+    ).valid is True
 
 
 def test_self_transition_validator_covers_buy_hold_and_sell() -> None:

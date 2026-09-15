@@ -41,8 +41,12 @@ from app.services.directional_balance_variance_service import (
 )
 from app.services.decision_canary_service import canonical_sha256, strict_json_schema
 from app.services.preconfirmation_decision_v2_service import (
+    STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT,
     PreconfirmationDecisionCandidate,
+    PreconfirmationValidationResult,
+    preconfirmation_stage2_field_ownership_inventory,
     validate_preconfirmation_candidate,
+    validate_preconfirmation_stage2_owned_semantics,
 )
 from app.services.expectation_valuation_interaction_service import (
     ExpectationValuationInteraction,
@@ -460,6 +464,43 @@ def validate_accepted_v2_candidate_ownership(
     )
     errors.extend(f"price_timing_in_holder_anchor:{ref_id}" for ref_id in holder_timing)
     return tuple(dict.fromkeys(errors))
+
+
+def accepted_v2_stage2_validation_scope_manifest() -> dict[str, object]:
+    fields = preconfirmation_stage2_field_ownership_inventory()
+    return {
+        "contract": STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT,
+        "trust_preconditions": [
+            "fundamental_core_schema_valid",
+            "fundamental_core_canonical_semantic_valid",
+            "fundamental_core_sha256_exact",
+            "frozen_core_fields_exact_copy",
+            "no_core_mutation",
+        ],
+        "unsupported_metric_scope_after_trust": "STAGE2_OWNED_FIELDS_ONLY",
+        "fields": list(fields),
+    }
+
+
+def validate_accepted_v2_stage2_candidate(
+    packet: DecisionEvidencePacket,
+    candidate: PreconfirmationDecisionCandidate,
+    core: AcceptedV2FundamentalCoreCandidate,
+    ownership: AcceptedV2EvidenceOwnership,
+) -> PreconfirmationValidationResult:
+    """Validate core identity first, then scope Stage-2 metric rules to Stage-2 prose."""
+    ownership_errors = validate_accepted_v2_candidate_ownership(
+        candidate,
+        core,
+        ownership,
+    )
+    semantic_validation = (
+        validate_preconfirmation_candidate(packet, candidate)
+        if ownership_errors
+        else validate_preconfirmation_stage2_owned_semantics(packet, candidate)
+    )
+    errors = tuple(dict.fromkeys((*ownership_errors, *semantic_validation.errors)))
+    return semantic_validation.model_copy(update={"valid": not errors, "errors": errors})
 
 
 def _compact_owned_evidence(
@@ -905,7 +946,7 @@ Change conditions are reassessment conditions, not automatic trades. Never descr
 
 Canonical evidence may include logical_condition metadata. When an upgrade_condition or downgrade_condition cites a composite logical condition, emit EvidenceClaim.logical_condition. Copy the source object's explicit source_condition_ref, severity, operator, and condition IDs exactly. Do not use the enclosing evidence ref as source_condition_ref. In claim expressions, LEAF requires leaf_ref and forbids children; ANY_OF/ALL_OF require children and forbid leaf_ref. For a LEAF-only source, leave claim logical_condition null. Use coverage_mode=FULL only when the full source tree is represented without changing ANY_OF to ALL_OF or ALL_OF to ANY_OF and without deleting a branch. A one-branch illustration must use NON_EXHAUSTIVE_EXAMPLE. Do not infer or reconstruct condition IDs.
 
-Do not state or infer ROIC, CCC, DSO, DPO, runway months, FCF yield, per-share FCF, EV/FCF, or P/FCF. Never abbreviate, truncate, or reconstruct an evidence ref ID; copy every cited ref exactly from the supplied context.
+Do not introduce or infer ROIC, CCC, DSO, DPO, runway months, FCF yield, per-share FCF, EV/FCF, or P/FCF in Stage-2-owned fields. Frozen FUNDAMENTAL_CORE fields must still be copied exactly, including any already-validated prospective thesis conditions they contain. Do not modify frozen core text merely to satisfy Stage-2 metric restrictions. Never abbreviate, truncate, or reconstruct an evidence ref ID; copy every cited ref exactly from the supplied context.
 
 Do not emit internal phrases such as 상향 라벨, 하향 라벨, or 내부 위험 확신. Every sentence must end as a complete user-facing Korean sentence.
 
@@ -1112,7 +1153,9 @@ def validate_accepted_v2_production_output(
                 + ":"
                 + ",".join(ownership_errors)
             )
-        validation = validate_preconfirmation_candidate(packets[ticker], candidate)
+        validation = validate_preconfirmation_stage2_owned_semantics(
+            packets[ticker], candidate
+        )
         if not validation.valid:
             raise ValueError(
                 "v2_production_candidate_invalid:" + ticker + ":" + ",".join(validation.errors)

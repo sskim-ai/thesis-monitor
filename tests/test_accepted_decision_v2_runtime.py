@@ -542,7 +542,10 @@ def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() 
     assert "canonical:chart:daily" not in core_prompt
     assert "technical-feature:daily:rsi14" not in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
-    assert "Do not state or infer ROIC" in prompt
+    assert "Do not introduce or infer ROIC" in prompt
+    assert "in Stage-2-owned fields" in prompt
+    assert "Frozen FUNDAMENTAL_CORE fields must still be copied exactly" in prompt
+    assert "Do not modify frozen core text" in prompt
     assert (
         "post_confirmation_hold=true only when decision=HOLD and "
         "overall_maturity.maturity=CONFIRMED"

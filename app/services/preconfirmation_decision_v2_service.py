@@ -140,6 +140,68 @@ class PreconfirmationValidationResult(FrozenModel):
     unresolved_numeric_count: int = 0
 
 
+STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT = "stage2-frozen-core-ownership-v1"
+STAGE2_FROZEN_CORE_FIELDS = frozenset(
+    {
+        "ticker",
+        "decision",
+        "holder_axis",
+        "directional_balance",
+        "buy_drivers",
+        "sell_drivers",
+        "balance_summary",
+        "confidence",
+        "decisive_reason",
+    }
+)
+STAGE2_IDENTITY_FIELDS = frozenset({"fundamental_core_sha256"})
+STAGE2_OWNED_FIELDS = frozenset(
+    set(PreconfirmationDecisionCandidate.model_fields)
+    - STAGE2_FROZEN_CORE_FIELDS
+    - STAGE2_IDENTITY_FIELDS
+)
+
+
+def preconfirmation_stage2_field_ownership_inventory() -> tuple[dict[str, object], ...]:
+    """Return the complete top-level ownership inventory for the combined candidate."""
+    all_fields = tuple(PreconfirmationDecisionCandidate.model_fields)
+    rows: list[dict[str, object]] = []
+    for field in all_fields:
+        if field in STAGE2_FROZEN_CORE_FIELDS:
+            owner = "FUNDAMENTAL_CORE"
+            frozen = True
+            stage2_semantics = False
+            immutability = True
+            notes = "entire field subtree must exactly copy the validated frozen core"
+        elif field in STAGE2_IDENTITY_FIELDS:
+            owner = "CROSS_STAGE_IDENTITY"
+            frozen = True
+            stage2_semantics = False
+            immutability = True
+            notes = "must equal the canonical SHA-256 of the validated frozen core"
+        else:
+            owner = "STAGE2"
+            frozen = False
+            stage2_semantics = True
+            immutability = False
+            notes = "newly authored or derived by Stage 2"
+        rows.append(
+            {
+                "field_path": f"$.{field}",
+                "owner_stage": owner,
+                "frozen_at_stage2": frozen,
+                "stage2_semantic_validator_applies": stage2_semantics,
+                "immutability_validator_applies": immutability,
+                "notes": notes,
+            }
+        )
+    if STAGE2_OWNED_FIELDS | STAGE2_FROZEN_CORE_FIELDS | STAGE2_IDENTITY_FIELDS != set(
+        all_fields
+    ):
+        raise RuntimeError("stage2_field_ownership_inventory_incomplete")
+    return tuple(rows)
+
+
 class RenderedPreconfirmationDecision(FrozenModel):
     contract: str = RENDERER_CONTRACT
     ticker: str
@@ -236,6 +298,55 @@ def candidate_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[Evide
     return tuple(claims)
 
 
+def stage2_owned_candidate_claims(
+    candidate: PreconfirmationDecisionCandidate,
+) -> tuple[EvidenceClaim, ...]:
+    claims: list[EvidenceClaim] = [
+        candidate.timing_basis,
+        candidate.factual_safety_basis,
+        candidate.overall_maturity.basis,
+        candidate.market_expectation.basis,
+        candidate.pricing_requirement.basis,
+        candidate.pricing_requirement.valuation_basis,
+        candidate.pricing_requirement.expectation_basis,
+        candidate.pricing_requirement.key_assumption,
+        *candidate.pricing_requirement.unknowns,
+        *_scenario_claims(candidate),
+        candidate.asymmetry.basis,
+        candidate.asymmetry.downside_permanence,
+        candidate.asymmetry.upside_not_priced,
+        candidate.confirmation_cost.basis,
+        candidate.confirmation_cost.likely_repricing_channel,
+        candidate.preconfirmation_error_cost.basis,
+        candidate.preconfirmation_error_cost.capital_loss_channel,
+        candidate.new_buyer_axis.reason,
+        candidate.why_not_buy,
+        candidate.why_not_sell,
+        *candidate.opposing_evidence,
+        *candidate.unknowns,
+        candidate.upgrade_condition,
+        candidate.downgrade_condition,
+    ]
+    for row in candidate.driver_maturity:
+        claims.append(row.what_remains_unproven)
+    if candidate.preconfirmation_buy_explanation is not None:
+        explanation = candidate.preconfirmation_buy_explanation
+        claims.extend(
+            (
+                explanation.not_yet_confirmed,
+                explanation.directionally_credible,
+                explanation.market_already_prices,
+                explanation.favorable_asymmetry,
+                explanation.thesis_break_risk,
+                explanation.buy_to_hold_or_sell,
+            )
+        )
+    if candidate.postconfirmation_hold_explanation is not None:
+        explanation = candidate.postconfirmation_hold_explanation
+        claims.extend((explanation.business_proof, explanation.price_repricing))
+    return tuple(claims)
+
+
 def _claim_categories(
     packet: DecisionEvidencePacket, claims: tuple[EvidenceClaim, ...]
 ) -> set[EvidenceCategory]:
@@ -248,9 +359,11 @@ def _claim_categories(
     }
 
 
-def validate_preconfirmation_candidate(
+def _validate_preconfirmation_candidate(
     packet: DecisionEvidencePacket,
     candidate: PreconfirmationDecisionCandidate,
+    *,
+    unsupported_metric_claims: tuple[EvidenceClaim, ...],
 ) -> PreconfirmationValidationResult:
     errors: list[str] = []
     refs = {row.ref_id: row for row in packet.evidence}
@@ -299,13 +412,14 @@ def validate_preconfirmation_candidate(
             errors.append("fixed_score_language")
         if _TARGET_PRICE_LANGUAGE.search(claim.text):
             errors.append("invented_target_price_language")
-        if _UNSUPPORTED.search(claim.text):
-            errors.append("unsupported_metric_or_inference")
         if _EXACT_NUMBER.search(claim.text):
             errors.append("freeform_exact_numeric_claim")
         for ref_id in claim.evidence_refs:
             if ref_id not in refs:
                 errors.append(f"unknown_evidence_ref:{ref_id}")
+
+    if any(_UNSUPPORTED.search(claim.text) for claim in unsupported_metric_claims):
+        errors.append("unsupported_metric_or_inference")
 
     for row in candidate.driver_maturity:
         for ref_id in (*row.supporting_evidence_refs, *row.contradicting_evidence_refs):
@@ -407,6 +521,29 @@ def validate_preconfirmation_candidate(
     return PreconfirmationValidationResult(
         valid=not errors,
         errors=tuple(dict.fromkeys(errors)),
+    )
+
+
+def validate_preconfirmation_candidate(
+    packet: DecisionEvidencePacket,
+    candidate: PreconfirmationDecisionCandidate,
+) -> PreconfirmationValidationResult:
+    return _validate_preconfirmation_candidate(
+        packet,
+        candidate,
+        unsupported_metric_claims=candidate_claims(candidate),
+    )
+
+
+def validate_preconfirmation_stage2_owned_semantics(
+    packet: DecisionEvidencePacket,
+    candidate: PreconfirmationDecisionCandidate,
+) -> PreconfirmationValidationResult:
+    """Validate a combined candidate after its frozen core identity is trusted."""
+    return _validate_preconfirmation_candidate(
+        packet,
+        candidate,
+        unsupported_metric_claims=stage2_owned_candidate_claims(candidate),
     )
 
 
