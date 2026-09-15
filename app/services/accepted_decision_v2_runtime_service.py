@@ -39,7 +39,7 @@ from app.services.directional_balance_service import (
 from app.services.directional_balance_variance_service import (
     requires_directional_balance_adjudication,
 )
-from app.services.decision_canary_service import canonical_sha256
+from app.services.decision_canary_service import canonical_sha256, strict_json_schema
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
     validate_preconfirmation_candidate,
@@ -60,6 +60,7 @@ RECEIPT_CONTRACT = "v2-accepted-production-receipt-v1"
 REASONING_MODEL = "gpt-5.6-sol"
 REASONING_EFFORT = "xhigh"
 FUNDAMENTAL_CORE_CONTRACT = "v2-accepted-fundamental-core-v1"
+FUNDAMENTAL_CORE_EXACT_REF_CONTRACT = "fundamental-core-exact-ref-fidelity-v1"
 
 
 class AcceptedV2EvidenceOwnership(FrozenModel):
@@ -471,6 +472,160 @@ def _compact_owned_evidence(
     )
 
 
+def accepted_v2_fundamental_core_ref_catalog(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> tuple[str, ...]:
+    selected = tuple(subjects or context.selected_subjects)
+    packets = {row.ticker: row for row in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    if (
+        not selected
+        or not set(selected).issubset(packets)
+        or not set(selected).issubset(ownership)
+    ):
+        raise ValueError("v2_fundamental_core_ref_catalog_subject_mismatch")
+
+    visible_refs: set[str] = set()
+    for ticker in selected:
+        owned_core_refs = set(ownership[ticker].core_ref_ids)
+        visible_refs.update(
+            row.ref_id
+            for row in packets[ticker].evidence
+            if row.ref_id in owned_core_refs
+            and not row.ref_id.startswith("technical-feature:")
+        )
+    return tuple(sorted(visible_refs))
+
+
+def accepted_v2_fundamental_core_ref_catalog_manifest(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> dict[str, object]:
+    selected = tuple(subjects or context.selected_subjects)
+    refs = accepted_v2_fundamental_core_ref_catalog(context, subjects=selected)
+    packets = {row.ticker: row for row in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    source_condition_refs: set[str] = set()
+    leaf_refs: set[str] = set()
+
+    def collect_leaf_refs(expression: object) -> None:
+        if not hasattr(expression, "condition_id"):
+            raise ValueError("v2_fundamental_core_source_condition_invalid")
+        children = getattr(expression, "children", None)
+        if children is None:
+            leaf_refs.add(str(getattr(expression, "condition_id")))
+            return
+        for child in children:
+            collect_leaf_refs(child)
+
+    for ticker in selected:
+        owned_core_refs = set(ownership[ticker].core_ref_ids)
+        for row in packets[ticker].evidence:
+            if (
+                row.ref_id not in owned_core_refs
+                or row.ref_id.startswith("technical-feature:")
+                or row.logical_condition is None
+            ):
+                continue
+            source_condition_refs.add(row.logical_condition.source_condition_ref)
+            collect_leaf_refs(row.logical_condition.expression)
+
+    ordered_source_condition_refs = tuple(sorted(source_condition_refs))
+    ordered_leaf_refs = tuple(sorted(leaf_refs))
+    catalog_hash = canonical_sha256(
+        {
+            "contract": FUNDAMENTAL_CORE_EXACT_REF_CONTRACT,
+            "allowed_refs": refs,
+            "allowed_source_condition_refs": ordered_source_condition_refs,
+            "allowed_leaf_refs": ordered_leaf_refs,
+        }
+    )
+    return {
+        "contract": FUNDAMENTAL_CORE_EXACT_REF_CONTRACT,
+        "packet_id": context.packet_id,
+        "claim_id": context.claim_id,
+        "market": context.market,
+        "subjects": list(selected),
+        "ref_catalog_hash": catalog_hash,
+        "ref_catalog_count": len(refs),
+        "allowed_refs": list(refs),
+        "source_condition_ref_count": len(ordered_source_condition_refs),
+        "allowed_source_condition_refs": list(ordered_source_condition_refs),
+        "leaf_ref_count": len(ordered_leaf_refs),
+        "allowed_leaf_refs": list(ordered_leaf_refs),
+    }
+
+
+def accepted_v2_fundamental_core_output_schema(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> dict[str, object]:
+    manifest = accepted_v2_fundamental_core_ref_catalog_manifest(
+        context,
+        subjects=subjects,
+    )
+    refs = manifest["allowed_refs"]
+    source_condition_refs = manifest["allowed_source_condition_refs"]
+    leaf_refs = manifest["allowed_leaf_refs"]
+    if not isinstance(refs, list) or not refs:
+        raise ValueError("v2_fundamental_core_ref_catalog_empty")
+
+    schema = strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema())
+    if not isinstance(schema, dict):
+        raise ValueError("v2_fundamental_core_schema_invalid")
+    try:
+        evidence_refs = schema["$defs"]["EvidenceClaim"]["properties"][
+            "evidence_refs"
+        ]
+        items = evidence_refs["items"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("v2_fundamental_core_ref_schema_path_missing") from exc
+    if not isinstance(evidence_refs, dict) or evidence_refs.get("type") != "array":
+        raise ValueError("v2_fundamental_core_ref_schema_not_array")
+    if not isinstance(items, dict) or items.get("type") != "string":
+        raise ValueError("v2_fundamental_core_ref_schema_item_not_string")
+    items["enum"] = refs
+
+    try:
+        logical_condition = schema["$defs"]["EvidenceClaim"]["properties"][
+            "logical_condition"
+        ]
+        source_condition_ref = schema["$defs"]["ClaimLogicalCondition"][
+            "properties"
+        ]["source_condition_ref"]
+        leaf_ref = schema["$defs"]["ClaimLogicalLeaf"]["properties"]["leaf_ref"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("v2_fundamental_core_logical_ref_schema_path_missing") from exc
+    if not isinstance(logical_condition, dict):
+        raise ValueError("v2_fundamental_core_logical_condition_schema_invalid")
+    if not source_condition_refs and not leaf_refs:
+        schema["$defs"]["EvidenceClaim"]["properties"]["logical_condition"] = {
+            "type": "null"
+        }
+    else:
+        if (
+            not isinstance(source_condition_refs, list)
+            or not source_condition_refs
+            or not isinstance(leaf_refs, list)
+            or not leaf_refs
+        ):
+            raise ValueError("v2_fundamental_core_logical_ref_catalog_incomplete")
+        if (
+            not isinstance(source_condition_ref, dict)
+            or source_condition_ref.get("type") != "string"
+            or not isinstance(leaf_ref, dict)
+            or leaf_ref.get("type") != "string"
+        ):
+            raise ValueError("v2_fundamental_core_logical_ref_schema_not_string")
+        source_condition_ref["enum"] = source_condition_refs
+        leaf_ref["enum"] = leaf_refs
+    return schema
+
+
 def accepted_v2_fundamental_core_prompt(
     context: AcceptedV2ProductionContext,
     *,
@@ -481,12 +636,21 @@ def accepted_v2_fundamental_core_prompt(
     ownership = {row.ticker: row for row in context.evidence_ownership}
     if not selected or not set(selected).issubset(packets):
         raise ValueError("v2_fundamental_core_prompt_subject_mismatch")
+    ref_catalog = accepted_v2_fundamental_core_ref_catalog_manifest(
+        context,
+        subjects=selected,
+    )
     identity = {
         "contract": FUNDAMENTAL_CORE_CONTRACT,
         "packet_id": context.packet_id,
         "claim_id": context.claim_id,
         "market": context.market,
         "assessment_date": context.assessment_date,
+    }
+    ref_catalog_identity = {
+        "contract": ref_catalog["contract"],
+        "ref_catalog_hash": ref_catalog["ref_catalog_hash"],
+        "ref_catalog_count": ref_catalog["ref_catalog_count"],
     }
     payload = [
         {
@@ -504,7 +668,7 @@ def accepted_v2_fundamental_core_prompt(
 
 For every supplied ticker, emit exactly one AcceptedV2FundamentalCoreCandidate. Decide overall BUY/HOLD/SELL, directional balance, confidence, core buy/sell drivers, decisive reason, and the existing-holder fundamental stance. Holder HOLDABLE/REVIEW/REDUCE must be based only on fundamental holding risk. REVIEW means the holding thesis needs re-examination; it is not an automatic sell instruction. REDUCE requires sufficiently severe or persistent fundamental downside. Do not derive holder stance mechanically from overall direction or Business Delta.
 
-The pair directional_balance must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. The balance is relative directional force, not probability or a weighted score. Every claim must be concise natural Korean and cite exact supplied refs.
+The pair directional_balance must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. The balance is relative directional force, not probability or a weighted score. Every claim must be concise natural Korean and cite exact supplied refs. Evidence refs are identifiers. Copy them exactly from the supplied evidence catalog. Never synthesize, shorten, edit, guess, or repair an evidence ref. If no valid ref supports a claim, do not cite one.
 
 Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. INDEPENDENT inputs may remain separate concepts. PARTIALLY_OVERLAPPING inputs must not count shared lineage twice. VALUATION_DERIVED_EXPECTATION_ONLY and UNKNOWN expectation evidence may remain context but cannot become an independent directional driver. Do not force any ticker or create a pro-BUY bias.
 
@@ -513,6 +677,11 @@ Return strict JSON only. Copy every FUNDAMENTAL_CORE_IDENTITY field exactly and 
 FUNDAMENTAL_CORE_IDENTITY:
 """
         + json.dumps(identity, ensure_ascii=False, separators=(",", ":"))
+        + """
+
+FUNDAMENTAL_CORE_REF_CATALOG_IDENTITY:
+"""
+        + json.dumps(ref_catalog_identity, ensure_ascii=False, separators=(",", ":"))
         + """
 
 FUNDAMENTAL_CORE_CONTEXT:

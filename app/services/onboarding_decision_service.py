@@ -20,6 +20,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBatchOutput,
     accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_output_schema,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
@@ -286,6 +288,7 @@ def generate_onboarding_accepted_decision(
         "core_prompt": root / f"{claim_id}.core.prompt.txt",
         "core_output": root / f"{claim_id}.core.output.json",
         "core_log": root / f"{claim_id}.core.cli.log",
+        "core_ref_catalog": root / f"{claim_id}.core.ref-catalog.json",
         "schema": root / f"{claim_id}.schema.json",
         "prompt": root / f"{claim_id}.prompt.txt",
         "output": root / f"{claim_id}.output.json",
@@ -298,7 +301,11 @@ def generate_onboarding_accepted_decision(
     _atomic_json(paths["context"], context.model_dump(mode="json"))
     _atomic_json(
         paths["core_schema"],
-        strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema()),
+        accepted_v2_fundamental_core_output_schema(context),
+    )
+    _atomic_json(
+        paths["core_ref_catalog"],
+        accepted_v2_fundamental_core_ref_catalog_manifest(context),
     )
     _atomic_text(paths["core_prompt"], accepted_v2_fundamental_core_prompt(context))
     _invoke_signed_in_codex(

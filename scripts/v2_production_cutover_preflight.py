@@ -26,6 +26,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2FundamentalCoreCandidate,
     accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_output_schema,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
@@ -119,11 +121,6 @@ def _codex_batch(
     state_namespace: str | None = None,
 ) -> AcceptedV2ProductionBatchOutput:
     codex_bin = _signed_in_codex_bin()
-    core_schema = output_dir / "fundamental-core.schema.json"
-    _write_json(
-        core_schema,
-        strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema()),
-    )
     ownership = {row.ticker: row for row in context.evidence_ownership}
     fundamental_cores: list[AcceptedV2FundamentalCoreCandidate] = []
     for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
@@ -132,7 +129,20 @@ def _codex_batch(
         prompt = output_dir / f"core-batch-{batch_number:02d}.prompt.txt"
         output = output_dir / f"core-batch-{batch_number:02d}.output.json"
         log = output_dir / f"core-batch-{batch_number:02d}.log"
+        core_schema = output_dir / f"core-batch-{batch_number:02d}.schema.json"
+        ref_catalog = output_dir / f"core-batch-{batch_number:02d}.ref-catalog.json"
         _write_text(prompt, accepted_v2_fundamental_core_prompt(context, subjects=subjects))
+        _write_json(
+            core_schema,
+            accepted_v2_fundamental_core_output_schema(context, subjects=subjects),
+        )
+        _write_json(
+            ref_catalog,
+            accepted_v2_fundamental_core_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+            ),
+        )
         _invoke_signed_in_codex(
             codex_bin=codex_bin,
             prompt=prompt,

@@ -30,6 +30,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2FundamentalCoreCandidate,
     accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_output_schema,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_paths,
     accepted_v2_production_prompt,
@@ -635,7 +637,7 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     _atomic_json(paths["context"], context.model_dump(mode="json"))
     _atomic_json(
         paths["core_schema"],
-        strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema()),
+        accepted_v2_fundamental_core_output_schema(context),
     )
     _atomic_json(
         paths["schema"],
@@ -892,9 +894,26 @@ async def _generate_claim_owned(
         core_log = paths["core_log"].with_name(
             f"{paths['core_log'].stem}.batch-{batch_number:02d}.log"
         )
+        core_schema = paths["core_schema"].with_name(
+            f"{paths['core_schema'].stem}.batch-{batch_number:02d}.json"
+        )
+        core_ref_catalog = paths["core_schema"].with_name(
+            f"{paths['core_schema'].stem}.batch-{batch_number:02d}.ref-catalog.json"
+        )
         _atomic_text(
             core_prompt,
             accepted_v2_fundamental_core_prompt(context, subjects=subjects),
+        )
+        _atomic_json(
+            core_schema,
+            accepted_v2_fundamental_core_output_schema(context, subjects=subjects),
+        )
+        _atomic_json(
+            core_ref_catalog,
+            accepted_v2_fundamental_core_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+            ),
         )
         _record_stage(
             packet_id,
@@ -909,7 +928,7 @@ async def _generate_claim_owned(
                 prompt=core_prompt,
                 output=core_output,
                 log=core_log,
-                schema=Path(str(prepared["core_schema_path"])),
+                schema=core_schema,
                 cwd=paths["core_prompt"].parent,
                 timeout=timeout,
                 state_namespace=claim_id,

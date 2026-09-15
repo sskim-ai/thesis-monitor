@@ -16,11 +16,14 @@ from app.jobs.accepted_decision_v2_runtime import (
 )
 from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2FundamentalCoreCandidate,
+    accepted_v2_fundamental_core_output_schema,
     accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
+    validate_accepted_v2_fundamental_core,
 )
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
@@ -32,10 +35,17 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     DecisionEvidenceRef,
     EvidenceCategory,
+    EvidenceClaim,
+)
+from app.services.directional_balance_service import DirectionalBalance
+from app.services.logical_condition_service import (
+    LogicalSeverity,
+    source_logical_condition,
 )
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
 )
+from app.services.three_axis_decision_service import HolderDecisionAxis
 
 
 @pytest.fixture(autouse=True)
@@ -93,6 +103,189 @@ def _packet() -> DecisionEvidencePacket:
 
 def _core(packet: DecisionEvidencePacket) -> AcceptedV2FundamentalCoreCandidate:
     return AcceptedV2FundamentalCoreCandidate.model_construct(ticker=packet.ticker)
+
+
+def _fundamental_packet(
+    ticker: str,
+    *refs: str,
+    logical_condition: bool = False,
+) -> DecisionEvidencePacket:
+    return DecisionEvidencePacket(
+        packet_id="packet-exact-ref",
+        ticker=ticker,
+        company_name=f"{ticker} Company",
+        market="us",
+        assessment_date="2026-09-15",
+        horizon="12-36 months",
+        evidence=tuple(
+            DecisionEvidenceRef(
+                ref_id=ref_id,
+                category=EvidenceCategory.THESIS,
+                label=f"{ticker} thesis",
+                statement=f"{ticker} canonical thesis evidence",
+                as_of="2026-09-15",
+                source_ref="fixture",
+                logical_condition=(
+                    source_logical_condition(
+                        subject=ticker,
+                        generation_id="exact-ref-fixture",
+                        evidence_ref=ref_id,
+                        statement="현금전환 개선 또는 매출 성장",
+                        severity=LogicalSeverity.STRENGTHENING,
+                    )
+                    if logical_condition and index == 0
+                    else None
+                ),
+            )
+            for index, ref_id in enumerate(refs)
+        ),
+        prohibited_claims=(),
+        evidence_sha256=f"fixture-{ticker}",
+    )
+
+
+def _exact_ref_context():
+    rxrx = _fundamental_packet(
+        "RXRX",
+        "decision-evidence:774e2e7f46d2025d7257",
+        "decision-evidence:rxrx-second",
+        logical_condition=True,
+    )
+    ibm = _fundamental_packet("IBM", "decision-evidence:ibm-owned")
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": rxrx.packet_id,
+            "market": rxrx.market,
+            "assessment_date": rxrx.assessment_date,
+            "stocks": [{"ticker": "RXRX"}, {"ticker": "IBM"}],
+        },
+        claim_id="claim-exact-ref",
+        evidence_packets=(rxrx, ibm),
+    )
+    return context
+
+
+def _schema_ref_enum(schema: dict[str, object]) -> tuple[str, ...]:
+    return tuple(
+        schema["$defs"]["EvidenceClaim"]["properties"]["evidence_refs"]["items"][
+            "enum"
+        ]
+    )
+
+
+def _schema_accepts_refs(schema: dict[str, object], refs: tuple[str, ...]) -> bool:
+    return set(refs).issubset(_schema_ref_enum(schema))
+
+
+def _fundamental_core(ticker: str, ref_id: str) -> AcceptedV2FundamentalCoreCandidate:
+    claim = EvidenceClaim(
+        text="검증된 사업 근거가 중립 판단을 지지합니다.",
+        evidence_refs=(ref_id,),
+    )
+    return AcceptedV2FundamentalCoreCandidate(
+        ticker=ticker,
+        decision="HOLD",
+        directional_balance=DirectionalBalance(buy=5, sell=5),
+        buy_drivers=(claim,),
+        sell_drivers=(claim,),
+        balance_summary="검증된 근거를 균형 있게 반영했습니다.",
+        confidence="MEDIUM",
+        decisive_reason=claim,
+        holder_axis=HolderDecisionAxis(stance="HOLDABLE", reason=claim),
+    )
+
+
+def test_fundamental_core_exact_ref_schema_inventory_and_catalog_identity() -> None:
+    context = _exact_ref_context()
+    subjects = ("RXRX", "IBM")
+    schema = accepted_v2_fundamental_core_output_schema(context, subjects=subjects)
+    manifest = accepted_v2_fundamental_core_ref_catalog_manifest(
+        context,
+        subjects=subjects,
+    )
+    prompt = accepted_v2_fundamental_core_prompt(context, subjects=subjects)
+
+    ref_paths: list[str] = []
+
+    def inventory(value: object, path: str = "$") -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                child_path = f"{path}.{key}"
+                if key in {"evidence_refs", "source_condition_ref", "leaf_ref"}:
+                    ref_paths.append(child_path)
+                inventory(child, child_path)
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                inventory(child, f"{path}[{index}]")
+
+    inventory(schema)
+    assert ref_paths == [
+        "$.$defs.ClaimLogicalCondition.properties.source_condition_ref",
+        "$.$defs.ClaimLogicalLeaf.properties.leaf_ref",
+        "$.$defs.EvidenceClaim.properties.evidence_refs",
+    ]
+    assert _schema_ref_enum(schema) == tuple(manifest["allowed_refs"])
+    assert schema["$defs"]["ClaimLogicalCondition"]["properties"][
+        "source_condition_ref"
+    ]["enum"] == manifest["allowed_source_condition_refs"]
+    assert schema["$defs"]["ClaimLogicalLeaf"]["properties"]["leaf_ref"][
+        "enum"
+    ] == manifest["allowed_leaf_refs"]
+    assert f'"ref_catalog_hash":"{manifest["ref_catalog_hash"]}"' in prompt
+    assert schema["$defs"]["EvidenceClaim"]["properties"]["text"].get("enum") is None
+    assert "Evidence refs are identifiers." in prompt
+    assert "Never synthesize, shorten, edit, guess, or repair an evidence ref." in prompt
+
+
+def test_fundamental_core_exact_ref_positive_fixtures() -> None:
+    context = _exact_ref_context()
+    schema = accepted_v2_fundamental_core_output_schema(
+        context,
+        subjects=("RXRX", "IBM"),
+    )
+    valid = "decision-evidence:774e2e7f46d2025d7257"
+    second = "decision-evidence:rxrx-second"
+
+    assert _schema_accepts_refs(schema, (valid,))
+    assert _schema_accepts_refs(schema, (valid, second))
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    assert validate_accepted_v2_fundamental_core(
+        _fundamental_core("RXRX", valid), ownership["RXRX"]
+    ) == ()
+
+
+@pytest.mark.parametrize(
+    "invalid_ref",
+    (
+        "decision-evidence:774e2e7f46d2020d7257",
+        "decision-evidence:774e2e7f46d2025d725",
+        "decision-evidence:774e2e7f46d20255d7257",
+        "decision-evidence:0123456789abcdef0123",
+    ),
+)
+def test_fundamental_core_exact_ref_negative_fixtures(invalid_ref: str) -> None:
+    context = _exact_ref_context()
+    schema = accepted_v2_fundamental_core_output_schema(
+        context,
+        subjects=("RXRX", "IBM"),
+    )
+
+    assert not _schema_accepts_refs(schema, (invalid_ref,))
+
+
+def test_batch_union_schema_keeps_cross_subject_semantic_ownership_hard_fail() -> None:
+    context = _exact_ref_context()
+    schema = accepted_v2_fundamental_core_output_schema(
+        context,
+        subjects=("RXRX", "IBM"),
+    )
+    ibm_ref = "decision-evidence:ibm-owned"
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+
+    assert _schema_accepts_refs(schema, (ibm_ref,))
+    assert validate_accepted_v2_fundamental_core(
+        _fundamental_core("RXRX", ibm_ref), ownership["RXRX"]
+    ) == (f"noncore_ref_in_fundamental_core:{ibm_ref}",)
 
 
 def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() -> None:
