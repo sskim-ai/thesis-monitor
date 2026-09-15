@@ -1,5 +1,32 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12BX. Read the iCloud bundle
+`thesis-monitor-20260916-stage2-typed-contract-closure-full22-reproof-market-context-restoration-report.zip`
+first. Exact instruction commit is `643bd0f43b005682e1ad777658b72ac212e3586c`; deterministic
+implementation is `eb24f37155fca38c5e993678b0d7261971c9a354`. No main merge, deploy, or
+remote push occurred.
+
+The Stage-2 typed contract is deterministically closed: 50 string fields classify to six genuine
+free-text fields and 44 typed fields, with zero unknown/gap fields and zero unsatisfiable dates.
+Focused/full tests are `156/4022 PASS`; Ruff and diff check pass. Kiwoom KOSPI200 local adapter
+replays for 9/1-9/3 pass, and the official/free FRED Treasury block restores DGS3/5/10/30 plus
+direct DFII10/T10YIE with explicit daily dates and time-layer separation.
+
+The new no-repair model generation
+`20260916-uskr22-m12bx-20260915T164818Z-eb24f37155fc` is terminal and must not be resumed or
+stitched. At ordinal 2, US Fundamental Core batch 2 requested `GOOGL/HUT/IBM` but returned only
+`GOOGL/HUT`, causing `preflight_fundamental_core_scope_mismatch:2`. Calls are `2/2/2`
+started/completed/usable; retry, fallback, judge, repair, and selective rerun are zero.
+
+Next bounded task: audit and structurally close Fundamental Core batch completeness without an
+IBM-specific exception, then start a wholly new US14/KR8 generation from call 1 under the same
+frozen model/no-repair rules. Keep the successful M12BX calls forensic-only. Kiwoom read-only
+gateway enablement is a separate prerequisite for final live message smoke; this host currently has
+no authenticated Windows gateway. Do not mutate production DB, warnings, notifications, schedules,
+Telegram, main, deployment, or Production Assist.
+
+---
+
 Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
 integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
 `docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact

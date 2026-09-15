@@ -2572,3 +2572,37 @@ Observe the next ordinary KR and US cycles read-only. Do not replay Run-57, manu
 Scheduled Task, resend production, expose recipient values, or treat TEST evidence as natural
 proof. Structured Autonomy may resume as a separate shadow/promotion program; production mutation
 remains zero and Production Assist remains OFF.
+
+## 2026-09-16 M12BX Typed Contract and Market Context Handoff
+
+Start with the iCloud-local bundle
+`thesis-monitor-20260916-stage2-typed-contract-closure-full22-reproof-market-context-restoration-report.zip`.
+Exact instructions are `643bd0f43b005682e1ad777658b72ac212e3586c`; deterministic code is
+`eb24f37155fca38c5e993678b0d7261971c9a354`. This branch is local only and has not been merged,
+pushed, or deployed.
+
+The Stage-2 typed-string audit is complete: 50 string fields are classified as six genuine prose
+fields and 44 structurally typed fields, with zero unknown typed fields or remaining proof-critical
+gaps. `driver_maturity[].as_of` accepts only a real catalog-owned `YYYY-MM-DD`; every emitted date
+must be owned by a cited ref in the same maturity row. Frozen US14/KR8 date feasibility is 22/22
+with zero impossible rows. Focused/full tests are `156/4022 PASS`; Ruff and diff check pass.
+
+Do not continue generation
+`20260916-uskr22-m12bx-20260915T164818Z-eb24f37155fc`. It stopped exactly at ordinal 2 after US
+Fundamental Core batch 2 returned `GOOGL/HUT` but omitted requested `IBM`. The immutable failure is
+`preflight_fundamental_core_scope_mismatch:2`; model calls are `2/2/2` started/completed/usable and
+retry/fallback/judge/repair/selective rerun are all zero. The two successful outputs are evidence,
+not a partial proof to stitch or resume.
+
+Track B and C are independently ready locally. Kiwoom KOSPI200 9/1-9/3 fixture replays pass through
+the current leading-market adapter; unsafe/unknown comparison bases render level-only. The Windows
+authenticated gateway is unavailable on this host, live read/order calls are `0/0`, and KOSDAQ150
+night support remains unproven. Treasury restoration reuses official/free FRED DGS3/5/10/30 and
+direct DFII10/T10YIE with prior valid same-series observations, basis-point changes, explicit daily
+dates, and separate completed/rate/current-leading layers.
+
+Next scope is a bounded Fundamental Core batch-completeness contract repair followed by a wholly
+new US14/KR8 generation from call 1. No ticker-specific IBM patch, prompt-result hotfix, retry,
+stitching, or selective rerun is allowed. Read-only Kiwoom gateway enablement is a separate
+prerequisite for a final live market-message smoke. Keep production DB, warnings, notifications,
+schedulers, Telegram, main, deploy, and Production Assist untouched.

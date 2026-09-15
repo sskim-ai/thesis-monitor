@@ -2520,3 +2520,36 @@ promotion and operating synchronization completed at `f031d72af76b408b90b1c9695a
 the thesis-monitor-only restart and API health pass. Open P0/material P1 are `0/0`; state is
 `DEPLOYED_AWAITING_NATURAL_KR_US_PROOF`. Natural KR/US proof and Structured Autonomy promotion
 remain separate. Production Assist remains OFF.
+
+### 40.41 M12BX Stage-2 Typed Contract and Market Context Restoration
+
+Exact work instructions were committed first as
+`643bd0f43b005682e1ad777658b72ac212e3586c`; deterministic implementation is
+`eb24f37155fca38c5e993678b0d7261971c9a354` on local branch
+`codex/20260916-m12bx-stage2-typed-contract-market-context-restoration`. The Stage-2 schema
+inventory closes all 44 proof-critical typed strings while preserving six narrative fields.
+`driver_maturity[].as_of` is an exact real `YYYY-MM-DD` owned by a cited same-row evidence ref;
+the frozen 22-subject feasibility audit has zero unsatisfiable dates. Focused/full validation is
+`156/4022 PASS`, Ruff and diff check pass.
+
+The new no-repair generation
+`20260916-uskr22-m12bx-20260915T164818Z-eb24f37155fc` stopped at model-call ordinal 2. US core
+batch 2 requested `GOOGL/HUT/IBM` but returned only `GOOGL/HUT`, yielding
+`preflight_fundamental_core_scope_mismatch:2`. Calls started/completed/usable are `2/2/2`; retry,
+fallback, judge, repair, and selective rerun are all zero. This is an immutable new hard failure,
+not a typed-date or exact-ref violation. Do not stitch the two successful calls into another proof.
+
+Independent market tracks pass locally. The recovered Kiwoom KOSPI200 contract and 9/1-9/3
+fixtures map into `LeadingMarketSnapshot`; a return is shown only for a source-owned safe comparison
+basis, and level-only rendering is used otherwise. The authenticated Windows gateway is unavailable,
+so live Kiwoom read calls and order calls remain `0/0`; KOSDAQ150 support remains unproven. Existing
+official/free FRED provenance restores DGS3/5/10/30 plus direct DFII10/T10YIE observations with
+same-series previous values, basis-point changes, explicit daily dates, and completed/rates/current
+leading time-layer separation.
+
+Top-level state is `M12BX_MODEL_CONTRACT_BLOCKED_MARKET_CONTEXT_READY`. No main merge, deploy,
+remote push, production send, database/warning/notification write, scheduler mutation, or automatic
+monitoring resume occurred. The next bounded scope is to close Fundamental Core batch completeness
+structurally, then run a wholly new 22-subject generation; separately enable a read-only Kiwoom
+gateway before any final live market-message smoke. Production Assist and V2 production gates remain
+unchanged.
