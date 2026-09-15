@@ -1,0 +1,14 @@
+{
+  "canonical_context_key": "frozen_contexts",
+  "contract_version": "shadow-frozen-context-manifest-v1",
+  "expected_active_count": 22,
+  "expected_context_count": 6,
+  "expected_model_calls": 18,
+  "legacy_context_key": "contexts",
+  "m12ak_bundle_sha256": "3643125d30b6d661c9a7d50d9ca168808c3600bc5717c27a0cf12e7682260ee0",
+  "m12ak_fictional_generation_id": "20260911-m12ai-fictional-20260911T073155Z-858474603de1",
+  "max_context_tickers": 4,
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "required_report_count": 85
+}

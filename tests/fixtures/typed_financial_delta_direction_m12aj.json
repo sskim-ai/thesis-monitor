@@ -1,0 +1,83 @@
+{
+  "contract": "financial-comparison-direction-v1",
+  "fixtures": [
+    {
+      "id": "DIR-CASH-01",
+      "metric": "operating_cash_flow",
+      "current": "180",
+      "prior": "110",
+      "quality": "verified",
+      "expected": ["STRENGTHENED"]
+    },
+    {
+      "id": "DIR-CASH-02",
+      "metric": "operating_cash_flow",
+      "current": "40",
+      "prior": "100",
+      "quality": "verified",
+      "expected": ["WEAKENED"]
+    },
+    {
+      "id": "DIR-CASH-03",
+      "metric": "operating_cash_flow",
+      "current": "100",
+      "prior": "100",
+      "quality": "verified",
+      "expected": []
+    },
+    {
+      "id": "DIR-CASH-04",
+      "metric": "ocf_less_ppe_capex",
+      "current": "130",
+      "prior": "70",
+      "quality": "verified",
+      "expected": ["STRENGTHENED"]
+    },
+    {
+      "id": "DIR-CASH-05",
+      "metric": "ocf_less_ppe_capex",
+      "current": "-20",
+      "prior": "55",
+      "quality": "verified",
+      "expected": ["WEAKENED"]
+    },
+    {
+      "id": "DIR-CASH-06",
+      "metric": "operating_cash_flow",
+      "current": "180",
+      "prior": "110",
+      "quality": "partial",
+      "expected": []
+    },
+    {
+      "id": "DIR-PERIOD-01",
+      "metric": "operating_cash_flow",
+      "current_period": "QTD",
+      "prior_period": "YTD",
+      "expected": []
+    },
+    {
+      "id": "DIR-PERIOD-02",
+      "metric": "operating_cash_flow",
+      "current_period": "YTD",
+      "prior_period": "YTD",
+      "duration_match": false,
+      "expected": []
+    },
+    {
+      "id": "DIR-BASIS-01",
+      "metric": "operating_cash_flow",
+      "currency_match": false,
+      "expected": []
+    },
+    {
+      "id": "DIR-WC-01",
+      "metric": "inventory",
+      "current": "240",
+      "prior": "150",
+      "quality": "verified",
+      "eligible_observed_change": true,
+      "expected": []
+    }
+  ]
+}

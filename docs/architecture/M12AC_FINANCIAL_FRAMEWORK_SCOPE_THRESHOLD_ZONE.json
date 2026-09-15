@@ -1,0 +1,95 @@
+{
+  "contract": "m12ac-financial-framework-scope-threshold-zone-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "phase": "M12AC",
+  "predecessor": {
+    "final_sha": "f22c3cef615c665150fe5e92b45e185345782d1c",
+    "bundle_sha256": "2ffe92275f7ea7b342669349fd4b2713b4c05611261bf33a33438c9220407926",
+    "integrity": {
+      "indexed_payload_count": 192,
+      "missing_count": 0,
+      "extra_count": 0,
+      "hash_mismatch_count": 0,
+      "size_mismatch_count": 0,
+      "duplicate_member_count": 0,
+      "status": "PASS"
+    }
+  },
+  "runtime": {
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "xhigh",
+    "runtime_mode": "MODEL_CONTEXT_COUPLED",
+    "subjects_per_context": 4,
+    "context_count": 2,
+    "repetition_count": 3,
+    "timeout_seconds": 1800,
+    "wrapper_retry_count": 0,
+    "batch_split_count": 0,
+    "fallback_model": null
+  },
+  "financial_framework_scope": {
+    "root_cause": "RIGHT_SIDE_NORMATIVE_APPLICATION_PREDICATE_NOT_RECOGNIZED",
+    "preserved_text_role_before": "ASSERTED_STATE",
+    "target_role": "CONTRASTIVE_REPLACEMENT",
+    "relation": "LEFT_FORBIDDEN_FRAMEWORKS_CONTRAST_MARKER_RIGHT_REPLACEMENT_APPLICATION",
+    "coordinated_forbidden_terms_supported": true,
+    "shared_consumers": [
+      "net_debt_completeness_validator",
+      "financial_sector_generic_framework_validator",
+      "working_capital_sector_validator"
+    ],
+    "cross_field_immunity": false
+  },
+  "boundary_architecture": {
+    "decision": "REPLACE_OPTION_F_WITH_DETERMINISTIC_THRESHOLD_ZONE",
+    "option_f_status": "RETIRED_FROM_MODEL_FACING_EXPERIMENT",
+    "model_self_declaration": false,
+    "raw_directional_state_mutated": false,
+    "threshold_zone_shadow_only": true,
+    "renderer_enabled": false,
+    "majority_vote": false,
+    "averaging": false,
+    "scorecard": false
+  },
+  "threshold_zone": {
+    "positive": [
+      "BUY 6.0:4.0",
+      "HOLD 5.5:4.5 BUY_LEAN"
+    ],
+    "neutral": [
+      "HOLD 5.0:5.0 NEUTRAL"
+    ],
+    "negative": [
+      "HOLD 4.5:5.5 SELL_LEAN",
+      "SELL 4.0:6.0"
+    ],
+    "outside_positive": [
+      "BUY 6.5:3.5 or stronger"
+    ],
+    "outside_negative": [
+      "SELL 3.5:6.5 or stronger"
+    ],
+    "validates_raw_state_only": true,
+    "repairs_malformed_raw_state": false
+  },
+  "frozen_semantics": {
+    "buy_threshold": 6,
+    "sell_threshold": 6,
+    "increment": 0.5,
+    "hold_buy_lean": "5.5:4.5",
+    "neutral": "5.0:5.0",
+    "hold_sell_lean": "4.5:5.5",
+    "adjacent_tiebreak": "TOWARD_5_0",
+    "business_delta_semantics_changed": false,
+    "financial_semantics_changed": false,
+    "market_expectation_contract_changed": false
+  },
+  "production": {
+    "readiness": "NOT_READY",
+    "renderer_change_count": 0,
+    "real_issuer_model_exposure_count": 0,
+    "production_sends": 0,
+    "automatic_monitoring_resume": 0
+  },
+  "frozen_at": "2026-09-10T11:07:44.229Z"
+}

@@ -30,9 +30,22 @@ FORMAL_FORMS = {
     "40-F/A",
     "6-K",
     "6-K/A",
+    "11011",
+    "11012",
+    "11013",
+    "11014",
 }
-ANNUAL_FORMS = {"10-K", "10-K/A", "20-F", "20-F/A", "40-F", "40-F/A"}
+ANNUAL_FORMS = {
+    "10-K",
+    "10-K/A",
+    "20-F",
+    "20-F/A",
+    "40-F",
+    "40-F/A",
+    "11011",
+}
 RESTATEMENT_POLICY_ID = "sec-companyfacts-latest-authoritative-v1"
+OPENDART_RESTATEMENT_POLICY_ID = "opendart-latest-authoritative-v1"
 
 
 @dataclass(frozen=True)
@@ -240,7 +253,11 @@ def _occurrence_id(occurrence: OfficialFilingOccurrence) -> str:
             occurrence.frame or "",
         )
     )
-    return f"sec-occurrence:{hashlib.sha256(payload.encode()).hexdigest()[:24]}"
+    prefix = {
+        "sec_edgar_companyfacts": "sec-occurrence",
+        "opendart_xbrl": "opendart-occurrence",
+    }.get(occurrence.source_provider, "official-occurrence")
+    return f"{prefix}:{hashlib.sha256(payload.encode()).hexdigest()[:24]}"
 
 
 def _reported_fact_id(
@@ -328,8 +345,16 @@ def canonicalize_official_occurrence(
         capex_scope=CapexScope.PPE_ONLY if entry.metric == Metric.CAPEX else None,
         quality="REPORTED_VERIFIED",
         eligibility=EligibilityStatus.ELIGIBLE,
-        cautions=("sec_companyfacts_issuer_level_context",),
-        restatement_policy_id=RESTATEMENT_POLICY_ID,
+        cautions=(
+            "opendart_xbrl_exact_duration_context"
+            if occurrence.source_provider == "opendart_xbrl"
+            else "sec_companyfacts_issuer_level_context",
+        ),
+        restatement_policy_id=(
+            OPENDART_RESTATEMENT_POLICY_ID
+            if occurrence.source_provider == "opendart_xbrl"
+            else RESTATEMENT_POLICY_ID
+        ),
         as_of_date=as_of_date,
     )
     if entry.metric == Metric.CAPEX:
@@ -471,17 +496,13 @@ def _fact_authority_key(fact: FinancialFact) -> tuple[object, ...]:
     return (fact.filing_date, amended, entry.priority, fact.source_document_id)
 
 
-def canonicalize_sec_companyfacts(
-    payload: Mapping[str, object],
+def canonicalize_official_occurrences(
+    source_occurrences: Iterable[OfficialFilingOccurrence],
     *,
-    raw_payload_sha256: str,
     as_of_date: date,
 ) -> CanonicalizationBatch:
     occurrences = _normalize_economic_fiscal_context(
-        extract_sec_companyfacts_occurrences(
-            payload,
-            raw_payload_sha256=raw_payload_sha256,
-        )
+        tuple(source_occurrences)
     )
     decisions = [
         canonicalize_official_occurrence(item, as_of_date=as_of_date)
@@ -541,6 +562,21 @@ def canonicalize_sec_companyfacts(
         extracted_occurrences=len(occurrences),
         exact_duplicates_suppressed=duplicates,
         conflicts=conflicts,
+    )
+
+
+def canonicalize_sec_companyfacts(
+    payload: Mapping[str, object],
+    *,
+    raw_payload_sha256: str,
+    as_of_date: date,
+) -> CanonicalizationBatch:
+    return canonicalize_official_occurrences(
+        extract_sec_companyfacts_occurrences(
+            payload,
+            raw_payload_sha256=raw_payload_sha256,
+        ),
+        as_of_date=as_of_date,
     )
 
 

@@ -1,0 +1,40 @@
+{
+  "contract": "m12ak-scope-freeze-v1",
+  "semantic_file_sha256": {
+    "app/services/business_delta_evidence_service.py": "2ae75e863f1dfb36825d3d396c92401296af62220216b73a4f04ab588e99bd0b",
+    "app/services/direction_timing_ownership_service.py": "f0b3a60ccd061ce2e8e1b7de0bbeb00f720cc56edf9c1ebf63f14eab5d3e8da0",
+    "app/services/directional_financial_context_service.py": "f9945e28cad64e5cf368ece0939a7c05f2875e8d49c416d682b188d85e38998b",
+    "app/services/structured_autonomy_alias_service.py": "3c9e7b0869a0157b40d8558c7618c5ed5c83bb8ce2240698755d2cf65b155c83",
+    "app/services/two_stage_directional_service.py": "6bfc575ab39d5dbba2b39870ae37e1c85385f2097b6081fad46c8cefd652261c",
+    "scripts/business_delta_evidence_capability_m12ai.py": "d0a54cb82109bf07cc8cc7fb05e34eee16001d0fbed6a5dab6d5f3f261488f8d",
+    "scripts/directional_financial_context_m12.py": "158f962cc2592df25160215bbf113dc2ed2e8fda79fd90d0df5260f378908b85",
+    "scripts/main_integration_two_stage_directional_m12ae_r2_runtime.py": "8880fcb20cceffc47dfa90a2297bfa6b77dc0ed09c79f7df7820d2650dc91e46"
+  },
+  "fictional_contexts": [
+    [
+      "FIC-FIN-01",
+      "FIC-FIN-02",
+      "FIC-FIN-03",
+      "FIC-FIN-04"
+    ],
+    [
+      "FIC-FIN-05",
+      "FIC-FIN-06",
+      "FIC-FIN-07",
+      "FIC-FIN-08"
+    ]
+  ],
+  "fictional_repetitions": 3,
+  "expected_offline_diagnostics": {
+    "business_delta_variance_subject_count": 0,
+    "holder_unstable_subject_count": 1,
+    "holder_unstable_tickers": [
+      "FIC-FIN-08"
+    ],
+    "new_buyer_unstable_subject_count": 0,
+    "primary_direction_unstable_subject_count": 1,
+    "primary_direction_unstable_tickers": [
+      "FIC-FIN-05"
+    ]
+  }
+}

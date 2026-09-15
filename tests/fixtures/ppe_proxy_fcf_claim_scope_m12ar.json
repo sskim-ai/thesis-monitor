@@ -1,0 +1,56 @@
+{
+  "negative": [
+    {
+      "id": "FCF-SCOPE-N01",
+      "text": "FCF is positive.",
+      "refs": ["proxy"]
+    },
+    {
+      "id": "FCF-SCOPE-N02",
+      "text": "잉여현금흐름은 352m이다.",
+      "refs": ["proxy"]
+    },
+    {
+      "id": "FCF-SCOPE-N03",
+      "text": "OCF-PPE를 FCF로 본다.",
+      "refs": []
+    },
+    {
+      "id": "FCF-SCOPE-N04",
+      "text": "이 대용치는 FCF가 아니지만 사실상 FCF다.",
+      "refs": ["proxy"]
+    }
+  ],
+  "positive": [
+    {
+      "id": "FCF-SCOPE-P01",
+      "field": "confirmation_business_condition",
+      "text": "FCF 성장률 재가속이 확인되어야 한다.",
+      "refs": ["configured_strengthen"]
+    },
+    {
+      "id": "FCF-SCOPE-P02",
+      "field": "business_invalidation_condition",
+      "text": "FCF가 장기간 정체·감소하면 보유 논리가 훼손된다.",
+      "refs": ["configured_invalidation"]
+    },
+    {
+      "id": "FCF-SCOPE-P03",
+      "field": "summary",
+      "text": "FCF 가속은 아직 확인되지 않았다.",
+      "refs": []
+    },
+    {
+      "id": "FCF-SCOPE-P04",
+      "field": "text",
+      "text": "OCF less PPE is positive.",
+      "refs": ["proxy"]
+    },
+    {
+      "id": "FCF-SCOPE-P05",
+      "field": "text",
+      "text": "This proxy is not management-defined FCF.",
+      "refs": ["proxy"]
+    }
+  ]
+}

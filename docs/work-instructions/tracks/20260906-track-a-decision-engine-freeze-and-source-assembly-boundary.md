@@ -1,0 +1,16 @@
+# Track A — Decision Engine Freeze + Source Assembly Boundary
+
+Decision layer must remain byte-for-byte semantically frozen.
+
+Required hashes:
+- builder_prompt: 2a4e6b4775db5e3f4d1b56b3f804613994e2602e4aaefd7902a9c1640cacb672
+- directional_balance: 2ecf5bbad338dc92d9996b60e3429ebb3c6b8d37cdb114439ffbff84166296ab
+- logical_condition: 255837edf51ff7fe06f26ed4d4782479131d2485e5e19349aa2a3f095ca1d234
+- stability: e824e9dc7044033c091f8b40fdb0f461f629d8b420f193e060b42e7f27e13188
+- validator_renderer: ee8dcdeaf42c40a49a8c56ebc140298271857eacd0bd2afc1cddb9fb631c018f
+- prompt_set: 95a46a8d3ac708aa981203270236eec7b21bdf196be7577245cc1e52fea50c89
+- schema_set: e86b747a0c6f459650275598a7c3c217bb0116ef6b6f8927debf3dfa938fd668
+
+Only source assembly / selection harness may change.
+
+No threshold, prompt, validator, renderer-semantics, or actionability changes.

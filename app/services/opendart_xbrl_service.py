@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal, InvalidOperation
 from io import BytesIO
 from typing import Iterable
 from xml.etree import ElementTree
@@ -39,8 +40,21 @@ def _date(value: str | None) -> date | None:
         return None
 
 
+def _decimal(value: object) -> Decimal | None:
+    try:
+        parsed = Decimal(str(value or "").replace(",", "").strip())
+    except (InvalidOperation, ValueError):
+        return None
+    return parsed if parsed.is_finite() else None
+
+
 def _basis_from_dimensions(dimensions: Iterable[tuple[str, str]]) -> str | None:
-    values = " ".join(f"{axis} {member}" for axis, member in dimensions).lower()
+    values = " ".join(
+        member
+        for axis, member in dimensions
+        if "statementbasis" in axis.casefold()
+        or "consolidatedandseparate" in axis.casefold()
+    ).lower()
     consolidated = any(term in values for term in ("consolidated", "consolidation", "연결"))
     separate = any(term in values for term in ("separate", "individual", "별도", "개별"))
     if consolidated == separate:
@@ -185,3 +199,80 @@ def reconcile_xbrl_fact(
         for fact in matches
     }
     return matches[0] if len(matches) == 1 and len(identities) == 1 else None
+
+
+def reconcile_xbrl_duration_fact(
+    facts: Iterable[XbrlFact],
+    *,
+    taxonomy_element: str,
+    value: object,
+    unit_ref: str,
+    statement_basis: str,
+    entity_identifier: str,
+) -> XbrlFact | None:
+    """Resolve one statement-level duration occurrence without guessing dates."""
+    expected_value = _decimal(value)
+    if expected_value is None:
+        return None
+    matches = []
+    for fact in facts:
+        non_basis_dimensions = [
+            axis
+            for axis, _member in fact.context.dimensions
+            if "statementbasis" not in axis.casefold()
+            and "consolidatedandseparate" not in axis.casefold()
+        ]
+        if (
+            _local_name(fact.taxonomy_element) == _local_name(taxonomy_element)
+            and fact.context.period_type == "duration"
+            and fact.context.period_start is not None
+            and fact.context.period_end is not None
+            and fact.context.period_start <= fact.context.period_end
+            and fact.unit_ref == unit_ref
+            and fact.context.statement_basis == statement_basis
+            and fact.context.entity_identifier == entity_identifier
+            and not non_basis_dimensions
+            and _decimal(fact.value) == expected_value
+        ):
+            matches.append(fact)
+    return matches[0] if len(matches) == 1 else None
+
+
+def reconcile_xbrl_instant_fact(
+    facts: Iterable[XbrlFact],
+    *,
+    taxonomy_element: str,
+    value: object,
+    instant_date: date | None = None,
+    unit_ref: str,
+    statement_basis: str,
+    entity_identifier: str,
+) -> XbrlFact | None:
+    """Resolve one statement-level instant occurrence without dimension guessing."""
+    expected_value = _decimal(value)
+    if expected_value is None:
+        return None
+    matches = []
+    for fact in facts:
+        non_basis_dimensions = [
+            axis
+            for axis, _member in fact.context.dimensions
+            if "statementbasis" not in axis.casefold()
+            and "consolidatedandseparate" not in axis.casefold()
+        ]
+        if (
+            _local_name(fact.taxonomy_element) == _local_name(taxonomy_element)
+            and fact.context.period_type == "instant"
+            and fact.context.period_start == fact.context.period_end
+            and (
+                instant_date is None
+                or fact.context.period_end == instant_date
+            )
+            and fact.unit_ref == unit_ref
+            and fact.context.statement_basis == statement_basis
+            and fact.context.entity_identifier == entity_identifier
+            and not non_basis_dimensions
+            and _decimal(fact.value) == expected_value
+        ):
+            matches.append(fact)
+    return matches[0] if len(matches) == 1 else None

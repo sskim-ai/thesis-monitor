@@ -1,0 +1,50 @@
+{
+  "contract": "market-expectation-independence-fixtures-v1",
+  "fixtures": [
+    {
+      "id": "EXP-INDEP-N01",
+      "expected": "FAIL",
+      "case": "conditional expectation used as material anchor"
+    },
+    {
+      "id": "EXP-INDEP-N02",
+      "expected": "FAIL",
+      "case": "conditional expectation used as dominant evidence"
+    },
+    {
+      "id": "EXP-INDEP-N03",
+      "expected": "FAIL",
+      "case": "source category alone asserted as independent"
+    },
+    {
+      "id": "EXP-INDEP-N04",
+      "expected": "FAIL",
+      "case": "conditional expectation driver counted outside OTHER_EVIDENCE"
+    },
+    {
+      "id": "EXP-INDEP-P01",
+      "expected": "PASS",
+      "case": "conditional expectation used only as expectation context"
+    },
+    {
+      "id": "EXP-INDEP-P02",
+      "expected": "PASS",
+      "case": "conditional expectation used as OTHER_EVIDENCE asymmetry"
+    },
+    {
+      "id": "EXP-INDEP-P03",
+      "expected": "PASS",
+      "case": "direction supported by non-expectation anchors"
+    },
+    {
+      "id": "EXP-INDEP-P04",
+      "expected": "PASS",
+      "case": "structured independent expectation used as anchor"
+    },
+    {
+      "id": "EXP-INDEP-P05",
+      "expected": "PASS",
+      "case": "unknown independence retained as context only"
+    }
+  ]
+}

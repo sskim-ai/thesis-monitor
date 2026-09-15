@@ -1,0 +1,23 @@
+{
+  "contract": "structured-actionability-unseen-coldstart-work-instruction-v1",
+  "source_report_bundle": "thesis-monitor-20260906-nominal-negation-clean-abc-devset-retirement-report.zip",
+  "source_report_bundle_sha256": "ef76df0ed4eb8c551eaf8827431e3b8d44274da9ecd1a4ac46713e0f231cadc9",
+  "frozen_generation": "20260906-uskr22-nominal-negation-20260906T010416Z-e45acd16cf43",
+  "frozen_source_lock_sha256": "12be1745fa048b04a075a5b965048afaf0d2d9dd1b731c039877436889b39bd0",
+  "frozen_result": {
+    "first": "22/22",
+    "a": "20/22",
+    "b": "NOT_RUN",
+    "c": "NOT_RUN"
+  },
+  "architecture_decision": "STRUCTURE_FIRST_ACTIONABILITY",
+  "devset_policy": "USKR22_RETIRED_FROM_TUNING_IMMEDIATELY",
+  "unseen_target_count": 16,
+  "unseen_allowed_range": [
+    12,
+    20
+  ],
+  "minimum_eligible_unseen": 12,
+  "production_mutation_allowed": false,
+  "night_futures_mutation_allowed": false
+}

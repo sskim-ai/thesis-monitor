@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": "CFG-FIELD-P01",
+      "field": "business_reevaluation_down",
+      "expected": "PASS"
+    },
+    {
+      "id": "CFG-FIELD-P02",
+      "field": "fundamental_holder.business_invalidation_condition",
+      "expected": "PASS"
+    },
+    {
+      "id": "CFG-FIELD-P03",
+      "field": "risk_context",
+      "expected": "PASS"
+    },
+    {
+      "id": "CFG-FIELD-N01",
+      "field": "sell_drivers",
+      "expected": "FAIL"
+    },
+    {
+      "id": "CFG-FIELD-N02",
+      "field": "buy_drivers",
+      "expected": "FAIL"
+    },
+    {
+      "id": "CFG-FIELD-N03",
+      "field": "material_directional_anchor_basis",
+      "expected": "FAIL"
+    },
+    {
+      "id": "CFG-FIELD-N04",
+      "field": "dominant_evidence",
+      "expected": "FAIL"
+    },
+    {
+      "id": "CFG-FIELD-P04",
+      "field": "sell_drivers",
+      "fulfillment": "VERIFIED_CURRENT_EVIDENCE",
+      "expected": "PASS"
+    }
+  ],
+  "contract": "configured-signal-field-fixtures-v1"
+}

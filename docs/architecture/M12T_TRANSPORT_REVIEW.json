@@ -1,0 +1,121 @@
+{
+  "task": "M12T",
+  "frozen_at": "2026-09-09T16:19:59.001Z",
+  "authoring": {
+    "timestamp": "2026-09-09T16:15:05.051Z",
+    "model": "gpt-6-astra",
+    "effort": "xhigh",
+    "target_match": true
+  },
+  "classification": {
+    "primary": "TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY",
+    "secondary": [
+      "UNRESOLVED_BACKEND_OR_CLI_RECOVERY_CAUSE"
+    ],
+    "certainty": "Inference from identical prompt/schema content except generation ID, same CLI/runtime, no detected local defect, WebSocket resets only in M12F; not a proven backend root cause",
+    "historical_resource_contention": "NOT_MEASURED",
+    "semantic_failure_claim": false
+  },
+  "watchdog_review": {
+    "status": "PASS",
+    "source": "scripts/directional_financial_context_m12.py::_single_attempt_model_call",
+    "source_baseline": "be3ee8d17e97edcf82ab2c8535d222c03b13667f",
+    "checks": [
+      "single Popen per context",
+      "start_new_session=True",
+      "file-backed stdin/stdout, no PIPE backpressure",
+      "process.wait(timeout=1800)",
+      "TimeoutExpired -> SIGTERM process group -> wait5 -> SIGKILL fallback -> wait5",
+      "M12F failed context returncode=-15 after1800.009935seconds",
+      "sequential context01 finish precedes context02 start",
+      "no previous experiment CLI/Python process in current process inventory"
+    ],
+    "defect_found": false,
+    "observation_limit": "Historical concurrent CPU/memory sampling unavailable; current process inventory cannot prove historical contention absent."
+  },
+  "runtime_change_decision": {
+    "timeout_seconds": 1800,
+    "timeout_change_count": 0,
+    "wrapper_retry_change_count": 0,
+    "subjects_per_context_change_count": 0,
+    "batch_split": 0,
+    "semantic_change_count": 0,
+    "runner_process_management_change_count": 0,
+    "receipt_observability": "New M12T audit wrapper records observed header, elapsed and CLI internal retry events for both success and failure; no retry/timeout behavior change",
+    "internal_retry_config_change": 0,
+    "official_configuration_reference": "https://learn.chatgpt.com/docs/config-file/config-reference",
+    "official_reference_limitation": "Documentation does not establish the root cause of the recorded disconnect. No internal retry configuration change."
+  },
+  "schedule_start": {
+    "contract": "m12s-schedule-pause-observation-v1",
+    "observed_at": "2026-09-09T16:19:58.970377+00:00",
+    "launchctl_returncode": 0,
+    "rows": [
+      {
+        "id": "thesis-monitor-ai-review-us-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-us-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-primary",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "thesis-monitor-ai-review-kr-backup",
+        "path_exists": true,
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.daily",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.kr-close",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-fallback",
+        "status": "PAUSED"
+      },
+      {
+        "id": "com.seungsoo.thesis-monitor.ai-review-delivery-retry",
+        "status": "PAUSED"
+      }
+    ],
+    "observed_paused_schedule_count": 8,
+    "scheduler_mutation_count": 0,
+    "automatic_monitoring_resume": 0,
+    "status": "PASS"
+  },
+  "gate_pass": true,
+  "next_if_timeout": "ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW",
+  "side_effect_firewall": {
+    "production_commands": false,
+    "model_calls_real": 0,
+    "provider_source_fetches": 0,
+    "automatic_monitoring_resume": 0
+  },
+  "local_resource_observation": {
+    "captured_at": "2026-09-09T16:18Z",
+    "model_cli_child_count": 0,
+    "python_processes": [
+      {
+        "pid": 686,
+        "elapsed": "6 days",
+        "cpu_percent": 0.1
+      },
+      {
+        "pid": 882,
+        "elapsed": "4 days",
+        "cpu_percent": 0.1
+      }
+    ],
+    "historical_contention": "NOT_MEASURED"
+  }
+}

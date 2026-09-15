@@ -5,7 +5,6 @@ import json
 import re
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
@@ -32,6 +31,10 @@ from app.services.cash_flow_shadow_consumption_service import (
 from app.services.numeric_semantic_registry import (
     NUMERIC_SEMANTICS,
     canonical_display_value,
+)
+from app.services.financial_lineage_projection_service import (
+    project_financial_fact_catalog,
+    projection_closure,
 )
 
 
@@ -72,6 +75,7 @@ class UserVisibleCashFlowSelection:
     rendered_text: str | None
     evidence_signature: str | None
     display_reason: str | None
+    lineage_facts: tuple[FinancialFact, ...] = ()
 
     @property
     def user_visible_enabled(self) -> bool:
@@ -196,6 +200,7 @@ def _selection(
     rendered_text: str | None = None,
     evidence_signature: str | None = None,
     display_reason: str | None = None,
+    lineage_facts: Iterable[FinancialFact] = (),
 ) -> UserVisibleCashFlowSelection:
     normalized_suppressions = tuple(sorted(set(suppressed_claim_ids)))
     context_id = None
@@ -235,6 +240,9 @@ def _selection(
         rendered_text=rendered_text if state == SelectionState.SELECTED else None,
         evidence_signature=evidence_signature,
         display_reason=display_reason,
+        lineage_facts=(
+            tuple(lineage_facts) if state == SelectionState.SELECTED else ()
+        ),
     )
 
 
@@ -643,6 +651,11 @@ def select_user_visible_cash_flow(
         for fact_id in (context.ocf_fact_id, context.capex_fact_id, context.fcf_fact_id)
         if fact_id and fact_id in facts_by_id
     )
+    lineage_facts = projection_closure(
+        facts,
+        selected_fact_ids=tuple(item.fact_id for item in selected_facts),
+        prior_fact_ids=context.prior_comparable_refs,
+    )
     return _selection(
         ticker=ticker,
         market=market,
@@ -660,6 +673,7 @@ def select_user_visible_cash_flow(
         rendered_text=rendered,
         evidence_signature=signature,
         display_reason=display_reason,
+        lineage_facts=lineage_facts,
     )
 
 
@@ -712,10 +726,6 @@ def resolve_selected_unknowns(
     return resolved
 
 
-def _numeric_value(value: Decimal) -> int | float:
-    return int(value) if value == value.to_integral_value() else float(value)
-
-
 def cash_flow_period_claim_contract(
     period: PeriodIdentity | None,
 ) -> dict[str, object] | None:
@@ -758,41 +768,11 @@ def fact_catalog_entries(
 ) -> list[dict[str, object]]:
     if not selection.user_visible_enabled:
         return []
-    fact_type_by_metric = {
-        Metric.OCF: "cash_flow_ocf",
-        Metric.CAPEX: "cash_flow_ppe_capex",
-        Metric.FCF: "cash_flow_fcf_ppe",
-    }
-    return [
-        {
-            "fact_id": fact.fact_id,
-            "fact_type": fact_type_by_metric[fact.metric],
-            "as_of_date": fact.period.end.isoformat(),
-            "source": "canonical_cash_flow_fact",
-            "fields": {
-                "value": _numeric_value(fact.value),
-                "currency": fact.currency,
-                "period_start": fact.period.start.isoformat(),
-                "period_end": fact.period.end.isoformat(),
-                "period_type": fact.period.period_type.value,
-                "fiscal_year": str(fact.period.fiscal_year),
-                "fiscal_quarter": (
-                    str(fact.period.fiscal_quarter)
-                    if fact.period.fiscal_quarter is not None
-                    else None
-                ),
-                "entity_scope": fact.entity_scope,
-                "statement_basis": fact.statement_basis,
-                "capex_scope": fact.capex_scope.value if fact.capex_scope else None,
-                "input_fact_ids": list(fact.input_fact_ids),
-                "cash_flow_user_visible_context_id": selection.context_id,
-            },
-            "prose_eligible": True,
-            "interpretation_eligible": True,
-            "numeric_registry_eligible": True,
-        }
-        for fact in selection.facts
-    ]
+    return project_financial_fact_catalog(
+        selection.facts,
+        context_id=selection.context_id,
+        lineage_facts=getattr(selection, "lineage_facts", ()),
+    )
 
 
 def selection_to_dict(

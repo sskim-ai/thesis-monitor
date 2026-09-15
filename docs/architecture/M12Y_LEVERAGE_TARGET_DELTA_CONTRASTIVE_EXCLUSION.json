@@ -1,0 +1,104 @@
+{
+  "contract": "m12y-leverage-target-delta-contrastive-exclusion-v1",
+  "status": "FROZEN_BEFORE_IMPLEMENTATION",
+  "frozen_at": "2026-09-10T12:59:11+09:00",
+  "base_sha": "0651fe2387049c27b81e273260b99e8cfe7e9b5d",
+  "work_instruction_commit": "68d00f9d413565a44ddb3e3306f6cfe036ce85c7",
+  "authoring": {
+    "model": "gpt-5.6-sol",
+    "effort": "xhigh"
+  },
+  "runtime": {
+    "model": "gpt-5.6-sol",
+    "effort": "xhigh",
+    "timeout_seconds": 1800,
+    "subjects_per_context": 4,
+    "context_count": 2,
+    "repetition_count": 3,
+    "transport_grouping_mode": "MODEL_CONTEXT_COUPLED",
+    "wrapper_retry_count": 0,
+    "batch_split": 0
+  },
+  "contrastive_exclusion": {
+    "root_cause": "CONTRASTIVE_REPLACEMENT_EXCLUSION_NOT_RECOGNIZED",
+    "scanner_path": {
+      "net_debt": "validate_directional_financial_semantics -> financial_framework_claims",
+      "financial_sector": "validate_directional_financial_semantics -> candidate_financial_framework_claims -> financial_framework_claims",
+      "working_capital": "candidate_financial_framework_claims -> financial_framework_claims"
+    },
+    "shared_classifier_already_used": true,
+    "defect": "The shared classifier recognizes suffix/prefix non-application but not bounded X-instead-of-Y or rather-than-X replacement clauses.",
+    "selected_repair": "BOUNDED_SHARED_CONTRASTIVE_REPLACEMENT_EXCLUSION",
+    "cross_field_immunity": false,
+    "material_anchor_immunity": false
+  },
+  "leverage_target": {
+    "root_cause": "EXACT_FIXTURE_TARGET_OVERCONSTRAINED_EXPECT_6_0",
+    "debt_cash_economic_independence": "B",
+    "classification_detail": "A material complete-debt anchor plus current verified thin-cash corroboration jointly establishes present balance-sheet resilience pressure; E03 is synthesis, not an extra axis.",
+    "previous_target": {
+      "direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "hold_lean": "SELL_LEAN"
+    },
+    "frozen_target": {
+      "direction": "SELL",
+      "buy": 4,
+      "sell": 6,
+      "hold_lean": "NOT_HOLD"
+    },
+    "market_expectation_independent_axis_count": 0,
+    "market_expectation_contract_changed": false,
+    "stronger_than_minimum_blocked_by": [
+      "refinancing_terms_unknown",
+      "maturity_concentration_unknown",
+      "stable_operating_profit_counterevidence"
+    ],
+    "selected_branch": "A_FIXTURE_TARGET_CORRECTION_ONLY",
+    "leverage_prompt_change_authorized": false
+  },
+  "business_delta": {
+    "root_cause": "ABSOLUTE_NEGATIVE_STATE_MISREAD_AS_WEAKENING_DELTA",
+    "source_supplies_baseline_change": false,
+    "previous_observed": "WEAKENED",
+    "frozen_target": "UNCHANGED",
+    "existing_prompt_explicitly_separates_absolute_state_from_change": false,
+    "selected_repair": "ONE_BOUNDED_GENERIC_BUSINESS_DELTA_CLARIFICATION",
+    "rule": "STRENGTHENED or WEAKENED requires supplied meaningful change relative to a prior or baseline state; an absolute current condition alone maps to UNCHANGED unless another supplied fact establishes change.",
+    "absolute_direction_separate": true
+  },
+  "frozen_targets": {
+    "FIC-FIN-01": {
+      "direction": "BUY",
+      "buy": 6.5,
+      "sell": 3.5
+    },
+    "FIC-FIN-02": {
+      "direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5
+    },
+    "FIC-FIN-04": {
+      "direction": "HOLD",
+      "buy": 5,
+      "sell": 5
+    },
+    "FIC-FIN-05": {
+      "direction": "SELL",
+      "buy": 4,
+      "sell": 6
+    }
+  },
+  "semantic_freeze": {
+    "directional_threshold": 6,
+    "directional_increment": 0.5,
+    "adjacent_tiebreak": "toward 5.0",
+    "market_expectation_contract_change_count": 0,
+    "directional_prompt_change_count": 0,
+    "fixture_target_change_count": 1,
+    "business_delta_prompt_change_count_authorized": 1,
+    "fixed_score_rule_count": 0,
+    "evidence_count_bucket_rule_count": 0
+  }
+}

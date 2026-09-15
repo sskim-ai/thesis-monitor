@@ -1,0 +1,98 @@
+{
+  "contract": "directional-core-fictional-calibration-fixtures-v1",
+  "fixtures": [
+    {
+      "fixture_id": "F1_BALANCED_INCOMPLETE",
+      "ticker": "FICUS01",
+      "market": "us",
+      "company_name": "Fictional Balanced Systems",
+      "expected": {"direction": "HOLD", "buy": 5.0, "sell": 5.0, "hold_lean": "NEUTRAL"},
+      "evidence": [
+        {"alias": "F1_E1", "domain": "BUSINESS_CURRENT", "category": "earnings_quality", "label": "Current positive anchor", "statement": "A current official filing shows stable revenue and modest positive operating profit.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F1_E2", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Current offsetting anchor", "statement": "The same current official filing shows lower operating margin and an equally material customer-concentration risk; neither side dominates.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F1_E3", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Incomplete corroboration", "statement": "No valuation, expectations, segment KPI, or persistence evidence is available.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F2_POSITIVE_LEAN_INCOMPLETE",
+      "ticker": "FICUS02",
+      "market": "us",
+      "company_name": "Fictional Lean Growth",
+      "expected": {"direction": "HOLD", "buy": 5.5, "sell": 4.5, "hold_lean": "BUY_LEAN"},
+      "evidence": [
+        {"alias": "F2_E1", "domain": "BUSINESS_CURRENT", "category": "earnings_quality", "label": "Single positive anchor", "statement": "One current official issuer filing provides a material positive revenue anchor.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F2_E2", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Lean-only limit", "statement": "There is no independent earnings corroboration, persistence evidence, valuation basis, expectations evidence, or critical operating KPI; the supplied evidence supports a positive lean but not a full positive direction.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F3_MINIMUM_POSITIVE_DIRECTION",
+      "ticker": "FICUS03",
+      "market": "us",
+      "company_name": "Fictional Confirmed Growth",
+      "expected": {"direction": "BUY", "minimum_buy": 6.0, "hold_lean": "NOT_HOLD"},
+      "evidence": [
+        {"alias": "F3_E1", "domain": "BUSINESS_CURRENT", "category": "earnings_quality", "label": "Current business anchor", "statement": "A current official filing shows material revenue expansion from the issuer's core business.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F3_E2", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Independent current corroboration", "statement": "A separate current official earnings fact shows operating profit expansion, corroborating the business anchor.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F3_E3", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Bounded uncertainty", "statement": "Valuation evidence is unavailable, but there is no material current counter-anchor in the supplied evidence.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F4_STRONG_POSITIVE",
+      "ticker": "FICUS04",
+      "market": "us",
+      "company_name": "Fictional Durable Compounder",
+      "expected": {"direction": "BUY", "minimum_buy": 6.5, "hold_lean": "NOT_HOLD"},
+      "evidence": [
+        {"alias": "F4_E1", "domain": "BUSINESS_CURRENT", "category": "earnings_quality", "label": "Durable business growth", "statement": "Multiple current official periods show persistent core-business revenue expansion.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F4_E2", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Profit corroboration", "statement": "Current official operating profit and cash generation both expanded with the business.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F4_E3", "domain": "VALUATION_SAFE", "category": "valuation", "label": "Valuation support", "statement": "A current issuer-comparable valuation basis is available and does not offset the positive operating evidence.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F5_NEGATIVE_LEAN_INCOMPLETE",
+      "ticker": "FICKR01",
+      "market": "kr",
+      "company_name": "Fictional Cautious Manufacturing",
+      "expected": {"direction": "HOLD", "buy": 4.5, "sell": 5.5, "hold_lean": "SELL_LEAN"},
+      "evidence": [
+        {"alias": "F5_E1", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Single negative anchor", "statement": "One current official period shows a material operating-profit decline, while the issuer remains profitable.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F5_E2", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Negative lean limit", "statement": "Persistence, cash-flow corroboration, valuation, expectations, and critical operating KPI evidence are unavailable; the supplied evidence supports a negative lean but not a full negative direction.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F6_MINIMUM_NEGATIVE_DIRECTION",
+      "ticker": "FICKR02",
+      "market": "kr",
+      "company_name": "Fictional Confirmed Deterioration",
+      "expected": {"direction": "SELL", "minimum_sell": 6.0, "hold_lean": "NOT_HOLD"},
+      "evidence": [
+        {"alias": "F6_E1", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Current loss anchor", "statement": "A current official filing shows a material operating loss in the core business.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F6_E2", "domain": "LIQUIDITY_CASHFLOW_CURRENT", "category": "earnings_quality", "label": "Independent cash corroboration", "statement": "Current official operating cash flow is also negative and independently corroborates the earnings deterioration.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F6_E3", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Bounded uncertainty", "statement": "No material current positive counter-anchor is present in the supplied evidence.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F7_STRONG_NEGATIVE",
+      "ticker": "FICKR03",
+      "market": "kr",
+      "company_name": "Fictional Structural Decline",
+      "expected": {"direction": "SELL", "minimum_sell": 6.5, "hold_lean": "NOT_HOLD"},
+      "evidence": [
+        {"alias": "F7_E1", "domain": "BUSINESS_CURRENT", "category": "earnings_quality", "label": "Persistent contraction", "statement": "Multiple current official periods show persistent contraction in the core business.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F7_E2", "domain": "EARNINGS_FINANCIAL_CURRENT", "category": "earnings", "label": "Loss corroboration", "statement": "Current official operating and net losses corroborate the business contraction.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F7_E3", "domain": "STRUCTURAL_RISK", "category": "risks", "label": "Structural risk", "statement": "A current official issuer disclosure identifies a material structural customer-loss risk with no supplied positive offset.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    },
+    {
+      "fixture_id": "F8_UNKNOWN_NOT_NEGATIVE",
+      "ticker": "FICKR04",
+      "market": "kr",
+      "company_name": "Fictional Sparse Evidence",
+      "expected": {"direction": "HOLD", "buy": 5.0, "sell": 5.0, "hold_lean": "NEUTRAL", "forbidden_direction": "SELL"},
+      "evidence": [
+        {"alias": "F8_E1", "domain": "IDENTITY_SECURITY", "category": "thesis", "label": "Issuer identity only", "statement": "The issuer identity and industry classification are verified, but they carry no investment direction.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []},
+        {"alias": "F8_E2", "domain": "DATA_QUALITY_LIMIT", "category": "quality", "label": "Missing evidence", "statement": "Current business, earnings, cash-flow, valuation, expectations, and structural-risk evidence are unavailable; missing evidence is not negative evidence.", "as_of": "2026-08-31", "value": null, "unit": null, "metric_refs": []}
+      ]
+    }
+  ]
+}

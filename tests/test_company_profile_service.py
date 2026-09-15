@@ -44,6 +44,7 @@ def _profile(
     source: str,
     code: str,
     description: str | None = None,
+    legal_name: str | None = None,
 ) -> OfficialProfile:
     return OfficialProfile(
         ticker=ticker,
@@ -53,7 +54,7 @@ def _profile(
         official_industry_code=code,
         official_industry_description=description,
         source_as_of="2026-08-13",
-        legal_name=f"{ticker} Legal Name",
+        legal_name=legal_name or f"{ticker} Legal Name",
         cik="0000001234" if market == "us" else None,
         corp_code="00123456" if market == "kr" else None,
     )
@@ -86,6 +87,45 @@ def test_official_industry_normalization_is_generic_and_fail_safe() -> None:
     assert ambiguous.reason == "diversified_identity_without_dominant_segment_evidence"
     assert unknown.quality == "partial"
     assert unknown.industry is None
+
+
+def test_kr_financial_holding_requires_official_code_and_legal_name_semantics() -> None:
+    financial_holding = normalize_official_industry(
+        _profile(
+            "FINHOLD",
+            "kr",
+            "opendart_company",
+            "64992",
+            legal_name="(주)테스트금융지주",
+        )
+    )
+    nonfinancial_holding = normalize_official_industry(
+        _profile(
+            "INDHOLD",
+            "kr",
+            "opendart_company",
+            "64992",
+            legal_name="에이치디한국조선해양(주)",
+        )
+    )
+    name_without_official_code = normalize_official_industry(
+        _profile(
+            "NAMEONLY",
+            "kr",
+            "opendart_company",
+            "99999",
+            legal_name="(주)테스트금융지주",
+        )
+    )
+
+    assert financial_holding.taxonomy_key == "financial_holding"
+    assert financial_holding.industry == "Financial Holding Company"
+    assert financial_holding.quality == "verified"
+    assert financial_holding.classification_method == (
+        "official_industry_code_and_legal_name"
+    )
+    assert nonfinancial_holding.taxonomy_key is None
+    assert name_without_official_code.taxonomy_key is None
 
 
 def test_population_discovers_only_active_companies_and_writes_provenance(

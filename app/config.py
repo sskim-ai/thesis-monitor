@@ -145,6 +145,11 @@ class Settings(BaseSettings):
     working_capital_runtime_shadow_canary_enabled: bool = True
     cash_flow_user_visible_mode: str = "OFF"
     working_capital_user_visible_mode: str = "OFF"
+    persistence_v2_writer_enabled: bool = False
+    persistence_v2_read_preference_enabled: bool = False
+    persistence_v2_manual_registry_enabled: bool = False
+    persistence_v2_warning_enabled: bool = False
+    persistence_v2_outbox_delivery_enabled: bool = False
     kr_market_sector_top3_enabled: bool = False
     kr_price_structure_v3_enabled: bool = False
     us_price_structure_v3_enabled: bool = False

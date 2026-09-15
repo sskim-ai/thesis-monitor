@@ -1,0 +1,154 @@
+{
+  "contract": "m12aa-boundary-band-application-scope-fixtures-v1",
+  "canary_outcomes": [
+    {
+      "id": "STOP-01",
+      "condition": "invalid_evidence_ref",
+      "class": "RUNTIME_OR_SCHEMA_HARD_FAILURE",
+      "stop": true
+    },
+    {
+      "id": "STOP-02",
+      "condition": "partial_ppe_called_fcf",
+      "class": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+      "stop": true
+    },
+    {
+      "id": "STOP-03",
+      "condition": "insurer_industrial_net_debt_application",
+      "class": "OBJECTIVE_SEMANTIC_HARD_FAILURE",
+      "stop": true
+    },
+    {
+      "id": "CONTINUE-01",
+      "condition": "adjacent_exact_target_deviation",
+      "class": "CALIBRATION_OBSERVATION",
+      "stop": false
+    },
+    {
+      "id": "CONTINUE-02",
+      "condition": "fic_fin_05_hold_sell_lean",
+      "class": "CALIBRATION_OBSERVATION",
+      "stop": false
+    },
+    {
+      "id": "CONTINUE-03",
+      "condition": "fic_fin_05_minimum_sell",
+      "class": "CALIBRATION_OBSERVATION",
+      "stop": false
+    },
+    {
+      "id": "CONTINUE-04",
+      "condition": "new_buyer_stance_variance",
+      "class": "CALIBRATION_OBSERVATION",
+      "stop": false
+    },
+    {
+      "id": "CONTINUE-05",
+      "condition": "holder_stance_variance",
+      "class": "CALIBRATION_OBSERVATION",
+      "stop": false
+    }
+  ],
+  "fic_fin_05_band": [
+    {
+      "id": "BAND-01",
+      "direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "lean": "SELL_LEAN",
+      "expected": "IN_BAND_HOLD_SELL_LEAN"
+    },
+    {
+      "id": "BAND-02",
+      "direction": "SELL",
+      "buy": 4.0,
+      "sell": 6.0,
+      "lean": null,
+      "expected": "IN_BAND_MINIMUM_SELL"
+    },
+    {
+      "id": "BAND-03",
+      "direction": "HOLD",
+      "buy": 5.0,
+      "sell": 5.0,
+      "lean": "NEUTRAL",
+      "expected": "OUT_OF_BAND_MORE_POSITIVE"
+    },
+    {
+      "id": "BAND-04",
+      "direction": "SELL",
+      "buy": 3.5,
+      "sell": 6.5,
+      "lean": null,
+      "expected": "OUT_OF_BAND_MORE_NEGATIVE"
+    }
+  ],
+  "application_scope_positive": [
+    {
+      "id": "APP-01",
+      "text": "보험사에는 산업회사식 순부채나 운전자본 틀 대신 인수 규율과 규제자본 틀이 적용된다.",
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "APP-02",
+      "text": "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다.",
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "APP-03",
+      "text": "일반기업 순부채 틀은 적용 대상이 아니다.",
+      "expected_role": "EXPLICIT_NON_APPLICATION"
+    },
+    {
+      "id": "APP-P04",
+      "text": "Use regulatory capital rather than industrial net debt.",
+      "expected_role": "CONTRASTIVE_REPLACEMENT"
+    },
+    {
+      "id": "APP-P05",
+      "text": "Industrial working capital is not the applicable framework.",
+      "expected_role": "EXPLICIT_NON_APPLICATION"
+    },
+    {
+      "id": "APP-07",
+      "text": "The historical discussion mentioned industrial net debt without applying it to the decision.",
+      "field": "historical_context",
+      "expected_role": "CONTEXT_ONLY_MENTION"
+    }
+  ],
+  "application_scope_negative": [
+    {
+      "id": "APP-04",
+      "text": "보험사의 순부채가 높아 재무 부담이 크다.",
+      "field": "risk_context",
+      "expected_role": "ASSERTED_STATE"
+    },
+    {
+      "id": "APP-05",
+      "text": "산업회사식 운전자본 악화를 보험사 SELL 근거로 사용한다.",
+      "field": "sell_drivers",
+      "expected_role": "APPLIED_DECISION_FRAMEWORK"
+    },
+    {
+      "id": "APP-06",
+      "text": "순부채 틀 대신 규제자본을 본다.",
+      "field": "sector_interpretation",
+      "extra_text": "하지만 순부채가 높아서 SELL이다.",
+      "extra_field": "sell_drivers",
+      "expected_role": "CONTRADICTORY_MIXED_USE"
+    },
+    {
+      "id": "APP-N07",
+      "text": "순부채가 높다.",
+      "field": "material_directional_anchor_basis",
+      "expected_role": "APPLIED_DECISION_FRAMEWORK"
+    },
+    {
+      "id": "APP-N08",
+      "text": "순부채가 부담일 수 있다.",
+      "field": "core_investment_judgment",
+      "expected_role": "UNRESOLVED"
+    }
+  ]
+}

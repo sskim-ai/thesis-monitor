@@ -25,6 +25,9 @@ from app.schemas.thesis import (
 )
 from app.services.local_storage import export_assessment_history, export_thesis
 from app.config import get_settings
+from app.services.assessment_source_registry_service import (
+    classify_manual_assessment_in_session,
+)
 from app.services.onboarding_readiness_service import (
     begin_onboarding,
     deactivate_onboarding,
@@ -435,6 +438,12 @@ def record_assessment(
     item.latest_valuation_context = payload.valuation_context.value
     item.latest_earnings_estimate_impact = payload.earnings_estimate_impact.value
     session.flush()
+    assert assessment.id is not None
+    classify_manual_assessment_in_session(
+        session,
+        assessment_id=assessment.id,
+        enabled=get_settings().persistence_v2_manual_registry_enabled,
+    )
     reconcile_onboarding(session, item)
     session.commit()
     session.refresh(assessment)

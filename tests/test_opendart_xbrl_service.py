@@ -10,6 +10,7 @@ from app.services.opendart_xbrl_service import (
     parse_xbrl_archive,
     parse_xbrl_document,
     reconcile_xbrl_fact,
+    reconcile_xbrl_instant_fact,
 )
 
 
@@ -46,6 +47,17 @@ def test_xbrl_parser_preserves_duration_instant_dimension_and_unit() -> None:
     assert revenue.unit_ref == "KRW"
 
 
+def test_statement_basis_uses_member_when_axis_names_both_scopes() -> None:
+    payload = XBRL.replace(
+        b"dart:StatementBasisAxis",
+        b"ifrs:ConsolidatedAndSeparateFinancialStatementsAxis",
+    )
+
+    contexts, _facts = parse_xbrl_document(payload)
+
+    assert {item.statement_basis for item in contexts} == {"consolidated"}
+
+
 def test_xbrl_reconciliation_requires_unique_exact_context() -> None:
     _contexts, facts = parse_xbrl_document(XBRL)
 
@@ -75,6 +87,32 @@ def test_xbrl_reconciliation_requires_unique_exact_context() -> None:
         period_end=date(2026, 6, 30),
         unit_ref="KRW",
         statement_basis="consolidated",
+    ) is None
+
+
+def test_instant_reconciliation_requires_statement_level_exact_identity() -> None:
+    _contexts, facts = parse_xbrl_document(XBRL)
+    equity = next(item for item in facts if item.taxonomy_element.endswith("Equity"))
+
+    exact = reconcile_xbrl_instant_fact(
+        facts,
+        taxonomy_element="Equity",
+        value="100000000000000",
+        instant_date=date(2026, 6, 30),
+        unit_ref="KRW",
+        statement_basis="consolidated",
+        entity_identifier="00126380",
+    )
+
+    assert exact == equity
+    assert reconcile_xbrl_instant_fact(
+        [*facts, equity],
+        taxonomy_element="Equity",
+        value="100000000000000",
+        instant_date=date(2026, 6, 30),
+        unit_ref="KRW",
+        statement_basis="consolidated",
+        entity_identifier="00126380",
     ) is None
 
 

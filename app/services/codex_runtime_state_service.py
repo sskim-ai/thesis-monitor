@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import sqlite3
 import stat
@@ -11,10 +12,154 @@ from pathlib import Path
 
 RUNTIME_STATE_CONTRACT = "codex-runtime-state-v1"
 RUNTIME_STATE_NOT_READY = "LOCAL_CODEX_RUNTIME_STATE_NOT_READY"
+RUNTIME_NAMESPACE_POLICY = "PER_MODEL_CONTEXT_UNIQUE_RUNTIME_NAMESPACE"
+RUNTIME_ISOLATION_CONTRACT = "codex-model-context-runtime-isolation-v1"
 
 
 class CodexRuntimeStateError(ValueError):
     """Raised before model transport when local Codex state is not writable."""
+
+
+class CodexRuntimeIsolationCollision(CodexRuntimeStateError):
+    """Raised before model spawn when a context isolation identity is reused."""
+
+
+@dataclass(frozen=True)
+class CodexRuntimeIsolationIdentity:
+    contract: str
+    policy: str
+    invocation_id: str
+    base_namespace_hash: str
+    runtime_state_namespace: str
+    runtime_state_namespace_hash: str
+    working_directory_identity: str
+
+    @property
+    def execution_isolation_valid(self) -> bool:
+        return True
+
+    def audit_dict(self) -> dict[str, object]:
+        return {
+            "contract": self.contract,
+            "policy": self.policy,
+            "invocation_id": self.invocation_id,
+            "base_namespace_hash": self.base_namespace_hash,
+            "runtime_state_namespace_hash": self.runtime_state_namespace_hash,
+            "working_directory_identity": self.working_directory_identity,
+            "invocation_identity_unique": True,
+            "runtime_state_namespace_unique": True,
+            "working_directory_unique": True,
+            "execution_isolation_valid": True,
+        }
+
+
+class CodexRuntimeIsolationRegistry:
+    """Claims invocation, namespace, and working-directory identities once."""
+
+    def __init__(self) -> None:
+        self._invocation_ids: set[str] = set()
+        self._namespace_hashes: set[str] = set()
+        self._working_directory_identities: set[str] = set()
+
+    @property
+    def claim_count(self) -> int:
+        return len(self._invocation_ids)
+
+    @property
+    def distinct_namespace_count(self) -> int:
+        return len(self._namespace_hashes)
+
+    @property
+    def distinct_working_directory_count(self) -> int:
+        return len(self._working_directory_identities)
+
+    def seed(
+        self,
+        *,
+        invocation_id: str,
+        runtime_state_namespace_hash: str,
+        working_directory_identity: str,
+    ) -> None:
+        collisions = self._collisions(
+            invocation_id=invocation_id,
+            namespace_hash=runtime_state_namespace_hash,
+            working_directory_identity=working_directory_identity,
+        )
+        if collisions:
+            raise CodexRuntimeIsolationCollision(
+                "RUNTIME_NAMESPACE_COLLISION:existing_claim:" + ",".join(collisions)
+            )
+        self._record(
+            invocation_id=invocation_id,
+            namespace_hash=runtime_state_namespace_hash,
+            working_directory_identity=working_directory_identity,
+        )
+
+    def claim(
+        self,
+        *,
+        base_namespace: str,
+        invocation_id: str,
+        working_directory: Path,
+    ) -> CodexRuntimeIsolationIdentity:
+        namespace = context_runtime_state_namespace(
+            base_namespace=base_namespace,
+            invocation_id=invocation_id,
+        )
+        namespace_hash = runtime_state_namespace_hash(namespace)
+        working_directory_identity = hashlib.sha256(
+            str(working_directory.resolve()).encode("utf-8")
+        ).hexdigest()
+        collisions = self._collisions(
+            invocation_id=invocation_id,
+            namespace_hash=namespace_hash,
+            working_directory_identity=working_directory_identity,
+        )
+        if collisions:
+            raise CodexRuntimeIsolationCollision(
+                "RUNTIME_NAMESPACE_COLLISION:" + ",".join(collisions)
+            )
+        self._record(
+            invocation_id=invocation_id,
+            namespace_hash=namespace_hash,
+            working_directory_identity=working_directory_identity,
+        )
+        return CodexRuntimeIsolationIdentity(
+            contract=RUNTIME_ISOLATION_CONTRACT,
+            policy=RUNTIME_NAMESPACE_POLICY,
+            invocation_id=invocation_id,
+            base_namespace_hash=runtime_state_namespace_hash(base_namespace),
+            runtime_state_namespace=namespace,
+            runtime_state_namespace_hash=namespace_hash,
+            working_directory_identity=working_directory_identity,
+        )
+
+    def _collisions(
+        self,
+        *,
+        invocation_id: str,
+        namespace_hash: str,
+        working_directory_identity: str,
+    ) -> list[str]:
+        collisions = []
+        if invocation_id in self._invocation_ids:
+            collisions.append("invocation_id")
+        if namespace_hash in self._namespace_hashes:
+            collisions.append("runtime_state_namespace_hash")
+        if working_directory_identity in self._working_directory_identities:
+            collisions.append("working_directory_identity")
+        return collisions
+
+    def _record(
+        self,
+        *,
+        invocation_id: str,
+        namespace_hash: str,
+        working_directory_identity: str,
+    ) -> None:
+        self._invocation_ids.add(invocation_id)
+        self._namespace_hashes.add(namespace_hash)
+        self._working_directory_identities.add(working_directory_identity)
 
 
 @dataclass(frozen=True)
@@ -53,6 +198,30 @@ def _namespace_hash(namespace: str) -> str:
     if not value:
         raise CodexRuntimeStateError(f"{RUNTIME_STATE_NOT_READY}:empty_namespace")
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:24]
+
+
+def runtime_state_namespace_hash(namespace: str) -> str:
+    return _namespace_hash(namespace)
+
+
+def context_runtime_state_namespace(*, base_namespace: str, invocation_id: str) -> str:
+    base = base_namespace.strip()
+    invocation = invocation_id.strip()
+    if not base:
+        raise CodexRuntimeStateError(f"{RUNTIME_STATE_NOT_READY}:empty_base_namespace")
+    if not invocation:
+        raise CodexRuntimeStateError(f"{RUNTIME_STATE_NOT_READY}:empty_invocation_id")
+    return json.dumps(
+        {
+            "base_namespace": base,
+            "contract": RUNTIME_ISOLATION_CONTRACT,
+            "invocation_id": invocation,
+            "policy": RUNTIME_NAMESPACE_POLICY,
+        },
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
 
 
 def _assert_private_owned_directory(path: Path) -> None:

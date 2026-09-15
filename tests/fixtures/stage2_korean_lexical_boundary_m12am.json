@@ -1,0 +1,32 @@
+{
+  "contract": "stage2-language-contamination-v2",
+  "m12al_generation_id": "20260911-m12ai-shadow-20260911T083524Z-8740a0bb34ed",
+  "negative_fixtures": [
+    {"id": "PRICE-LEX-01", "text": "현재 주가가 상승했다"},
+    {"id": "PRICE-LEX-02", "text": "주가는 아직 비싸다"},
+    {"id": "PRICE-LEX-03", "text": "주가상승을 기다린다"},
+    {"id": "PRICE-LEX-09", "text": "주가가 반등하면 진입한다"},
+    {"id": "PRICE-LEX-10", "text": "차트가 개선됐다"},
+    {"id": "PRICE-LEX-11", "text": "수급이 좋아져 신규 진입이 가능하다"},
+    {"id": "PRICE-LEX-12", "text": "기술적 지지선을 확인한다"},
+    {"id": "PRICE-LEX-13", "text": "거래량이 증가했다"}
+  ],
+  "positive_fixtures": [
+    {"id": "PRICE-LEX-04", "text": "해외수주가 확대되고 있다"},
+    {"id": "PRICE-LEX-05", "text": "신규 수주가 증가했다"},
+    {"id": "PRICE-LEX-06", "text": "신규수주가 늘었다"},
+    {"id": "PRICE-LEX-07", "text": "발주가 회복됐다"},
+    {"id": "PRICE-LEX-08", "text": "수주가 영업이익으로 전환된다"}
+  ],
+  "ambiguous_fixtures": [
+    {"id": "TECH-LEX-01", "text": "기술적 경쟁력이 개선됐다"},
+    {"id": "TECH-LEX-02", "text": "기술적 진입장벽이 높다"},
+    {"id": "FLOW-LEX-01", "text": "원자재 수급이 안정되고 생산 효율이 개선됐다"}
+  ],
+  "scanned_text_paths": [
+    "fundamental_new_buyer.summary",
+    "fundamental_new_buyer.confirmation_business_condition",
+    "fundamental_holder.summary",
+    "fundamental_holder.business_invalidation_condition"
+  ]
+}

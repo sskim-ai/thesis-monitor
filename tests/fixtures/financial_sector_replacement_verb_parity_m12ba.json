@@ -1,0 +1,62 @@
+{
+  "contract": "financial-sector-replacement-verb-parity-fixtures-v1",
+  "positive": [
+    {
+      "id": "SECTOR-VERB-P01",
+      "text": "보험사에는 산업회사식 순부채·운전자본 틀을 적용하지 않고 언더라이팅과 규제자본을 중심으로 해석한다.",
+      "frameworks": ["net_debt", "working_capital"]
+    },
+    {
+      "id": "SECTOR-VERB-P02",
+      "text": "산업회사식 순부채 틀을 배제하고 규제자본을 중심으로 해석한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-P03",
+      "text": "산업회사식 운전자본 대신 인수 규율을 중심으로 해석한다.",
+      "frameworks": ["working_capital"]
+    },
+    {
+      "id": "SECTOR-VERB-P04",
+      "text": "산업회사식 순부채 틀을 제외하고 규제자본을 중심으로 해석합니다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-P05",
+      "text": "산업회사식 순부채 틀을 제외하고 규제자본을 중심으로 판단한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-P06",
+      "text": "산업회사식 순부채 틀을 제외하고 규제자본을 중심으로 평가한다.",
+      "frameworks": ["net_debt"]
+    }
+  ],
+  "negative": [
+    {
+      "id": "SECTOR-VERB-N01",
+      "text": "산업회사식 순부채 틀을 적용하지 않고 규제자본도 해석하지 않는다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-N02",
+      "text": "산업회사식 순부채 틀을 적용하지 않고 다른 요소를 중심으로 해석한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-N03",
+      "text": "보험사 순부채를 핵심 위험으로 해석한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-N04",
+      "text": "순부채 틀을 적용하지 않는다고 하지만 실제 판단은 순부채를 핵심으로 한다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-VERB-N05",
+      "text": "규제자본을 해석할 수 있다.",
+      "frameworks": []
+    }
+  ]
+}

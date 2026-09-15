@@ -1,0 +1,92 @@
+[
+  {
+    "fixture_id": "P01",
+    "text": "강화·약화 조건은 아직 충족되지 않았다.",
+    "expected_status": "PASS",
+    "expected_role": "CONFIGURED_CONDITION_NOT_FULFILLED"
+  },
+  {
+    "fixture_id": "P02",
+    "text": "제시된 강화·약화 조건은 의미 있는 관찰 변화로 확정되지 않았다.",
+    "expected_status": "PASS",
+    "expected_role": "CONFIGURED_CONDITION_NOT_FULFILLED"
+  },
+  {
+    "fixture_id": "P03",
+    "text": "기존 논리는 유지되며 현재까지 강화나 약화는 확인되지 않았다.",
+    "expected_status": "PASS",
+    "expected_role": "EXPLICIT_NO_OBSERVED_CHANGE"
+  },
+  {
+    "fixture_id": "P04",
+    "text": "The configured strengthening condition has not been met.",
+    "expected_status": "PASS",
+    "expected_role": "CONFIGURED_CONDITION_NOT_FULFILLED"
+  },
+  {
+    "fixture_id": "N01",
+    "text": "논리가 강화됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  },
+  {
+    "fixture_id": "N02",
+    "text": "논리가 약화됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  },
+  {
+    "fixture_id": "N03",
+    "text": "강화 조건이 충족됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CONDITION_FULFILLED"
+  },
+  {
+    "fixture_id": "N04",
+    "text": "약화 조건이 확인됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CONDITION_FULFILLED"
+  },
+  {
+    "fixture_id": "N05",
+    "text": "강화 조건은 아직 미확인이라고 했지만 실제 논리는 강화됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  },
+  {
+    "fixture_id": "N06",
+    "text": "강화되지 않은 것은 아니고 이미 강화됐다.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  },
+  {
+    "fixture_id": "SNDK_EXACT",
+    "text": "AI 데이터센터 수요와 장기계약이 기존 논리의 중심이며, 제시된 강화·약화 조건은 의미 있는 관찰 변화로 확정되지 않았다.",
+    "expected_status": "PASS",
+    "expected_role": "CONFIGURED_CONDITION_NOT_FULFILLED"
+  },
+  {
+    "fixture_id": "EN_PASS_NO_CHANGE",
+    "text": "The thesis has not strengthened and remains unchanged.",
+    "expected_status": "PASS",
+    "expected_role": "EXPLICIT_NO_OBSERVED_CHANGE"
+  },
+  {
+    "fixture_id": "EN_FAIL_CURRENT_CHANGE",
+    "text": "The thesis has strengthened.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  },
+  {
+    "fixture_id": "EN_FAIL_CONDITION_FULFILLED",
+    "text": "The configured weakening condition has been met.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CONDITION_FULFILLED"
+  },
+  {
+    "fixture_id": "EN_FAIL_LOCAL_NEGATION",
+    "text": "The strengthening condition has not been met, but the thesis has strengthened.",
+    "expected_status": "FAIL",
+    "expected_role": "CURRENT_CHANGE_ASSERTION"
+  }
+]

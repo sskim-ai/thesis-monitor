@@ -1,0 +1,35 @@
+{
+  "contract": "ppe-proxy-fcf-claim-polarity-fixtures-v1",
+  "negative": [
+    {"id": "FCF-PPE-N01", "text": "FCF is 352m."},
+    {"id": "FCF-PPE-N02", "text": "\uc789\uc5ec\ud604\uae08\ud750\ub984\uc740 352m\uc785\ub2c8\ub2e4."},
+    {"id": "FCF-PPE-N03", "text": "OCF-PPE\ub97c FCF\ub85c \ubcf8\ub2e4."},
+    {"id": "FCF-PPE-N04", "text": "not FCF, but \uc0ac\uc2e4\uc0c1 FCF\ub2e4."},
+    {"id": "FCF-PPE-N05", "text": "FCF\uac00 \uc591\uc218\ub2e4."}
+  ],
+  "positive": [
+    {"id": "FCF-PPE-P01", "text": "\uc720\ud615\uc790\uc0b0 \ucde8\ub4dd \ud604\uae08\uc9c0\ucd9c \ucc28\uac10 \ud6c4 \ub0a8\ub294 \ud604\uae08\uc785\ub2c8\ub2e4."},
+    {"id": "FCF-PPE-P02", "text": "\ud604\uae08 \uc804\ud658 \ub300\uc6a9\uce58\uc774\uba70 \uad00\ub9ac \uae30\uc900 \uc789\uc5ec\ud604\uae08\ud750\ub984\uc774 \uc544\ub2d9\ub2c8\ub2e4."},
+    {"id": "FCF-PPE-P03", "text": "This is a cash-conversion proxy, not free cash flow."},
+    {"id": "FCF-PPE-P04", "text": "OCF less PPE acquisition cash outflow is positive."},
+    {"id": "FCF-PPE-P05", "text": "\uc601\uc5c5\ud604\uae08\ud750\ub984 \ub300\ubd80\ubd84\uc744 \uc720\ud615\uc790\uc0b0 \ucde8\ub4dd\uc774 \uc18c\ubaa8\ud569\ub2c8\ub2e4."}
+  ],
+  "local_negation": [
+    {
+      "id": "FCF-PPE-L01",
+      "text": "FCF\uac00 352m\uc778 \uac83\uc740 \uc544\ub2c8\ub2e4, \ud558\uc9c0\ub9cc \uc0ac\uc2e4\uc0c1 FCF\ub85c \ubcf8\ub2e4.",
+      "expected_roles": [
+        "EXPLICIT_NOT_FCF_DISCLAIMER",
+        "PROXY_AS_FCF_ATTRIBUTION"
+      ]
+    },
+    {
+      "id": "FCF-PPE-L02",
+      "text": "not GAAP FCF, but our FCF is 352m.",
+      "expected_roles": [
+        "EXPLICIT_NOT_FCF_DISCLAIMER",
+        "NUMERIC_FCF_ATTRIBUTION"
+      ]
+    }
+  ]
+}

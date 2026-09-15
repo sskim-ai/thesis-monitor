@@ -1,0 +1,89 @@
+{
+  "phase": "M12U",
+  "status": "FROZEN_OFFLINE_BEFORE_IMPLEMENTATION",
+  "base_sha": "e8e82e353ff71f251c66a1c6940af4d70ff0c778",
+  "work_instruction_commit": "459af10",
+  "authoring": {
+    "model": "gpt-6-astra",
+    "effort": "xhigh",
+    "observed_at": "2026-09-09T23:10:15.879Z",
+    "source": "local turn_context",
+    "target_match": true
+  },
+  "latest_result_sha256": "d3202a35bcf5b13cd0afc86b59b1eda76c5088ecab377f3e63f316f6ca7a004b",
+  "latest_result_integrity": {
+    "status": "PASS",
+    "indexed_payload_count": 142,
+    "hash_mismatches": [],
+    "size_mismatches": []
+  },
+  "exclusion": {
+    "root_cause": "EXPLICIT_NON_APPLICABILITY_NOMINAL_COMPLEMENT_NOT_RECOGNIZED",
+    "before_replay": {
+      "ticker": "FIC-FIN-08",
+      "status": "FAIL",
+      "errors": [
+        "financial_sector_generic_reasoning"
+      ]
+    },
+    "repair": "Extend directly governed nominal non-applicability predicates; preserve clause/field/anchor independence and conditional/double-negative fail-closed behavior.",
+    "vocabulary": "Reuse UNCERTAIN_OR_AMBIGUOUS for AMBIGUOUS_OR_CONTRADICTORY; no schema rename."
+  },
+  "expectation": {
+    "classification": "CONDITIONAL_ON_SAME_UNRESOLVED_RISK",
+    "outcome": "LEV_EXPECTATION_CONTEXT_DEPENDENT_WITH_EXPLICIT_RULE",
+    "reasoning": [
+      "E07 is supplied, not hallucinated. It describes expectation exposure to prolonged refinancing burden, while E08 leaves severity and persistence unresolved.",
+      "Complete debt and thin cash establish current low resilience, not actual refinancing failure or debt-service stress. E07 supplies no distinct current pricing fact establishing a separate downside axis.",
+      "Source-category independence is not economic independence. Same lineage can nevertheless contain distinct established propositions.",
+      "Adopt conditional-expectation rule: a second category conditional on the same unresolved premise does not automatically meet minimum-direction corroboration.",
+      "Adopt independent-expectation positive control: confirmed financing stress plus independently established benign expectations may support minimum SELL.",
+      "No safe valuation multiple is supplied. Expectation asymmetry may be evaluated qualitatively, but expensive/cheap or a fabricated multiple cannot be inferred.",
+      "A separate established current expectation/pricing risk may support direction without a numeric multiple; missing valuation is a limit, not a universal veto.",
+      "No explicit baseline deterioration: UNCHANGED remains valid. New-buyer/holder semantics unchanged."
+    ],
+    "prompt_change_required": true,
+    "target": {
+      "direction": "HOLD",
+      "buy": 4.5,
+      "sell": 5.5,
+      "lean": "SELL_LEAN"
+    },
+    "target_pattern": "High complete debt + thin cash + stable profitable operations + unresolved refinancing severity/maturity + expectation conditional on that same unresolved downside, without distinct established pricing or other corroboration.",
+    "all_target_buys": {
+      "FIC-FIN-01": 6,
+      "FIC-FIN-02": 4.5,
+      "FIC-FIN-04": 5,
+      "FIC-FIN-05": 4.5
+    },
+    "boundary": {
+      "threshold": 6,
+      "increment": 0.5,
+      "tie_break": "toward 5.0",
+      "scorecard": false,
+      "evidence_count_rule": false
+    }
+  },
+  "transport": {
+    "classification": "TRANSIENT_WEBSOCKET_OR_SERVICE_DEGRADATION_LIKELY",
+    "exact_backend_cause": "UNRESOLVED",
+    "runtime_change_required": false,
+    "model": "gpt-6-astra",
+    "effort": "xhigh",
+    "timeout": 1800,
+    "wrapper_retry": 0,
+    "subjects_per_context": 4,
+    "contexts": 2,
+    "repetitions": 3,
+    "batch_split": 0
+  },
+  "schedule_start": {
+    "observed_at": "2026-09-09T23:12:07.312933+00:00",
+    "status": "PASS",
+    "observed_paused_schedule_count": 8
+  },
+  "source_facts_change": false,
+  "production_authorized": false,
+  "real_issuer_calls_authorized": false,
+  "model_call_gate": "Only after offline repair and all local deterministic gates PASS; new generation only; stop first failed context."
+}

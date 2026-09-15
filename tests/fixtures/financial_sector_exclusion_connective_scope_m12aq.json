@@ -1,0 +1,62 @@
+{
+  "contract": "financial-sector-exclusion-connective-fixtures-v1",
+  "positive": [
+    {
+      "id": "SECTOR-EXCL-P01",
+      "text": "산업회사식 순부채와 운전자본 틀을 배제하고 인수 규율과 규제자본을 중심으로 본다.",
+      "frameworks": ["net_debt", "working_capital"]
+    },
+    {
+      "id": "SECTOR-EXCL-P02",
+      "text": "산업회사식 순부채 틀을 제외하고 규제자본을 본다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-EXCL-P03",
+      "text": "산업회사식 운전자본 틀을 적용하지 않고 인수 규율을 본다.",
+      "frameworks": ["working_capital"]
+    },
+    {
+      "id": "SECTOR-EXCL-P04",
+      "text": "순부채·운전자본 틀을 배제한 채 보험 인수와 규제자본을 평가한다.",
+      "frameworks": ["net_debt", "working_capital"]
+    },
+    {
+      "id": "SECTOR-EXCL-P05",
+      "text": "순부채와 운전자본 틀을 사용하지 않고 지급여력과 자본 적정성을 평가한다.",
+      "frameworks": ["net_debt", "working_capital"]
+    },
+    {
+      "id": "SECTOR-EXCL-P06",
+      "text": "순부채 틀을 보지 않고 보험 인수 규율을 판단한다.",
+      "frameworks": ["net_debt"]
+    }
+  ],
+  "negative": [
+    {
+      "id": "SECTOR-EXCL-N01",
+      "text": "순부채 틀을 배제하지 않고 본다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-EXCL-N02",
+      "text": "순부채 틀을 제외할 수 없다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-EXCL-N03",
+      "text": "순부채 틀을 배제한다고 하지만 현재 순부채가 높아 SELL이다.",
+      "frameworks": ["net_debt"]
+    },
+    {
+      "id": "SECTOR-EXCL-N04",
+      "text": "보험사 운전자본 악화가 핵심 하방이다.",
+      "frameworks": ["working_capital"]
+    },
+    {
+      "id": "SECTOR-EXCL-N05",
+      "text": "순부채와 규제자본을 함께 핵심 보험업 기준으로 본다.",
+      "frameworks": ["net_debt"]
+    }
+  ]
+}

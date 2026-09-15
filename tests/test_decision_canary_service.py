@@ -27,6 +27,7 @@ from app.services.decision_canary_service import (
     decision_canary_preconditions,
     insert_decision_canary_block,
     load_decision_canary_state,
+    strict_json_schema,
     validate_decision_canary_output,
 )
 
@@ -41,6 +42,31 @@ def _settings(
         decision_engine_canary_us_subjects="GOOGL,RXRX",
         data_dir=data_dir,
     )
+
+
+def test_strict_schema_preserves_tagged_union_in_provider_supported_form() -> None:
+    schema = strict_json_schema(
+        {
+            "discriminator": {"propertyName": "type"},
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {"type": {"const": "LEAF"}},
+                },
+                {
+                    "type": "object",
+                    "properties": {"type": {"const": "ANY_OF"}},
+                },
+            ],
+        }
+    )
+
+    assert "discriminator" not in schema
+    assert "oneOf" not in schema
+    assert [row["properties"]["type"]["const"] for row in schema["anyOf"]] == [
+        "LEAF",
+        "ANY_OF",
+    ]
 
 
 def _evidence(ticker: str) -> DecisionEvidencePacket:

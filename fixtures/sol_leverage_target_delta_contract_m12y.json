@@ -1,0 +1,118 @@
+{
+  "contract": "m12y-deterministic-fixtures-v1",
+  "exclusion_positive": [
+    "산업회사식 순부채와 운전자본 틀 대신 언더라이팅과 규제자본을 본다.",
+    "순부채가 아니라 규제자본을 본다.",
+    "순부채보다는 규제자본이 적절한 평가틀이다.",
+    "use regulatory capital instead of industrial net debt.",
+    "rather than industrial working capital, evaluate underwriting and capital.",
+    "not industrial net debt but regulatory capital."
+  ],
+  "exclusion_negative": [
+    "순부채 대신 규제자본을 보지만 순부채가 높아 SELL 근거다.",
+    "산업회사 틀은 적용하지 않지만 운전자본 악화가 핵심 투자 리스크다.",
+    "순부채 대신 규제자본을 본다. 운전자본 악화가 핵심 투자 리스크다.",
+    "If net debt rather than regulatory capital applies, be cautious.",
+    "not not industrial net debt but regulatory capital.",
+    "순부채보다 규제자본이 중요하지 않지 않다."
+  ],
+  "leverage": [
+    {
+      "id": "LEV-SOL-01",
+      "facts": [
+        "complete high debt",
+        "thin cash",
+        "stable operating profit"
+      ],
+      "limitation": "refinancing severity unknown and expectation conditional on the same unresolved risk",
+      "expected_direction": "SELL",
+      "expected_buy": 4,
+      "expected_sell": 6,
+      "rationale": "Current complete leverage evidence establishes minimum negative direction; unresolved refinancing detail caps stronger severity."
+    },
+    {
+      "id": "LEV-SOL-02",
+      "facts": [
+        "complete high debt",
+        "thin cash",
+        "confirmed refinancing stress"
+      ],
+      "limitation": "valuation unavailable",
+      "expected": "STRONGER_NEGATIVE_MAY_BE_SUPPORTED"
+    },
+    {
+      "id": "LEV-SOL-03",
+      "facts": [
+        "high debt",
+        "strong cash and liquidity",
+        "stable operating profit"
+      ],
+      "limitation": "refinancing detail unavailable",
+      "expected": "NO_MECHANICAL_SELL"
+    },
+    {
+      "id": "LEV-SOL-04",
+      "facts": [
+        "partial debt components only"
+      ],
+      "limitation": "complete interest-bearing debt not supplied",
+      "expected": "NO_COMPLETE_DEBT_OR_NET_DEBT_CONCLUSION"
+    },
+    {
+      "id": "LEV-SOL-05",
+      "facts": [
+        "financial sector"
+      ],
+      "limitation": "industrial leverage framework not applicable",
+      "expected": "INDUSTRIAL_LEVERAGE_NOT_APPLICABLE"
+    }
+  ],
+  "business_delta": [
+    {
+      "id": "DELTA-01",
+      "facts": [
+        "high debt and thin cash current state"
+      ],
+      "baseline_change": false,
+      "expected": "UNCHANGED"
+    },
+    {
+      "id": "DELTA-02",
+      "facts": [
+        "high debt worsened materially versus supplied prior baseline"
+      ],
+      "baseline_change": true,
+      "expected": "WEAKENED"
+    },
+    {
+      "id": "DELTA-03",
+      "facts": [
+        "strong current margins"
+      ],
+      "baseline_change": false,
+      "expected": "UNCHANGED"
+    },
+    {
+      "id": "DELTA-04",
+      "facts": [
+        "operating and cash conversion improved versus prior comparable period"
+      ],
+      "baseline_change": true,
+      "expected": "STRENGTHENED"
+    },
+    {
+      "id": "DELTA-05",
+      "facts": [
+        "current neutral condition",
+        "newly confirmed structural deterioration"
+      ],
+      "baseline_change": true,
+      "expected": "WEAKENED"
+    }
+  ],
+  "policy": {
+    "fixed_score_rule": false,
+    "evidence_count_bucket_rule": false,
+    "ticker_specific_branch": false
+  }
+}

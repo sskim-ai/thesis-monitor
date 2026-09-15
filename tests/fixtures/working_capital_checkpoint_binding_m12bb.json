@@ -1,0 +1,47 @@
+{
+  "contract": "working-capital-checkpoint-binding-fixtures-v1",
+  "selected": {
+    "inventory": {
+      "alias": "E06",
+      "canonical_ref": "canonical:fixture:inventory"
+    },
+    "trade_accounts_receivable": {
+      "alias": "E05",
+      "canonical_ref": "canonical:fixture:receivables"
+    }
+  },
+  "positive": [
+    {
+      "id": "WC-BIND-P01",
+      "field": "risk_context",
+      "text": "재고와 매출채권 증가는 자동 악화가 아니라 확인 지점이다.",
+      "refs": ["E05", "E06", "E10"]
+    },
+    {
+      "id": "WC-BIND-P02",
+      "field": "sell_drivers",
+      "text": "운전자본의 질은 추가 확인이 필요하다.",
+      "refs": ["E06"]
+    }
+  ],
+  "negative": [
+    {
+      "id": "WC-BIND-N01",
+      "field": "risk_context",
+      "text": "재고와 매출채권 증가를 확인해야 한다.",
+      "refs": ["E06"]
+    },
+    {
+      "id": "WC-BIND-N02",
+      "field": "sell_drivers",
+      "text": "매출채권 증가의 회수 전환을 확인해야 한다.",
+      "refs": ["E06"]
+    },
+    {
+      "id": "WC-BIND-N03",
+      "field": "risk_context",
+      "text": "재고와 매출채권 증가는 자동 악화가 아니라 확인 지점이다.",
+      "refs": ["E03", "E10"]
+    }
+  ]
+}

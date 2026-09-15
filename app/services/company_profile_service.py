@@ -172,6 +172,19 @@ def _match_rule(code: str, rules: tuple[_IndustryRule, ...]) -> _IndustryRule | 
 
 def normalize_official_industry(profile: OfficialProfile) -> NormalizedProfile:
     code = profile.official_industry_code.strip()
+    legal_name = "".join(str(profile.legal_name or "").split())
+    if (
+        profile.source == "opendart_company"
+        and code == "64992"
+        and "금융지주" in legal_name
+    ):
+        return NormalizedProfile(
+            industry="Financial Holding Company",
+            sector="Financials",
+            taxonomy_key="financial_holding",
+            quality="verified",
+            classification_method="official_industry_code_and_legal_name",
+        )
     rules = _KSIC_RULES if profile.source == "opendart_company" else _SIC_RULES
     rule = _match_rule(code, rules)
     if rule is not None:

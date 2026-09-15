@@ -1,5 +1,69 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-10 M12W Nonproduction Closeout
+
+M12W: M12W_CANARY_FAIL. Read `docs/reports/20260910-m12w-completion.md` and
+`docs/reports/20260910-gpt56-sol-xhigh-restoration-full-fictional-financial-canary/69-program-completion.json`.
+Work instruction `e8441e0543054534566e99c19fbdcd6c0722462c`; frozen implementation
+`538cb761e1c10754cd74dd66b22d3e2f803561ac`. The proof-critical runtime was restored to
+`gpt-5.6-sol / xhigh`, 1800 seconds, four subjects/context, no wrapper retry or fallback.
+M12U semantics, targets, fictional source, prompt and schema stayed frozen.
+
+Generation `20260910-m12w-fictional-20260910T020309Z-f8b8bd468c5a`, source lock
+`ae98f6b76270399d856cbeb064ac55787c85a8249c96ffc5e5a310d2796be6fa`, stopped after
+the first context. Transport returned a parsed 4-row output in 407.720583s with Sol/xhigh
+identity and timeout/capacity/internal retry/wrapper retry/orphan all zero. FIC-FIN-01 failed the
+frozen ordinal target: expected BUY 6.0, observed 6.5. FIC-FIN-02/03/04 passed; five later
+contexts are NOT_RUN. Do not resume, selectively rerun, stitch, hotfix or change thresholds in
+this generation. Full core/formal/stance/delta stability remains NOT_MEASURED.
+
+Local focused/full 260/3255 PASS, Ruff/diff PASS. Hosted CI is 3250 PASS with the same five
+historical portability failures and zero new M12W failures. Eight schedules remain PAUSED;
+real/judge/provider calls, sends, persistence, merge and deployment are zero. Fresh real and
+production remain NOT_READY. Next scope: `BOUNDED_SOL_DIRECTIONAL_CONTRACT_REPAIR`.
+
+The M12V and older sections below are historical and are not execution authorization.
+
+## 2026-09-10 M12V Nonproduction Closeout
+
+M12V: M12V_RUNTIME_PROOF_FAIL. Read `docs/reports/20260910-m12v-completion.md` and
+`docs/reports/20260910-astra-transport-runtime-architecture-review-full-fictional-canary/86-program-completion.json`.
+Instruction f1da357, architecture 2e50558, implementation 46ec85c were committed before execution.
+The single selected experiment increased the finite watchdog from 1800 to 2400 seconds,
+reusing the existing lifecycle observer in an archive-only adapter. No existing app/runtime
+file or M12U semantic/source/prompt/schema contract changed. Wrapper retry 0, four subjects/context.
+Generation `20260910-m12v-fictional-20260910T002912Z-cb6d03277dc8` stopped after its first call:
+2400.062226s to watchdog exit, no stdout/final output, logged CLI retry 0, wrapper retry 0,
+orphan 0. Five later contexts NOT_RUN. All 679 frozen code/contract hashes remain unchanged.
+Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. Do not retry or resume this generation.
+Local focused/full 243/3238 PASS; implementation hosted CI 3233 PASS/5 old portability FAIL,
+new M12V failures 0. Eight schedules remain PAUSED; production/main/deployment changes 0.
+Fresh real and production NOT_READY. Next scope: ASTRA_FINITE_2400_TAIL_TOLERANCE_ASSUMPTION_REVIEW.
+The failed sufficiency hypothesis is finite 2400-second tail tolerance, not a proven backend cause.
+Further execution, timeout increases, retries, context splitting or real issuers require a new task scope.
+
+The M12U and older sections below are historical; their next actions are not current authorization.
+
+## 2026-09-10 M12U Nonproduction Closeout
+
+M12U: PARTIAL_STOPPED after one fictional gpt-6-astra/xhigh call timed out at 1,800.068784 seconds without output. No later context was started. Work instruction 459af10, offline review f73ce3a, implementation 551f98f are frozen. Exclusion classification and conditional expectation/leverage independence pass offline; FIC-FIN-05 target is HOLD 4.5:5.5 SELL_LEAN under the frozen generic contract. Actual semantic/core/formal/stance/delta proof is NOT_MEASURED. No retry, timeout increase, batch split, real issuer call, merge/deploy or schedule resume. Eight schedules remain PAUSED. Local focused/full 186/3225 PASS; hosted CI retains five historical portability failures, with zero new M12U failures. Next scope: ASTRA_TRANSPORT_RUNTIME_ARCHITECTURE_REVIEW. Read docs/reports/20260910-m12u-completion.md and the M12U 79-program-completion.json. Fresh real and production remain NOT_READY.
+
+The M12T and older sections below are historical. They do not authorize retries or production resumption.
+
+## 2026-09-10 M12T Nonproduction Closeout
+
+M12T: PARTIAL_STOPPED. Read `docs/reports/20260910-m12t-completion.md` and
+`docs/reports/20260910-bounded-astra-transport-timeout-review-new-full-fictional-canary/62-program-completion.json`.
+Frozen implementation: `695464f2b122bfe6e5378476b066cd945415eb61`.
+Transport returned 2/2 in 321.70s/331.91s with timeout/internal retry/wrapper retry 0.
+New generation emitted 8 schema-valid rows, but final acceptance was 6/8: FIC-FIN-08
+explicit non-applicability false reject and FIC-FIN-05 frozen 5.5/6.0 leverage boundary violation.
+Remaining four contexts were NOT_RUN; full stability is NOT_MEASURED.
+Next: bounded generic exclusion-scope repair and full-source leverage/market-expectation
+independence review, no current-generation hotfix or retry. CI retains the same five portability
+failures; new M12T failures 0. Fresh real and production NOT_READY. Eight schedules remain PAUSED.
+This nonproduction state does not supersede or deploy changes to the historical live implementation.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and
@@ -2572,3 +2636,420 @@ Observe the next ordinary KR and US cycles read-only. Do not replay Run-57, manu
 Scheduled Task, resend production, expose recipient values, or treat TEST evidence as natural
 proof. Structured Autonomy may resume as a separate shadow/promotion program; production mutation
 remains zero and Production Assist remains OFF.
+
+## 2026-09-10 M12X Positive Stronger-Bucket Handoff
+
+Start with `docs/reports/20260910-m12x-completion.md`, then read reports 46, 47, 53, 54, 60,
+69, 73, and 75 in the M12X report directory. The exact work-instruction commit is
+`239b799a1361b8ad8168aef2310f03eaf8fc641e`; implementation/runtime identity commit is
+`7b1407eab18182defc3bafc261064008a65e20c1`.
+
+The contract review closed FIC-FIN-01 at `BUY 6.5`: the previous exact 6.0 fixture target was
+over-constrained. Production Directional semantics, prompt, thresholds, tie-breaks, evidence
+selection, and financial validators were not changed. In the new frozen Sol/xhigh generation,
+run-1 context-01 passed 4/4 and FIC-FIN-01 reproduced 6.5. Run-1 context-02 returned a complete,
+transport-valid output but failed at FIC-FIN-05 (`BUY 4.0` versus frozen 4.5) and FIC-FIN-08
+(insurance exclusion wording flagged as net-debt/generic-financial reasoning). The runner stopped
+after 2/6 calls; four contexts were never attempted. No rerun or hotfix occurred.
+
+Status is `M12X_PARTIAL_STOPPED`; full stability and stance variance are `NOT_MEASURED`, fresh real
+proof is `NOT_READY`, and the next bounded scope is `SOL_RUNTIME_REGRESSION_REVIEW`. Review the
+preserved outputs first. Do not reopen FIC-FIN-01, alter code/config from this generation based on
+its outputs, selectively rerun failed subjects, call a new model, or start real issuer proof without
+a separate instruction. Eight approved schedules remain PAUSED and must not be resumed implicitly.
+Production calls, sends, persistence, merges, and deployments are zero.
+
+## 2026-09-13 M12BD Handoff
+
+Start with the M12BD `program-completion.json`, `FAILURE-REPORT.md`, reports 093, 095, 103, 106,
+107, and the nested M12BA report 101. Work-instruction commit is
+`2ceced2f2e86ee9e93cdd4350d68594ae6f762fd`; frozen implementation head is
+`5b2092fa8948c69d65086925a9cecd59bbb8cb4c`.
+
+The new formal `gpt-5.6-sol / xhigh` generation
+`20260911-m12ai-fictional-20260913T113957Z-07ac29f97bc6` completed 12/12 calls and passed all
+objective gates. Stage 2 working-capital binding is `12/12` grounded with mismatch, narrative-only
+substitution, irrelevant-ref, and unsafe-direction failures all zero. Optional zero-claim coverage
+is nonblocking and observed invalid semantics remain hard failures. Full local tests are `3848`
+passed; Ruff and diff checks pass.
+
+The monitored shadow did not call the model. Its 22 packets and generation
+`20260911-m12ai-shadow-20260913T121804Z-145705ea053d` were frozen, then M12BA preflight failed
+because its consumer requires `active_count` while the authoritative report exposes
+`subject_count=22`. Do not reuse this partial generation or bypass the gate. The next separately
+instructed scope is `M12BA_SHADOW_ACTIVE_COUNT_REPORT_CONTRACT_COMPATIBILITY_REPAIR_NEW_FULL_SHADOW`,
+followed by a completely new full shadow generation. P0/P1/P2 are `0/1/0`. No remote push, main
+merge, deploy, provider fetch, production mutation/send, or monitoring resume occurred.
+
+## 2026-09-13 M12BE Handoff
+
+Start with M12BE `program-completion.json`, `FAILURE-REPORT.md`, `proof-runtime/shadow/stop.json`,
+and reports 049-051, 056-069, and 124. Work-instruction commit is
+`e939ffd1e8e8e0ff68959baed0976fe5c7dfd0ef`; frozen implementation head is
+`6eb69a203ca40c5e6c42f9f63ef77551d62ec481`.
+
+The intended count-contract repair is complete: the authoritative expectation manifest is read via
+`market-expectation-evidence-view-v1.subject_count`, row count is validated, and all shadow reports
+must match the exact active ticker set. The stopped-shadow offline replay and the new 22-subject
+preflight passed with six contexts, 18 planned calls, and zero count, ticker-set, duplicate, or
+packet mismatch. The complete M12BD formal proof remains reusable; no new fictional call occurred.
+
+The new shadow generation `20260911-m12ai-shadow-20260913T132402Z-c956834e1892` failed in
+pre-spawn frozen-state verification. Frozen rows contain nested `inputs` path/hash records, while
+the inherited verifier expects legacy flat path/hash fields. The first missing field was
+`stage1_prompt`. Model calls are `0/18`; no model output or candidate exists. Do not reuse or repair
+that frozen generation.
+
+P0/P1/P2 are `0/1/0`. The next separately instructed scope is
+`BOUNDED_FROZEN_CONTEXT_INPUT_LAYOUT_COMPATIBILITY_REPAIR_AND_NEW_GENERATION`: align only the frozen
+input identity reader, prove nested/legacy behavior and hash tamper rejection, then prepare an
+entirely new shadow generation. Do not change prompts, schemas, evidence semantics, validators,
+candidates, or thresholds. Remote push, main merge, deploy, production effects, and monitoring
+resume remain prohibited.
+
+## 2026-09-13 M12BF Handoff
+
+Start with M12BF `program-completion.json`, `FAILURE-REPORT.md`,
+`shadow-partial-failure-forensics.json`, and reports 075, 079, 082, 088, 103, 107, and 121-132.
+The work-instruction commit is `a9ac223b48f1a113d70a393fa5380056c4d5dc79`; the frozen
+implementation head is `c3ece726a2ffa89d2fa0963b75c59419dcf05469`.
+
+The `frozen-context-input-layout-v1` repair is complete. M12BE nested inputs replay `30/30`, M12BD
+legacy-flat inputs replay `6/6`, and the new generation verifies all `30/30` nested inputs with no
+missing, hash mismatch, or ambiguity. Model-facing semantic hashes are unchanged, so the complete
+M12BD formal proof remains reusable and no fictional model call was made.
+
+The new Sol/xhigh shadow generation
+`20260911-m12ai-shadow-20260913T141850Z-fdfcb99c8668` passed pre-spawn and reached the model. Its
+first monolithic context returned normally; three of four tickers passed. `005490` failed because
+two prospective FCF verification requirements in `business_thesis_context` and
+`market_expectation_context` defaulted to `CURRENT_CORE_CLAIM` and were falsely classified as
+unsupported present FCF assertions. Transport, business-delta capability, financial grounding,
+expectation independence, ownership, QTD/YTD, working-capital binding, and the `003690` insurance
+negative control passed in the observed context.
+
+The whole generation stopped at `1/18`; 17 calls, Stage 1/2, final compositions, aggregate, and
+policy comparisons were not run. Do not resume this generation, selectively rerun `005490`, edit
+the candidate, or reopen the layout/count/M12BD formal contracts. P0/P1/P2 are `0/1/0`. The next
+separately instructed scope is
+`BOUNDED_FCF_PROSPECTIVE_REQUIREMENT_SCOPE_FALSE_POSITIVE_REPAIR_AND_NEW_FULL_SHADOW`, followed by
+an entirely new full shadow. Remote push, main merge, deploy, production effects, and monitoring
+resume remain prohibited.
+
+## 2026-09-14 M12BG Handoff
+
+Start with M12BG `program-completion.json`, `FAILURE-REPORT.md`, the new-shadow stop receipt, and
+the 141 generated reports under
+`docs/reports/20260914-fcf-prospective-requirement-verification-scope-new-full-shadow/`. The
+work-instruction commit is `b739a2b286c16fe1cf70cf8c3e8c88d69b645f01`; the implementation
+head is `b4a6c2f90745352619769ae794a7baa78ffb71d1`.
+
+`fcf-prospective-requirement-v1` is implemented. Exact M12BF context-01 offline replay passes
+`4/4`; the reused M12BD proof re-audits Stage 1 `24/24`, Stage 2 `24/24`, and final `24/24`.
+Focused `134/134`, full local `3899/3899`, Ruff, and diff checks pass. Current numeric/state FCF
+claims retain hard-fail behavior, while clause-local prospective verification requirements are
+classified separately and cannot serve as buy/sell/dominant directional anchors.
+
+The new Sol/xhigh generation `20260911-m12ai-shadow-20260913T232403Z-b5fcaed53268` passed its
+packet, frozen-input, and pre-spawn gates, then stopped before the first model process was spawned.
+Three network-readiness probes resolved zero addresses, producing `DNS_FAILURE`. Completed calls
+are `0/18`; wrapper retries, timeouts, orphans, semantic failures, and production effects are all
+zero. Full-shadow semantic compatibility is therefore `NOT_MEASURED`, not PASS or FAIL.
+
+Do not resume or selectively rerun this generation and do not alter code/config from its result.
+The smallest next scope is `BOUNDED_NETWORK_READINESS_REPROOF_WITH_NEW_GENERATION`, only after
+network readiness is independently restored and a new instruction authorizes a wholly new
+generation. Remote push, main merge, deploy, scheduler mutation/resume, and production effects
+remain prohibited. Monitoring schedules remain paused.
+
+## 2026-09-14 M12BH Handoff
+
+Start with M12BH `program-completion.json`, reports 005-017, 031-045, and the architecture note
+`FRESH_MONITORED_SEMANTIC_SINGLE_SOURCE_CONVERGENCE.md`. Work-instruction commit is
+`e24ae28dbf5536e23939ac478f593c64423089c0`; audit implementation is
+`d41b9cf2c024628bf0e965d192c554552aa854c2`.
+
+The authoritative M12BG bundle independently verifies at SHA
+`8b809b13d5766168f357ff4824075dcaa1f87c62e909154a8b191fee539ae277`, with 1,137 indexed
+payloads and 1,138 ZIP entries. The 40-case canonical golden corpus passes `40/40`, so this task
+did not find a new canonical phrase defect. It found path ownership debt: the latest fresh/new-
+issuer `execute_run -> core_partial_audit` path does not invoke the canonical financial,
+QTD/YTD, configured-signal, WC, business-delta, or market-expectation services used by the
+monitored/shadow path. Ten proof-critical families are bypassed. Two ticker-specific proof hard
+helpers are divergent duplicates, and one business-delta fallback remains independently driftable.
+
+Status is `STOPPED_BEFORE_SHADOW_CONVERGENCE_DEBT`. No network gate, fictional model call, M12BD
+reuse decision, shadow call, or provider fetch occurred. Full local tests are `3907/3907`; Ruff and
+diff pass. Do not treat this as a shadow semantic failure and do not resume M12BG's stopped
+generation. The next bounded scope is `BOUNDED_SEMANTIC_SINGLE_SOURCE_CONVERGENCE_REPAIR`: route
+the active fresh post-model path through existing canonical services, make proof assertions consume
+canonical audit output, seal the business-delta fallback, then rerun the unchanged 40-case corpus
+before any model call. Do not add lexical patches, alter prompts/schemas, push remotely, merge main,
+deploy, or resume paused monitoring.
+
+## 2026-09-14 M12BI Handoff
+
+Start with M12BI `program-completion.json`, reports 006, 021-025, 034-041,
+086-096, and `DIRECTIONAL_CORE_SEMANTIC_SINGLE_SOURCE.md`. Work-instruction commit is
+`4503dad39aa320b31f81d001e8f3f23a2328f2dc`; branch is
+`codex/20260914-semantic-single-source-convergence-repair-m12bi`; implementation head is
+`8d39557e92f5470427052e628f0c12abe4974948`.
+
+The active fresh post-model path and monitored base audit now consume
+`directional-core-semantic-audit-v1`. Fresh-only ownership/domain/Unknown checks remain additive.
+Final-freeze requires canonical provenance, proof readiness uses the canonical hard-vs-diagnostic
+policy, both ticker-specific duplicate hard helpers are retired, and the BusinessDelta fallback is
+sealed from proof-critical callers. The unchanged corpus is 40/40 with zero cross-path divergence;
+M12BD re-audits 24/24 at Stage 1, Stage 2, and final composition with zero mutation. Monitored hard
+outputs are unchanged.
+
+Focused tests are `229/229`; full local tests are `3919/3919` with two dependency warnings. Ruff
+and diff checks pass.
+
+The frozen historical fresh proof is not grandfathered: 16/16 candidates fail canonical
+BusinessDelta because `UNRESOLVED` was used without eligible ambiguity. This is proof-history debt,
+not a production mutation. Do not weaken the validator or edit those candidates. Fresh real proof
+remains `NOT_READY`; semantic architecture convergence is confirmed. No model/network/shadow call,
+remote push, main merge, deploy, or monitoring resume occurred. The next authorized scope must be a
+new instruction for `RETRY_FULL_SHADOW_ON_CONVERGED_SEMANTIC_SINGLE_SOURCE`.
+
+## 2026-09-14 M12BJ Handoff
+
+Start with M12BJ `program-completion.json`, reports 028-045, 047-052, 059-069, and 070-082,
+plus `CONVERGED_SEMANTIC_MONITORED_SHADOW.md`. Work-instruction commit is
+`95b683e433f0811e10650ad3fa4ffe9ee19f4b8c`; the final aggregate-only implementation head is
+`c57216fa52e689e3f0a70fb36f517dd3ca4ca04e` on branch
+`codex/20260914-converged-semantic-full-monitored-shadow-m12bj`.
+
+Generation `20260911-m12ai-shadow-20260914T024739Z-1fe808eba817` completed all 18 planned
+`gpt-5.6-sol / xhigh` calls for 22 subjects and six contexts. Canonical audits cover 66 candidates
+and pass with hard semantic failures 0, bypasses 0, legacy duplicate hard-decision participation 0,
+Stage 1/2 WC binding PASS, runtime timeout/retry/orphan 0, and core mutation 0. The old M12AZ
+duplicate's one false-negative is retained as a nonblocking legacy diagnostic; it did not modify a
+candidate or participate in the M12BJ hard decision. Raw artifacts remain outside the repository.
+
+Observed monolithic/two-stage policy inputs are primary direction 5, holder 3, same-direction
+calibration 5, multi-field 1, no material change 8, business-delta 0, and new-buyer 0. Do not
+declare either path correct, add another semantic validator, or resolve these differences in a
+semantic repair. Next bounded scope is
+`DECISION_BOUNDARY_DELTA_HOLDER_POLICY_REVIEW_ON_INTEGRATED_MAIN`. Fresh real proof, final main
+merge, and production remain `NOT_READY`. Monitoring schedules remain paused. Do not push, merge,
+deploy, resume schedules, call a model, or mutate production without a separate instruction.
+
+## 2026-09-14 M12BK-R2 Handoff
+
+Start with M12BK-R2 `program-completion.json`, reports 005-023 and 026-034, and
+`REAL_COHORT_FROZEN_POLICY_VALIDATION.md`. Work-instruction commit is
+`c5783e3be40fb6faaa46e8e75bab3ac3ca04d3da`; offline validation implementation is
+`cd5338663faf76a50d7bd5ab2e9247f8ff60c44f` on branch
+`codex/20260914-real-cohort-policy-validation-m12bk-r2`.
+
+Both authoritative inputs are independently intact: M12BJ has 97 indexed payloads, 22 frozen
+packets, 18 model documents, and 18 receipts for generation
+`20260911-m12ai-shadow-20260914T024739Z-1fe808eba817`; M12BD has 930 indexed payloads and the
+12 Stage 1/2 documents used for FIC-FIN-05/FIC-FIN-08 under generation
+`20260911-m12ai-fictional-20260913T113957Z-07ac29f97bc6`. Raw model material remains local-only
+and is represented in the new bundle only by identities and rationale hashes.
+
+All reviewed real cases fit the frozen contracts: adjacent primary `5/5`, holder `3/3`, coupled
+entry `1/1`, and calibration `5/5`. Business Delta policy change is not required. No true policy
+exception was found. Selected material-anchor subsets differ in several cases, but the same frozen
+packet and material source universe are available to both paths and the relevant domains remain in
+their core reasoning; this is recorded explicitly rather than hidden as exact-anchor identity.
+
+The authoritative result is `REAL_COHORT_VALIDATES_FROZEN_POLICY_CONTRACTS`. Do not reopen these
+policy contracts or run another model proof from this handoff. The next separately instructed scope
+is `PRODUCTION_INTEGRATION_PERSISTENCE_REVIEW_ON_INTEGRATED_MAIN`. Fresh real proof, final main
+merge, and production are still `NOT_READY`; no merge, deploy, persistence, provider call, send,
+remote push, or schedule resume is authorized. Monitoring schedules remain paused.
+
+## 2026-09-14 M12BL Handoff
+
+Start with M12BL reports 01-50 and 52-68, `program-completion.json`, and
+`PRODUCTION_INTEGRATION_PERSISTENCE_REVIEW.md`. Work-instruction commit is
+`f536e5f125dfa0f9a996b58b750ee5dbb486ed4a`; audit implementation is
+`89469baf9608241c8100ea51a488156b2be5858f` on local branch
+`codex/20260914-production-integration-persistence-review-m12bl`.
+
+The authoritative M12BK-R2 ZIP re-verifies at
+`0f845b5c0cf2d6fdef74228bebacdc08bf46543bd8bc0299bcfba6a1ee0c050e` with 45 indexed
+payloads, 46 entries, and zero integrity error. M12BJ generation
+`20260911-m12ai-shadow-20260914T024739Z-1fe808eba817` remains canonical/final-composition PASS for
+all 22 names. It is not persistence-ready: the existing assessment action and daily writer have no
+enforceable canonical receipt, generation/hash/finalization/quarantine identity, and the target
+schema cannot losslessly represent the typed business delta, stances, expectation, confidence,
+risk, unknown treatment, and evidence provenance.
+
+Real-service ephemeral SQLite replay confirms missing/failed receipt payloads can persist after
+unknown fields are discarded. Same ticker/date has one mutable row, but an older date can overwrite
+`WatchlistItem.latest_*`; the accepted V2 file can likewise regress to the older date. Same-date
+warning replay retains its ID but changes `open` to `escalated`. Notification same-date uniqueness
+and caller rollback work locally, while canonical/stale eligibility and full lifecycle transaction
+semantics remain absent.
+
+The result is `BLOCKING_PRODUCTION_PERSISTENCE_CONTRACT_GAP`; M12BJ persistence eligibility is
+`0/22`, and fresh proof/main merge/production are `NOT_READY`. Next scope:
+`CANONICAL_ACCEPTANCE_PERSISTENCE_CONTRACT_SCHEMA_AND_LIFECYCLE_DESIGN`. Focused tests are `8/8`,
+full local tests `3943/3943` with two existing dependency warnings; Ruff and diff pass. No model,
+provider, network, production DB/watchlist/warning/queue/send, scheduler mutation, remote push,
+main merge, or deployment occurred. Schedules remain paused.
+
+## 2026-09-14 M12BM Handoff
+
+Start with M12BM reports 01-74, `program-completion.json`, and
+`CANONICAL_ACCEPTANCE_PERSISTENCE_V2.md`. Work-instruction commit is
+`43734324b5e1740edf93886ce2d439accd810380`; the local design implementation commit is
+`ba2b8458077fabaeb1aca2da212cad9ef5bd9e60` on branch
+`codex/20260914-canonical-acceptance-persistence-design-m12bm` from base
+`1f1155711f9cda1d98ea4d51f30eb43967f1f25d`.
+
+M12BL remains frozen as `BLOCKING_PRODUCTION_PERSISTENCE_CONTRACT_GAP`. M12BM closes only the
+design layer with `PERSISTENCE_V2_CONTRACT_DESIGN_COMPLETE`: one trusted issuer
+(`canonical_two_stage_finalizer_v1`) may issue a deterministic 25-field
+`CanonicalAcceptanceReceiptV1`; accepted payloads enter immutable `AcceptedAssessmentV2`, while
+the latest monitoring view advances through a DB-level compare-and-swap ordering tuple. Public
+`recordThesisAssessment` stays manual-only, manual and pre-V2 legacy rows are not automation
+eligible, and missing provenance is never fabricated.
+
+Warning updates consume explicit accepted observations (`CONFIRMED`, `WORSENED`, `RECOVERED`,
+`UNRESOLVED`); a repeated confirmation does not escalate. Assessment persistence, current-state
+advance, warning transition, and notification outbox enqueue share one transaction, while the
+external send occurs after commit. Migration is forward-only and data-preserving, and an
+operational rollback disables V2 without dropping its tables. No production schema migration or
+runtime cutover has been implemented.
+
+The next bounded scope is `BOUNDED_PERSISTENCE_V2_IMPLEMENTATION_AND_LOCAL_REPLAY`. It must remain
+offline and local, implement the frozen design, replay the frozen M12BJ 22-subject cohort plus
+negative/stale/concurrency/failure fixtures in ephemeral storage, and preserve the production
+firewall. Fresh real proof, main merge, production, and automatic monitoring resume remain
+`NOT_READY`. No model/provider/network call, production mutation, remote push, main merge, deploy,
+or scheduler change occurred; the four monitoring schedules remain paused.
+
+## 2026-09-14 M12BN Handoff
+
+Start with M12BN reports 001-113, `program-completion.json`, and
+`CANONICAL_ACCEPTANCE_PERSISTENCE_V2.md`. Work-instruction commit is
+`8355269f03b5bb79080c4f0db9b28bfb32dd2ae0`; local implementation commit is
+`2cd59975650a05021e4bbd6376b4db30aa02efe6` on branch
+`codex/20260914-persistence-v2-local-proof-m12bn` from base
+`5e80c0122ca4c49cdd1ecc8cdf1eae5ad8ad5d94`.
+
+M12BN implements the frozen M12BM contract in seven independent-metadata V2 tables. Receipt
+issuance has one trusted typed boundary and 25 deterministic fields; accepted payloads are stored
+losslessly and immutably. Current state uses the four-part total order and bounded database CAS;
+stale acceptances remain history-only. Warning transitions consume explicit accepted observations,
+and outbox rows are committed atomically before fake-only post-commit dispatch. Manual and legacy
+rows remain readable, discriminated, and automation-ineligible. Corrupt canonical pointers or
+history receipts fail closed.
+
+The frozen M12BJ positives pass receipt/persistence/readback `22/22` with zero payload or provenance
+loss. Historical fresh negatives remain rejected `16/16`. Focused `33/33`, persistence regression
+`80/80`, full local `3988/3988`, Ruff, and diff pass. Model/prompt/schema/semantic/policy hashes are
+unchanged. No model/provider/network call, production DB/send, scheduler mutation/resume, remote
+push, main merge, or deploy occurred.
+
+Result: `PERSISTENCE_V2_LOCAL_IMPLEMENTATION_PROOF_PASS`. The only next scope is a separately
+authorized `NEW_FRESH_UNSEEN_PROOF_ON_CANONICAL_INTEGRATED_PIPELINE`. Fresh proof readiness is
+`READY_FOR_SEPARATELY_AUTHORIZED_PROOF`; final main merge and production readiness remain
+`NOT_READY`. Do not enable any V2 production gate or resume monitoring without explicit authority.
+
+## 2026-09-14 M12BO Handoff
+
+Start with M12BO reports 01-67 under
+`docs/reports/20260914-new-fresh-unseen-real-proof-canonical-integrated-pipeline/`.
+The work instruction is fixed at `4d0ec4855e02142b1b46401b1847ea7f658aa2aa` on local branch
+`codex/20260914-new-fresh-unseen-real-proof-m12bo`, based on
+`92460b0020d74b3b277d1f4c60966a5bdbcf1c78`. The authoritative M12BN result ZIP independently
+passes at SHA `c98eee1b2de414d83a7b6b85b3693060b304c1995cdda59a62a1e9530e02a1ba`, with
+142 indexed payloads, 143 ZIP entries, and zero integrity or secret-scan failure.
+
+M12BO built a conservative 306-subject seen registry from the task-start 22-name active universe
+and prior fresh/new-issuer artifacts. A fixed 60-name fallback pool was ranked before any model
+call across 12 market/sector slots. Current free-provider preflight produced an 11-name shortlist:
+`BAC`, `000270`, `GM`, `018260`, `INTU`, `004170`, `SBUX`, `207940`, `ABBV`, `096770`, and `SLB`.
+This is not a frozen proof cohort. The KR financial slot remained unfilled, so the required 12-name
+freeze was not created and model calls remained zero.
+
+The KR financial gap has two input-contract components. `000810` and `032830` resolve to the
+specialized bank/insurer framework but lack required regulatory-capital or sector-operating
+evidence. `138930`, `139130`, `316140`, and `086790` expose official industry code `64992`, which
+the current KR framework mapping does not classify as financial; they consequently enter the
+standard path and lack its required business evidence. Do not fix this by lowering source
+sufficiency, using a smaller cohort, hard-coding tickers, or substituting another market slot.
+
+The authoritative result is `FRESH_UNSEEN_PREMODEL_CONTRACT_GAP`, with stop reason
+`FRESH_UNSEEN_COHORT_SELECTION_INCOMPLETE`. Persistence applicability is frozen as
+`CANONICAL_RECEIPT_NOT_APPLICABLE_UNTIL_EXPLICIT_MONITORING_REGISTRATION`; no receipt, thesis
+version, monitoring registration, or persistence row was fabricated. The next single scope is
+`BOUNDED_FRESH_INPUT_PACKET_REPAIR`, limited to generic KR financial framework classification and
+specialized evidence projection. M12BO made no model call, production mutation, send, scheduler
+change, remote push, main merge, deployment, or automatic monitoring resume. Focused tests pass
+`67/67`, full local tests pass `3994/3994` with two dependency warnings, and Ruff/diff pass.
+
+## 2026-09-15 M12BP Handoff
+
+Start with reports 01-74 under
+`docs/reports/20260915-kr-financial-coldstart-repair-m12bp/`, especially proofs 23-29, 37-52,
+59, 68-74. Work instruction: `b4b79cdb311e11fbf9a632a8d93e30be852f1954`. Frozen local
+model-call gate: `7f0f381985c9ec3d98c0cd3b56353ef7a102ea73`. Base:
+`dca708690c8c85ce22c9f5b8163d2837d4fd9e46`; branch:
+`codex/20260915-kr-financial-coldstart-repair-m12bp`.
+
+The bounded input repair passes. Official OpenDART identity now classifies a legal-name-confirmed
+`64992` issuer as `financial_holding`; exact IFRS interest/fee/insurance tags project current
+sector-operating evidence into the existing `BANK_INSURER` path. The six formerly blocked KR
+financial candidates replay `6/6` current/provider-ready. There are no ticker allowlists,
+fabricated regulatory-capital values, generic revenue relabels, prompt/schema changes, or canonical
+semantic-policy changes.
+
+The deterministic retry froze generation
+`20260915-m12bp-fresh-20260914T101849Z-9329c13191bd` with KR 6 + US 6. The first four-subject
+core call reached the signed-in `gpt-5.6-sol / xhigh` transport but produced no stdout or output
+file. One server-side websocket disconnect was logged; the same invocation remained open until the
+1,800-second lifecycle watchdog terminated its process group. Calls started/completed-receipt are
+`1/1`; later calls are `NOT_RUN`; wrapper retry, fallback, judge, selective rerun, orphan, and
+partial stitching are all zero. No model semantic result exists, so canonical and final-composition
+quality are not measured.
+
+Focused tests pass `79/79`; Ruff and diff pass. Full pytest is `4003 PASS / 5 FAIL / 1 warning`.
+The five failures are historical exact-scope freeze assertions in M12E/U/F/B/W that detect the six
+new approved service/test files; they were intentionally not repaired after the model attempt.
+Production DB/send/scheduler/monitoring state, V2 gates, remote push, main, and deploy remain
+unchanged. Main merge and production are `NOT_READY`. Next single scope:
+`NETWORK_RETRY_SAME_FROZEN_COHORT`; do not retry this task, change timeout/context, replace subjects,
+or merge generations without a separate instruction.
+
+## 2026-09-15 M12BQ Handoff
+
+Start with reports 01-51 under
+`docs/reports/20260915-historical-scope-fixture-reconciliation-clean-network-retry-same-frozen-fresh-cohort/`.
+Work instruction: `1735f3acf25310dcb7f0b0bc45dfcd96365fbc8e`; exact-scope fixture repair:
+`bac49cfc1c385a7b00d9b611dbf78c1f52be0dfe`; retry harness:
+`a32f5cbaccf0ba4ff284b8bc1f04e7ee523d81f7`; pre-model evidence freeze:
+`f929d974d4734c1eaf5c554369503df7ccb109bb`. Base:
+`39cd04744cd209780f12d1b0f5a619693ffdf3d1`; branch:
+`codex/20260915-historical-scope-fixture-reconciliation-clean-network-retry-m12bq`.
+
+The five historical M12E/U/F/B/W failures were confirmed scope-only and reconciled only for the
+six exact M12BP service/test paths. The M12B frozen `source_sufficiency` surface uses exact verified
+before/after hashes, and an unexpected seventh path still fails closed. Premodel gates pass:
+historical `5/5`, negative controls `3/3`, M12BP focused `79/79`, Persistence V2 `41/41`, semantic
+convergence `21/21`, full pytest `4017/4017`, Ruff, and diff.
+
+The M12BP parent generation and all 12 packet, source-lock, prompt/schema-lock, frozen-context, and
+base-context hashes were byte-identical. M12BQ created only the new execution generation
+`20260915-m12bq-retry-20260915T045708Z-7d5b3a78e242` and ran the fixed three CORE plus three TIMING
+batches from call 1 with signed-in Codex CLI `gpt-5.6-sol / xhigh` and the unchanged 1,800-second
+timeout. Calls started/usable are `6/6`; transport failures, dependency-not-run calls, wrapper
+retries, fallback, judge, selective rerun, post-hoc override, and subject replacement are all zero.
+
+The authoritative result is `FRESH_UNSEEN_CANONICAL_PROOF_PASS`. Schema, canonical semantics,
+final composition, and acceptance pass `12/12`; all measured hard-failure families, stage2
+contamination, core mutation, and proof-critical bypass are zero. Fresh persistence remains
+`CANONICAL_RECEIPT_NOT_APPLICABLE_UNTIL_EXPLICIT_MONITORING_REGISTRATION`.
+
+Main merge readiness is `READY_FOR_EXPLICIT_USER_APPROVAL`, but production remains
+`NOT_READY_PENDING_EXPLICIT_CUTOVER_APPROVAL`. The user has not authorized remote push, main merge,
+deploy, V2 production gates, production writes/sends, monitoring registration, or schedule resume.
+The next single scope is `FINAL_MAIN_MERGE_AND_PRODUCTION_CUTOVER_APPROVAL_GATE`; preserve the local
+evidence and do nothing at that gate without a new explicit instruction.

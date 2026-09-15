@@ -746,6 +746,42 @@ class ThesisAssessmentCreate(BaseModel):
     risk_level: str = "review"
     confidence: float = Field(default=0.0, ge=0, le=1)
 
+    @model_validator(mode="before")
+    @classmethod
+    def reject_reserved_canonical_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+        reserved = {
+            "acceptance_id",
+            "accepted_at",
+            "receipt_hash",
+            "receipt_status",
+            "trusted_issuer_id",
+            "generation_id",
+            "generation_generated_at",
+            "packet_hash",
+            "source_packet_id",
+            "source_evidence_snapshot_identity",
+            "accepted_payload_contract_version",
+            "canonical_serialization_contract",
+            "final_composed_candidate_hash",
+            "canonical_semantic_audit_contract",
+            "canonical_semantic_audit_status",
+            "finalization_status",
+            "core_immutability_status",
+            "core_hash",
+            "stance_hash",
+            "quarantine_reason_codes",
+            "source_domain",
+        }
+        attempted = sorted(reserved.intersection(value))
+        if attempted:
+            raise ValueError(
+                "reserved_canonical_acceptance_fields_not_allowed:"
+                + ",".join(attempted)
+            )
+        return value
+
 
 class DailyMonitorResponse(BaseModel):
     run_date: date
