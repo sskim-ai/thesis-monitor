@@ -1,13 +1,35 @@
 from __future__ import annotations
 
+import re
+from datetime import date, datetime
 from enum import StrEnum
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.services.cross_market_decision_engine_service import EvidenceClaim, FrozenModel
 
 
 CONTRACT_VERSION = "evidence-maturity-pricing-v2"
+ISO_DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
+_ISO_DATE = re.compile(ISO_DATE_PATTERN)
+_ISO_DATETIME_PREFIX = re.compile(r"^\d{4}-\d{2}-\d{2}T")
+
+
+def concrete_evidence_date(value: str | None) -> date | None:
+    """Return an explicitly encoded calendar date without resolving symbolic tokens."""
+    if value is None:
+        return None
+    if _ISO_DATE.fullmatch(value):
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+    if not _ISO_DATETIME_PREFIX.match(value):
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).date()
+    except ValueError:
+        return None
 
 
 class EvidenceMaturity(StrEnum):
@@ -43,7 +65,14 @@ class DriverEvidenceMaturity(FrozenModel):
     supporting_evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
     contradicting_evidence_refs: tuple[str, ...] = Field(default=(), max_length=6)
     what_remains_unproven: EvidenceClaim
-    as_of: str = Field(min_length=10, max_length=35)
+    as_of: str = Field(min_length=10, max_length=10, pattern=ISO_DATE_PATTERN)
+
+    @field_validator("as_of")
+    @classmethod
+    def as_of_is_real_calendar_date(cls, value: str) -> str:
+        if concrete_evidence_date(value) is None:
+            raise ValueError("maturity_as_of_invalid_calendar_date")
+        return value
 
     @model_validator(mode="after")
     def references_are_distinct(self) -> DriverEvidenceMaturity:

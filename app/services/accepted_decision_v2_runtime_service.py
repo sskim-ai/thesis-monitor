@@ -53,6 +53,10 @@ from app.services.expectation_valuation_interaction_service import (
     duplicate_directional_anchor_errors,
     interaction_from_packet,
 )
+from app.services.evidence_maturity_pricing_service import (
+    ISO_DATE_PATTERN,
+    concrete_evidence_date,
+)
 from app.services.three_axis_decision_service import HolderDecisionAxis
 
 
@@ -515,6 +519,23 @@ def _compact_owned_evidence(
     )
 
 
+def _compact_stage2_owned_evidence(
+    packet: DecisionEvidencePacket,
+    ref_ids: Sequence[str],
+) -> dict[str, object]:
+    compact = _compact_owned_evidence(packet, ref_ids)
+    rows = compact.get("evidence")
+    if isinstance(rows, list):
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            resolved = concrete_evidence_date(
+                str(row["as_of"]) if row.get("as_of") is not None else None
+            )
+            row["resolved_as_of_date"] = resolved.isoformat() if resolved else None
+    return compact
+
+
 def accepted_v2_fundamental_core_ref_catalog(
     context: AcceptedV2ProductionContext,
     *,
@@ -722,6 +743,7 @@ def accepted_v2_stage2_ref_catalog_manifest(
         raise ValueError("v2_stage2_ref_catalog_subject_mismatch")
 
     visible_refs: set[str] = set()
+    maturity_ref_dates: dict[str, set[str]] = {}
     source_condition_refs: set[str] = set()
     leaf_refs: set[str] = set()
 
@@ -743,6 +765,11 @@ def accepted_v2_stage2_ref_catalog_manifest(
             ):
                 continue
             visible_refs.add(row.ref_id)
+            resolved_date = concrete_evidence_date(row.as_of)
+            if resolved_date is not None:
+                maturity_ref_dates.setdefault(row.ref_id, set()).add(
+                    resolved_date.isoformat()
+                )
             if row.logical_condition is not None:
                 source_condition_refs.add(row.logical_condition.source_condition_ref)
                 collect_source_expression(row.logical_condition.expression)
@@ -757,6 +784,14 @@ def accepted_v2_stage2_ref_catalog_manifest(
             )
 
     ordered_refs = tuple(sorted(visible_refs))
+    ordered_maturity_ref_dates = {
+        ref_id: sorted(maturity_ref_dates[ref_id])
+        for ref_id in sorted(maturity_ref_dates)
+        if ref_id in visible_refs
+    }
+    allowed_maturity_dates = tuple(
+        sorted({value for values in ordered_maturity_ref_dates.values() for value in values})
+    )
     ordered_source_condition_refs = tuple(sorted(source_condition_refs))
     ordered_leaf_refs = tuple(sorted(leaf_refs))
     catalog_hash = canonical_sha256(
@@ -764,6 +799,7 @@ def accepted_v2_stage2_ref_catalog_manifest(
             "contract": STAGE2_EXACT_REF_CONTRACT,
             "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
             "allowed_refs": ordered_refs,
+            "maturity_ref_dates": ordered_maturity_ref_dates,
             "allowed_source_condition_refs": ordered_source_condition_refs,
             "allowed_leaf_refs": ordered_leaf_refs,
         }
@@ -778,6 +814,10 @@ def accepted_v2_stage2_ref_catalog_manifest(
         "ref_catalog_hash": catalog_hash,
         "ref_catalog_count": len(ordered_refs),
         "allowed_refs": list(ordered_refs),
+        "maturity_date_catalog_hash": canonical_sha256(ordered_maturity_ref_dates),
+        "maturity_date_count": len(allowed_maturity_dates),
+        "allowed_maturity_dates": list(allowed_maturity_dates),
+        "maturity_ref_dates": ordered_maturity_ref_dates,
         "source_condition_ref_count": len(ordered_source_condition_refs),
         "allowed_source_condition_refs": list(ordered_source_condition_refs),
         "leaf_ref_count": len(ordered_leaf_refs),
@@ -798,7 +838,7 @@ def accepted_v2_stage2_output_schema(
         raise ValueError("v2_stage2_ref_catalog_empty")
     if not isinstance(source_condition_refs, list) or not isinstance(leaf_refs, list):
         raise ValueError("v2_stage2_logical_ref_catalog_invalid")
-    return _exact_ref_output_schema(
+    schema = _exact_ref_output_schema(
         AcceptedV2ProductionBatchOutput.model_json_schema(),
         evidence_ref_fields=(
             ("EvidenceClaim", "evidence_refs"),
@@ -810,6 +850,47 @@ def accepted_v2_stage2_output_schema(
         leaf_refs=leaf_refs,
         error_prefix="v2_stage2",
     )
+    selected = tuple(subjects or context.selected_subjects)
+    allowed_dates = manifest["allowed_maturity_dates"]
+    if not isinstance(allowed_dates, list) or not allowed_dates:
+        raise ValueError("v2_stage2_maturity_date_catalog_empty")
+    try:
+        properties = schema["properties"]
+        definitions = schema["$defs"]
+        maturity_as_of = definitions["DriverEvidenceMaturity"]["properties"]["as_of"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("v2_stage2_typed_schema_path_missing") from exc
+    for field_name, value in (
+        ("packet_id", context.packet_id),
+        ("claim_id", context.claim_id),
+        ("market", context.market),
+        ("assessment_date", context.assessment_date),
+    ):
+        field = properties[field_name]
+        if not isinstance(field, dict):
+            raise ValueError(f"v2_stage2_identity_schema_invalid:{field_name}")
+        field["const"] = value
+    for definition in (
+        "AcceptedV2Adjudication",
+        "AcceptedV2FundamentalCoreCandidate",
+        "PreconfirmationDecisionCandidate",
+    ):
+        ticker = definitions[definition]["properties"]["ticker"]
+        if not isinstance(ticker, dict):
+            raise ValueError(f"v2_stage2_ticker_schema_invalid:{definition}")
+        ticker["enum"] = list(selected)
+    if not isinstance(maturity_as_of, dict):
+        raise ValueError("v2_stage2_maturity_date_schema_invalid")
+    maturity_as_of.update(
+        {
+            "type": "string",
+            "pattern": ISO_DATE_PATTERN,
+            "minLength": 10,
+            "maxLength": 10,
+            "enum": allowed_dates,
+        }
+    )
+    return schema
 
 
 def accepted_v2_fundamental_core_prompt(
@@ -905,15 +986,17 @@ def accepted_v2_production_prompt(
         "shared_contract": ref_catalog["shared_contract"],
         "ref_catalog_hash": ref_catalog["ref_catalog_hash"],
         "ref_catalog_count": ref_catalog["ref_catalog_count"],
+        "maturity_date_catalog_hash": ref_catalog["maturity_date_catalog_hash"],
+        "maturity_date_count": ref_catalog["maturity_date_count"],
     }
     payload = [
         {
             "frozen_fundamental_core": cores[ticker].model_dump(mode="json"),
             "fundamental_core_sha256": accepted_v2_fundamental_core_sha256(cores[ticker]),
-            "fundamental_core_evidence": _compact_owned_evidence(
+            "fundamental_core_evidence": _compact_stage2_owned_evidence(
                 packets[ticker], ownership[ticker].core_ref_ids
             ),
-            "price_timing_evidence": _compact_owned_evidence(
+            "price_timing_evidence": _compact_stage2_owned_evidence(
                 packets[ticker], ownership[ticker].timing_ref_ids
             ),
             "expectation_valuation_interaction": ownership[
@@ -935,6 +1018,8 @@ Set post_confirmation_hold=true only when decision=HOLD and overall_maturity.mat
 Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count the same underlying valuation signal once as high expectations and again as expensive valuation. Preserve genuinely independent expectation evidence. Do not force GOOGL or any other ticker to a target enum.
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
+
+Every driver_maturity.as_of must be an exact YYYY-MM-DD date owned by at least one evidence ref cited in that same driver_maturity row. Use each evidence item's resolved_as_of_date when non-null. A symbolic source value such as latest has no concrete date ownership: it may be cited only when another cited ref in the same row owns the emitted date. Never write latest, current, today, a placeholder, padded text, or an invented date.
 
 Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
 

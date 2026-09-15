@@ -229,7 +229,11 @@ def _observation_fact(
             fields["level_pct"] = value
         if change_value is not None:
             fields["change_bp"] = change_value * 100.0
-        if fact_type in {"market_nominal_yield", "market_real_yield"}:
+        if fact_type in {
+            "market_nominal_yield",
+            "market_real_yield",
+            "market_breakeven_inflation",
+        }:
             previous_value = _number(item, "previous_value")
             if previous_value is not None:
                 fields["previous_level_pct"] = previous_value
@@ -239,7 +243,7 @@ def _observation_fact(
             if previous_date:
                 fields["previous_observation_date"] = str(previous_date)
             elif (
-                fact_type == "market_real_yield"
+                fact_type in {"market_real_yield", "market_breakeven_inflation"}
                 and isinstance(temporal, dict)
                 and temporal.get("prior_observation_date")
             ):

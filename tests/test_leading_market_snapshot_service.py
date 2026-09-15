@@ -83,6 +83,40 @@ def test_change_must_use_the_declared_futures_reference_basis() -> None:
         LeadingMarketObservation.model_validate(payload)
 
 
+def test_level_only_observation_renders_without_fabricated_change() -> None:
+    source = _source(market="kr").model_copy(update={"reference_basis": None})
+    observation = _observation("KOSPI200-NIGHT").model_copy(
+        update={
+            "display_name": "KOSPI200 야간선물",
+            "current_price": 1093.9,
+            "reference_price": None,
+            "change_pct": None,
+            "reference_basis": None,
+            "source_timezone": "Asia/Seoul",
+        }
+    )
+    snapshot = LeadingMarketSnapshot(
+        market="kr",
+        session_state=LeadingMarketSessionState.ACTIVE_FUTURES_SESSION,
+        observations=(observation,),
+        collected_at=NOW - timedelta(seconds=10),
+    )
+
+    rendered = render_leading_market_block(snapshot, source, now=NOW)
+
+    assert rendered.status == "VISIBLE"
+    assert "KOSPI200 야간선물 1,093.90" in rendered.text
+    assert "%" not in rendered.text
+
+
+def test_partial_comparison_is_rejected() -> None:
+    payload = _observation().model_dump()
+    payload["change_pct"] = None
+
+    with pytest.raises(ValidationError, match="leading_market_partial_comparison_forbidden"):
+        LeadingMarketObservation.model_validate(payload)
+
+
 def test_stale_and_closed_sessions_never_render_as_current() -> None:
     stale = _snapshot(_observation(as_of=NOW - timedelta(minutes=10)))
     closed = LeadingMarketSnapshot(

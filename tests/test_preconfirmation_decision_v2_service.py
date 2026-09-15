@@ -254,6 +254,42 @@ def _candidate_with_current_core_sha(
     )
 
 
+def test_driver_maturity_date_must_be_owned_by_a_cited_ref() -> None:
+    candidate = _candidate()
+    row = candidate.driver_maturity[0].model_copy(update={"as_of": "2026-08-29"})
+
+    validation = validate_preconfirmation_candidate(
+        _packet(),
+        candidate.model_copy(update={"driver_maturity": (row,)}),
+    )
+
+    assert "maturity_evidence_date_not_owned:신규 제품 수익화" in validation.errors
+
+
+def test_symbolic_only_maturity_evidence_is_fail_closed() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"as_of": "latest"})
+        if row.ref_id == "ref:thesis"
+        else row
+        for row in packet.evidence
+    )
+    candidate = _candidate()
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_evidence_refs": ("ref:thesis",),
+            "contradicting_evidence_refs": (),
+        }
+    )
+
+    validation = validate_preconfirmation_candidate(
+        packet.model_copy(update={"evidence": evidence}),
+        candidate.model_copy(update={"driver_maturity": (maturity,)}),
+    )
+
+    assert "maturity_evidence_date_unresolvable:신규 제품 수익화" in validation.errors
+
+
 def _core(candidate: PreconfirmationDecisionCandidate | None = None):
     return accepted_v2_fundamental_core_from_candidate(candidate or _candidate())
 

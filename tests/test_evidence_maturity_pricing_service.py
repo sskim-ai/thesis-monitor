@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from app.services.cross_market_decision_engine_service import EvidenceClaim
 from app.services.evidence_maturity_pricing_service import (
     DriverEvidenceMaturity,
@@ -63,3 +66,45 @@ def test_existing_expectation_enum_and_pricing_requirement_remain_separate() -> 
     assert expectation.level == "low"
     assert pricing.requirement == "BASE_CASE_REQUIRED"
     assert overall.maturity == "MIXED"
+
+
+@pytest.mark.parametrize(
+    "invalid_as_of",
+    (
+        "latest",
+        "latest00000000000",
+        "current",
+        "today",
+        "2026-9-15",
+        "2026-99-99",
+        "          ",
+        "2026-08-30T00:00:00Z",
+    ),
+)
+def test_driver_maturity_requires_a_real_iso_calendar_date(invalid_as_of: str) -> None:
+    with pytest.raises(ValidationError):
+        DriverEvidenceMaturity(
+            driver="현금전환",
+            decisive=True,
+            maturity=EvidenceMaturity.PARTIAL,
+            supporting_evidence_refs=("ref:earnings",),
+            what_remains_unproven=_claim("ref:unknown"),
+            as_of=invalid_as_of,
+        )
+
+
+def test_driver_and_reasoning_fields_remain_free_narrative_text() -> None:
+    row = DriverEvidenceMaturity(
+        driver="Cash conversion durability after the build-out phase",
+        decisive=True,
+        maturity=EvidenceMaturity.PARTIAL,
+        supporting_evidence_refs=("ref:earnings",),
+        what_remains_unproven=_claim(
+            "ref:unknown",
+            "다음 정식 공시에서 영업현금흐름과 재투자 부담의 지속성을 다시 확인합니다.",
+        ),
+        as_of="2026-08-30",
+    )
+
+    assert row.driver.startswith("Cash conversion")
+    assert "다음 정식 공시" in row.what_remains_unproven.text

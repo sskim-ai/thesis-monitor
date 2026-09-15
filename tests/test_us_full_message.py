@@ -480,6 +480,106 @@ def test_nominal_treasury_curve_uses_same_series_observation_pairs() -> None:
     assert len(rendered.treasury_fact_ids) == 4
 
 
+def test_treasury_companions_keep_direct_series_and_distinct_daily_dates() -> None:
+    context = _context()
+    rates = (
+        ("DGS3", "market_nominal_yield", "3년", 3.72, 3.74, "2026-09-01"),
+        ("DGS5", "market_nominal_yield", "5년", 3.84, 3.83, "2026-09-01"),
+        ("DGS10", "market_nominal_yield", "10년", 4.21, 4.17, "2026-09-01"),
+        ("DGS30", "market_nominal_yield", "30년", 4.86, 4.80, "2026-09-01"),
+        ("DFII10", "market_real_yield", "10년 실질금리", 1.91, 1.89, "2026-08-31"),
+        (
+            "T10YIE",
+            "market_breakeven_inflation",
+            "10년 기대인플레이션",
+            2.30,
+            2.31,
+            "2026-08-31",
+        ),
+    )
+    for series, fact_type, label, current, previous, observed in rates:
+        context["fact_catalog"].append(
+            {
+                "fact_id": f"market:{fact_type.removeprefix('market_')}:{series}",
+                "fact_type": fact_type,
+                "as_of_date": observed,
+                "fields": {
+                    "series_code": series,
+                    "label": label,
+                    "level_pct": current,
+                    "previous_level_pct": previous,
+                    "previous_observation_date": "2026-08-28",
+                    "change_bp": (current - previous) * 100,
+                    "temporal_role": "CURRENT_OBSERVATION",
+                    "today_signal_eligible": True,
+                    "structured_state": "CURRENT_DIRECTIONAL",
+                },
+            }
+        )
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert "🌐 미국 국채금리\n" in rendered.text
+    assert "• 5년: 3.84% · +1bp (09/01 관측)" in rendered.text
+    assert "• 10년 실질금리: 1.91% · +2bp (08/31 관측)" in rendered.text
+    assert "• 10년 기대인플레이션: 2.30% · -1bp (08/31 관측)" in rendered.text
+    assert rendered.treasury_fact_ids == (
+        "market:nominal_yield:DGS3",
+        "market:nominal_yield:DGS5",
+        "market:nominal_yield:DGS10",
+        "market:nominal_yield:DGS30",
+        "market:real_yield:DFII10",
+        "market:breakeven_inflation:T10YIE",
+    )
+
+
+def test_daily_treasury_and_current_futures_keep_separate_time_layers() -> None:
+    context = _context()
+    values = {
+        "DGS3": (3.72, 3.74),
+        "DGS5": (3.84, 3.83),
+        "DGS10": (4.21, 4.17),
+        "DGS30": (4.86, 4.80),
+    }
+    for series, (current, previous) in values.items():
+        context["fact_catalog"].append(
+            {
+                "fact_id": f"market:nominal_yield:{series}",
+                "fact_type": "market_nominal_yield",
+                "as_of_date": "2026-09-01",
+                "fields": {
+                    "series_code": series,
+                    "level_pct": current,
+                    "previous_level_pct": previous,
+                    "previous_observation_date": "2026-08-31",
+                    "change_bp": (current - previous) * 100,
+                },
+            }
+        )
+    context["leading_market_context"] = _leading_context()
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.section_order == (
+        "HEADER",
+        "INDEX_BLOCK",
+        "MARKET_INTERNAL",
+        "TREASURY_CURVE",
+        "LEADING_MARKET",
+        "NEXT_CHECK",
+    )
+    assert rendered.text.index("완료 세션 2026-08-27") < rendered.text.index(
+        "미국 국채금리 · 09/01 관측"
+    )
+    assert rendered.text.index("미국 국채금리 · 09/01 관측") < rendered.text.index(
+        "현재 선행시장 · 2026-08-28 09:29 KST"
+    )
+    assert "business_delta" not in vars(rendered)
+    assert "holder_axis" not in vars(rendered)
+
+
 def test_dual_market_test_message_keeps_treasury_and_suppresses_night() -> None:
     context = _context()
     context["night_futures"] = [

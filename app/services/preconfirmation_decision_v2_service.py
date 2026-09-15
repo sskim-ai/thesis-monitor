@@ -23,6 +23,7 @@ from app.services.evidence_maturity_pricing_service import (
     OverallMaturityAssessment,
     PricingRequirement,
     PricingRequirementAssessment,
+    concrete_evidence_date,
     decisive_maturities,
 )
 from app.services.directional_balance_service import (
@@ -422,10 +423,22 @@ def _validate_preconfirmation_candidate(
         errors.append("unsupported_metric_or_inference")
 
     for row in candidate.driver_maturity:
+        cited_dates = {
+            resolved
+            for ref_id in (*row.supporting_evidence_refs, *row.contradicting_evidence_refs)
+            if ref_id in refs
+            if (resolved := concrete_evidence_date(refs[ref_id].as_of)) is not None
+        }
         for ref_id in (*row.supporting_evidence_refs, *row.contradicting_evidence_refs):
             if ref_id not in refs:
                 errors.append(f"unknown_maturity_ref:{ref_id}")
-        if row.as_of[:10] > packet.assessment_date[:10]:
+        row_date = concrete_evidence_date(row.as_of)
+        assessment_date = concrete_evidence_date(packet.assessment_date)
+        if not cited_dates:
+            errors.append(f"maturity_evidence_date_unresolvable:{row.driver}")
+        elif row_date not in cited_dates:
+            errors.append(f"maturity_evidence_date_not_owned:{row.driver}")
+        if row_date is not None and assessment_date is not None and row_date > assessment_date:
             errors.append(f"future_maturity_evidence:{row.driver}")
 
     expectation_categories = _claim_categories(packet, (candidate.market_expectation.basis,))

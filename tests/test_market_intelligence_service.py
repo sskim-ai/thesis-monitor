@@ -165,6 +165,45 @@ def test_fx_change_uses_its_exact_field_for_key_change_selection() -> None:
     assert result["key_change_fact_ids"] == ["market:fx:USDKRW"]
 
 
+def test_real_yield_and_breakeven_preserve_previous_valid_observation_identity() -> None:
+    observations = []
+    for series, category, current, previous in (
+        ("DFII10", "real_rates", 1.91, 1.89),
+        ("T10YIE", "inflation", 2.30, 2.31),
+    ):
+        observations.append(
+            {
+                **_observation(
+                    series,
+                    category,
+                    current,
+                    (current / previous - 1) * 100,
+                    change_value=current - previous,
+                ),
+                "previous_value": previous,
+                "temporal": {
+                    "temporal_role": "CURRENT_OBSERVATION",
+                    "today_signal_eligible": True,
+                    "important_change_eligible": True,
+                    "prior_observation_date": "2026-08-11",
+                    "reason": "same_series_previous_valid_observation",
+                },
+            }
+        )
+
+    result = build_market_intelligence(
+        _briefing(observations), RUN_DATE, _stocks(), [], market="us"
+    )
+    facts = {item["fact_id"]: item for item in result["fact_catalog"]}
+
+    for fact_id, expected_previous in (
+        ("market:real_yield:DFII10", 1.89),
+        ("market:breakeven_inflation:T10YIE", 2.31),
+    ):
+        assert facts[fact_id]["fields"]["previous_level_pct"] == expected_previous
+        assert facts[fact_id]["fields"]["previous_observation_date"] == "2026-08-11"
+
+
 def test_us_indices_are_local_proxies_but_breadth_remains_unknown() -> None:
     result = build_market_intelligence(
         _briefing(_observations()), RUN_DATE, _stocks(), [], market="us"

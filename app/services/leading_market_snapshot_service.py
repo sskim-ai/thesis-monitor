@@ -14,6 +14,11 @@ from app.services.cross_market_decision_engine_service import FrozenModel
 
 CONTRACT_VERSION = "leading-market-snapshot-v1"
 CONTEXT_KEY = "leading_market_context"
+LeadingMarketReferenceBasis = Literal[
+    "PRIOR_OFFICIAL_SETTLEMENT",
+    "PROVIDER_DOCUMENTED_REFERENCE",
+    "PRIOR_COMPARABLE_NIGHT_CLOSE",
+]
 
 
 class LeadingMarketSessionState(StrEnum):
@@ -33,7 +38,7 @@ class LeadingMarketSourceContract(FrozenModel):
     provider: str
     market: Literal["us", "kr"]
     instrument_ids: tuple[str, ...] = Field(min_length=1)
-    reference_basis: Literal["PRIOR_OFFICIAL_SETTLEMENT", "PROVIDER_DOCUMENTED_REFERENCE"]
+    reference_basis: LeadingMarketReferenceBasis | None = None
     active_max_age_seconds: int = Field(gt=0)
     preopen_max_age_seconds: int = Field(gt=0)
     source_timezone: str
@@ -56,9 +61,9 @@ class LeadingMarketObservation(FrozenModel):
     provider: str
     session_id: str
     current_price: float
-    reference_price: float
-    change_pct: float
-    reference_basis: Literal["PRIOR_OFFICIAL_SETTLEMENT", "PROVIDER_DOCUMENTED_REFERENCE"]
+    reference_price: float | None = None
+    change_pct: float | None = None
+    reference_basis: LeadingMarketReferenceBasis | None = None
     as_of: datetime
     source_timezone: str
     source_document_or_endpoint: str
@@ -67,12 +72,19 @@ class LeadingMarketObservation(FrozenModel):
     def validate_observation(self) -> LeadingMarketObservation:
         if self.as_of.tzinfo is None or self.as_of.utcoffset() is None:
             raise ValueError("leading_market_naive_asof")
-        if not all(
-            math.isfinite(value)
-            for value in (self.current_price, self.reference_price, self.change_pct)
+        comparison = (self.reference_price, self.change_pct, self.reference_basis)
+        if any(value is None for value in comparison) and not all(
+            value is None for value in comparison
         ):
+            raise ValueError("leading_market_partial_comparison_forbidden")
+        numeric_values = [self.current_price]
+        if self.reference_price is not None and self.change_pct is not None:
+            numeric_values.extend((self.reference_price, self.change_pct))
+        if not all(math.isfinite(value) for value in numeric_values):
             raise ValueError("leading_market_nonfinite_value")
-        if self.current_price <= 0 or self.reference_price <= 0:
+        if self.current_price <= 0 or (
+            self.reference_price is not None and self.reference_price <= 0
+        ):
             raise ValueError("leading_market_nonpositive_price")
         if not all(
             value.strip()
@@ -89,9 +101,10 @@ class LeadingMarketObservation(FrozenModel):
             ZoneInfo(self.source_timezone)
         except (KeyError, ValueError) as exc:
             raise ValueError("leading_market_observation_timezone_invalid") from exc
-        expected = (self.current_price / self.reference_price - 1) * 100
-        if not math.isclose(expected, self.change_pct, rel_tol=0, abs_tol=0.005):
-            raise ValueError("leading_market_change_basis_mismatch")
+        if self.reference_price is not None and self.change_pct is not None:
+            expected = (self.current_price / self.reference_price - 1) * 100
+            if not math.isclose(expected, self.change_pct, rel_tol=0, abs_tol=0.005):
+                raise ValueError("leading_market_change_basis_mismatch")
         return self
 
 
@@ -238,7 +251,11 @@ def render_leading_market_block(
     heading = "현재 선행시장" if snapshot.market == "us" else "현재 선행시장 / 야간선물"
     lines = [f"⏱ {heading} · {kst}"]
     lines.extend(
-        f"• {row.display_name} {row.change_pct:+.2f}%"
+        (
+            f"• {row.display_name} {row.change_pct:+.2f}%"
+            if row.change_pct is not None
+            else f"• {row.display_name} {row.current_price:,.2f}"
+        )
         for row in snapshot.observations
     )
     lines.append("• 선물은 현재 선행 신호이며 완료된 정규장 신호가 아닙니다.")

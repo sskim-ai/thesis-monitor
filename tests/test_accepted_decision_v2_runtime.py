@@ -449,6 +449,31 @@ def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
     assert "Never edit, append, shorten, infer, synthesize, guess, or repair" in prompt
 
 
+def test_stage2_typed_identity_and_maturity_date_schema_are_closed() -> None:
+    context = _stage2_exact_ref_context()
+    subjects = ("CORZ", "IBM")
+    schema = accepted_v2_stage2_output_schema(context, subjects=subjects)
+    manifest = accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects)
+
+    assert schema["properties"]["packet_id"]["const"] == context.packet_id
+    assert schema["properties"]["claim_id"]["const"] == context.claim_id
+    assert schema["properties"]["market"]["const"] == context.market
+    assert schema["properties"]["assessment_date"]["const"] == context.assessment_date
+    for definition in (
+        "AcceptedV2Adjudication",
+        "AcceptedV2FundamentalCoreCandidate",
+        "PreconfirmationDecisionCandidate",
+    ):
+        assert schema["$defs"][definition]["properties"]["ticker"]["enum"] == list(
+            subjects
+        )
+    as_of = schema["$defs"]["DriverEvidenceMaturity"]["properties"]["as_of"]
+    assert as_of["pattern"] == r"^\d{4}-\d{2}-\d{2}$"
+    assert as_of["minLength"] == as_of["maxLength"] == 10
+    assert as_of["enum"] == manifest["allowed_maturity_dates"]
+    assert "latest" not in as_of["enum"]
+
+
 def test_stage2_exact_ref_positive_fixtures() -> None:
     context = _stage2_exact_ref_context()
     schema = accepted_v2_stage2_output_schema(context, subjects=("CORZ", "IBM"))
