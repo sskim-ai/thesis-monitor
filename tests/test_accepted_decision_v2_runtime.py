@@ -15,7 +15,9 @@ from app.jobs.accepted_decision_v2_runtime import (
     _signed_in_codex_bin,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2FundamentalCoreBatch,
     AcceptedV2FundamentalCoreCandidate,
+    accepted_v2_fundamental_core_batch_identity_manifest,
     accepted_v2_fundamental_core_output_schema,
     accepted_v2_fundamental_core_prompt,
     accepted_v2_fundamental_core_ref_catalog_manifest,
@@ -28,6 +30,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     build_accepted_v2_production_context,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
 )
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
@@ -170,6 +173,24 @@ def _exact_ref_context():
         evidence_packets=(rxrx, ibm),
     )
     return context
+
+
+def _batch_identity_context():
+    packets = tuple(
+        _fundamental_packet(ticker, f"decision-evidence:{ticker.lower()}-owned")
+        for ticker in ("GOOGL", "HUT", "IBM")
+    )
+    first = packets[0]
+    return build_accepted_v2_production_context(
+        packet={
+            "packet_id": first.packet_id,
+            "market": first.market,
+            "assessment_date": first.assessment_date,
+            "stocks": [{"ticker": packet.ticker} for packet in packets],
+        },
+        claim_id="claim-batch-identity",
+        evidence_packets=packets,
+    )
 
 
 def _stage2_exact_ref_context():
@@ -336,6 +357,172 @@ def test_fundamental_core_exact_ref_schema_inventory_and_catalog_identity() -> N
     assert schema["$defs"]["EvidenceClaim"]["properties"]["text"].get("enum") is None
     assert "Evidence refs are identifiers." in prompt
     assert "Never synthesize, shorten, edit, guess, or repair an evidence ref." in prompt
+
+
+def test_fundamental_core_schema_closes_dynamic_batch_and_identity() -> None:
+    context = _batch_identity_context()
+    subjects = ("GOOGL", "HUT", "IBM")
+    schema = accepted_v2_fundamental_core_output_schema(context, subjects=subjects)
+    properties = schema["properties"]
+    cores = properties["cores"]
+    ticker = schema["$defs"]["AcceptedV2FundamentalCoreCandidate"]["properties"][
+        "ticker"
+    ]
+
+    assert cores["minItems"] == cores["maxItems"] == 3
+    assert ticker["enum"] == list(subjects)
+    assert properties["contract"]["const"] == "v2-accepted-fundamental-core-v1"
+    assert properties["packet_id"]["const"] == context.packet_id
+    assert properties["claim_id"]["const"] == context.claim_id
+    assert properties["market"]["const"] == context.market
+    assert properties["assessment_date"]["const"] == context.assessment_date
+
+    manifest = accepted_v2_fundamental_core_batch_identity_manifest(
+        context,
+        subjects=subjects,
+    )
+    assert manifest["contract"] == "fundamental-core-batch-identity-v1"
+    assert manifest["expected_subject_count"] == 3
+    assert manifest["expected_tickers"] == list(subjects)
+    assert len(str(manifest["ticker_domain_hash"])) == 64
+    assert len(str(manifest["identity_contract_hash"])) == 64
+
+
+def test_fundamental_core_schema_cardinality_is_generated_per_batch() -> None:
+    context = _batch_identity_context()
+    three = accepted_v2_fundamental_core_output_schema(
+        context,
+        subjects=("GOOGL", "HUT", "IBM"),
+    )["properties"]["cores"]
+    two = accepted_v2_fundamental_core_output_schema(
+        context,
+        subjects=("GOOGL", "HUT"),
+    )["properties"]["cores"]
+
+    assert (three["minItems"], three["maxItems"]) == (3, 3)
+    assert (two["minItems"], two["maxItems"]) == (2, 2)
+
+
+def test_fundamental_core_old_batch2_omission_fails_repaired_cardinality() -> None:
+    context = _batch_identity_context()
+    subjects = ("GOOGL", "HUT", "IBM")
+    schema = accepted_v2_fundamental_core_output_schema(context, subjects=subjects)
+    returned = ("GOOGL", "HUT")
+
+    assert len(returned) < schema["properties"]["cores"]["minItems"]
+
+
+def test_fundamental_core_prompt_closes_subject_completeness_and_order() -> None:
+    prompt = accepted_v2_fundamental_core_prompt(
+        _batch_identity_context(),
+        subjects=("GOOGL", "HUT", "IBM"),
+    )
+
+    assert "Emit exactly one core for every supplied ticker" in prompt
+    assert "in the same order as FUNDAMENTAL_CORE_CONTEXT" in prompt
+    assert "Do not omit, duplicate, replace, or reorder subjects" in prompt
+
+
+def test_fundamental_core_batch_scope_accepts_exact_three_and_two() -> None:
+    context = _batch_identity_context()
+    cores = tuple(
+        _fundamental_core(ticker, f"decision-evidence:{ticker.lower()}-owned")
+        for ticker in ("GOOGL", "HUT", "IBM")
+    )
+    batch = AcceptedV2FundamentalCoreBatch(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        cores=cores,
+    )
+
+    assert (
+        validate_accepted_v2_fundamental_core_batch_scope(
+            batch,
+            context,
+            subjects=("GOOGL", "HUT", "IBM"),
+        )
+        == ()
+    )
+    assert (
+        validate_accepted_v2_fundamental_core_batch_scope(
+            batch.model_copy(update={"cores": cores[:2]}),
+            context,
+            subjects=("GOOGL", "HUT"),
+        )
+        == ()
+    )
+
+
+@pytest.mark.parametrize(
+    ("returned", "expected_error"),
+    (
+        (("GOOGL", "HUT"), "cardinality_mismatch:expected=3:returned=2"),
+        (
+            ("GOOGL", "HUT", "IBM", "IBM"),
+            "cardinality_mismatch:expected=3:returned=4",
+        ),
+        (("GOOGL", "GOOGL", "HUT"), "duplicate_ticker:GOOGL"),
+        (("GOOGL", "HUT", "TSLA"), "extra_ticker:TSLA"),
+    ),
+)
+def test_fundamental_core_batch_scope_rejects_cardinality_and_ticker_set(
+    returned: tuple[str, ...],
+    expected_error: str,
+) -> None:
+    context = _batch_identity_context()
+    batch = AcceptedV2FundamentalCoreBatch(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        cores=tuple(
+            _fundamental_core(ticker, "decision-evidence:googl-owned")
+            for ticker in returned
+        ),
+    )
+
+    errors = validate_accepted_v2_fundamental_core_batch_scope(
+        batch,
+        context,
+        subjects=("GOOGL", "HUT", "IBM"),
+    )
+
+    assert expected_error in errors
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "expected_error"),
+    (
+        ("packet_id", "wrong-packet", "packet_id_mismatch"),
+        ("claim_id", "wrong-claim", "claim_id_mismatch"),
+        ("market", "kr", "market_mismatch"),
+        ("assessment_date", "2026-09-14", "assessment_date_mismatch"),
+    ),
+)
+def test_fundamental_core_batch_scope_rejects_top_level_identity(
+    field: str,
+    value: str,
+    expected_error: str,
+) -> None:
+    context = _batch_identity_context()
+    batch = AcceptedV2FundamentalCoreBatch(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        cores=tuple(
+            _fundamental_core(ticker, f"decision-evidence:{ticker.lower()}-owned")
+            for ticker in ("GOOGL", "HUT", "IBM")
+        ),
+    ).model_copy(update={field: value})
+
+    assert expected_error in validate_accepted_v2_fundamental_core_batch_scope(
+        batch,
+        context,
+        subjects=("GOOGL", "HUT", "IBM"),
+    )
 
 
 def test_fundamental_core_exact_ref_positive_fixtures() -> None:

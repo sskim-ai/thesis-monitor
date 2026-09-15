@@ -29,6 +29,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     build_accepted_v2_production_context,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
 )
 from app.services.accepted_decision_v2_service import (
     AcceptedDecisionStatus,
@@ -321,13 +322,10 @@ def generate_onboarding_accepted_decision(
     core_output = AcceptedV2FundamentalCoreBatch.model_validate_json(
         paths["core_output"].read_text(encoding="utf-8")
     )
-    if (
-        core_output.packet_id != packet.packet_id
-        or core_output.claim_id != claim_id
-        or core_output.market != packet.market
-        or core_output.assessment_date != packet.assessment_date
-        or len(core_output.cores) != 1
-        or core_output.cores[0].ticker != item.ticker
+    if validate_accepted_v2_fundamental_core_batch_scope(
+        core_output,
+        context,
+        subjects=(item.ticker,),
     ):
         raise ValueError("onboarding_fundamental_core_identity_mismatch")
     core = core_output.cores[0]

@@ -36,6 +36,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     build_accepted_v2_production_context,
     validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
     validate_accepted_v2_production_output,
 )
 from app.services.cross_market_decision_engine_service import (
@@ -150,14 +151,12 @@ def _codex_batch(
             state_namespace=state_namespace or context.claim_id,
         )
         batch = AcceptedV2FundamentalCoreBatch.model_validate(_read_json(output))
-        if (
-            batch.packet_id != context.packet_id
-            or batch.claim_id != context.claim_id
-            or batch.market != context.market
-            or batch.assessment_date != context.assessment_date
-            or {row.ticker for row in batch.cores} != set(subjects)
-            or len(batch.cores) != len(subjects)
-        ):
+        scope_errors = validate_accepted_v2_fundamental_core_batch_scope(
+            batch,
+            context,
+            subjects=subjects,
+        )
+        if scope_errors:
             raise ValueError(f"preflight_fundamental_core_scope_mismatch:{batch_number}")
         by_ticker = {row.ticker: row for row in batch.cores}
         for ticker in subjects:

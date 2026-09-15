@@ -71,6 +71,9 @@ FUNDAMENTAL_CORE_CONTRACT = "v2-accepted-fundamental-core-v1"
 FUNDAMENTAL_CORE_EXACT_REF_CONTRACT = "fundamental-core-exact-ref-fidelity-v1"
 EXACT_REF_FIDELITY_CONTRACT = "model-output-exact-ref-fidelity-v1"
 STAGE2_EXACT_REF_CONTRACT = "stage2-exact-ref-fidelity-v1"
+FUNDAMENTAL_CORE_BATCH_IDENTITY_CONTRACT = (
+    "fundamental-core-batch-identity-v1"
+)
 
 
 class AcceptedV2EvidenceOwnership(FrozenModel):
@@ -103,6 +106,42 @@ class AcceptedV2FundamentalCoreBatch(FrozenModel):
     )
 
 
+def validate_accepted_v2_fundamental_core_batch_scope(
+    batch: AcceptedV2FundamentalCoreBatch,
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str],
+) -> tuple[str, ...]:
+    expected = tuple(subjects)
+    returned = tuple(row.ticker for row in batch.cores)
+    errors: list[str] = []
+    if batch.packet_id != context.packet_id:
+        errors.append("packet_id_mismatch")
+    if batch.claim_id != context.claim_id:
+        errors.append("claim_id_mismatch")
+    if batch.market != context.market:
+        errors.append("market_mismatch")
+    if batch.assessment_date != context.assessment_date:
+        errors.append("assessment_date_mismatch")
+    if len(returned) != len(expected):
+        errors.append(
+            f"cardinality_mismatch:expected={len(expected)}:returned={len(returned)}"
+        )
+    counts = Counter(returned)
+    errors.extend(
+        f"duplicate_ticker:{ticker}"
+        for ticker, count in sorted(counts.items())
+        if count > 1
+    )
+    expected_set = set(expected)
+    returned_set = set(returned)
+    errors.extend(f"missing_ticker:{ticker}" for ticker in expected if ticker not in returned_set)
+    errors.extend(
+        f"extra_ticker:{ticker}" for ticker in returned if ticker not in expected_set
+    )
+    return tuple(errors)
+
+
 class AcceptedV2ProductionBaseline(FrozenModel):
     ticker: str
     market: Literal["kr", "us"]
@@ -130,6 +169,38 @@ class AcceptedV2ProductionContext(FrozenModel):
     )
     prior_accepted: tuple[AcceptedV2ProductionBaseline, ...] = Field(default=(), max_length=20)
     prepared_at: str
+
+
+def accepted_v2_fundamental_core_batch_identity_manifest(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> dict[str, object]:
+    selected = tuple(subjects or context.selected_subjects)
+    if (
+        not selected
+        or len(set(selected)) != len(selected)
+        or not set(selected).issubset(context.selected_subjects)
+    ):
+        raise ValueError("v2_fundamental_core_identity_subject_mismatch")
+    identity = {
+        "contract": FUNDAMENTAL_CORE_CONTRACT,
+        "packet_id": context.packet_id,
+        "claim_id": context.claim_id,
+        "market": context.market,
+        "assessment_date": context.assessment_date,
+    }
+    contract_payload = {
+        "contract": FUNDAMENTAL_CORE_BATCH_IDENTITY_CONTRACT,
+        "identity": identity,
+        "expected_subject_count": len(selected),
+        "expected_tickers": list(selected),
+    }
+    return {
+        **contract_payload,
+        "ticker_domain_hash": canonical_sha256(list(selected)),
+        "identity_contract_hash": canonical_sha256(contract_payload),
+    }
 
 
 class AcceptedV2ProductionBatchOutput(FrozenModel):
@@ -684,9 +755,14 @@ def accepted_v2_fundamental_core_output_schema(
     *,
     subjects: Sequence[str] | None = None,
 ) -> dict[str, object]:
-    manifest = accepted_v2_fundamental_core_ref_catalog_manifest(
+    identity_manifest = accepted_v2_fundamental_core_batch_identity_manifest(
         context,
         subjects=subjects,
+    )
+    selected = tuple(str(value) for value in identity_manifest["expected_tickers"])
+    manifest = accepted_v2_fundamental_core_ref_catalog_manifest(
+        context,
+        subjects=selected,
     )
     refs = manifest["allowed_refs"]
     source_condition_refs = manifest["allowed_source_condition_refs"]
@@ -694,7 +770,7 @@ def accepted_v2_fundamental_core_output_schema(
     if not isinstance(refs, list) or not refs:
         raise ValueError("v2_fundamental_core_ref_catalog_empty")
 
-    return _exact_ref_output_schema(
+    schema = _exact_ref_output_schema(
         AcceptedV2FundamentalCoreBatch.model_json_schema(),
         evidence_ref_fields=(("EvidenceClaim", "evidence_refs"),),
         refs=refs,
@@ -702,6 +778,34 @@ def accepted_v2_fundamental_core_output_schema(
         leaf_refs=leaf_refs,
         error_prefix="v2_fundamental_core",
     )
+    try:
+        properties = schema["properties"]
+        definitions = schema["$defs"]
+        cores = properties["cores"]
+        ticker = definitions["AcceptedV2FundamentalCoreCandidate"]["properties"][
+            "ticker"
+        ]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("v2_fundamental_core_identity_schema_path_missing") from exc
+    for field_name, value in (
+        ("contract", FUNDAMENTAL_CORE_CONTRACT),
+        ("packet_id", context.packet_id),
+        ("claim_id", context.claim_id),
+        ("market", context.market),
+        ("assessment_date", context.assessment_date),
+    ):
+        field = properties[field_name]
+        if not isinstance(field, dict):
+            raise ValueError(f"v2_fundamental_core_identity_schema_invalid:{field_name}")
+        field["const"] = value
+    if not isinstance(cores, dict) or cores.get("type") != "array":
+        raise ValueError("v2_fundamental_core_cores_schema_invalid")
+    cores["minItems"] = len(selected)
+    cores["maxItems"] = len(selected)
+    if not isinstance(ticker, dict) or ticker.get("type") != "string":
+        raise ValueError("v2_fundamental_core_ticker_schema_invalid")
+    ticker["enum"] = list(selected)
+    return schema
 
 
 def _collect_claim_logical_refs(
@@ -933,7 +1037,7 @@ def accepted_v2_fundamental_core_prompt(
     return (
         """You own the immutable fundamental/economic core of a three-axis monitored decision. Use only FUNDAMENTAL_CORE_EVIDENCE. You cannot see or use price, support/resistance, confirmation-price status, OHLCV technicals, short-term flow/positioning, or futures. Do not browse, use later facts, calculate unregistered numbers, target prices, stops, order sizes, or fixed scores.
 
-For every supplied ticker, emit exactly one AcceptedV2FundamentalCoreCandidate. Decide overall BUY/HOLD/SELL, directional balance, confidence, core buy/sell drivers, decisive reason, and the existing-holder fundamental stance. Holder HOLDABLE/REVIEW/REDUCE must be based only on fundamental holding risk. REVIEW means the holding thesis needs re-examination; it is not an automatic sell instruction. REDUCE requires sufficiently severe or persistent fundamental downside. Do not derive holder stance mechanically from overall direction or Business Delta.
+Emit exactly one core for every supplied ticker as an AcceptedV2FundamentalCoreCandidate, in the same order as FUNDAMENTAL_CORE_CONTEXT. Do not omit, duplicate, replace, or reorder subjects. Decide overall BUY/HOLD/SELL, directional balance, confidence, core buy/sell drivers, decisive reason, and the existing-holder fundamental stance. Holder HOLDABLE/REVIEW/REDUCE must be based only on fundamental holding risk. REVIEW means the holding thesis needs re-examination; it is not an automatic sell instruction. REDUCE requires sufficiently severe or persistent fundamental downside. Do not derive holder stance mechanically from overall direction or Business Delta.
 
 The pair directional_balance must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. The balance is relative directional force, not probability or a weighted score. Every claim must be concise natural Korean and cite exact supplied refs. Evidence refs are identifiers. Copy them exactly from the supplied evidence catalog. Never synthesize, shorten, edit, guess, or repair an evidence ref. If no valid ref supports a claim, do not cite one.
 

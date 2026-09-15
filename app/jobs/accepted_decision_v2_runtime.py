@@ -42,6 +42,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     load_accepted_v2_production_artifact,
     validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
     v2_accepted_production_armed,
     validate_accepted_v2_production_output,
 )
@@ -933,14 +934,12 @@ async def _generate_claim_owned(
         core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
             _read_json(core_output)
         )
-        if (
-            core_batch.packet_id != context.packet_id
-            or core_batch.claim_id != context.claim_id
-            or core_batch.market != context.market
-            or core_batch.assessment_date != context.assessment_date
-            or {row.ticker for row in core_batch.cores} != set(subjects)
-            or len(core_batch.cores) != len(subjects)
-        ):
+        scope_errors = validate_accepted_v2_fundamental_core_batch_scope(
+            core_batch,
+            context,
+            subjects=subjects,
+        )
+        if scope_errors:
             raise ValueError("v2_production_fundamental_core_scope_mismatch")
         batch_cores = {row.ticker: row for row in core_batch.cores}
         for ticker in subjects:
