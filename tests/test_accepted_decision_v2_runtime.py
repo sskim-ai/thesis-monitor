@@ -118,6 +118,12 @@ def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() 
     assert "technical-feature:daily:rsi14" not in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
     assert "Do not state or infer ROIC" in prompt
+    assert (
+        "post_confirmation_hold=true only when decision=HOLD and "
+        "overall_maturity.maturity=CONFIRMED"
+    ) in prompt
+    assert "A HOLD decision alone does not imply post_confirmation_hold=true" in prompt
+    assert "do not change the decision or maturity merely to satisfy this flag" in prompt
 
 
 def test_bounded_repair_prompt_names_errors_and_keeps_exact_identity() -> None:

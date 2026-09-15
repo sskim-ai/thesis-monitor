@@ -551,6 +551,87 @@ def test_confirmed_business_can_be_postconfirmation_hold() -> None:
     assert validate_preconfirmation_candidate(_packet(), candidate).valid is True
 
 
+@pytest.mark.parametrize(
+    "maturity",
+    (EvidenceMaturity.MIXED, EvidenceMaturity.UNKNOWN),
+)
+def test_nonconfirmed_maturity_without_postconfirmation_hold_is_valid(
+    maturity: EvidenceMaturity,
+) -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "overall_maturity": OverallMaturityAssessment(
+                maturity=maturity,
+                basis=_claim("ref:thesis", "사업 성숙도는 아직 확정되지 않았습니다."),
+            ),
+            "post_confirmation_hold": False,
+            "postconfirmation_hold_explanation": None,
+        }
+    )
+
+    assert validate_preconfirmation_candidate(_packet(), candidate).valid is True
+
+
+def test_hold_with_mixed_maturity_without_postconfirmation_hold_is_valid() -> None:
+    candidate = _candidate_with_current_core_sha(
+        _candidate().model_copy(
+            update={
+                "decision": "HOLD",
+                "directional_balance": DirectionalBalance(buy=5, sell=5),
+                "pre_confirmation_buy": False,
+                "preconfirmation_buy_explanation": None,
+                "overall_maturity": OverallMaturityAssessment(
+                    maturity=EvidenceMaturity.MIXED,
+                    basis=_claim("ref:thesis", "사업 증거는 확인과 불확실성이 섞여 있습니다."),
+                ),
+                "post_confirmation_hold": False,
+                "postconfirmation_hold_explanation": None,
+                "asymmetry": _candidate().asymmetry.model_copy(
+                    update={"asymmetry": Asymmetry.BALANCED}
+                ),
+            }
+        )
+    )
+
+    assert validate_preconfirmation_candidate(_packet(), candidate).valid is True
+
+
+@pytest.mark.parametrize(
+    "maturity",
+    (EvidenceMaturity.MIXED, EvidenceMaturity.UNKNOWN),
+)
+def test_postconfirmation_hold_requires_confirmed_maturity(
+    maturity: EvidenceMaturity,
+) -> None:
+    candidate = _candidate_with_current_core_sha(
+        _candidate().model_copy(
+            update={
+                "decision": "HOLD",
+                "directional_balance": DirectionalBalance(buy=5, sell=5),
+                "pre_confirmation_buy": False,
+                "preconfirmation_buy_explanation": None,
+                "overall_maturity": OverallMaturityAssessment(
+                    maturity=maturity,
+                    basis=_claim("ref:thesis", "사업 성숙도는 아직 확정되지 않았습니다."),
+                ),
+                "post_confirmation_hold": True,
+                "postconfirmation_hold_explanation": PostconfirmationHoldExplanation(
+                    business_proof=_claim("ref:earnings", "사업 증거가 일부 확인됐습니다."),
+                    price_repricing=_claim("ref:valuation", "가격 재평가 여부를 점검합니다."),
+                ),
+                "asymmetry": _candidate().asymmetry.model_copy(
+                    update={"asymmetry": Asymmetry.BALANCED}
+                ),
+            }
+        )
+    )
+
+    validation = validate_preconfirmation_candidate(_packet(), candidate)
+
+    assert validation.valid is False
+    assert "postconfirmation_hold_without_confirmed_maturity" in validation.errors
+
+
 def test_factual_safety_block_cannot_be_priced_as_investment_uncertainty() -> None:
     candidate = _candidate().model_copy(update={"factual_safety_state": FactualSafetyState.BLOCKED})
     errors = validate_preconfirmation_candidate(_packet(), candidate).errors
