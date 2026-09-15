@@ -24,6 +24,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
@@ -39,7 +41,6 @@ from app.services.cross_market_decision_engine_service import (
     EvidenceCategory,
 )
 from app.services.codex_runtime_state_service import prepare_codex_runtime_state
-from app.services.decision_canary_service import strict_json_schema
 from app.services.directional_balance_service import (
     DirectionalBalance,
     directional_balance_matches_decision,
@@ -290,6 +291,7 @@ def generate_onboarding_accepted_decision(
         "core_log": root / f"{claim_id}.core.cli.log",
         "core_ref_catalog": root / f"{claim_id}.core.ref-catalog.json",
         "schema": root / f"{claim_id}.schema.json",
+        "ref_catalog": root / f"{claim_id}.ref-catalog.json",
         "prompt": root / f"{claim_id}.prompt.txt",
         "output": root / f"{claim_id}.output.json",
         "log": root / f"{claim_id}.cli.log",
@@ -337,7 +339,11 @@ def generate_onboarding_accepted_decision(
         )
     _atomic_json(
         paths["schema"],
-        strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
+        accepted_v2_stage2_output_schema(context),
+    )
+    _atomic_json(
+        paths["ref_catalog"],
+        accepted_v2_stage2_ref_catalog_manifest(context),
     )
     _atomic_text(
         paths["prompt"],

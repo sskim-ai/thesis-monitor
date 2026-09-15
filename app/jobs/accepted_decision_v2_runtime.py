@@ -36,6 +36,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_production_paths,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
     validate_accepted_v2_candidate_ownership,
@@ -63,7 +65,6 @@ from app.services.codex_network_transport_service import (
     probe_codex_network_readiness,
     retryable_codex_transport_failure,
 )
-from app.services.decision_canary_service import strict_json_schema
 from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
     packet_owned_context_for_stock,
@@ -641,7 +642,7 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     )
     _atomic_json(
         paths["schema"],
-        strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
+        accepted_v2_stage2_output_schema(context),
     )
     _atomic_text(paths["core_prompt"], accepted_v2_fundamental_core_prompt(context))
     _record_stage(
@@ -980,6 +981,20 @@ async def _generate_claim_owned(
             f"{paths['temp'].stem}.batch-{batch_number:02d}.json"
         )
         batch_log = paths["log"].with_name(f"{paths['log'].stem}.batch-{batch_number:02d}.log")
+        batch_schema = paths["schema"].with_name(
+            f"{paths['schema'].stem}.batch-{batch_number:02d}.json"
+        )
+        batch_ref_catalog = paths["schema"].with_name(
+            f"{paths['schema'].stem}.batch-{batch_number:02d}.ref-catalog.json"
+        )
+        _atomic_json(
+            batch_schema,
+            accepted_v2_stage2_output_schema(context, subjects=subjects),
+        )
+        _atomic_json(
+            batch_ref_catalog,
+            accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects),
+        )
         _atomic_text(
             batch_prompt,
             accepted_v2_production_prompt(
@@ -1001,7 +1016,7 @@ async def _generate_claim_owned(
                 prompt=batch_prompt,
                 output=batch_output,
                 log=batch_log,
-                schema=Path(str(prepared["schema_path"])),
+                schema=batch_schema,
                 cwd=paths["prompt"].parent,
                 timeout=timeout,
                 state_namespace=claim_id,
@@ -1047,7 +1062,7 @@ async def _generate_claim_owned(
                     prompt=schema_repair_prompt,
                     output=schema_repair_output,
                     log=schema_repair_log,
-                    schema=Path(str(prepared["schema_path"])),
+                    schema=batch_schema,
                     cwd=paths["prompt"].parent,
                     timeout=timeout,
                     state_namespace=claim_id,
@@ -1095,6 +1110,20 @@ async def _generate_claim_owned(
             repair_log = paths["log"].with_name(
                 f"{paths['log'].stem}.batch-{batch_number:02d}.{ticker}.repair.log"
             )
+            repair_schema = paths["schema"].with_name(
+                f"{paths['schema'].stem}.batch-{batch_number:02d}.{ticker}.repair.json"
+            )
+            repair_ref_catalog = paths["schema"].with_name(
+                f"{paths['schema'].stem}.batch-{batch_number:02d}.{ticker}.repair.ref-catalog.json"
+            )
+            _atomic_json(
+                repair_schema,
+                accepted_v2_stage2_output_schema(context, subjects=(ticker,)),
+            )
+            _atomic_json(
+                repair_ref_catalog,
+                accepted_v2_stage2_ref_catalog_manifest(context, subjects=(ticker,)),
+            )
             _atomic_text(
                 repair_prompt,
                 accepted_v2_production_repair_prompt(
@@ -1111,7 +1140,7 @@ async def _generate_claim_owned(
                     prompt=repair_prompt,
                     output=repair_output,
                     log=repair_log,
-                    schema=Path(str(prepared["schema_path"])),
+                    schema=repair_schema,
                     cwd=paths["prompt"].parent,
                     timeout=timeout,
                     state_namespace=claim_id,

@@ -61,6 +61,8 @@ REASONING_MODEL = "gpt-5.6-sol"
 REASONING_EFFORT = "xhigh"
 FUNDAMENTAL_CORE_CONTRACT = "v2-accepted-fundamental-core-v1"
 FUNDAMENTAL_CORE_EXACT_REF_CONTRACT = "fundamental-core-exact-ref-fidelity-v1"
+EXACT_REF_FIDELITY_CONTRACT = "model-output-exact-ref-fidelity-v1"
+STAGE2_EXACT_REF_CONTRACT = "stage2-exact-ref-fidelity-v1"
 
 
 class AcceptedV2EvidenceOwnership(FrozenModel):
@@ -559,6 +561,62 @@ def accepted_v2_fundamental_core_ref_catalog_manifest(
     }
 
 
+def _exact_ref_output_schema(
+    model_schema: dict[str, object],
+    *,
+    evidence_ref_fields: Sequence[tuple[str, str]],
+    refs: Sequence[str],
+    source_condition_refs: Sequence[str],
+    leaf_refs: Sequence[str],
+    error_prefix: str,
+) -> dict[str, object]:
+    schema = strict_json_schema(model_schema)
+    if not isinstance(schema, dict):
+        raise ValueError(f"{error_prefix}_schema_invalid")
+
+    for definition, property_name in evidence_ref_fields:
+        try:
+            evidence_refs = schema["$defs"][definition]["properties"][property_name]
+            items = evidence_refs["items"]
+        except (KeyError, TypeError) as exc:
+            raise ValueError(f"{error_prefix}_ref_schema_path_missing") from exc
+        if not isinstance(evidence_refs, dict) or evidence_refs.get("type") != "array":
+            raise ValueError(f"{error_prefix}_ref_schema_not_array")
+        if not isinstance(items, dict) or items.get("type") != "string":
+            raise ValueError(f"{error_prefix}_ref_schema_item_not_string")
+        items["enum"] = list(refs)
+
+    try:
+        logical_condition = schema["$defs"]["EvidenceClaim"]["properties"][
+            "logical_condition"
+        ]
+        source_condition_ref = schema["$defs"]["ClaimLogicalCondition"][
+            "properties"
+        ]["source_condition_ref"]
+        leaf_ref = schema["$defs"]["ClaimLogicalLeaf"]["properties"]["leaf_ref"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"{error_prefix}_logical_ref_schema_path_missing") from exc
+    if not isinstance(logical_condition, dict):
+        raise ValueError(f"{error_prefix}_logical_condition_schema_invalid")
+    if not source_condition_refs and not leaf_refs:
+        schema["$defs"]["EvidenceClaim"]["properties"]["logical_condition"] = {
+            "type": "null"
+        }
+    else:
+        if not source_condition_refs or not leaf_refs:
+            raise ValueError(f"{error_prefix}_logical_ref_catalog_incomplete")
+        if (
+            not isinstance(source_condition_ref, dict)
+            or source_condition_ref.get("type") != "string"
+            or not isinstance(leaf_ref, dict)
+            or leaf_ref.get("type") != "string"
+        ):
+            raise ValueError(f"{error_prefix}_logical_ref_schema_not_string")
+        source_condition_ref["enum"] = list(source_condition_refs)
+        leaf_ref["enum"] = list(leaf_refs)
+    return schema
+
+
 def accepted_v2_fundamental_core_output_schema(
     context: AcceptedV2ProductionContext,
     *,
@@ -574,56 +632,143 @@ def accepted_v2_fundamental_core_output_schema(
     if not isinstance(refs, list) or not refs:
         raise ValueError("v2_fundamental_core_ref_catalog_empty")
 
-    schema = strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema())
-    if not isinstance(schema, dict):
-        raise ValueError("v2_fundamental_core_schema_invalid")
-    try:
-        evidence_refs = schema["$defs"]["EvidenceClaim"]["properties"][
-            "evidence_refs"
-        ]
-        items = evidence_refs["items"]
-    except (KeyError, TypeError) as exc:
-        raise ValueError("v2_fundamental_core_ref_schema_path_missing") from exc
-    if not isinstance(evidence_refs, dict) or evidence_refs.get("type") != "array":
-        raise ValueError("v2_fundamental_core_ref_schema_not_array")
-    if not isinstance(items, dict) or items.get("type") != "string":
-        raise ValueError("v2_fundamental_core_ref_schema_item_not_string")
-    items["enum"] = refs
+    return _exact_ref_output_schema(
+        AcceptedV2FundamentalCoreBatch.model_json_schema(),
+        evidence_ref_fields=(("EvidenceClaim", "evidence_refs"),),
+        refs=refs,
+        source_condition_refs=source_condition_refs,
+        leaf_refs=leaf_refs,
+        error_prefix="v2_fundamental_core",
+    )
 
-    try:
-        logical_condition = schema["$defs"]["EvidenceClaim"]["properties"][
-            "logical_condition"
-        ]
-        source_condition_ref = schema["$defs"]["ClaimLogicalCondition"][
-            "properties"
-        ]["source_condition_ref"]
-        leaf_ref = schema["$defs"]["ClaimLogicalLeaf"]["properties"]["leaf_ref"]
-    except (KeyError, TypeError) as exc:
-        raise ValueError("v2_fundamental_core_logical_ref_schema_path_missing") from exc
-    if not isinstance(logical_condition, dict):
-        raise ValueError("v2_fundamental_core_logical_condition_schema_invalid")
-    if not source_condition_refs and not leaf_refs:
-        schema["$defs"]["EvidenceClaim"]["properties"]["logical_condition"] = {
-            "type": "null"
+
+def _collect_claim_logical_refs(
+    claims: Sequence[EvidenceClaim],
+    *,
+    source_condition_refs: set[str],
+    leaf_refs: set[str],
+) -> None:
+    def collect_expression(expression: object) -> None:
+        children = getattr(expression, "children", None)
+        if children is None:
+            leaf_refs.add(str(getattr(expression, "leaf_ref")))
+            return
+        for child in children:
+            collect_expression(child)
+
+    for claim in claims:
+        condition = claim.logical_condition
+        if condition is None:
+            continue
+        source_condition_refs.add(condition.source_condition_ref)
+        collect_expression(condition.expression)
+
+
+def accepted_v2_stage2_ref_catalog_manifest(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> dict[str, object]:
+    selected = tuple(subjects or context.selected_subjects)
+    packets = {row.ticker: row for row in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    prior = {row.ticker: row for row in context.prior_accepted}
+    if (
+        not selected
+        or not set(selected).issubset(packets)
+        or not set(selected).issubset(ownership)
+    ):
+        raise ValueError("v2_stage2_ref_catalog_subject_mismatch")
+
+    visible_refs: set[str] = set()
+    source_condition_refs: set[str] = set()
+    leaf_refs: set[str] = set()
+
+    def collect_source_expression(expression: object) -> None:
+        children = getattr(expression, "children", None)
+        if children is None:
+            leaf_refs.add(str(getattr(expression, "condition_id")))
+            return
+        for child in children:
+            collect_source_expression(child)
+
+    for ticker in selected:
+        visible_owned_refs = set(ownership[ticker].core_ref_ids) | set(
+            ownership[ticker].timing_ref_ids
+        )
+        for row in packets[ticker].evidence:
+            if row.ref_id not in visible_owned_refs or row.ref_id.startswith(
+                "technical-feature:"
+            ):
+                continue
+            visible_refs.add(row.ref_id)
+            if row.logical_condition is not None:
+                source_condition_refs.add(row.logical_condition.source_condition_ref)
+                collect_source_expression(row.logical_condition.expression)
+        baseline = prior.get(ticker)
+        if baseline is not None:
+            prior_claims = (*baseline.accepted_buy_drivers, *baseline.accepted_sell_drivers)
+            visible_refs.update(_claim_ref_set(prior_claims))
+            _collect_claim_logical_refs(
+                prior_claims,
+                source_condition_refs=source_condition_refs,
+                leaf_refs=leaf_refs,
+            )
+
+    ordered_refs = tuple(sorted(visible_refs))
+    ordered_source_condition_refs = tuple(sorted(source_condition_refs))
+    ordered_leaf_refs = tuple(sorted(leaf_refs))
+    catalog_hash = canonical_sha256(
+        {
+            "contract": STAGE2_EXACT_REF_CONTRACT,
+            "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
+            "allowed_refs": ordered_refs,
+            "allowed_source_condition_refs": ordered_source_condition_refs,
+            "allowed_leaf_refs": ordered_leaf_refs,
         }
-    else:
-        if (
-            not isinstance(source_condition_refs, list)
-            or not source_condition_refs
-            or not isinstance(leaf_refs, list)
-            or not leaf_refs
-        ):
-            raise ValueError("v2_fundamental_core_logical_ref_catalog_incomplete")
-        if (
-            not isinstance(source_condition_ref, dict)
-            or source_condition_ref.get("type") != "string"
-            or not isinstance(leaf_ref, dict)
-            or leaf_ref.get("type") != "string"
-        ):
-            raise ValueError("v2_fundamental_core_logical_ref_schema_not_string")
-        source_condition_ref["enum"] = source_condition_refs
-        leaf_ref["enum"] = leaf_refs
-    return schema
+    )
+    return {
+        "contract": STAGE2_EXACT_REF_CONTRACT,
+        "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
+        "packet_id": context.packet_id,
+        "claim_id": context.claim_id,
+        "market": context.market,
+        "subjects": list(selected),
+        "ref_catalog_hash": catalog_hash,
+        "ref_catalog_count": len(ordered_refs),
+        "allowed_refs": list(ordered_refs),
+        "source_condition_ref_count": len(ordered_source_condition_refs),
+        "allowed_source_condition_refs": list(ordered_source_condition_refs),
+        "leaf_ref_count": len(ordered_leaf_refs),
+        "allowed_leaf_refs": list(ordered_leaf_refs),
+    }
+
+
+def accepted_v2_stage2_output_schema(
+    context: AcceptedV2ProductionContext,
+    *,
+    subjects: Sequence[str] | None = None,
+) -> dict[str, object]:
+    manifest = accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects)
+    refs = manifest["allowed_refs"]
+    source_condition_refs = manifest["allowed_source_condition_refs"]
+    leaf_refs = manifest["allowed_leaf_refs"]
+    if not isinstance(refs, list) or not refs:
+        raise ValueError("v2_stage2_ref_catalog_empty")
+    if not isinstance(source_condition_refs, list) or not isinstance(leaf_refs, list):
+        raise ValueError("v2_stage2_logical_ref_catalog_invalid")
+    return _exact_ref_output_schema(
+        AcceptedV2ProductionBatchOutput.model_json_schema(),
+        evidence_ref_fields=(
+            ("EvidenceClaim", "evidence_refs"),
+            ("DriverEvidenceMaturity", "supporting_evidence_refs"),
+            ("DriverEvidenceMaturity", "contradicting_evidence_refs"),
+        ),
+        refs=refs,
+        source_condition_refs=source_condition_refs,
+        leaf_refs=leaf_refs,
+        error_prefix="v2_stage2",
+    )
 
 
 def accepted_v2_fundamental_core_prompt(
@@ -710,6 +855,16 @@ def accepted_v2_production_prompt(
         "market": context.market,
         "assessment_date": context.assessment_date,
     }
+    ref_catalog = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=selected,
+    )
+    ref_catalog_identity = {
+        "contract": ref_catalog["contract"],
+        "shared_contract": ref_catalog["shared_contract"],
+        "ref_catalog_hash": ref_catalog["ref_catalog_hash"],
+        "ref_catalog_count": ref_catalog["ref_catalog_count"],
+    }
     payload = [
         {
             "frozen_fundamental_core": cores[ticker].model_dump(mode="json"),
@@ -738,7 +893,7 @@ Set post_confirmation_hold=true only when decision=HOLD and overall_maturity.mat
 
 Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count the same underlying valuation signal once as high expectations and again as expensive valuation. Preserve genuinely independent expectation evidence. Do not force GOOGL or any other ticker to a target enum.
 
-For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Preserve exact complete evidence ref IDs. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
+For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
 Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
 
@@ -759,6 +914,11 @@ Return strict JSON only. Set fundamental_cores to the supplied frozen cores exac
 PRODUCTION_V2_IDENTITY:
 """
         + json.dumps(identity, ensure_ascii=False, separators=(",", ":"))
+        + """
+
+STAGE2_REF_CATALOG_IDENTITY:
+"""
+        + json.dumps(ref_catalog_identity, ensure_ascii=False, separators=(",", ":"))
         + """
 
 PRODUCTION_V2_CONTEXT:

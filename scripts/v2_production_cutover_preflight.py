@@ -31,6 +31,8 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
@@ -40,10 +42,7 @@ from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     build_decision_evidence_packet,
 )
-from app.services.decision_canary_service import (
-    insert_decision_canary_block,
-    strict_json_schema,
-)
+from app.services.decision_canary_service import insert_decision_canary_block
 from app.services.packet_owned_technical_context_service import (
     packet_owned_context_for_stock,
 )
@@ -177,11 +176,6 @@ def _codex_batch(
                 )
             fundamental_cores.append(by_ticker[ticker])
 
-    schema = output_dir / "output.schema.json"
-    _write_json(
-        schema,
-        strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
-    )
     candidates = []
     adjudications = []
     cores_by_ticker = {row.ticker: row for row in fundamental_cores}
@@ -191,7 +185,17 @@ def _codex_batch(
         prompt = output_dir / f"batch-{batch_number:02d}.prompt.txt"
         output = output_dir / f"batch-{batch_number:02d}.output.json"
         log = output_dir / f"batch-{batch_number:02d}.log"
+        schema = output_dir / f"batch-{batch_number:02d}.schema.json"
+        ref_catalog = output_dir / f"batch-{batch_number:02d}.ref-catalog.json"
         selected_cores = tuple(cores_by_ticker[ticker] for ticker in subjects)
+        _write_json(
+            schema,
+            accepted_v2_stage2_output_schema(context, subjects=subjects),
+        )
+        _write_json(
+            ref_catalog,
+            accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects),
+        )
         _write_text(
             prompt,
             accepted_v2_production_prompt(
@@ -271,6 +275,19 @@ def _codex_batch(
             repair_prompt = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.txt"
             repair_output = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.json"
             repair_log = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.log"
+            repair_schema = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.schema.json"
+            repair_ref_catalog = (
+                output_dir
+                / f"batch-{batch_number:02d}.{ticker}.repair.ref-catalog.json"
+            )
+            _write_json(
+                repair_schema,
+                accepted_v2_stage2_output_schema(context, subjects=(ticker,)),
+            )
+            _write_json(
+                repair_ref_catalog,
+                accepted_v2_stage2_ref_catalog_manifest(context, subjects=(ticker,)),
+            )
             _write_text(
                 repair_prompt,
                 accepted_v2_production_repair_prompt(
@@ -286,7 +303,7 @@ def _codex_batch(
                 prompt=repair_prompt,
                 output=repair_output,
                 log=repair_log,
-                schema=schema,
+                schema=repair_schema,
                 cwd=output_dir,
                 timeout=timeout,
                 state_namespace=state_namespace or context.claim_id,

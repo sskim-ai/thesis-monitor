@@ -19,10 +19,14 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_fundamental_core_output_schema,
     accepted_v2_fundamental_core_prompt,
     accepted_v2_fundamental_core_ref_catalog_manifest,
+    accepted_v2_fundamental_core_sha256,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
+    validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
 )
 from app.services.codex_network_transport_service import (
@@ -45,7 +49,10 @@ from app.services.logical_condition_service import (
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
 )
-from app.services.three_axis_decision_service import HolderDecisionAxis
+from app.services.three_axis_decision_service import (
+    HolderDecisionAxis,
+    NewBuyerDecisionAxis,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -165,6 +172,83 @@ def _exact_ref_context():
     return context
 
 
+def _stage2_exact_ref_context():
+    corz_core_ref = "decision-evidence:36090e913951b40587f1"
+    corz = DecisionEvidencePacket(
+        packet_id="packet-stage2-exact-ref",
+        ticker="CORZ",
+        company_name="CORZ Company",
+        market="us",
+        assessment_date="2026-09-15",
+        horizon="12-36 months",
+        evidence=(
+            DecisionEvidenceRef(
+                ref_id=corz_core_ref,
+                category=EvidenceCategory.THESIS,
+                label="CORZ thesis",
+                statement="CORZ canonical thesis evidence",
+                as_of="2026-09-15",
+                source_ref="fixture",
+                logical_condition=source_logical_condition(
+                    subject="CORZ",
+                    generation_id="stage2-exact-ref-fixture",
+                    evidence_ref=corz_core_ref,
+                    statement="현금전환 개선 또는 매출 성장",
+                    severity=LogicalSeverity.STRENGTHENING,
+                ),
+            ),
+            DecisionEvidenceRef(
+                ref_id="canonical:chart:corz-daily",
+                category=EvidenceCategory.PRICE_STRUCTURE,
+                label="CORZ price timing",
+                statement="CORZ canonical price timing evidence",
+                as_of="2026-09-15",
+                source_ref="fixture",
+            ),
+        ),
+        prohibited_claims=(),
+        evidence_sha256="fixture-CORZ",
+    )
+    ibm = DecisionEvidencePacket(
+        packet_id=corz.packet_id,
+        ticker="IBM",
+        company_name="IBM Company",
+        market="us",
+        assessment_date=corz.assessment_date,
+        horizon="12-36 months",
+        evidence=(
+            DecisionEvidenceRef(
+                ref_id="decision-evidence:ibm-stage2-owned",
+                category=EvidenceCategory.THESIS,
+                label="IBM thesis",
+                statement="IBM canonical thesis evidence",
+                as_of="2026-09-15",
+                source_ref="fixture",
+            ),
+            DecisionEvidenceRef(
+                ref_id="canonical:chart:ibm-daily",
+                category=EvidenceCategory.PRICE_STRUCTURE,
+                label="IBM price timing",
+                statement="IBM canonical price timing evidence",
+                as_of="2026-09-15",
+                source_ref="fixture",
+            ),
+        ),
+        prohibited_claims=(),
+        evidence_sha256="fixture-IBM",
+    )
+    return build_accepted_v2_production_context(
+        packet={
+            "packet_id": corz.packet_id,
+            "market": corz.market,
+            "assessment_date": corz.assessment_date,
+            "stocks": [{"ticker": "CORZ"}, {"ticker": "IBM"}],
+        },
+        claim_id="claim-stage2-exact-ref",
+        evidence_packets=(corz, ibm),
+    )
+
+
 def _schema_ref_enum(schema: dict[str, object]) -> tuple[str, ...]:
     return tuple(
         schema["$defs"]["EvidenceClaim"]["properties"]["evidence_refs"]["items"][
@@ -175,6 +259,23 @@ def _schema_ref_enum(schema: dict[str, object]) -> tuple[str, ...]:
 
 def _schema_accepts_refs(schema: dict[str, object], refs: tuple[str, ...]) -> bool:
     return set(refs).issubset(_schema_ref_enum(schema))
+
+
+def _stage2_schema_ref_enums(schema: dict[str, object]) -> dict[str, tuple[str, ...]]:
+    definitions = schema["$defs"]
+    fields = {
+        "evidence_refs": definitions["EvidenceClaim"]["properties"]["evidence_refs"],
+        "supporting_evidence_refs": definitions["DriverEvidenceMaturity"][
+            "properties"
+        ]["supporting_evidence_refs"],
+        "contradicting_evidence_refs": definitions["DriverEvidenceMaturity"][
+            "properties"
+        ]["contradicting_evidence_refs"],
+    }
+    return {
+        name: tuple(field["items"]["enum"])
+        for name, field in fields.items()
+    }
 
 
 def _fundamental_core(ticker: str, ref_id: str) -> AcceptedV2FundamentalCoreCandidate:
@@ -286,6 +387,137 @@ def test_batch_union_schema_keeps_cross_subject_semantic_ownership_hard_fail() -
     assert validate_accepted_v2_fundamental_core(
         _fundamental_core("RXRX", ibm_ref), ownership["RXRX"]
     ) == (f"noncore_ref_in_fundamental_core:{ibm_ref}",)
+
+
+def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
+    context = _stage2_exact_ref_context()
+    schema = accepted_v2_stage2_output_schema(context, subjects=("CORZ", "IBM"))
+    manifest = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=("CORZ", "IBM"),
+    )
+    core = _fundamental_core("CORZ", "decision-evidence:36090e913951b40587f1")
+    prompt = accepted_v2_production_prompt(
+        context,
+        fundamental_cores=(core,),
+        subjects=("CORZ",),
+    )
+
+    ref_paths: set[str] = set()
+
+    def inventory(value: object, path: str = "$") -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                child_path = f"{path}.{key}"
+                if key in {
+                    "evidence_refs",
+                    "supporting_evidence_refs",
+                    "contradicting_evidence_refs",
+                    "source_condition_ref",
+                    "leaf_ref",
+                }:
+                    ref_paths.add(child_path)
+                inventory(child, child_path)
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                inventory(child, f"{path}[{index}]")
+
+    inventory(schema)
+    assert ref_paths == {
+        "$.$defs.ClaimLogicalCondition.properties.source_condition_ref",
+        "$.$defs.ClaimLogicalLeaf.properties.leaf_ref",
+        "$.$defs.DriverEvidenceMaturity.properties.contradicting_evidence_refs",
+        "$.$defs.DriverEvidenceMaturity.properties.supporting_evidence_refs",
+        "$.$defs.EvidenceClaim.properties.evidence_refs",
+    }
+    expected_refs = tuple(manifest["allowed_refs"])
+    assert all(
+        refs == expected_refs for refs in _stage2_schema_ref_enums(schema).values()
+    )
+    assert schema["$defs"]["ClaimLogicalCondition"]["properties"][
+        "source_condition_ref"
+    ]["enum"] == manifest["allowed_source_condition_refs"]
+    assert schema["$defs"]["ClaimLogicalLeaf"]["properties"]["leaf_ref"][
+        "enum"
+    ] == manifest["allowed_leaf_refs"]
+    corz_manifest = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=("CORZ",),
+    )
+    assert f'"ref_catalog_hash":"{corz_manifest["ref_catalog_hash"]}"' in prompt
+    assert "Evidence refs are exact opaque identifiers." in prompt
+    assert "Never edit, append, shorten, infer, synthesize, guess, or repair" in prompt
+
+
+def test_stage2_exact_ref_positive_fixtures() -> None:
+    context = _stage2_exact_ref_context()
+    schema = accepted_v2_stage2_output_schema(context, subjects=("CORZ", "IBM"))
+    valid = "decision-evidence:36090e913951b40587f1"
+    second = "canonical:chart:corz-daily"
+
+    assert all(
+        {valid}.issubset(refs)
+        for refs in _stage2_schema_ref_enums(schema).values()
+    )
+    assert all(
+        {valid, second}.issubset(refs)
+        for refs in _stage2_schema_ref_enums(schema).values()
+    )
+
+
+@pytest.mark.parametrize(
+    "invalid_ref",
+    (
+        "decision-evidence:36090e913951b40587f1d",
+        "decision-evidence:36090e913951b40587f",
+        "decision-evidence:36090e913951b40587e1",
+        "decision-evidence:0123456789abcdef0123",
+    ),
+)
+def test_stage2_exact_ref_negative_fixtures(invalid_ref: str) -> None:
+    context = _stage2_exact_ref_context()
+    schema = accepted_v2_stage2_output_schema(context, subjects=("CORZ", "IBM"))
+
+    assert all(
+        invalid_ref not in refs for refs in _stage2_schema_ref_enums(schema).values()
+    )
+
+
+def test_stage2_batch_union_keeps_cross_subject_ownership_hard_fail() -> None:
+    context = _stage2_exact_ref_context()
+    schema = accepted_v2_stage2_output_schema(context, subjects=("CORZ", "IBM"))
+    corz_ref = "decision-evidence:36090e913951b40587f1"
+    ibm_ref = "decision-evidence:ibm-stage2-owned"
+    core = _fundamental_core("CORZ", corz_ref)
+    candidate = PreconfirmationDecisionCandidate.model_construct(
+        ticker="CORZ",
+        fundamental_core_sha256=accepted_v2_fundamental_core_sha256(core),
+        decision=core.decision,
+        new_buyer_axis=NewBuyerDecisionAxis(
+            stance="WAIT",
+            reason=EvidenceClaim(
+                text="IBM 근거를 잘못 참조했습니다.",
+                evidence_refs=(ibm_ref,),
+            ),
+        ),
+        holder_axis=core.holder_axis,
+        directional_balance=core.directional_balance,
+        buy_drivers=core.buy_drivers,
+        sell_drivers=core.sell_drivers,
+        balance_summary=core.balance_summary,
+        confidence=core.confidence,
+        decisive_reason=core.decisive_reason,
+    )
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+
+    assert all(
+        ibm_ref in refs for refs in _stage2_schema_ref_enums(schema).values()
+    )
+    assert validate_accepted_v2_candidate_ownership(
+        candidate,
+        core,
+        ownership["CORZ"],
+    ) == (f"new_buyer_ref_outside_owned_evidence:{ibm_ref}",)
 
 
 def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() -> None:
