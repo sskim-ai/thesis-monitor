@@ -42,6 +42,11 @@ from app.services.logical_condition_service import (
     logical_condition_errors,
     logical_expression_is_composite,
 )
+from app.services.three_axis_decision_service import (
+    HolderDecisionAxis,
+    NewBuyerDecisionAxis,
+    ThreeAxisDecision,
+)
 
 
 CONTRACT_VERSION = "preconfirmation-asymmetry-decision-engine-v2"
@@ -72,7 +77,10 @@ class PostconfirmationHoldExplanation(FrozenModel):
 
 class PreconfirmationDecisionCandidate(FrozenModel):
     ticker: str
+    fundamental_core_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     decision: Decision
+    new_buyer_axis: NewBuyerDecisionAxis
+    holder_axis: HolderDecisionAxis
     directional_balance: DirectionalBalance
     buy_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
     sell_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
@@ -109,6 +117,11 @@ class PreconfirmationDecisionCandidate(FrozenModel):
             raise ValueError("preconfirmation_explanation_flag_mismatch")
         if self.post_confirmation_hold != (self.postconfirmation_hold_explanation is not None):
             raise ValueError("postconfirmation_explanation_flag_mismatch")
+        ThreeAxisDecision(
+            overall_direction=self.decision,
+            new_buyer=self.new_buyer_axis,
+            holder=self.holder_axis,
+        )
         return self
 
 
@@ -192,6 +205,8 @@ def candidate_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[Evide
         candidate.preconfirmation_error_cost.basis,
         candidate.preconfirmation_error_cost.capital_loss_channel,
         candidate.decisive_reason,
+        candidate.new_buyer_axis.reason,
+        candidate.holder_axis.reason,
         candidate.why_not_buy,
         candidate.why_not_sell,
         *candidate.opposing_evidence,

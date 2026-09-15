@@ -25,13 +25,17 @@ from app.services.production_validation_policy_service import (
     classify_repeated_span,
 )
 from app.services.cross_market_decision_engine_service import (
+    Confidence,
     Decision,
     DecisionEvidencePacket,
     EvidenceClaim,
     FrozenModel,
     compact_ai_context,
 )
-from app.services.directional_balance_service import DirectionalBalance
+from app.services.directional_balance_service import (
+    DirectionalBalance,
+    directional_balance_matches_decision,
+)
 from app.services.directional_balance_variance_service import (
     requires_directional_balance_adjudication,
 )
@@ -40,6 +44,12 @@ from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
     validate_preconfirmation_candidate,
 )
+from app.services.expectation_valuation_interaction_service import (
+    ExpectationValuationInteraction,
+    duplicate_directional_anchor_errors,
+    interaction_from_packet,
+)
+from app.services.three_axis_decision_service import HolderDecisionAxis
 
 
 CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
@@ -49,6 +59,37 @@ STATE_CONTRACT = "v2-accepted-production-state-v1"
 RECEIPT_CONTRACT = "v2-accepted-production-receipt-v1"
 REASONING_MODEL = "gpt-5.6-sol"
 REASONING_EFFORT = "xhigh"
+FUNDAMENTAL_CORE_CONTRACT = "v2-accepted-fundamental-core-v1"
+
+
+class AcceptedV2EvidenceOwnership(FrozenModel):
+    ticker: str
+    core_ref_ids: tuple[str, ...]
+    timing_ref_ids: tuple[str, ...]
+    expectation_valuation: ExpectationValuationInteraction
+
+
+class AcceptedV2FundamentalCoreCandidate(FrozenModel):
+    ticker: str
+    decision: Decision
+    directional_balance: DirectionalBalance
+    buy_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    sell_drivers: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
+    balance_summary: str = Field(min_length=1, max_length=500)
+    confidence: Confidence
+    decisive_reason: EvidenceClaim
+    holder_axis: HolderDecisionAxis
+
+
+class AcceptedV2FundamentalCoreBatch(FrozenModel):
+    contract: Literal["v2-accepted-fundamental-core-v1"] = FUNDAMENTAL_CORE_CONTRACT
+    packet_id: str
+    claim_id: str
+    market: Literal["kr", "us"]
+    assessment_date: str
+    cores: tuple[AcceptedV2FundamentalCoreCandidate, ...] = Field(
+        min_length=1, max_length=20
+    )
 
 
 class AcceptedV2ProductionBaseline(FrozenModel):
@@ -73,6 +114,9 @@ class AcceptedV2ProductionContext(FrozenModel):
     source_packet_sha256: str
     selected_subjects: tuple[str, ...] = Field(min_length=1, max_length=20)
     evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=1, max_length=20)
+    evidence_ownership: tuple[AcceptedV2EvidenceOwnership, ...] = Field(
+        min_length=1, max_length=20
+    )
     prior_accepted: tuple[AcceptedV2ProductionBaseline, ...] = Field(default=(), max_length=20)
     prepared_at: str
 
@@ -83,6 +127,9 @@ class AcceptedV2ProductionBatchOutput(FrozenModel):
     claim_id: str
     market: Literal["kr", "us"]
     assessment_date: str
+    fundamental_cores: tuple[AcceptedV2FundamentalCoreCandidate, ...] = Field(
+        min_length=1, max_length=20
+    )
     candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(min_length=1, max_length=20)
     adjudications: tuple[AcceptedV2Adjudication, ...] = Field(default=(), max_length=20)
 
@@ -93,6 +140,8 @@ class AcceptedV2ProductionBlock(FrozenModel):
     accepted_decision_id: str
     buy_balance: float | None = None
     sell_balance: float | None = None
+    new_buyer_stance: Literal["ATTRACTIVE", "WAIT", "AVOID"] | None = None
+    holder_stance: Literal["HOLDABLE", "REVIEW", "REDUCE"] | None = None
     text: str = Field(min_length=1, max_length=2200)
 
 
@@ -108,6 +157,12 @@ class AcceptedV2ProductionArtifact(FrozenModel):
     reasoning_model: Literal["gpt-5.6-sol"] = REASONING_MODEL
     reasoning_effort: Literal["xhigh"] = REASONING_EFFORT
     evidence_packets: tuple[DecisionEvidencePacket, ...] = Field(min_length=1, max_length=20)
+    evidence_ownership: tuple[AcceptedV2EvidenceOwnership, ...] = Field(
+        min_length=1, max_length=20
+    )
+    fundamental_cores: tuple[AcceptedV2FundamentalCoreCandidate, ...] = Field(
+        min_length=1, max_length=20
+    )
     candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(min_length=1, max_length=20)
     accepted_plans: tuple[AcceptedDecisionPlan, ...] = Field(min_length=1, max_length=20)
     blocks: tuple[AcceptedV2ProductionBlock, ...] = Field(default=(), max_length=20)
@@ -153,6 +208,14 @@ def accepted_v2_production_paths(
     claim_stem = f"{stem}--{claim_id}"
     return {
         "context": parent.parent / "claims" / f"{claim_stem}.decision-v2-context.json",
+        "core_schema": parent.parent
+        / "claims"
+        / f"{claim_stem}.decision-v2-core-schema.json",
+        "core_prompt": parent.parent
+        / "claims"
+        / f"{claim_stem}.decision-v2-core-prompt.txt",
+        "core_temp": parent / f"{claim_stem}.decision-v2-core.json.tmp",
+        "core_log": parent.parent / "claims" / f"{claim_stem}.decision-v2-core-cli.log",
         "schema": parent.parent / "claims" / f"{claim_stem}.decision-v2-schema.json",
         "prompt": parent.parent / "claims" / f"{claim_stem}.decision-v2-prompt.txt",
         "temp": parent / f"{claim_stem}.decision-v2.json.tmp",
@@ -242,6 +305,13 @@ def build_accepted_v2_production_context(
     prepared_at: datetime | None = None,
     settings: Settings | None = None,
 ) -> AcceptedV2ProductionContext:
+    # This service is imported by onboarding initialization, while the ownership
+    # service reaches back through AI review. Resolve it only when building a
+    # context so module import order remains acyclic.
+    from app.services.direction_timing_ownership_service import (
+        build_owned_evidence_packet,
+    )
+
     market = str(packet.get("market") or "").lower()
     if market not in {"kr", "us"}:
         raise ValueError("v2_production_market_invalid")
@@ -251,6 +321,10 @@ def build_accepted_v2_production_context(
     if not subjects or len(subjects) != len(set(subjects)):
         raise ValueError("v2_production_subject_inventory_invalid")
     by_ticker = {row.ticker: row for row in evidence_packets}
+    stocks_by_ticker = {
+        str(row.get("ticker") or "").upper(): row
+        for row in stocks
+    }
     if set(subjects) != set(by_ticker):
         raise ValueError("v2_production_evidence_scope_mismatch")
     packet_id = str(packet.get("packet_id") or "")
@@ -269,6 +343,20 @@ def build_accepted_v2_production_context(
         for ticker in subjects
         if ticker in baselines and baselines[ticker].market == typed_market
     )
+    ownership: list[AcceptedV2EvidenceOwnership] = []
+    for ticker in subjects:
+        owned = build_owned_evidence_packet(
+            by_ticker[ticker],
+            stock=stocks_by_ticker[ticker],
+        )
+        ownership.append(
+            AcceptedV2EvidenceOwnership(
+                ticker=ticker,
+                core_ref_ids=tuple(sorted(owned.core_refs)),
+                timing_ref_ids=tuple(sorted(owned.timing_refs)),
+                expectation_valuation=interaction_from_packet(by_ticker[ticker]),
+            )
+        )
     return AcceptedV2ProductionContext(
         packet_id=packet_id,
         claim_id=claim_id,
@@ -277,20 +365,174 @@ def build_accepted_v2_production_context(
         source_packet_sha256=canonical_sha256(packet),
         selected_subjects=subjects,
         evidence_packets=tuple(by_ticker[ticker] for ticker in subjects),
+        evidence_ownership=tuple(ownership),
         prior_accepted=prior,
         prepared_at=(prepared_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
     )
 
 
-def accepted_v2_production_prompt(
+def accepted_v2_fundamental_core_sha256(
+    core: AcceptedV2FundamentalCoreCandidate,
+) -> str:
+    return canonical_sha256(core.model_dump(mode="json"))
+
+
+def accepted_v2_fundamental_core_from_candidate(
+    candidate: PreconfirmationDecisionCandidate,
+) -> AcceptedV2FundamentalCoreCandidate:
+    return AcceptedV2FundamentalCoreCandidate(
+        ticker=candidate.ticker,
+        decision=candidate.decision,
+        directional_balance=candidate.directional_balance,
+        buy_drivers=candidate.buy_drivers,
+        sell_drivers=candidate.sell_drivers,
+        balance_summary=candidate.balance_summary,
+        confidence=candidate.confidence,
+        decisive_reason=candidate.decisive_reason,
+        holder_axis=candidate.holder_axis,
+    )
+
+
+def _claim_ref_set(claims: Sequence[EvidenceClaim]) -> set[str]:
+    return {
+        ref_id
+        for claim in claims
+        for ref_id in claim.evidence_refs
+    }
+
+
+def validate_accepted_v2_fundamental_core(
+    core: AcceptedV2FundamentalCoreCandidate,
+    ownership: AcceptedV2EvidenceOwnership,
+) -> tuple[str, ...]:
+    errors: list[str] = []
+    if core.ticker != ownership.ticker:
+        errors.append("fundamental_core_ticker_mismatch")
+    if not directional_balance_matches_decision(core.directional_balance, core.decision):
+        errors.append("fundamental_core_directional_balance_mismatch")
+    core_refs = _claim_ref_set(
+        (
+            *core.buy_drivers,
+            *core.sell_drivers,
+            core.decisive_reason,
+            core.holder_axis.reason,
+        )
+    )
+    allowed = set(ownership.core_ref_ids)
+    timing = sorted(core_refs & set(ownership.timing_ref_ids))
+    outside = sorted(core_refs - allowed)
+    errors.extend(f"price_timing_in_fundamental_core:{ref_id}" for ref_id in timing)
+    errors.extend(f"noncore_ref_in_fundamental_core:{ref_id}" for ref_id in outside)
+    errors.extend(
+        duplicate_directional_anchor_errors(
+            interaction=ownership.expectation_valuation,
+            driver_ref_groups=tuple(
+                claim.evidence_refs for claim in (*core.buy_drivers, *core.sell_drivers)
+            ),
+        )
+    )
+    return tuple(dict.fromkeys(errors))
+
+
+def validate_accepted_v2_candidate_ownership(
+    candidate: PreconfirmationDecisionCandidate,
+    core: AcceptedV2FundamentalCoreCandidate,
+    ownership: AcceptedV2EvidenceOwnership,
+) -> tuple[str, ...]:
+    errors = list(validate_accepted_v2_fundamental_core(core, ownership))
+    projected = accepted_v2_fundamental_core_from_candidate(candidate)
+    expected_sha = accepted_v2_fundamental_core_sha256(core)
+    if candidate.fundamental_core_sha256 != expected_sha:
+        errors.append("fundamental_core_fingerprint_mismatch")
+    if projected != core:
+        errors.append("price_timing_stage_mutated_fundamental_core")
+    known = set(ownership.core_ref_ids) | set(ownership.timing_ref_ids)
+    unknown_new_buyer = sorted(set(candidate.new_buyer_axis.reason.evidence_refs) - known)
+    errors.extend(
+        f"new_buyer_ref_outside_owned_evidence:{ref_id}"
+        for ref_id in unknown_new_buyer
+    )
+    holder_timing = sorted(
+        set(candidate.holder_axis.reason.evidence_refs) & set(ownership.timing_ref_ids)
+    )
+    errors.extend(f"price_timing_in_holder_anchor:{ref_id}" for ref_id in holder_timing)
+    return tuple(dict.fromkeys(errors))
+
+
+def _compact_owned_evidence(
+    packet: DecisionEvidencePacket,
+    ref_ids: Sequence[str],
+) -> dict[str, object]:
+    allowed = {ref_id for ref_id in ref_ids if not ref_id.startswith("technical-feature:")}
+    return compact_ai_context(
+        packet.model_copy(
+            update={"evidence": tuple(row for row in packet.evidence if row.ref_id in allowed)}
+        )
+    )
+
+
+def accepted_v2_fundamental_core_prompt(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
 ) -> str:
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
-    prior = {row.ticker: row for row in context.prior_accepted}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
     if not selected or not set(selected).issubset(packets):
+        raise ValueError("v2_fundamental_core_prompt_subject_mismatch")
+    identity = {
+        "contract": FUNDAMENTAL_CORE_CONTRACT,
+        "packet_id": context.packet_id,
+        "claim_id": context.claim_id,
+        "market": context.market,
+        "assessment_date": context.assessment_date,
+    }
+    payload = [
+        {
+            "fundamental_core_evidence": _compact_owned_evidence(
+                packets[ticker], ownership[ticker].core_ref_ids
+            ),
+            "expectation_valuation_interaction": ownership[
+                ticker
+            ].expectation_valuation.model_dump(mode="json"),
+        }
+        for ticker in selected
+    ]
+    return (
+        """You own the immutable fundamental/economic core of a three-axis monitored decision. Use only FUNDAMENTAL_CORE_EVIDENCE. You cannot see or use price, support/resistance, confirmation-price status, OHLCV technicals, short-term flow/positioning, or futures. Do not browse, use later facts, calculate unregistered numbers, target prices, stops, order sizes, or fixed scores.
+
+For every supplied ticker, emit exactly one AcceptedV2FundamentalCoreCandidate. Decide overall BUY/HOLD/SELL, directional balance, confidence, core buy/sell drivers, decisive reason, and the existing-holder fundamental stance. Holder HOLDABLE/REVIEW/REDUCE must be based only on fundamental holding risk. REVIEW means the holding thesis needs re-examination; it is not an automatic sell instruction. REDUCE requires sufficiently severe or persistent fundamental downside. Do not derive holder stance mechanically from overall direction or Business Delta.
+
+The pair directional_balance must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. The balance is relative directional force, not probability or a weighted score. Every claim must be concise natural Korean and cite exact supplied refs.
+
+Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. INDEPENDENT inputs may remain separate concepts. PARTIALLY_OVERLAPPING inputs must not count shared lineage twice. VALUATION_DERIVED_EXPECTATION_ONLY and UNKNOWN expectation evidence may remain context but cannot become an independent directional driver. Do not force any ticker or create a pro-BUY bias.
+
+Return strict JSON only. Copy every FUNDAMENTAL_CORE_IDENTITY field exactly and include no core outside the supplied ticker set.
+
+FUNDAMENTAL_CORE_IDENTITY:
+"""
+        + json.dumps(identity, ensure_ascii=False, separators=(",", ":"))
+        + """
+
+FUNDAMENTAL_CORE_CONTEXT:
+"""
+        + json.dumps(payload, ensure_ascii=False, separators=(",", ":"), default=str)
+    )
+
+
+def accepted_v2_production_prompt(
+    context: AcceptedV2ProductionContext,
+    *,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate],
+    subjects: Sequence[str] | None = None,
+) -> str:
+    selected = tuple(subjects or context.selected_subjects)
+    packets = {row.ticker: row for row in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    prior = {row.ticker: row for row in context.prior_accepted}
+    cores = {row.ticker: row for row in fundamental_cores}
+    if not selected or not set(selected).issubset(packets) or not set(selected).issubset(cores):
         raise ValueError("v2_production_prompt_subject_mismatch")
     identity = {
         "contract": OUTPUT_CONTRACT,
@@ -301,23 +543,29 @@ def accepted_v2_production_prompt(
     }
     payload = [
         {
-            "canonical_evidence": compact_ai_context(
-                packets[ticker].model_copy(
-                    update={
-                        "evidence": tuple(
-                            row
-                            for row in packets[ticker].evidence
-                            if not row.ref_id.startswith("technical-feature:")
-                        )
-                    }
-                )
+            "frozen_fundamental_core": cores[ticker].model_dump(mode="json"),
+            "fundamental_core_sha256": accepted_v2_fundamental_core_sha256(cores[ticker]),
+            "fundamental_core_evidence": _compact_owned_evidence(
+                packets[ticker], ownership[ticker].core_ref_ids
             ),
+            "price_timing_evidence": _compact_owned_evidence(
+                packets[ticker], ownership[ticker].timing_ref_ids
+            ),
+            "expectation_valuation_interaction": ownership[
+                ticker
+            ].expectation_valuation.model_dump(mode="json"),
             "prior_accepted": (prior[ticker].model_dump(mode="json") if ticker in prior else None),
         }
         for ticker in selected
     ]
     return (
-        """You own the production-bound V2 analytical BUY/HOLD/SELL candidate and required accepted-decision adjudication. Use only the supplied canonical evidence. Do not browse, use later facts, calculate unregistered numbers, target prices, stops, order sizes, or fixed scores.
+        """You complete a production-bound V2 three-axis analytical candidate around a FROZEN_FUNDAMENTAL_CORE and perform any required accepted-decision adjudication. Use only supplied canonical evidence. Do not browse, use later facts, calculate unregistered numbers, target prices, stops, order sizes, or fixed scores.
+
+Copy every frozen core field exactly into the complete candidate: ticker, decision, directional_balance, buy_drivers, sell_drivers, balance_summary, confidence, decisive_reason, and holder_axis. Copy fundamental_core_sha256 exactly. Price/timing evidence must never mutate these fields. Use price/timing, valuation, expectations, confirmation need, and uncertainty only to form timing and the independent new_buyer_axis. Overall BUY can coexist with new-buyer WAIT, overall SELL can coexist with holder HOLDABLE, and overall HOLD does not force WAIT. Do not mechanically map any axis from another.
+
+Holder REVIEW means 보유 근거 재검토, not an automatic sell. Holder REDUCE must remain fundamental and may not cite price, technical, flow, confirmation-price, or futures evidence. A configured price confirmation is an entry/price check, never a fundamental business confirmation. Futures, when present in a timing-only context, cannot create Business Delta, holder risk, or a fundamental direction change.
+
+Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count the same underlying valuation signal once as high expectations and again as expensive valuation. Preserve genuinely independent expectation evidence. Do not force GOOGL or any other ticker to a target enum.
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Preserve exact complete evidence ref IDs. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
@@ -333,7 +581,9 @@ Canonical evidence may include logical_condition metadata. When an upgrade_condi
 
 Do not state or infer ROIC, CCC, DSO, DPO, runway months, FCF yield, per-share FCF, EV/FCF, or P/FCF. Never abbreviate, truncate, or reconstruct an evidence ref ID; copy every cited ref exactly from the supplied context.
 
-Return strict JSON only. Copy every PRODUCTION_V2_IDENTITY field exactly and include no candidate or adjudication outside the supplied ticker set.
+Do not emit internal phrases such as 상향 라벨, 하향 라벨, or 내부 위험 확신. Every sentence must end as a complete user-facing Korean sentence.
+
+Return strict JSON only. Set fundamental_cores to the supplied frozen cores exactly. Copy every PRODUCTION_V2_IDENTITY field exactly and include no candidate or adjudication outside the supplied ticker set.
 
 PRODUCTION_V2_IDENTITY:
 """
@@ -349,6 +599,7 @@ PRODUCTION_V2_CONTEXT:
 def accepted_v2_production_repair_prompt(
     context: AcceptedV2ProductionContext,
     *,
+    fundamental_core: AcceptedV2FundamentalCoreCandidate,
     ticker: str,
     rejected_candidate: PreconfirmationDecisionCandidate,
     validation_errors: Sequence[str],
@@ -369,7 +620,11 @@ def accepted_v2_production_repair_prompt(
             "the HOLD decision unless canonical evidence independently requires a change."
         )
     return (
-        accepted_v2_production_prompt(context, subjects=(ticker,))
+        accepted_v2_production_prompt(
+            context,
+            fundamental_cores=(fundamental_core,),
+            subjects=(ticker,),
+        )
         + "\n\nBOUNDED_VALIDATOR_REPAIR:\n"
         + json.dumps(
             {
@@ -394,6 +649,7 @@ def accepted_v2_production_repair_prompt(
 def accepted_v2_production_batch_schema_repair_prompt(
     context: AcceptedV2ProductionContext,
     *,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate],
     subjects: Sequence[str],
     rejected_output: Mapping[str, object],
     validation_errors: Sequence[str],
@@ -402,7 +658,11 @@ def accepted_v2_production_batch_schema_repair_prompt(
     if not selected or any(ticker not in context.selected_subjects for ticker in selected):
         raise ValueError("v2_production_batch_repair_subject_mismatch")
     return (
-        accepted_v2_production_prompt(context, subjects=selected)
+        accepted_v2_production_prompt(
+            context,
+            fundamental_cores=fundamental_cores,
+            subjects=selected,
+        )
         + "\n\nBOUNDED_BATCH_SCHEMA_REPAIR:\n"
         + json.dumps(
             {
@@ -493,12 +753,34 @@ def validate_accepted_v2_production_output(
     ):
         raise ValueError("v2_production_output_identity_mismatch")
     packets = {row.ticker: row for row in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    cores = {row.ticker: row for row in output.fundamental_cores}
     candidates = {row.ticker: row for row in output.candidates}
+    if set(ownership) != set(context.selected_subjects) or len(ownership) != len(
+        context.evidence_ownership
+    ):
+        raise ValueError("v2_production_ownership_scope_mismatch")
+    if set(cores) != set(context.selected_subjects) or len(cores) != len(
+        output.fundamental_cores
+    ):
+        raise ValueError("v2_production_fundamental_core_scope_mismatch")
     if set(candidates) != set(context.selected_subjects) or len(candidates) != len(
         output.candidates
     ):
         raise ValueError("v2_production_candidate_scope_mismatch")
     for ticker, candidate in candidates.items():
+        ownership_errors = validate_accepted_v2_candidate_ownership(
+            candidate,
+            cores[ticker],
+            ownership[ticker],
+        )
+        if ownership_errors:
+            raise ValueError(
+                "v2_production_candidate_ownership_invalid:"
+                + ticker
+                + ":"
+                + ",".join(ownership_errors)
+            )
         validation = validate_preconfirmation_candidate(packets[ticker], candidate)
         if not validation.valid:
             raise ValueError(
@@ -576,6 +858,16 @@ def validate_accepted_v2_production_output(
                     if plan.accepted_directional_balance is not None
                     else None
                 ),
+                new_buyer_stance=(
+                    plan.accepted_new_buyer_axis.stance
+                    if plan.accepted_new_buyer_axis is not None
+                    else None
+                ),
+                holder_stance=(
+                    plan.accepted_holder_axis.stance
+                    if plan.accepted_holder_axis is not None
+                    else None
+                ),
                 text=rendered_row.text,
             )
         )
@@ -630,6 +922,8 @@ def validate_accepted_v2_production_output(
         source_packet_sha256=context.source_packet_sha256,
         selected_subjects=context.selected_subjects,
         evidence_packets=context.evidence_packets,
+        evidence_ownership=context.evidence_ownership,
+        fundamental_cores=tuple(cores[ticker] for ticker in context.selected_subjects),
         candidates=tuple(candidates[ticker] for ticker in context.selected_subjects),
         accepted_plans=tuple(plans),
         blocks=tuple(blocks),
@@ -681,6 +975,10 @@ def load_accepted_v2_production_artifact(
             or plan.accepted_directional_balance is None
             or block.buy_balance != plan.accepted_directional_balance.buy
             or block.sell_balance != plan.accepted_directional_balance.sell
+            or plan.accepted_new_buyer_axis is None
+            or block.new_buyer_stance != plan.accepted_new_buyer_axis.stance
+            or plan.accepted_holder_axis is None
+            or block.holder_stance != plan.accepted_holder_axis.stance
             or block.text != expected.text
         ):
             raise ValueError("v2_production_artifact_block_mismatch")

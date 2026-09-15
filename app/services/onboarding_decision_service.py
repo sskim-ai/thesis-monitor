@@ -17,10 +17,14 @@ from app.models.watchlist import WatchlistItem
 from app.services.accepted_decision_v2_runtime_service import (
     REASONING_EFFORT,
     REASONING_MODEL,
+    AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBatchOutput,
+    accepted_v2_fundamental_core_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
     build_accepted_v2_production_context,
+    validate_accepted_v2_candidate_ownership,
+    validate_accepted_v2_fundamental_core,
 )
 from app.services.accepted_decision_v2_service import (
     AcceptedDecisionStatus,
@@ -278,6 +282,10 @@ def generate_onboarding_accepted_decision(
     root = Path(data_dir or get_settings().data_dir) / "onboarding" / item.ticker
     paths = {
         "context": root / f"{claim_id}.context.json",
+        "core_schema": root / f"{claim_id}.core.schema.json",
+        "core_prompt": root / f"{claim_id}.core.prompt.txt",
+        "core_output": root / f"{claim_id}.core.output.json",
+        "core_log": root / f"{claim_id}.core.cli.log",
         "schema": root / f"{claim_id}.schema.json",
         "prompt": root / f"{claim_id}.prompt.txt",
         "output": root / f"{claim_id}.output.json",
@@ -289,10 +297,45 @@ def generate_onboarding_accepted_decision(
     }
     _atomic_json(paths["context"], context.model_dump(mode="json"))
     _atomic_json(
+        paths["core_schema"],
+        strict_json_schema(AcceptedV2FundamentalCoreBatch.model_json_schema()),
+    )
+    _atomic_text(paths["core_prompt"], accepted_v2_fundamental_core_prompt(context))
+    _invoke_signed_in_codex(
+        prompt=paths["core_prompt"],
+        output=paths["core_output"],
+        log=paths["core_log"],
+        schema=paths["core_schema"],
+        timeout=timeout,
+        state_namespace=claim_id,
+    )
+    core_output = AcceptedV2FundamentalCoreBatch.model_validate_json(
+        paths["core_output"].read_text(encoding="utf-8")
+    )
+    if (
+        core_output.packet_id != packet.packet_id
+        or core_output.claim_id != claim_id
+        or core_output.market != packet.market
+        or core_output.assessment_date != packet.assessment_date
+        or len(core_output.cores) != 1
+        or core_output.cores[0].ticker != item.ticker
+    ):
+        raise ValueError("onboarding_fundamental_core_identity_mismatch")
+    core = core_output.cores[0]
+    ownership = context.evidence_ownership[0]
+    core_errors = validate_accepted_v2_fundamental_core(core, ownership)
+    if core_errors:
+        raise ValueError(
+            "onboarding_fundamental_core_invalid:" + ",".join(core_errors)
+        )
+    _atomic_json(
         paths["schema"],
         strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
     )
-    _atomic_text(paths["prompt"], accepted_v2_production_prompt(context))
+    _atomic_text(
+        paths["prompt"],
+        accepted_v2_production_prompt(context, fundamental_cores=(core,)),
+    )
     _invoke_signed_in_codex(
         prompt=paths["prompt"],
         output=paths["output"],
@@ -309,21 +352,28 @@ def generate_onboarding_accepted_decision(
         or output.claim_id != claim_id
         or output.market != packet.market
         or output.assessment_date != packet.assessment_date
+        or tuple(output.fundamental_cores) != (core,)
         or len(output.candidates) != 1
         or output.candidates[0].ticker != item.ticker
     ):
         raise ValueError("onboarding_decision_output_identity_mismatch")
     candidate = output.candidates[0]
     validation = validate_preconfirmation_candidate(packet, candidate)
+    ownership_errors = validate_accepted_v2_candidate_ownership(
+        candidate, core, ownership
+    )
     adjudications = {row.ticker: row for row in output.adjudications}
-    if not validation.valid:
+    if not validation.valid or ownership_errors:
         _atomic_text(
             paths["repair_prompt"],
             accepted_v2_production_repair_prompt(
                 context,
+                fundamental_core=core,
                 ticker=item.ticker,
                 rejected_candidate=candidate,
-                validation_errors=tuple(dict.fromkeys(validation.errors)),
+                validation_errors=tuple(
+                    dict.fromkeys((*validation.errors, *ownership_errors))
+                ),
             ),
         )
         _invoke_signed_in_codex(
@@ -337,13 +387,23 @@ def generate_onboarding_accepted_decision(
         repaired = AcceptedV2ProductionBatchOutput.model_validate_json(
             paths["repair_output"].read_text(encoding="utf-8")
         )
-        if len(repaired.candidates) != 1 or repaired.candidates[0].ticker != item.ticker:
+        if (
+            tuple(repaired.fundamental_cores) != (core,)
+            or len(repaired.candidates) != 1
+            or repaired.candidates[0].ticker != item.ticker
+        ):
             raise ValueError("onboarding_decision_repair_identity_mismatch")
         candidate = repaired.candidates[0]
         validation = validate_preconfirmation_candidate(packet, candidate)
+        ownership_errors = validate_accepted_v2_candidate_ownership(
+            candidate, core, ownership
+        )
         adjudications = {row.ticker: row for row in repaired.adjudications}
-    if not validation.valid:
-        raise ValueError("onboarding_decision_validation_failed:" + ",".join(validation.errors))
+    if not validation.valid or ownership_errors:
+        raise ValueError(
+            "onboarding_decision_validation_failed:"
+            + ",".join(tuple(dict.fromkeys((*validation.errors, *ownership_errors))))
+        )
     prior = next((row for row in context.prior_accepted if row.ticker == item.ticker), None)
     material_disagreement = bool(
         prior is not None

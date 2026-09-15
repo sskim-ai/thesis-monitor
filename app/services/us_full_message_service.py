@@ -9,6 +9,7 @@ from app.services.krx_night_history_service import (
     KrxNightAggregateBar,
     KrxNightTimeframes,
 )
+from app.services.leading_market_snapshot_service import leading_market_block_from_context
 from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
 from app.services.night_futures_visibility_service import (
     night_futures_user_facing_visibility,
@@ -296,8 +297,8 @@ def render_us_full_market_message(
         index_fact_ids.append(_fact_id(fact))
         if fact.get("as_of_date"):
             index_dates.add(str(fact["as_of_date"]))
-    if len(index_dates) > 1:
-        errors.append("index_session_mismatch")
+    if len(index_dates) != 1:
+        errors.append("index_session_missing_or_mixed")
 
     internal_lines: list[str] = []
     style = _plan_item(plan, UsMarketDigestSlot.PARTICIPATION_STYLE)
@@ -410,10 +411,35 @@ def render_us_full_market_message(
     if not checks:
         checks = ("다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",)
 
-    blocks = ["🇺🇸 미국시장 마감", "📈 주요 지수\n" + "\n".join(index_lines)]
+    session_date = next(iter(index_dates), "날짜 확인 불가")
+    try:
+        leading_market = leading_market_block_from_context(
+            _mapping(context), expected_market="us"
+        )
+    except (TypeError, ValueError) as exc:
+        leading_market = None
+        errors.append(f"leading_market_context_invalid:{exc}")
+    leading_visible = leading_market is not None and leading_market.status == "VISIBLE"
+    header = (
+        f"🇺🇸 미국 시장환경 점검 · 완료 세션 {session_date}"
+        if leading_visible
+        else f"🇺🇸 미국시장 마감 · {session_date}"
+    )
+    blocks = [
+        header,
+        "📈 주요 지수\n" + "\n".join(index_lines),
+    ]
     section_order = ["HEADER", "INDEX_BLOCK"]
     blocks.append("🔎 시장 내부\n" + "\n".join(internal_lines))
     section_order.append("MARKET_INTERNAL")
+    if leading_visible:
+        assert leading_market is not None
+        blocks.append(leading_market.text)
+        section_order.append("LEADING_MARKET")
+    elif leading_market is not None and leading_market.status == "INVALID":
+        errors.extend(
+            f"leading_market_invalid:{error}" for error in leading_market.validation.errors
+        )
     if night_lines:
         night_date = next(
             (

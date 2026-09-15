@@ -15,6 +15,8 @@ from app.jobs.accepted_decision_v2_runtime import (
     _signed_in_codex_bin,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2FundamentalCoreCandidate,
+    accepted_v2_fundamental_core_prompt,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
@@ -89,6 +91,10 @@ def _packet() -> DecisionEvidencePacket:
     )
 
 
+def _core(packet: DecisionEvidencePacket) -> AcceptedV2FundamentalCoreCandidate:
+    return AcceptedV2FundamentalCoreCandidate.model_construct(ticker=packet.ticker)
+
+
 def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() -> None:
     packet = _packet()
     context = build_accepted_v2_production_context(
@@ -102,9 +108,13 @@ def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() 
         evidence_packets=(packet,),
     )
 
-    prompt = accepted_v2_production_prompt(context)
+    core_prompt = accepted_v2_fundamental_core_prompt(context)
+    prompt = accepted_v2_production_prompt(
+        context, fundamental_cores=(_core(packet),)
+    )
 
     assert "canonical:chart:daily" in prompt
+    assert "canonical:chart:daily" not in core_prompt
     assert "technical-feature:daily:rsi14" not in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
     assert "Do not state or infer ROIC" in prompt
@@ -126,6 +136,7 @@ def test_bounded_repair_prompt_names_errors_and_keeps_exact_identity() -> None:
 
     prompt = accepted_v2_production_repair_prompt(
         context,
+        fundamental_core=_core(packet),
         ticker=packet.ticker,
         rejected_candidate=candidate,
         validation_errors=("unsupported_metric_or_inference",),
@@ -152,6 +163,7 @@ def test_bounded_repair_prompt_explains_temporal_and_hold_contracts() -> None:
 
     prompt = accepted_v2_production_repair_prompt(
         context,
+        fundamental_core=_core(packet),
         ticker=packet.ticker,
         rejected_candidate=candidate,
         validation_errors=(
@@ -180,6 +192,7 @@ def test_bounded_batch_schema_repair_keeps_scope_and_strict_errors() -> None:
 
     prompt = accepted_v2_production_batch_schema_repair_prompt(
         context,
+        fundamental_cores=(_core(packet),),
         subjects=(packet.ticker,),
         rejected_output={"candidates": [{"ticker": packet.ticker}]},
         validation_errors=(

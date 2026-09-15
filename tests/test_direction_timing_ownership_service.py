@@ -267,7 +267,7 @@ def test_counterfactual_price_state_cannot_mutate_direction_balance_or_lean() ->
         assert validate_ownership(owned, core, result.timing, result).valid
     assert favorable.candidate.new_buyer_view.stance == "ATTRACTIVE"
     assert adverse.candidate.new_buyer_view.stance == "AVOID"
-    assert adverse.candidate.holder_view.stance == "REVIEW"
+    assert adverse.candidate.holder_view.stance == "HOLDABLE"
 
 
 def test_timing_only_downgrades_new_buyer_and_never_creates_reduce() -> None:
@@ -286,7 +286,7 @@ def test_timing_only_downgrades_new_buyer_and_never_creates_reduce() -> None:
         )
         composed = compose_decision(core, timing)
         assert composed.candidate.new_buyer_view.stance == expected
-        assert composed.candidate.holder_view.stance == "REVIEW"
+        assert composed.candidate.holder_view.stance == "HOLDABLE"
         assert validate_ownership(owned, core, timing, composed).valid
 
 
@@ -374,3 +374,21 @@ def test_business_invalidation_is_copied_only_from_core() -> None:
     )
     assert composed.candidate.decision == "BUY"
     assert validate_ownership(owned, core, timing, composed).valid
+
+
+def test_leading_market_futures_are_timing_only_not_fundamental_macro() -> None:
+    packet, stock = _packet()
+    leading = DecisionEvidenceRef(
+        ref_id="leading-market:us:ES",
+        category=EvidenceCategory.MARKET,
+        label="S&P 500 futures",
+        statement="현재 선행시장 신호입니다.",
+        as_of="2026-09-15",
+        source_ref="leading_market.timing_context",
+    )
+    packet = packet.model_copy(update={"evidence": (*packet.evidence, leading)})
+
+    owned = build_owned_evidence_packet(packet, stock=stock)
+
+    assert leading.ref_id in owned.timing_refs
+    assert leading.ref_id not in owned.core_refs

@@ -58,13 +58,20 @@ from app.services.accepted_decision_v2_service import (
     validate_accepted_v2_render,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2EvidenceOwnership,
+    AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBaseline,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionBlock,
     AcceptedV2ProductionContext,
+    accepted_v2_fundamental_core_from_candidate,
+    accepted_v2_fundamental_core_sha256,
     build_accepted_v2_production_context,
+    validate_accepted_v2_candidate_ownership,
+    validate_accepted_v2_fundamental_core,
     validate_accepted_v2_production_output,
 )
+from app.services.expectation_valuation_interaction_service import interaction_from_packet
 from app.services.accepted_decision_consistency_service import (
     MaterialEvidenceDelta,
     audit_accepted_decision_consistency,
@@ -73,6 +80,10 @@ from app.services.directional_balance_service import (
     DirectionalBalance,
     decision_from_directional_balance,
     render_directional_balance,
+)
+from app.services.three_axis_decision_service import (
+    HolderDecisionAxis,
+    NewBuyerDecisionAxis,
 )
 
 
@@ -125,9 +136,18 @@ def _scenario(name: ScenarioName) -> ScenarioInterpretation:
 
 
 def _candidate() -> PreconfirmationDecisionCandidate:
-    return PreconfirmationDecisionCandidate(
+    candidate = PreconfirmationDecisionCandidate(
         ticker="TEST",
+        fundamental_core_sha256="0" * 64,
         decision="BUY",
+        new_buyer_axis=NewBuyerDecisionAxis(
+            stance="ATTRACTIVE",
+            reason=_claim("ref:price", "현재 진입 가격 구조는 부담이 크지 않습니다."),
+        ),
+        holder_axis=HolderDecisionAxis(
+            stance="HOLDABLE",
+            reason=_claim("ref:thesis", "기존 사업 근거는 보유 유지와 양립합니다."),
+        ),
         directional_balance=DirectionalBalance(buy=6, sell=4),
         buy_drivers=(_claim("ref:valuation", "보수적 평가가 매수 방향을 지지합니다."),),
         sell_drivers=(_claim("ref:risks", "실행 위험이 매도 방향의 반대 근거입니다."),),
@@ -215,13 +235,30 @@ def _candidate() -> PreconfirmationDecisionCandidate:
         upgrade_condition=_claim("ref:earnings", "경제성의 반복 증거가 쌓이면 확신을 높입니다."),
         downgrade_condition=_claim("ref:risks", "기존 사업까지 약화되면 판단을 낮춥니다."),
     )
+    core = accepted_v2_fundamental_core_from_candidate(candidate)
+    return candidate.model_copy(
+        update={"fundamental_core_sha256": accepted_v2_fundamental_core_sha256(core)}
+    )
+
+
+def _candidate_with_current_core_sha(
+    candidate: PreconfirmationDecisionCandidate,
+) -> PreconfirmationDecisionCandidate:
+    core = accepted_v2_fundamental_core_from_candidate(candidate)
+    return candidate.model_copy(
+        update={"fundamental_core_sha256": accepted_v2_fundamental_core_sha256(core)}
+    )
+
+
+def _core(candidate: PreconfirmationDecisionCandidate | None = None):
+    return accepted_v2_fundamental_core_from_candidate(candidate or _candidate())
 
 
 def _candidate_with_balance(buy: float) -> PreconfirmationDecisionCandidate:
     balance = DirectionalBalance(buy=buy, sell=10 - buy)
     decision = decision_from_directional_balance(balance)
     baseline = _candidate()
-    return baseline.model_copy(
+    return _candidate_with_current_core_sha(baseline.model_copy(
         update={
             "decision": decision,
             "directional_balance": balance,
@@ -232,7 +269,7 @@ def _candidate_with_balance(buy: float) -> PreconfirmationDecisionCandidate:
             "post_confirmation_hold": False,
             "postconfirmation_hold_explanation": None,
         }
-    )
+    ))
 
 
 @pytest.mark.parametrize(
@@ -334,12 +371,22 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
         claim_id="claim-preflight-schema-repair",
         evidence_packets=(packet,),
     )
+    candidate = _candidate()
+    core = _core(candidate)
+    core_batch = AcceptedV2FundamentalCoreBatch(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        cores=(core,),
+    )
     valid = AcceptedV2ProductionBatchOutput(
         packet_id=context.packet_id,
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
-        candidates=(_candidate(),),
+        fundamental_cores=(core,),
+        candidates=(candidate,),
     )
     invalid = valid.model_dump(mode="json")
     maturity = invalid["candidates"][0]["driver_maturity"][0]
@@ -347,7 +394,10 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
 
     def fake_invoke(**kwargs) -> None:
         output = kwargs["output"]
-        payload = valid.model_dump(mode="json") if "schema-repair" in output.name else invalid
+        if "core-batch" in output.name:
+            payload = core_batch.model_dump(mode="json")
+        else:
+            payload = valid.model_dump(mode="json") if "schema-repair" in output.name else invalid
         output.write_text(json.dumps(payload), encoding="utf-8")
 
     monkeypatch.setattr(preflight, "_signed_in_codex_bin", lambda: "codex")
@@ -716,7 +766,9 @@ def test_accepted_renderer_uses_keep_v1_hold_not_raw_candidate_buy() -> None:
     rendered = render_accepted_v2_shadow(packet, plan)
     assert rendered.candidate_decision == "BUY"
     assert rendered.accepted_decision == "HOLD"
-    assert "AI 수용 판단: HOLD" in rendered.text
+    assert "AI 수용 판단\n종합 방향: HOLD" in rendered.text
+    assert "신규 관찰자:" in rendered.text
+    assert "보유자:" in rendered.text
     assert "AI 수용 판단: BUY" not in rendered.text
     assert "완전 확인 전 BUY" not in rendered.text
     assert accepted_message_quality((rendered,))["status"] == "PASS"
@@ -762,6 +814,59 @@ def test_hold_change_condition_removes_impossible_hold_to_hold_downgrade() -> No
     )
 
 
+def test_047810_internal_downgrade_label_wording_is_removed() -> None:
+    claim = _claim(
+        "ref:risks",
+        "추가 하향 라벨은 없으며, 수주 수익성이 약화되면 보유 근거를 재검토합니다.",
+    )
+
+    normalized = normalize_decision_change_condition("HOLD", "DOWNGRADE", claim)
+
+    assert "하향 라벨" not in normalized.text
+    assert normalized.text == "수주 수익성이 약화되면 보유 근거를 재검토합니다."
+    assert normalized.evidence_refs == claim.evidence_refs
+
+
+def test_googl_like_price_timing_evidence_cannot_enter_fundamental_core() -> None:
+    packet = _packet().model_copy(update={"ticker": "GOOGL"})
+    ownership = AcceptedV2EvidenceOwnership(
+        ticker="GOOGL",
+        core_ref_ids=tuple(
+            row.ref_id
+            for row in packet.evidence
+            if row.category not in {EvidenceCategory.PRICE_STRUCTURE, EvidenceCategory.MARKET}
+        ),
+        timing_ref_ids=("ref:market", "ref:price"),
+        expectation_valuation=interaction_from_packet(packet),
+    )
+    valid_core = _core().model_copy(update={"ticker": "GOOGL"})
+    contaminated_core = valid_core.model_copy(
+        update={
+            "decisive_reason": _claim(
+                "ref:price",
+                "현재 가격 위치가 방향 판단의 결정적 근거입니다.",
+            )
+        }
+    )
+
+    core_errors = validate_accepted_v2_fundamental_core(contaminated_core, ownership)
+    candidate = _candidate().model_copy(
+        update={
+            "ticker": "GOOGL",
+            "decisive_reason": contaminated_core.decisive_reason,
+            "fundamental_core_sha256": accepted_v2_fundamental_core_sha256(valid_core),
+        }
+    )
+    candidate_errors = validate_accepted_v2_candidate_ownership(
+        candidate,
+        valid_core,
+        ownership,
+    )
+
+    assert "price_timing_in_fundamental_core:ref:price" in core_errors
+    assert "price_timing_stage_mutated_fundamental_core" in candidate_errors
+
+
 def test_self_transition_validator_covers_buy_hold_and_sell() -> None:
     assert decision_change_condition_errors(
         "BUY",
@@ -790,7 +895,9 @@ def test_production_renderer_consumes_only_ready_accepted_plan() -> None:
         adjudication=_adjudication(recommendation="KEEP_V1", accepted_decision="HOLD"),
     )
     rendered = render_accepted_v2_production(packet, plan)
-    assert "🧠 AI 분석 판단: HOLD" in rendered.text
+    assert "🧠 AI 분석 판단\n종합 방향: HOLD" in rendered.text
+    assert "신규 관찰자:" in rendered.text
+    assert "보유자:" in rendered.text
     assert "판단 균형: BUY 5 : SELL 5" in rendered.text
     assert "SHADOW" not in rendered.text
     assert "후보" not in rendered.text
@@ -835,7 +942,9 @@ def test_production_renderer_omits_common_disclaimer_for_every_decision(
 
     rendered = render_accepted_v2_production(packet, plan)
 
-    assert f"AI 분석 판단: {decision}" in rendered.text
+    assert f"AI 분석 판단\n종합 방향: {decision}" in rendered.text
+    assert "신규 관찰자:" in rendered.text
+    assert "보유자:" in rendered.text
     assert "분석 분류이며 주문·자동매매·의무 매매 지시가 아닙니다" not in rendered.text
     assert rendered.validation.valid is True
 
@@ -858,6 +967,7 @@ def test_v2_production_output_resolves_ready_plan_for_complete_scope() -> None:
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=(_core(),),
         candidates=(_candidate(),),
     )
     artifact = validate_accepted_v2_production_output(context, output)
@@ -902,6 +1012,7 @@ def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=(_core(),),
         candidates=(_candidate(),),
     )
     artifact = validate_accepted_v2_production_output(context, output)
@@ -950,6 +1061,7 @@ def test_same_evidence_material_balance_move_requires_adjudication() -> None:
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=(_core(candidate),),
         candidates=(candidate,),
     )
 
@@ -976,6 +1088,7 @@ def test_same_evidence_material_candidate_move_can_keep_prior_balance() -> None:
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=(_core(candidate),),
         candidates=(candidate,),
         adjudications=(adjudication,),
     )
@@ -1004,6 +1117,7 @@ def test_same_evidence_material_accepted_balance_drift_fails_closed() -> None:
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=(_core(candidate),),
         candidates=(candidate,),
         adjudications=(adjudication,),
     )
@@ -1040,12 +1154,14 @@ def test_same_evidence_v2_decision_churn_fails_closed() -> None:
             )
         }
     )
+    candidate = _candidate()
     output = AcceptedV2ProductionBatchOutput(
         packet_id=context.packet_id,
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
-        candidates=(_candidate(),),
+        fundamental_cores=(_core(candidate),),
+        candidates=(candidate,),
         adjudications=(_adjudication(recommendation="KEEP_V2", accepted_decision="BUY"),),
     )
     try:
