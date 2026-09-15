@@ -5,7 +5,7 @@
     "artifacts/",
     "docs/reports/"
   ],
-  "reason": "These exact historical replay tests require excluded local raw or report evidence. Runtime and synthetic contract tests remain enabled.",
+  "reason": "These exact historical replay tests require excluded local raw/report evidence, local bundles, or non-ancestor Git objects. Runtime and synthetic contract tests remain enabled.",
   "tests": [
     {"nodeid": "tests/test_boundary_band_application_scope_m12aa.py::test_exact_m12z_fic_fin_08_output_passes_without_rewrite"},
     {"nodeid": "tests/test_boundary_band_application_scope_m12aa.py::test_m12z_business_delta_replay_remains_closed"},
@@ -49,6 +49,25 @@
     {"nodeid": "tests/test_stage2_korean_lexical_boundary_m12am_runner.py::test_m12al_stop_and_exact_stage2_replay_are_reproduced"},
     {"nodeid": "tests/test_typed_financial_delta_direction_m12aj.py::test_capability_classification_is_identical_to_m12ai"},
     {"nodeid": "tests/test_typed_financial_delta_direction_m12aj.py::test_exact_fic_fin_02_direction_projection_and_offline_revalidation"},
-    {"nodeid": "tests/test_websocket_timeout_runtime_review_first_a_closeout.py::test_historical_current_format_closes_after_terminal_failure"}
+    {"nodeid": "tests/test_websocket_timeout_runtime_review_first_a_closeout.py::test_historical_current_format_closes_after_terminal_failure"},
+    {"nodeid": "tests/test_business_delta_unchanged_negation_scope_m12as_runner.py::test_model_facing_semantic_hashes_are_unchanged"},
+    {"nodeid": "tests/test_canonical_acceptance_persistence_design_m12bm.py::test_latest_m12bl_bundle_integrity_is_independently_reproducible"},
+    {"nodeid": "tests/test_configured_fcf_support_mapping_m12ay_runner.py::test_m12ay_general_framework_surface_stays_closed_to_fcf"},
+    {"nodeid": "tests/test_configured_fcf_support_mapping_m12ay_runner.py::test_m12ay_model_facing_surface_is_unchanged"},
+    {"nodeid": "tests/test_fcf_claim_temporal_scope_negated_fulfillment_m12az_runner.py::test_m12az_model_facing_surface_is_unchanged"},
+    {"nodeid": "tests/test_fictional_aggregate_context_boundary_m12bc.py::test_model_facing_ast_surfaces_unchanged_from_m12bb_base"},
+    {"nodeid": "tests/test_fictional_case_fcf_prospective_scope_m12au_runner.py::test_model_facing_semantic_surfaces_are_unchanged"},
+    {"nodeid": "tests/test_financial_boundary_calibration_m12e.py::test_historical_transport_prompt_is_exact_prior_text"},
+    {"nodeid": "tests/test_financial_exclusion_leverage_m12f.py::test_full_offline_replay_closes_exclusion_without_rewriting_history"},
+    {"nodeid": "tests/test_financial_sector_replacement_verb_parity_m12ba_runner.py::test_m12ba_replacement_code_audit_is_bounded"},
+    {"nodeid": "tests/test_first_class_typed_financial_evidence_m12b.py::test_frozen_semantic_surfaces_remain_unchanged"},
+    {"nodeid": "tests/test_first_class_typed_financial_evidence_m12b.py::test_authoritative_m12a_bundle_remains_integrity_clean"},
+    {"nodeid": "tests/test_historical_scope_fixture_reconciliation_m12bq.py::test_m12w_allows_exact_m12bp_paths_and_preserves_unexpected_path_rejection"},
+    {"nodeid": "tests/test_historical_scope_fixture_reconciliation_m12bq.py::test_m12b_allows_only_named_surface_and_rejects_unrelated_surface_change"},
+    {"nodeid": "tests/test_market_expectation_independence_m12ap.py::test_m12ap_prompt_contract_is_already_present_without_prompt_edit"},
+    {"nodeid": "tests/test_materiality_scoped_working_capital_grounding_m12c.py::test_m12c_genericity_and_validator_scope_are_bounded"},
+    {"nodeid": "tests/test_production_integration_persistence_review_m12bl.py::test_authoritative_latest_result_inventory_is_intact"},
+    {"nodeid": "tests/test_prospective_condition_nominalization_m12aw_runner.py::test_m12aw_model_facing_surfaces_are_unchanged"},
+    {"nodeid": "tests/test_stage2_korean_lexical_boundary_m12am_runner.py::test_lexicon_and_semantic_scope_are_bounded"}
   ]
 }

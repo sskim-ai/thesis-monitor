@@ -29,7 +29,7 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     payload = json.loads(_CLEAN_HISTORY_EXCLUSIONS.read_text(encoding="utf-8"))
     excluded = {row["nodeid"] for row in payload["tests"]}
     marker = pytest.mark.skip(
-        reason="clean-history integration excludes local raw/report proof inputs"
+        reason="clean-history excludes nonportable historical proof inputs"
     )
     for item in items:
         if item.nodeid in excluded:
