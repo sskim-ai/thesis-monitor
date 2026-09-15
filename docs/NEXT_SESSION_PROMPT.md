@@ -1,29 +1,28 @@
 # Next Session Prompt
 
-Latest authoritative local-only work is M12BX. Read the iCloud bundle
-`thesis-monitor-20260916-stage2-typed-contract-closure-full22-reproof-market-context-restoration-report.zip`
-first. Exact instruction commit is `643bd0f43b005682e1ad777658b72ac212e3586c`; deterministic
-implementation is `eb24f37155fca38c5e993678b0d7261971c9a354`. No main merge, deploy, or
-remote push occurred.
+Latest authoritative local-only work is M12BY. Read the iCloud bundle
+`thesis-monitor-20260916-fundamental-core-batch-completeness-identity-closure-full22-reproof-market-context-final-readiness-report.zip`
+first. Exact instruction commit is `fe177a1f5fc5273617055f890e9e8ea192e9e19e`; deterministic implementation is
+`3a22a8fb167e35da0bba4c2c1681ab70fc65e060`. No main merge, deploy, remote push, production send,
+or persistence/scheduler mutation occurred.
 
-The Stage-2 typed contract is deterministically closed: 50 string fields classify to six genuine
-free-text fields and 44 typed fields, with zero unknown/gap fields and zero unsatisfiable dates.
-Focused/full tests are `156/4022 PASS`; Ruff and diff check pass. Kiwoom KOSPI200 local adapter
-replays for 9/1-9/3 pass, and the official/free FRED Treasury block restores DGS3/5/10/30 plus
-direct DFII10/T10YIE with explicit daily dates and time-layer separation.
+Fundamental Core batch identity is structurally closed with dynamic exact cardinality, exact batch
+ticker enums, const top-level identity, and unchanged hard set/duplicate validation. The old omitted
+IBM output fails unchanged. In the new no-repair generation, US core batches passed `5/5`, US14
+subjects were present, IBM appeared exactly once, and cardinality/ticker-set/identity/exact-ref
+failures were zero.
 
-The new no-repair model generation
-`20260916-uskr22-m12bx-20260915T164818Z-eb24f37155fc` is terminal and must not be resumed or
-stitched. At ordinal 2, US Fundamental Core batch 2 requested `GOOGL/HUT/IBM` but returned only
-`GOOGL/HUT`, causing `preflight_fundamental_core_scope_mismatch:2`. Calls are `2/2/2`
-started/completed/usable; retry, fallback, judge, repair, and selective rerun are zero.
+Generation `20260916-uskr22-m12by-20260915T232729Z-3a22a8fb167e` is terminal and must not be
+resumed or stitched. At ordinal 6, US Stage-2 batch 1 returned a CORZ maturity row with the same ref
+in supporting and contradicting sets, so existing validation failed
+`maturity_reference_polarity_overlap`. Calls are `6/6/6`; retry, fallback, judge, repair, and
+selective rerun are zero.
 
-Next bounded task: audit and structurally close Fundamental Core batch completeness without an
-IBM-specific exception, then start a wholly new US14/KR8 generation from call 1 under the same
-frozen model/no-repair rules. Keep the successful M12BX calls forensic-only. Kiwoom read-only
-gateway enablement is a separate prerequisite for final live message smoke; this host currently has
-no authenticated Windows gateway. Do not mutate production DB, warnings, notifications, schedules,
-Telegram, main, deployment, or Production Assist.
+Next bounded task: review generic Stage-2 driver-maturity polarity disjointness and close only that
+model contract, then run a wholly new US14/KR8 proof from call 1. Do not create a CORZ-specific
+exception or reinterpret the failed output. Kiwoom local history and Treasury context remain ready;
+the authenticated Kiwoom gateway remains unconfigured, with read/order calls `0/0`. Keep production
+DB, warnings, notifications, schedules, Telegram, main, deployment, and Production Assist untouched.
 
 ---
 

@@ -2606,3 +2606,29 @@ new US14/KR8 generation from call 1. No ticker-specific IBM patch, prompt-result
 stitching, or selective rerun is allowed. Read-only Kiwoom gateway enablement is a separate
 prerequisite for a final live market-message smoke. Keep production DB, warnings, notifications,
 schedulers, Telegram, main, deploy, and Production Assist untouched.
+
+## 2026-09-16 M12BY Batch Identity Closure Handoff
+
+Start with the iCloud-local bundle
+`thesis-monitor-20260916-fundamental-core-batch-completeness-identity-closure-full22-reproof-market-context-final-readiness-report.zip`.
+Exact instructions are `fe177a1f5fc5273617055f890e9e8ea192e9e19e`; implementation is
+`3a22a8fb167e35da0bba4c2c1681ab70fc65e060`. This local branch was not pushed, merged, or deployed.
+
+Fundamental Core batch identity is now `fundamental-core-batch-identity-v1`: batch cardinality is
+generated per call, ticker values are limited to the exact batch domain, top identity values are
+const, and exact-set/duplicate/missing/extra validation remains hard. The old `GOOGL/HUT` output
+fails the repaired three-subject schema. In the new generation, all US14 core batches passed and
+IBM appeared once, with zero cardinality, ticker-set, identity, or exact-ref failures.
+
+Do not continue generation `20260916-uskr22-m12by-20260915T232729Z-3a22a8fb167e`. It stopped at
+call 6 after the first Stage-2 raw output used the same CORZ evidence ref in both supporting and
+contradicting maturity polarity sets. The immutable error is
+`maturity_reference_polarity_overlap`; calls are `6/6/6` and all repair paths remain zero. The next
+scope must be a generic, bounded Stage-2 maturity-reference polarity-disjointness contract review,
+not a CORZ phrase/ref exception, followed by a new full22 proof from call 1.
+
+Market context remains independently local-ready. Kiwoom historical 9/1-9/3 and KOSPI200 render
+pass, unsafe percentage fabrication is zero, and no gateway is configured, so live read/order calls
+are `0/0`. Treasury DGS3/5/10/30 plus DFII10/T10YIE remain safe daily observations with per-series
+dates and separate time layers. Keep production DB, warnings, notifications, schedulers, Telegram,
+main, deployment, and Production Assist unchanged.

@@ -2553,3 +2553,33 @@ monitoring resume occurred. The next bounded scope is to close Fundamental Core 
 structurally, then run a wholly new 22-subject generation; separately enable a read-only Kiwoom
 gateway before any final live market-message smoke. Production Assist and V2 production gates remain
 unchanged.
+
+### 40.42 M12BY Fundamental-Core Batch Identity Closure and Final Readiness
+
+Exact work instructions were committed first as
+`fe177a1f5fc5273617055f890e9e8ea192e9e19e` and deterministic implementation is
+`3a22a8fb167e35da0bba4c2c1681ab70fc65e060` on local branch
+`codex/20260916-m12by-fundamental-core-batch-identity-closure`. The model-facing Fundamental Core
+schema now closes each batch with dynamic equal `minItems/maxItems`, an exact batch ticker enum,
+and const packet/claim/market/date identity values. A central hard validator still rejects
+duplicates, missing/extra tickers, cardinality mismatch, and identity mismatch. The M12BX two-core
+output fails unchanged under the repaired three-core schema; no IBM exception was added.
+
+Focused/market/full validation is `167/94/4035 PASS` with `63` full-suite skips and two dependency
+warnings; Ruff and diff check pass. New no-repair generation
+`20260916-uskr22-m12by-20260915T232729Z-3a22a8fb167e` completed all five US Fundamental Core
+batches. Cardinality, ticker-set, duplicate, missing, extra, identity, and exact-ref failures are
+all zero; IBM is present exactly once. The run then stopped at ordinal 6, US Stage-2 batch 1,
+because CORZ `driver_maturity[2]` placed ref `decision-evidence:acea5134d19f8ded2449` in both
+supporting and contradicting sets. Existing hard validation rejected it as
+`maturity_reference_polarity_overlap`. Calls started/completed/usable are `6/6/6`; retry,
+fallback, judge, repair, and selective rerun are zero. Do not resume or stitch this generation.
+
+Independent market-context regressions remain ready locally. Kiwoom KOSPI200 9/1-9/3 adapter
+replays pass and basis-less historical changes remain suppressed. No authenticated gateway is
+configured, so live read/order calls are `0/0` and KOSDAQ150 remains unproven. FRED
+DGS3/5/10/30, DFII10, and T10YIE parser/render/bp/as-of/time-layer tests pass. Top-level state is
+`M12BY_MODEL_CONTRACT_BLOCKED_MARKET_CONTEXT_READY`; no merge, deploy, remote push, production
+send, persistence mutation, scheduler mutation, or automation resume occurred. The next bounded
+model-contract scope is generic Stage-2 maturity polarity disjointness, followed by a wholly new
+full22 generation; Kiwoom read-only gateway enablement remains a separate final-smoke prerequisite.
