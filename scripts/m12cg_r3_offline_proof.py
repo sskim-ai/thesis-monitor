@@ -4,29 +4,34 @@ import argparse
 import ast
 import hashlib
 import json
+import os
 import shutil
 import subprocess
+import tempfile
 import zipfile
 from collections.abc import Mapping, Sequence
 from pathlib import Path, PurePosixPath
 from types import SimpleNamespace
 from xml.etree import ElementTree
 
-from app.services.accepted_decision_v2_runtime_service import (
-    AcceptedV2FundamentalCoreCandidate,
-    AcceptedV2ProductionContext,
-    accepted_v2_production_prompt,
-    accepted_v2_stage2_output_schema,
-    accepted_v2_stage2_ref_catalog_manifest,
-)
-from scripts import m12cg_r2_runtime_probe as r2_runtime_probe
-from scripts.m12cg_r3_proof_harness import (
-    FAIL,
-    PASS,
-    aggregate_fixture_rows,
-    evaluate_expected_exception,
-    exact_node_coverage,
-)
+try:
+    from scripts import m12cg_r2_runtime_probe as r2_runtime_probe
+    from scripts.m12cg_r3_proof_harness import (
+        FAIL,
+        PASS,
+        aggregate_fixture_rows,
+        evaluate_expected_exception,
+        exact_node_coverage,
+    )
+except ModuleNotFoundError:
+    import m12cg_r2_runtime_probe as r2_runtime_probe
+    from m12cg_r3_proof_harness import (
+        FAIL,
+        PASS,
+        aggregate_fixture_rows,
+        evaluate_expected_exception,
+        exact_node_coverage,
+    )
 
 
 REQUIRED_BASE_SHA = "f15f299c668787171742aa1beda22415cc4e7537"
@@ -82,6 +87,31 @@ def run(repo: Path, *args: str, check: bool = True) -> str:
         text=True,
     )
     return result.stdout.strip()
+
+
+def export_git_tree(repo: Path, revision: str, destination: Path) -> None:
+    destination.mkdir(parents=True, exist_ok=True)
+    archive = subprocess.Popen(
+        ("git", "archive", "--format=tar", revision),
+        cwd=repo,
+        stdout=subprocess.PIPE,
+    )
+    assert archive.stdout is not None
+    extracted = subprocess.run(
+        ("tar", "-xf", "-", "-C", str(destination)),
+        stdin=archive.stdout,
+        check=False,
+        capture_output=True,
+        text=False,
+    )
+    archive.stdout.close()
+    archive_status = archive.wait()
+    if archive_status != 0 or extracted.returncode != 0:
+        raise RuntimeError(
+            "git_tree_export_failed:"
+            f"archive={archive_status}:extract={extracted.returncode}:"
+            f"stderr={extracted.stderr.decode('utf-8', errors='replace')}"
+        )
 
 
 def report_root(root: Path, fragment: str) -> Path:
@@ -436,6 +466,156 @@ def write_native_event_traces(out: Path, native: Mapping[str, object]) -> dict[s
         "trace_count": len(trace_rows),
         "path": trace_path.relative_to(out).as_posix(),
         "sha256": sha256_file(trace_path),
+        "status": PASS,
+    }
+
+
+def native_execution_counts(native: Mapping[str, object]) -> dict[str, object]:
+    rows = native.get("cases")
+    assert isinstance(rows, list)
+    by_variant = {
+        str(row["variant_id"]): row
+        for row in rows
+        if isinstance(row, Mapping) and row.get("variant_id")
+    }
+
+    scenarios: list[dict[str, object]] = []
+
+    def add(
+        scenario_id: str,
+        variant_id: str,
+        final_key: str,
+        attempt_keys: tuple[str, ...],
+        *,
+        chunked: bool = False,
+        state_keys: tuple[str, ...] | None = None,
+    ) -> None:
+        row = by_variant[variant_id]
+        final = row.get(final_key)
+        assert isinstance(final, Mapping)
+        attempts = 0
+        successes = 0
+        for key in attempt_keys:
+            snapshot = row.get(key)
+            assert isinstance(snapshot, Mapping)
+            if chunked:
+                attempted = snapshot.get("attempted_chunks")
+                sent = snapshot.get("sent_chunks")
+                assert isinstance(attempted, list) and isinstance(sent, list)
+                attempts += len(attempted)
+                successes += len(sent)
+            else:
+                attempts += int(snapshot.get("attempted_sink_count") or 0)
+                successes += int(snapshot.get("successful_sink_count") or 0)
+        deliveries = final.get("deliveries")
+        assert isinstance(deliveries, list)
+        observed_states: set[str] = set()
+        for key in state_keys or attempt_keys:
+            snapshot = row.get(key)
+            assert isinstance(snapshot, Mapping)
+            state = snapshot.get("state")
+            if isinstance(state, Mapping):
+                observed_states.add(sha256_bytes(pretty_bytes(state)))
+        scenarios.append(
+            {
+                "scenario_id": scenario_id,
+                "source_variant_id": variant_id,
+                "sink_invocation_count": attempts,
+                "sink_success_count": successes,
+                "logical_intent_count": len(deliveries),
+                "state_transition_count": len(observed_states),
+            }
+        )
+
+    add(
+        "positive-concrete",
+        "D01-eligible-matched-concrete-artifact",
+        "repeat",
+        ("repeat",),
+        state_keys=("first", "repeat"),
+    )
+    add("positive-symbolic", "D02-symbolic-only-limitation", "first", ("first",))
+    add("positive-mixed", "D03-mixed-provenance-concrete-max", "first", ("first",))
+    add(
+        "new-independent-event",
+        "D05-new-independent-packet-and-business-date",
+        "new_event",
+        ("new_event",),
+        state_keys=("first", "new_event"),
+    )
+    add(
+        "failure-reentry",
+        "D07-failure-reentry-same-event",
+        "reentry",
+        ("failed_attempt", "reentry"),
+    )
+    add(
+        "cross-version-continuity",
+        "D09-legacy-new-coexistence",
+        "repeat_after_version_change",
+        ("repeat_after_version_change",),
+        state_keys=("first", "repeat_after_version_change"),
+    )
+    for variant_id in sorted(by_variant):
+        if variant_id.startswith(("D10-", "D11-", "D12-")):
+            add(variant_id, variant_id, "native_route", ("native_route",))
+    add(
+        "quality-receipt-tamper",
+        "D13-runtime-message-quality-receipt-tamper",
+        "reentry_after_tamper",
+        ("pending_before_tamper", "reentry_after_tamper"),
+    )
+    add(
+        "authoritative-artifact-swap",
+        "D13-authoritative-artifact-swap",
+        "native_route",
+        ("native_route",),
+    )
+    add(
+        "chunk-partial-resume",
+        "D14-chunk-partial-failure-cursor-resume",
+        "recovered",
+        ("partial", "recovered"),
+        chunked=True,
+    )
+    add(
+        "chunk-crash-recovery",
+        "D14-post-send-pre-cursor-crash-window",
+        "recovered",
+        ("crash", "recovered"),
+        chunked=True,
+    )
+    add(
+        "overlapping-native-lock",
+        "D14-overlapping-claim-native-lock-serialization",
+        "native_route",
+        ("native_route",),
+    )
+    return {
+        "contract": "m12cg-r3-native-execution-counts-v1",
+        "scope": "isolated offline native-route scenarios",
+        "scenario_count": len(scenarios),
+        "test_sink_invocation_count": sum(
+            int(row["sink_invocation_count"]) for row in scenarios
+        ),
+        "test_sink_success_count": sum(
+            int(row["sink_success_count"]) for row in scenarios
+        ),
+        "test_logical_intent_count": sum(
+            int(row["logical_intent_count"]) for row in scenarios
+        ),
+        "test_state_transition_count": sum(
+            int(row["state_transition_count"]) for row in scenarios
+        ),
+        "deduplication": (
+            "D04 reuses D01, D06 reuses D07, and D08 reuses D09; cumulative "
+            "sink counters are counted once at each scenario's final observation"
+        ),
+        "state_transition_method": (
+            "count distinct non-null accepted-state snapshots observed after native "
+            "route calls within each isolated scenario"
+        ),
+        "scenarios": scenarios,
         "status": PASS,
     }
 
@@ -885,73 +1065,120 @@ def valid_input_parity(
     return result
 
 
-def model_facing_byte_proof(out: Path, m12ce_root: Path) -> dict[str, object]:
-    raw_root = m12ce_root / "raw/reproof-no-repair/us"
-    context = AcceptedV2ProductionContext.model_validate_json(
-        (raw_root / "context.json").read_text(encoding="utf-8")
+def execute_model_facing_probe(
+    *,
+    repo: Path,
+    runtime_root: Path,
+    m12ce_root: Path,
+    output_dir: Path,
+    runtime_label: str,
+) -> dict[str, object]:
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        str(runtime_root)
+        if not existing
+        else f"{runtime_root}{os.pathsep}{existing}"
     )
-    comparison_root = out / "comparisons/model-facing"
-    rows: list[dict[str, object]] = []
-    for batch_number in range(1, 4):
-        raw = read_json(raw_root / f"batch-{batch_number:02d}.output.json")
-        assert isinstance(raw, Mapping)
-        candidates = raw.get("candidates")
-        cores_raw = raw.get("fundamental_cores")
-        assert isinstance(candidates, list) and isinstance(cores_raw, list)
-        subjects = tuple(str(row["ticker"]) for row in candidates if isinstance(row, Mapping))
-        batch_context = r2_runtime_probe.subset_context(context, subjects)
-        cores = tuple(
-            AcceptedV2FundamentalCoreCandidate.model_validate(row)
-            for row in cores_raw
+    result = subprocess.run(
+        (
+            str(repo / ".venv/bin/python"),
+            str(repo / "scripts/m12cg_r3_model_facing_probe.py"),
+            "--source-m12ce",
+            str(m12ce_root),
+            "--out",
+            str(output_dir),
+            "--runtime-label",
+            runtime_label,
+        ),
+        cwd=repo,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"model_facing_probe_failed:{runtime_label}:"
+            f"stdout={result.stdout}:stderr={result.stderr}"
         )
-        payloads = {
-            "prompt": accepted_v2_production_prompt(
-                batch_context,
-                fundamental_cores=cores,
-                subjects=subjects,
-            ).encode("utf-8"),
-            "schema": pretty_bytes(
-                accepted_v2_stage2_output_schema(
-                    batch_context,
-                    subjects=subjects,
-                    fundamental_cores=cores,
-                )
-            ),
-            "catalog": pretty_bytes(
-                accepted_v2_stage2_ref_catalog_manifest(
-                    batch_context,
-                    subjects=subjects,
-                    fundamental_cores=cores,
-                )
-            ),
-        }
-        suffixes = {"prompt": "prompt.txt", "schema": "schema.json", "catalog": "ref-catalog.json"}
-        for kind, current_bytes in payloads.items():
-            source = raw_root / f"batch-{batch_number:02d}.{suffixes[kind]}"
-            before = comparison_root / "frozen" / source.name
-            after = comparison_root / "current" / source.name
-            before.parent.mkdir(parents=True, exist_ok=True)
-            after.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, before)
-            after.write_bytes(current_bytes)
-            rows.append(
-                {
-                    "batch": batch_number,
-                    "subjects": list(subjects),
-                    "kind": kind,
-                    "frozen_path": before.relative_to(out).as_posix(),
-                    "current_path": after.relative_to(out).as_posix(),
-                    "frozen_sha256": sha256_file(before),
-                    "current_sha256": sha256_file(after),
-                    "byte_equal": before.read_bytes() == after.read_bytes(),
-                }
-            )
+    manifest = read_json(output_dir / "manifest.json")
+    assert isinstance(manifest, Mapping)
+    return dict(manifest)
+
+
+def model_facing_byte_proof(
+    *, repo: Path, out: Path, m12ce_root: Path
+) -> dict[str, object]:
+    comparison_root = out / "comparisons/model-facing"
+    frozen = comparison_root / "required-base"
+    current = comparison_root / "current"
+    with tempfile.TemporaryDirectory(prefix="m12cg-r3-required-base-") as value:
+        required_base_root = Path(value)
+        export_git_tree(repo, REQUIRED_BASE_SHA, required_base_root)
+        frozen_manifest = execute_model_facing_probe(
+            repo=repo,
+            runtime_root=required_base_root,
+            m12ce_root=m12ce_root,
+            output_dir=frozen,
+            runtime_label=f"required-base:{REQUIRED_BASE_SHA}",
+        )
+    current_manifest = execute_model_facing_probe(
+        repo=repo,
+        runtime_root=repo,
+        m12ce_root=m12ce_root,
+        output_dir=current,
+        runtime_label="m12cg-r3-current-runtime",
+    )
+    frozen_rows = frozen_manifest.get("artifacts")
+    current_rows = current_manifest.get("artifacts")
+    assert isinstance(frozen_rows, list) and isinstance(current_rows, list)
+    frozen_by_path = {
+        str(row["path"]): row for row in frozen_rows if isinstance(row, Mapping)
+    }
+    current_by_path = {
+        str(row["path"]): row for row in current_rows if isinstance(row, Mapping)
+    }
+    if set(frozen_by_path) != set(current_by_path):
+        raise ValueError("model_facing_probe_path_set_mismatch")
+    rows: list[dict[str, object]] = []
+    for relative in sorted(frozen_by_path):
+        before = frozen / relative
+        after = current / relative
+        frozen_row = frozen_by_path[relative]
+        current_row = current_by_path[relative]
+        rows.append(
+            {
+                "batch": frozen_row["batch"],
+                "subjects": frozen_row["subjects"],
+                "kind": frozen_row["kind"],
+                "frozen_path": before.relative_to(out).as_posix(),
+                "current_path": after.relative_to(out).as_posix(),
+                "frozen_sha256": sha256_file(before),
+                "current_sha256": sha256_file(after),
+                "manifest_metadata_equal": (
+                    frozen_row["subjects"] == current_row["subjects"]
+                    and frozen_row["kind"] == current_row["kind"]
+                ),
+                "byte_equal": before.read_bytes() == after.read_bytes(),
+            }
+        )
     result = {
         "contract": "m12cg-r3-model-facing-byte-proof-v1",
+        "frozen_runtime": f"required-base:{REQUIRED_BASE_SHA}",
+        "current_runtime": "m12cg-r3-current-runtime",
+        "source_context": "M12CE frozen context and Fundamental Core rows",
         "comparison_denominator": len(rows),
         "byte_delta_count": sum(not row["byte_equal"] for row in rows),
         "rows": rows,
-        "status": PASS if all(row["byte_equal"] for row in rows) else FAIL,
+        "status": (
+            PASS
+            if len(rows) == 9
+            and all(
+                row["byte_equal"] and row["manifest_metadata_equal"] for row in rows
+            )
+            else FAIL
+        ),
     }
     write_json(out, "audits/model-facing-byte-proof.json", result)
     return result
@@ -1016,6 +1243,7 @@ def build_report(args: argparse.Namespace) -> None:
     audit_files = (
         "scripts/m12cg_r3_proof_harness.py",
         "scripts/m12cg_r3_native_probe.py",
+        "scripts/m12cg_r3_model_facing_probe.py",
         "scripts/m12cg_r3_offline_proof.py",
         "tests/test_m12cg_r3_proof_harness.py",
         "tests/test_m12cg_r3_native_probe.py",
@@ -1077,6 +1305,8 @@ def build_report(args: argparse.Namespace) -> None:
     write_json(out, "audits/runtime-freeze-and-diff.json", runtime_freeze)
 
     native = copy_probe(probe_root, out)
+    native_counts = native_execution_counts(native)
+    write_json(out, "audits/native-execution-counts.json", native_counts)
     call_graph = build_call_graph(repo, out)
     write_json(out, "audits/native-route-owner-call-graph.json", call_graph)
     event_contract = {
@@ -1145,7 +1375,11 @@ def build_report(args: argparse.Namespace) -> None:
         m12cb_root=source_m12cb,
         m12ce_root=source_m12ce,
     )
-    model_facing = model_facing_byte_proof(out, source_m12ce)
+    model_facing = model_facing_byte_proof(
+        repo=repo,
+        out=out,
+        m12ce_root=source_m12ce,
+    )
 
     commands = read_json(validation_dir / "commands.json")
     validation = {
@@ -1454,9 +1688,12 @@ in M12CG-R3.
         "test_isolation_result": isolation["status"],
         "network_attempts_blocked": isolation["network_attempts_blocked"],
         "actual_native_delivery_route_executed": True,
-        "test_sink_invocation_count": "SEE_NATIVE_SINK_EVENT_TRACES_GRANULAR",
-        "test_logical_intent_count": "SEE_NATIVE_CASE_MATRIX_GRANULAR",
-        "test_state_transition_count": "SEE_NATIVE_STATE_LEDGER_SNAPSHOTS_GRANULAR",
+        "test_sink_invocation_count": native_counts["test_sink_invocation_count"],
+        "test_sink_success_count": native_counts["test_sink_success_count"],
+        "test_logical_intent_count": native_counts["test_logical_intent_count"],
+        "test_state_transition_count": native_counts["test_state_transition_count"],
+        "test_execution_count_scope": native_counts["scope"],
+        "test_execution_scenario_count": native_counts["scenario_count"],
         "native_authoritative_binding_result": PASS,
         "diagnostic_sidecar_disposition": native_contracts["n17"][
             "diagnostic_sidecar_disposition"
@@ -1570,6 +1807,7 @@ therefore 7/9 and deployment readiness remains NO.
     for script_name in (
         "m12cg_r3_proof_harness.py",
         "m12cg_r3_native_probe.py",
+        "m12cg_r3_model_facing_probe.py",
         "m12cg_r3_offline_proof.py",
     ):
         shutil.copy2(repo / "scripts" / script_name, out / "proof-scripts" / script_name)
