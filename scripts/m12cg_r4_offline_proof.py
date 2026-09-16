@@ -860,7 +860,10 @@ def variant_matrix(
             "F16",
             "raw authored runtime provenance remains forbidden",
             PASS
-            if "test_stage2_raw_model_cannot_author_as_of_or_provenance_status" in passed_names
+            if {
+                "test_m12cg_model_authored_provenance_status_is_rejected",
+                "test_stage2_materializer_rejects_model_authored_as_of",
+            }.issubset(passed_names)
             else FAIL,
         ),
         (
