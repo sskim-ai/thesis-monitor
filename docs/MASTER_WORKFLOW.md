@@ -2705,3 +2705,26 @@ Top-level state is `MATURITY_AS_OF_MODEL_OWNERSHIP_DESIGN_GAP` and message/model
 `NOT_EVALUATED_BY_DESIGN`. The next bounded scope is
 `BOUNDED_MATURITY_AS_OF_OWNERSHIP_MIGRATION_DESIGN`: define compatibility-safe deterministic
 derivation and multi-date behavior before authorizing a new Full22 proof.
+
+### 40.47 M12CD Deterministic Maturity `as_of` Ownership Migration
+
+Exact work instructions were committed first as `dbe40f4`; implementation is
+`9a9bda729afcb0777d7228ee7151d31f0b2f84f8` on local branch
+`codex/20260916-m12cd-maturity-as-of-deterministic-migration`. The Stage-2 model contract no
+longer exposes `driver_maturity[].as_of`. Runtime materialization preserves the existing internal
+required field and derives it as the latest concrete provenance date owned by ticker-local refs
+cited in the same maturity row. There is no assessment/global/current/latest fallback, ticker/date
+exception, or weakening of the existing same-row validator.
+
+The 20 historical candidates and 62 maturity rows replay offline. Deterministic values equal the
+old value for 60 rows. WULF and the designated invalid `010120` row differ, causing two candidate
+and accepted-plan hash changes but zero accepted-plan semantic, renderer, or continuity changes.
+Historical source bytes were not modified; the original `010120` output remains invalid, while an
+ephemeral new-contract copy derives its owned `2026-08-12` date.
+
+Focused/full validation is `188 PASS, 1 skipped / 4064 PASS, 63 skipped`, with two existing
+warnings; Treasury `69` and Kiwoom `32` focused tests, Ruff, and diff check pass. Model calls,
+production mutation/send, scheduler change, main merge, deploy, and remote push are all zero.
+Top-level state is `MATURITY_AS_OF_DETERMINISTIC_OWNERSHIP_MIGRATION_OFFLINE_PASS`, while message
+model readiness remains `NOT_REPROVEN_MODEL_CALL_REQUIRED`. The next scope is a wholly new M12CE
+Full22 proof under the frozen deterministic contract; even a clean proof does not authorize deploy.

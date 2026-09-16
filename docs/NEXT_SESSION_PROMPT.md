@@ -1,5 +1,30 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12CD. Read
+`docs/reports/20260916-m12cd-maturity-as-of-deterministic-migration-result.md`,
+`docs/reports/20260916-m12cd-readiness.json`, and the iCloud report bundle first. Exact work
+instructions are `dbe40f4`; implementation is `9a9bda729afcb0777d7228ee7151d31f0b2f84f8`.
+
+M12CD moved `driver_maturity[].as_of` out of the model-facing Stage-2 schema. The runtime now
+materializes the internal required field from the maximum concrete provenance date owned by
+ticker-local refs cited in the same maturity row. No assessment/global/latest/current fallback,
+ticker/date exception, or validator weakening exists. The old internal contract remains readable.
+
+Offline replay covers 20 historical candidates and 62 rows: 60 values are unchanged and two
+differ with identity/hash-only impact. Accepted-plan semantics, renderer output, and continuity
+events change `0/0/0`. The immutable old `010120` output remains invalid. Full pytest is
+`4064 passed, 63 skipped`; model calls and all production, scheduler, merge, deploy, and push
+operations are zero.
+
+Next bounded task:
+`M12CE_NEW_FULL22_REPROOF_UNDER_FROZEN_DETERMINISTIC_AS_OF_CONTRACT`. Use a wholly new US14/KR8
+generation from call 1, no old output reuse or stitching, and zero retry/fallback/judge/repair/
+selective/per-ticker rerun. Stop on the first hard failure. A clean M12CE proof does not authorize
+deployment; keep production DB, warnings, notifications, Telegram, schedules, main, deploy, remote
+push, and Production Assist untouched.
+
+---
+
 Latest authoritative local-only work is M12CC. Read
 `docs/reports/20260916-m12cc-maturity-as-of-ownership-result.md`,
 `docs/reports/20260916-m12cc-readiness.json`, and the iCloud report bundle first. Exact work

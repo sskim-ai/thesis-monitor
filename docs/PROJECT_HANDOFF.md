@@ -2741,3 +2741,28 @@ No prompt/schema/model-facing changes and no model calls were made. Full22 is
 derivation, multiple-owned-date semantics, hashes, and historical replay before a new Full22 proof.
 Keep production DB, warnings, notifications, Telegram, schedules, main, deployment, remote push,
 and Production Assist untouched.
+
+## 2026-09-16 M12CD Deterministic Maturity `as_of` Migration Handoff
+
+Start with `docs/reports/20260916-m12cd-maturity-as-of-deterministic-migration-result.md` and
+`docs/reports/20260916-m12cd-readiness.json`. Exact instructions are `dbe40f4`; implementation is
+`9a9bda729afcb0777d7228ee7151d31f0b2f84f8`. This branch remains local-only.
+
+`driver_maturity[].as_of` is no longer model-authored in
+`v2-accepted-stage2-model-output-v2`. The runtime materializer derives the existing internal field
+from the maximum concrete provenance date owned by ticker-local refs cited in the same row. It
+rejects model-emitted dates, no-concrete-owner rows, unknown/cross-ticker refs, future dates, and
+tampering. Do not add an assessment/global/latest fallback or weaken the existing hard validator.
+
+Historical replay covers 20 candidates and 62 rows. Old and derived values match in 60 rows. The
+two differences are WULF and the designated invalid `010120` output, with two identity/hash changes
+but zero accepted-plan semantic, renderer, or continuity changes. Historical artifacts are not
+rewritten and the original `010120` row remains invalid. Focused/full tests are
+`188 PASS, 1 skipped / 4064 PASS, 63 skipped`; Ruff and diff check pass.
+
+M12CD is `MATURITY_AS_OF_DETERMINISTIC_OWNERSHIP_MIGRATION_OFFLINE_PASS`, but model readiness is
+`NOT_REPROVEN_MODEL_CALL_REQUIRED`. The next separately authorized task is
+`M12CE_NEW_FULL22_REPROOF_UNDER_FROZEN_DETERMINISTIC_AS_OF_CONTRACT`: start a wholly new US14/KR8
+generation from call 1 with no output reuse, stitch, retry, fallback, judge, repair, or selective
+rerun. Keep production state, sends, schedulers, main, deploy, remote push, and Production Assist
+untouched.
