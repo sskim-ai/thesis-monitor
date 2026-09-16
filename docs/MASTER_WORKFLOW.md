@@ -2684,3 +2684,24 @@ Market context remains local-ready with the live Kiwoom gateway unavailable. No 
 remote push, production send/state write, scheduler mutation, or automation resume occurred. The
 next bounded scope is
 `BOUNDED_STAGE2_MATURITY_AS_OF_OWNERSHIP_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`.
+
+### 40.46 M12CC Maturity `as_of` Semantic Ownership Audit
+
+Exact work instructions were committed first as `7766b29` on local branch
+`codex/20260916-m12cc-stage2-maturity-as-of-ownership`. The mandatory semantic-ownership and Git
+history audit classified `driver_maturity.as_of` as `DETERMINISTIC_PROVENANCE_FIELD`, not a
+meaningful model-selected investment judgment. Its canonical owner chain is
+`concrete_evidence_date -> maturity_ref_dates -> same-row validator`; no renderer, accepted
+decision plan, persistence state, or later decision logic consumes the model's date choice.
+
+Per the instruction's Track 0B gate, M12CC stopped fail-closed before prompt/schema changes and
+before model calls. The immutable M12CB `010120` row remains rejected as
+`CONCRETE_BUT_UNOWNED_DATE`: it cited a ref owning `2026-08-12` while emitting `2026-09-15`.
+Focused/full validation is `115/4055 PASS`, with 63 full-suite skips and two existing warnings;
+Ruff and diff check pass. Model calls, retry/fallback/judge/repair, production mutation, send,
+scheduler change, main merge, deployment, and remote push are all zero.
+
+Top-level state is `MATURITY_AS_OF_MODEL_OWNERSHIP_DESIGN_GAP` and message/model readiness is
+`NOT_EVALUATED_BY_DESIGN`. The next bounded scope is
+`BOUNDED_MATURITY_AS_OF_OWNERSHIP_MIGRATION_DESIGN`: define compatibility-safe deterministic
+derivation and multi-date behavior before authorizing a new Full22 proof.

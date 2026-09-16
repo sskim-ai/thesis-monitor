@@ -1,5 +1,29 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12CC. Read
+`docs/reports/20260916-m12cc-maturity-as-of-ownership-result.md`,
+`docs/reports/20260916-m12cc-readiness.json`, and the iCloud report bundle first. Exact work
+instructions are `7766b29`.
+
+M12CC's mandatory semantic-ownership and Git-history audit found that
+`driver_maturity.as_of` is `DETERMINISTIC_PROVENANCE_FIELD`, not a meaningful model choice. Its
+canonical owner chain is `concrete_evidence_date -> maturity_ref_dates -> same-row validator`.
+No renderer, accepted decision plan, persistence state, or downstream decision policy uses the
+model-authored date. The immutable M12CB `010120` output remains rejected as
+`CONCRETE_BUT_UNOWNED_DATE`; no rejected output was reinterpreted.
+
+Per Track 0B, no prompt/schema change and no model call occurred. Do not resume or stitch the M12CB
+generation, weaken the same-row validator, or add a ticker/date exception. Full22 is
+`NOT_STARTED_BY_DESIGN` and message/model readiness is `NOT_EVALUATED_BY_DESIGN`.
+
+Next bounded task: `BOUNDED_MATURITY_AS_OF_OWNERSHIP_MIGRATION_DESIGN`. Design a compatibility-safe
+way to derive `as_of` from canonical same-row evidence, including multiple-owned-date behavior,
+candidate hashes, stored artifacts, and historical replay. Do not run a new Full22 proof until that
+migration contract is explicitly authorized and frozen. Keep production DB/warnings/notifications,
+Telegram, schedules, main, deploy, remote push, and Production Assist untouched.
+
+---
+
 Latest authoritative local-only work is M12CB. Read
 `docs/reports/20260916-m12cb-stage2-frozen-core-claim-language-scope-result.md`,
 `docs/reports/20260916-m12cb-readiness.json`, and the iCloud report bundle first. Work instructions

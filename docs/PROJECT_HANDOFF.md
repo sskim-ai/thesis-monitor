@@ -2718,3 +2718,26 @@ make row-local evidence/date ownership more reliably model-consumable, retain de
 same-row validation, add no ticker/date exception, then start a wholly new US14/KR8 generation
 from call 1. Keep production DB, warnings, notifications, Telegram, schedules, main, deployment,
 remote push, and Production Assist untouched.
+
+## 2026-09-16 M12CC Maturity `as_of` Ownership Handoff
+
+Start with `docs/reports/20260916-m12cc-maturity-as-of-ownership-result.md` and
+`docs/reports/20260916-m12cc-readiness.json`. Exact instructions are `7766b29`; this is a
+Track 0B design-gap closeout with no product implementation commit.
+
+The mandatory ownership audit classified `driver_maturity.as_of` as
+`DETERMINISTIC_PROVENANCE_FIELD`. The field is historically model-authored, but no renderer,
+accepted decision plan, persisted accepted state, or downstream decision policy uses the chosen
+date. Canonical ownership already flows through `concrete_evidence_date`, evidence-local
+`resolved_as_of_date`, `maturity_ref_dates`, and the same-row deterministic validator.
+
+The M12CB `010120` output remains immutable and invalid: its cited ref owns `2026-08-12`, while the
+row emitted `2026-09-15`. Detailed classification is `CONCRETE_BUT_UNOWNED_DATE`. Do not weaken
+the validator, add a date/ticker exception, or revive this terminal generation.
+
+No prompt/schema/model-facing changes and no model calls were made. Full22 is
+`NOT_STARTED_BY_DESIGN`; message/model readiness is `NOT_EVALUATED_BY_DESIGN`. The next task is
+`BOUNDED_MATURITY_AS_OF_OWNERSHIP_MIGRATION_DESIGN`, covering compatibility, deterministic
+derivation, multiple-owned-date semantics, hashes, and historical replay before a new Full22 proof.
+Keep production DB, warnings, notifications, Telegram, schedules, main, deployment, remote push,
+and Production Assist untouched.
