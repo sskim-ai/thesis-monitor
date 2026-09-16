@@ -222,7 +222,7 @@ def probe(args: argparse.Namespace) -> dict[str, object]:
     return {
         "contract": "m12cg-r1-runtime-probe-v1",
         "runtime_label": args.runtime_label,
-        "m12ce_root": str(source_root),
+        "source_label": args.source_label,
         "batches": batch_results,
         "finalization_targets": target_results,
     }
@@ -234,6 +234,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--result", type=Path, required=True)
     parser.add_argument("--runtime-label", required=True)
+    parser.add_argument("--source-label", default="packaged-source:m12ce")
     args = parser.parse_args()
     result = probe(args)
     args.result.parent.mkdir(parents=True, exist_ok=True)

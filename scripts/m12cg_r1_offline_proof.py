@@ -1406,6 +1406,8 @@ def execute_runtime_probe(
             str(result_path),
             "--runtime-label",
             runtime_label,
+            "--source-label",
+            "packaged-source:m12ce",
         ),
         cwd=repo,
         env=env,
@@ -1859,7 +1861,7 @@ def build_report(args: argparse.Namespace) -> None:
         source_preflight = {
             "contract": "m12cg-r1-source-integrity-availability-preflight-v1",
             "checked_at": datetime.now(UTC).isoformat(),
-            "package_root": str(package_root),
+            "source_addressing": "package-relative filename plus verified SHA-256",
             "sources_verified": sum(
                 row["status"] == "PASS" for row in source_results.values()
             ),
