@@ -1910,6 +1910,17 @@ def build_report(args: argparse.Namespace) -> None:
             "--",
             str(args.work_instruction.relative_to(repo)),
         )
+        audit_implementation_sha = run(
+            repo,
+            "git",
+            "log",
+            "-1",
+            "--format=%H",
+            "--",
+            "scripts/m12cg_r1_offline_proof.py",
+            "scripts/m12cg_r1_runtime_probe.py",
+            "tests/test_m12cg_r1_offline_proof.py",
+        )
         runtime_changes = run(
             repo,
             "git",
@@ -1943,7 +1954,7 @@ def build_report(args: argparse.Namespace) -> None:
             "pre_m12cg_runtime_sha": PRE_M12CG_SHA,
             "work_instruction_commit": instruction_commit,
             "work_instruction_content_sha256": instruction_sha,
-            "audit_implementation_sha": head,
+            "audit_implementation_sha": audit_implementation_sha,
             "final_local_sha": head,
             "required_base_is_ancestor": subprocess.run(
                 ("git", "merge-base", "--is-ancestor", REQUIRED_BASE_SHA, head),
@@ -2341,7 +2352,7 @@ production database mutation, delivery intent, or real send.
             "frozen_runtime_implementation_sha": FROZEN_RUNTIME_SHA,
             "work_instruction_commit": instruction_commit,
             "work_instruction_content_sha256": instruction_sha,
-            "audit_implementation_sha": head,
+            "audit_implementation_sha": audit_implementation_sha,
             "final_local_sha": head,
             "runtime_source_change_count": len(runtime_changes),
             "sources_verified": source_preflight["sources_verified"],
