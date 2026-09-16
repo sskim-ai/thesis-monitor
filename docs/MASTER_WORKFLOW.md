@@ -2728,3 +2728,25 @@ production mutation/send, scheduler change, main merge, deploy, and remote push 
 Top-level state is `MATURITY_AS_OF_DETERMINISTIC_OWNERSHIP_MIGRATION_OFFLINE_PASS`, while message
 model readiness remains `NOT_REPROVEN_MODEL_CALL_REQUIRED`. The next scope is a wholly new M12CE
 Full22 proof under the frozen deterministic contract; even a clean proof does not authorize deploy.
+
+### 40.48 M12CE New Full22 Reproof Under Frozen Deterministic `as_of`
+
+Exact work instructions were committed first as `96a562d` on local branch
+`codex/20260916-m12ce-deterministic-asof-full22-reproof`. No runtime/source change followed. A
+wholly new `gpt-5.6-sol / xhigh` generation started with the frozen US14/KR8 packets and the
+formal no-repair policy.
+
+US Fundamental Core calls 1-5 passed for 14 subjects. Stage-2 calls 6-7 materialized and validated
+six subjects. Call 8 produced exact-ref-valid raw outputs for MU/RXRX/SKHY but failed during
+deterministic materialization at `SKHY driver_maturity[2]`: the row cited only
+`canonical:financial_quality:latest`, whose provenance token is symbolic `latest` and has no
+concrete date. The frozen contract correctly raised
+`stage2_materialization_no_concrete_owned_date:SKHY:2`; calls 9-16 were not run.
+
+The stop point is `16/8/8/8` planned/started/completed/usable calls, Fundamental Core `14`, raw
+Stage-2 `9`, and materialized/semantic Stage-2 `6`. Across 42 raw maturity rows there was one
+symbolic-only row, zero model-authored dates, and zero retry/fallback/judge/repair/stitch/reuse.
+Focused/full tests remain `198 PASS, 1 skipped / 4064 PASS, 63 skipped`; Treasury `69`, Kiwoom
+`32`, Ruff, and diff check pass. No production mutation, send, scheduler change, merge, deploy, or
+push occurred. M12CE is terminal with message/model readiness `NOT_READY`; next scope is the
+separate bounded `M12CF_SYMBOLIC_ONLY_MATURITY_PROVENANCE_OWNERSHIP_REVIEW`.

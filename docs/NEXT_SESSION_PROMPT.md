@@ -1,5 +1,28 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12CE. Read
+`docs/reports/20260916-m12ce-deterministic-asof-full22-reproof-result.md`,
+`docs/reports/20260916-m12ce-readiness.json`, and the iCloud report bundle first. Exact work
+instructions are `96a562d`; M12CD runtime implementation remains
+`9a9bda729afcb0777d7228ee7151d31f0b2f84f8` with zero M12CE
+runtime/source changes.
+
+Generation `20260916-uskr22-m12ce-20260916T080425Z-96a562d5cafc` stopped at call 8. US Fundamental
+Core passed 14 subjects and six Stage-2 candidates materialized/validated. The raw MU/RXRX/SKHY
+batch was contract-valid, but SKHY maturity row 2 cited only symbolic date-less
+`canonical:financial_quality:latest`; deterministic materialization failed closed with
+`stage2_materialization_no_concrete_owned_date:SKHY:2`. Calls 9-16 were not run. Retry, fallback,
+judge, repair, selective rerun, stitch, and prior-output reuse are all zero.
+
+Next bounded task: `M12CF_SYMBOLIC_ONLY_MATURITY_PROVENANCE_OWNERSHIP_REVIEW`. Treat M12CE as
+terminal. Do not resume it, patch its raw output, use assessment/system/global date fallback, add
+a ticker/date exception, or weaken the same-row validator. Review the generic ownership boundary
+for canonical date-less limitation facts before authorizing any new Full22 generation. Keep
+production DB, warnings, notifications, Telegram, schedules, main, deploy, remote push, and
+Production Assist untouched.
+
+---
+
 Latest authoritative local-only work is M12CD. Read
 `docs/reports/20260916-m12cd-maturity-as-of-deterministic-migration-result.md`,
 `docs/reports/20260916-m12cd-readiness.json`, and the iCloud report bundle first. Exact work

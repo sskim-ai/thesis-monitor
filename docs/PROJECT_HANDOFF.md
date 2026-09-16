@@ -2766,3 +2766,23 @@ M12CD is `MATURITY_AS_OF_DETERMINISTIC_OWNERSHIP_MIGRATION_OFFLINE_PASS`, but mo
 generation from call 1 with no output reuse, stitch, retry, fallback, judge, repair, or selective
 rerun. Keep production state, sends, schedulers, main, deploy, remote push, and Production Assist
 untouched.
+
+## 2026-09-16 M12CE Frozen Deterministic `as_of` Full22 Reproof Handoff
+
+Read `docs/reports/20260916-m12ce-deterministic-asof-full22-reproof-result.md` and
+`docs/reports/20260916-m12ce-readiness.json` first. Work instructions are `96a562d`; no runtime
+implementation commit exists because source changes were forbidden.
+
+Generation `20260916-uskr22-m12ce-20260916T080425Z-96a562d5cafc` is terminal. Calls 1-5 accepted
+all 14 US Fundamental Cores, and calls 6-7 accepted six US Stage-2 candidates. Call 8 raw output
+was schema/exact-ref valid for MU/RXRX/SKHY but failed deterministic materialization at SKHY row 2.
+The row cited only `canonical:financial_quality:latest`, whose catalog has no concrete owned date,
+so the runtime correctly raised `stage2_materialization_no_concrete_owned_date:SKHY:2`. Calls 9-16
+are `NOT_RUN_AFTER_FIRST_HARD_FAILURE`.
+
+Do not resume, stitch, or selectively rerun this generation. Do not add an assessment/current/
+global date fallback or a SKHY/date exception. The next separately authorized scope is
+`M12CF_SYMBOLIC_ONLY_MATURITY_PROVENANCE_OWNERSHIP_REVIEW`, which must decide how a canonical
+date-less limitation fact can participate in maturity reasoning without weakening deterministic
+ownership. Production DB, warning/notification state, Telegram, schedules, main, deployment,
+remote push, and Production Assist remain untouched.
