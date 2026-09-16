@@ -384,6 +384,7 @@ def _validate_preconfirmation_candidate(
     packet: DecisionEvidencePacket,
     candidate: PreconfirmationDecisionCandidate,
     *,
+    claim_language_claims: tuple[EvidenceClaim, ...],
     unsupported_metric_claims: tuple[EvidenceClaim, ...],
 ) -> PreconfirmationValidationResult:
     errors: list[str] = []
@@ -423,8 +424,7 @@ def _validate_preconfirmation_candidate(
     if not directional_categories & directional_fundamental_categories:
         errors.append("directional_balance_without_fundamental_or_valuation_driver")
 
-    claims = candidate_claims(candidate)
-    for claim in claims:
+    for claim in claim_language_claims:
         if not _KOREAN.search(claim.text):
             errors.append("claim_not_korean")
         if _ORDER_LANGUAGE.search(claim.text):
@@ -565,6 +565,7 @@ def validate_preconfirmation_candidate(
     return _validate_preconfirmation_candidate(
         packet,
         candidate,
+        claim_language_claims=candidate_claims(candidate),
         unsupported_metric_claims=candidate_claims(candidate),
     )
 
@@ -577,6 +578,7 @@ def validate_preconfirmation_stage2_owned_semantics(
     return _validate_preconfirmation_candidate(
         packet,
         candidate,
+        claim_language_claims=stage2_owned_candidate_claims(candidate),
         unsupported_metric_claims=stage2_owned_candidate_claims(candidate),
     )
 

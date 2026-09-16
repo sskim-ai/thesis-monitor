@@ -1127,8 +1127,110 @@ def test_stage2_field_ownership_inventory_covers_complete_candidate_schema() -> 
         "$.confidence",
         "$.decisive_reason",
     }
+    assert manifest["claim_language_scope_after_trust"] == "STAGE2_OWNED_FIELDS_ONLY"
     assert manifest["unsupported_metric_scope_after_trust"] == "STAGE2_OWNED_FIELDS_ONLY"
     assert manifest["fields"] == list(inventory)
+
+
+def test_stage2_trusts_exact_copied_core_numeric_claim() -> None:
+    packet = _packet()
+    candidate = _candidate_with_current_core_sha(
+        _candidate().model_copy(
+            update={
+                "decisive_reason": _claim(
+                    "ref:valuation",
+                    "검증된 선행 평가 6.5배는 방향 판단의 정식 근거입니다.",
+                )
+            }
+        )
+    )
+    core = _core(candidate)
+
+    standalone = validate_preconfirmation_candidate(packet, candidate)
+    trusted_stage2 = validate_accepted_v2_stage2_candidate(
+        packet, candidate, core, _stage2_ownership(packet)
+    )
+
+    assert "freeform_exact_numeric_claim" in standalone.errors
+    assert trusted_stage2.valid is True
+
+
+def test_stage2_owned_exact_numeric_claim_remains_hard_failure() -> None:
+    packet = _packet()
+    candidate = _candidate().model_copy(
+        update={
+            "why_not_buy": _claim(
+                "ref:valuation",
+                "검증 전에는 선행 평가 6.5배만으로 신규 진입을 결정하지 않습니다.",
+            )
+        }
+    )
+
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, candidate, _core(candidate), _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "freeform_exact_numeric_claim" in validation.errors
+
+
+def test_mutated_numeric_frozen_core_fails_before_claim_scope_exemption() -> None:
+    packet = _packet()
+    original = _candidate()
+    mutated = original.model_copy(
+        update={
+            "decisive_reason": _claim(
+                "ref:valuation",
+                "검증된 선행 평가 6.5배를 새 핵심 근거로 사용합니다.",
+            )
+        }
+    )
+
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, mutated, _core(original), _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "price_timing_stage_mutated_fundamental_core" in validation.errors
+
+
+def test_stage2_owned_unknown_evidence_ref_remains_hard_failure() -> None:
+    packet = _packet()
+    candidate = _candidate().model_copy(
+        update={
+            "why_not_buy": _claim(
+                "ref:stage2-missing",
+                "검증되지 않은 근거로 신규 진입을 결정하지 않습니다.",
+            )
+        }
+    )
+
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, candidate, _core(candidate), _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "unknown_evidence_ref:ref:stage2-missing" in validation.errors
+
+
+def test_mutated_frozen_core_unknown_ref_fails_before_claim_scope_exemption() -> None:
+    packet = _packet()
+    original = _candidate()
+    mutated = original.model_copy(
+        update={
+            "decisive_reason": _claim(
+                "ref:frozen-core-missing",
+                "검증되지 않은 참조로 핵심 방향을 바꿉니다.",
+            )
+        }
+    )
+
+    validation = validate_accepted_v2_stage2_candidate(
+        packet, mutated, _core(original), _stage2_ownership(packet)
+    )
+
+    assert validation.valid is False
+    assert "price_timing_stage_mutated_fundamental_core" in validation.errors
 
 
 def test_stage2_trusts_exact_copied_core_prospective_roic_condition() -> None:

@@ -603,6 +603,7 @@ def accepted_v2_stage2_validation_scope_manifest() -> dict[str, object]:
             "frozen_core_fields_exact_copy",
             "no_core_mutation",
         ],
+        "claim_language_scope_after_trust": "STAGE2_OWNED_FIELDS_ONLY",
         "unsupported_metric_scope_after_trust": "STAGE2_OWNED_FIELDS_ONLY",
         "fields": list(fields),
     }
@@ -614,7 +615,7 @@ def validate_accepted_v2_stage2_candidate(
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
 ) -> PreconfirmationValidationResult:
-    """Validate core identity first, then scope Stage-2 metric rules to Stage-2 prose."""
+    """Validate core identity first, then scope Stage-2 prose rules to Stage-2 claims."""
     ownership_errors = validate_accepted_v2_candidate_ownership(
         candidate,
         core,
