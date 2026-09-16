@@ -2750,3 +2750,35 @@ Focused/full tests remain `198 PASS, 1 skipped / 4064 PASS, 63 skipped`; Treasur
 `32`, Ruff, and diff check pass. No production mutation, send, scheduler change, merge, deploy, or
 push occurred. M12CE is terminal with message/model readiness `NOT_READY`; next scope is the
 separate bounded `M12CF_SYMBOLIC_ONLY_MATURITY_PROVENANCE_OWNERSHIP_REVIEW`.
+
+### 40.49 M12CF Symbolic-Only Maturity Provenance Ownership Review
+
+Exact work instructions were committed first as `03c5d22` on local branch
+`codex/20260916-m12cf-symbolic-only-maturity-review`. This was an architecture/ownership review:
+runtime and model contracts were not changed, and no model call or M12CE continuation occurred.
+
+Independent verification passed all 112 M12CE bundle entries. The current US14/KR8 packets contain
+two symbolic refs, both for SKHY; only `canonical:financial_quality:latest` appeared alone in a
+fresh maturity row. It is an intentional, meaningful unknown-quality state with no concrete source
+period. Packet assessment/observation timestamps exist but do not own that financial source period.
+Historical M12CD rows contained zero symbolic-only and two symbolic-plus-concrete cases.
+
+The selected classification is `SYMBOLIC_PROVENANCE_IS_VALID_NONDATE_STATE` (Branch A). R2 is the
+preferred next implementation: nullable `as_of` plus a deterministic runtime-owned provenance
+status distinguishing concrete-only, concrete-with-symbolic, and symbolic-only rows. Mixed-row
+`MAX(concrete_dates)` remains only the latest known concrete same-row provenance date, not a full
+evidence cutoff. All assessment/current/global/sibling fallbacks remain forbidden.
+
+R1 is semantically unsafe because dropping the SKHY row removes a decisive confirmed financial-
+quality limitation, even though top-level HOLD/WAIT/REVIEW/MIXED/UNKNOWN labels remain stable in an
+ephemeral deletion check. R2 has
+`HASH_CHANGE_WITH_CONTROLLED_CONTRACT_VERSION_MIGRATION`: raw Fundamental Core and Stage-2 output
+hashes stay fixed, while normalized/persisted identities may change under a new version. Historical
+artifacts must remain immutable.
+
+Focused/full validation is `198 PASS, 1 skipped / 4064 PASS, 63 skipped`, with two existing
+warnings; Treasury `69`, Kiwoom local `32`, Ruff, and diff check pass. Model calls, runtime source
+changes, production mutation/send, scheduler resume, main merge, deploy, and remote push are all
+zero. Deployment and Full22 remain unauthorized. The next scope is
+`M12CG_SYMBOLIC_MATURITY_PROVENANCE_REPRESENTATION_MIGRATION_OFFLINE_PROOF`, stopping before model
+calls.

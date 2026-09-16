@@ -1,5 +1,27 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12CF. Read
+`docs/reports/20260916-m12cf-symbolic-only-maturity-provenance-ownership-review-result.md`,
+`docs/reports/20260916-m12cf-readiness.json`, and the iCloud report bundle first. Exact work
+instructions are `03c5d22db436b8b9d841efc991ede3b1aba62237`; M12CF made zero runtime/model
+contract changes and zero model calls.
+
+The M12CE SKHY failure is classified as a generic
+`SYMBOLIC_ONLY_MATURITY_PROVENANCE_REPRESENTATION_GAP`. The canonical financial-quality ref is a
+valid and decision-material symbolic state with no truthful concrete source-period date. Assessment,
+observation, system/current, global, and sibling dates are not interchangeable source provenance.
+The chosen branch is `SYMBOLIC_PROVENANCE_IS_VALID_NONDATE_STATE`, and the preferred representation
+is R2: nullable `as_of` plus deterministic runtime-owned provenance status.
+
+Next bounded task:
+`M12CG_SYMBOLIC_MATURITY_PROVENANCE_REPRESENTATION_MIGRATION_OFFLINE_PROOF`. Introduce a controlled
+contract version that distinguishes concrete-only, concrete-with-symbolic, and symbolic-only rows;
+preserve exact refs and all hard ownership/future/tamper checks; prove persistence/hash continuity and
+SKHY semantic preservation offline. Stop before model calls. Do not resume or reuse M12CE, run a
+Full22 proof, deploy, merge main, push, send, mutate production state, or resume schedulers.
+
+---
+
 Latest authoritative local-only work is M12CE. Read
 `docs/reports/20260916-m12ce-deterministic-asof-full22-reproof-result.md`,
 `docs/reports/20260916-m12ce-readiness.json`, and the iCloud report bundle first. Exact work

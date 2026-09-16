@@ -2786,3 +2786,31 @@ global date fallback or a SKHY/date exception. The next separately authorized sc
 date-less limitation fact can participate in maturity reasoning without weakening deterministic
 ownership. Production DB, warning/notification state, Telegram, schedules, main, deployment,
 remote push, and Production Assist remain untouched.
+
+## 2026-09-16 M12CF Symbolic Provenance Ownership Handoff
+
+Read `docs/reports/20260916-m12cf-symbolic-only-maturity-provenance-ownership-review-result.md`,
+`docs/reports/20260916-m12cf-readiness.json`, and the iCloud report bundle first. Exact instructions
+are `03c5d22db436b8b9d841efc991ede3b1aba62237`. This branch remains local-only and contains no
+runtime/model contract implementation.
+
+M12CF independently verified the M12CE bundle `112/112` and reconstructed the immutable SKHY
+failure. `canonical:financial_quality:latest` is an exact, real, decision-material ref whose
+symbolic state records missing/unsupported financial quality. No concrete source period exists.
+Assessment and observation timestamps are not valid substitutes, and the producer does not have a
+date it should have emitted. This is Branch A,
+`SYMBOLIC_PROVENANCE_IS_VALID_NONDATE_STATE`, not a model hallucination or materializer bug.
+
+Use R2 in the next bounded offline migration: nullable row `as_of` plus deterministic provenance
+status (`CONCRETE_ONLY`, `CONCRETE_WITH_SYMBOLIC_REFS`, or
+`SYMBOLIC_ONLY_NO_CONCRETE_DATE`). Preserve exact refs. Mixed rows may keep MAX of concrete dates,
+but that scalar means only latest known concrete same-row provenance, not complete evidence cutoff.
+Never substitute assessment/current/system/global/sibling dates.
+
+R1 is rejected because deleting the symbolic-only SKHY row erases a decisive confirmed financial-
+quality limitation. R2 requires a controlled contract-version and identity migration; do not try to
+preserve old hashes by rewriting payloads. Next scope is
+`M12CG_SYMBOLIC_MATURITY_PROVENANCE_REPRESENTATION_MIGRATION_OFFLINE_PROOF`, with historical replay,
+Persistence V2/hash checks, and semantic-preservation proof, stopping before model calls. Do not
+resume/reuse M12CE, run Full22, merge main, deploy, push, send, mutate production state, or resume
+schedulers.
