@@ -508,31 +508,52 @@ def compare_guard_probes(
     }
 
 
-def semantic_loss_proof(current_probe: Mapping[str, object]) -> dict[str, object]:
+def semantic_loss_proof(
+    current_probe: Mapping[str, object],
+    *,
+    current_probe_root: Path,
+    out: Path,
+) -> dict[str, object]:
     fresh = current_probe["fresh"]
     assert isinstance(fresh, Mapping)
     skhy = next(row for row in fresh["candidates"] if row["ticker"] == "SKHY")
-    payload_path = skhy["payload"]["path"]
-    # The report generator resolves this basename from the current runtime probe output.
-    original = deepcopy(skhy)
-    decisive_rows = [row for row in original["rows"] if row.get("driver")]
+    payload_path = current_probe_root / "fresh" / str(skhy["payload"]["path"])
+    original = json.loads(payload_path.read_text(encoding="utf-8"))
+    decisive_rows = [row for row in skhy["rows"] if row.get("driver")]
     target = next(
         row
         for row in decisive_rows
         if row.get("provenance_status") == "SYMBOLIC_ONLY_NO_CONCRETE_DATE"
     )
-    remaining = [row for row in original["rows"] if row is not target]
-    diffs = r1.json_pointer_diffs(original["rows"], remaining)
+    row_index = int(target["row_index"])
+    mutated = deepcopy(original)
+    deleted_row = mutated["driver_maturity"].pop(row_index)
+    mutation_relative = (
+        "payloads/negative-controls/"
+        "SKHY.decisive-symbolic-row-deleted.candidate.json"
+    )
+    mutation_path = write_json(out, mutation_relative, mutated)
+    diffs = r1.json_pointer_diffs(original, mutated)
     return {
         "contract": "m12cg-r2-semantic-loss-negative-control-v1",
         "ticker": "SKHY",
-        "source_candidate_payload": payload_path,
-        "original_row_count": len(original["rows"]),
-        "mutated_row_count": len(remaining),
-        "deleted_row_index": target["row_index"],
-        "deleted_row_sha256": target["canonical_sha256"],
+        "source_candidate_payload": (
+            "runtime-probes/after-r2/fresh/" + payload_path.name
+        ),
+        "source_candidate_sha256": sha256_file(payload_path),
+        "mutated_candidate_payload": mutation_relative,
+        "mutated_candidate_sha256": sha256_file(mutation_path),
+        "original_row_count": len(original["driver_maturity"]),
+        "mutated_row_count": len(mutated["driver_maturity"]),
+        "deleted_row_index": row_index,
+        "deleted_row_sha256": sha256_bytes(canonical_bytes(deleted_row)),
+        "deleted_row": deleted_row,
         "json_pointer_diffs": diffs,
-        "semantic_loss_detected": bool(diffs) and len(remaining) + 1 == len(original["rows"]),
+        "semantic_loss_detected": (
+            bool(diffs)
+            and len(mutated["driver_maturity"]) + 1
+            == len(original["driver_maturity"])
+        ),
         "status": "PASS" if diffs else "FAIL",
     }
 
@@ -832,11 +853,13 @@ def matching_nodes(
     nodes: Sequence[Mapping[str, object]],
     patterns: Sequence[str],
 ) -> list[dict[str, object]]:
-    return [
-        dict(row)
-        for row in nodes
-        if any(pattern in str(row["node_id"]) for pattern in patterns)
-    ]
+    matched: dict[tuple[str, str], dict[str, object]] = {}
+    for row in nodes:
+        if not any(pattern in str(row["node_id"]) for pattern in patterns):
+            continue
+        key = (str(row["node_id"]), str(row["status"]))
+        matched[key] = dict(row)
+    return list(matched.values())
 
 
 def aggregate_fixture_rows(rows: Sequence[Mapping[str, object]]) -> dict[str, object]:
@@ -1389,7 +1412,11 @@ def build_report(args: argparse.Namespace) -> None:
             "audits/serialization-type-json-bytes-hash-comparison.json",
             serialization,
         )
-        semantic_loss = semantic_loss_proof(after_runtime)
+        semantic_loss = semantic_loss_proof(
+            after_runtime,
+            current_probe_root=probe_root / "after-r2",
+            out=out,
+        )
         polarity_node = (
             "tests/test_preconfirmation_decision_v2_service.py::"
             "test_m12cg_r2_atomic_polarity_mutation_is_rejected"
@@ -1441,10 +1468,14 @@ def build_report(args: argparse.Namespace) -> None:
                 "valid_candidate_count"
             ],
             "new_finalization_count": after_runtime["fresh"]["finalized_count"],
-            "paired_finalization_count": sum(
+            "r2_before_after_finalization_parity_count": sum(
                 row["before_result"] == row["after_result"] == "PASS"
                 for row in finalizations
             ),
+            "legacy_normalizable_count": fresh["v1_normalizable_count"],
+            "paired_finalization_count": fresh[
+                "paired_finalization_comparable_count"
+            ],
             "baseline_finalization_errors": [
                 {
                     "ticker": row["ticker"],

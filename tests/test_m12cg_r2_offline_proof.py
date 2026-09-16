@@ -6,6 +6,8 @@ from scripts.m12cg_r2_offline_proof import (
     aggregate_fixture_rows,
     artifact_manifest,
     dynamic_aggregation_negative_controls,
+    matching_nodes,
+    semantic_loss_proof,
 )
 
 
@@ -81,3 +83,80 @@ def test_m12cg_r2_artifact_manifest_excludes_itself(tmp_path) -> None:
     assert result["manifest_self_excluded"] is True
     assert result["artifact_count"] == 1
     assert [row["path"] for row in result["artifacts"]] == ["payload.json"]
+
+
+def test_m12cg_r2_matching_nodes_deduplicates_focused_and_full_results() -> None:
+    node = {
+        "node_id": "tests/test_example.py::test_case[value]",
+        "status": "PASS",
+    }
+
+    result = matching_nodes([node, dict(node)], ["test_case"])
+
+    assert result == [node]
+
+
+def test_m12cg_r2_semantic_loss_uses_full_candidate_payload(tmp_path) -> None:
+    probe_root = tmp_path / "runtime-probes" / "after-r2"
+    candidate_path = probe_root / "fresh" / "SKHY.candidate.json"
+    candidate_path.parent.mkdir(parents=True)
+    candidate = {
+        "ticker": "SKHY",
+        "driver_maturity": [
+            {
+                "driver": "symbolic limitation",
+                "supporting_evidence_refs": ["financial-quality:SKHY"],
+                "contradicting_evidence_refs": [],
+                "as_of": None,
+                "provenance_status": "SYMBOLIC_ONLY_NO_CONCRETE_DATE",
+            },
+            {
+                "driver": "concrete row",
+                "supporting_evidence_refs": ["price:SKHY"],
+                "contradicting_evidence_refs": [],
+                "as_of": "2026-09-15",
+                "provenance_status": "CONCRETE_ONLY",
+            },
+        ],
+    }
+    candidate_path.write_text(json.dumps(candidate), encoding="utf-8")
+    probe = {
+        "fresh": {
+            "candidates": [
+                {
+                    "ticker": "SKHY",
+                    "payload": {"path": candidate_path.name},
+                    "rows": [
+                        {
+                            "row_index": 0,
+                            "driver": "symbolic limitation",
+                            "provenance_status": (
+                                "SYMBOLIC_ONLY_NO_CONCRETE_DATE"
+                            ),
+                        },
+                        {
+                            "row_index": 1,
+                            "driver": "concrete row",
+                            "provenance_status": "CONCRETE_ONLY",
+                        },
+                    ],
+                }
+            ]
+        }
+    }
+
+    result = semantic_loss_proof(
+        probe,
+        current_probe_root=probe_root,
+        out=tmp_path / "report",
+    )
+
+    assert result["status"] == "PASS"
+    assert result["original_row_count"] == 2
+    assert result["mutated_row_count"] == 1
+    assert result["deleted_row"]["supporting_evidence_refs"] == [
+        "financial-quality:SKHY"
+    ]
+    assert result["source_candidate_sha256"] != result[
+        "mutated_candidate_sha256"
+    ]
