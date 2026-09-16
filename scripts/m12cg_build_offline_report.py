@@ -61,6 +61,7 @@ REQUIRED_BASE_SHA = "912b1ce6c46f0caf801b2c620b42d904b489c4e7"
 ORIGIN_MAIN_OBSERVED = "9b1fe2de10ff3a4d6b25b17bf1b6e24e5a5ac479"
 M12CD_RUNTIME_SHA = "9a9bda729afcb0777d7228ee7151d31f0b2f84f8"
 M12CF_FINAL_SHA = REQUIRED_BASE_SHA
+M12CG_IMPLEMENTATION_SHA = "b7e541b6a3c54567018f937f32d6f92be09a7e4e"
 M12CE_GENERATION_ID = "20260916-uskr22-m12ce-20260916T080425Z-96a562d5cafc"
 
 
@@ -785,7 +786,8 @@ def build_report(args: argparse.Namespace) -> None:
     )
 
     branch = run(repo, "git", "branch", "--show-current")
-    implementation_sha = run(repo, "git", "rev-parse", "HEAD")
+    final_local_sha = run(repo, "git", "rev-parse", "HEAD")
+    implementation_sha = run(repo, "git", "rev-parse", M12CG_IMPLEMENTATION_SHA)
     work_instruction_sha = sha256_file(args.work_instruction)
     changed_runtime = run(
         repo,
@@ -817,6 +819,7 @@ def build_report(args: argparse.Namespace) -> None:
         "m12cg_work_instruction_commit": run(repo, "git", "rev-parse", "ef5a0ad"),
         "m12cg_work_instruction_sha256": work_instruction_sha,
         "m12cg_implementation_sha": implementation_sha,
+        "m12cg_final_local_sha": final_local_sha,
         "runtime_source_changed_files": changed_runtime,
         "main_merge_count": 0,
         "remote_push_count": 0,
@@ -1342,7 +1345,7 @@ def build_report(args: argparse.Namespace) -> None:
         "m12cf_manifest_verified_count": source_integrity["m12cf"]["manifest"]["verified_count"],
         "m12cg_work_instruction_sha": work_instruction_sha,
         "m12cg_implementation_sha": implementation_sha,
-        "m12cg_final_local_sha": "PENDING_DOCUMENTATION_COMMIT",
+        "m12cg_final_local_sha": final_local_sha,
         "raw_model_output_contract_before": STAGE2_MODEL_OUTPUT_CONTRACT,
         "raw_model_output_contract_after": STAGE2_MODEL_OUTPUT_CONTRACT,
         "normalized_contract_before": STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
