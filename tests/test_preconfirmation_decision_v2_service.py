@@ -630,6 +630,22 @@ def test_m12cg_r2_concrete_peer_cannot_hide_missing_metadata_ref() -> None:
         materialize_accepted_v2_stage2_output(context, raw)
 
 
+def test_m12cg_r2_empty_maturity_ref_set_is_rejected() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    raw["candidates"][0]["driver_maturity"][0][
+        "supporting_evidence_refs"
+    ] = []
+    raw["candidates"][0]["driver_maturity"][0][
+        "contradicting_evidence_refs"
+    ] = []
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unresolvable_provenance:TEST:0:<empty>",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
 def test_m12cg_r2_independent_validator_rejects_forged_symbolic_projection() -> None:
     valid_packet = _packet().model_copy(
         update={
@@ -680,6 +696,24 @@ def test_m12cg_r2_presence_guard_is_not_ref_or_market_specific(
 
     assert symbolic_maturity_evidence_kind(valid_ref) is not None
     assert symbolic_maturity_evidence_kind(invalid_ref) is None
+
+
+def test_m12cg_r2_atomic_polarity_mutation_is_rejected() -> None:
+    candidate = _candidate()
+    original = candidate.driver_maturity[0]
+    mutated = original.model_copy(
+        update={"supporting_claim_refs": original.contradicting_claim_refs}
+    )
+    mutated_candidate = candidate.model_copy(
+        update={"driver_maturity": (mutated,)}
+    )
+
+    errors = validate_accepted_v2_maturity_atomic_identity(
+        mutated_candidate,
+        _core(candidate),
+    )
+
+    assert "maturity_supporting_source_claim_mismatch:0" in errors
 
 
 def test_m12cg_model_authored_provenance_status_is_rejected() -> None:
