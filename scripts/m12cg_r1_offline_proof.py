@@ -2091,7 +2091,7 @@ def build_report(args: argparse.Namespace) -> None:
         )
         paired_finalization, model_facing = paired_runtime_proof(
             repo=repo,
-            python=args.python.resolve(),
+            python=args.python,
             probe_script=(repo / "scripts/m12cg_r1_runtime_probe.py"),
             m12ce_root=source_roots["m12ce"],
             out=out,
