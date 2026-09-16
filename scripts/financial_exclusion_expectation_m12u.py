@@ -92,6 +92,10 @@ def scope_audit():
         "tests/test_notification_service.py",
         "tests/test_preconfirmation_decision_v2_service.py",
         "tests/test_us_full_message.py",
+        # M12CG-R4-R1 forwards the already-frozen Core reference through the
+        # existing delivery reader and owns only its direct regressions.
+        "app/services/ai_assisted_delivery_service.py",
+        "tests/test_ai_assisted_delivery.py",
     }
     unexpected = [
         p
