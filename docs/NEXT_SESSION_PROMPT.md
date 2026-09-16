@@ -1,29 +1,30 @@
 # Next Session Prompt
 
-Latest authoritative local-only work is M12CA. Read
-`docs/reports/20260916-m12ca-preconfirmation-buy-contract-convergence-result.md`,
-`docs/reports/20260916-m12ca-readiness.json`, and the iCloud report bundle first. Work instructions
-are `b586303`; frozen implementation is `663d69eade2ba601c0248635d5656dec242563dc`.
+Latest authoritative local-only work is M12CB. Read
+`docs/reports/20260916-m12cb-stage2-frozen-core-claim-language-scope-result.md`,
+`docs/reports/20260916-m12cb-readiness.json`, and the iCloud report bundle first. Work instructions
+are `3830959`; frozen implementation is `dcaac603f11edbde150a5d34ee20201fece5e7dc`.
 
-The historical `preconfirmation-asymmetry-decision-engine-v2` contract is canonical. Stage-2 now
-states its exact lifecycle invariant without changing schema or weakening the validator. GOOGL is a
-passing proof of overall BUY + PARTIAL + `pre_confirmation_buy=true` + new-buyer WAIT + holder
-HOLDABLE + timing UNFAVORABLE. Price confirmation remains `not_reached`; the flag is not an entry
-instruction. The old flag-missing GOOGL output still fails unchanged.
+M12CB closed the frozen-core claim-language scope defect without weakening standalone validation.
+SNDK, TSLA, and TSM pass unchanged offline replay and the wholly new generation; their copied
+Fundamental Core numbers are no longer treated as Stage-2-authored prose. Stage-2-owned exact
+numbers, unsupported metrics, unknown refs, and frozen-core mutation remain hard failures. GOOGL's
+BUY/PARTIAL/flag-true/WAIT/HOLDABLE/UNFAVORABLE contract remains PASS.
 
 Do not continue or stitch generation
-`20260916-uskr22-m12ca-20260916T021457Z-663d69eade2b`. It stopped at call 9 on a new validator-scope
-failure. SNDK, TSLA, and TSM have zero Stage2-owned exact numeric claims, ownership errors, or
-maturity errors, but exact-number validation traversed their fingerprint-locked Fundamental Core
-and returned `freeform_exact_numeric_claim`. Calls are `16/9/9/9`; retry, fallback, judge, repair,
-selective rerun, and hotfix are all zero.
+`20260916-uskr22-m12cb-20260916T041207Z-dcaac603f11e`. It completed Fundamental Core `22/22`,
+produced 20 Stage-2 schema-valid outputs, formally accepted 17 Stage-2 candidates, and completed US
+final composition `14/14`. It stopped at call 15 when `010120` emitted maturity date `2026-09-15`
+for a same-row evidence ref that owns only `2026-08-12`. KR batch 2 is rejected as a unit; batch 3
+was not run. Calls are `16/15/15/14`; retry, fallback, judge, repair, selective rerun, hotfix, and
+stitching are zero.
 
 Next bounded task:
-`BOUNDED_STAGE2_FROZEN_CORE_NUMERIC_VALIDATION_SCOPE_REPAIR_AND_NEW_FULL22_REPROOF`. Scope only the
-general prose checks that are Stage2-owned after immutable Core identity passes. Do not exempt a
-ticker, permit arbitrary exact numbers, or weaken standalone candidate validation. Preserve all
-M12BY/M12BZ/M12CA contracts, add contrastive ownership tests, freeze code before a wholly new
-US14/KR8 generation, and stop on the first new hard failure without repair.
+`BOUNDED_STAGE2_MATURITY_AS_OF_OWNERSHIP_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`. Preserve the
+deterministic same-row evidence/date ownership gate. Make row-local ownership more reliably
+model-consumable without a ticker/date exception, global allowlist bypass, validator weakening, or
+repair route. Freeze all deterministic changes before a wholly new US14/KR8 generation from call 1
+and stop on the first new hard failure.
 
 Kiwoom and Treasury remain local-ready, but `KIWOOM_GATEWAY_URL` and
 `KIWOOM_GATEWAY_API_KEY` are not configured. Keep live trading calls, production DB/warnings/

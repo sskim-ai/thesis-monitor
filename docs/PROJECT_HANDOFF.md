@@ -2688,3 +2688,33 @@ claim-language checks that are explicitly Stage2-owned after frozen-core identit
 hard core validation and prove old invalid standalone candidates still fail. Then use a wholly new
 US14/KR8 generation from call 1. Keep production DB, warnings, notifications, Telegram, schedules,
 main, deployment, remote push, and Production Assist untouched.
+
+## 2026-09-16 M12CB Stage-2 Frozen-Core Claim Scope Handoff
+
+Start with `docs/reports/20260916-m12cb-stage2-frozen-core-claim-language-scope-result.md` and
+`docs/reports/20260916-m12cb-readiness.json`. Exact instructions are `3830959`; deterministic
+implementation is `dcaac603f11edbde150a5d34ee20201fece5e7dc`. This branch remains local-only.
+
+The M12CA validator-scope defect is closed. Trusted Stage-2 validation now scopes exact-number,
+general language, evidence-ref, and unsupported-metric checks to the existing canonical
+Stage-2-owned claim inventory only after frozen-core ownership passes. Standalone validation is
+unchanged and strict. SNDK, TSLA, and TSM pass both immutable offline replay and the new generation;
+no ticker or numeric exception was added. GOOGL's pre-confirmation contract remains PASS.
+
+Do not continue generation `20260916-uskr22-m12cb-20260916T041207Z-dcaac603f11e`. It stopped at
+call 15 after Fundamental Core `22/22`, Stage-2 schema output `20`, formal Stage-2 semantic PASS
+`17`, and US final composition `14/14`. KR batch 2 is rejected as a unit and KR batch 3 was not
+run. Retry, fallback, judge, repair, selective rerun, hotfix, and stitching are all zero.
+
+The new blocker is one genuine `010120` maturity date-ownership violation. The row cited only
+`decision-evidence:e3e0e73c7b80428e5459`, which owns `2026-08-12`, but emitted `2026-09-15`.
+That date is in the batch-wide schema enum but is not owned by the same row. The prompt already
+states the rule and the deterministic validator correctly failed closed. Do not weaken the same-row
+gate or accept the two other batch outputs selectively.
+
+Next scope is
+`BOUNDED_STAGE2_MATURITY_AS_OF_OWNERSHIP_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`. Keep it generic:
+make row-local evidence/date ownership more reliably model-consumable, retain deterministic
+same-row validation, add no ticker/date exception, then start a wholly new US14/KR8 generation
+from call 1. Keep production DB, warnings, notifications, Telegram, schedules, main, deployment,
+remote push, and Production Assist untouched.

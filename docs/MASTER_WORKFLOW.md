@@ -2649,3 +2649,38 @@ the authenticated Kiwoom gateway remains unconfigured. Top-level state is
 deploy, remote push, production send/state write, scheduler mutation, or automation resume
 occurred. The next bounded scope is
 `BOUNDED_STAGE2_FROZEN_CORE_NUMERIC_VALIDATION_SCOPE_REPAIR_AND_NEW_FULL22_REPROOF`.
+
+### 40.45 M12CB Stage-2 Frozen-Core Claim-Language Scope Convergence
+
+Exact work instructions were committed first as `3830959`; deterministic implementation is
+`dcaac603f11edbde150a5d34ee20201fece5e7dc` on local branch
+`codex/20260916-m12cb-stage2-frozen-core-claim-language-scope`. The existing
+`stage2_owned_candidate_claims()` inventory is now applied consistently to general claim-language
+and unsupported-metric checks after frozen Fundamental Core identity passes. Standalone validation
+remains full-candidate strict. Numeric regex semantics, prompt, schema, and canonical policy are
+unchanged.
+
+Focused/full validation is `115/4055 PASS`, with 63 full-suite skips and two existing dependency
+warnings; Ruff and diff check pass. The immutable M12CA SNDK/TSLA/TSM batch replays `3/3`, and all
+three pass again in new generation
+`20260916-uskr22-m12cb-20260916T041207Z-dcaac603f11e`. Their four copied frozen-core numeric
+claims no longer produce a Stage-2 false positive, while Stage-2-owned numeric claims and mutated
+core fields remain hard failures. GOOGL remains BUY/PARTIAL with `pre_confirmation_buy=true`,
+new-buyer WAIT, holder HOLDABLE, and timing UNFAVORABLE.
+
+The new generation completed Fundamental Core `22/22`, produced 20 schema-valid Stage-2 outputs,
+formally accepted 17 Stage-2 candidates, and completed US final composition `14/14`. It stopped at
+call 15 because `010120` emitted maturity `as_of=2026-09-15` for a same-row evidence ref that owns
+only `2026-08-12`. Existing validation correctly rejected
+`maturity_evidence_date_not_owned`; classification is
+`MODEL_OUTPUT_MATURITY_DATE_OWNERSHIP_VIOLATION`. The KR batch is rejected as a unit, batch 3 was
+not run, and the terminal generation must not be resumed or stitched. Planned/started/completed/
+usable calls are `16/15/15/14`; retry, fallback, judge, repair, selective rerun, and hotfix are all
+zero.
+
+Top-level state is
+`STAGE2_FROZEN_CORE_CLAIM_SCOPE_CONVERGED_FULL22_BLOCKED_BY_NEW_TYPED_DATE_OWNERSHIP_FAILURE`.
+Market context remains local-ready with the live Kiwoom gateway unavailable. No main merge, deploy,
+remote push, production send/state write, scheduler mutation, or automation resume occurred. The
+next bounded scope is
+`BOUNDED_STAGE2_MATURITY_AS_OF_OWNERSHIP_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`.
