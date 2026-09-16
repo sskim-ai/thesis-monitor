@@ -34,6 +34,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_stage2_output_schema,
     accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
+    materialize_accepted_v2_stage2_output,
     validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_fundamental_core_batch_scope,
@@ -220,7 +221,11 @@ def _codex_batch(
         )
         raw_batch = _read_json(output)
         try:
-            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                raw_batch,
+                subjects=subjects,
+            )
         except ValidationError as exc:
             if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
                 raise
@@ -247,7 +252,11 @@ def _codex_batch(
                 timeout=timeout,
                 state_namespace=state_namespace or context.claim_id,
             )
-            batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                subjects=subjects,
+            )
         if (
             batch.packet_id != context.packet_id
             or batch.claim_id != context.claim_id
@@ -316,7 +325,11 @@ def _codex_batch(
                 timeout=timeout,
                 state_namespace=state_namespace or context.claim_id,
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            repaired = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                subjects=(ticker,),
+            )
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id

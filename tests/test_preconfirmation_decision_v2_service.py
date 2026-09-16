@@ -61,6 +61,7 @@ from app.services.accepted_decision_v2_service import (
     validate_accepted_v2_render,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    STAGE2_MODEL_OUTPUT_CONTRACT,
     AcceptedV2EvidenceOwnership,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBaseline,
@@ -71,11 +72,14 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_fundamental_core_sha256,
     accepted_v2_stage2_validation_scope_manifest,
     build_accepted_v2_production_context,
+    materialize_accepted_v2_stage2_output,
+    Stage2MaturityAsOfMaterializationError,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_production_output,
     validate_accepted_v2_stage2_candidate,
 )
+from app.services.decision_canary_service import canonical_sha256
 from app.services.expectation_valuation_interaction_service import interaction_from_packet
 from app.services.accepted_decision_consistency_service import (
     MaterialEvidenceDelta,
@@ -306,6 +310,227 @@ def _core(candidate: PreconfirmationDecisionCandidate | None = None):
     return accepted_v2_fundamental_core_from_candidate(candidate or _candidate())
 
 
+def _model_facing_stage2_payload(
+    output: AcceptedV2ProductionBatchOutput,
+) -> dict[str, object]:
+    payload = output.model_dump(mode="json")
+    payload["contract"] = STAGE2_MODEL_OUTPUT_CONTRACT
+    for candidate in payload["candidates"]:
+        for row in candidate["driver_maturity"]:
+            row.pop("as_of")
+    return payload
+
+
+def _stage2_materialization_fixture(
+    *,
+    packet: DecisionEvidencePacket | None = None,
+    candidate: PreconfirmationDecisionCandidate | None = None,
+) -> tuple[
+    AcceptedV2ProductionContext,
+    AcceptedV2ProductionBatchOutput,
+    dict[str, object],
+]:
+    source_packet = packet or _packet()
+    source_candidate = candidate or _candidate()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": source_packet.packet_id,
+            "market": source_packet.market,
+            "assessment_date": source_packet.assessment_date,
+            "stocks": [{"ticker": source_packet.ticker}],
+        },
+        claim_id="claim-stage2-materialization",
+        evidence_packets=(source_packet,),
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(_core(source_candidate),),
+        candidates=(source_candidate,),
+    )
+    return context, output, _model_facing_stage2_payload(output)
+
+
+def test_stage2_materializer_uses_max_concrete_same_row_date() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(
+            update={
+                "as_of": (
+                    "2026-06-30" if row.ref_id == "ref:valuation" else row.as_of
+                )
+            }
+        )
+        for row in packet.evidence
+    )
+    context, _output, raw = _stage2_materialization_fixture(
+        packet=packet.model_copy(update={"evidence": evidence})
+    )
+
+    materialized = materialize_accepted_v2_stage2_output(context, raw)
+
+    assert materialized.contract == "v2-accepted-production-output-v1"
+    assert materialized.candidates[0].driver_maturity[0].as_of == "2026-08-30"
+
+
+def test_stage2_materializer_uses_concrete_date_with_symbolic_peer() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"as_of": "latest"})
+        if row.ref_id == "ref:risks"
+        else row
+        for row in packet.evidence
+    )
+    context, _output, raw = _stage2_materialization_fixture(
+        packet=packet.model_copy(update={"evidence": evidence})
+    )
+
+    materialized = materialize_accepted_v2_stage2_output(context, raw)
+
+    assert materialized.candidates[0].driver_maturity[0].as_of == "2026-08-30"
+
+
+def test_stage2_materializer_is_hash_stable() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+
+    first = materialize_accepted_v2_stage2_output(context, raw)
+    second = materialize_accepted_v2_stage2_output(context, raw)
+
+    assert canonical_sha256(first.model_dump(mode="json")) == canonical_sha256(
+        second.model_dump(mode="json")
+    )
+    assert all(
+        "as_of" not in row
+        for candidate in raw["candidates"]
+        for row in candidate["driver_maturity"]
+    )
+
+
+def test_stage2_materializer_rejects_model_authored_as_of() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    raw["candidates"][0]["driver_maturity"][0]["as_of"] = "2026-08-30"
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_model_authored_as_of_forbidden",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_stage2_materializer_rejects_symbolic_only_without_global_fallback() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"as_of": "latest"})
+        if row.ref_id in {"ref:valuation", "ref:risks"}
+        else row
+        for row in packet.evidence
+    )
+    context, _output, raw = _stage2_materialization_fixture(
+        packet=packet.model_copy(update={"evidence": evidence})
+    )
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_no_concrete_owned_date",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_stage2_materializer_rejects_unknown_ref() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    raw["candidates"][0]["driver_maturity"][0][
+        "supporting_evidence_refs"
+    ] = ["ref:not-owned"]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unknown_ticker_local_ref",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_stage2_materializer_rejects_cross_ticker_ref() -> None:
+    packet = _packet()
+    other = packet.model_copy(
+        update={
+            "ticker": "OTHER",
+            "company_name": "Other Company",
+            "evidence": (
+                packet.evidence[0].model_copy(
+                    update={"ref_id": "other:owned", "as_of": "2026-08-30"}
+                ),
+            ),
+            "evidence_sha256": "other-fixture",
+        }
+    )
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": "TEST"}, {"ticker": "OTHER"}],
+        },
+        claim_id="claim-stage2-cross-ticker",
+        evidence_packets=(packet, other),
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(_core(),),
+        candidates=(_candidate(),),
+    )
+    raw = _model_facing_stage2_payload(output)
+    raw["candidates"][0]["driver_maturity"][0][
+        "supporting_evidence_refs"
+    ] = ["other:owned"]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unknown_ticker_local_ref",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw, subjects=("TEST",))
+
+
+def test_stage2_materializer_rejects_future_derived_date() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"as_of": "2026-08-31"})
+        if row.ref_id == "ref:risks"
+        else row
+        for row in packet.evidence
+    )
+    context, _output, raw = _stage2_materialization_fixture(
+        packet=packet.model_copy(update={"evidence": evidence})
+    )
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_future_derived_date",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_stage2_hard_validator_rejects_post_materialization_tamper() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    materialized = materialize_accepted_v2_stage2_output(context, raw)
+    candidate = materialized.candidates[0]
+    row = candidate.driver_maturity[0].model_copy(update={"as_of": "2026-08-29"})
+    tampered = candidate.model_copy(update={"driver_maturity": (row,)})
+
+    validation = validate_accepted_v2_stage2_candidate(
+        context.evidence_packets[0],
+        tampered,
+        materialized.fundamental_cores[0],
+        context.evidence_ownership[0],
+    )
+
+    assert "maturity_evidence_date_not_owned:신규 제품 수익화" in validation.errors
+
+
 def _candidate_with_balance(buy: float) -> PreconfirmationDecisionCandidate:
     balance = DirectionalBalance(buy=buy, sell=10 - buy)
     decision = decision_from_directional_balance(balance)
@@ -440,7 +665,8 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
         fundamental_cores=(core,),
         candidates=(candidate,),
     )
-    invalid = valid.model_dump(mode="json")
+    valid_raw = _model_facing_stage2_payload(valid)
+    invalid = _model_facing_stage2_payload(valid)
     maturity = invalid["candidates"][0]["driver_maturity"][0]
     maturity["contradicting_claim_refs"].append(maturity["supporting_claim_refs"][0])
 
@@ -449,7 +675,7 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
         if "core-batch" in output.name:
             payload = core_batch.model_dump(mode="json")
         else:
-            payload = valid.model_dump(mode="json") if "schema-repair" in output.name else invalid
+            payload = valid_raw if "schema-repair" in output.name else invalid
         output.write_text(json.dumps(payload), encoding="utf-8")
 
     monkeypatch.setattr(preflight, "_signed_in_codex_bin", lambda: "codex")

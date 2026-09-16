@@ -15,6 +15,7 @@ from app.jobs.accepted_decision_v2_runtime import (
     _signed_in_codex_bin,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    STAGE2_MODEL_OUTPUT_CONTRACT,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2FundamentalCoreCandidate,
     accepted_v2_fundamental_core_batch_identity_manifest,
@@ -765,13 +766,14 @@ def test_old_corz_source_overlap_without_atomic_claims_fails_closed() -> None:
     assert len(accepted_v2_maturity_atomic_claim_catalog(core)) == 2
 
 
-def test_stage2_typed_identity_and_maturity_date_schema_are_closed() -> None:
+def test_stage2_typed_identity_and_runtime_owned_maturity_date_schema_are_closed() -> None:
     context = _stage2_exact_ref_context()
     subjects = ("CORZ", "IBM")
     schema = accepted_v2_stage2_output_schema(context, subjects=subjects)
     manifest = accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects)
 
     assert schema["properties"]["packet_id"]["const"] == context.packet_id
+    assert schema["properties"]["contract"]["const"] == STAGE2_MODEL_OUTPUT_CONTRACT
     assert schema["properties"]["claim_id"]["const"] == context.claim_id
     assert schema["properties"]["market"]["const"] == context.market
     assert schema["properties"]["assessment_date"]["const"] == context.assessment_date
@@ -783,11 +785,11 @@ def test_stage2_typed_identity_and_maturity_date_schema_are_closed() -> None:
         assert schema["$defs"][definition]["properties"]["ticker"]["enum"] == list(
             subjects
         )
-    as_of = schema["$defs"]["DriverEvidenceMaturity"]["properties"]["as_of"]
-    assert as_of["pattern"] == r"^\d{4}-\d{2}-\d{2}$"
-    assert as_of["minLength"] == as_of["maxLength"] == 10
-    assert as_of["enum"] == manifest["allowed_maturity_dates"]
-    assert "latest" not in as_of["enum"]
+    maturity = schema["$defs"]["DriverEvidenceMaturity"]
+    assert "as_of" not in maturity["properties"]
+    assert "as_of" not in maturity["required"]
+    assert maturity["additionalProperties"] is False
+    assert manifest["allowed_maturity_dates"]
 
 
 def test_stage2_exact_ref_positive_fixtures() -> None:
@@ -884,6 +886,9 @@ def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() 
     assert "technical-feature:daily:rsi14" not in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
     assert "Do not introduce or infer ROIC" in prompt
+    assert "runtime owns row-level provenance-date materialization" in prompt
+    assert "Do not emit or infer driver_maturity.as_of" in prompt
+    assert "Every driver_maturity.as_of must be" not in prompt
     assert "in Stage-2-owned fields" in prompt
     assert "Frozen FUNDAMENTAL_CORE fields must still be copied exactly" in prompt
     assert "Do not modify frozen core text" in prompt
@@ -947,7 +952,8 @@ def test_bounded_repair_prompt_explains_temporal_and_hold_contracts() -> None:
         ),
     )
 
-    assert "never later than assessment_date" in prompt
+    assert "not later than assessment_date" in prompt
+    assert "runtime derives driver_maturity.as_of" in prompt
     assert "post_confirmation_hold=false" in prompt
     assert "postconfirmation_hold_explanation=null" in prompt
 

@@ -4,6 +4,7 @@ import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
@@ -54,10 +55,7 @@ from app.services.expectation_valuation_interaction_service import (
     duplicate_directional_anchor_errors,
     interaction_from_packet,
 )
-from app.services.evidence_maturity_pricing_service import (
-    ISO_DATE_PATTERN,
-    concrete_evidence_date,
-)
+from app.services.evidence_maturity_pricing_service import concrete_evidence_date
 from app.services.stage2_maturity_polarity_adapter_service import (
     ATOMIC_IDENTITY_CONTRACT,
     CONTRACT_VERSION as MATURITY_POLARITY_ADAPTER_CONTRACT,
@@ -70,6 +68,14 @@ from app.services.three_axis_decision_service import HolderDecisionAxis
 
 CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
 OUTPUT_CONTRACT = "v2-accepted-production-output-v1"
+STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v2"
+STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT = (
+    "stage2-maturity-as-of-deterministic-v1"
+)
+STAGE2_MATURITY_AS_OF_SEMANTICS = (
+    "LATEST_KNOWN_CONCRETE_SAME_ROW_PROVENANCE_DATE"
+)
+STAGE2_MATURITY_AS_OF_AGGREGATION = "MAX_CONCRETE_OWNED_DATES"
 ARTIFACT_CONTRACT = "v2-accepted-production-artifact-v1"
 STATE_CONTRACT = "v2-accepted-production-state-v1"
 RECEIPT_CONTRACT = "v2-accepted-production-receipt-v1"
@@ -261,6 +267,10 @@ class AcceptedV2ProductionBatchOutput(FrozenModel):
     )
     candidates: tuple[PreconfirmationDecisionCandidate, ...] = Field(min_length=1, max_length=20)
     adjudications: tuple[AcceptedV2Adjudication, ...] = Field(default=(), max_length=20)
+
+
+class Stage2MaturityAsOfMaterializationError(ValueError):
+    pass
 
 
 class AcceptedV2ProductionBlock(FrozenModel):
@@ -1054,16 +1064,16 @@ def accepted_v2_stage2_output_schema(
         error_prefix="v2_stage2",
     )
     selected = tuple(subjects or context.selected_subjects)
-    allowed_dates = manifest["allowed_maturity_dates"]
-    if not isinstance(allowed_dates, list) or not allowed_dates:
-        raise ValueError("v2_stage2_maturity_date_catalog_empty")
     try:
         properties = schema["properties"]
         definitions = schema["$defs"]
-        maturity_as_of = definitions["DriverEvidenceMaturity"]["properties"]["as_of"]
+        maturity_definition = definitions["DriverEvidenceMaturity"]
+        maturity_properties = maturity_definition["properties"]
+        maturity_required = maturity_definition["required"]
     except (KeyError, TypeError) as exc:
         raise ValueError("v2_stage2_typed_schema_path_missing") from exc
     for field_name, value in (
+        ("contract", STAGE2_MODEL_OUTPUT_CONTRACT),
         ("packet_id", context.packet_id),
         ("claim_id", context.claim_id),
         ("market", context.market),
@@ -1082,17 +1092,14 @@ def accepted_v2_stage2_output_schema(
         if not isinstance(ticker, dict):
             raise ValueError(f"v2_stage2_ticker_schema_invalid:{definition}")
         ticker["enum"] = list(selected)
-    if not isinstance(maturity_as_of, dict):
-        raise ValueError("v2_stage2_maturity_date_schema_invalid")
-    maturity_as_of.update(
-        {
-            "type": "string",
-            "pattern": ISO_DATE_PATTERN,
-            "minLength": 10,
-            "maxLength": 10,
-            "enum": allowed_dates,
-        }
-    )
+    if not isinstance(maturity_properties, dict) or not isinstance(
+        maturity_required, list
+    ):
+        raise ValueError("v2_stage2_maturity_schema_invalid")
+    maturity_properties.pop("as_of", None)
+    maturity_definition["required"] = [
+        value for value in maturity_required if value != "as_of"
+    ]
     claim_refs = manifest["allowed_maturity_claim_refs"]
     if fundamental_cores is not None and (not isinstance(claim_refs, list) or not claim_refs):
         raise ValueError("v2_stage2_maturity_atomic_claim_catalog_empty")
@@ -1109,6 +1116,166 @@ def accepted_v2_stage2_output_schema(
                 raise ValueError("v2_stage2_maturity_claim_schema_invalid")
             items["enum"] = list(claim_refs)
     return schema
+
+
+def _stage2_model_facing_candidate_payload(
+    candidate: PreconfirmationDecisionCandidate,
+) -> dict[str, object]:
+    payload = candidate.model_dump(mode="json")
+    rows = payload.get("driver_maturity")
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, dict):
+                row.pop("as_of", None)
+    return payload
+
+
+def _stage2_model_facing_rejected_output(
+    rejected_output: Mapping[str, object],
+) -> dict[str, object]:
+    payload = deepcopy(dict(rejected_output))
+    candidates = payload.get("candidates")
+    if isinstance(candidates, list):
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            rows = candidate.get("driver_maturity")
+            if isinstance(rows, list):
+                for row in rows:
+                    if isinstance(row, dict):
+                        row.pop("as_of", None)
+    return payload
+
+
+def materialize_accepted_v2_stage2_output(
+    context: AcceptedV2ProductionContext,
+    raw_output: Mapping[str, object],
+    *,
+    subjects: Sequence[str] | None = None,
+) -> AcceptedV2ProductionBatchOutput:
+    """Materialize runtime-owned maturity dates into the internal typed contract."""
+    selected = tuple(subjects or context.selected_subjects)
+    if (
+        not selected
+        or len(set(selected)) != len(selected)
+        or not set(selected).issubset(context.selected_subjects)
+    ):
+        raise Stage2MaturityAsOfMaterializationError(
+            "stage2_materialization_subject_scope_invalid"
+        )
+    payload = deepcopy(dict(raw_output))
+    if payload.get("contract") != STAGE2_MODEL_OUTPUT_CONTRACT:
+        raise Stage2MaturityAsOfMaterializationError(
+            "stage2_model_output_contract_mismatch"
+        )
+    for field_name, expected in (
+        ("packet_id", context.packet_id),
+        ("claim_id", context.claim_id),
+        ("market", context.market),
+        ("assessment_date", context.assessment_date),
+    ):
+        if payload.get(field_name) != expected:
+            raise Stage2MaturityAsOfMaterializationError(
+                f"stage2_materialization_identity_mismatch:{field_name}"
+            )
+
+    candidates = payload.get("candidates")
+    if not isinstance(candidates, list):
+        raise Stage2MaturityAsOfMaterializationError(
+            "stage2_materialization_candidates_invalid"
+        )
+    candidate_tickers = tuple(
+        str(candidate.get("ticker"))
+        for candidate in candidates
+        if isinstance(candidate, dict)
+    )
+    if (
+        len(candidate_tickers) != len(candidates)
+        or len(set(candidate_tickers)) != len(candidate_tickers)
+        or set(candidate_tickers) != set(selected)
+    ):
+        raise Stage2MaturityAsOfMaterializationError(
+            "stage2_materialization_candidate_scope_mismatch"
+        )
+
+    packets = {packet.ticker: packet for packet in context.evidence_packets}
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    assessment_date = concrete_evidence_date(context.assessment_date)
+    if assessment_date is None:
+        raise Stage2MaturityAsOfMaterializationError(
+            "stage2_materialization_assessment_date_invalid"
+        )
+    for candidate_index, candidate in enumerate(candidates):
+        assert isinstance(candidate, dict)
+        ticker = str(candidate["ticker"])
+        packet = packets.get(ticker)
+        owned = ownership.get(ticker)
+        if packet is None or owned is None:
+            raise Stage2MaturityAsOfMaterializationError(
+                f"stage2_materialization_ticker_context_missing:{ticker}"
+            )
+        visible_refs = {
+            ref_id
+            for ref_id in (*owned.core_ref_ids, *owned.timing_ref_ids)
+            if not ref_id.startswith("technical-feature:")
+        }
+        evidence = {
+            row.ref_id: row for row in packet.evidence if row.ref_id in visible_refs
+        }
+        rows = candidate.get("driver_maturity")
+        if not isinstance(rows, list):
+            raise Stage2MaturityAsOfMaterializationError(
+                f"stage2_materialization_rows_invalid:{ticker}:{candidate_index}"
+            )
+        for row_index, row in enumerate(rows):
+            if not isinstance(row, dict):
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_materialization_row_invalid:{ticker}:{row_index}"
+                )
+            if "as_of" in row:
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_model_authored_as_of_forbidden:{ticker}:{row_index}"
+                )
+            cited_refs: list[str] = []
+            for field_name in (
+                "supporting_evidence_refs",
+                "contradicting_evidence_refs",
+            ):
+                values = row.get(field_name)
+                if not isinstance(values, list) or any(
+                    not isinstance(value, str) for value in values
+                ):
+                    raise Stage2MaturityAsOfMaterializationError(
+                        f"stage2_materialization_ref_list_invalid:"
+                        f"{ticker}:{row_index}:{field_name}"
+                    )
+                cited_refs.extend(values)
+            concrete_dates = []
+            for ref_id in cited_refs:
+                evidence_row = evidence.get(ref_id)
+                if evidence_row is None:
+                    raise Stage2MaturityAsOfMaterializationError(
+                        f"stage2_materialization_unknown_ticker_local_ref:"
+                        f"{ticker}:{row_index}:{ref_id}"
+                    )
+                resolved = concrete_evidence_date(evidence_row.as_of)
+                if resolved is not None:
+                    concrete_dates.append(resolved)
+            if not concrete_dates:
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_materialization_no_concrete_owned_date:"
+                    f"{ticker}:{row_index}"
+                )
+            derived = max(concrete_dates)
+            if derived > assessment_date:
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_materialization_future_derived_date:"
+                    f"{ticker}:{row_index}:{derived.isoformat()}"
+                )
+            row["as_of"] = derived.isoformat()
+
+    payload["contract"] = OUTPUT_CONTRACT
+    return AcceptedV2ProductionBatchOutput.model_validate(payload)
 
 
 def accepted_v2_fundamental_core_prompt(
@@ -1189,7 +1356,7 @@ def accepted_v2_production_prompt(
     if not selected or not set(selected).issubset(packets) or not set(selected).issubset(cores):
         raise ValueError("v2_production_prompt_subject_mismatch")
     identity = {
-        "contract": OUTPUT_CONTRACT,
+        "contract": STAGE2_MODEL_OUTPUT_CONTRACT,
         "packet_id": context.packet_id,
         "claim_id": context.claim_id,
         "market": context.market,
@@ -1258,7 +1425,7 @@ Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
-Every driver_maturity.as_of must be an exact YYYY-MM-DD date owned by at least one evidence ref cited in that same driver_maturity row. Use each evidence item's resolved_as_of_date when non-null. A symbolic source value such as latest has no concrete date ownership: it may be cited only when another cited ref in the same row owns the emitted date. Never write latest, current, today, a placeholder, padded text, or an invented date.
+The runtime owns row-level provenance-date materialization from exact same-row cited evidence refs. Do not emit or infer driver_maturity.as_of. Select only valid exact evidence refs; provenance scalar derivation is not a model task.
 
 For every driver_maturity row, supporting_claim_refs and contradicting_claim_refs must copy exact claim_ref values from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. These claim refs identify already-structured frozen-core propositions; never create, alter, infer, split, or repair one. The two atomic claim sets must be disjoint. supporting_evidence_refs and contradicting_evidence_refs must exactly equal the union of parent source evidence_refs owned by their respective atomic claims. One mixed parent source may appear on both source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
 
@@ -1307,9 +1474,9 @@ def accepted_v2_production_repair_prompt(
     repair_hints: list[str] = []
     if any(error.startswith("future_maturity_evidence:") for error in validation_errors):
         repair_hints.append(
-            "For every future_maturity_evidence driver, set driver_maturity.as_of to the "
-            "actual date of its cited canonical evidence and never later than assessment_date; "
-            "do not invent or preserve a future date."
+            "For every future_maturity_evidence driver, select only exact same-row evidence "
+            "refs whose canonical concrete dates are not later than assessment_date. The "
+            "runtime derives driver_maturity.as_of; do not emit or infer it."
         )
     if "postconfirmation_hold_without_confirmed_maturity" in validation_errors:
         repair_hints.append(
@@ -1328,7 +1495,9 @@ def accepted_v2_production_repair_prompt(
             {
                 "ticker": ticker,
                 "validation_errors": list(validation_errors),
-                "rejected_candidate": rejected_candidate.model_dump(mode="json"),
+                "rejected_candidate": _stage2_model_facing_candidate_payload(
+                    rejected_candidate
+                ),
                 "instructions": (
                     "Repair only the listed contract violations. Preserve the analytical "
                     "decision unless the supplied canonical evidence requires otherwise. "
@@ -1366,7 +1535,9 @@ def accepted_v2_production_batch_schema_repair_prompt(
             {
                 "subjects": list(selected),
                 "validation_errors": list(validation_errors),
-                "rejected_output": dict(rejected_output),
+                "rejected_output": _stage2_model_facing_rejected_output(
+                    rejected_output
+                ),
                 "instructions": (
                     "Repair only the listed schema or cross-field contract violations. "
                     "Return the complete batch for exactly the supplied subjects. Preserve each "

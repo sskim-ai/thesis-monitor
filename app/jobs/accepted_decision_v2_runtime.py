@@ -40,6 +40,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
+    materialize_accepted_v2_stage2_output,
     validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_fundamental_core_batch_scope,
@@ -1037,7 +1038,11 @@ async def _generate_claim_owned(
             subject_count=len(subjects),
         )
         try:
-            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                raw_batch,
+                subjects=subjects,
+            )
         except ValidationError as exc:
             if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
                 raise
@@ -1074,8 +1079,10 @@ async def _generate_claim_owned(
                     state_namespace=claim_id,
                 )
             )
-            batch = AcceptedV2ProductionBatchOutput.model_validate(
-                _read_json(schema_repair_output)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(schema_repair_output),
+                subjects=subjects,
             )
             batch_schema_repair_count += 1
         if (
@@ -1156,7 +1163,11 @@ async def _generate_claim_owned(
                     state_namespace=claim_id,
                 )
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            repaired = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                subjects=(ticker,),
+            )
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id

@@ -18,7 +18,6 @@ from app.services.accepted_decision_v2_runtime_service import (
     REASONING_EFFORT,
     REASONING_MODEL,
     AcceptedV2FundamentalCoreBatch,
-    AcceptedV2ProductionBatchOutput,
     accepted_v2_fundamental_core_prompt,
     accepted_v2_fundamental_core_output_schema,
     accepted_v2_fundamental_core_ref_catalog_manifest,
@@ -27,6 +26,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_stage2_output_schema,
     accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
+    materialize_accepted_v2_stage2_output,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_fundamental_core_batch_scope,
@@ -358,8 +358,10 @@ def generate_onboarding_accepted_decision(
         timeout=timeout,
         state_namespace=claim_id,
     )
-    output = AcceptedV2ProductionBatchOutput.model_validate_json(
-        paths["output"].read_text(encoding="utf-8")
+    output = materialize_accepted_v2_stage2_output(
+        context,
+        json.loads(paths["output"].read_text(encoding="utf-8")),
+        subjects=(item.ticker,),
     )
     if (
         output.packet_id != packet.packet_id
@@ -398,8 +400,10 @@ def generate_onboarding_accepted_decision(
             timeout=timeout,
             state_namespace=claim_id,
         )
-        repaired = AcceptedV2ProductionBatchOutput.model_validate_json(
-            paths["repair_output"].read_text(encoding="utf-8")
+        repaired = materialize_accepted_v2_stage2_output(
+            context,
+            json.loads(paths["repair_output"].read_text(encoding="utf-8")),
+            subjects=(item.ticker,),
         )
         if (
             tuple(repaired.fundamental_cores) != (core,)
