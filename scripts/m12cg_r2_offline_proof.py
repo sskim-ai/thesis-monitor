@@ -1087,9 +1087,9 @@ def build_report(args: argparse.Namespace) -> None:
         else (repo / args.work_instruction).resolve()
     )
     python = (
-        args.python.resolve()
+        args.python
         if args.python.is_absolute()
-        else (repo / args.python).resolve()
+        else repo / args.python
     )
     if out.exists():
         shutil.rmtree(out)
