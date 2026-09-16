@@ -983,11 +983,23 @@ async def _generate_claim_owned(
         )
         _atomic_json(
             batch_schema,
-            accepted_v2_stage2_output_schema(context, subjects=subjects),
+            accepted_v2_stage2_output_schema(
+                context,
+                subjects=subjects,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+            ),
         )
         _atomic_json(
             batch_ref_catalog,
-            accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects),
+            accepted_v2_stage2_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+            ),
         )
         _atomic_text(
             batch_prompt,
@@ -1108,11 +1120,19 @@ async def _generate_claim_owned(
             )
             _atomic_json(
                 repair_schema,
-                accepted_v2_stage2_output_schema(context, subjects=(ticker,)),
+                accepted_v2_stage2_output_schema(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
             )
             _atomic_json(
                 repair_ref_catalog,
-                accepted_v2_stage2_ref_catalog_manifest(context, subjects=(ticker,)),
+                accepted_v2_stage2_ref_catalog_manifest(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
             )
             _atomic_text(
                 repair_prompt,

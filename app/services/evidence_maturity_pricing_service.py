@@ -64,6 +64,8 @@ class DriverEvidenceMaturity(FrozenModel):
     maturity: EvidenceMaturity
     supporting_evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
     contradicting_evidence_refs: tuple[str, ...] = Field(default=(), max_length=6)
+    supporting_claim_refs: tuple[str, ...] = Field(default=(), max_length=6)
+    contradicting_claim_refs: tuple[str, ...] = Field(default=(), max_length=6)
     what_remains_unproven: EvidenceClaim
     as_of: str = Field(min_length=10, max_length=10, pattern=ISO_DATE_PATTERN)
 
@@ -75,11 +77,11 @@ class DriverEvidenceMaturity(FrozenModel):
         return value
 
     @model_validator(mode="after")
-    def references_are_distinct(self) -> DriverEvidenceMaturity:
-        supporting = set(self.supporting_evidence_refs)
-        contradicting = set(self.contradicting_evidence_refs)
+    def atomic_claims_are_distinct(self) -> DriverEvidenceMaturity:
+        supporting = set(self.supporting_claim_refs)
+        contradicting = set(self.contradicting_claim_refs)
         if supporting & contradicting:
-            raise ValueError("maturity_reference_polarity_overlap")
+            raise ValueError("maturity_atomic_claim_polarity_overlap")
         return self
 
 

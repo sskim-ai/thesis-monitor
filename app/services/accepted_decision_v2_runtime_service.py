@@ -57,6 +57,13 @@ from app.services.evidence_maturity_pricing_service import (
     ISO_DATE_PATTERN,
     concrete_evidence_date,
 )
+from app.services.stage2_maturity_polarity_adapter_service import (
+    ATOMIC_IDENTITY_CONTRACT,
+    CONTRACT_VERSION as MATURITY_POLARITY_ADAPTER_CONTRACT,
+    MaturityAtomicClaim,
+    maturity_atomic_assignment_errors,
+    stage2_maturity_atomic_claim_catalog,
+)
 from app.services.three_axis_decision_service import HolderDecisionAxis
 
 
@@ -104,6 +111,45 @@ class AcceptedV2FundamentalCoreBatch(FrozenModel):
     cores: tuple[AcceptedV2FundamentalCoreCandidate, ...] = Field(
         min_length=1, max_length=20
     )
+
+
+def accepted_v2_maturity_atomic_claim_catalog(
+    core: AcceptedV2FundamentalCoreCandidate,
+) -> tuple[MaturityAtomicClaim, ...]:
+    return stage2_maturity_atomic_claim_catalog(
+        ticker=core.ticker,
+        buy_drivers=core.buy_drivers,
+        sell_drivers=core.sell_drivers,
+    )
+
+
+def accepted_v2_maturity_atomic_claim_catalog_manifest(
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate],
+) -> dict[str, object]:
+    tickers = tuple(core.ticker for core in fundamental_cores)
+    if not tickers or len(tickers) != len(set(tickers)):
+        raise ValueError("v2_maturity_atomic_claim_core_scope_invalid")
+    rows = tuple(
+        claim
+        for core in fundamental_cores
+        for claim in accepted_v2_maturity_atomic_claim_catalog(core)
+    )
+    payload = [
+        {
+            **row.model_dump(mode="json"),
+            "parent_source_refs": list(row.parent_source_refs),
+        }
+        for row in rows
+    ]
+    return {
+        "contract": MATURITY_POLARITY_ADAPTER_CONTRACT,
+        "atomic_identity_contract": ATOMIC_IDENTITY_CONTRACT,
+        "subjects": list(tickers),
+        "claim_catalog_hash": canonical_sha256(payload),
+        "claim_count": len(rows),
+        "allowed_claim_refs": [row.claim_ref for row in rows],
+        "claims": payload,
+    }
 
 
 def validate_accepted_v2_fundamental_core_batch_scope(
@@ -492,6 +538,10 @@ def validate_accepted_v2_fundamental_core(
         errors.append("fundamental_core_ticker_mismatch")
     if not directional_balance_matches_decision(core.directional_balance, core.decision):
         errors.append("fundamental_core_directional_balance_mismatch")
+    try:
+        accepted_v2_maturity_atomic_claim_catalog(core)
+    except ValueError as exc:
+        errors.append(f"fundamental_core_atomic_claim_identity_invalid:{exc}")
     core_refs = _claim_ref_set(
         (
             *core.buy_drivers,
@@ -574,8 +624,21 @@ def validate_accepted_v2_stage2_candidate(
         if ownership_errors
         else validate_preconfirmation_stage2_owned_semantics(packet, candidate)
     )
-    errors = tuple(dict.fromkeys((*ownership_errors, *semantic_validation.errors)))
+    maturity_errors = validate_accepted_v2_maturity_atomic_identity(candidate, core)
+    errors = tuple(
+        dict.fromkeys((*ownership_errors, *semantic_validation.errors, *maturity_errors))
+    )
     return semantic_validation.model_copy(update={"valid": not errors, "errors": errors})
+
+
+def validate_accepted_v2_maturity_atomic_identity(
+    candidate: PreconfirmationDecisionCandidate,
+    core: AcceptedV2FundamentalCoreCandidate,
+) -> tuple[str, ...]:
+    return maturity_atomic_assignment_errors(
+        candidate.driver_maturity,
+        catalog=accepted_v2_maturity_atomic_claim_catalog(core),
+    )
 
 
 def _compact_owned_evidence(
@@ -834,6 +897,7 @@ def accepted_v2_stage2_ref_catalog_manifest(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
 ) -> dict[str, object]:
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
@@ -898,16 +962,30 @@ def accepted_v2_stage2_ref_catalog_manifest(
     )
     ordered_source_condition_refs = tuple(sorted(source_condition_refs))
     ordered_leaf_refs = tuple(sorted(leaf_refs))
-    catalog_hash = canonical_sha256(
-        {
-            "contract": STAGE2_EXACT_REF_CONTRACT,
-            "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
-            "allowed_refs": ordered_refs,
-            "maturity_ref_dates": ordered_maturity_ref_dates,
-            "allowed_source_condition_refs": ordered_source_condition_refs,
-            "allowed_leaf_refs": ordered_leaf_refs,
-        }
-    )
+    atomic_manifest: dict[str, object] | None = None
+    if fundamental_cores is not None:
+        core_tickers = tuple(core.ticker for core in fundamental_cores)
+        if core_tickers != selected:
+            raise ValueError("v2_stage2_maturity_atomic_core_scope_mismatch")
+        atomic_manifest = accepted_v2_maturity_atomic_claim_catalog_manifest(
+            fundamental_cores
+        )
+    catalog_payload: dict[str, object] = {
+        "contract": STAGE2_EXACT_REF_CONTRACT,
+        "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
+        "allowed_refs": ordered_refs,
+        "maturity_ref_dates": ordered_maturity_ref_dates,
+        "allowed_source_condition_refs": ordered_source_condition_refs,
+        "allowed_leaf_refs": ordered_leaf_refs,
+    }
+    if atomic_manifest is not None:
+        catalog_payload["maturity_atomic_claim_catalog_hash"] = atomic_manifest[
+            "claim_catalog_hash"
+        ]
+        catalog_payload["allowed_maturity_claim_refs"] = atomic_manifest[
+            "allowed_claim_refs"
+        ]
+    catalog_hash = canonical_sha256(catalog_payload)
     return {
         "contract": STAGE2_EXACT_REF_CONTRACT,
         "shared_contract": EXACT_REF_FIDELITY_CONTRACT,
@@ -926,6 +1004,20 @@ def accepted_v2_stage2_ref_catalog_manifest(
         "allowed_source_condition_refs": list(ordered_source_condition_refs),
         "leaf_ref_count": len(ordered_leaf_refs),
         "allowed_leaf_refs": list(ordered_leaf_refs),
+        "maturity_polarity_adapter_contract": MATURITY_POLARITY_ADAPTER_CONTRACT,
+        "maturity_atomic_identity_contract": ATOMIC_IDENTITY_CONTRACT,
+        "maturity_atomic_claim_catalog_hash": (
+            atomic_manifest["claim_catalog_hash"] if atomic_manifest is not None else None
+        ),
+        "maturity_atomic_claim_count": (
+            atomic_manifest["claim_count"] if atomic_manifest is not None else 0
+        ),
+        "allowed_maturity_claim_refs": (
+            atomic_manifest["allowed_claim_refs"] if atomic_manifest is not None else []
+        ),
+        "maturity_atomic_claims": (
+            atomic_manifest["claims"] if atomic_manifest is not None else []
+        ),
     }
 
 
@@ -933,8 +1025,13 @@ def accepted_v2_stage2_output_schema(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
 ) -> dict[str, object]:
-    manifest = accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects)
+    manifest = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=subjects,
+        fundamental_cores=fundamental_cores,
+    )
     refs = manifest["allowed_refs"]
     source_condition_refs = manifest["allowed_source_condition_refs"]
     leaf_refs = manifest["allowed_leaf_refs"]
@@ -994,6 +1091,21 @@ def accepted_v2_stage2_output_schema(
             "enum": allowed_dates,
         }
     )
+    claim_refs = manifest["allowed_maturity_claim_refs"]
+    if fundamental_cores is not None and (not isinstance(claim_refs, list) or not claim_refs):
+        raise ValueError("v2_stage2_maturity_atomic_claim_catalog_empty")
+    if isinstance(claim_refs, list) and claim_refs:
+        try:
+            maturity_properties = definitions["DriverEvidenceMaturity"]["properties"]
+            supporting_claim_refs = maturity_properties["supporting_claim_refs"]
+            contradicting_claim_refs = maturity_properties["contradicting_claim_refs"]
+        except (KeyError, TypeError) as exc:
+            raise ValueError("v2_stage2_maturity_claim_schema_path_missing") from exc
+        for field in (supporting_claim_refs, contradicting_claim_refs):
+            items = field.get("items") if isinstance(field, dict) else None
+            if not isinstance(items, dict) or items.get("type") != "string":
+                raise ValueError("v2_stage2_maturity_claim_schema_invalid")
+            items["enum"] = list(claim_refs)
     return schema
 
 
@@ -1081,9 +1193,11 @@ def accepted_v2_production_prompt(
         "market": context.market,
         "assessment_date": context.assessment_date,
     }
+    selected_cores = tuple(cores[ticker] for ticker in selected)
     ref_catalog = accepted_v2_stage2_ref_catalog_manifest(
         context,
         subjects=selected,
+        fundamental_cores=selected_cores,
     )
     ref_catalog_identity = {
         "contract": ref_catalog["contract"],
@@ -1092,7 +1206,21 @@ def accepted_v2_production_prompt(
         "ref_catalog_count": ref_catalog["ref_catalog_count"],
         "maturity_date_catalog_hash": ref_catalog["maturity_date_catalog_hash"],
         "maturity_date_count": ref_catalog["maturity_date_count"],
+        "maturity_polarity_adapter_contract": ref_catalog[
+            "maturity_polarity_adapter_contract"
+        ],
+        "maturity_atomic_identity_contract": ref_catalog[
+            "maturity_atomic_identity_contract"
+        ],
+        "maturity_atomic_claim_catalog_hash": ref_catalog[
+            "maturity_atomic_claim_catalog_hash"
+        ],
+        "maturity_atomic_claim_count": ref_catalog["maturity_atomic_claim_count"],
     }
+    atomic_claims_by_ticker: dict[str, list[dict[str, object]]] = {}
+    for row in ref_catalog["maturity_atomic_claims"]:
+        if isinstance(row, dict):
+            atomic_claims_by_ticker.setdefault(str(row.get("ticker") or ""), []).append(row)
     payload = [
         {
             "frozen_fundamental_core": cores[ticker].model_dump(mode="json"),
@@ -1106,6 +1234,7 @@ def accepted_v2_production_prompt(
             "expectation_valuation_interaction": ownership[
                 ticker
             ].expectation_valuation.model_dump(mode="json"),
+            "maturity_atomic_claim_catalog": atomic_claims_by_ticker.get(ticker, []),
             "prior_accepted": (prior[ticker].model_dump(mode="json") if ticker in prior else None),
         }
         for ticker in selected
@@ -1124,6 +1253,8 @@ Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
 Every driver_maturity.as_of must be an exact YYYY-MM-DD date owned by at least one evidence ref cited in that same driver_maturity row. Use each evidence item's resolved_as_of_date when non-null. A symbolic source value such as latest has no concrete date ownership: it may be cited only when another cited ref in the same row owns the emitted date. Never write latest, current, today, a placeholder, padded text, or an invented date.
+
+For every driver_maturity row, supporting_claim_refs and contradicting_claim_refs must copy exact claim_ref values from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. These claim refs identify already-structured frozen-core propositions; never create, alter, infer, split, or repair one. The two atomic claim sets must be disjoint. supporting_evidence_refs and contradicting_evidence_refs must exactly equal the union of parent source evidence_refs owned by their respective atomic claims. One mixed parent source may appear on both source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
 
 Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
 
@@ -1342,8 +1473,11 @@ def validate_accepted_v2_production_output(
                 + ":"
                 + ",".join(ownership_errors)
             )
-        validation = validate_preconfirmation_stage2_owned_semantics(
-            packets[ticker], candidate
+        validation = validate_accepted_v2_stage2_candidate(
+            packets[ticker],
+            candidate,
+            cores[ticker],
+            ownership[ticker],
         )
         if not validation.valid:
             raise ValueError(

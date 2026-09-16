@@ -108,3 +108,20 @@ def test_driver_and_reasoning_fields_remain_free_narrative_text() -> None:
 
     assert row.driver.startswith("Cash conversion")
     assert "다음 정식 공시" in row.what_remains_unproven.text
+
+
+def test_driver_maturity_rejects_same_atomic_claim_on_both_sides() -> None:
+    claim_ref = "maturity-claim:" + "a" * 64
+
+    with pytest.raises(ValidationError, match="maturity_atomic_claim_polarity_overlap"):
+        DriverEvidenceMaturity(
+            driver="혼합 근거의 성숙도",
+            decisive=True,
+            maturity=EvidenceMaturity.MIXED,
+            supporting_evidence_refs=("ref:mixed",),
+            contradicting_evidence_refs=("ref:mixed",),
+            supporting_claim_refs=(claim_ref,),
+            contradicting_claim_refs=(claim_ref,),
+            what_remains_unproven=_claim("ref:unknown"),
+            as_of="2026-08-30",
+        )

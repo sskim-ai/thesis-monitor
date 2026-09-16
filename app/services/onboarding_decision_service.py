@@ -337,11 +337,14 @@ def generate_onboarding_accepted_decision(
         )
     _atomic_json(
         paths["schema"],
-        accepted_v2_stage2_output_schema(context),
+        accepted_v2_stage2_output_schema(context, fundamental_cores=(core,)),
     )
     _atomic_json(
         paths["ref_catalog"],
-        accepted_v2_stage2_ref_catalog_manifest(context),
+        accepted_v2_stage2_ref_catalog_manifest(
+            context,
+            fundamental_cores=(core,),
+        ),
     )
     _atomic_text(
         paths["prompt"],

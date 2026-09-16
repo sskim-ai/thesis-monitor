@@ -89,6 +89,9 @@ from app.services.three_axis_decision_service import (
     HolderDecisionAxis,
     NewBuyerDecisionAxis,
 )
+from app.services.stage2_maturity_polarity_adapter_service import (
+    maturity_atomic_claim_ref,
+)
 
 
 def _claim(ref: str, text: str = "검증된 근거가 이 해석을 지지합니다.") -> EvidenceClaim:
@@ -140,6 +143,8 @@ def _scenario(name: ScenarioName) -> ScenarioInterpretation:
 
 
 def _candidate() -> PreconfirmationDecisionCandidate:
+    buy_driver = _claim("ref:valuation", "보수적 평가가 매수 방향을 지지합니다.")
+    sell_driver = _claim("ref:risks", "실행 위험이 매도 방향의 반대 근거입니다.")
     candidate = PreconfirmationDecisionCandidate(
         ticker="TEST",
         fundamental_core_sha256="0" * 64,
@@ -153,8 +158,8 @@ def _candidate() -> PreconfirmationDecisionCandidate:
             reason=_claim("ref:thesis", "기존 사업 근거는 보유 유지와 양립합니다."),
         ),
         directional_balance=DirectionalBalance(buy=6, sell=4),
-        buy_drivers=(_claim("ref:valuation", "보수적 평가가 매수 방향을 지지합니다."),),
-        sell_drivers=(_claim("ref:risks", "실행 위험이 매도 방향의 반대 근거입니다."),),
+        buy_drivers=(buy_driver,),
+        sell_drivers=(sell_driver,),
         balance_summary="낮은 기대와 실행 위험을 함께 반영해 매수 우위가 있습니다.",
         reasoning_grade="VERY_HIGH",
         confidence="MEDIUM",
@@ -167,8 +172,14 @@ def _candidate() -> PreconfirmationDecisionCandidate:
                 driver="신규 제품 수익화",
                 decisive=True,
                 maturity=EvidenceMaturity.PARTIAL,
-                supporting_evidence_refs=("ref:thesis", "ref:earnings"),
+                supporting_evidence_refs=("ref:valuation",),
                 contradicting_evidence_refs=("ref:risks",),
+                supporting_claim_refs=(
+                    maturity_atomic_claim_ref(ticker="TEST", claim=buy_driver),
+                ),
+                contradicting_claim_refs=(
+                    maturity_atomic_claim_ref(ticker="TEST", claim=sell_driver),
+                ),
                 what_remains_unproven=_claim(
                     "ref:unknown", "반복 가능한 경제성은 아직 확인되지 않았습니다."
                 ),
@@ -430,7 +441,7 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
     )
     invalid = valid.model_dump(mode="json")
     maturity = invalid["candidates"][0]["driver_maturity"][0]
-    maturity["contradicting_evidence_refs"].append(maturity["supporting_evidence_refs"][0])
+    maturity["contradicting_claim_refs"].append(maturity["supporting_claim_refs"][0])
 
     def fake_invoke(**kwargs) -> None:
         output = kwargs["output"]
@@ -447,7 +458,7 @@ def test_preflight_repairs_batch_schema_before_candidate_validation(monkeypatch,
 
     assert [candidate.ticker for candidate in result.candidates] == ["TEST"]
     repair_prompt = (tmp_path / "batch-01.schema-repair.txt").read_text(encoding="utf-8")
-    assert "maturity_reference_polarity_overlap" in repair_prompt
+    assert "maturity_atomic_claim_polarity_overlap" in repair_prompt
 
 
 def test_preflight_rate_limit_resume_sends_only_exact_remaining_subset(
@@ -1040,10 +1051,19 @@ def test_stage2_trusts_exact_copied_core_prospective_roic_condition() -> None:
         "ref:risks",
         "AI 투자가 FCF와 ROIC의 구조적 악화로 이어지는지 확인해야 합니다.",
     )
-    candidate = _candidate().model_copy(
+    baseline = _candidate()
+    maturity = baseline.driver_maturity[0].model_copy(
+        update={
+            "contradicting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=prospective),
+            ),
+        }
+    )
+    candidate = baseline.model_copy(
         update={
             "sell_drivers": (prospective,),
             "holder_axis": HolderDecisionAxis(stance="HOLDABLE", reason=prospective),
+            "driver_maturity": (maturity,),
         }
     )
     candidate = _candidate_with_current_core_sha(candidate)

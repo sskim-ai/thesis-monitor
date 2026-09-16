@@ -22,6 +22,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     accepted_v2_fundamental_core_prompt,
     accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_fundamental_core_sha256,
+    accepted_v2_maturity_atomic_claim_catalog,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
@@ -31,6 +32,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_fundamental_core_batch_scope,
+    validate_accepted_v2_maturity_atomic_identity,
 )
 from app.services.codex_network_transport_service import (
     NETWORK_READINESS_CONTRACT,
@@ -51,6 +53,10 @@ from app.services.logical_condition_service import (
 )
 from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
+)
+from app.services.evidence_maturity_pricing_service import (
+    DriverEvidenceMaturity,
+    EvidenceMaturity,
 )
 from app.services.three_axis_decision_service import (
     HolderDecisionAxis,
@@ -112,7 +118,7 @@ def _packet() -> DecisionEvidencePacket:
 
 
 def _core(packet: DecisionEvidencePacket) -> AcceptedV2FundamentalCoreCandidate:
-    return AcceptedV2FundamentalCoreCandidate.model_construct(ticker=packet.ticker)
+    return _fundamental_core(packet.ticker, packet.evidence[0].ref_id)
 
 
 def _fundamental_packet(
@@ -300,20 +306,24 @@ def _stage2_schema_ref_enums(schema: dict[str, object]) -> dict[str, tuple[str, 
 
 
 def _fundamental_core(ticker: str, ref_id: str) -> AcceptedV2FundamentalCoreCandidate:
-    claim = EvidenceClaim(
-        text="검증된 사업 근거가 중립 판단을 지지합니다.",
+    buy_claim = EvidenceClaim(
+        text="검증된 사업 진전이 상방 선택지를 지지합니다.",
+        evidence_refs=(ref_id,),
+    )
+    sell_claim = EvidenceClaim(
+        text="같은 자료의 재무 위험이 하방 경계를 지지합니다.",
         evidence_refs=(ref_id,),
     )
     return AcceptedV2FundamentalCoreCandidate(
         ticker=ticker,
         decision="HOLD",
         directional_balance=DirectionalBalance(buy=5, sell=5),
-        buy_drivers=(claim,),
-        sell_drivers=(claim,),
+        buy_drivers=(buy_claim,),
+        sell_drivers=(sell_claim,),
         balance_summary="검증된 근거를 균형 있게 반영했습니다.",
         confidence="MEDIUM",
-        decisive_reason=claim,
-        holder_axis=HolderDecisionAxis(stance="HOLDABLE", reason=claim),
+        decisive_reason=buy_claim,
+        holder_axis=HolderDecisionAxis(stance="HOLDABLE", reason=buy_claim),
     )
 
 
@@ -600,6 +610,8 @@ def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
                     "evidence_refs",
                     "supporting_evidence_refs",
                     "contradicting_evidence_refs",
+                    "supporting_claim_refs",
+                    "contradicting_claim_refs",
                     "source_condition_ref",
                     "leaf_ref",
                 }:
@@ -614,7 +626,9 @@ def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
         "$.$defs.ClaimLogicalCondition.properties.source_condition_ref",
         "$.$defs.ClaimLogicalLeaf.properties.leaf_ref",
         "$.$defs.DriverEvidenceMaturity.properties.contradicting_evidence_refs",
+        "$.$defs.DriverEvidenceMaturity.properties.contradicting_claim_refs",
         "$.$defs.DriverEvidenceMaturity.properties.supporting_evidence_refs",
+        "$.$defs.DriverEvidenceMaturity.properties.supporting_claim_refs",
         "$.$defs.EvidenceClaim.properties.evidence_refs",
     }
     expected_refs = tuple(manifest["allowed_refs"])
@@ -630,10 +644,105 @@ def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
     corz_manifest = accepted_v2_stage2_ref_catalog_manifest(
         context,
         subjects=("CORZ",),
+        fundamental_cores=(core,),
     )
     assert f'"ref_catalog_hash":"{corz_manifest["ref_catalog_hash"]}"' in prompt
     assert "Evidence refs are exact opaque identifiers." in prompt
     assert "Never edit, append, shorten, infer, synthesize, guess, or repair" in prompt
+
+
+def test_stage2_atomic_claim_schema_and_prompt_are_bound_to_frozen_cores() -> None:
+    context = _stage2_exact_ref_context()
+    subjects = ("CORZ", "IBM")
+    cores = (
+        _fundamental_core("CORZ", "decision-evidence:36090e913951b40587f1"),
+        _fundamental_core("IBM", "decision-evidence:ibm-stage2-owned"),
+    )
+    schema = accepted_v2_stage2_output_schema(
+        context,
+        subjects=subjects,
+        fundamental_cores=cores,
+    )
+    manifest = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=subjects,
+        fundamental_cores=cores,
+    )
+    maturity = schema["$defs"]["DriverEvidenceMaturity"]["properties"]
+    expected = manifest["allowed_maturity_claim_refs"]
+
+    assert expected
+    assert maturity["supporting_claim_refs"]["items"]["enum"] == expected
+    assert maturity["contradicting_claim_refs"]["items"]["enum"] == expected
+    prompt = accepted_v2_production_prompt(
+        context,
+        fundamental_cores=(cores[0],),
+        subjects=("CORZ",),
+    )
+    corz_manifest = accepted_v2_stage2_ref_catalog_manifest(
+        context,
+        subjects=("CORZ",),
+        fundamental_cores=(cores[0],),
+    )
+    assert corz_manifest["maturity_atomic_claim_count"] == 2
+    assert all(
+        row["parent_source_refs"] == ["decision-evidence:36090e913951b40587f1"]
+        for row in corz_manifest["maturity_atomic_claims"]
+    )
+    assert (
+        f'"maturity_atomic_claim_catalog_hash":"'
+        f'{corz_manifest["maturity_atomic_claim_catalog_hash"]}"'
+    ) in prompt
+    assert "Absolute BULLISH/BEARISH polarity is metadata" in prompt
+
+
+def test_fundamental_core_rejects_one_claim_with_conflicting_absolute_polarity() -> None:
+    context = _stage2_exact_ref_context()
+    ownership = {row.ticker: row for row in context.evidence_ownership}["CORZ"]
+    ref_id = "decision-evidence:36090e913951b40587f1"
+    claim = EvidenceClaim(text="동일 구조화 주장입니다.", evidence_refs=(ref_id,))
+    core = AcceptedV2FundamentalCoreCandidate(
+        ticker="CORZ",
+        decision="HOLD",
+        directional_balance=DirectionalBalance(buy=5, sell=5),
+        buy_drivers=(claim,),
+        sell_drivers=(claim,),
+        balance_summary="동일 주장을 양쪽에 중복하지 않습니다.",
+        confidence="MEDIUM",
+        decisive_reason=claim,
+        holder_axis=HolderDecisionAxis(stance="HOLDABLE", reason=claim),
+    )
+
+    errors = validate_accepted_v2_fundamental_core(core, ownership)
+
+    assert any(
+        error.startswith("fundamental_core_atomic_claim_identity_invalid:")
+        for error in errors
+    )
+
+
+def test_old_corz_source_overlap_without_atomic_claims_fails_closed() -> None:
+    parent = "decision-evidence:acea5134d19f8ded2449"
+    core = _fundamental_core("CORZ", parent)
+    row = DriverEvidenceMaturity(
+        driver="높은 기대에 비해 실행과 현금흐름 검증이 덜 성숙하다.",
+        decisive=True,
+        maturity=EvidenceMaturity.MIXED,
+        supporting_evidence_refs=("decision-evidence:expectations", parent),
+        contradicting_evidence_refs=(parent,),
+        what_remains_unproven=EvidenceClaim(
+            text="현금흐름 전환은 아직 확인되지 않았습니다.",
+            evidence_refs=("decision-evidence:expectations",),
+        ),
+        as_of="2026-09-15",
+    )
+    candidate = SimpleNamespace(driver_maturity=(row,))
+
+    errors = validate_accepted_v2_maturity_atomic_identity(candidate, core)  # type: ignore[arg-type]
+
+    assert "maturity_atomic_claim_identity_missing:0:supporting" in errors
+    assert any(error.startswith("maturity_unproven_parent_source_overlap") for error in errors)
+    assert len(accepted_v2_maturity_atomic_claim_catalog(core)) == 2
 
 
 def test_stage2_typed_identity_and_maturity_date_schema_are_closed() -> None:
@@ -842,12 +951,13 @@ def test_bounded_batch_schema_repair_keeps_scope_and_strict_errors() -> None:
         subjects=(packet.ticker,),
         rejected_output={"candidates": [{"ticker": packet.ticker}]},
         validation_errors=(
-            "candidates.0.driver_maturity.2:value_error:maturity_reference_polarity_overlap",
+            "candidates.0.driver_maturity.2:value_error:"
+            "maturity_atomic_claim_polarity_overlap",
         ),
     )
 
     assert "BOUNDED_BATCH_SCHEMA_REPAIR" in prompt
-    assert "maturity_reference_polarity_overlap" in prompt
+    assert "maturity_atomic_claim_polarity_overlap" in prompt
     assert '"subjects":["TEST"]' in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
 

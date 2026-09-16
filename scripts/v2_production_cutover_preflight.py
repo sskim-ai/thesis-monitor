@@ -186,11 +186,19 @@ def _codex_batch(
         selected_cores = tuple(cores_by_ticker[ticker] for ticker in subjects)
         _write_json(
             schema,
-            accepted_v2_stage2_output_schema(context, subjects=subjects),
+            accepted_v2_stage2_output_schema(
+                context,
+                subjects=subjects,
+                fundamental_cores=selected_cores,
+            ),
         )
         _write_json(
             ref_catalog,
-            accepted_v2_stage2_ref_catalog_manifest(context, subjects=subjects),
+            accepted_v2_stage2_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+                fundamental_cores=selected_cores,
+            ),
         )
         _write_text(
             prompt,
@@ -274,11 +282,19 @@ def _codex_batch(
             )
             _write_json(
                 repair_schema,
-                accepted_v2_stage2_output_schema(context, subjects=(ticker,)),
+                accepted_v2_stage2_output_schema(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
             )
             _write_json(
                 repair_ref_catalog,
-                accepted_v2_stage2_ref_catalog_manifest(context, subjects=(ticker,)),
+                accepted_v2_stage2_ref_catalog_manifest(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
             )
             _write_text(
                 repair_prompt,
