@@ -2616,3 +2616,36 @@ FRED DGS3/5/10/30, DFII10, and T10YIE remain PASS. Top-level state is
 production send/state write, scheduler mutation, or automation resume occurred. The next bounded
 scope is generic preconfirmation BUY-flag contract convergence followed by a wholly new Full22
 generation; Kiwoom read-only configuration remains a separate final-smoke prerequisite.
+
+### 40.44 M12CA Pre-Confirmation BUY Contract Convergence
+
+Exact work instructions were committed first as `b586303`; deterministic implementation is
+`663d69eade2ba601c0248635d5656dec242563dc` on local branch
+`codex/20260916-m12ca-preconfirmation-buy-contract-convergence`. Historical contract
+`preconfirmation-asymmetry-decision-engine-v2` was already canonical, but the current Stage-2
+prompt did not state its invariant. The prompt now requires analytical BUY with a decisive
+EARLY/PARTIAL driver to set `pre_confirmation_buy=true`, retain FAVORABLE asymmetry and safe factual
+state, and provide all six explanation claims. The flag remains independent from new-buyer stance,
+holder stance, timing, and price confirmation. Schema and hard semantic policy remain unchanged.
+
+Focused/wider/full validation is `115/208/4050 PASS`, with four wider skips, 63 full-suite skips,
+and two existing dependency warnings; Ruff and diff check pass. The old M12BZ GOOGL output still
+fails closed. In new generation `20260916-uskr22-m12ca-20260916T021457Z-663d69eade2b`, all US14
+Fundamental Core subjects passed. GOOGL then passed Stage-2 as overall BUY, PARTIAL,
+`pre_confirmation_buy=true`, new-buyer WAIT, holder HOLDABLE, and timing UNFAVORABLE. This closes
+the intended pre-confirmation contract without forcing a decision or entry stance.
+
+The generation stopped at call 9 on a new independent scope defect. SNDK, TSLA, and TSM had zero
+Stage2-owned exact numeric claims and zero core-identity or maturity errors, but general prose
+validation rechecked four frozen Fundamental Core numeric sentences and emitted
+`freeform_exact_numeric_claim`. Classification is
+`FROZEN_CORE_EXACT_NUMERIC_SCOPE_FALSE_POSITIVE`. Planned/started/completed/usable calls are
+`16/9/9/9`; retry, fallback, judge, repair, selective rerun, and hotfix are all zero. Do not resume
+or stitch this generation.
+
+Market regressions remain local-ready: Kiwoom fixtures and Treasury parsing/rendering pass, while
+the authenticated Kiwoom gateway remains unconfigured. Top-level state is
+`PRECONFIRMATION_CONVERGENCE_PROVEN_FULL22_BLOCKED_BY_NEW_VALIDATOR_SCOPE_FAILURE`. No main merge,
+deploy, remote push, production send/state write, scheduler mutation, or automation resume
+occurred. The next bounded scope is
+`BOUNDED_STAGE2_FROZEN_CORE_NUMERIC_VALIDATION_SCOPE_REPAIR_AND_NEW_FULL22_REPROOF`.

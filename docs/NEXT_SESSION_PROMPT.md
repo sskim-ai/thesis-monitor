@@ -1,26 +1,29 @@
 # Next Session Prompt
 
-Latest authoritative local-only work is M12BZ. Read
-`docs/reports/20260916-m12bz-maturity-polarity-convergence-result.md`,
-`docs/reports/20260916-m12bz-readiness.json`, and the iCloud report bundle first. Work instructions
-are `d8d2351`; frozen implementation is `60a267c475f89fd39c051266b0e458c468a20184`.
+Latest authoritative local-only work is M12CA. Read
+`docs/reports/20260916-m12ca-preconfirmation-buy-contract-convergence-result.md`,
+`docs/reports/20260916-m12ca-readiness.json`, and the iCloud report bundle first. Work instructions
+are `b586303`; frozen implementation is `663d69eade2ba601c0248635d5656dec242563dc`.
 
-The maturity-polarity path now reuses `decision-evidence-polarity-v1` through the thin
-`stage2-maturity-polarity-adapter-v1`. Driver maturity cites deterministic
-`maturity-atomic-claim-identity-v1` children. Same-claim overlap remains forbidden, while a mixed
-parent source is allowed only with distinct canonical child claims. CORZ's old failure is closed;
-IBM supplies a valid mixed-parent proof. No free-form classifier or ticker exception was added.
+The historical `preconfirmation-asymmetry-decision-engine-v2` contract is canonical. Stage-2 now
+states its exact lifecycle invariant without changing schema or weakening the validator. GOOGL is a
+passing proof of overall BUY + PARTIAL + `pre_confirmation_buy=true` + new-buyer WAIT + holder
+HOLDABLE + timing UNFAVORABLE. Price confirmation remains `not_reached`; the flag is not an entry
+instruction. The old flag-missing GOOGL output still fails unchanged.
 
 Do not continue or stitch generation
-`20260916-uskr22-m12bz-20260916T003454Z-60a267c475f8`. It stopped at ordinal 7 after GOOGL alone
-failed `preconfirmation_buy_flag_missing`. Core is `14/14`, Stage-2 schema/semantic is `6/5`, and
-atomic identity, same-claim overlap, unproven parent overlap, exact refs, and dates have zero errors.
-Retry/fallback/judge/repair/selective rerun are all zero.
+`20260916-uskr22-m12ca-20260916T021457Z-663d69eade2b`. It stopped at call 9 on a new validator-scope
+failure. SNDK, TSLA, and TSM have zero Stage2-owned exact numeric claims, ownership errors, or
+maturity errors, but exact-number validation traversed their fingerprint-locked Fundamental Core
+and returned `freeform_exact_numeric_claim`. Calls are `16/9/9/9`; retry, fallback, judge, repair,
+selective rerun, and hotfix are all zero.
 
 Next bounded task:
-`BOUNDED_PRECONFIRMATION_BUY_FLAG_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`. Audit the generic flag
-contract, preserve all M12BZ polarity and M12BY batch closure, and run a wholly new US14/KR8 proof
-from call 1. Do not target GOOGL text or infer from the failed candidate.
+`BOUNDED_STAGE2_FROZEN_CORE_NUMERIC_VALIDATION_SCOPE_REPAIR_AND_NEW_FULL22_REPROOF`. Scope only the
+general prose checks that are Stage2-owned after immutable Core identity passes. Do not exempt a
+ticker, permit arbitrary exact numbers, or weaken standalone candidate validation. Preserve all
+M12BY/M12BZ/M12CA contracts, add contrastive ownership tests, freeze code before a wholly new
+US14/KR8 generation, and stop on the first new hard failure without repair.
 
 Kiwoom and Treasury remain local-ready, but `KIWOOM_GATEWAY_URL` and
 `KIWOOM_GATEWAY_API_KEY` are not configured. Keep live trading calls, production DB/warnings/

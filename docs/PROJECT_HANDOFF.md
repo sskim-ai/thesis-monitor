@@ -2659,3 +2659,32 @@ call 1. Do not hotfix from the failed output, stitch partial batches, or selecti
 Market context is local-ready: Kiwoom fixture and Treasury curve regressions pass. The authenticated
 Kiwoom gateway remains unconfigured, so live read/order/modify/cancel calls are zero. No production
 DB, warning, notification, Telegram, scheduler, main, deploy, or remote-push mutation occurred.
+
+## 2026-09-16 M12CA Pre-Confirmation BUY Convergence Handoff
+
+Start with `docs/reports/20260916-m12ca-preconfirmation-buy-contract-convergence-result.md` and
+`docs/reports/20260916-m12ca-readiness.json`. Exact instructions are `b586303`; deterministic
+implementation is `663d69eade2ba601c0248635d5656dec242563dc`. This branch remains local-only.
+
+The historical `preconfirmation-asymmetry-decision-engine-v2` contract was reused rather than
+replaced. Its hard invariant is unchanged: analytical BUY with a decisive EARLY/PARTIAL driver
+requires the flag and six-part explanation when asymmetry is FAVORABLE and factual safety is not
+BLOCKED. Confirmed BUY and all HOLD/SELL candidates use a false flag. New-buyer, holder, timing,
+and price confirmation remain independent axes.
+
+GOOGL is the direct convergence proof: BUY, PARTIAL, flag true, explanation present, new-buyer WAIT,
+holder HOLDABLE, timing UNFAVORABLE, and price confirmation `not_reached`; semantic validation
+passes. Do not reinterpret this as an entry instruction or force the same enum for another ticker.
+
+Do not continue generation `20260916-uskr22-m12ca-20260916T021457Z-663d69eade2b`. It stopped at
+call 9 after SNDK, TSLA, and TSM were falsely rejected because Stage-2 semantic validation traversed
+numeric prose in their immutable Fundamental Core. Their Stage2-owned numeric-claim count,
+ownership errors, and maturity errors are all zero. Calls are `16/9/9/9`, with retry, fallback,
+judge, repair, selective rerun, and hotfix all zero.
+
+Next scope is
+`BOUNDED_STAGE2_FROZEN_CORE_NUMERIC_VALIDATION_SCOPE_REPAIR_AND_NEW_FULL22_REPROOF`. Narrow only
+claim-language checks that are explicitly Stage2-owned after frozen-core identity passes; preserve
+hard core validation and prove old invalid standalone candidates still fail. Then use a wholly new
+US14/KR8 generation from call 1. Keep production DB, warnings, notifications, Telegram, schedules,
+main, deployment, remote push, and Production Assist untouched.
