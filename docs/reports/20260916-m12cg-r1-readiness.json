@@ -5,7 +5,7 @@
   "frozen_runtime_implementation_sha": "b7e541b6a3c54567018f937f32d6f92be09a7e4e",
   "work_instruction_commit": "28d640856f0bd3c6d1655d260f6f043562325eaf",
   "work_instruction_content_sha256": "fe8145dc0a0fef99c1b77adf4fcceb007a7ecfa1f56c48e31a202dbdde073a50",
-  "audit_implementation_sha": "585fd97a0f7aa5184b9bf74d42d161d3c9cab672",
+  "audit_implementation_sha": "5619d73c9b81da12644c186e45fcee346e1deb2c",
   "runtime_source_change_count": 0,
   "sources_verified": 6,
   "historical_rows_bound": 62,

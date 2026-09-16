@@ -85,5 +85,5 @@ the real delivery path was intentionally not executed.
 - `deployment_readiness=NO`
 
 Work-instruction commit: `28d640856f0bd3c6d1655d260f6f043562325eaf`.
-Audit implementation commit: `585fd97a0f7aa5184b9bf74d42d161d3c9cab672`.
+Audit implementation commit: `5619d73c9b81da12644c186e45fcee346e1deb2c`.
 The final local SHA is captured after this documentation commit in the immutable report bundle.
