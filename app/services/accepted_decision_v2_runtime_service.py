@@ -41,6 +41,7 @@ from app.services.directional_balance_variance_service import (
 )
 from app.services.decision_canary_service import canonical_sha256, strict_json_schema
 from app.services.preconfirmation_decision_v2_service import (
+    PRECONFIRMATION_BUY_STAGE2_PROMPT_RULE,
     STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT,
     PreconfirmationDecisionCandidate,
     PreconfirmationValidationResult,
@@ -1245,6 +1246,10 @@ def accepted_v2_production_prompt(
 Copy every frozen core field exactly into the complete candidate: ticker, decision, directional_balance, buy_drivers, sell_drivers, balance_summary, confidence, decisive_reason, and holder_axis. Copy fundamental_core_sha256 exactly. Price/timing evidence must never mutate these fields. Use price/timing, valuation, expectations, confirmation need, and uncertainty only to form timing and the independent new_buyer_axis. Overall BUY can coexist with new-buyer WAIT, overall SELL can coexist with holder HOLDABLE, and overall HOLD does not force WAIT. Do not mechanically map any axis from another.
 
 Holder REVIEW means 보유 근거 재검토, not an automatic sell. Holder REDUCE must remain fundamental and may not cite price, technical, flow, confirmation-price, or futures evidence. A configured price confirmation is an entry/price check, never a fundamental business confirmation. Futures, when present in a timing-only context, cannot create Business Delta, holder risk, or a fundamental direction change.
+
+"""
+        + PRECONFIRMATION_BUY_STAGE2_PROMPT_RULE
+        + """
 
 Set post_confirmation_hold=true only when decision=HOLD and overall_maturity.maturity=CONFIRMED. If overall_maturity.maturity is not CONFIRMED, set post_confirmation_hold=false and postconfirmation_hold_explanation=null. A HOLD decision alone does not imply post_confirmation_hold=true; do not change the decision or maturity merely to satisfy this flag.
 

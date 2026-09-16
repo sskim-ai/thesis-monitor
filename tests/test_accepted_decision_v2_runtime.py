@@ -696,6 +696,26 @@ def test_stage2_atomic_claim_schema_and_prompt_are_bound_to_frozen_cores() -> No
     assert "Absolute BULLISH/BEARISH polarity is metadata" in prompt
 
 
+def test_stage2_prompt_states_canonical_preconfirmation_buy_invariant() -> None:
+    context = _stage2_exact_ref_context()
+    core = _fundamental_core("CORZ", "decision-evidence:36090e913951b40587f1")
+
+    prompt = accepted_v2_production_prompt(
+        context,
+        fundamental_cores=(core,),
+        subjects=("CORZ",),
+    )
+
+    assert "at least one decisive driver whose maturity is EARLY or PARTIAL" in prompt
+    assert "set pre_confirmation_buy=true" in prompt
+    assert "provide all six preconfirmation_buy_explanation claims" in prompt
+    assert "pre_confirmation_buy=true may coexist with new_buyer_axis=WAIT" in prompt
+    assert "holder_axis=HOLDABLE" in prompt
+    assert "timing=UNFAVORABLE" in prompt
+    assert "price confirmation is an entry/price check" in prompt
+    assert "must never set or clear pre_confirmation_buy" in prompt
+
+
 def test_fundamental_core_rejects_one_claim_with_conflicting_absolute_polarity() -> None:
     context = _stage2_exact_ref_context()
     ownership = {row.ticker: row for row in context.evidence_ownership}["CORZ"]

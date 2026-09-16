@@ -31,6 +31,7 @@ from app.services.preconfirmation_decision_v2_service import (
     PreconfirmationDecisionCandidate,
     preconfirmation_stage2_field_ownership_inventory,
     preconfirmation_message_quality,
+    requires_preconfirmation_buy,
     render_preconfirmation_shadow,
     validate_preconfirmation_candidate,
     validate_preconfirmation_stage2_owned_semantics,
@@ -569,6 +570,91 @@ def test_partial_maturity_can_be_medium_confidence_preconfirmation_buy() -> None
     quality = preconfirmation_message_quality((rendered,))
     assert quality["status"] == "PASS"
     assert "완전 확인 전 판단" in rendered.text
+
+
+def test_partial_buy_requires_preconfirmation_flag_and_explanation() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "pre_confirmation_buy": False,
+            "preconfirmation_buy_explanation": None,
+        }
+    )
+
+    validation = validate_preconfirmation_candidate(_packet(), candidate)
+
+    assert requires_preconfirmation_buy(candidate) is True
+    assert validation.valid is False
+    assert validation.errors == ("preconfirmation_buy_flag_missing",)
+
+
+def test_confirmed_buy_does_not_require_preconfirmation_flag() -> None:
+    baseline = _candidate()
+    candidate = baseline.model_copy(
+        update={
+            "driver_maturity": (
+                baseline.driver_maturity[0].model_copy(
+                    update={"maturity": EvidenceMaturity.CONFIRMED}
+                ),
+            ),
+            "overall_maturity": OverallMaturityAssessment(
+                maturity=EvidenceMaturity.CONFIRMED,
+                basis=_claim("ref:thesis", "핵심 사업 증거는 충분히 확인됐습니다."),
+            ),
+            "pre_confirmation_buy": False,
+            "preconfirmation_buy_explanation": None,
+        }
+    )
+
+    assert requires_preconfirmation_buy(candidate) is False
+    assert validate_preconfirmation_candidate(_packet(), candidate).valid is True
+
+
+def test_preconfirmation_buy_is_independent_from_wait_and_unfavorable_timing() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "new_buyer_axis": NewBuyerDecisionAxis(
+                stance="WAIT",
+                reason=_claim(
+                    "ref:price", "진입 가격 확인 전까지 신규 관찰자는 기다립니다."
+                ),
+            ),
+            "timing": "UNFAVORABLE",
+            "timing_basis": _claim(
+                "ref:price", "단기 가격 구조는 신규 진입에 불리합니다."
+            ),
+        }
+    )
+
+    validation = validate_preconfirmation_candidate(_packet(), candidate)
+
+    assert validation.valid is True
+    assert candidate.decision == "BUY"
+    assert candidate.pre_confirmation_buy is True
+    assert candidate.new_buyer_axis.stance == "WAIT"
+    assert candidate.holder_axis.stance == "HOLDABLE"
+    assert candidate.timing == "UNFAVORABLE"
+
+
+def test_non_buy_cannot_set_preconfirmation_buy() -> None:
+    candidate = _candidate().model_copy(
+        update={
+            "decision": "HOLD",
+            "directional_balance": DirectionalBalance(buy=5, sell=5),
+        }
+    )
+
+    validation = validate_preconfirmation_candidate(_packet(), candidate)
+
+    assert requires_preconfirmation_buy(candidate) is False
+    assert "preconfirmation_buy_without_buy_decision" in validation.errors
+
+
+def test_preconfirmation_explanation_shape_remains_hard_required() -> None:
+    payload = _candidate().model_dump(mode="json")
+    payload["preconfirmation_buy_explanation"] = None
+
+    with pytest.raises(ValidationError, match="preconfirmation_explanation_flag_mismatch"):
+        PreconfirmationDecisionCandidate.model_validate(payload)
 
 
 def test_confirmed_business_can_be_postconfirmation_hold() -> None:

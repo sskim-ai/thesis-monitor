@@ -55,6 +55,18 @@ OUTPUT_CONTRACT = "preconfirmation-asymmetry-decision-output-v2"
 VALIDATOR_CONTRACT = "preconfirmation-asymmetry-validator-v2"
 RENDERER_CONTRACT = "preconfirmation-asymmetry-shadow-renderer-v2"
 
+PRECONFIRMATION_BUY_STAGE2_PROMPT_RULE = """\
+pre_confirmation_buy is an analytical BUY lifecycle flag, not a new-buyer entry stance. For every
+candidate with decision=BUY and at least one decisive driver whose maturity is EARLY or PARTIAL,
+set pre_confirmation_buy=true and provide all six preconfirmation_buy_explanation claims. Such a
+candidate is valid only when asymmetry is FAVORABLE and factual_safety_state is not BLOCKED; if
+the evidence does not support those conditions, do not force or rewrite the decision, maturity, or
+asymmetry merely to satisfy the flag. For HOLD or SELL, and for BUY with no decisive EARLY or
+PARTIAL driver, set pre_confirmation_buy=false and preconfirmation_buy_explanation=null.
+pre_confirmation_buy=true may coexist with new_buyer_axis=WAIT, holder_axis=HOLDABLE, and
+timing=UNFAVORABLE. Never derive any of those three fields mechanically from another. A configured
+price confirmation is an entry/price check and must never set or clear pre_confirmation_buy."""
+
 
 class FactualSafetyState(StrEnum):
     PASS = "PASS"
@@ -139,6 +151,14 @@ class PreconfirmationValidationResult(FrozenModel):
     automatically_bound_numeric_count: int = 0
     manual_numeric_count: int = 0
     unresolved_numeric_count: int = 0
+
+
+def requires_preconfirmation_buy(candidate: PreconfirmationDecisionCandidate) -> bool:
+    """Return the canonical lifecycle-flag requirement without changing any decision axis."""
+    decisive = decisive_maturities(candidate.driver_maturity)
+    return candidate.decision == "BUY" and bool(
+        decisive & {EvidenceMaturity.EARLY, EvidenceMaturity.PARTIAL}
+    )
 
 
 STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT = "stage2-frozen-core-ownership-v1"
@@ -477,6 +497,7 @@ def _validate_preconfirmation_candidate(
 
     decisive = decisive_maturities(candidate.driver_maturity)
     early_or_partial = bool(decisive & {EvidenceMaturity.EARLY, EvidenceMaturity.PARTIAL})
+    preconfirmation_required = requires_preconfirmation_buy(candidate)
     if candidate.pre_confirmation_buy:
         if candidate.decision != "BUY":
             errors.append("preconfirmation_buy_without_buy_decision")
@@ -486,7 +507,7 @@ def _validate_preconfirmation_candidate(
             errors.append("preconfirmation_buy_without_favorable_asymmetry")
         if candidate.factual_safety_state == FactualSafetyState.BLOCKED:
             errors.append("preconfirmation_logic_bypasses_data_safety")
-    elif candidate.decision == "BUY" and early_or_partial:
+    elif preconfirmation_required:
         errors.append("preconfirmation_buy_flag_missing")
 
     if candidate.post_confirmation_hold:
