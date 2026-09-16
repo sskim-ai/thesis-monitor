@@ -15,6 +15,7 @@ artifact cannot grant that allowance from its own serialized Core fields.
 - Work-instruction commit: `920ae64b424c56dc73a7c1090c251bc66695e933`
 - Binding implementation: `0946d663`
 - Successor-owner accounting: `6c7ca2fb`
+- Independent replay and native-consumer proof: `73024f52`
 - Frozen-base reader test without an independent Core argument: 1/1 PASS
 
 The frozen-base PASS confirms the missing reader binding: a self-contained numeric artifact
