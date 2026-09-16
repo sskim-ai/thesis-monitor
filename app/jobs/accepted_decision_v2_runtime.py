@@ -686,7 +686,12 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     )
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
     packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
-    load_accepted_v2_production_artifact(paths["final"], packet=packet, claim_id=claim_id)
+    load_accepted_v2_production_artifact(
+        paths["final"],
+        packet=packet,
+        claim_id=claim_id,
+        trusted_fundamental_core_batch=trusted_core_batch,
+    )
     receipt = {
         "contract": RECEIPT_CONTRACT,
         "status": artifact.status,

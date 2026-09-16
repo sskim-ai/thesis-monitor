@@ -11,6 +11,7 @@ import pytest
 from pydantic import ValidationError
 
 from scripts import v2_production_cutover_preflight as preflight
+from app.jobs import accepted_decision_v2_runtime as accepted_v2_runtime_job
 
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
@@ -2364,9 +2365,418 @@ def test_numeric_frozen_core_artifact_round_trip(
         path,
         packet=runtime_packet,
         claim_id=context.claim_id,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
     )
 
     assert loaded == artifact
+
+
+def test_numeric_frozen_core_artifact_requires_independent_core(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-independent-core-required",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+    )
+    path = tmp_path / "accepted-v2.json"
+    path.write_text(
+        json.dumps(artifact.model_dump(mode="json"), ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="accepted_decision_invalid:adjudication_introduced_unregistered_numeric",
+    ):
+        load_accepted_v2_production_artifact(
+            path,
+            packet=runtime_packet,
+            claim_id=context.claim_id,
+        )
+
+
+def test_artifact_reader_rejects_joint_numeric_mutation_against_independent_core(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-artifact-joint-mutation",
+        evidence_packets=(packet,),
+    )
+    original_candidate = _candidate_with_frozen_core_numeric_claims()
+    original_core = _core(original_candidate)
+    mutated_buy = original_candidate.buy_drivers[0].model_copy(
+        update={"text": "검증된 평가 12.4173배가 매수 방향을 지지합니다."}
+    )
+    mutated_maturity = original_candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=mutated_buy),
+            )
+        }
+    )
+    mutated_candidate = _candidate_with_current_core_sha(
+        original_candidate.model_copy(
+            update={
+                "buy_drivers": (mutated_buy,),
+                "driver_maturity": (mutated_maturity,),
+            }
+        )
+    )
+    mutated_core = _core(mutated_candidate)
+    mutated_output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(mutated_core,),
+        candidates=(mutated_candidate,),
+    )
+    self_consistent_artifact = validate_accepted_v2_production_output(
+        context,
+        mutated_output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, mutated_core),
+    )
+    path = tmp_path / "jointly-mutated-accepted-v2.json"
+    path.write_text(
+        json.dumps(self_consistent_artifact.model_dump(mode="json"), ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_artifact_trusted_fundamental_core_mismatch:TEST",
+    ):
+        load_accepted_v2_production_artifact(
+            path,
+            packet=runtime_packet,
+            claim_id=context.claim_id,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, original_core),
+        )
+
+
+def test_artifact_reader_rejects_tampered_accepted_plan_after_materialization_bypass(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-plan-tamper",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+    )
+    accepted_plan = artifact.accepted_plans[0]
+    tampered_claim = accepted_plan.accepted_buy_drivers[0].model_copy(
+        update={"text": "검증된 평가 12.4173배가 매수 방향을 지지합니다."}
+    )
+    tampered_plan = accepted_plan.model_copy(
+        update={"accepted_buy_drivers": (tampered_claim,)}
+    )
+    tampered_artifact = artifact.model_copy(
+        update={"accepted_plans": (tampered_plan,)}
+    )
+    path = tmp_path / "tampered-plan-accepted-v2.json"
+    path.write_text(
+        json.dumps(tampered_artifact.model_dump(mode="json"), ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="accepted_decision_invalid:adjudication_introduced_unregistered_numeric",
+    ):
+        load_accepted_v2_production_artifact(
+            path,
+            packet=runtime_packet,
+            claim_id=context.claim_id,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+        )
+
+
+def test_artifact_reader_rejects_wrong_independent_core_batch_identity(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-reader-core-identity",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+    )
+    path = tmp_path / "accepted-v2.json"
+    path.write_text(
+        json.dumps(artifact.model_dump(mode="json"), ensure_ascii=False),
+        encoding="utf-8",
+    )
+    wrong_batch = _trusted_core_batch(context, frozen_core).model_copy(
+        update={"claim_id": "different-claim"}
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "v2_production_artifact_trusted_fundamental_core_scope_mismatch:"
+            "claim_id_mismatch"
+        ),
+    ):
+        load_accepted_v2_production_artifact(
+            path,
+            packet=runtime_packet,
+            claim_id=context.claim_id,
+            trusted_fundamental_core_batch=wrong_batch,
+        )
+
+
+def test_artifact_contract_rejects_serialized_trust_permission(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-serialized-trust",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate()
+    core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(core,),
+        candidates=(candidate,),
+    )
+    artifact = validate_accepted_v2_production_output(context, output)
+    payload = artifact.model_dump(mode="json")
+    payload["trusted_fundamental_core_batch"] = _trusted_core_batch(
+        context,
+        core,
+    ).model_dump(mode="json")
+    path = tmp_path / "serialized-trust-accepted-v2.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    with pytest.raises(ValidationError, match="extra_forbidden"):
+        load_accepted_v2_production_artifact(
+            path,
+            packet=runtime_packet,
+            claim_id=context.claim_id,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, core),
+        )
+
+
+def test_runtime_validate_output_forwards_independent_core_to_reader(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    claim_id = "claim-v2-job-independent-core"
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id=claim_id,
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    paths = {
+        name: tmp_path / filename
+        for name, filename in {
+            "context": "context.json",
+            "core_temp": "core.json",
+            "temp": "output.json",
+            "final": "artifact.json",
+            "receipt": "receipt.json",
+        }.items()
+    }
+    packet_path = tmp_path / "packet.json"
+    packet_path.write_text(json.dumps(runtime_packet), encoding="utf-8")
+    paths["context"].write_text(context.model_dump_json(), encoding="utf-8")
+    paths["core_temp"].write_text(
+        _trusted_core_batch(context, frozen_core).model_dump_json(),
+        encoding="utf-8",
+    )
+    paths["temp"].write_text(output.model_dump_json(), encoding="utf-8")
+    claim = {
+        "packet_id": context.packet_id,
+        "claim_id": claim_id,
+        "packet_path": str(packet_path),
+    }
+    monkeypatch.setattr(accepted_v2_runtime_job, "_claim", lambda *_: claim)
+    monkeypatch.setattr(accepted_v2_runtime_job, "_paths", lambda *_: paths)
+    monkeypatch.setattr(
+        accepted_v2_runtime_job,
+        "_generation_identity",
+        lambda *_: {"generation_id": "fixture-generation"},
+    )
+
+    receipt = accepted_v2_runtime_job.validate_output(context.packet_id, claim_id)
+
+    assert receipt["status"] == "PASS"
+    assert paths["final"].exists()
+    assert paths["receipt"].exists()
+
+
+def test_runtime_validate_output_rejects_mutated_output_with_original_core_temp(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    claim_id = "claim-v2-job-mutated-output"
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id=claim_id,
+        evidence_packets=(packet,),
+    )
+    original_candidate = _candidate_with_frozen_core_numeric_claims()
+    original_core = _core(original_candidate)
+    mutated_buy = original_candidate.buy_drivers[0].model_copy(
+        update={"text": "검증된 평가 12.4173배가 매수 방향을 지지합니다."}
+    )
+    mutated_candidate = _candidate_with_current_core_sha(
+        original_candidate.model_copy(update={"buy_drivers": (mutated_buy,)})
+    )
+    mutated_output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(_core(mutated_candidate),),
+        candidates=(mutated_candidate,),
+    )
+    paths = {
+        name: tmp_path / filename
+        for name, filename in {
+            "context": "context.json",
+            "core_temp": "core.json",
+            "temp": "output.json",
+            "final": "artifact.json",
+            "receipt": "receipt.json",
+        }.items()
+    }
+    packet_path = tmp_path / "packet.json"
+    packet_path.write_text(json.dumps(runtime_packet), encoding="utf-8")
+    paths["context"].write_text(context.model_dump_json(), encoding="utf-8")
+    paths["core_temp"].write_text(
+        _trusted_core_batch(context, original_core).model_dump_json(),
+        encoding="utf-8",
+    )
+    paths["temp"].write_text(mutated_output.model_dump_json(), encoding="utf-8")
+    claim = {
+        "packet_id": context.packet_id,
+        "claim_id": claim_id,
+        "packet_path": str(packet_path),
+    }
+    monkeypatch.setattr(accepted_v2_runtime_job, "_claim", lambda *_: claim)
+    monkeypatch.setattr(accepted_v2_runtime_job, "_paths", lambda *_: paths)
+    monkeypatch.setattr(
+        accepted_v2_runtime_job,
+        "_generation_identity",
+        lambda *_: {"generation_id": "fixture-generation"},
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_trusted_fundamental_core_mismatch:TEST",
+    ):
+        accepted_v2_runtime_job.validate_output(context.packet_id, claim_id)
+
+    assert not paths["final"].exists()
+    assert not paths["receipt"].exists()
 
 
 def test_integrated_finalizer_without_trusted_core_keeps_numeric_gate_strict() -> None:

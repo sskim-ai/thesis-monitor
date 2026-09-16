@@ -1957,6 +1957,7 @@ def load_accepted_v2_production_artifact(
     *,
     packet: Mapping[str, object],
     claim_id: str,
+    trusted_fundamental_core_batch: AcceptedV2FundamentalCoreBatch | None = None,
 ) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, Mapping):
@@ -1987,11 +1988,43 @@ def load_accepted_v2_production_artifact(
         for rows in (packets, ownership, cores, candidates, plans)
     ):
         raise ValueError("v2_production_artifact_subject_mismatch")
+    trusted_cores: dict[str, AcceptedV2FundamentalCoreCandidate] = {}
+    if trusted_fundamental_core_batch is not None:
+        trusted_context = AcceptedV2ProductionContext(
+            packet_id=artifact.packet_id,
+            claim_id=artifact.claim_id,
+            market=artifact.market,
+            assessment_date=artifact.assessment_date,
+            source_packet_sha256=artifact.source_packet_sha256,
+            selected_subjects=artifact.selected_subjects,
+            evidence_packets=artifact.evidence_packets,
+            evidence_ownership=artifact.evidence_ownership,
+            prepared_at=artifact.validated_at,
+        )
+        trusted_scope_errors = validate_accepted_v2_fundamental_core_batch_scope(
+            trusted_fundamental_core_batch,
+            trusted_context,
+            subjects=artifact.selected_subjects,
+        )
+        if trusted_scope_errors:
+            raise ValueError(
+                "v2_production_artifact_trusted_fundamental_core_scope_mismatch:"
+                + ",".join(trusted_scope_errors)
+            )
+        trusted_cores = {
+            row.ticker: row for row in trusted_fundamental_core_batch.cores
+        }
+        for ticker in artifact.selected_subjects:
+            if cores[ticker] != trusted_cores[ticker]:
+                raise ValueError(
+                    f"v2_production_artifact_trusted_fundamental_core_mismatch:{ticker}"
+                )
     for ticker, plan in plans.items():
+        validation_core = trusted_cores.get(ticker, cores[ticker])
         candidate_validation = validate_accepted_v2_stage2_candidate(
             packets[ticker],
             candidates[ticker],
-            cores[ticker],
+            validation_core,
             ownership[ticker],
         )
         if not candidate_validation.valid:
@@ -2005,14 +2038,20 @@ def load_accepted_v2_production_artifact(
             if ticker in blocks:
                 raise ValueError("v2_production_not_ready_block_visible")
             continue
-        core = cores[ticker]
-        frozen_core_numeric_scope = AcceptedDecisionFrozenCoreNumericScope(
-            ticker=ticker,
-            fundamental_core_sha256=accepted_v2_fundamental_core_sha256(core),
-            directional_balance=core.directional_balance,
-            buy_drivers=core.buy_drivers,
-            sell_drivers=core.sell_drivers,
-            balance_summary=core.balance_summary,
+        trusted_core = trusted_cores.get(ticker)
+        frozen_core_numeric_scope = (
+            AcceptedDecisionFrozenCoreNumericScope(
+                ticker=ticker,
+                fundamental_core_sha256=accepted_v2_fundamental_core_sha256(
+                    trusted_core
+                ),
+                directional_balance=trusted_core.directional_balance,
+                buy_drivers=trusted_core.buy_drivers,
+                sell_drivers=trusted_core.sell_drivers,
+                balance_summary=trusted_core.balance_summary,
+            )
+            if trusted_core is not None
+            else None
         )
         expected = render_accepted_v2_production(
             packets[ticker],
