@@ -45,6 +45,7 @@ from app.services.preconfirmation_decision_v2_service import (
     PRECONFIRMATION_BUY_STAGE2_PROMPT_RULE,
     STAGE2_FROZEN_CORE_OWNERSHIP_CONTRACT,
     PreconfirmationDecisionCandidate,
+    PreconfirmationDecisionCandidateV2,
     PreconfirmationValidationResult,
     preconfirmation_stage2_field_ownership_inventory,
     validate_preconfirmation_candidate,
@@ -55,7 +56,10 @@ from app.services.expectation_valuation_interaction_service import (
     duplicate_directional_anchor_errors,
     interaction_from_packet,
 )
-from app.services.evidence_maturity_pricing_service import concrete_evidence_date
+from app.services.evidence_maturity_pricing_service import (
+    concrete_evidence_date,
+    project_maturity_provenance,
+)
 from app.services.stage2_maturity_polarity_adapter_service import (
     ATOMIC_IDENTITY_CONTRACT,
     CONTRACT_VERSION as MATURITY_POLARITY_ADAPTER_CONTRACT,
@@ -68,15 +72,20 @@ from app.services.three_axis_decision_service import HolderDecisionAxis
 
 CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
 OUTPUT_CONTRACT = "v2-accepted-production-output-v1"
+OUTPUT_CONTRACT_V2 = "v2-accepted-production-output-v2"
 STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v2"
 STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT = (
     "stage2-maturity-as-of-deterministic-v1"
+)
+STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT = (
+    "stage2-maturity-as-of-deterministic-v2"
 )
 STAGE2_MATURITY_AS_OF_SEMANTICS = (
     "LATEST_KNOWN_CONCRETE_SAME_ROW_PROVENANCE_DATE"
 )
 STAGE2_MATURITY_AS_OF_AGGREGATION = "MAX_CONCRETE_OWNED_DATES"
 ARTIFACT_CONTRACT = "v2-accepted-production-artifact-v1"
+ARTIFACT_CONTRACT_V2 = "v2-accepted-production-artifact-v2"
 STATE_CONTRACT = "v2-accepted-production-state-v1"
 RECEIPT_CONTRACT = "v2-accepted-production-receipt-v1"
 REASONING_MODEL = "gpt-5.6-sol"
@@ -269,6 +278,21 @@ class AcceptedV2ProductionBatchOutput(FrozenModel):
     adjudications: tuple[AcceptedV2Adjudication, ...] = Field(default=(), max_length=20)
 
 
+class AcceptedV2ProductionBatchOutputV2(FrozenModel):
+    contract: Literal["v2-accepted-production-output-v2"] = OUTPUT_CONTRACT_V2
+    packet_id: str
+    claim_id: str
+    market: Literal["kr", "us"]
+    assessment_date: str
+    fundamental_cores: tuple[AcceptedV2FundamentalCoreCandidate, ...] = Field(
+        min_length=1, max_length=20
+    )
+    candidates: tuple[PreconfirmationDecisionCandidateV2, ...] = Field(
+        min_length=1, max_length=20
+    )
+    adjudications: tuple[AcceptedV2Adjudication, ...] = Field(default=(), max_length=20)
+
+
 class Stage2MaturityAsOfMaterializationError(ValueError):
     pass
 
@@ -310,6 +334,35 @@ class AcceptedV2ProductionArtifact(FrozenModel):
     message_quality: dict[str, object]
     decision_consistency: dict[str, object] = Field(default_factory=dict)
     validated_at: str
+
+
+class AcceptedV2ProductionArtifactV2(AcceptedV2ProductionArtifact):
+    contract: Literal["v2-accepted-production-artifact-v2"] = ARTIFACT_CONTRACT_V2
+    candidates: tuple[PreconfirmationDecisionCandidateV2, ...] = Field(
+        min_length=1, max_length=20
+    )
+
+
+def parse_accepted_v2_production_batch_output(
+    payload: Mapping[str, object],
+) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
+    contract = payload.get("contract")
+    if contract == OUTPUT_CONTRACT:
+        return AcceptedV2ProductionBatchOutput.model_validate(payload)
+    if contract == OUTPUT_CONTRACT_V2:
+        return AcceptedV2ProductionBatchOutputV2.model_validate(payload)
+    raise ValueError("unsupported_accepted_v2_output_contract")
+
+
+def parse_accepted_v2_production_artifact(
+    payload: Mapping[str, object],
+) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
+    contract = payload.get("contract")
+    if contract == ARTIFACT_CONTRACT:
+        return AcceptedV2ProductionArtifact.model_validate(payload)
+    if contract == ARTIFACT_CONTRACT_V2:
+        return AcceptedV2ProductionArtifactV2.model_validate(payload)
+    raise ValueError("unsupported_accepted_v2_artifact_contract")
 
 
 class AcceptedV2ProductionStateEntry(FrozenModel):
@@ -517,7 +570,7 @@ def accepted_v2_fundamental_core_sha256(
 
 
 def accepted_v2_fundamental_core_from_candidate(
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
 ) -> AcceptedV2FundamentalCoreCandidate:
     return AcceptedV2FundamentalCoreCandidate(
         ticker=candidate.ticker,
@@ -578,7 +631,7 @@ def validate_accepted_v2_fundamental_core(
 
 
 def validate_accepted_v2_candidate_ownership(
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
 ) -> tuple[str, ...]:
@@ -621,7 +674,7 @@ def accepted_v2_stage2_validation_scope_manifest() -> dict[str, object]:
 
 def validate_accepted_v2_stage2_candidate(
     packet: DecisionEvidencePacket,
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
 ) -> PreconfirmationValidationResult:
@@ -644,7 +697,7 @@ def validate_accepted_v2_stage2_candidate(
 
 
 def validate_accepted_v2_maturity_atomic_identity(
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     core: AcceptedV2FundamentalCoreCandidate,
 ) -> tuple[str, ...]:
     return maturity_atomic_assignment_errors(
@@ -1119,7 +1172,7 @@ def accepted_v2_stage2_output_schema(
 
 
 def _stage2_model_facing_candidate_payload(
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
 ) -> dict[str, object]:
     payload = candidate.model_dump(mode="json")
     rows = payload.get("driver_maturity")
@@ -1127,6 +1180,7 @@ def _stage2_model_facing_candidate_payload(
         for row in rows:
             if isinstance(row, dict):
                 row.pop("as_of", None)
+                row.pop("provenance_status", None)
     return payload
 
 
@@ -1144,6 +1198,7 @@ def _stage2_model_facing_rejected_output(
                 for row in rows:
                     if isinstance(row, dict):
                         row.pop("as_of", None)
+                        row.pop("provenance_status", None)
     return payload
 
 
@@ -1152,8 +1207,16 @@ def materialize_accepted_v2_stage2_output(
     raw_output: Mapping[str, object],
     *,
     subjects: Sequence[str] | None = None,
-) -> AcceptedV2ProductionBatchOutput:
-    """Materialize runtime-owned maturity dates into the internal typed contract."""
+    normalized_contract: str = STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
+) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
+    """Materialize runtime-owned maturity provenance into a versioned typed contract."""
+    if normalized_contract not in {
+        STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
+        STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
+    }:
+        raise Stage2MaturityAsOfMaterializationError(
+            "unsupported_normalized_contract"
+        )
     selected = tuple(subjects or context.selected_subjects)
     if (
         not selected
@@ -1236,6 +1299,11 @@ def materialize_accepted_v2_stage2_output(
                 raise Stage2MaturityAsOfMaterializationError(
                     f"stage2_model_authored_as_of_forbidden:{ticker}:{row_index}"
                 )
+            if "provenance_status" in row:
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_model_authored_provenance_status_forbidden:"
+                    f"{ticker}:{row_index}"
+                )
             cited_refs: list[str] = []
             for field_name in (
                 "supporting_evidence_refs",
@@ -1250,32 +1318,57 @@ def materialize_accepted_v2_stage2_output(
                         f"{ticker}:{row_index}:{field_name}"
                     )
                 cited_refs.extend(values)
-            concrete_dates = []
-            for ref_id in cited_refs:
-                evidence_row = evidence.get(ref_id)
-                if evidence_row is None:
+            if normalized_contract == STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT:
+                concrete_dates = []
+                for ref_id in cited_refs:
+                    evidence_row = evidence.get(ref_id)
+                    if evidence_row is None:
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_materialization_unknown_ticker_local_ref:"
+                            f"{ticker}:{row_index}:{ref_id}"
+                        )
+                    resolved = concrete_evidence_date(evidence_row.as_of)
+                    if resolved is not None:
+                        concrete_dates.append(resolved)
+                if not concrete_dates:
                     raise Stage2MaturityAsOfMaterializationError(
-                        f"stage2_materialization_unknown_ticker_local_ref:"
-                        f"{ticker}:{row_index}:{ref_id}"
+                        f"stage2_materialization_no_concrete_owned_date:"
+                        f"{ticker}:{row_index}"
                     )
-                resolved = concrete_evidence_date(evidence_row.as_of)
-                if resolved is not None:
-                    concrete_dates.append(resolved)
-            if not concrete_dates:
+                derived = max(concrete_dates)
+                if derived > assessment_date:
+                    raise Stage2MaturityAsOfMaterializationError(
+                        f"stage2_materialization_future_derived_date:"
+                        f"{ticker}:{row_index}:{derived.isoformat()}"
+                    )
+                row["as_of"] = derived.isoformat()
+                continue
+
+            projection = project_maturity_provenance(evidence, cited_refs)
+            if projection.invalid_ref_ids:
                 raise Stage2MaturityAsOfMaterializationError(
-                    f"stage2_materialization_no_concrete_owned_date:"
+                    f"stage2_materialization_unresolvable_provenance:"
+                    f"{ticker}:{row_index}:{','.join(projection.invalid_ref_ids)}"
+                )
+            if projection.provenance_status is None:
+                raise Stage2MaturityAsOfMaterializationError(
+                    f"stage2_materialization_no_valid_provenance:"
                     f"{ticker}:{row_index}"
                 )
-            derived = max(concrete_dates)
-            if derived > assessment_date:
+            derived = concrete_evidence_date(projection.as_of)
+            if derived is not None and derived > assessment_date:
                 raise Stage2MaturityAsOfMaterializationError(
                     f"stage2_materialization_future_derived_date:"
                     f"{ticker}:{row_index}:{derived.isoformat()}"
                 )
-            row["as_of"] = derived.isoformat()
+            row["as_of"] = projection.as_of
+            row["provenance_status"] = projection.provenance_status.value
 
-    payload["contract"] = OUTPUT_CONTRACT
-    return AcceptedV2ProductionBatchOutput.model_validate(payload)
+    if normalized_contract == STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT:
+        payload["contract"] = OUTPUT_CONTRACT
+        return AcceptedV2ProductionBatchOutput.model_validate(payload)
+    payload["contract"] = OUTPUT_CONTRACT_V2
+    return AcceptedV2ProductionBatchOutputV2.model_validate(payload)
 
 
 def accepted_v2_fundamental_core_prompt(
@@ -1466,7 +1559,7 @@ def accepted_v2_production_repair_prompt(
     *,
     fundamental_core: AcceptedV2FundamentalCoreCandidate,
     ticker: str,
-    rejected_candidate: PreconfirmationDecisionCandidate,
+    rejected_candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     validation_errors: Sequence[str],
 ) -> str:
     if ticker != rejected_candidate.ticker:
@@ -1605,10 +1698,10 @@ def _production_message_quality(
 
 def validate_accepted_v2_production_output(
     context: AcceptedV2ProductionContext,
-    output: AcceptedV2ProductionBatchOutput,
+    output: AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2,
     *,
     validated_at: datetime | None = None,
-) -> AcceptedV2ProductionArtifact:
+) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
     if (
         output.packet_id,
         output.claim_id,
@@ -1787,7 +1880,12 @@ def validate_accepted_v2_production_output(
         raise ValueError("v2_production_unexplained_accepted_decision_drift")
     ready_count = len(blocks)
     not_ready_count = len(context.selected_subjects) - ready_count
-    return AcceptedV2ProductionArtifact(
+    artifact_type = (
+        AcceptedV2ProductionArtifactV2
+        if isinstance(output, AcceptedV2ProductionBatchOutputV2)
+        else AcceptedV2ProductionArtifact
+    )
+    return artifact_type(
         status="PASS" if not_ready_count == 0 else "PARTIAL_SAFE",
         packet_id=context.packet_id,
         claim_id=context.claim_id,
@@ -1814,8 +1912,11 @@ def load_accepted_v2_production_artifact(
     *,
     packet: Mapping[str, object],
     claim_id: str,
-) -> AcceptedV2ProductionArtifact:
-    artifact = AcceptedV2ProductionArtifact.model_validate_json(path.read_text(encoding="utf-8"))
+) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping):
+        raise ValueError("v2_production_artifact_payload_invalid")
+    artifact = parse_accepted_v2_production_artifact(payload)
     subjects = tuple(
         str(row.get("ticker") or "").upper()
         for row in packet.get("stocks") or ()
@@ -1860,7 +1961,7 @@ def load_accepted_v2_production_artifact(
 
 
 def advance_accepted_v2_state(
-    artifact: AcceptedV2ProductionArtifact,
+    artifact: AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2,
     *,
     settings: Settings | None = None,
     updated_at: datetime | None = None,

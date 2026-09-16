@@ -25,7 +25,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     RECEIPT_CONTRACT,
     REASONING_EFFORT,
     REASONING_MODEL,
-    AcceptedV2ProductionBatchOutput,
+    AcceptedV2ProductionBatchOutputV2,
     AcceptedV2ProductionContext,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2FundamentalCoreCandidate,
@@ -41,6 +41,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
     materialize_accepted_v2_stage2_output,
+    parse_accepted_v2_production_batch_output,
     validate_accepted_v2_stage2_candidate,
     validate_accepted_v2_fundamental_core,
     validate_accepted_v2_fundamental_core_batch_scope,
@@ -674,7 +675,7 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     paths = _paths(claim, claim_id)
     identity = _generation_identity(packet_id, claim_id, claim)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
-    output = AcceptedV2ProductionBatchOutput.model_validate(_read_json(paths["temp"]))
+    output = parse_accepted_v2_production_batch_output(_read_json(paths["temp"]))
     artifact = validate_accepted_v2_production_output(context, output)
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
     packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
@@ -1203,7 +1204,7 @@ async def _generate_claim_owned(
     output_path = Path(str(prepared["temp_output_path"]))
     _atomic_json(
         output_path,
-        AcceptedV2ProductionBatchOutput(
+        AcceptedV2ProductionBatchOutputV2(
             packet_id=context.packet_id,
             claim_id=context.claim_id,
             market=context.market,

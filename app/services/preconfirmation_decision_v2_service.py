@@ -18,13 +18,16 @@ from app.services.cross_market_decision_engine_service import (
 )
 from app.services.evidence_maturity_pricing_service import (
     DriverEvidenceMaturity,
+    DriverEvidenceMaturityV2,
     EvidenceMaturity,
     MarketExpectationAssessment,
+    MaturityProvenanceStatus,
     OverallMaturityAssessment,
     PricingRequirement,
     PricingRequirementAssessment,
     concrete_evidence_date,
     decisive_maturities,
+    project_maturity_provenance,
 )
 from app.services.directional_balance_service import (
     DirectionalBalance,
@@ -138,6 +141,12 @@ class PreconfirmationDecisionCandidate(FrozenModel):
         return self
 
 
+class PreconfirmationDecisionCandidateV2(PreconfirmationDecisionCandidate):
+    driver_maturity: tuple[DriverEvidenceMaturityV2, ...] = Field(
+        min_length=1, max_length=6
+    )
+
+
 class PreconfirmationDecisionBatch(FrozenModel):
     contract: Literal[OUTPUT_CONTRACT]
     decisions: tuple[PreconfirmationDecisionCandidate, ...]
@@ -153,7 +162,9 @@ class PreconfirmationValidationResult(FrozenModel):
     unresolved_numeric_count: int = 0
 
 
-def requires_preconfirmation_buy(candidate: PreconfirmationDecisionCandidate) -> bool:
+def requires_preconfirmation_buy(
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
+) -> bool:
     """Return the canonical lifecycle-flag requirement without changing any decision axis."""
     decisive = decisive_maturities(candidate.driver_maturity)
     return candidate.decision == "BUY" and bool(
@@ -255,7 +266,9 @@ _EXACT_NUMBER = re.compile(
 _KOREAN = re.compile(r"[가-힣]")
 
 
-def _scenario_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[EvidenceClaim, ...]:
+def _scenario_claims(
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
+) -> tuple[EvidenceClaim, ...]:
     scenarios = candidate.scenarios
     return tuple(
         claim
@@ -268,7 +281,9 @@ def _scenario_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[Evide
     )
 
 
-def candidate_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[EvidenceClaim, ...]:
+def candidate_claims(
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
+) -> tuple[EvidenceClaim, ...]:
     claims: list[EvidenceClaim] = [
         candidate.timing_basis,
         candidate.factual_safety_basis,
@@ -320,7 +335,7 @@ def candidate_claims(candidate: PreconfirmationDecisionCandidate) -> tuple[Evide
 
 
 def stage2_owned_candidate_claims(
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
 ) -> tuple[EvidenceClaim, ...]:
     claims: list[EvidenceClaim] = [
         candidate.timing_basis,
@@ -382,7 +397,7 @@ def _claim_categories(
 
 def _validate_preconfirmation_candidate(
     packet: DecisionEvidencePacket,
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     *,
     claim_language_claims: tuple[EvidenceClaim, ...],
     unsupported_metric_claims: tuple[EvidenceClaim, ...],
@@ -443,23 +458,57 @@ def _validate_preconfirmation_candidate(
         errors.append("unsupported_metric_or_inference")
 
     for row in candidate.driver_maturity:
-        cited_dates = {
-            resolved
-            for ref_id in (*row.supporting_evidence_refs, *row.contradicting_evidence_refs)
-            if ref_id in refs
-            if (resolved := concrete_evidence_date(refs[ref_id].as_of)) is not None
-        }
-        for ref_id in (*row.supporting_evidence_refs, *row.contradicting_evidence_refs):
+        cited_refs = (*row.supporting_evidence_refs, *row.contradicting_evidence_refs)
+        for ref_id in cited_refs:
             if ref_id not in refs:
                 errors.append(f"unknown_maturity_ref:{ref_id}")
-        row_date = concrete_evidence_date(row.as_of)
         assessment_date = concrete_evidence_date(packet.assessment_date)
-        if not cited_dates:
-            errors.append(f"maturity_evidence_date_unresolvable:{row.driver}")
-        elif row_date not in cited_dates:
-            errors.append(f"maturity_evidence_date_not_owned:{row.driver}")
-        if row_date is not None and assessment_date is not None and row_date > assessment_date:
-            errors.append(f"future_maturity_evidence:{row.driver}")
+        if isinstance(row, DriverEvidenceMaturityV2):
+            projection = project_maturity_provenance(refs, cited_refs)
+            errors.extend(
+                f"maturity_provenance_unresolvable:{row.driver}:{ref_id}"
+                for ref_id in projection.invalid_ref_ids
+            )
+            if projection.provenance_status is None:
+                errors.append(f"maturity_evidence_date_unresolvable:{row.driver}")
+            else:
+                if row.provenance_status != projection.provenance_status:
+                    errors.append(f"maturity_provenance_status_mismatch:{row.driver}")
+                if row.as_of != projection.as_of:
+                    errors.append(f"maturity_evidence_date_not_owned:{row.driver}")
+                row_date = concrete_evidence_date(row.as_of)
+                if (
+                    row.provenance_status
+                    == MaturityProvenanceStatus.SYMBOLIC_ONLY_NO_CONCRETE_DATE
+                    and row.as_of is not None
+                ):
+                    errors.append(f"maturity_provenance_status_date_mismatch:{row.driver}")
+                if (
+                    row.provenance_status
+                    != MaturityProvenanceStatus.SYMBOLIC_ONLY_NO_CONCRETE_DATE
+                    and row.as_of is None
+                ):
+                    errors.append(f"maturity_provenance_status_date_mismatch:{row.driver}")
+                if (
+                    row_date is not None
+                    and assessment_date is not None
+                    and row_date > assessment_date
+                ):
+                    errors.append(f"future_maturity_evidence:{row.driver}")
+        else:
+            cited_dates = {
+                resolved
+                for ref_id in cited_refs
+                if ref_id in refs
+                if (resolved := concrete_evidence_date(refs[ref_id].as_of)) is not None
+            }
+            row_date = concrete_evidence_date(row.as_of)
+            if not cited_dates:
+                errors.append(f"maturity_evidence_date_unresolvable:{row.driver}")
+            elif row_date not in cited_dates:
+                errors.append(f"maturity_evidence_date_not_owned:{row.driver}")
+            if row_date is not None and assessment_date is not None and row_date > assessment_date:
+                errors.append(f"future_maturity_evidence:{row.driver}")
 
     expectation_categories = _claim_categories(packet, (candidate.market_expectation.basis,))
     if EvidenceCategory.EXPECTATIONS not in expectation_categories:
@@ -560,7 +609,7 @@ def _validate_preconfirmation_candidate(
 
 def validate_preconfirmation_candidate(
     packet: DecisionEvidencePacket,
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
 ) -> PreconfirmationValidationResult:
     return _validate_preconfirmation_candidate(
         packet,
@@ -572,7 +621,7 @@ def validate_preconfirmation_candidate(
 
 def validate_preconfirmation_stage2_owned_semantics(
     packet: DecisionEvidencePacket,
-    candidate: PreconfirmationDecisionCandidate,
+    candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
 ) -> PreconfirmationValidationResult:
     """Validate a combined candidate after its frozen core identity is trusted."""
     return _validate_preconfirmation_candidate(

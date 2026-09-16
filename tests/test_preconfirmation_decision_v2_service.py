@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -17,12 +18,16 @@ from app.services.cross_market_decision_engine_service import (
 )
 from app.services.evidence_maturity_pricing_service import (
     DriverEvidenceMaturity,
+    DriverEvidenceMaturityV2,
     EvidenceMaturity,
     MarketExpectation,
     MarketExpectationAssessment,
+    MaturityProvenanceStatus,
     OverallMaturityAssessment,
     PricingRequirement,
     PricingRequirementAssessment,
+    project_maturity_provenance,
+    symbolic_maturity_evidence_kind,
 )
 from app.services.preconfirmation_decision_v2_service import (
     FactualSafetyState,
@@ -61,21 +66,29 @@ from app.services.accepted_decision_v2_service import (
     validate_accepted_v2_render,
 )
 from app.services.accepted_decision_v2_runtime_service import (
+    STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
+    STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
     STAGE2_MODEL_OUTPUT_CONTRACT,
     AcceptedV2EvidenceOwnership,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBaseline,
     AcceptedV2ProductionBatchOutput,
+    AcceptedV2ProductionBatchOutputV2,
+    AcceptedV2ProductionArtifactV2,
     AcceptedV2ProductionBlock,
     AcceptedV2ProductionContext,
     accepted_v2_fundamental_core_from_candidate,
     accepted_v2_fundamental_core_sha256,
     accepted_v2_stage2_validation_scope_manifest,
+    accepted_v2_stage2_output_schema,
     build_accepted_v2_production_context,
     materialize_accepted_v2_stage2_output,
+    load_accepted_v2_production_artifact,
+    parse_accepted_v2_production_batch_output,
     Stage2MaturityAsOfMaterializationError,
     validate_accepted_v2_candidate_ownership,
     validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_maturity_atomic_identity,
     validate_accepted_v2_production_output,
     validate_accepted_v2_stage2_candidate,
 )
@@ -353,6 +366,315 @@ def _stage2_materialization_fixture(
     return context, output, _model_facing_stage2_payload(output)
 
 
+def _materialize_v1(
+    context: AcceptedV2ProductionContext,
+    raw: dict[str, object],
+    *,
+    subjects: tuple[str, ...] | None = None,
+) -> AcceptedV2ProductionBatchOutput:
+    output = materialize_accepted_v2_stage2_output(
+        context,
+        raw,
+        subjects=subjects,
+        normalized_contract=STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
+    )
+    assert isinstance(output, AcceptedV2ProductionBatchOutput)
+    return output
+
+
+def _financial_quality_symbolic_ref() -> DecisionEvidenceRef:
+    return DecisionEvidenceRef(
+        ref_id="canonical:financial_quality:latest",
+        category=EvidenceCategory.EARNINGS,
+        label="financial_quality",
+        statement=json.dumps(
+            {
+                "decision_version": "financial-quality-taint-v2",
+                "reason_codes": ["provider_not_supported"],
+                "source_period": None,
+                "source_type": "unknown",
+                "state": "unknown",
+            },
+            sort_keys=True,
+        ),
+        as_of="latest",
+        source_ref="stock.fact_catalog.financial_quality:latest",
+    )
+
+
+def _earnings_symbolic_ref() -> DecisionEvidenceRef:
+    return DecisionEvidenceRef(
+        ref_id="canonical:earnings:latest",
+        category=EvidenceCategory.EARNINGS,
+        label="earnings",
+        statement=json.dumps(
+            {
+                "field_period_labels": {},
+                "field_statement_basis": {},
+                "financial_period_required": True,
+                "period": "latest",
+                "period_label": None,
+                "period_type": None,
+                "preliminary": False,
+            },
+            sort_keys=True,
+        ),
+        as_of="latest",
+        source_ref="stock.fact_catalog.earnings:latest",
+    )
+
+
+def _materialization_with_refs(
+    *refs: str,
+    packet: DecisionEvidencePacket | None = None,
+) -> tuple[AcceptedV2ProductionContext, dict[str, object]]:
+    source_packet = packet or _packet()
+    candidate = _candidate()
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_evidence_refs": tuple(refs),
+            "contradicting_evidence_refs": (),
+        }
+    )
+    context, _output, raw = _stage2_materialization_fixture(
+        packet=source_packet,
+        candidate=candidate.model_copy(update={"driver_maturity": (maturity,)}),
+    )
+    return context, raw
+
+
+def test_m12cg_symbolic_only_provenance_is_materialized_without_fake_date() -> None:
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, _financial_quality_symbolic_ref())}
+    )
+    context, raw = _materialization_with_refs(
+        "canonical:financial_quality:latest",
+        packet=packet,
+    )
+
+    output = materialize_accepted_v2_stage2_output(context, raw)
+
+    assert isinstance(output, AcceptedV2ProductionBatchOutputV2)
+    row = output.candidates[0].driver_maturity[0]
+    assert row.as_of is None
+    assert (
+        row.provenance_status
+        == MaturityProvenanceStatus.SYMBOLIC_ONLY_NO_CONCRETE_DATE
+    )
+    validation = validate_preconfirmation_candidate(packet, output.candidates[0])
+    assert not any("maturity_" in error for error in validation.errors)
+
+
+def test_m12cg_mixed_provenance_uses_concrete_max_and_explicit_status() -> None:
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, _financial_quality_symbolic_ref())}
+    )
+    context, raw = _materialization_with_refs(
+        "ref:valuation",
+        "canonical:financial_quality:latest",
+        packet=packet,
+    )
+
+    output = materialize_accepted_v2_stage2_output(context, raw)
+
+    assert isinstance(output, AcceptedV2ProductionBatchOutputV2)
+    row = output.candidates[0].driver_maturity[0]
+    assert row.as_of == "2026-08-30"
+    assert (
+        row.provenance_status
+        == MaturityProvenanceStatus.CONCRETE_WITH_SYMBOLIC_REFS
+    )
+
+
+def test_m12cg_concrete_projection_is_order_and_duplicate_invariant() -> None:
+    packet = _packet()
+    refs = {row.ref_id: row for row in packet.evidence}
+
+    first = project_maturity_provenance(
+        refs,
+        ("ref:valuation", "ref:risks", "ref:valuation"),
+    )
+    second = project_maturity_provenance(refs, ("ref:risks", "ref:valuation"))
+
+    assert first == second
+    assert first.as_of == "2026-08-30"
+    assert first.provenance_status == MaturityProvenanceStatus.CONCRETE_ONLY
+
+
+def test_m12cg_symbolic_classifier_requires_canonical_structured_metadata() -> None:
+    recognized = _financial_quality_symbolic_ref()
+    malformed = recognized.model_copy(update={"as_of": " latest "})
+    free_text = recognized.model_copy(update={"statement": "unknown latest filing"})
+
+    assert symbolic_maturity_evidence_kind(recognized) is not None
+    assert symbolic_maturity_evidence_kind(_earnings_symbolic_ref()) is not None
+    assert symbolic_maturity_evidence_kind(malformed) is None
+    assert symbolic_maturity_evidence_kind(free_text) is None
+
+
+def test_m12cg_model_authored_provenance_status_is_rejected() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    raw["candidates"][0]["driver_maturity"][0][
+        "provenance_status"
+    ] = "CONCRETE_ONLY"
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_model_authored_provenance_status_forbidden",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_m12cg_concrete_ref_cannot_hide_invalid_symbolic_peer() -> None:
+    packet = _packet()
+    evidence = tuple(
+        row.model_copy(update={"as_of": "current"})
+        if row.ref_id == "ref:risks"
+        else row
+        for row in packet.evidence
+    )
+    context, raw = _materialization_with_refs(
+        "ref:valuation",
+        "ref:risks",
+        packet=packet.model_copy(update={"evidence": evidence}),
+    )
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unresolvable_provenance",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+@pytest.mark.parametrize("invalid", ["null", "", 0, False])
+def test_m12cg_normalized_date_rejects_non_json_null_primitives(invalid: object) -> None:
+    payload = _candidate().driver_maturity[0].model_dump(mode="json")
+    payload["as_of"] = invalid
+    payload["provenance_status"] = "SYMBOLIC_ONLY_NO_CONCRETE_DATE"
+
+    with pytest.raises(ValidationError):
+        DriverEvidenceMaturityV2.model_validate(payload)
+
+
+def test_m12cg_normalized_status_date_shape_is_relationally_strict() -> None:
+    payload = _candidate().driver_maturity[0].model_dump(mode="json")
+    payload["as_of"] = None
+    payload["provenance_status"] = "CONCRETE_ONLY"
+
+    with pytest.raises(ValidationError, match="maturity_provenance_status_date_mismatch"):
+        DriverEvidenceMaturityV2.model_validate(payload)
+
+
+def test_m12cg_hard_validator_recomputes_max_and_status() -> None:
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, _financial_quality_symbolic_ref())}
+    )
+    context, raw = _materialization_with_refs(
+        "ref:valuation",
+        "canonical:financial_quality:latest",
+        packet=packet,
+    )
+    output = materialize_accepted_v2_stage2_output(context, raw)
+    assert isinstance(output, AcceptedV2ProductionBatchOutputV2)
+    candidate = output.candidates[0]
+    tampered_row = candidate.driver_maturity[0].model_copy(
+        update={"provenance_status": MaturityProvenanceStatus.CONCRETE_ONLY}
+    )
+
+    validation = validate_preconfirmation_candidate(
+        packet,
+        candidate.model_copy(update={"driver_maturity": (tampered_row,)}),
+    )
+
+    assert "maturity_provenance_status_mismatch:신규 제품 수익화" in validation.errors
+
+
+def test_m12cg_raw_stage2_schema_does_not_expose_runtime_provenance_fields() -> None:
+    context, _output, _raw = _stage2_materialization_fixture()
+
+    schema = accepted_v2_stage2_output_schema(context)
+    maturity = schema["$defs"]["DriverEvidenceMaturity"]
+
+    assert "as_of" not in maturity["properties"]
+    assert "provenance_status" not in maturity["properties"]
+    assert "as_of" not in maturity["required"]
+    assert "provenance_status" not in maturity["required"]
+
+
+def test_m12cg_version_dispatch_preserves_legacy_and_rejects_unknown_contract() -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    legacy = _materialize_v1(context, raw)
+    migrated = materialize_accepted_v2_stage2_output(
+        context,
+        raw,
+        normalized_contract=STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
+    )
+
+    assert parse_accepted_v2_production_batch_output(
+        legacy.model_dump(mode="json")
+    ) == legacy
+    assert parse_accepted_v2_production_batch_output(
+        migrated.model_dump(mode="json")
+    ) == migrated
+    with pytest.raises(ValueError, match="unsupported_accepted_v2_output_contract"):
+        parse_accepted_v2_production_batch_output({"contract": "unsupported"})
+
+
+def test_m12cg_v2_artifact_roundtrip_is_deterministic(
+    tmp_path,
+) -> None:
+    context, _output, raw = _stage2_materialization_fixture()
+    output = materialize_accepted_v2_stage2_output(context, raw)
+    validated_at = datetime(2026, 9, 16, tzinfo=UTC)
+
+    first = validate_accepted_v2_production_output(
+        context,
+        output,
+        validated_at=validated_at,
+    )
+    second = validate_accepted_v2_production_output(
+        context,
+        output,
+        validated_at=validated_at,
+    )
+
+    assert isinstance(first, AcceptedV2ProductionArtifactV2)
+    assert first == second
+    path = tmp_path / "accepted-v2.json"
+    path.write_text(first.model_dump_json(), encoding="utf-8")
+    packet = {
+        "packet_id": context.packet_id,
+        "market": context.market,
+        "assessment_date": context.assessment_date,
+        "stocks": [{"ticker": "TEST"}],
+    }
+    loaded = load_accepted_v2_production_artifact(
+        path,
+        packet=packet,
+        claim_id=context.claim_id,
+    )
+    assert loaded == first
+
+
+def test_m12cg_earnings_placeholder_does_not_bypass_atomic_claim_eligibility() -> None:
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, _earnings_symbolic_ref())}
+    )
+    context, raw = _materialization_with_refs(
+        "canonical:earnings:latest",
+        packet=packet,
+    )
+    output = materialize_accepted_v2_stage2_output(context, raw)
+    assert isinstance(output, AcceptedV2ProductionBatchOutputV2)
+
+    errors = validate_accepted_v2_maturity_atomic_identity(
+        output.candidates[0],
+        output.fundamental_cores[0],
+    )
+
+    assert "maturity_supporting_source_claim_mismatch:0" in errors
+
+
 def test_stage2_materializer_uses_max_concrete_same_row_date() -> None:
     packet = _packet()
     evidence = tuple(
@@ -369,7 +691,7 @@ def test_stage2_materializer_uses_max_concrete_same_row_date() -> None:
         packet=packet.model_copy(update={"evidence": evidence})
     )
 
-    materialized = materialize_accepted_v2_stage2_output(context, raw)
+    materialized = _materialize_v1(context, raw)
 
     assert materialized.contract == "v2-accepted-production-output-v1"
     assert materialized.candidates[0].driver_maturity[0].as_of == "2026-08-30"
@@ -387,7 +709,7 @@ def test_stage2_materializer_uses_concrete_date_with_symbolic_peer() -> None:
         packet=packet.model_copy(update={"evidence": evidence})
     )
 
-    materialized = materialize_accepted_v2_stage2_output(context, raw)
+    materialized = _materialize_v1(context, raw)
 
     assert materialized.candidates[0].driver_maturity[0].as_of == "2026-08-30"
 
@@ -395,8 +717,8 @@ def test_stage2_materializer_uses_concrete_date_with_symbolic_peer() -> None:
 def test_stage2_materializer_is_hash_stable() -> None:
     context, _output, raw = _stage2_materialization_fixture()
 
-    first = materialize_accepted_v2_stage2_output(context, raw)
-    second = materialize_accepted_v2_stage2_output(context, raw)
+    first = _materialize_v1(context, raw)
+    second = _materialize_v1(context, raw)
 
     assert canonical_sha256(first.model_dump(mode="json")) == canonical_sha256(
         second.model_dump(mode="json")
@@ -416,7 +738,7 @@ def test_stage2_materializer_rejects_model_authored_as_of() -> None:
         Stage2MaturityAsOfMaterializationError,
         match="stage2_model_authored_as_of_forbidden",
     ):
-        materialize_accepted_v2_stage2_output(context, raw)
+        _materialize_v1(context, raw)
 
 
 def test_stage2_materializer_rejects_symbolic_only_without_global_fallback() -> None:
@@ -435,7 +757,7 @@ def test_stage2_materializer_rejects_symbolic_only_without_global_fallback() -> 
         Stage2MaturityAsOfMaterializationError,
         match="stage2_materialization_no_concrete_owned_date",
     ):
-        materialize_accepted_v2_stage2_output(context, raw)
+        _materialize_v1(context, raw)
 
 
 def test_stage2_materializer_rejects_unknown_ref() -> None:
@@ -448,7 +770,7 @@ def test_stage2_materializer_rejects_unknown_ref() -> None:
         Stage2MaturityAsOfMaterializationError,
         match="stage2_materialization_unknown_ticker_local_ref",
     ):
-        materialize_accepted_v2_stage2_output(context, raw)
+        _materialize_v1(context, raw)
 
 
 def test_stage2_materializer_rejects_cross_ticker_ref() -> None:
@@ -492,7 +814,7 @@ def test_stage2_materializer_rejects_cross_ticker_ref() -> None:
         Stage2MaturityAsOfMaterializationError,
         match="stage2_materialization_unknown_ticker_local_ref",
     ):
-        materialize_accepted_v2_stage2_output(context, raw, subjects=("TEST",))
+        _materialize_v1(context, raw, subjects=("TEST",))
 
 
 def test_stage2_materializer_rejects_future_derived_date() -> None:
@@ -511,12 +833,12 @@ def test_stage2_materializer_rejects_future_derived_date() -> None:
         Stage2MaturityAsOfMaterializationError,
         match="stage2_materialization_future_derived_date",
     ):
-        materialize_accepted_v2_stage2_output(context, raw)
+        _materialize_v1(context, raw)
 
 
 def test_stage2_hard_validator_rejects_post_materialization_tamper() -> None:
     context, _output, raw = _stage2_materialization_fixture()
-    materialized = materialize_accepted_v2_stage2_output(context, raw)
+    materialized = _materialize_v1(context, raw)
     candidate = materialized.candidates[0]
     row = candidate.driver_maturity[0].model_copy(update={"as_of": "2026-08-29"})
     tampered = candidate.model_copy(update={"driver_maturity": (row,)})
