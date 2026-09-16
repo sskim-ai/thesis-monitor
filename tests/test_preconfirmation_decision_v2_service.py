@@ -5,6 +5,7 @@ import asyncio
 import json
 from collections.abc import Callable
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -54,6 +55,7 @@ from app.services.scenario_asymmetry_service import (
     ScenarioSet,
 )
 from app.services.accepted_decision_v2_service import (
+    AcceptedDecisionFrozenCoreNumericScope,
     AcceptedDecisionSource,
     AcceptedDecisionStatus,
     AcceptedV2Adjudication,
@@ -284,6 +286,35 @@ def _candidate_with_current_core_sha(
     )
 
 
+def _candidate_with_frozen_core_numeric_claims() -> PreconfirmationDecisionCandidate:
+    candidate = _candidate()
+    numeric_buy = candidate.buy_drivers[0].model_copy(
+        update={"text": "검증된 평가 12.4172배가 매수 방향을 지지합니다."}
+    )
+    numeric_sell = candidate.sell_drivers[0].model_copy(
+        update={"text": "평가 19.2893배와 12.4172배의 간극은 반대 근거입니다."}
+    )
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=numeric_buy),
+            ),
+            "contradicting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=numeric_sell),
+            ),
+        }
+    )
+    return _candidate_with_current_core_sha(
+        candidate.model_copy(
+            update={
+                "buy_drivers": (numeric_buy,),
+                "sell_drivers": (numeric_sell,),
+                "driver_maturity": (maturity,),
+            }
+        )
+    )
+
+
 def test_driver_maturity_date_must_be_owned_by_a_cited_ref() -> None:
     candidate = _candidate()
     row = candidate.driver_maturity[0].model_copy(update={"as_of": "2026-08-29"})
@@ -322,6 +353,19 @@ def test_symbolic_only_maturity_evidence_is_fail_closed() -> None:
 
 def _core(candidate: PreconfirmationDecisionCandidate | None = None):
     return accepted_v2_fundamental_core_from_candidate(candidate or _candidate())
+
+
+def _trusted_core_batch(
+    context: AcceptedV2ProductionContext,
+    *cores,
+) -> AcceptedV2FundamentalCoreBatch:
+    return AcceptedV2FundamentalCoreBatch(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        cores=cores,
+    )
 
 
 def _model_facing_stage2_payload(
@@ -2185,6 +2229,346 @@ def test_v2_production_output_resolves_ready_plan_for_complete_scope() -> None:
     assert artifact.decision_consistency["status"] == "PASS"
     assert artifact.decision_consistency["raw_candidate_used_as_final"] == 0
     assert artifact.decision_consistency["daily_review_overrides_valid_v2_accepted"] == 0
+
+
+def test_standalone_numeric_candidate_plan_remains_strict() -> None:
+    packet = _packet()
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    plan = resolve_accepted_v2_decision(
+        packet,
+        candidate,
+        v1_decision=candidate.decision,
+        material_disagreement=False,
+        adjudication=None,
+    )
+
+    validation = validate_accepted_v2_decision(packet, plan)
+
+    assert validation.valid is False
+    assert "adjudication_introduced_unregistered_numeric" in validation.errors
+
+
+def test_finalizer_gate_allows_only_exact_owned_numeric_balance_summary() -> None:
+    packet = _packet()
+    candidate = _candidate()
+    candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(
+            update={"balance_summary": "평가 12.4172배와 실행 위험을 함께 반영합니다."}
+        )
+    )
+    core = _core(candidate)
+    plan = resolve_accepted_v2_decision(
+        packet,
+        candidate,
+        v1_decision=candidate.decision,
+        material_disagreement=False,
+        adjudication=None,
+    )
+    scope = AcceptedDecisionFrozenCoreNumericScope(
+        ticker=core.ticker,
+        fundamental_core_sha256=accepted_v2_fundamental_core_sha256(core),
+        directional_balance=core.directional_balance,
+        buy_drivers=core.buy_drivers,
+        sell_drivers=core.sell_drivers,
+        balance_summary=core.balance_summary,
+    )
+
+    assert validate_accepted_v2_decision(
+        packet,
+        plan,
+        frozen_core_numeric_scope=scope,
+    ).valid
+
+    mutated = plan.model_copy(
+        update={"accepted_balance_summary": "평가 12.4173배와 실행 위험을 함께 반영합니다."}
+    )
+    assert "adjudication_introduced_unregistered_numeric" in validate_accepted_v2_decision(
+        packet,
+        mutated,
+        frozen_core_numeric_scope=scope,
+    ).errors
+
+
+def test_integrated_finalizer_allows_exact_frozen_core_numeric_claims() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-frozen-core-numeric",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+    )
+
+    assert artifact.status == "PASS"
+    assert artifact.accepted_plans[0].accepted_buy_drivers == frozen_core.buy_drivers
+    assert artifact.accepted_plans[0].accepted_sell_drivers == frozen_core.sell_drivers
+    assert artifact.accepted_plans[0].accepted_balance_summary == frozen_core.balance_summary
+
+
+def test_numeric_frozen_core_artifact_round_trip(
+    tmp_path: Path,
+) -> None:
+    packet = _packet()
+    runtime_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": packet.ticker}],
+    }
+    context = build_accepted_v2_production_context(
+        packet=runtime_packet,
+        claim_id="claim-v2-frozen-core-round-trip",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+    )
+    path = tmp_path / "accepted-v2.json"
+    path.write_text(
+        json.dumps(artifact.model_dump(mode="json"), ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    loaded = load_accepted_v2_production_artifact(
+        path,
+        packet=runtime_packet,
+        claim_id=context.claim_id,
+    )
+
+    assert loaded == artifact
+
+
+def test_integrated_finalizer_without_trusted_core_keeps_numeric_gate_strict() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-untrusted-core-numeric",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(_core(candidate),),
+        candidates=(candidate,),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_accepted_plan_invalid:TEST:"
+        "adjudication_introduced_unregistered_numeric",
+    ):
+        validate_accepted_v2_production_output(context, output)
+
+
+def test_integrated_finalizer_rejects_joint_core_candidate_numeric_mutation() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-mutated-core-numeric",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    trusted_core = _core(candidate)
+    mutated_buy = candidate.buy_drivers[0].model_copy(
+        update={"text": candidate.buy_drivers[0].text.replace("12.4172", "12.4173")}
+    )
+    mutated_candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(update={"buy_drivers": (mutated_buy,)})
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(_core(mutated_candidate),),
+        candidates=(mutated_candidate,),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_trusted_fundamental_core_mismatch:TEST",
+    ):
+        validate_accepted_v2_production_output(
+            context,
+            output,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, trusted_core),
+        )
+
+
+def test_integrated_finalizer_rejects_wrong_trusted_core_batch_identity() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-core-identity",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+    )
+    wrong_batch = _trusted_core_batch(context, frozen_core).model_copy(
+        update={"claim_id": "different-claim"}
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_trusted_fundamental_core_scope_mismatch:claim_id_mismatch",
+    ):
+        validate_accepted_v2_production_output(
+            context,
+            output,
+            trusted_fundamental_core_batch=wrong_batch,
+        )
+
+
+def test_integrated_finalizer_keeps_stage2_numeric_claim_strict() -> None:
+    packet = _packet()
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-stage2-numeric",
+        evidence_packets=(packet,),
+    )
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    numeric_new_buyer = candidate.new_buyer_axis.model_copy(
+        update={
+            "reason": candidate.new_buyer_axis.reason.model_copy(
+                update={"text": "현재 10달러 가격은 신규 진입과 양립합니다."}
+            )
+        }
+    )
+    mutated_candidate = candidate.model_copy(update={"new_buyer_axis": numeric_new_buyer})
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(mutated_candidate,),
+    )
+
+    with pytest.raises(ValueError, match="freeform_exact_numeric_claim"):
+        validate_accepted_v2_production_output(
+            context,
+            output,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+        )
+
+
+def test_integrated_finalizer_keeps_adjudication_numeric_claims_strict() -> None:
+    packet = _packet()
+    candidate = _candidate_with_frozen_core_numeric_claims()
+    frozen_core = _core(candidate)
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": packet.ticker}],
+        },
+        claim_id="claim-v2-adjudication-numeric",
+        evidence_packets=(packet,),
+    ).model_copy(
+        update={
+            "prior_accepted": (
+                AcceptedV2ProductionBaseline(
+                    ticker=packet.ticker,
+                    market="us",
+                    accepted_decision="HOLD",
+                    evidence_sha256="prior-evidence",
+                    accepted_decision_id="prior-id",
+                    source="fixture",
+                ),
+            )
+        }
+    )
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=(frozen_core,),
+        candidates=(candidate,),
+        adjudications=(
+            _adjudication(
+                recommendation="KEEP_V2",
+                accepted_decision="BUY",
+                candidate=candidate,
+                v1_decision="HOLD",
+            ),
+        ),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="v2_production_accepted_plan_invalid:TEST:"
+        "adjudication_introduced_unregistered_numeric",
+    ):
+        validate_accepted_v2_production_output(
+            context,
+            output,
+            trusted_fundamental_core_batch=_trusted_core_batch(context, frozen_core),
+        )
 
 
 def test_changed_v2_candidate_without_adjudication_is_suppressed_not_visible() -> None:

@@ -675,8 +675,15 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     paths = _paths(claim, claim_id)
     identity = _generation_identity(packet_id, claim_id, claim)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
+    trusted_core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
+        _read_json(paths["core_temp"])
+    )
     output = parse_accepted_v2_production_batch_output(_read_json(paths["temp"]))
-    artifact = validate_accepted_v2_production_output(context, output)
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=trusted_core_batch,
+    )
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
     packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
     load_accepted_v2_production_artifact(paths["final"], packet=packet, claim_id=claim_id)

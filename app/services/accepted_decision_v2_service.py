@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 from collections import Counter
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal
 
@@ -127,6 +128,16 @@ class AcceptedDecisionPlan(FrozenModel):
     accepted_balance_summary: str | None = None
     accepted_new_buyer_axis: NewBuyerDecisionAxis | None = None
     accepted_holder_axis: HolderDecisionAxis | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class AcceptedDecisionFrozenCoreNumericScope:
+    ticker: str
+    fundamental_core_sha256: str
+    directional_balance: DirectionalBalance
+    buy_drivers: tuple[EvidenceClaim, ...]
+    sell_drivers: tuple[EvidenceClaim, ...]
+    balance_summary: str
 
 
 class AcceptedDecisionValidationResult(FrozenModel):
@@ -561,6 +572,8 @@ def resolve_accepted_v2_decision(
 def validate_accepted_v2_decision(
     packet: DecisionEvidencePacket,
     plan: AcceptedDecisionPlan,
+    *,
+    frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> AcceptedDecisionValidationResult:
     errors: list[str] = []
     if plan.status != AcceptedDecisionStatus.READY:
@@ -582,10 +595,28 @@ def validate_accepted_v2_decision(
         errors.append("accepted_decision_balance_mismatch")
     if not plan.accepted_buy_drivers or not plan.accepted_sell_drivers:
         errors.append("accepted_directional_drivers_missing")
+    frozen_core_fields_bound = bool(
+        frozen_core_numeric_scope is not None
+        and plan.accepted_source == AcceptedDecisionSource.CANDIDATE
+        and plan.ticker == frozen_core_numeric_scope.ticker
+        and plan.material_disagreement is False
+        and plan.adjudication_id is None
+        and plan.adjudication_status == "NOT_REQUIRED"
+        and plan.candidate_directional_balance
+        == frozen_core_numeric_scope.directional_balance
+        and plan.candidate_buy_drivers == frozen_core_numeric_scope.buy_drivers
+        and plan.candidate_sell_drivers == frozen_core_numeric_scope.sell_drivers
+        and plan.candidate_balance_summary == frozen_core_numeric_scope.balance_summary
+        and plan.accepted_directional_balance
+        == frozen_core_numeric_scope.directional_balance
+        and plan.accepted_buy_drivers == frozen_core_numeric_scope.buy_drivers
+        and plan.accepted_sell_drivers == frozen_core_numeric_scope.sell_drivers
+        and plan.accepted_balance_summary == frozen_core_numeric_scope.balance_summary
+    )
     if not plan.accepted_balance_summary:
         errors.append("accepted_balance_summary_missing")
     else:
-        if _EXACT_NUMBER.search(plan.accepted_balance_summary):
+        if _EXACT_NUMBER.search(plan.accepted_balance_summary) and not frozen_core_fields_bound:
             errors.append("adjudication_introduced_unregistered_numeric")
         errors.extend(
             directional_balance_language_errors(
@@ -613,28 +644,36 @@ def validate_accepted_v2_decision(
     ):
         errors.append("keep_v1_did_not_replace_candidate_or_balance")
     claims = tuple(
-        claim
-        for claim in (
-            plan.accepted_reason,
-            plan.accepted_confirmation_cost_basis,
-            plan.accepted_upgrade_condition,
-            plan.accepted_downgrade_condition,
-            *plan.accepted_buy_drivers,
-            *plan.accepted_sell_drivers,
+        (claim, allow_frozen_core_numeric)
+        for claim, allow_frozen_core_numeric in (
+            (plan.accepted_reason, False),
+            (plan.accepted_confirmation_cost_basis, False),
+            (plan.accepted_upgrade_condition, False),
+            (plan.accepted_downgrade_condition, False),
+            *((claim, frozen_core_fields_bound) for claim in plan.accepted_buy_drivers),
+            *((claim, frozen_core_fields_bound) for claim in plan.accepted_sell_drivers),
             (
-                plan.accepted_new_buyer_axis.reason
-                if plan.accepted_new_buyer_axis is not None
-                else None
+                (
+                    plan.accepted_new_buyer_axis.reason
+                    if plan.accepted_new_buyer_axis is not None
+                    else None
+                ),
+                False,
             ),
-            plan.accepted_holder_axis.reason if plan.accepted_holder_axis is not None else None,
+            (
+                plan.accepted_holder_axis.reason
+                if plan.accepted_holder_axis is not None
+                else None,
+                False,
+            ),
         )
         if claim is not None
     )
     allowed_refs = {row.ref_id for row in packet.evidence}
-    for claim in claims:
+    for claim, allow_frozen_core_numeric in claims:
         if _ORDER_LANGUAGE.search(claim.text):
             errors.append("order_command_language")
-        if _EXACT_NUMBER.search(claim.text):
+        if _EXACT_NUMBER.search(claim.text) and not allow_frozen_core_numeric:
             errors.append("adjudication_introduced_unregistered_numeric")
         if _INTERNAL_LABEL_LANGUAGE.search(claim.text):
             errors.append("internal_label_language")
@@ -836,9 +875,15 @@ def render_accepted_v2_shadow(
 def render_accepted_v2_production(
     packet: DecisionEvidencePacket,
     plan: AcceptedDecisionPlan,
+    *,
+    frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> RenderedProductionAcceptedDecision:
     plan = normalize_accepted_plan_conditions(plan)
-    accepted_validation = validate_accepted_v2_decision(packet, plan)
+    accepted_validation = validate_accepted_v2_decision(
+        packet,
+        plan,
+        frozen_core_numeric_scope=frozen_core_numeric_scope,
+    )
     if not accepted_validation.valid or plan.accepted_decision is None:
         raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
     if plan.accepted_source is None or plan.accepted_reason is None:
