@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+from collections.abc import Callable
 from datetime import UTC, datetime
 
 import pytest
@@ -424,6 +425,21 @@ def _earnings_symbolic_ref() -> DecisionEvidenceRef:
     )
 
 
+def _symbolic_ref_statement(
+    row: DecisionEvidenceRef,
+    *,
+    remove: tuple[str, ...] = (),
+    replace: dict[str, object] | None = None,
+) -> DecisionEvidenceRef:
+    statement = json.loads(row.statement)
+    for field_name in remove:
+        statement.pop(field_name, None)
+    statement.update(replace or {})
+    return row.model_copy(
+        update={"statement": json.dumps(statement, sort_keys=True)}
+    )
+
+
 def _materialization_with_refs(
     *refs: str,
     packet: DecisionEvidencePacket | None = None,
@@ -510,6 +526,160 @@ def test_m12cg_symbolic_classifier_requires_canonical_structured_metadata() -> N
     assert symbolic_maturity_evidence_kind(_earnings_symbolic_ref()) is not None
     assert symbolic_maturity_evidence_kind(malformed) is None
     assert symbolic_maturity_evidence_kind(free_text) is None
+
+
+def test_m12cg_r2_financial_quality_missing_source_period_is_rejected() -> None:
+    invalid_ref = _symbolic_ref_statement(
+        _financial_quality_symbolic_ref(),
+        remove=("source_period",),
+    )
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, invalid_ref)}
+    )
+    context, raw = _materialization_with_refs(
+        invalid_ref.ref_id,
+        packet=packet,
+    )
+
+    assert symbolic_maturity_evidence_kind(invalid_ref) is None
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unresolvable_provenance",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+@pytest.mark.parametrize(
+    ("field_name", "remaining_field"),
+    [
+        ("period_label", "period_type"),
+        ("period_type", "period_label"),
+    ],
+)
+def test_m12cg_r2_earnings_missing_required_nullable_field_is_rejected(
+    field_name: str,
+    remaining_field: str,
+) -> None:
+    invalid_ref = _symbolic_ref_statement(
+        _earnings_symbolic_ref(),
+        remove=(field_name,),
+    )
+    statement = json.loads(invalid_ref.statement)
+
+    assert remaining_field in statement
+    assert statement[remaining_field] is None
+    assert symbolic_maturity_evidence_kind(invalid_ref) is None
+    projection = project_maturity_provenance(
+        {invalid_ref.ref_id: invalid_ref},
+        (invalid_ref.ref_id,),
+    )
+    assert projection.invalid_ref_ids == (invalid_ref.ref_id,)
+    assert projection.provenance_status is None
+
+
+def test_m12cg_r2_earnings_missing_both_nullable_fields_is_rejected() -> None:
+    invalid_ref = _symbolic_ref_statement(
+        _earnings_symbolic_ref(),
+        remove=("period_label", "period_type"),
+    )
+
+    assert symbolic_maturity_evidence_kind(invalid_ref) is None
+
+
+@pytest.mark.parametrize("invalid_value", ["null", "", 0, False, {}, []])
+@pytest.mark.parametrize(
+    ("row_factory", "field_name"),
+    [
+        (_financial_quality_symbolic_ref, "source_period"),
+        (_earnings_symbolic_ref, "period_label"),
+        (_earnings_symbolic_ref, "period_type"),
+    ],
+)
+def test_m12cg_r2_required_nullable_fields_reject_non_null_values(
+    row_factory: Callable[[], DecisionEvidenceRef],
+    field_name: str,
+    invalid_value: object,
+) -> None:
+    row = row_factory()
+    invalid_ref = _symbolic_ref_statement(
+        row,
+        replace={field_name: invalid_value},
+    )
+
+    assert symbolic_maturity_evidence_kind(invalid_ref) is None
+
+
+def test_m12cg_r2_concrete_peer_cannot_hide_missing_metadata_ref() -> None:
+    invalid_ref = _symbolic_ref_statement(
+        _financial_quality_symbolic_ref(),
+        remove=("source_period",),
+    )
+    packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, invalid_ref)}
+    )
+    context, raw = _materialization_with_refs(
+        "ref:valuation",
+        invalid_ref.ref_id,
+        packet=packet,
+    )
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unresolvable_provenance",
+    ):
+        materialize_accepted_v2_stage2_output(context, raw)
+
+
+def test_m12cg_r2_independent_validator_rejects_forged_symbolic_projection() -> None:
+    valid_packet = _packet().model_copy(
+        update={
+            "evidence": (*_packet().evidence, _financial_quality_symbolic_ref())
+        }
+    )
+    context, raw = _materialization_with_refs(
+        "canonical:financial_quality:latest",
+        packet=valid_packet,
+    )
+    output = materialize_accepted_v2_stage2_output(context, raw)
+    invalid_ref = _symbolic_ref_statement(
+        _financial_quality_symbolic_ref(),
+        remove=("source_period",),
+    )
+    invalid_packet = _packet().model_copy(
+        update={"evidence": (*_packet().evidence, invalid_ref)}
+    )
+
+    validation = validate_preconfirmation_candidate(
+        invalid_packet,
+        output.candidates[0],
+    )
+
+    assert not validation.valid
+    assert any(
+        error.startswith("maturity_provenance_unresolvable:")
+        for error in validation.errors
+    )
+
+
+@pytest.mark.parametrize("market_prefix", ["us_fixture", "kr_fixture"])
+def test_m12cg_r2_presence_guard_is_not_ref_or_market_specific(
+    market_prefix: str,
+) -> None:
+    original = _financial_quality_symbolic_ref()
+    ref_id = f"canonical:{market_prefix}:financial_quality:latest"
+    valid_ref = original.model_copy(
+        update={
+            "ref_id": ref_id,
+            "source_ref": f"stock.fact_catalog.{ref_id.removeprefix('canonical:')}",
+        }
+    )
+    invalid_ref = _symbolic_ref_statement(
+        valid_ref,
+        remove=("source_period",),
+    )
+
+    assert symbolic_maturity_evidence_kind(valid_ref) is not None
+    assert symbolic_maturity_evidence_kind(invalid_ref) is None
 
 
 def test_m12cg_model_authored_provenance_status_is_rejected() -> None:

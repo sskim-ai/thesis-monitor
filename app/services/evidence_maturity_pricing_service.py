@@ -93,6 +93,7 @@ def symbolic_maturity_evidence_kind(
         return None
     if row.label == "financial_quality" and (
         statement.get("decision_version") == "financial-quality-taint-v2"
+        and "source_period" in statement
         and statement.get("source_period") is None
         and statement.get("source_type") == "unknown"
         and statement.get("state") == "unknown"
@@ -101,7 +102,9 @@ def symbolic_maturity_evidence_kind(
         return SymbolicMaturityEvidenceKind.FINANCIAL_QUALITY_LIMITATION
     if row.label == "earnings" and (
         statement.get("period") == "latest"
+        and "period_label" in statement
         and statement.get("period_label") is None
+        and "period_type" in statement
         and statement.get("period_type") is None
         and statement.get("financial_period_required") is True
         and statement.get("preliminary") is False
