@@ -1,0 +1,21 @@
+{
+  "contract": "m12cg-readiness-v1",
+  "deployment_readiness": "NO",
+  "implementation_sha": "b7e541b6a3c54567018f937f32d6f92be09a7e4e",
+  "implementation_status": "R2_IMPLEMENTED_AND_FRESH_REPLAY_PASS",
+  "m12cg_go_no_go": "NO_GO",
+  "message_model_contract_readiness": "NOT_READY_REQUIRED_OFFLINE_EVIDENCE_REPAIR",
+  "next_scope": "M12CG_SOURCE_RECOVERY_AND_CANONICAL_RECEIPT_CONTINUITY_PROOF",
+  "open_blockers": [
+    {
+      "code": "M12CG_REQUIRED_HISTORICAL_SOURCE_MISSING",
+      "detail": "The exact M12CD report ZIP is unavailable; 60 of 62 required historical row-level records cannot be replayed."
+    },
+    {
+      "code": "M12CG_CANONICAL_RECEIPT_CONTINUITY_NOT_PROVEN",
+      "detail": "The accepted-v2 artifact/state path exercised offline is not wired to the canonical acceptance receipt path in the available evidence."
+    }
+  ],
+  "production_changes": 0,
+  "result": "M12CG_REQUIRED_SOURCE_COVERAGE_FAILURE"
+}
