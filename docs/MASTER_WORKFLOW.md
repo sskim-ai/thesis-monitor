@@ -2583,3 +2583,36 @@ DGS3/5/10/30, DFII10, and T10YIE parser/render/bp/as-of/time-layer tests pass. T
 send, persistence mutation, scheduler mutation, or automation resume occurred. The next bounded
 model-contract scope is generic Stage-2 maturity polarity disjointness, followed by a wholly new
 full22 generation; Kiwoom read-only gateway enablement remains a separate final-smoke prerequisite.
+
+### 40.43 M12BZ Maturity Polarity Single-Source Convergence
+
+Exact work instructions were committed first as `d8d2351`; deterministic implementation is
+`60a267c475f89fd39c051266b0e458c468a20184` on local branch
+`codex/20260916-m12bz-maturity-polarity-single-source-convergence`. Historical
+`decision-evidence-polarity-v1` remains canonical for absolute BULLISH/BEARISH/NEUTRAL ownership,
+while `stage2-maturity-polarity-adapter-v1` adds deterministic
+`maturity-atomic-claim-identity-v1` projection for driver-relative support/opposition. A mixed
+parent source may occur on both sides only through distinct child claims; the same atomic claim is
+still hard-rejected. No free-form polarity classifier or ticker exception was added.
+
+Focused/wider/full validation is `128/164/4044 PASS`, with `63` full-suite skips and two existing
+dependency warnings; Ruff and diff check pass. New immutable generation
+`20260916-uskr22-m12bz-20260916T003454Z-60a267c475f8` completed all five US Fundamental Core
+batches and two Stage-2 batches. Core is `14/14`; Stage-2 schema/semantic validity is `6/5`.
+Atomic identity, same-claim overlap, unproven parent overlap, exact-ref, and typed-date errors are
+zero. IBM proves one valid mixed-parent overlap with distinct BULLISH/BEARISH child claims, and the
+M12BY CORZ polarity failure does not recur.
+
+The run stopped at ordinal 7 because GOOGL alone failed the existing semantic rule
+`preconfirmation_buy_flag_missing`. The frozen repair guard prevented any repair call; planned/
+started/completed/usable calls are `16/7/7/7`, and retry/fallback/judge/repair/selective rerun are
+all zero. Do not resume or stitch this generation. Track A is
+`FULL22_REPROOF_NEW_HARD_FAILURE`.
+
+Market context remains independently local-ready. Kiwoom KOSPI200 9/1-9/3 and basis suppression
+pass, but gateway URL/key are not configured, so live read/order/modify/cancel calls are all zero.
+FRED DGS3/5/10/30, DFII10, and T10YIE remain PASS. Top-level state is
+`M12BZ_MODEL_CONTRACT_BLOCKED_MARKET_CONTEXT_READY`. No main merge, deploy, remote push,
+production send/state write, scheduler mutation, or automation resume occurred. The next bounded
+scope is generic preconfirmation BUY-flag contract convergence followed by a wholly new Full22
+generation; Kiwoom read-only configuration remains a separate final-smoke prerequisite.

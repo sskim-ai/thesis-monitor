@@ -2632,3 +2632,30 @@ pass, unsafe percentage fabrication is zero, and no gateway is configured, so li
 are `0/0`. Treasury DGS3/5/10/30 plus DFII10/T10YIE remain safe daily observations with per-series
 dates and separate time layers. Keep production DB, warnings, notifications, schedulers, Telegram,
 main, deployment, and Production Assist unchanged.
+
+## 2026-09-16 M12BZ Maturity Polarity Convergence Handoff
+
+Start with `docs/reports/20260916-m12bz-maturity-polarity-convergence-result.md` and
+`docs/reports/20260916-m12bz-readiness.json`. Exact instructions are `d8d2351`; frozen
+implementation is `60a267c475f89fd39c051266b0e458c468a20184`. This branch remains local only.
+
+The historical `decision-evidence-polarity-v1` contract is reused through
+`stage2-maturity-polarity-adapter-v1`. Stage-2 now cites deterministic
+`maturity-atomic-claim-identity-v1` child claims while retaining parent source refs. The same atomic
+claim cannot appear on both sides; a mixed parent source can only overlap when distinct canonical
+children prove it. No free-form classifier or ticker exception exists.
+
+Do not continue generation `20260916-uskr22-m12bz-20260916T003454Z-60a267c475f8`. CORZ's old
+polarity failure is closed and IBM proves safe mixed-parent handling, but ordinal 7 stopped on the
+unrelated GOOGL semantic error `preconfirmation_buy_flag_missing`. Core is `14/14`; Stage-2
+schema/semantic is `6/5`; atomic identity, same-claim overlap, unproven parent overlap, exact-ref,
+and date errors are zero. Calls are `16/7/7/7` planned/started/completed/usable, with all repair
+paths zero.
+
+Next scope is `BOUNDED_PRECONFIRMATION_BUY_FLAG_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`. Preserve
+the successful polarity adapter and batch identity work, then start a wholly new generation from
+call 1. Do not hotfix from the failed output, stitch partial batches, or selectively rerun GOOGL.
+
+Market context is local-ready: Kiwoom fixture and Treasury curve regressions pass. The authenticated
+Kiwoom gateway remains unconfigured, so live read/order/modify/cancel calls are zero. No production
+DB, warning, notification, Telegram, scheduler, main, deploy, or remote-push mutation occurred.

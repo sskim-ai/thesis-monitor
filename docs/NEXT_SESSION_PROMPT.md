@@ -1,5 +1,33 @@
 # Next Session Prompt
 
+Latest authoritative local-only work is M12BZ. Read
+`docs/reports/20260916-m12bz-maturity-polarity-convergence-result.md`,
+`docs/reports/20260916-m12bz-readiness.json`, and the iCloud report bundle first. Work instructions
+are `d8d2351`; frozen implementation is `60a267c475f89fd39c051266b0e458c468a20184`.
+
+The maturity-polarity path now reuses `decision-evidence-polarity-v1` through the thin
+`stage2-maturity-polarity-adapter-v1`. Driver maturity cites deterministic
+`maturity-atomic-claim-identity-v1` children. Same-claim overlap remains forbidden, while a mixed
+parent source is allowed only with distinct canonical child claims. CORZ's old failure is closed;
+IBM supplies a valid mixed-parent proof. No free-form classifier or ticker exception was added.
+
+Do not continue or stitch generation
+`20260916-uskr22-m12bz-20260916T003454Z-60a267c475f8`. It stopped at ordinal 7 after GOOGL alone
+failed `preconfirmation_buy_flag_missing`. Core is `14/14`, Stage-2 schema/semantic is `6/5`, and
+atomic identity, same-claim overlap, unproven parent overlap, exact refs, and dates have zero errors.
+Retry/fallback/judge/repair/selective rerun are all zero.
+
+Next bounded task:
+`BOUNDED_PRECONFIRMATION_BUY_FLAG_CONTRACT_REPAIR_AND_NEW_FULL22_REPROOF`. Audit the generic flag
+contract, preserve all M12BZ polarity and M12BY batch closure, and run a wholly new US14/KR8 proof
+from call 1. Do not target GOOGL text or infer from the failed candidate.
+
+Kiwoom and Treasury remain local-ready, but `KIWOOM_GATEWAY_URL` and
+`KIWOOM_GATEWAY_API_KEY` are not configured. Keep live trading calls, production DB/warnings/
+notifications, Telegram, schedules, main, deploy, remote push, and Production Assist untouched.
+
+---
+
 Latest authoritative local-only work is M12BY. Read the iCloud bundle
 `thesis-monitor-20260916-fundamental-core-batch-completeness-identity-closure-full22-reproof-market-context-final-readiness-report.zip`
 first. Exact instruction commit is `fe177a1f5fc5273617055f890e9e8ea192e9e19e`; deterministic implementation is
