@@ -5,6 +5,7 @@ import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2FundamentalCoreBatch,
@@ -46,12 +47,107 @@ def _json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _delivery_consumer_probe(
+    *,
+    output_root: Path,
+    artifact,
+    trusted_batch: AcceptedV2FundamentalCoreBatch,
+) -> dict[str, object]:
+    from app.services import ai_assisted_delivery_service as delivery
+
+    packet = {
+        "packet_id": artifact.packet_id,
+        "market": artifact.market,
+        "assessment_date": artifact.assessment_date,
+        "stocks": [{"ticker": ticker} for ticker in artifact.selected_subjects],
+    }
+    delivery_artifact = artifact.model_copy(
+        update={"source_packet_sha256": canonical_sha256(packet)}
+    )
+    output_path = output_root / "native-consumer" / "review.json"
+    paths = delivery.accepted_v2_production_paths(
+        output_path,
+        claim_id=artifact.claim_id,
+    )
+    _write_json(paths["final"], delivery_artifact.model_dump(mode="json"))
+    _write_json(paths["core_temp"], trusted_batch.model_dump(mode="json"))
+    settings = delivery.get_settings().model_copy(
+        update={
+            "visible_stock_decision_engine": "v2_accepted",
+            "v2_production_enabled": True,
+            "v2_full_monitored_stock_coverage_target": True,
+            "v1_decision_rollback_available": True,
+        }
+    )
+    original_get_settings = delivery.get_settings
+    delivery.get_settings = lambda: settings
+    try:
+        loaded, state, loaded_path = delivery._load_delivery_accepted_v2(
+            packet,
+            SimpleNamespace(claim_id=artifact.claim_id),
+            output_path,
+        )
+    finally:
+        delivery.get_settings = original_get_settings
+    compositions: list[dict[str, object]] = []
+    if loaded is not None:
+        blocks = {row.ticker: row for row in loaded.blocks}
+        for ticker in ("GOOGL", "HUT"):
+            block = blocks[ticker]
+            base_text = f"{ticker} deterministic base message"
+            combined = delivery.insert_decision_canary_block(base_text, block.text)
+            compositions.append(
+                {
+                    "ticker": ticker,
+                    "accepted_block_id": block.accepted_decision_id,
+                    "block_exactly_in_composed_message": block.text in combined,
+                    "base_message_preserved": base_text in combined,
+                    "within_existing_message_limit": (
+                        len(combined) <= settings.telegram_message_max_chars
+                    ),
+                    "composed_text": combined,
+                }
+            )
+    status = (
+        "PASS"
+        if loaded is not None
+        and state == "PASS"
+        and loaded_path == paths["final"]
+        and loaded.selected_subjects == artifact.selected_subjects
+        and len(compositions) == 2
+        and all(
+            row["block_exactly_in_composed_message"]
+            and row["base_message_preserved"]
+            and row["within_existing_message_limit"]
+            for row in compositions
+        )
+        else "FAIL"
+    )
+    result = {
+        "contract": "m12cg-r4-r1-native-consumer-v1",
+        "consumer": (
+            "_load_delivery_accepted_v2 + insert_decision_canary_block"
+        ),
+        "artifact_path": paths["final"].relative_to(output_root).as_posix(),
+        "trusted_core_path": paths["core_temp"].relative_to(output_root).as_posix(),
+        "artifact_state": state,
+        "base_ai_fallback_used": False,
+        "notifier_invoked": False,
+        "production_send": 0,
+        "compositions": compositions,
+        "status": status,
+    }
+    _write_json(output_root / "native-consumer-proof.json", result)
+    return result
+
+
 def run_audit(*, m12ce_root: Path, r4_root: Path, output_root: Path) -> dict[str, object]:
     raw_root = m12ce_root / "raw" / "reproof-no-repair" / "us"
     r4_payload_root = r4_root / "payloads" / "fresh"
     binding_rows: list[dict[str, object]] = []
     parity_rows: list[dict[str, object]] = []
     subject_rows: list[dict[str, object]] = []
+    native_consumer_result: dict[str, object] | None = None
 
     for batch_number in range(1, 4):
         label = f"batch-{batch_number:02d}"
@@ -120,6 +216,12 @@ def run_audit(*, m12ce_root: Path, r4_root: Path, output_root: Path) -> dict[str
         reader_round_trip = canonical_sha256(
             loaded.model_dump(mode="json")
         ) == canonical_sha256(reader_artifact.model_dump(mode="json"))
+        if batch_number == 2:
+            native_consumer_result = _delivery_consumer_probe(
+                output_root=output_root,
+                artifact=artifact,
+                trusted_batch=trusted_batch,
+            )
 
         core_copy = output_root / "independent-core-sources" / core_path.name
         core_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -216,9 +318,17 @@ def run_audit(*, m12ce_root: Path, r4_root: Path, output_root: Path) -> dict[str
         "contract": "m12cg-r4-r1-independent-binding-audit-v1",
         "independent_binding": binding_result["status"],
         "fresh_parity": parity_result["status"],
+        "native_consumer": (
+            native_consumer_result["status"]
+            if native_consumer_result is not None
+            else "NOT_RUN"
+        ),
         "status": (
             "PASS"
-            if binding_result["status"] == "PASS" and parity_result["status"] == "PASS"
+            if binding_result["status"] == "PASS"
+            and parity_result["status"] == "PASS"
+            and native_consumer_result is not None
+            and native_consumer_result["status"] == "PASS"
             else "FAIL"
         ),
     }
