@@ -1081,6 +1081,16 @@ def build_report(args: argparse.Namespace) -> None:
     package_root = args.package_root.resolve()
     out = args.out.resolve()
     validation_dir = args.validation_dir.resolve()
+    work_instruction = (
+        args.work_instruction.resolve()
+        if args.work_instruction.is_absolute()
+        else (repo / args.work_instruction).resolve()
+    )
+    python = (
+        args.python.resolve()
+        if args.python.is_absolute()
+        else (repo / args.python).resolve()
+    )
     if out.exists():
         shutil.rmtree(out)
     for directory in (
@@ -1126,7 +1136,7 @@ def build_report(args: argparse.Namespace) -> None:
 
         head = run(repo, "git", "rev-parse", "HEAD")
         branch = run(repo, "git", "branch", "--show-current")
-        instruction_sha = sha256_file(args.work_instruction)
+        instruction_sha = sha256_file(work_instruction)
         instruction_commit = run(
             repo,
             "git",
@@ -1134,7 +1144,7 @@ def build_report(args: argparse.Namespace) -> None:
             "-1",
             "--format=%H",
             "--",
-            str(args.work_instruction.relative_to(repo)),
+            str(work_instruction.relative_to(repo)),
         )
         guard_implementation_sha = run(
             repo,
@@ -1273,7 +1283,7 @@ def build_report(args: argparse.Namespace) -> None:
         probe_root = out / "runtime-probes"
         before_runtime = execute_probe(
             repo=repo,
-            python=args.python,
+            python=python,
             script=repo / "scripts/m12cg_r2_runtime_probe.py",
             runtime_root=before_runtime_root,
             runtime_label="before-r2-b7e541b6",
@@ -1289,7 +1299,7 @@ def build_report(args: argparse.Namespace) -> None:
         )
         after_runtime = execute_probe(
             repo=repo,
-            python=args.python,
+            python=python,
             script=repo / "scripts/m12cg_r2_runtime_probe.py",
             runtime_root=repo,
             runtime_label="after-r2",
@@ -1333,7 +1343,7 @@ def build_report(args: argparse.Namespace) -> None:
 
         before_guard = execute_probe(
             repo=repo,
-            python=args.python,
+            python=python,
             script=repo / "scripts/m12cg_r2_guard_probe.py",
             runtime_root=before_runtime_root,
             runtime_label="before-r2-b7e541b6",
@@ -1342,7 +1352,7 @@ def build_report(args: argparse.Namespace) -> None:
         )
         after_guard = execute_probe(
             repo=repo,
-            python=args.python,
+            python=python,
             script=repo / "scripts/m12cg_r2_guard_probe.py",
             runtime_root=repo,
             runtime_label="after-r2",
@@ -1772,8 +1782,8 @@ continuity and duplicate-intent suppression remain NOT_PROVEN. N17 is therefore 
                 out / "proof-scripts" / script_name,
             )
         shutil.copy2(
-            args.work_instruction,
-            out / "repository" / args.work_instruction.name,
+            work_instruction,
+            out / "repository" / work_instruction.name,
         )
         (out / "repository/git-log.txt").write_text(
             run(repo, "git", "log", "-14", "--oneline", "--decorate") + "\n",
