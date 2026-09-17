@@ -7,12 +7,16 @@ from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import asdict, dataclass, replace
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 
-CONTRACT = "m12cn-investment-policy-shadow-v1"
+CONTRACT = "m12cn-r1-investment-policy-shadow-v2"
+SCHEMA_CONTRACT = "m12cn-r1-wait-entry-applicability-schema-v2"
+FUNDAMENTAL_UNRESOLVED_REASON = "no evidence-backed fundamental entry option is available"
+TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON = "no supplied tactical candidate was safely selected"
+TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON = "no safe tactical candidate is available"
 
 
 class FrozenModel(BaseModel):
@@ -120,8 +124,8 @@ class RuleId(StrEnum):
     FUNDAMENTAL_TACTICAL_COMBINATION = "FUNDAMENTAL_TACTICAL_COMBINATION"
 
 
-class EntryBand(FrozenModel):
-    status: EntryBandStatus
+class WaitEntryBand(FrozenModel):
+    status: Literal[EntryBandStatus.RESOLVED, EntryBandStatus.UNRESOLVED]
     candidate_id: str | None
     low: float | None
     high: float | None
@@ -129,8 +133,20 @@ class EntryBand(FrozenModel):
     evidence_refs: tuple[str, ...] = Field(max_length=8)
 
 
-class EntryRange(FrozenModel):
-    entry_range_status: EntryRangeStatus
+class NonWaitEntryBand(FrozenModel):
+    status: Literal[EntryBandStatus.NOT_APPLICABLE] = EntryBandStatus.NOT_APPLICABLE
+    candidate_id: None = None
+    low: None = None
+    high: None = None
+    currency: None = None
+    evidence_refs: tuple[()] = ()
+
+
+class WaitEntryRange(FrozenModel):
+    entry_range_status: Literal[
+        EntryRangeStatus.ENTRY_RANGE_RESOLVED,
+        EntryRangeStatus.ENTRY_RANGE_UNRESOLVED,
+    ]
     entry_option_id: str | None
     current_price: float | None
     current_price_as_of: str | None
@@ -138,8 +154,8 @@ class EntryRange(FrozenModel):
     preferred_entry_low: float | None
     preferred_entry_high: float | None
     distance_to_band_pct: float | None
-    fundamental_entry_band: EntryBand
-    tactical_entry_band: EntryBand
+    fundamental_entry_band: WaitEntryBand
+    tactical_entry_band: WaitEntryBand
     method: EntryMethod
     combination_rule: CombinationRule
     valuation_basis_refs: tuple[str, ...] = Field(max_length=8)
@@ -149,14 +165,33 @@ class EntryRange(FrozenModel):
     re_evaluate_conditions: tuple[str, ...] = Field(max_length=8)
 
 
-class ShadowCandidate(FrozenModel):
+class NonWaitEntryRange(FrozenModel):
+    entry_range_status: Literal[EntryRangeStatus.NOT_APPLICABLE] = EntryRangeStatus.NOT_APPLICABLE
+    entry_option_id: None = None
+    current_price: None = None
+    current_price_as_of: None = None
+    current_price_ref: None = None
+    preferred_entry_low: None = None
+    preferred_entry_high: None = None
+    distance_to_band_pct: None = None
+    fundamental_entry_band: NonWaitEntryBand
+    tactical_entry_band: NonWaitEntryBand
+    method: Literal[EntryMethod.NOT_APPLICABLE] = EntryMethod.NOT_APPLICABLE
+    combination_rule: Literal[CombinationRule.NOT_APPLICABLE] = CombinationRule.NOT_APPLICABLE
+    valuation_basis_refs: tuple[()] = ()
+    technical_basis_refs: tuple[()] = ()
+    assumptions: tuple[()] = ()
+    unresolved_inputs: tuple[()] = ()
+    re_evaluate_conditions: tuple[()] = ()
+
+
+class ShadowCandidateBase(FrozenModel):
     ticker: str
     company_archetype: CompanyArchetype
     archetype_confidence: Confidence
     archetype_evidence_refs: tuple[str, ...] = Field(min_length=1, max_length=8)
     archetype_rationale: str = Field(min_length=1, max_length=600)
     overall_direction: Literal["BUY", "HOLD", "SELL"]
-    new_buyer: Literal["ATTRACTIVE", "WAIT", "AVOID"]
     holder: Literal["HOLDABLE", "REVIEW", "REDUCE"]
     decision_confidence: Confidence
     decisive_supporting_claim_refs: tuple[str, ...] = Field(min_length=1, max_length=6)
@@ -169,14 +204,29 @@ class ShadowCandidate(FrozenModel):
     holder_reason_class: HolderReasonClass
     holder_reason: str = Field(min_length=1, max_length=500)
     holder_reason_evidence_refs: tuple[str, ...] = Field(max_length=6)
-    entry_range: EntryRange
     valuation_affects: tuple[ValuationAffects, ...] = Field(max_length=3)
     rule_trace: tuple[RuleId, ...] = Field(min_length=1, max_length=10)
     policy_summary: str = Field(min_length=1, max_length=700)
 
 
+class WaitShadowCandidate(ShadowCandidateBase):
+    new_buyer: Literal["WAIT"]
+    entry_range: WaitEntryRange
+
+
+class NonWaitShadowCandidate(ShadowCandidateBase):
+    new_buyer: Literal["ATTRACTIVE", "AVOID"]
+    entry_range: NonWaitEntryRange
+
+
+ShadowCandidate = Annotated[
+    WaitShadowCandidate | NonWaitShadowCandidate,
+    Field(discriminator="new_buyer"),
+]
+
+
 class ShadowBatchOutput(FrozenModel):
-    contract: Literal["m12cn-investment-policy-shadow-v1"] = CONTRACT
+    contract: Literal["m12cn-r1-investment-policy-shadow-v2"] = CONTRACT
     generation_id: str
     packet_id: str
     market: Literal["us", "kr"]
@@ -437,13 +487,24 @@ def build_entry_catalog(
                         _resolved_band(tactical)
                         if tactical is not None
                         else {
-                            "status": EntryBandStatus.NOT_APPLICABLE.value,
+                            "status": EntryBandStatus.UNRESOLVED.value,
                             "candidate_id": None,
                             "low": None,
                             "high": None,
                             "currency": None,
                             "evidence_refs": [],
                         }
+                    ),
+                    "unresolved_inputs": (
+                        []
+                        if tactical is not None
+                        else [
+                            (
+                                TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON
+                                if tactical_candidates
+                                else TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON
+                            )
+                        ]
                     ),
                 }
                 option["entry_option_id"] = _entry_id("option", option)
@@ -460,6 +521,13 @@ def build_entry_catalog(
         "unresolved_policy": {
             "technical_only_is_not_fundamental_entry": True,
             "preferred_numeric_fields_must_be_null": True,
+            "fundamental_unresolved_reason": FUNDAMENTAL_UNRESOLVED_REASON,
+            "tactical_unresolved_reason": (
+                TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON
+                if tactical_candidates
+                else TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON
+            ),
+            "wait_components_not_applicable_forbidden": True,
         },
     }
 
@@ -497,11 +565,7 @@ def build_subject_catalog(
     expectation = ownership.get("expectation_valuation")
     valuation_refs = {
         str(ref)
-        for ref in (
-            expectation.get("valuation_refs")
-            if isinstance(expectation, Mapping)
-            else []
-        )
+        for ref in (expectation.get("valuation_refs") if isinstance(expectation, Mapping) else [])
     }
     material_terms = (
         "material disclosure failure",
@@ -610,9 +674,7 @@ def model_subject_payload(
             packet,
             catalog["timing_evidence_refs"],
         ),
-        "expectation_valuation_interaction": deepcopy(
-            ownership.get("expectation_valuation")
-        ),
+        "expectation_valuation_interaction": deepcopy(ownership.get("expectation_valuation")),
         "maturity_atomic_claim_catalog": deepcopy(catalog["atomic_claims"]),
         "entry_range_catalog": deepcopy(catalog["entry_catalog"]),
         "directional_data_quality_catalog": {
@@ -633,6 +695,26 @@ def _string_branch(schema: dict[str, object]) -> dict[str, object] | None:
     return None
 
 
+def _strict_json_schema(value: object) -> object:
+    if isinstance(value, dict):
+        transformed: dict[str, object] = {}
+        for key, item in value.items():
+            if key in {"default", "discriminator", "$comment"}:
+                continue
+            target = "anyOf" if key == "oneOf" else key
+            if target in transformed:
+                raise ValueError(f"strict_schema_keyword_collision:{target}")
+            transformed[target] = _strict_json_schema(item)
+        properties = transformed.get("properties")
+        if isinstance(properties, dict):
+            transformed["required"] = list(properties)
+            transformed["additionalProperties"] = False
+        return transformed
+    if isinstance(value, list):
+        return [_strict_json_schema(item) for item in value]
+    return value
+
+
 def batch_output_schema(
     *,
     generation_id: str,
@@ -643,6 +725,7 @@ def batch_output_schema(
     catalogs: Mapping[str, Mapping[str, object]],
 ) -> dict[str, object]:
     schema = ShadowBatchOutput.model_json_schema()
+    schema["title"] = SCHEMA_CONTRACT
     properties = schema["properties"]
     for field, value in (
         ("contract", CONTRACT),
@@ -659,35 +742,32 @@ def batch_output_schema(
     properties["candidates"]["maxItems"] = len(subjects)
 
     definitions = schema["$defs"]
-    candidate = definitions["ShadowCandidate"]["properties"]
-    candidate["ticker"]["enum"] = list(subjects)
+    candidate_definitions = (
+        definitions["WaitShadowCandidate"]["properties"],
+        definitions["NonWaitShadowCandidate"]["properties"],
+    )
+    for candidate in candidate_definitions:
+        candidate["ticker"]["enum"] = list(subjects)
     all_evidence_refs = sorted(
-        {
-            str(ref)
-            for ticker in subjects
-            for ref in catalogs[ticker]["all_evidence_refs"]
-        }
+        {str(ref) for ticker in subjects for ref in catalogs[ticker]["all_evidence_refs"]}
     )
     all_claim_refs = sorted(
-        {
-            str(ref)
-            for ticker in subjects
-            for ref in catalogs[ticker]["claim_refs"]
-        }
+        {str(ref) for ticker in subjects for ref in catalogs[ticker]["claim_refs"]}
     )
-    for field in (
-        "archetype_evidence_refs",
-        "data_quality_evidence_refs",
-        "holder_reason_evidence_refs",
-    ):
-        candidate[field]["items"]["enum"] = all_evidence_refs
-    for field in (
-        "decisive_supporting_claim_refs",
-        "decisive_contradicting_claim_refs",
-    ):
-        candidate[field]["items"]["enum"] = all_claim_refs
+    for candidate in candidate_definitions:
+        for field in (
+            "archetype_evidence_refs",
+            "data_quality_evidence_refs",
+            "holder_reason_evidence_refs",
+        ):
+            candidate[field]["items"]["enum"] = all_evidence_refs
+        for field in (
+            "decisive_supporting_claim_refs",
+            "decisive_contradicting_claim_refs",
+        ):
+            candidate[field]["items"]["enum"] = all_claim_refs
 
-    entry = definitions["EntryRange"]["properties"]
+    entry = definitions["WaitEntryRange"]["properties"]
     current_ref = _string_branch(entry["current_price_ref"])
     if current_ref is not None:
         current_ref["enum"] = all_evidence_refs
@@ -704,7 +784,7 @@ def batch_output_schema(
     if option_branch is not None and option_ids:
         option_branch["enum"] = option_ids
 
-    band = definitions["EntryBand"]["properties"]
+    band = definitions["WaitEntryBand"]["properties"]
     band["evidence_refs"]["items"]["enum"] = all_evidence_refs
     candidate_ids = sorted(
         {
@@ -717,7 +797,10 @@ def batch_output_schema(
     candidate_branch = _string_branch(band["candidate_id"])
     if candidate_branch is not None and candidate_ids:
         candidate_branch["enum"] = candidate_ids
-    return schema
+    strict = _strict_json_schema(schema)
+    if not isinstance(strict, dict):
+        raise TypeError("strict batch schema must be an object")
+    return strict
 
 
 def policy_prompt(
@@ -745,16 +828,25 @@ def policy_prompt(
         """only for an exact ref listed in material_disclosure_failure_refs. DIRECTIONAL_POSITIVE is """
         """allowed only for an exact ref listed in positive_quality_refs. Missing provider data alone """
         """is never bearish evidence.\n\n"""
-        """For every WAIT, emit exactly ENTRY_RANGE_RESOLVED or ENTRY_RANGE_UNRESOLVED. A resolved """
-        """range must copy one supplied resolved option exactly, including option ID, current price, """
-        """bands, method, combination rule, refs, assumptions, and signed distance. The signed distance """
-        """is already runtime-computed: positive means price is below the band, negative means price """
-        """must fall to the band, and zero means price is inside. The selected option's """
+        """For every WAIT, the parent, fundamental component, and tactical component are all applicable: """
+        """never emit NOT_APPLICABLE for any of them. The parent must be ENTRY_RANGE_RESOLVED or """
+        """ENTRY_RANGE_UNRESOLVED, and each component must be RESOLVED or UNRESOLVED. A resolved parent """
+        """must copy one supplied resolved option exactly, including option ID, current price, bands, """
+        """method, combination rule, refs, assumptions, unresolved inputs, and signed distance. The """
+        """signed distance is already runtime-computed: positive means price is below the band, negative """
+        """means price must fall to the band, and zero means price is inside. The selected option's """
         """allowed_archetypes must contain the chosen company_archetype. Never calculate or adjust a """
-        """price. If no suitable fundamental option exists, return ENTRY_RANGE_UNRESOLVED with all """
-        """preferred numeric fields null and exact unresolved inputs. A tactical support alone cannot """
-        """become a fundamental entry range. For non-WAIT outputs, use NOT_APPLICABLE and null numeric """
-        """fields.\n\n"""
+        """price. If no suitable fundamental option exists, return ENTRY_RANGE_UNRESOLVED: the """
+        """fundamental component is UNRESOLVED, all preferred numeric fields are null, and unresolved_inputs """
+        """copies the catalog's exact fundamental_unresolved_reason. A supplied tactical candidate may be """
+        """copied exactly as RESOLVED watch/support context, with technical_basis_refs equal to that """
+        """candidate's evidence_refs, while the parent remains unresolved; it never """
+        """becomes preferred or fair entry by itself. If tactical cannot be safely selected, emit tactical """
+        """UNRESOLVED with null identity/numbers, empty evidence refs, and copy the catalog's exact """
+        """tactical_unresolved_reason into unresolved_inputs or re_evaluate_conditions. For a resolved """
+        """fundamental option with tactical UNRESOLVED, only the supplied FUNDAMENTAL_ONLY option is valid. """
+        """For non-WAIT outputs, every entry status and method is NOT_APPLICABLE and every entry number is """
+        """null.\n\n"""
         """BOOK_VALUE_MULTIPLE is usable only where its supplied allowed_archetypes and positive, """
         """directly comparable book evidence apply. Do not assign an earnings multiple to a loss-making """
         """company. Do not create an arbitrary discount from current price. Do not infer target prices, """
@@ -778,7 +870,7 @@ def _same_float(left: object, right: object) -> bool:
     return math.isclose(float(left), float(right), rel_tol=0.0, abs_tol=1e-6)
 
 
-def _band_matches(actual: EntryBand, expected: Mapping[str, object]) -> bool:
+def _band_matches(actual: WaitEntryBand, expected: Mapping[str, object]) -> bool:
     return (
         actual.status.value == expected["status"]
         and actual.candidate_id == expected["candidate_id"]
@@ -789,7 +881,9 @@ def _band_matches(actual: EntryBand, expected: Mapping[str, object]) -> bool:
     )
 
 
-def _band_has_no_numeric_identity(actual: EntryBand) -> bool:
+def _band_has_no_numeric_identity(
+    actual: WaitEntryBand | NonWaitEntryBand,
+) -> bool:
     return all(
         value is None
         for value in (
@@ -801,8 +895,12 @@ def _band_has_no_numeric_identity(actual: EntryBand) -> bool:
     )
 
 
+def _unresolved_reason_present(entry: WaitEntryRange, reason: str) -> bool:
+    return reason in set(entry.unresolved_inputs) | set(entry.re_evaluate_conditions)
+
+
 def validate_shadow_candidate(
-    candidate: ShadowCandidate,
+    candidate: WaitShadowCandidate | NonWaitShadowCandidate,
     catalog: Mapping[str, object],
 ) -> tuple[str, ...]:
     errors: list[str] = []
@@ -883,7 +981,7 @@ def validate_shadow_candidate(
     entry = candidate.entry_range
     entry_catalog = catalog["entry_catalog"]
     current = entry_catalog["current_price"]
-    if candidate.new_buyer == "WAIT":
+    if isinstance(candidate, WaitShadowCandidate):
         required_entry_rules = {
             RuleId.WAIT_ENTRY_RANGE,
             RuleId.NO_ARBITRARY_DISCOUNT,
@@ -936,17 +1034,23 @@ def validate_shadow_candidate(
             or entry.tactical_entry_band.status != EntryBandStatus.NOT_APPLICABLE
         ):
             errors.append("non_wait_entry_shape_invalid")
-        if (
-            not _band_has_no_numeric_identity(entry.fundamental_entry_band)
-            or not _band_has_no_numeric_identity(entry.tactical_entry_band)
-        ):
+        if not _band_has_no_numeric_identity(
+            entry.fundamental_entry_band
+        ) or not _band_has_no_numeric_identity(entry.tactical_entry_band):
             errors.append("non_wait_band_numeric_or_identity_present")
+        if any(
+            (
+                entry.valuation_basis_refs,
+                entry.technical_basis_refs,
+                entry.assumptions,
+                entry.unresolved_inputs,
+                entry.re_evaluate_conditions,
+            )
+        ):
+            errors.append("non_wait_entry_metadata_present")
 
     if entry.entry_range_status == EntryRangeStatus.ENTRY_RANGE_RESOLVED:
-        options = {
-            str(row["entry_option_id"]): row
-            for row in entry_catalog["resolved_options"]
-        }
+        options = {str(row["entry_option_id"]): row for row in entry_catalog["resolved_options"]}
         option = options.get(str(entry.entry_option_id))
         if option is None:
             errors.append("resolved_entry_option_unknown")
@@ -974,8 +1078,22 @@ def validate_shadow_candidate(
                 errors.append("resolved_fundamental_band_not_exact")
             if not _band_matches(entry.tactical_entry_band, option["tactical_entry_band"]):
                 errors.append("resolved_tactical_band_not_exact")
-        if entry.unresolved_inputs:
-            errors.append("resolved_entry_has_unresolved_inputs")
+            if tuple(entry.unresolved_inputs) != tuple(option["unresolved_inputs"]):
+                errors.append("resolved_unresolved_inputs_not_exact")
+        if entry.fundamental_entry_band.status != EntryBandStatus.RESOLVED:
+            errors.append("resolved_parent_fundamental_not_resolved")
+        if entry.tactical_entry_band.status == EntryBandStatus.UNRESOLVED:
+            if entry.combination_rule != CombinationRule.FUNDAMENTAL_ONLY:
+                errors.append("resolved_tactical_unresolved_not_fundamental_only")
+            reason = str(entry_catalog["unresolved_policy"]["tactical_unresolved_reason"])
+            if not _unresolved_reason_present(entry, reason):
+                errors.append("resolved_tactical_unresolved_reason_missing")
+            if not _band_has_no_numeric_identity(entry.tactical_entry_band):
+                errors.append("resolved_tactical_unresolved_has_identity")
+            if entry.tactical_entry_band.evidence_refs or entry.technical_basis_refs:
+                errors.append("resolved_tactical_unresolved_has_refs")
+        elif entry.tactical_entry_band.status != EntryBandStatus.RESOLVED:
+            errors.append("resolved_tactical_band_status_invalid")
     elif entry.entry_range_status == EntryRangeStatus.ENTRY_RANGE_UNRESOLVED:
         if any(
             value is not None
@@ -995,22 +1113,36 @@ def validate_shadow_candidate(
             errors.append("unresolved_fundamental_band_status_invalid")
         if not _band_has_no_numeric_identity(entry.fundamental_entry_band):
             errors.append("unresolved_fundamental_band_numeric_or_identity_present")
-        if not entry.unresolved_inputs:
-            errors.append("unresolved_inputs_missing")
+        if entry.fundamental_entry_band.evidence_refs:
+            errors.append("unresolved_fundamental_band_has_refs")
+        fundamental_reason = str(
+            entry_catalog["unresolved_policy"]["fundamental_unresolved_reason"]
+        )
+        if not _unresolved_reason_present(entry, fundamental_reason):
+            errors.append("unresolved_fundamental_reason_missing")
+        if entry.valuation_basis_refs or entry.assumptions:
+            errors.append("unresolved_fundamental_metadata_present")
         if entry.tactical_entry_band.status == EntryBandStatus.RESOLVED:
             tactical = {
-                str(row["candidate_id"]): row
-                for row in entry_catalog["tactical_candidates"]
+                str(row["candidate_id"]): row for row in entry_catalog["tactical_candidates"]
             }.get(str(entry.tactical_entry_band.candidate_id))
             if tactical is None or not _band_matches(
                 entry.tactical_entry_band,
                 _resolved_band(tactical),
             ):
                 errors.append("unresolved_tactical_band_not_exact")
+            elif tuple(entry.technical_basis_refs) != tuple(tactical["evidence_refs"]):
+                errors.append("unresolved_tactical_refs_not_exact")
         elif entry.tactical_entry_band.status != EntryBandStatus.UNRESOLVED:
             errors.append("unresolved_tactical_band_status_invalid")
-        elif not _band_has_no_numeric_identity(entry.tactical_entry_band):
-            errors.append("unresolved_tactical_band_numeric_or_identity_present")
+        else:
+            if not _band_has_no_numeric_identity(entry.tactical_entry_band):
+                errors.append("unresolved_tactical_band_numeric_or_identity_present")
+            if entry.tactical_entry_band.evidence_refs or entry.technical_basis_refs:
+                errors.append("unresolved_tactical_band_has_refs")
+            tactical_reason = str(entry_catalog["unresolved_policy"]["tactical_unresolved_reason"])
+            if not _unresolved_reason_present(entry, tactical_reason):
+                errors.append("unresolved_tactical_reason_missing")
     return tuple(sorted(set(errors)))
 
 
@@ -1179,12 +1311,8 @@ def generic_policy_control_matrix() -> dict[str, object]:
             "holder": "HOLDABLE",
         },
         "holder_not_reviewed_for_valuation_only": {"holder": "HOLDABLE"},
-        "provider_limit_is_confidence_only": {
-            "data_quality_effect": "CONFIDENCE_ONLY"
-        },
-        "material_disclosure_can_be_directional": {
-            "data_quality_effect": "DIRECTIONAL_NEGATIVE"
-        },
+        "provider_limit_is_confidence_only": {"data_quality_effect": "CONFIDENCE_ONLY"},
+        "material_disclosure_can_be_directional": {"data_quality_effect": "DIRECTIONAL_NEGATIVE"},
         "execution_risk_can_impair_direction": {
             "overall_direction": "SELL",
             "holder": "REDUCE",
@@ -1193,12 +1321,8 @@ def generic_policy_control_matrix() -> dict[str, object]:
             "overall_direction": "BUY",
             "new_buyer": "WAIT",
         },
-        "wait_without_fundamental_is_unresolved": {
-            "entry_range_status": "ENTRY_RANGE_UNRESOLVED"
-        },
-        "profitable_uses_earnings_method": {
-            "entry_method": "FORWARD_EARNINGS_MULTIPLE"
-        },
+        "wait_without_fundamental_is_unresolved": {"entry_range_status": "ENTRY_RANGE_UNRESOLVED"},
+        "profitable_uses_earnings_method": {"entry_method": "FORWARD_EARNINGS_MULTIPLE"},
         "loss_making_does_not_use_pe": {"entry_method": "UNRESOLVED"},
     }
     rows: list[dict[str, object]] = []
@@ -1226,12 +1350,463 @@ def generic_policy_control_matrix() -> dict[str, object]:
     identity_status = "PASS" if comparable_a == comparable_b else "FAIL"
     rows[-2]["identity_equivalence_status"] = identity_status
     rows[-1]["identity_equivalence_status"] = identity_status
-    status = "PASS" if all(row["status"] == "PASS" for row in rows) and identity_status == "PASS" else "FAIL"
+    component_controls = wait_entry_component_control_matrix()
+    status = (
+        "PASS"
+        if all(row["status"] == "PASS" for row in rows)
+        and identity_status == "PASS"
+        and component_controls["status"] == "PASS"
+        else "FAIL"
+    )
     return {
-        "contract": "m12cn-generic-policy-control-matrix-v1",
-        "control_count": len(rows),
+        "contract": "m12cn-r1-generic-policy-control-matrix-v2",
+        "control_count": len(rows) + int(component_controls["control_count"]),
         "identity_renamed_equivalence": identity_status,
         "ticker_or_name_policy_mapping_count": 0,
         "rows": rows,
+        "wait_entry_component_controls": component_controls,
         "status": status,
+    }
+
+
+def _generic_entry_catalog() -> dict[str, object]:
+    fundamental_overlap = {
+        "status": EntryBandStatus.RESOLVED.value,
+        "candidate_id": "fundamental:overlap",
+        "low": 70.0,
+        "high": 90.0,
+        "currency": "USD",
+        "evidence_refs": ["valuation:generic"],
+    }
+    fundamental_no_overlap = {
+        **fundamental_overlap,
+        "candidate_id": "fundamental:no-overlap",
+        "high": 75.0,
+    }
+    tactical_overlap = {
+        "status": EntryBandStatus.RESOLVED.value,
+        "candidate_id": "tactical:overlap",
+        "low": 80.0,
+        "high": 85.0,
+        "currency": "USD",
+        "evidence_refs": ["timing:support-overlap"],
+    }
+    tactical_no_overlap = {
+        "status": EntryBandStatus.RESOLVED.value,
+        "candidate_id": "tactical:no-overlap",
+        "low": 80.0,
+        "high": 90.0,
+        "currency": "USD",
+        "evidence_refs": ["timing:support-no-overlap"],
+    }
+    tactical_unresolved = {
+        "status": EntryBandStatus.UNRESOLVED.value,
+        "candidate_id": None,
+        "low": None,
+        "high": None,
+        "currency": None,
+        "evidence_refs": [],
+    }
+
+    def option(
+        *,
+        identity: str,
+        fundamental: Mapping[str, object],
+        tactical: Mapping[str, object],
+        low: float,
+        high: float,
+        combination: CombinationRule,
+        technical_refs: Sequence[str],
+        unresolved_inputs: Sequence[str] = (),
+    ) -> dict[str, object]:
+        return {
+            "entry_option_id": identity,
+            "method": EntryMethod.BOOK_VALUE_MULTIPLE.value,
+            "combination_rule": combination.value,
+            "preferred_entry_low": low,
+            "preferred_entry_high": high,
+            "distance_to_band_pct": _signed_distance_to_band(100.0, low, high),
+            "currency": "USD",
+            "valuation_basis_refs": ["valuation:generic"],
+            "technical_basis_refs": list(technical_refs),
+            "assumptions": ["generic evidence-backed book-value fixture"],
+            "allowed_archetypes": [CompanyArchetype.DURABLE_FRANCHISE.value],
+            "fundamental_entry_band": dict(fundamental),
+            "tactical_entry_band": dict(tactical),
+            "unresolved_inputs": list(unresolved_inputs),
+        }
+
+    return {
+        "current_price": {
+            "value": 100.0,
+            "currency": "USD",
+            "as_of": "2026-09-17",
+            "ref_id": "timing:price",
+        },
+        "fundamental_candidates": [fundamental_overlap, fundamental_no_overlap],
+        "tactical_candidates": [
+            {key: value for key, value in tactical_overlap.items() if key != "status"},
+            {key: value for key, value in tactical_no_overlap.items() if key != "status"},
+        ],
+        "resolved_options": [
+            option(
+                identity="option:overlap",
+                fundamental=fundamental_overlap,
+                tactical=tactical_overlap,
+                low=80.0,
+                high=85.0,
+                combination=CombinationRule.OVERLAP_INTERSECTION,
+                technical_refs=("timing:support-overlap",),
+            ),
+            option(
+                identity="option:no-overlap",
+                fundamental=fundamental_no_overlap,
+                tactical=tactical_no_overlap,
+                low=70.0,
+                high=75.0,
+                combination=CombinationRule.FUNDAMENTAL_PRIMARY_NO_OVERLAP,
+                technical_refs=("timing:support-no-overlap",),
+            ),
+            option(
+                identity="option:fundamental-only",
+                fundamental=fundamental_overlap,
+                tactical=tactical_unresolved,
+                low=70.0,
+                high=90.0,
+                combination=CombinationRule.FUNDAMENTAL_ONLY,
+                technical_refs=(),
+                unresolved_inputs=(TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON,),
+            ),
+        ],
+        "unresolved_policy": {
+            "fundamental_unresolved_reason": FUNDAMENTAL_UNRESOLVED_REASON,
+            "tactical_unresolved_reason": (TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON),
+        },
+    }
+
+
+def _generic_candidate_payload(entry_range: Mapping[str, object]) -> dict[str, object]:
+    return {
+        "ticker": "GENERIC",
+        "company_archetype": CompanyArchetype.DURABLE_FRANCHISE.value,
+        "archetype_confidence": Confidence.HIGH.value,
+        "archetype_evidence_refs": ["core:business"],
+        "archetype_rationale": "일반화된 사업 근거를 사용했습니다.",
+        "overall_direction": "BUY",
+        "new_buyer": "WAIT",
+        "holder": "HOLDABLE",
+        "decision_confidence": Confidence.MEDIUM.value,
+        "decisive_supporting_claim_refs": ["maturity:generic:support"],
+        "decisive_contradicting_claim_refs": [],
+        "thesis_state": ThesisState.INTACT.value,
+        "data_quality_effect": DataQualityEffect.NONE.value,
+        "data_quality_reason_class": DataQualityReasonClass.NOT_APPLICABLE.value,
+        "data_quality_reason": None,
+        "data_quality_evidence_refs": [],
+        "holder_reason_class": HolderReasonClass.NOT_APPLICABLE.value,
+        "holder_reason": "보유 논리를 훼손하는 근거가 없습니다.",
+        "holder_reason_evidence_refs": ["core:business"],
+        "entry_range": deepcopy(dict(entry_range)),
+        "valuation_affects": [ValuationAffects.NEW_BUYER.value],
+        "rule_trace": [
+            RuleId.ARCHETYPE_WEIGHTING.value,
+            RuleId.EVIDENCE_OWNERSHIP.value,
+            RuleId.THESIS_ENTRY_SEPARATION.value,
+            RuleId.WAIT_ENTRY_RANGE.value,
+            RuleId.NO_ARBITRARY_DISCOUNT.value,
+            RuleId.FUNDAMENTAL_TACTICAL_COMBINATION.value,
+        ],
+        "policy_summary": "장기 논리와 신규 진입 조건을 분리했습니다.",
+    }
+
+
+def wait_entry_component_control_matrix() -> dict[str, object]:
+    entry_catalog = _generic_entry_catalog()
+    catalog = {
+        "ticker": "GENERIC",
+        "all_evidence_refs": [
+            "core:business",
+            "valuation:generic",
+            "timing:price",
+            "timing:support-overlap",
+            "timing:support-no-overlap",
+        ],
+        "core_evidence_refs": ["core:business", "valuation:generic"],
+        "timing_evidence_refs": [
+            "timing:price",
+            "timing:support-overlap",
+            "timing:support-no-overlap",
+        ],
+        "valuation_evidence_refs": ["valuation:generic"],
+        "material_disclosure_failure_refs": [],
+        "positive_quality_refs": [],
+        "claim_refs": ["maturity:generic:support"],
+        "entry_catalog": entry_catalog,
+    }
+    adapter = TypeAdapter(ShadowCandidate)
+
+    unresolved_band = {
+        "status": EntryBandStatus.UNRESOLVED.value,
+        "candidate_id": None,
+        "low": None,
+        "high": None,
+        "currency": None,
+        "evidence_refs": [],
+    }
+    not_applicable_band = {
+        "status": EntryBandStatus.NOT_APPLICABLE.value,
+        "candidate_id": None,
+        "low": None,
+        "high": None,
+        "currency": None,
+        "evidence_refs": [],
+    }
+
+    def unresolved_entry(
+        *,
+        tactical: Mapping[str, object],
+        technical_refs: Sequence[str] = (),
+        tactical_reason: str | None = None,
+    ) -> dict[str, object]:
+        reasons = [FUNDAMENTAL_UNRESOLVED_REASON]
+        if tactical_reason:
+            reasons.append(tactical_reason)
+        return {
+            "entry_range_status": EntryRangeStatus.ENTRY_RANGE_UNRESOLVED.value,
+            "entry_option_id": None,
+            "current_price": 100.0,
+            "current_price_as_of": "2026-09-17",
+            "current_price_ref": "timing:price",
+            "preferred_entry_low": None,
+            "preferred_entry_high": None,
+            "distance_to_band_pct": None,
+            "fundamental_entry_band": unresolved_band,
+            "tactical_entry_band": dict(tactical),
+            "method": EntryMethod.UNRESOLVED.value,
+            "combination_rule": CombinationRule.UNRESOLVED.value,
+            "valuation_basis_refs": [],
+            "technical_basis_refs": list(technical_refs),
+            "assumptions": [],
+            "unresolved_inputs": reasons,
+            "re_evaluate_conditions": ["re-evaluate when required evidence changes"],
+        }
+
+    def resolved_entry(option_id: str) -> dict[str, object]:
+        option = next(
+            row for row in entry_catalog["resolved_options"] if row["entry_option_id"] == option_id
+        )
+        return {
+            "entry_range_status": EntryRangeStatus.ENTRY_RANGE_RESOLVED.value,
+            "entry_option_id": option_id,
+            "current_price": 100.0,
+            "current_price_as_of": "2026-09-17",
+            "current_price_ref": "timing:price",
+            "preferred_entry_low": option["preferred_entry_low"],
+            "preferred_entry_high": option["preferred_entry_high"],
+            "distance_to_band_pct": option["distance_to_band_pct"],
+            "fundamental_entry_band": option["fundamental_entry_band"],
+            "tactical_entry_band": option["tactical_entry_band"],
+            "method": option["method"],
+            "combination_rule": option["combination_rule"],
+            "valuation_basis_refs": option["valuation_basis_refs"],
+            "technical_basis_refs": option["technical_basis_refs"],
+            "assumptions": option["assumptions"],
+            "unresolved_inputs": option["unresolved_inputs"],
+            "re_evaluate_conditions": ["re-evaluate when price or evidence changes"],
+        }
+
+    tactical_overlap = {
+        "status": EntryBandStatus.RESOLVED.value,
+        "candidate_id": "tactical:overlap",
+        "low": 80.0,
+        "high": 85.0,
+        "currency": "USD",
+        "evidence_refs": ["timing:support-overlap"],
+    }
+    non_wait_entry = {
+        "entry_range_status": EntryRangeStatus.NOT_APPLICABLE.value,
+        "entry_option_id": None,
+        "current_price": None,
+        "current_price_as_of": None,
+        "current_price_ref": None,
+        "preferred_entry_low": None,
+        "preferred_entry_high": None,
+        "distance_to_band_pct": None,
+        "fundamental_entry_band": not_applicable_band,
+        "tactical_entry_band": not_applicable_band,
+        "method": EntryMethod.NOT_APPLICABLE.value,
+        "combination_rule": CombinationRule.NOT_APPLICABLE.value,
+        "valuation_basis_refs": [],
+        "technical_basis_refs": [],
+        "assumptions": [],
+        "unresolved_inputs": [],
+        "re_evaluate_conditions": [],
+    }
+
+    def assess(
+        name: str,
+        payload: Mapping[str, object],
+        *,
+        expected_schema: str,
+        expected_semantic: str,
+        candidate_catalog: Mapping[str, object] = catalog,
+        expected_error: str | None = None,
+    ) -> dict[str, object]:
+        schema_status = "PASS"
+        semantic_status = "NOT_REACHED"
+        semantic_errors: tuple[str, ...] = ()
+        try:
+            parsed = adapter.validate_python(payload)
+        except ValidationError:
+            schema_status = "FAIL"
+        else:
+            semantic_errors = validate_shadow_candidate(parsed, candidate_catalog)
+            semantic_status = "PASS" if not semantic_errors else "FAIL"
+        expected_error_present = expected_error is None or expected_error in semantic_errors
+        passed = (
+            schema_status == expected_schema
+            and semantic_status == expected_semantic
+            and expected_error_present
+        )
+        return {
+            "control": name,
+            "schema_status": schema_status,
+            "semantic_status": semantic_status,
+            "semantic_errors": list(semantic_errors),
+            "expected_schema_status": expected_schema,
+            "expected_semantic_status": expected_semantic,
+            "expected_error": expected_error,
+            "status": "PASS" if passed else "FAIL",
+        }
+
+    wait_na = unresolved_entry(tactical=not_applicable_band)
+    wait_resolved_tactical = unresolved_entry(
+        tactical=tactical_overlap,
+        technical_refs=("timing:support-overlap",),
+    )
+    wait_unresolved_tactical = unresolved_entry(
+        tactical=unresolved_band,
+        tactical_reason=TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON,
+    )
+    no_tactical_catalog = deepcopy(catalog)
+    no_tactical_catalog["entry_catalog"]["tactical_candidates"] = []
+    no_tactical_catalog["entry_catalog"]["unresolved_policy"]["tactical_unresolved_reason"] = (
+        TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON
+    )
+    no_tactical_entry = unresolved_entry(
+        tactical=unresolved_band,
+        tactical_reason=TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON,
+    )
+    technical_only = deepcopy(wait_resolved_tactical)
+    technical_only["preferred_entry_low"] = 80.0
+
+    non_wait_payload = _generic_candidate_payload(non_wait_entry)
+    non_wait_payload["new_buyer"] = "ATTRACTIVE"
+    invalid_non_wait = _generic_candidate_payload(resolved_entry("option:overlap"))
+    invalid_non_wait["new_buyer"] = "ATTRACTIVE"
+
+    rows = [
+        assess(
+            "wait_fundamental_unresolved_tactical_not_applicable_rejected",
+            _generic_candidate_payload(wait_na),
+            expected_schema="FAIL",
+            expected_semantic="NOT_REACHED",
+        ),
+        assess(
+            "wait_fundamental_unresolved_exact_tactical_resolved",
+            _generic_candidate_payload(wait_resolved_tactical),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "wait_both_components_unresolved_with_exact_reasons",
+            _generic_candidate_payload(wait_unresolved_tactical),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "wait_no_safe_tactical_uses_unresolved_not_not_applicable",
+            _generic_candidate_payload(no_tactical_entry),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+            candidate_catalog=no_tactical_catalog,
+        ),
+        assess(
+            "wait_resolved_fundamental_tactical_overlap",
+            _generic_candidate_payload(resolved_entry("option:overlap")),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "wait_resolved_fundamental_tactical_no_overlap",
+            _generic_candidate_payload(resolved_entry("option:no-overlap")),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "wait_resolved_fundamental_tactical_unresolved_fundamental_only",
+            _generic_candidate_payload(resolved_entry("option:fundamental-only")),
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "technical_only_fundamental_unresolved_keeps_preferred_null",
+            _generic_candidate_payload(technical_only),
+            expected_schema="PASS",
+            expected_semantic="FAIL",
+            expected_error="unresolved_entry_has_preferred_numbers",
+        ),
+        assess(
+            "non_wait_all_entry_components_not_applicable",
+            non_wait_payload,
+            expected_schema="PASS",
+            expected_semantic="PASS",
+        ),
+        assess(
+            "non_wait_resolved_preferred_entry_rejected",
+            invalid_non_wait,
+            expected_schema="FAIL",
+            expected_semantic="NOT_REACHED",
+        ),
+    ]
+    renamed_a = evaluate_generic_control(
+        GenericControlCase(
+            identity="generic-identity-a",
+            archetype=CompanyArchetype.DURABLE_FRANCHISE,
+            strong_thesis=True,
+            valuation_expensive=True,
+        )
+    )
+    renamed_b = evaluate_generic_control(
+        GenericControlCase(
+            identity="renamed-identity-b",
+            archetype=CompanyArchetype.DURABLE_FRANCHISE,
+            strong_thesis=True,
+            valuation_expensive=True,
+        )
+    )
+    comparable_a = {key: value for key, value in renamed_a.items() if key != "identity"}
+    comparable_b = {key: value for key, value in renamed_b.items() if key != "identity"}
+    rows.extend(
+        [
+            {
+                "control": "renamed_generic_identity_preserves_policy",
+                "status": "PASS" if comparable_a == comparable_b else "FAIL",
+                "result_a": comparable_a,
+                "result_b": comparable_b,
+            },
+            {
+                "control": "no_ticker_company_country_policy_condition",
+                "ticker_or_name_policy_mapping_count": 0,
+                "identity_features_forbidden": ["ticker", "company_name", "country"],
+                "status": "PASS",
+            },
+        ]
+    )
+    return {
+        "contract": "m12cn-r1-wait-entry-component-control-matrix-v1",
+        "schema_contract": SCHEMA_CONTRACT,
+        "control_count": len(rows),
+        "rows": rows,
+        "status": "PASS" if all(row["status"] == "PASS" for row in rows) else "FAIL",
     }

@@ -8,21 +8,26 @@ from scripts.m12cn_policy_contract import (
     Confidence,
     DataQualityEffect,
     DataQualityReasonClass,
-    EntryBand,
     EntryBandStatus,
     EntryMethod,
-    EntryRange,
     EntryRangeStatus,
     HolderReasonClass,
+    NonWaitEntryBand,
+    NonWaitEntryRange,
+    NonWaitShadowCandidate,
     RuleId,
-    ShadowCandidate,
+    ShadowBatchOutput,
     ThesisState,
     ValuationAffects,
+    WaitEntryBand,
+    WaitEntryRange,
+    WaitShadowCandidate,
     batch_output_schema,
     build_entry_catalog,
     generic_policy_control_matrix,
     model_subject_payload,
     validate_shadow_candidate,
+    wait_entry_component_control_matrix,
 )
 
 
@@ -150,8 +155,8 @@ def _catalog() -> dict[str, object]:
     }
 
 
-def _not_applicable_band() -> EntryBand:
-    return EntryBand(
+def _not_applicable_band() -> NonWaitEntryBand:
+    return NonWaitEntryBand(
         status=EntryBandStatus.NOT_APPLICABLE,
         candidate_id=None,
         low=None,
@@ -161,10 +166,10 @@ def _not_applicable_band() -> EntryBand:
     )
 
 
-def _resolved_candidate() -> ShadowCandidate:
+def _resolved_candidate() -> WaitShadowCandidate:
     catalog = _catalog()
     option = catalog["entry_catalog"]["resolved_options"][1]
-    return ShadowCandidate(
+    return WaitShadowCandidate(
         ticker="RENAMED",
         company_archetype=CompanyArchetype.STRUCTURAL_CYCLICAL_LEADER,
         archetype_confidence=Confidence.HIGH,
@@ -184,7 +189,7 @@ def _resolved_candidate() -> ShadowCandidate:
         holder_reason_class=HolderReasonClass.NOT_APPLICABLE,
         holder_reason="보유 논리를 훼손하는 근거가 없습니다.",
         holder_reason_evidence_refs=("core:business",),
-        entry_range=EntryRange(
+        entry_range=WaitEntryRange(
             entry_range_status=EntryRangeStatus.ENTRY_RANGE_RESOLVED,
             entry_option_id=option["entry_option_id"],
             current_price=180.0,
@@ -193,10 +198,8 @@ def _resolved_candidate() -> ShadowCandidate:
             preferred_entry_low=option["preferred_entry_low"],
             preferred_entry_high=option["preferred_entry_high"],
             distance_to_band_pct=option["distance_to_band_pct"],
-            fundamental_entry_band=EntryBand.model_validate(
-                option["fundamental_entry_band"]
-            ),
-            tactical_entry_band=EntryBand.model_validate(option["tactical_entry_band"]),
+            fundamental_entry_band=WaitEntryBand.model_validate(option["fundamental_entry_band"]),
+            tactical_entry_band=WaitEntryBand.model_validate(option["tactical_entry_band"]),
             method=EntryMethod(option["method"]),
             combination_rule=CombinationRule(option["combination_rule"]),
             valuation_basis_refs=tuple(option["valuation_basis_refs"]),
@@ -256,14 +259,10 @@ def test_resolved_wait_must_copy_runtime_option_exactly() -> None:
     assert validate_shadow_candidate(candidate, _catalog()) == ()
     changed = candidate.model_copy(
         update={
-            "entry_range": candidate.entry_range.model_copy(
-                update={"preferred_entry_low": 134.0}
-            )
+            "entry_range": candidate.entry_range.model_copy(update={"preferred_entry_low": 134.0})
         }
     )
-    assert "resolved_entry_low_not_exact" in validate_shadow_candidate(
-        changed, _catalog()
-    )
+    assert "resolved_entry_low_not_exact" in validate_shadow_candidate(changed, _catalog())
 
 
 def test_unresolved_wait_rejects_fabricated_numbers() -> None:
@@ -275,7 +274,7 @@ def test_unresolved_wait_rejects_fabricated_numbers() -> None:
             "preferred_entry_low": 150.0,
             "preferred_entry_high": None,
             "distance_to_band_pct": None,
-            "fundamental_entry_band": EntryBand(
+            "fundamental_entry_band": WaitEntryBand(
                 status=EntryBandStatus.UNRESOLVED,
                 candidate_id=None,
                 low=None,
@@ -283,7 +282,7 @@ def test_unresolved_wait_rejects_fabricated_numbers() -> None:
                 currency=None,
                 evidence_refs=(),
             ),
-            "tactical_entry_band": EntryBand(
+            "tactical_entry_band": WaitEntryBand(
                 status=EntryBandStatus.UNRESOLVED,
                 candidate_id=None,
                 low=None,
@@ -315,9 +314,7 @@ def test_holder_review_cannot_be_supported_only_by_valuation() -> None:
         }
     )
 
-    assert "review_supported_only_by_valuation" in validate_shadow_candidate(
-        candidate, _catalog()
-    )
+    assert "review_supported_only_by_valuation" in validate_shadow_candidate(candidate, _catalog())
 
 
 def test_data_quality_limitation_is_not_directional_without_explicit_ref() -> None:
@@ -363,6 +360,9 @@ def test_batch_schema_has_no_unique_items_keyword() -> None:
     )
 
     assert not _contains_key(schema, "uniqueItems")
+    assert not _contains_key(schema, "default")
+    assert not _contains_key(schema, "discriminator")
+    assert not _contains_key(schema, "oneOf")
     assert "contract" in schema["required"]
     assert schema["properties"]["candidates"]["minItems"] == 1
     assert schema["properties"]["candidates"]["maxItems"] == 1
@@ -400,29 +400,119 @@ def test_model_payload_excludes_prior_accepted_and_decision_identity() -> None:
 
 def test_non_wait_requires_not_applicable_entry_shape() -> None:
     candidate = _resolved_candidate()
-    non_wait = candidate.model_copy(
-        update={
-            "new_buyer": "ATTRACTIVE",
-            "entry_range": EntryRange(
-                entry_range_status=EntryRangeStatus.NOT_APPLICABLE,
-                entry_option_id=None,
-                current_price=None,
-                current_price_as_of=None,
-                current_price_ref=None,
-                preferred_entry_low=None,
-                preferred_entry_high=None,
-                distance_to_band_pct=None,
-                fundamental_entry_band=_not_applicable_band(),
-                tactical_entry_band=_not_applicable_band(),
-                method=EntryMethod.NOT_APPLICABLE,
-                combination_rule=CombinationRule.NOT_APPLICABLE,
-                valuation_basis_refs=(),
-                technical_basis_refs=(),
-                assumptions=(),
-                unresolved_inputs=(),
-                re_evaluate_conditions=(),
-            ),
-        }
+    payload = candidate.model_dump(mode="python", exclude={"new_buyer", "entry_range"})
+    non_wait = NonWaitShadowCandidate(
+        **payload,
+        new_buyer="ATTRACTIVE",
+        entry_range=NonWaitEntryRange(
+            entry_range_status=EntryRangeStatus.NOT_APPLICABLE,
+            entry_option_id=None,
+            current_price=None,
+            current_price_as_of=None,
+            current_price_ref=None,
+            preferred_entry_low=None,
+            preferred_entry_high=None,
+            distance_to_band_pct=None,
+            fundamental_entry_band=_not_applicable_band(),
+            tactical_entry_band=_not_applicable_band(),
+            method=EntryMethod.NOT_APPLICABLE,
+            combination_rule=CombinationRule.NOT_APPLICABLE,
+            valuation_basis_refs=(),
+            technical_basis_refs=(),
+            assumptions=(),
+            unresolved_inputs=(),
+            re_evaluate_conditions=(),
+        ),
     )
 
     assert validate_shadow_candidate(non_wait, _catalog()) == ()
+
+
+def test_wait_entry_component_control_matrix_covers_all_required_cases() -> None:
+    matrix = wait_entry_component_control_matrix()
+
+    assert matrix["status"] == "PASS"
+    assert matrix["control_count"] == 12
+    assert all(row["status"] == "PASS" for row in matrix["rows"])
+
+
+def test_schema_discriminates_wait_and_structurally_forbids_not_applicable() -> None:
+    schema = batch_output_schema(
+        generation_id="generation",
+        packet_id="packet",
+        market="us",
+        assessment_date="2026-09-17",
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    items = schema["properties"]["candidates"]["items"]
+    assert {branch["$ref"] for branch in items["anyOf"]} == {
+        "#/$defs/WaitShadowCandidate",
+        "#/$defs/NonWaitShadowCandidate",
+    }
+    assert "discriminator" not in items
+    assert set(schema["$defs"]["WaitEntryBand"]["properties"]["status"]["enum"]) == {
+        "RESOLVED",
+        "UNRESOLVED",
+    }
+    assert schema["$defs"]["NonWaitEntryBand"]["properties"]["status"]["const"] == "NOT_APPLICABLE"
+
+
+def test_wait_tactical_not_applicable_fails_before_semantic_validation() -> None:
+    candidate = _resolved_candidate().model_dump(mode="json")
+    candidate["entry_range"]["entry_range_status"] = "ENTRY_RANGE_UNRESOLVED"
+    candidate["entry_range"]["entry_option_id"] = None
+    candidate["entry_range"]["preferred_entry_low"] = None
+    candidate["entry_range"]["preferred_entry_high"] = None
+    candidate["entry_range"]["distance_to_band_pct"] = None
+    candidate["entry_range"]["fundamental_entry_band"] = {
+        "status": "UNRESOLVED",
+        "candidate_id": None,
+        "low": None,
+        "high": None,
+        "currency": None,
+        "evidence_refs": [],
+    }
+    candidate["entry_range"]["tactical_entry_band"] = {
+        "status": "NOT_APPLICABLE",
+        "candidate_id": None,
+        "low": None,
+        "high": None,
+        "currency": None,
+        "evidence_refs": [],
+    }
+    candidate["entry_range"]["method"] = "UNRESOLVED"
+    candidate["entry_range"]["combination_rule"] = "UNRESOLVED"
+    candidate["entry_range"]["valuation_basis_refs"] = []
+    candidate["entry_range"]["technical_basis_refs"] = []
+    candidate["entry_range"]["assumptions"] = []
+
+    payload = {
+        "contract": "m12cn-r1-investment-policy-shadow-v2",
+        "generation_id": "generation",
+        "packet_id": "packet",
+        "market": "us",
+        "assessment_date": "2026-09-17",
+        "candidates": [candidate],
+    }
+    try:
+        ShadowBatchOutput.model_validate(payload)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("WAIT + tactical NOT_APPLICABLE must fail structurally")
+
+
+def test_fundamental_only_option_marks_tactical_as_unresolved() -> None:
+    catalog = build_entry_catalog(_packet(), _ownership())
+    fundamental_only = next(
+        option
+        for option in catalog["resolved_options"]
+        if option["combination_rule"] == "FUNDAMENTAL_ONLY"
+    )
+
+    assert fundamental_only["tactical_entry_band"]["status"] == "UNRESOLVED"
+    assert fundamental_only["unresolved_inputs"] == [
+        "no supplied tactical candidate was safely selected"
+    ]

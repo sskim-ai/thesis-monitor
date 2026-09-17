@@ -17,8 +17,10 @@ from zoneinfo import ZoneInfo
 
 from scripts.m12cn_policy_contract import (
     CONTRACT,
+    SCHEMA_CONTRACT,
     CompanyArchetype,
     DataQualityEffect,
+    EntryBandStatus,
     EntryRangeStatus,
     ShadowBatchOutput,
     batch_output_schema,
@@ -33,12 +35,8 @@ from scripts.m12cn_policy_contract import (
 REPO = Path(__file__).resolve().parents[1]
 KST = ZoneInfo("Asia/Seoul")
 REQUIRED_RUNTIME_BASE = "831890d1bf0dff303f67a6e0de1403ad3221b5d8"
-EXPECTED_RUNTIME_TREE_SHA256 = (
-    "c0a48acb3acdbd1dff940924f38c177bfecfd07df7cda0d3bddf86424c1f1062"
-)
-EXPECTED_FROZEN_GENERATION = (
-    "20260917-m12cm-current-v4-smoke-20260917T062918Z-5c0cb075ce8b"
-)
+EXPECTED_RUNTIME_TREE_SHA256 = "c0a48acb3acdbd1dff940924f38c177bfecfd07df7cda0d3bddf86424c1f1062"
+EXPECTED_FROZEN_GENERATION = "20260917-m12cm-current-v4-smoke-20260917T062918Z-5c0cb075ce8b"
 EXPECTED_POPULATION = {
     "us": (
         "CORZ",
@@ -68,9 +66,6 @@ EXPECTED_POPULATION = {
     ),
 }
 EXPECTED_SOURCE_HASHES = {
-    "inputs/m12cm-human-review-only.zip": (
-        "93e376c5efe91664e0193f6f79c048cb4c9328befa18c182ae729616e64409fb"
-    ),
     "inputs/m12cm-shadow-input-manifest.json": (
         "9b5763a4ef3481e388db77ce5c479244177cbed3e03e313a659f7317451a310e"
     ),
@@ -81,13 +76,9 @@ EXPECTED_SOURCE_HASHES = {
         "1cbda3115fe26681917a6bd46499a3987e449c9a18f14f19ef8fa7f331e11310"
     ),
     (
-        "sources/thesis-monitor-20260917-m12cl-stage2-maturity-supporting-claim-"
-        "completeness-contract-repair-offline-closure-report.zip"
-    ): "744f638e56436d31b6bdc8eb4aece3f68cd7daf0e4a2f02d8feabf7dbddd8024",
-    (
-        "sources/thesis-monitor-20260917-m12cm-fresh-current-v4-production-"
-        "equivalent-smoke-blind-handoff-report.zip"
-    ): "625606d6df521cf3368c8779ec7f24816ee3a374cdfcc7fac367f984983359cc",
+        "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
+        "calibration-shadow-entry-range-design-report.zip"
+    ): "2fb44910ea8f1545da6e8e6f40bfffe95a44fc614b5c41b7755f576cd2ab16ed",
 }
 POST_FREEZE_HASHES = {
     "m12cm-independent-assistant-judgment.json": (
@@ -100,8 +91,9 @@ POST_FREEZE_HASHES = {
         "0fc4761d8e8fb32870c547f8921a6d55dff00c54a072b486b752ed99d43d13ab"
     ),
 }
-COMPLETION_PASS = "M12CN_POLICY_CALIBRATION_SHADOW_PASS_READY_FOR_CHAT_REVIEW"
-COMPLETION_FAILED = "M12CN_POLICY_CALIBRATION_SHADOW_FAILED"
+COMPLETION_PASS = "M12CN_R1_POLICY_CALIBRATION_SHADOW_PASS_READY_FOR_CHAT_REVIEW"
+COMPLETION_BLOCKED = "M12CN_R1_SHADOW_CONTRACT_REPAIR_PASS_EXECUTION_BLOCKED"
+COMPLETION_FAILED = "M12CN_R1_POLICY_CALIBRATION_SHADOW_FAILED"
 
 
 class M12CNFailure(RuntimeError):
@@ -124,8 +116,7 @@ def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
-        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, default=str)
-        + "\n",
+        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, default=str) + "\n",
         encoding="utf-8",
     )
     temporary.replace(path)
@@ -200,9 +191,7 @@ def runtime_integrity(expected_head: str) -> dict[str, object]:
         frozen = git_bytes("show", f"{REQUIRED_RUNTIME_BASE}:{relative}")
         if current != frozen:
             drift.append(relative)
-        rows.append(
-            {"path": relative, "sha256": sha256_bytes(current), "size": len(current)}
-        )
+        rows.append({"path": relative, "sha256": sha256_bytes(current), "size": len(current)})
     tree_sha = canonical_sha256(rows)
     head = git_text("rev-parse", "HEAD")
     base_is_ancestor = (
@@ -274,11 +263,73 @@ def verify_pre_freeze_sources(
         if actual != row["sha256"]:
             errors.append(f"shadow_input_hash_mismatch:{relative}")
     return {
-        "contract": "m12cn-pre-freeze-source-integrity-v1",
+        "contract": "m12cn-r1-pre-freeze-source-integrity-v2",
         "cryptographic_only_post_freeze_payload_access": True,
         "post_freeze_semantic_open_count": 0,
         "package_sources": rows,
         "shadow_input_files": selected_rows,
+        "error_count": len(errors),
+        "errors": errors,
+        "status": "PASS" if not errors else "FAIL",
+    }
+
+
+def verify_prior_m12cn_report(report_zip: Path) -> dict[str, object]:
+    expected_zip_sha = EXPECTED_SOURCE_HASHES[
+        (
+            "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
+            "calibration-shadow-entry-range-design-report.zip"
+        )
+    ]
+    actual_zip_sha = sha256_file(report_zip)
+    errors: list[str] = []
+    rows: list[dict[str, object]] = []
+    if actual_zip_sha != expected_zip_sha:
+        errors.append("prior_m12cn_report_zip_hash_mismatch")
+    with zipfile.ZipFile(report_zip) as archive:
+        manifest_names = [
+            name for name in archive.namelist() if name.endswith("/artifact-manifest.json")
+        ]
+        if len(manifest_names) != 1:
+            raise M12CNFailure("prior_m12cn_artifact_manifest_count_invalid")
+        manifest_name = manifest_names[0]
+        prefix = manifest_name.removesuffix("artifact-manifest.json")
+        manifest = json.loads(archive.read(manifest_name).decode("utf-8"))
+        for item in manifest.get("files") or []:
+            relative = str(item["path"])
+            name = f"{prefix}{relative}"
+            try:
+                raw = archive.read(name)
+            except KeyError:
+                actual_sha = None
+                actual_size = None
+            else:
+                actual_sha = sha256_bytes(raw)
+                actual_size = len(raw)
+            status = (
+                "PASS" if actual_sha == item["sha256"] and actual_size == item["size"] else "FAIL"
+            )
+            rows.append(
+                {
+                    "path": relative,
+                    "expected_sha256": item["sha256"],
+                    "actual_sha256": actual_sha,
+                    "expected_size": item["size"],
+                    "actual_size": actual_size,
+                    "status": status,
+                }
+            )
+            if status != "PASS":
+                errors.append(f"prior_m12cn_payload_mismatch:{relative}")
+    if len(rows) != 83:
+        errors.append(f"prior_m12cn_payload_count:{len(rows)}")
+    return {
+        "contract": "m12cn-r1-prior-result-cryptographic-verification-v1",
+        "zip_sha256": actual_zip_sha,
+        "expected_zip_sha256": expected_zip_sha,
+        "payload_count": len(rows),
+        "payloads": rows,
+        "semantic_output_open_count": 0,
         "error_count": len(errors),
         "errors": errors,
         "status": "PASS" if not errors else "FAIL",
@@ -333,7 +384,7 @@ def data_quality_contract() -> dict[str, object]:
 
 def entry_range_contract() -> dict[str, object]:
     return {
-        "contract": "m12cn-entry-range-method-contract-v1",
+        "contract": "m12cn-r1-entry-range-method-contract-v2",
         "scope": "buy_entry_band_not_price_target",
         "wait_statuses": [
             EntryRangeStatus.ENTRY_RANGE_RESOLVED.value,
@@ -354,6 +405,78 @@ def entry_range_contract() -> dict[str, object]:
             "SOTP_EXISTING_EVIDENCE",
         ],
         "other_methods_currently_resolved_without_source_inputs": False,
+    }
+
+
+def wait_entry_component_applicability_contract() -> dict[str, object]:
+    return {
+        "contract": "m12cn-r1-wait-entry-component-applicability-v1",
+        "schema_contract": SCHEMA_CONTRACT,
+        "wait": {
+            "parent": [
+                EntryRangeStatus.ENTRY_RANGE_RESOLVED.value,
+                EntryRangeStatus.ENTRY_RANGE_UNRESOLVED.value,
+            ],
+            "fundamental": [
+                EntryBandStatus.RESOLVED.value,
+                EntryBandStatus.UNRESOLVED.value,
+            ],
+            "tactical": [
+                EntryBandStatus.RESOLVED.value,
+                EntryBandStatus.UNRESOLVED.value,
+            ],
+            "not_applicable_allowed": False,
+            "fundamental_unresolved_forces_parent_unresolved": True,
+            "resolved_tactical_is_watch_context_when_parent_unresolved": True,
+            "tactical_only_can_be_preferred_entry": False,
+        },
+        "non_wait": {
+            "new_buyer": ["ATTRACTIVE", "AVOID"],
+            "parent": EntryRangeStatus.NOT_APPLICABLE.value,
+            "fundamental": EntryBandStatus.NOT_APPLICABLE.value,
+            "tactical": EntryBandStatus.NOT_APPLICABLE.value,
+            "numeric_fields": None,
+        },
+        "production_stage2_changed": False,
+    }
+
+
+def shadow_schema_version_and_diff() -> dict[str, object]:
+    return {
+        "contract": "m12cn-r1-shadow-schema-version-and-diff-v1",
+        "previous_contract": "m12cn-investment-policy-shadow-v1",
+        "current_contract": CONTRACT,
+        "schema_contract": SCHEMA_CONTRACT,
+        "changes": [
+            "candidate is discriminated by new_buyer",
+            "WAIT entry components exclude NOT_APPLICABLE structurally",
+            "non-WAIT entry components require NOT_APPLICABLE and null values structurally",
+            "hard semantic validation remains an independent second gate",
+        ],
+        "production_stage2_schema_changed": False,
+    }
+
+
+def m12cn_failure_reproducer() -> dict[str, object]:
+    controls = generic_policy_control_matrix()["wait_entry_component_controls"]
+    row = next(
+        item
+        for item in controls["rows"]
+        if item["control"] == "wait_fundamental_unresolved_tactical_not_applicable_rejected"
+    )
+    return {
+        "contract": "m12cn-r1-prior-failure-reproducer-v1",
+        "prior_generation": ("20260917-m12cn-policy-shadow-20260917T085353Z-dba107ca8948"),
+        "prior_failed_call": {"market": "us", "batch": 3, "subjects": ["MU", "RXRX", "SKHY"]},
+        "redacted_structural_combination": {
+            "new_buyer": "WAIT",
+            "entry_range_status": "ENTRY_RANGE_UNRESOLVED",
+            "fundamental_entry_band_status": "UNRESOLVED",
+            "tactical_entry_band_status": "NOT_APPLICABLE",
+        },
+        "schema_rejection_control": row,
+        "ticker_labels_used_as_expected_answers": False,
+        "status": row["status"],
     }
 
 
@@ -388,8 +511,7 @@ def scan_model_facing_files(
         ("old_sealed_ai_name", "m12cm-sealed-ai-verdicts"),
     ]
     markers.extend(
-        (f"post_freeze_hash:{name}", digest)
-        for name, digest in POST_FREEZE_HASHES.items()
+        (f"post_freeze_hash:{name}", digest) for name, digest in POST_FREEZE_HASHES.items()
     )
     markers.extend(
         (f"accepted_id_fingerprint:{sha256_bytes(value.encode())[:12]}", value)
@@ -412,20 +534,74 @@ def scan_model_facing_files(
         for label, marker in markers:
             count = folded.count(marker.casefold())
             if count:
-                findings.append(
-                    {"path": str(path), "marker": label, "occurrence_count": count}
-                )
+                findings.append({"path": str(path), "marker": label, "occurrence_count": count})
     return {
         "contract": "m12cn-model-input-target-leak-scan-v1",
         "model_facing_file_count": len(files),
         "files": files,
         "marker_count": len(markers),
         "accepted_decision_id_fingerprint_count": len(accepted_decision_ids),
-        "target_label_leak_count": sum(
-            int(row["occurrence_count"]) for row in findings
-        ),
+        "target_label_leak_count": sum(int(row["occurrence_count"]) for row in findings),
         "findings": findings,
         "status": "PASS" if not findings else "FAIL",
+    }
+
+
+def schema_structural_proof(paths: Sequence[Path]) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    errors: list[str] = []
+    for path in paths:
+        schema = read_json(path)
+        definitions = schema.get("$defs") or {}
+        wait_statuses = (
+            definitions.get("WaitEntryBand", {})
+            .get("properties", {})
+            .get("status", {})
+            .get("enum", [])
+        )
+        non_wait_status = (
+            definitions.get("NonWaitEntryBand", {})
+            .get("properties", {})
+            .get("status", {})
+            .get("const")
+        )
+        candidate_items = schema.get("properties", {}).get("candidates", {}).get("items", {})
+        candidate_branches = candidate_items.get("anyOf", [])
+        row_errors: list[str] = []
+        if set(wait_statuses) != {
+            EntryBandStatus.RESOLVED.value,
+            EntryBandStatus.UNRESOLVED.value,
+        }:
+            row_errors.append("wait_component_status_domain_invalid")
+        if non_wait_status != EntryBandStatus.NOT_APPLICABLE.value:
+            row_errors.append("non_wait_component_not_applicable_not_structural")
+        branch_refs = {
+            str(branch.get("$ref")) for branch in candidate_branches if isinstance(branch, Mapping)
+        }
+        if branch_refs != {
+            "#/$defs/WaitShadowCandidate",
+            "#/$defs/NonWaitShadowCandidate",
+        }:
+            row_errors.append("candidate_structural_union_missing")
+        if schema.get("title") != SCHEMA_CONTRACT:
+            row_errors.append("schema_contract_marker_mismatch")
+        rows.append(
+            {
+                "path": str(path),
+                "sha256": sha256_file(path),
+                "errors": row_errors,
+                "status": "PASS" if not row_errors else "FAIL",
+            }
+        )
+        errors.extend(f"{path.name}:{error}" for error in row_errors)
+    return {
+        "contract": "m12cn-r1-shadow-schema-structural-proof-v1",
+        "schema_contract": SCHEMA_CONTRACT,
+        "schema_count": len(rows),
+        "wait_not_applicable_structurally_forbidden": not errors,
+        "rows": rows,
+        "errors": errors,
+        "status": "PASS" if not errors else "FAIL",
     }
 
 
@@ -515,9 +691,7 @@ def load_old_monitoring_axes(sealed_zip: Path) -> dict[str, dict[str, str | None
     combined: dict[str, dict[str, str | None]] = {}
     with zipfile.ZipFile(sealed_zip) as archive:
         names = sorted(
-            name
-            for name in archive.namelist()
-            if name.endswith("candidate-output.json")
+            name for name in archive.namelist() if name.endswith("candidate-output.json")
         )
         require(bool(names), "old_sealed_candidate_outputs_missing")
         for name in names:
@@ -548,18 +722,27 @@ def compare_three_sets(
     shadow_distribution = {axis: Counter() for axis in axes}
     old_shadow_exact = 0
     independent_shadow_exact = 0
+    archetypes = Counter()
+    holder_review_reasons = Counter()
+    data_quality_effects = Counter()
+    entry_statuses = Counter()
+    buy_wait_holdable = 0
     for ticker in expected_tickers:
         old = old_rows[ticker]
         independent = independent_rows[ticker]
         shadow = shadow_rows[ticker]
-        old_matches = {
-            axis: old.get(axis) == shadow.get(axis)
-            for axis in axes
-        }
-        independent_matches = {
-            axis: independent.get(axis) == shadow.get(axis)
-            for axis in axes
-        }
+        archetypes[str(shadow["company_archetype"])] += 1
+        data_quality_effects[str(shadow["data_quality_effect"])] += 1
+        entry_statuses[str(shadow["entry_range"]["entry_range_status"])] += 1
+        if shadow["holder"] == "REVIEW":
+            holder_review_reasons[str(shadow["holder_reason_class"])] += 1
+        buy_wait_holdable += int(
+            shadow["overall_direction"] == "BUY"
+            and shadow["new_buyer"] == "WAIT"
+            and shadow["holder"] == "HOLDABLE"
+        )
+        old_matches = {axis: old.get(axis) == shadow.get(axis) for axis in axes}
+        independent_matches = {axis: independent.get(axis) == shadow.get(axis) for axis in axes}
         old_shadow_exact += int(all(old_matches.values()))
         independent_shadow_exact += int(all(independent_matches.values()))
         for axis in axes:
@@ -573,9 +756,7 @@ def compare_three_sets(
                 "ticker": ticker,
                 "old_monitoring": dict(old),
                 "independent_reference": dict(independent),
-                "m12cn_shadow": {
-                    axis: shadow.get(axis) for axis in axes
-                },
+                "m12cn_shadow": {axis: shadow.get(axis) for axis in axes},
                 "old_vs_shadow_axis_match": old_matches,
                 "independent_vs_shadow_axis_match": independent_matches,
                 "company_archetype": shadow["company_archetype"],
@@ -587,7 +768,7 @@ def compare_three_sets(
             }
         )
     return {
-        "contract": "m12cn-post-freeze-three-way-comparison-v1",
+        "contract": "m12cn-r1-post-freeze-three-way-comparison-v2",
         "comparison_is_descriptive_not_pass_target": True,
         "subject_count": len(expected_tickers),
         "old_vs_shadow_exact_three_axis_agreement": old_shadow_exact,
@@ -596,18 +777,32 @@ def compare_three_sets(
         "independent_vs_shadow_per_axis_agreement": dict(independent_shadow_axis),
         "label_distributions": {
             "old_monitoring": {
-                axis: dict(sorted(counter.items()))
-                for axis, counter in old_distribution.items()
+                axis: dict(sorted(counter.items())) for axis, counter in old_distribution.items()
             },
             "independent_reference": {
                 axis: dict(sorted(counter.items()))
                 for axis, counter in independent_distribution.items()
             },
             "m12cn_shadow": {
-                axis: dict(sorted(counter.items()))
-                for axis, counter in shadow_distribution.items()
+                axis: dict(sorted(counter.items())) for axis, counter in shadow_distribution.items()
             },
         },
+        "archetype_distribution": dict(sorted(archetypes.items())),
+        "buy_wait_holdable_count": buy_wait_holdable,
+        "holder_review_reason_counts": dict(sorted(holder_review_reasons.items())),
+        "data_quality_effect_counts": dict(sorted(data_quality_effects.items())),
+        "wait_entry_range_status_counts": dict(sorted(entry_statuses.items())),
+        "key_qualitative_disagreements": [
+            {
+                "ticker": row["ticker"],
+                "old_vs_shadow_axis_match": row["old_vs_shadow_axis_match"],
+                "independent_vs_shadow_axis_match": row["independent_vs_shadow_axis_match"],
+                "policy_basis": row["generic_rule_trace"],
+            }
+            for row in rows
+            if not all(row["old_vs_shadow_axis_match"].values())
+            or not all(row["independent_vs_shadow_axis_match"].values())
+        ],
         "rows": rows,
         "second_inference_or_retuning_count": 0,
         "status": "PASS",
@@ -691,7 +886,44 @@ def artifact_manifest(root: Path) -> dict[str, object]:
     }
 
 
-def _result_analyses(candidates: Sequence[Mapping[str, object]]) -> dict[str, object]:
+def entry_catalog_coverage(
+    catalogs: Mapping[str, Mapping[str, Mapping[str, object]]],
+) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    for market in ("us", "kr"):
+        for ticker in EXPECTED_POPULATION[market]:
+            entry = catalogs[market][ticker]["entry_catalog"]
+            rows.append(
+                {
+                    "market": market,
+                    "ticker": ticker,
+                    "current_price_available": entry["current_price"] is not None,
+                    "fundamental_candidate_count": len(entry["fundamental_candidates"]),
+                    "tactical_candidate_count": len(entry["tactical_candidates"]),
+                    "resolved_option_count": len(entry["resolved_options"]),
+                    "tactical_applicable_if_wait": True,
+                }
+            )
+    return {
+        "contract": "m12cn-r1-entry-range-catalog-coverage-v1",
+        "subject_count": len(rows),
+        "fundamental_candidate_subject_count": sum(
+            int(row["fundamental_candidate_count"] > 0) for row in rows
+        ),
+        "tactical_candidate_subject_count": sum(
+            int(row["tactical_candidate_count"] > 0) for row in rows
+        ),
+        "resolved_option_subject_count": sum(int(row["resolved_option_count"] > 0) for row in rows),
+        "rows": rows,
+        "valuation_inputs_broadened": False,
+        "status": "PASS",
+    }
+
+
+def _result_analyses(
+    candidates: Sequence[Mapping[str, object]],
+    catalogs: Mapping[str, Mapping[str, Mapping[str, object]]],
+) -> dict[str, object]:
     entry_status = Counter()
     entry_methods = Counter()
     archetypes = Counter()
@@ -701,8 +933,19 @@ def _result_analyses(candidates: Sequence[Mapping[str, object]]) -> dict[str, ob
     data_quality_effects = Counter()
     valuation_affects = Counter()
     unresolved_inputs = Counter()
+    fundamental_status = Counter()
+    tactical_status = Counter()
+    tactical_candidate_availability = Counter()
+    tactical_selection = Counter()
+    wait_parent_status = Counter()
+    wait_fundamental_status = Counter()
+    wait_tactical_status = Counter()
+    unresolved_by_archetype_method = Counter()
     wait_count = 0
     for row in candidates:
+        ticker = str(row["ticker"])
+        market = "us" if ticker in EXPECTED_POPULATION["us"] else "kr"
+        tactical_available = bool(catalogs[market][ticker]["entry_catalog"]["tactical_candidates"])
         archetype = str(row["company_archetype"])
         archetypes[archetype] += 1
         holder_stances[str(row["holder"])] += 1
@@ -715,21 +958,45 @@ def _result_analyses(candidates: Sequence[Mapping[str, object]]) -> dict[str, ob
         method = str(entry["method"])
         entry_status[status] += 1
         entry_methods[method] += 1
+        fundamental_status[str(entry["fundamental_entry_band"]["status"])] += 1
+        tactical_status[str(entry["tactical_entry_band"]["status"])] += 1
         if row["new_buyer"] == "WAIT":
             wait_count += 1
+            wait_parent_status[status] += 1
+            wait_fundamental_status[str(entry["fundamental_entry_band"]["status"])] += 1
+            wait_tactical_status[str(entry["tactical_entry_band"]["status"])] += 1
+            tactical_candidate_availability[
+                "AVAILABLE" if tactical_available else "UNAVAILABLE"
+            ] += 1
+            tactical_selection[
+                "SELECTED"
+                if entry["tactical_entry_band"]["status"] == EntryBandStatus.RESOLVED.value
+                else "NOT_SELECTED"
+            ] += 1
         if status == EntryRangeStatus.ENTRY_RANGE_RESOLVED.value:
             resolved_archetypes[archetype] += 1
         for missing in entry.get("unresolved_inputs") or []:
             unresolved_inputs[str(missing)] += 1
+            unresolved_by_archetype_method[f"{archetype}|{method}|{missing}"] += 1
     return {
         "entry": {
-            "contract": "m12cn-entry-range-coverage-and-methods-v1",
+            "contract": "m12cn-r1-entry-range-coverage-and-methods-v2",
             "subject_count": len(candidates),
             "wait_count": wait_count,
             "status_counts": dict(sorted(entry_status.items())),
             "method_counts": dict(sorted(entry_methods.items())),
+            "fundamental_status_counts": dict(sorted(fundamental_status.items())),
+            "tactical_status_counts": dict(sorted(tactical_status.items())),
+            "wait_parent_status_counts": dict(sorted(wait_parent_status.items())),
+            "wait_fundamental_status_counts": dict(sorted(wait_fundamental_status.items())),
+            "wait_tactical_status_counts": dict(sorted(wait_tactical_status.items())),
+            "tactical_candidate_availability_counts": dict(
+                sorted(tactical_candidate_availability.items())
+            ),
+            "tactical_selection_counts": dict(sorted(tactical_selection.items())),
             "resolved_archetype_counts": dict(sorted(resolved_archetypes.items())),
             "unresolved_input_counts": dict(sorted(unresolved_inputs.items())),
+            "unresolved_by_archetype_method": dict(sorted(unresolved_by_archetype_method.items())),
             "arbitrary_discount_count": 0,
             "technical_only_masquerading_as_fundamental_count": 0,
             "status": "PASS",
@@ -745,8 +1012,7 @@ def _result_analyses(candidates: Sequence[Mapping[str, object]]) -> dict[str, ob
             "contract": "m12cn-valuation-vs-overall-direction-analysis-v1",
             "valuation_affects_counts": dict(sorted(valuation_affects.items())),
             "valuation_affects_only_new_buyer_count": sum(
-                tuple(row.get("valuation_affects") or []) == ("NEW_BUYER",)
-                for row in candidates
+                tuple(row.get("valuation_affects") or []) == ("NEW_BUYER",) for row in candidates
             ),
             "valuation_affects_overall_count": valuation_affects["OVERALL"],
             "valuation_alone_forced_holder_review_count": 0,
@@ -809,13 +1075,13 @@ def _report_markdown(
     call_pass = sum(row.get("status") == "PASS" for row in calls)
     subject_count = completion.get("shadow_subject_count", 0)
     lines = [
-        "# M12CN Investment Archetype Policy Calibration Shadow",
+        "# M12CN-R1 WAIT Entry Applicability Repair And Fresh Policy Shadow",
         "",
         f"**Completion:** `{status}`",
         "",
         "## Scope",
         "",
-        "This was an archive-only policy calibration against frozen M12CM facts and accepted Fundamental Core. Production prompt, runtime, persistence, scheduler, notifications, and delivery were unchanged.",
+        "This was an archive-only WAIT entry-component contract repair and wholly fresh policy calibration against frozen M12CM facts and accepted Fundamental Core. Production prompt, runtime, persistence, scheduler, notifications, and delivery were unchanged.",
         "",
         "## Provenance",
         "",
@@ -847,6 +1113,11 @@ def _report_markdown(
                 f"- WAIT count: `{entry['wait_count']}`",
                 f"- Entry status counts: `{entry['status_counts']}`",
                 f"- Entry method counts: `{entry['method_counts']}`",
+                f"- WAIT parent status counts: `{entry['wait_parent_status_counts']}`",
+                f"- WAIT fundamental component counts: `{entry['wait_fundamental_status_counts']}`",
+                f"- WAIT tactical component counts: `{entry['wait_tactical_status_counts']}`",
+                f"- Tactical candidate availability: `{entry['tactical_candidate_availability_counts']}`",
+                f"- Tactical selection: `{entry['tactical_selection_counts']}`",
                 f"- Holder stance counts: `{holder['stance_counts']}`",
                 f"- Valuation-only holder REVIEW: `{holder['valuation_only_review_count']}`",
                 f"- Valuation affects only new buyer: `{valuation['valuation_affects_only_new_buyer_count']}`",
@@ -922,6 +1193,16 @@ def run(args: argparse.Namespace) -> None:
         )
         write_json(result_root / "pre-freeze-source-integrity.json", pre_sources)
         require(pre_sources["status"] == "PASS", "M12CN_SOURCE_OR_BASE_MISMATCH")
+        prior_report = verify_prior_m12cn_report(
+            args.package_root.resolve()
+            / "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
+            "calibration-shadow-entry-range-design-report.zip"
+        )
+        write_json(
+            result_root / "prior-m12cn-result-cryptographic-verification.json",
+            prior_report,
+        )
+        require(prior_report["status"] == "PASS", "M12CN_SOURCE_OR_BASE_MISMATCH")
 
         validation_files = copy_validation_artifacts(
             args.validation_root.resolve(),
@@ -952,6 +1233,18 @@ def run(args: argparse.Namespace) -> None:
             data_quality_contract(),
         )
         write_json(result_root / "entry-range-method-contract.json", entry_range_contract())
+        write_json(
+            result_root / "wait-entry-component-applicability-contract.json",
+            wait_entry_component_applicability_contract(),
+        )
+        write_json(
+            result_root / "shadow-schema-version-and-diff.json",
+            shadow_schema_version_and_diff(),
+        )
+        write_json(
+            result_root / "m12cn-failure-reproducer.json",
+            m12cn_failure_reproducer(),
+        )
         controls = generic_policy_control_matrix()
         write_json(result_root / "generic-policy-control-matrix.json", controls)
         require(controls["status"] == "PASS", "generic_policy_controls_failed")
@@ -981,7 +1274,7 @@ def run(args: argparse.Namespace) -> None:
 
         now_utc = datetime.now(UTC)
         generation_id = (
-            f"{now_utc.astimezone(KST):%Y%m%d}-m12cn-policy-shadow-"
+            f"{now_utc.astimezone(KST):%Y%m%d}-m12cn-r1-policy-shadow-"
             f"{now_utc:%Y%m%dT%H%M%SZ}-{args.expected_head[:12]}"
         )
         contexts: dict[str, Any] = {}
@@ -993,19 +1286,14 @@ def run(args: argparse.Namespace) -> None:
             context_payload = read_json(args.shadow_input_root / market / "context.json")
             context = AcceptedV2ProductionContext.model_validate(context_payload)
             core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
-                read_json(
-                    args.shadow_input_root
-                    / market
-                    / "trusted-fundamental-core-batch.json"
-                )
+                read_json(args.shadow_input_root / market / "trusted-fundamental-core-batch.json")
             )
             require(
                 tuple(context.selected_subjects) == EXPECTED_POPULATION[market],
                 f"{market}_population_mismatch",
             )
             require(
-                tuple(core.ticker for core in core_batch.cores)
-                == tuple(context.selected_subjects),
+                tuple(core.ticker for core in core_batch.cores) == tuple(context.selected_subjects),
                 f"{market}_core_scope_mismatch",
             )
             require(core_batch.packet_id == context.packet_id, f"{market}_packet_mismatch")
@@ -1014,9 +1302,7 @@ def run(args: argparse.Namespace) -> None:
                 core_batch.assessment_date == context.assessment_date,
                 f"{market}_assessment_date_mismatch",
             )
-            atomic = accepted_v2_maturity_atomic_claim_catalog_manifest(
-                core_batch.cores
-            )
+            atomic = accepted_v2_maturity_atomic_claim_catalog_manifest(core_batch.cores)
             market_catalogs: dict[str, dict[str, object]] = {}
             for ticker in context.selected_subjects:
                 market_catalogs[ticker] = build_subject_catalog(
@@ -1034,6 +1320,11 @@ def run(args: argparse.Namespace) -> None:
                 if isinstance(row, Mapping)
             )
 
+        write_json(
+            result_root / "entry-range-catalog-coverage.json",
+            entry_catalog_coverage(catalogs),
+        )
+
         model_inputs = result_root / "shadow-model-inputs"
         model_facing_paths: list[Path] = []
         batch_specs: list[dict[str, object]] = []
@@ -1041,8 +1332,7 @@ def run(args: argparse.Namespace) -> None:
             context = contexts[market]
             context_payload = context_payloads[market]
             cores_by_ticker = {
-                core.ticker: core.model_dump(mode="json")
-                for core in core_batches[market].cores
+                core.ticker: core.model_dump(mode="json") for core in core_batches[market].cores
             }
             subjects = tuple(context.selected_subjects)
             for offset in range(0, len(subjects), runtime.V2_REASONING_BATCH_SIZE):
@@ -1094,10 +1384,7 @@ def run(args: argparse.Namespace) -> None:
                     {
                         "contract": "m12cn-batch-ref-catalog-v1",
                         "subjects": list(batch_subjects),
-                        "catalogs": {
-                            ticker: catalogs[market][ticker]
-                            for ticker in batch_subjects
-                        },
+                        "catalogs": {ticker: catalogs[market][ticker] for ticker in batch_subjects},
                     },
                 )
                 write_json(subject_path, {"subjects": payloads})
@@ -1117,11 +1404,15 @@ def run(args: argparse.Namespace) -> None:
                     }
                 )
         require(len(batch_specs) == 8, "planned_shadow_call_count_not_8")
+        schema_proof = schema_structural_proof([Path(spec["schema"]) for spec in batch_specs])
+        write_json(result_root / "shadow-schema-structural-proof.json", schema_proof)
+        require(schema_proof["status"] == "PASS", "shadow_schema_structure_invalid")
         leak_scan = scan_model_facing_files(model_facing_paths, accepted_ids)
         write_json(result_root / "blindness-and-target-leak-proof.json", leak_scan)
         require(leak_scan["status"] == "PASS", "M12CN_BLINDNESS_FAILURE")
         input_manifest = {
-            "contract": "m12cn-shadow-model-input-manifest-v1",
+            "contract": "m12cn-r1-shadow-model-input-manifest-v2",
+            "schema_contract": SCHEMA_CONTRACT,
             "generation_id": generation_id,
             "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
             "harness_commit": args.expected_head,
@@ -1131,9 +1422,7 @@ def run(args: argparse.Namespace) -> None:
             "planned_fundamental_core_call_count": 0,
             "model_facing_files": leak_scan["files"],
             "target_label_leak_count": leak_scan["target_label_leak_count"],
-            "policy_contract_sha256": sha256_file(
-                REPO / "scripts/m12cn_policy_contract.py"
-            ),
+            "policy_contract_sha256": sha256_file(REPO / "scripts/m12cn_policy_contract.py"),
             "runner_sha256": sha256_file(REPO / "scripts/m12cn_policy_shadow.py"),
             "frozen_at": datetime.now(UTC).isoformat(),
         }
@@ -1176,9 +1465,7 @@ def run(args: argparse.Namespace) -> None:
                     schema=spec["schema"],
                     cwd=REPO,
                     timeout=args.timeout,
-                    state_namespace=(
-                        f"m12cn:{generation_id}:{market}:batch-{batch_number:02d}"
-                    ),
+                    state_namespace=(f"m12cn-r1:{generation_id}:{market}:batch-{batch_number:02d}"),
                 )
                 require(
                     int(receipt.get("transport_attempts") or 0) == 1,
@@ -1186,10 +1473,7 @@ def run(args: argparse.Namespace) -> None:
                 )
                 raw_sha = sha256_file(output)
                 frozen_raw = (
-                    result_root
-                    / "shadow-output-freeze"
-                    / market
-                    / f"batch-{batch_number:02d}.json"
+                    result_root / "shadow-output-freeze" / market / f"batch-{batch_number:02d}.json"
                 )
                 frozen_raw.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(output, frozen_raw)
@@ -1250,7 +1534,7 @@ def run(args: argparse.Namespace) -> None:
             "shadow_subject_order_mismatch",
         )
         aggregate = {
-            "contract": "m12cn-shadow-22-subject-results-v1",
+            "contract": "m12cn-r1-shadow-22-subject-results-v2",
             "generation_id": generation_id,
             "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
             "subject_count": len(all_candidates),
@@ -1260,7 +1544,7 @@ def run(args: argparse.Namespace) -> None:
         write_json(aggregate_path, aggregate)
         output_frozen_at = datetime.now(UTC).isoformat()
         output_freeze = {
-            "contract": "m12cn-shadow-output-freeze-manifest-v1",
+            "contract": "m12cn-r1-shadow-output-freeze-manifest-v2",
             "generation_id": generation_id,
             "call_output_count": len(completed_outputs),
             "subject_count": len(all_candidates),
@@ -1284,8 +1568,7 @@ def run(args: argparse.Namespace) -> None:
             "policy_contract_changed_after_call_1",
         )
         require(
-            sha256_file(REPO / "scripts/m12cn_policy_shadow.py")
-            == input_manifest["runner_sha256"],
+            sha256_file(REPO / "scripts/m12cn_policy_shadow.py") == input_manifest["runner_sha256"],
             "runner_changed_after_call_1",
         )
 
@@ -1318,8 +1601,7 @@ def run(args: argparse.Namespace) -> None:
         )
 
         independent_payload = read_json(
-            args.post_freeze_root.resolve()
-            / "m12cm-independent-assistant-judgment.json"
+            args.post_freeze_root.resolve() / "m12cm-independent-assistant-judgment.json"
         )
         independent_rows = extract_three_axis_rows(independent_payload)
         old_rows = load_old_monitoring_axes(
@@ -1339,7 +1621,7 @@ def run(args: argparse.Namespace) -> None:
             comparison_markdown(comparison),
         )
 
-        analyses = _result_analyses(all_candidates)
+        analyses = _result_analyses(all_candidates, catalogs)
         write_json(result_root / "entry-range-coverage-and-methods.json", analyses["entry"])
         write_json(result_root / "holder-review-reason-analysis.json", analyses["holder"])
         write_json(
@@ -1365,7 +1647,12 @@ def run(args: argparse.Namespace) -> None:
         if (result_root / "generic-policy-control-matrix.json").is_file()
         else {"status": "NOT_REACHED"}
     )
-    completion_state = COMPLETION_PASS if terminal_error is None else COMPLETION_FAILED
+    if terminal_error is None:
+        completion_state = COMPLETION_PASS
+    elif str(terminal_error).startswith("post_freeze_"):
+        completion_state = COMPLETION_BLOCKED
+    else:
+        completion_state = COMPLETION_FAILED
     blockers = []
     if terminal_error is not None:
         blockers.append(
@@ -1379,14 +1666,14 @@ def run(args: argparse.Namespace) -> None:
     write_json(
         result_root / "complete-blocker-ledger.json",
         {
-            "contract": "m12cn-complete-blocker-ledger-v1",
+            "contract": "m12cn-r1-complete-blocker-ledger-v2",
             "open_blocker_count": len(blockers),
             "blockers": blockers,
             "status": "PASS" if not blockers else "BLOCKED",
         },
     )
     safety = {
-        "contract": "m12cn-safety-counters-v1",
+        "contract": "m12cn-r1-safety-counters-v2",
         "production_send": 0,
         "production_intent": 0,
         "production_db_mutation": 0,
@@ -1401,9 +1688,7 @@ def run(args: argparse.Namespace) -> None:
         "deployment": 0,
         "fundamental_core_model_calls": 0,
         "stage2_style_shadow_calls_started": len(call_rows),
-        "stage2_style_shadow_calls_passed": sum(
-            row.get("status") == "PASS" for row in call_rows
-        ),
+        "stage2_style_shadow_calls_passed": sum(row.get("status") == "PASS" for row in call_rows),
         "model_retry": 0,
         "wrapper_retry": 0,
         "repair_model": 0,
@@ -1411,6 +1696,9 @@ def run(args: argparse.Namespace) -> None:
         "judge_model": 0,
         "selective_rerun": 0,
         "post_call_hotfix": 0,
+        "previous_m12cn_output_reuse": 0,
+        "cross_generation_stitching": 0,
+        "per_ticker_rerun": 0,
         "second_inference_after_reveal": 0,
         "production_runtime_behavior_change": 0,
     }
@@ -1418,7 +1706,7 @@ def run(args: argparse.Namespace) -> None:
     write_json(
         result_root / "shadow-call-ledger.json",
         {
-            "contract": "m12cn-shadow-call-ledger-v1",
+            "contract": "m12cn-r1-shadow-call-ledger-v2",
             "generation_id": generation_id,
             "planned_call_count": 8,
             "started_call_count": len(call_rows),
@@ -1427,7 +1715,7 @@ def run(args: argparse.Namespace) -> None:
         },
     )
     completion = {
-        "contract": "m12cn-program-completion-v1",
+        "contract": "m12cn-r1-program-completion-v2",
         "completion_state": completion_state,
         "generation_id": generation_id,
         "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
