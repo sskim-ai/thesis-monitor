@@ -757,13 +757,8 @@ def _depositary_subjects(value: Mapping[str, object]) -> set[str]:
             rows.extend(row for row in candidate if isinstance(row, Mapping))
     result = set()
     for row in rows:
-        state_text = json.dumps(row, ensure_ascii=False).lower()
         ticker = str(row.get("ticker") or "")
-        if ticker and (
-            "depositary" in state_text
-            or "adr" in state_text
-            or row.get("conversion_contract_materialized") is False
-        ):
+        if ticker and row.get("affected") is True:
             result.add(ticker)
     return result
 
