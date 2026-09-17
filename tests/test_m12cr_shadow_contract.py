@@ -25,6 +25,7 @@ from scripts.m12cr_shadow_contract import (
 
 
 def _context(*, quality_refs: bool = True) -> dict[str, object]:
+    financial_quality_ref = "canonical:financial_quality:2026-06-30"
     evidence = [
         {
             "ref_id": "core:thesis",
@@ -33,10 +34,16 @@ def _context(*, quality_refs: bool = True) -> dict[str, object]:
             "statement": {"state": "verified"},
         },
         {
-            "ref_id": "quality:provider",
-            "category": "quality",
-            "label": "provider limitation",
-            "statement": {"state": "provider_limited"},
+            "ref_id": financial_quality_ref,
+            "category": "earnings",
+            "label": "financial_quality",
+            "statement": {
+                "decision_version": "financial-quality-taint-v2",
+                "reason_codes": [],
+                "source_period": "2026-06-30",
+                "source_type": "full_statement",
+                "state": "caution_usable" if quality_refs else "verified_usable",
+            },
         },
         {
             "ref_id": "quality:negative",
@@ -58,7 +65,7 @@ def _context(*, quality_refs: bool = True) -> dict[str, object]:
         "eligible_claim_refs": ["claim:bull", "claim:bear"],
         "premium_eligible_claim_refs": ["claim:bull"],
         "data_quality_catalog": {
-            "evidence_refs": ["quality:provider"] if quality_refs else [],
+            "evidence_refs": [financial_quality_ref] if quality_refs else [],
             "material_disclosure_failure_refs": ["quality:negative"],
             "positive_quality_refs": ["quality:positive"],
         },
@@ -364,7 +371,7 @@ def test_runtime_projects_normal_quality_state_and_model_cannot_recopy_it() -> N
 
     assert base["effect"] == "CONFIDENCE_ONLY"
     assert rows[0]["data_quality_effect"] == "CONFIDENCE_ONLY"
-    assert rows[0]["data_quality_evidence_refs"] == ["quality:provider"]
+    assert rows[0]["data_quality_evidence_refs"] == ["canonical:financial_quality:2026-06-30"]
     assert result["status"] == "PASS"
 
 

@@ -19,6 +19,7 @@ from scripts.m12cn_policy_contract import (
     response_format_schema_completeness_scan,
 )
 from scripts.m12cp_valuation_policy_contract import Archetype, ValuationRegimeTier
+from scripts.m12cr_r1_typed_quality_contract import project_business_evidence_quality
 from scripts.m12cq_two_pass_contract import (
     PASS_A_CONTRACT,
     PASS_B_CONTRACT,
@@ -454,37 +455,15 @@ def schema_completeness_and_parity_scan(
 
 
 def project_data_quality_base_state(context: Mapping[str, object]) -> dict[str, object]:
-    quality = context.get("data_quality_catalog") or {}
-    directional = set(quality.get("material_disclosure_failure_refs") or ()) | set(
-        quality.get("positive_quality_refs") or ()
-    )
-    base_refs = sorted(set(quality.get("evidence_refs") or ()) - directional)
-    evidence_by_ref = {
-        str(row.get("ref_id") or ""): row
-        for row in context.get("eligible_non_price_evidence") or ()
-        if isinstance(row, Mapping)
-    }
-    text = " ".join(str(evidence_by_ref.get(ref, {})) for ref in base_refs).lower()
-    stale_terms = ("stale", "unsupported", "outdated", "미지원", "오래된", "최신 아님")
-    if not base_refs:
-        return {
-            "effect": DataQualityEffect.NONE.value,
-            "reason_class": DataQualityReasonClass.NOT_APPLICABLE.value,
-            "reason": None,
-            "evidence_refs": [],
-            "owner": OwnershipClass.DETERMINISTIC_SOURCE_PROJECTION.value,
-        }
-    reason_class = (
-        DataQualityReasonClass.STALE_OR_UNSUPPORTED.value
-        if any(term in text for term in stale_terms)
-        else DataQualityReasonClass.PROVIDER_LIMITATION.value
-    )
+    projected = project_business_evidence_quality(context)
     return {
-        "effect": DataQualityEffect.CONFIDENCE_ONLY.value,
-        "reason_class": reason_class,
-        "reason": "정형 데이터 품질 제한은 방향이 아니라 확신도에만 반영합니다.",
-        "evidence_refs": base_refs,
+        "effect": projected["effect"],
+        "reason_class": projected["reason_class"],
+        "reason": projected["reason"],
+        "evidence_refs": list(projected["source_refs"]),
         "owner": OwnershipClass.DETERMINISTIC_SOURCE_PROJECTION.value,
+        "typed_business_quality_state": projected["state"],
+        "typed_reason_codes": list(projected["reason_codes"]),
     }
 
 
@@ -1047,7 +1026,9 @@ def future_pass_a_prompt_template() -> str:
         "Pass A is price-blind. Return strict JSON matching the supplied subject-keyed schema. "
         "Do not output identity fields or ticker fields; the runtime-owned object keys bind each subject. "
         "Judge only archetype, confidence, valuation-policy regime, bounded rationales, and exact "
-        "same-subject claim refs. The runtime owns normal data-quality state and refs. The model may "
+        "same-subject claim refs. The runtime owns typed business-evidence quality and ordinary "
+        "quality refs. Security valuation basis is not archetype, regime, or business-direction "
+        "evidence. The model may "
         "select only a narrow directional data-quality judgment from the supplied allowlist; otherwise "
         "return the NONE branch with NOT_APPLICABLE, null reason, and an empty ref array. PREMIUM must "
         "use a supplied structural-improvement claim. Do not mention price, technical timing, entry "
@@ -1061,7 +1042,11 @@ def future_pass_b_prompt_template() -> str:
         "or ticker fields. Pass-A classification and deterministic policy options are frozen. Judge "
         "Overall, New Buyer, Holder, directional balance, confidence, exact evidence selections, and "
         "bounded prose only. The runtime owns rule trace, valuation-affects metadata, price, bands, "
-        "distance, methods, source refs, status, and final entry materialization. BUY/WAIT/HOLDABLE is "
+        "distance, methods, source refs, status, typed business-quality state, security valuation "
+        "basis, and final entry materialization. Unresolved security basis may support New Buyer "
+        "WAIT or suppress an unsafe entry range, but cannot by itself lower Overall or Holder. "
+        "Non-directional business-quality confidence limits also cannot be their sole downgrade "
+        "reason. BUY/WAIT/HOLDABLE is "
         "valid. Valuation or timing alone cannot force Overall lower or Holder REVIEW. Use one schema "
         "branch exactly; do not reproduce deterministic metadata."
     )
