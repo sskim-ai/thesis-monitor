@@ -260,7 +260,7 @@ def human_review_files(
         "generation_id": generation_id,
         "subject_count": len(index_rows),
         "subjects": index_rows,
-        "excluded_current_ai_verdict_fields": sorted(BANNED_EXACT_KEYS),
+        "excluded_sensitive_fields": sorted(BANNED_EXACT_KEYS),
     }
     write_json(human / "MONITORED_STOCK_FACTS_ONLY_INDEX.json", index)
     files = sorted(path for path in human.rglob("*") if path.is_file())
