@@ -446,12 +446,11 @@ async def run(args: argparse.Namespace) -> None:
                     }
                 )
     require(ordinal == 16, "planned_call_count_drift")
-    require(not model_facing_mismatches, "model_facing_contract_drift")
     write_json(
         output / "fundamental-core-freeze-manifest.json",
         {
             "contract": "m12ch-model-facing-freeze-v1",
-            "status": "PASS",
+            "status": "PASS" if not model_facing_mismatches else "FAIL",
             "reasoning_model": REASONING_MODEL,
             "reasoning_effort": REASONING_EFFORT,
             "planned_model_call_count": 16,
@@ -462,6 +461,7 @@ async def run(args: argparse.Namespace) -> None:
             "call_plan": call_plan,
         },
     )
+    require(not model_facing_mismatches, "model_facing_contract_drift")
 
     deterministic_rows = [
         deterministic_snapshot_audit(
