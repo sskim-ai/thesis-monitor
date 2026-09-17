@@ -255,7 +255,9 @@ def test_pass_a_context_projects_from_full_packet_before_model_filtering() -> No
     projected = build_r1_pass_a_context(base, source_packet=packet)
     result = project_business_evidence_quality(projected)
     assert result["state"] == "NONE"
-    assert result["excluded_security_basis_reason_codes"] == ["per_share_basis_insufficient"]
+    assert result["reason_codes"] == []
+    assert "excluded_security_basis_reason_codes" not in result
+    assert "financial_quality_state" not in result
 
 
 def test_verified_non_depositary_provider_native_basis_is_resolved() -> None:

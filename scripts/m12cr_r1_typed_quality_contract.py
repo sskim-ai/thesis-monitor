@@ -224,6 +224,22 @@ def build_r1_pass_a_context(
     source_packet: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     projected = project_business_evidence_quality(source_packet or base_context)
+    pass_a_projection = {
+        key: deepcopy(projected[key])
+        for key in (
+            "contract",
+            "state",
+            "effect",
+            "reason_class",
+            "reason",
+            "reason_codes",
+            "source_refs",
+            "source_presence",
+            "directional_use_allowed",
+            "owner",
+            "status",
+        )
+    }
     result = deepcopy(dict(base_context))
     quality = dict(_mapping(result.get("data_quality_catalog")))
     directional_refs = set(quality.get("material_disclosure_failure_refs") or ()) | set(
@@ -266,7 +282,7 @@ def build_r1_pass_a_context(
     ]
     quality["evidence_refs"] = list(projected.get("source_refs") or ())
     result["data_quality_catalog"] = quality
-    result["business_evidence_quality_state"] = deepcopy(projected)
+    result["business_evidence_quality_state"] = pass_a_projection
     return result
 
 

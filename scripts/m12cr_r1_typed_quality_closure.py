@@ -244,7 +244,7 @@ def build_typed_audit(
         for ticker in contexts[market].selected_subjects:
             packet = packets[ticker]
             pass_a = build_r1_pass_a_context(base_pass_a[market][ticker], source_packet=packet)
-            business = project_business_evidence_quality(pass_a)
+            business = project_business_evidence_quality(packet)
             current = catalogs[market][ticker]["entry_catalog"].get("current_price") or {}
             expected = security_index[ticker]
             security = project_security_valuation_basis(
