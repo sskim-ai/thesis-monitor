@@ -33,6 +33,7 @@ REPO = Path(__file__).resolve().parents[1]
 EXPECTED_R2_ZIP_SHA256 = "5f26ad263cf29ef5a3b18c856c6eafc7b74894367e6444e868014dff304c8b37"
 EXPECTED_R2_HARNESS = "c4cfb0f2c1ed4326587fac0c493a463beeb2bd0b"
 EXPECTED_RUNTIME_BASE = "831890d1bf0dff303f67a6e0de1403ad3221b5d8"
+WORK_INSTRUCTION_COMMIT = "965e804d803fd79339129774a1f379362f586b01"
 EXPECTED_FROZEN_GENERATION = "20260917-m12cm-current-v4-smoke-20260917T062918Z-5c0cb075ce8b"
 EXPECTED_POPULATION = {
     "us": (
@@ -315,12 +316,18 @@ def _candidate_coverage(rows: Sequence[Mapping[str, object]]) -> dict[str, objec
     family_subjects: Counter[str] = Counter()
     family_candidates: Counter[str] = Counter()
     disagreement = Counter()
+    generally_applicable: dict[str, set[str]] = {}
+    conditionally_applicable: dict[str, set[str]] = {}
     for row in rows:
         families = set(row.get("safe_method_families") or [])
         for family in families:
             family_subjects[str(family)] += 1
         for candidate in row.get("fundamental_candidates") or []:
             family_candidates[str(candidate["method_family"])] += 1
+            for archetype in candidate.get("generally_meaningful_archetypes") or []:
+                generally_applicable.setdefault(str(archetype), set()).add(str(row["ticker"]))
+            for archetype in candidate.get("conditionally_meaningful_archetypes") or []:
+                conditionally_applicable.setdefault(str(archetype), set()).add(str(row["ticker"]))
         disagreement[str(row["method_disagreement"]["status"])] += 1
     any_safe = sum(bool(row.get("fundamental_candidates")) for row in rows)
     return {
@@ -339,6 +346,12 @@ def _candidate_coverage(rows: Sequence[Mapping[str, object]]) -> dict[str, objec
         "candidate_count": sum(family_candidates.values()),
         "candidate_count_by_family": dict(sorted(family_candidates.items())),
         "method_disagreement_status_counts": dict(sorted(disagreement.items())),
+        "subject_count_by_generally_applicable_archetype": {
+            key: len(value) for key, value in sorted(generally_applicable.items())
+        },
+        "subject_count_by_conditionally_applicable_archetype": {
+            key: len(value) for key, value in sorted(conditionally_applicable.items())
+        },
         "multi_safe_method_subject_count": sum(
             len(row.get("safe_method_families") or []) > 1 for row in rows
         ),
@@ -490,6 +503,7 @@ def _report_markdown(
         "## Provenance",
         "",
         f"- Work/implementation commit: `{expected_head}`",
+        f"- Work-instruction commit: `{WORK_INSTRUCTION_COMMIT}`",
         f"- Required runtime base: `{EXPECTED_RUNTIME_BASE}`",
         f"- R2 harness: `{EXPECTED_R2_HARNESS}`",
         f"- Frozen M12CM generation: `{EXPECTED_FROZEN_GENERATION}`",
@@ -666,7 +680,31 @@ def run(args: argparse.Namespace) -> None:
         write_json(result_root / "fundamental-entry-candidate-coverage.json", coverage)
         write_json(result_root / "fundamental-entry-candidates-22.json", candidates)
         write_json(result_root / "method-disagreement-analysis.json", method_disagreement)
+        write_json(
+            result_root / "historical-regime-structural-rerating-diagnostics.json",
+            {
+                "contract": "m12co-historical-regime-structural-rerating-diagnostics-v1",
+                "subject_count": len(rows),
+                "subjects": [
+                    {
+                        "market": row["market"],
+                        "ticker": row["ticker"],
+                        **row["historical_regime_diagnostics"],
+                    }
+                    for row in rows
+                ],
+                "status": "PASS",
+            },
+        )
         write_json(result_root / "current-price-discount-prohibition-proof.json", discount_proof)
+        write_json(
+            result_root / "generic-positive-negative-fixtures.json",
+            {
+                "contract": "m12co-generic-positive-negative-fixtures-v1",
+                "controls": controls,
+                "status": controls["status"],
+            },
+        )
         require(coverage["status"] == "PASS", "safe_method_coverage_insufficient")
         require(discount_proof["status"] == "PASS", "arbitrary_discount_proof_failed")
 
@@ -692,6 +730,10 @@ def run(args: argparse.Namespace) -> None:
             REPO / "scripts/m12co_entry_range_design.py",
             result_root / "sources/m12co_entry_range_design.py",
         )
+        shutil.copy2(
+            REPO / "scripts/m12cn_policy_shadow.py",
+            result_root / "sources/m12cn_policy_shadow.py",
+        )
         write_json(
             result_root / "shadow-builder-materializer-source-hashes.json",
             {
@@ -704,6 +746,7 @@ def run(args: argparse.Namespace) -> None:
                     for name in (
                         "m12co_entry_range_contract.py",
                         "m12co_entry_range_design.py",
+                        "m12cn_policy_shadow.py",
                     )
                 ],
             },

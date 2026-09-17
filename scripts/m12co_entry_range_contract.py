@@ -554,6 +554,83 @@ def _method_disagreement(candidates: Sequence[Mapping[str, object]]) -> dict[str
     return {"status": status, "magnitude": magnitude, "pairwise": pairwise}
 
 
+def _historical_regime_diagnostics(
+    *,
+    rows: Mapping[str, Mapping[str, object]],
+    ownership: Mapping[str, object],
+    candidates: Sequence[Mapping[str, object]],
+    disagreement: Mapping[str, object],
+) -> dict[str, object]:
+    methods: list[dict[str, object]] = []
+    for family, ref_id, statistics_key in (
+        (
+            MethodFamily.HISTORICAL_TRAILING_PE_QUANTILE,
+            "canonical:valuation:historical_pe",
+            "historical_pe_statistics",
+        ),
+        (
+            MethodFamily.HISTORICAL_PB_QUANTILE,
+            "canonical:valuation:historical_pb",
+            "historical_pb_statistics",
+        ),
+    ):
+        statistics = _statement(rows.get(ref_id)).get(statistics_key)
+        stats = dict(statistics) if isinstance(statistics, Mapping) else {}
+        family_candidates = [row for row in candidates if row.get("method_family") == family.value]
+        methods.append(
+            {
+                "method_family": family.value,
+                "history_ref": ref_id if stats else None,
+                "current_percentile": stats.get("current_percentile"),
+                "current_multiple": stats.get("current_value"),
+                "historical_quantiles": {
+                    key: stats.get(key)
+                    for key in (
+                        "percentile_25",
+                        "percentile_50",
+                        "percentile_75",
+                        "percentile_90",
+                    )
+                },
+                "history_quality": stats.get("history_quality"),
+                "deduplicated_observation_count": stats.get("deduplicated_observation_count"),
+                "history_coverage_ratio": stats.get("history_coverage_ratio"),
+                "history_start_date": stats.get("history_start_date"),
+                "history_end_date": stats.get("history_end_date"),
+                "premium_band_candidate_exists": any(
+                    row.get("quantile_band") == "P75_P90" for row in family_candidates
+                ),
+            }
+        )
+    trailing = _statement(rows.get("canonical:valuation:trailing_earnings"))
+    eps = _decimal(trailing.get("ttm_eps"))
+    if eps is None:
+        earnings_state = "UNAVAILABLE"
+    elif eps > 0:
+        earnings_state = "POSITIVE_TTM_EPS"
+    elif eps == 0:
+        earnings_state = "ZERO_TTM_EPS"
+    else:
+        earnings_state = "NEGATIVE_TTM_EPS"
+    core_context_refs = sorted(
+        str(ref)
+        for ref in ownership.get("core_ref_ids") or []
+        if str(ref) in rows and not str(ref).startswith("canonical:valuation:")
+    )
+    return {
+        "historical_distribution_role": "DESCRIPTIVE_NOT_NORMATIVE_FAIR_VALUE",
+        "ttm_eps_state": earnings_state,
+        "ttm_eps_ref": ("canonical:valuation:trailing_earnings" if trailing else None),
+        "structural_thesis_change": {
+            "status": "NOT_DETERMINISTICALLY_CLASSIFIED",
+            "available_core_context_refs": core_context_refs,
+            "requires_chat_policy_selection": True,
+        },
+        "method_disagreement_status": disagreement["status"],
+        "methods": methods,
+    }
+
+
 def build_subject_candidate_coverage(
     *,
     market: str,
@@ -593,6 +670,7 @@ def build_subject_candidate_coverage(
         pb_diagnostics,
         *_non_materialized_method_diagnostics(rows),
     ]
+    disagreement = _method_disagreement(candidates)
     return {
         "contract": "m12co-subject-method-coverage-v1",
         "market": market,
@@ -608,7 +686,13 @@ def build_subject_candidate_coverage(
         "fundamental_candidate_count": len(candidates),
         "safe_method_families": sorted({str(row["method_family"]) for row in candidates}),
         "method_feasibility": method_diagnostics,
-        "method_disagreement": _method_disagreement(candidates),
+        "method_disagreement": disagreement,
+        "historical_regime_diagnostics": _historical_regime_diagnostics(
+            rows=rows,
+            ownership=ownership,
+            candidates=candidates,
+            disagreement=disagreement,
+        ),
         "unresolved_policy": deepcopy(r2_catalog.get("unresolved_policy") or {}),
     }
 
@@ -736,6 +820,8 @@ def materialize_entry_range(
         raise ValueError("catalog_ticker_mismatch")
     prose = _validate_re_evaluate_conditions(re_evaluate_conditions)
     if new_buyer != "WAIT":
+        if prose:
+            raise ValueError("non_wait_re_evaluate_conditions_forbidden")
         if fundamental_choice not in {None, "NOT_APPLICABLE"} or tactical_choice not in {
             None,
             "NOT_APPLICABLE",
@@ -980,6 +1066,14 @@ def generic_materialization_control_matrix() -> dict[str, object]:
             "catalog": catalog,
             "fundamental_choice": "fundamental:generic-a",
             "tactical_choice": None,
+        },
+        "non_wait_prose_injection_fails_closed": {
+            "ticker": "GENERIC_A",
+            "new_buyer": "ATTRACTIVE",
+            "catalog": catalog,
+            "fundamental_choice": None,
+            "tactical_choice": None,
+            "re_evaluate_conditions": ("business conditions change",),
         },
     }
     for name, payload in cases.items():

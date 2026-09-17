@@ -278,6 +278,26 @@ def test_method_disagreement_is_preserved_without_averaging() -> None:
     assert "averaged_candidate" not in result["method_disagreement"]
 
 
+def test_historical_regime_diagnostics_are_descriptive_and_source_bound() -> None:
+    result = _coverage()
+    diagnostics = result["historical_regime_diagnostics"]
+    by_method = {row["method_family"]: row for row in diagnostics["methods"]}
+
+    assert diagnostics["historical_distribution_role"] == ("DESCRIPTIVE_NOT_NORMATIVE_FAIR_VALUE")
+    assert diagnostics["ttm_eps_state"] == "POSITIVE_TTM_EPS"
+    assert diagnostics["structural_thesis_change"]["status"] == ("NOT_DETERMINISTICALLY_CLASSIFIED")
+    assert by_method[MethodFamily.HISTORICAL_PB_QUANTILE.value]["historical_quantiles"] == {
+        "percentile_25": 1.0,
+        "percentile_50": 2.0,
+        "percentile_75": 3.0,
+        "percentile_90": 4.0,
+    }
+    assert (
+        by_method[MethodFamily.HISTORICAL_PB_QUANTILE.value]["premium_band_candidate_exists"]
+        is True
+    )
+
+
 def test_current_price_is_context_only_and_no_arbitrary_discount_is_used() -> None:
     result = _coverage()
 
