@@ -722,6 +722,7 @@ def run(args: argparse.Namespace) -> None:
             "status": "PASS",
         }
         write_json(result_root / "m12cn-r2-chat-scope-reconciliation.json", scope_reconciliation)
+        (result_root / "sources").mkdir(parents=True, exist_ok=True)
         shutil.copy2(
             REPO / "scripts/m12co_entry_range_contract.py",
             result_root / "sources/m12co_entry_range_contract.py",
@@ -810,16 +811,17 @@ def run(args: argparse.Namespace) -> None:
             ),
         )
     except BaseException as exc:  # noqa: BLE001
+        failure_code = str(exc).split(":", 1)[0]
         open_blockers.append(
             {
                 "severity": "P0",
-                "code": str(exc).split(":", 1)[0],
+                "code": failure_code,
                 "error_type": type(exc).__name__,
             }
         )
-        if "field_ownership" in str(exc):
+        if failure_code == "field_ownership_incomplete":
             terminal = COMPLETION_OWNERSHIP_GAP
-        elif "coverage" in str(exc):
+        elif failure_code == "safe_method_coverage_insufficient":
             terminal = COMPLETION_COVERAGE_INSUFFICIENT
         else:
             terminal = COMPLETION_FAILED
