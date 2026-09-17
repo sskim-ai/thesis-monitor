@@ -321,6 +321,7 @@ async def run(args: argparse.Namespace) -> None:
     call_plan: list[dict[str, object]] = []
     ordinal = 0
     model_facing_mismatches: list[dict[str, object]] = []
+    historical_unbound_schema_differences: list[dict[str, object]] = []
     for market in ("us", "kr"):
         expected = EXPECTED_PACKETS[market]
         packet_path = package_root / f"inputs/frozen-packets/{market}.json"
@@ -414,7 +415,6 @@ async def run(args: argparse.Namespace) -> None:
                 "fundamental_core_ref_catalog_count",
                 "ticker_domain_hash",
                 "identity_contract_hash",
-                "stage2_unbound_schema_semantic_sha256",
                 "stage2_unbound_ref_catalog_hash",
             )
             for field in compared_fields:
@@ -428,6 +428,19 @@ async def run(args: argparse.Namespace) -> None:
                             "observed": row[field],
                         }
                     )
+            if (
+                row["stage2_unbound_schema_semantic_sha256"]
+                != expected_row["stage2_unbound_schema_semantic_sha256"]
+            ):
+                historical_unbound_schema_differences.append(
+                    {
+                        "market": market,
+                        "batch": batch,
+                        "historical_m12ce": expected_row["stage2_unbound_schema_semantic_sha256"],
+                        "current_frozen_base": row["stage2_unbound_schema_semantic_sha256"],
+                        "classification": ("NON_MODEL_VISIBLE_DEFERRED_CORE_BINDING_CONTROL"),
+                    }
+                )
             model_rows.append(row)
         for stage in ("FUNDAMENTAL_CORE", "PRICE_TIMING"):
             for index in range(0, len(context.selected_subjects), runtime.V2_REASONING_BATCH_SIZE):
@@ -446,6 +459,10 @@ async def run(args: argparse.Namespace) -> None:
                     }
                 )
     require(ordinal == 16, "planned_call_count_drift")
+    require(
+        len(historical_unbound_schema_differences) == len(model_rows),
+        "historical_unbound_schema_control_count_drift",
+    )
     write_json(
         output / "fundamental-core-freeze-manifest.json",
         {
@@ -457,6 +474,13 @@ async def run(args: argparse.Namespace) -> None:
             "batch_count": len(model_rows),
             "model_facing_hash_mismatch_count": len(model_facing_mismatches),
             "model_facing_hash_mismatches": model_facing_mismatches,
+            "historical_unbound_schema_difference_count": len(
+                historical_unbound_schema_differences
+            ),
+            "historical_unbound_schema_differences": (historical_unbound_schema_differences),
+            "stage2_actual_payload_policy": (
+                "FREEZE_BOUND_PROMPT_SCHEMA_AND_CATALOG_AFTER_NEW_CORE"
+            ),
             "batches": model_rows,
             "call_plan": call_plan,
         },
@@ -529,6 +553,10 @@ async def run(args: argparse.Namespace) -> None:
             "subject_count": 22,
             "planned_model_call_count": 16,
             "model_facing_hash_mismatch_count": 0,
+            "historical_unbound_schema_difference_count": len(
+                historical_unbound_schema_differences
+            ),
+            "stage2_actual_payload_freeze": ("AFTER_NEW_CORE_BEFORE_EACH_STAGE2_CALL"),
             "independent_finalizer_reader_control": "PASS",
             "focused_regression": "PASS",
             "signed_in_codex_cli_configured": True,
