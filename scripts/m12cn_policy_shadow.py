@@ -362,21 +362,65 @@ def _single_archive_member(archive: zipfile.ZipFile, suffix: str) -> tuple[str, 
     return names[0], archive.read(names[0])
 
 
-def classify_shadow_failure(error: BaseException, transport_log: Path | None) -> str:
-    raw = ""
-    if transport_log is not None and transport_log.is_file():
-        raw = transport_log.read_text(encoding="utf-8", errors="replace")
-    combined = f"{type(error).__name__}\n{error}\n{raw}".casefold()
-    if "invalid_json_schema" in combined or (
-        "invalid_request_error" in combined and "schema" in combined
+def _provider_error_events(transport_log: Path | None) -> list[dict[str, object]]:
+    if transport_log is None or not transport_log.is_file():
+        return []
+    raw = transport_log.read_text(encoding="utf-8", errors="replace")
+    candidates: list[str] = []
+    stripped = raw.strip()
+    if stripped.startswith("{"):
+        candidates.append(stripped)
+    marker = "ERROR:"
+    offset = 0
+    while True:
+        index = raw.find(marker, offset)
+        if index < 0:
+            break
+        candidates.append(raw[index + len(marker) :].lstrip())
+        offset = index + len(marker)
+    decoder = json.JSONDecoder()
+    events: list[dict[str, object]] = []
+    for candidate in candidates:
+        try:
+            value, _ = decoder.raw_decode(candidate)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict) and isinstance(value.get("error"), Mapping):
+            events.append(value)
+    return events
+
+
+def classify_shadow_failure(
+    error: BaseException,
+    transport_log: Path | None,
+    *,
+    execution_stage: str | None = None,
+) -> str:
+    stage = str(execution_stage or "").upper()
+    error_text = f"{type(error).__name__}\n{error}".casefold()
+    if stage == "SEMANTIC_VALIDATION" or str(error).split(":", 1)[0] == (
+        "shadow_semantic_validation_failed"
     ):
-        return "SCHEMA_REJECTED_PRE_INFERENCE"
-    if "rate_limit" in combined or "quota" in combined or 'status": 429' in combined:
-        return "RATE_LIMIT_OR_QUOTA"
-    if "timeout" in combined or "timed out" in combined:
+        return "SEMANTIC_VALIDATION_FAILED"
+    if stage in {"OUTPUT_PARSE", "MODEL_OUTPUT_VALIDATION"} or "model_validate" in error_text:
+        return "MODEL_OUTPUT_CONTRACT_FAILURE"
+    provider_events = _provider_error_events(transport_log)
+    for event in provider_events:
+        provider_error = event["error"]
+        code = str(provider_error.get("code") or "").casefold()
+        error_type = str(provider_error.get("type") or "").casefold()
+        message = str(provider_error.get("message") or "").casefold()
+        status = event.get("status")
+        if code == "invalid_json_schema" or (
+            error_type == "invalid_request_error" and "schema" in message
+        ):
+            return "SCHEMA_REJECTED_PRE_INFERENCE"
+        if status == 429 or code in {"rate_limit_exceeded", "insufficient_quota"}:
+            return "RATE_LIMIT_OR_QUOTA"
+    if "timeout" in error_text or "timed out" in error_text:
         return "TRANSPORT_TIMEOUT"
     if any(
-        marker in combined
+        marker in error_text
         for marker in (
             "connection refused",
             "connection reset",
@@ -386,8 +430,6 @@ def classify_shadow_failure(error: BaseException, transport_log: Path | None) ->
         )
     ):
         return "NETWORK_FAILURE"
-    if "semantic_validation" in combined or "model_validate" in combined:
-        return "MODEL_OUTPUT_CONTRACT_FAILURE"
     return "OTHER_DOCUMENTED_FAILURE"
 
 
@@ -1765,6 +1807,7 @@ def run(args: argparse.Namespace) -> None:
                 f"subjects={','.join(spec['subjects'])}",
                 flush=True,
             )
+            execution_stage = "TRANSPORT"
             try:
                 receipt = runtime._invoke_signed_in_codex(
                     codex_bin=codex_bin,
@@ -1787,7 +1830,9 @@ def run(args: argparse.Namespace) -> None:
                 frozen_raw.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(output, frozen_raw)
                 require(sha256_file(frozen_raw) == raw_sha, "raw_output_freeze_mismatch")
+                execution_stage = "OUTPUT_PARSE"
                 parsed = ShadowBatchOutput.model_validate(read_json(output))
+                execution_stage = "SEMANTIC_VALIDATION"
                 validation = validate_shadow_batch(
                     parsed,
                     expected_identity=spec["identity"],
@@ -1796,6 +1841,7 @@ def run(args: argparse.Namespace) -> None:
                 )
                 write_json(call_dir / "semantic-validation.json", validation)
                 require(validation["status"] == "PASS", "shadow_semantic_validation_failed")
+                execution_stage = "COMPLETE"
                 candidates = [row.model_dump(mode="json") for row in parsed.candidates]
                 all_candidates.extend(candidates)
                 row.update(
@@ -1819,7 +1865,11 @@ def run(args: argparse.Namespace) -> None:
                 )
                 print(f"COMPLETE {ordinal}/8 {market} batch={batch_number}", flush=True)
             except BaseException as exc:  # noqa: BLE001
-                failure_category = classify_shadow_failure(exc, log)
+                failure_category = classify_shadow_failure(
+                    exc,
+                    log,
+                    execution_stage=execution_stage,
+                )
                 row.update(
                     {
                         "status": "FAIL",
