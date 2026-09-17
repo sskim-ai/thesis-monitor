@@ -12,8 +12,8 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 
 
-CONTRACT = "m12cn-r1-investment-policy-shadow-v2"
-SCHEMA_CONTRACT = "m12cn-r1-wait-entry-applicability-schema-v2"
+CONTRACT = "m12cn-r2-investment-policy-shadow-v3"
+SCHEMA_CONTRACT = "m12cn-r2-structured-output-schema-v3"
 FUNDAMENTAL_UNRESOLVED_REASON = "no evidence-backed fundamental entry option is available"
 TACTICAL_UNRESOLVED_WITH_CANDIDATES_REASON = "no supplied tactical candidate was safely selected"
 TACTICAL_UNRESOLVED_WITHOUT_CANDIDATES_REASON = "no safe tactical candidate is available"
@@ -139,7 +139,7 @@ class NonWaitEntryBand(FrozenModel):
     low: None = None
     high: None = None
     currency: None = None
-    evidence_refs: tuple[()] = ()
+    evidence_refs: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
 
 
 class WaitEntryRange(FrozenModel):
@@ -178,11 +178,11 @@ class NonWaitEntryRange(FrozenModel):
     tactical_entry_band: NonWaitEntryBand
     method: Literal[EntryMethod.NOT_APPLICABLE] = EntryMethod.NOT_APPLICABLE
     combination_rule: Literal[CombinationRule.NOT_APPLICABLE] = CombinationRule.NOT_APPLICABLE
-    valuation_basis_refs: tuple[()] = ()
-    technical_basis_refs: tuple[()] = ()
-    assumptions: tuple[()] = ()
-    unresolved_inputs: tuple[()] = ()
-    re_evaluate_conditions: tuple[()] = ()
+    valuation_basis_refs: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
+    technical_basis_refs: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
+    assumptions: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
+    unresolved_inputs: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
+    re_evaluate_conditions: tuple[str, ...] = Field(default=(), min_length=0, max_length=0)
 
 
 class ShadowCandidateBase(FrozenModel):
@@ -226,7 +226,7 @@ ShadowCandidate = Annotated[
 
 
 class ShadowBatchOutput(FrozenModel):
-    contract: Literal["m12cn-r1-investment-policy-shadow-v2"] = CONTRACT
+    contract: Literal["m12cn-r2-investment-policy-shadow-v3"] = CONTRACT
     generation_id: str
     packet_id: str
     market: Literal["us", "kr"]
@@ -713,6 +713,98 @@ def _strict_json_schema(value: object) -> object:
     if isinstance(value, list):
         return [_strict_json_schema(item) for item in value]
     return value
+
+
+def _schema_path(parts: Sequence[str | int]) -> str:
+    rendered = ""
+    for part in parts:
+        if isinstance(part, int):
+            rendered += f"[{part}]"
+        elif rendered:
+            rendered += f".{part}"
+        else:
+            rendered = part
+    return rendered or "$"
+
+
+def response_format_schema_completeness_scan(
+    schema: Mapping[str, object],
+) -> dict[str, object]:
+    array_without_items: list[str] = []
+    array_invalid_items: list[str] = []
+    object_constraint_errors: list[dict[str, object]] = []
+    traversed_paths: list[str] = []
+    combinator_branch_count = 0
+    definition_count = 0
+
+    def visit(node: object, path: tuple[str | int, ...]) -> None:
+        nonlocal combinator_branch_count, definition_count
+        if isinstance(node, Mapping):
+            rendered = _schema_path(path)
+            traversed_paths.append(rendered)
+            if node.get("type") == "array":
+                if "items" not in node:
+                    array_without_items.append(rendered)
+                elif not isinstance(node.get("items"), Mapping):
+                    array_invalid_items.append(rendered)
+            properties = node.get("properties")
+            if isinstance(properties, Mapping):
+                property_names = list(properties)
+                required = node.get("required")
+                errors: list[str] = []
+                if node.get("additionalProperties") is not False:
+                    errors.append("additional_properties_not_false")
+                if not isinstance(required, list):
+                    errors.append("required_missing_or_not_array")
+                elif set(required) != set(property_names) or len(required) != len(property_names):
+                    errors.append("required_properties_mismatch")
+                if errors:
+                    object_constraint_errors.append(
+                        {
+                            "path": rendered,
+                            "errors": errors,
+                            "property_names": property_names,
+                            "required": required,
+                        }
+                    )
+            definitions = node.get("$defs")
+            if isinstance(definitions, Mapping):
+                definition_count += len(definitions)
+            for key in ("anyOf", "oneOf", "allOf"):
+                branches = node.get(key)
+                if isinstance(branches, list):
+                    combinator_branch_count += len(branches)
+            for key, child in node.items():
+                visit(child, (*path, str(key)))
+        elif isinstance(node, list):
+            for index, child in enumerate(node):
+                visit(child, (*path, index))
+
+    visit(schema, ())
+    errors = [
+        *(f"array_missing_items:{path}" for path in array_without_items),
+        *(f"array_invalid_items:{path}" for path in array_invalid_items),
+        *(
+            f"strict_object:{row['path']}:{error}"
+            for row in object_constraint_errors
+            for error in row["errors"]
+        ),
+    ]
+    return {
+        "contract": "m12cn-r2-response-format-schema-completeness-scan-v1",
+        "schema_contract": schema.get("title"),
+        "visited_object_count": len(traversed_paths),
+        "definition_count": definition_count,
+        "combinator_branch_count": combinator_branch_count,
+        "array_without_items_count": len(array_without_items),
+        "array_without_items_paths": array_without_items,
+        "array_invalid_items_count": len(array_invalid_items),
+        "array_invalid_items_paths": array_invalid_items,
+        "strict_object_error_count": len(object_constraint_errors),
+        "strict_object_errors": object_constraint_errors,
+        "errors": errors,
+        "status": "PASS" if not errors else "FAIL",
+    }
 
 
 def batch_output_schema(

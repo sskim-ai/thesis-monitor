@@ -26,9 +26,11 @@ from scripts.m12cn_policy_contract import (
     build_entry_catalog,
     generic_policy_control_matrix,
     model_subject_payload,
+    response_format_schema_completeness_scan,
     validate_shadow_candidate,
     wait_entry_component_control_matrix,
 )
+from scripts.m12cn_policy_shadow import classify_shadow_failure
 
 
 def _packet() -> dict[str, object]:
@@ -368,6 +370,82 @@ def test_batch_schema_has_no_unique_items_keyword() -> None:
     assert schema["properties"]["candidates"]["maxItems"] == 1
 
 
+def test_batch_schema_is_recursively_complete_for_response_format() -> None:
+    schema = batch_output_schema(
+        generation_id="generation",
+        packet_id="packet",
+        market="us",
+        assessment_date="2026-09-17",
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    scan = response_format_schema_completeness_scan(schema)
+    assert scan["status"] == "PASS"
+    assert scan["array_without_items_count"] == 0
+    assert scan["strict_object_error_count"] == 0
+    non_wait_band = schema["$defs"]["NonWaitEntryBand"]["properties"]
+    non_wait_entry = schema["$defs"]["NonWaitEntryRange"]["properties"]
+    zero_length_arrays = [
+        non_wait_band["evidence_refs"],
+        non_wait_entry["assumptions"],
+        non_wait_entry["re_evaluate_conditions"],
+        non_wait_entry["technical_basis_refs"],
+        non_wait_entry["unresolved_inputs"],
+        non_wait_entry["valuation_basis_refs"],
+    ]
+    assert all(item["minItems"] == 0 for item in zero_length_arrays)
+    assert all(item["maxItems"] == 0 for item in zero_length_arrays)
+    assert all(item["items"] == {"type": "string"} for item in zero_length_arrays)
+
+
+def test_r1_missing_items_negative_control_reports_all_six_paths() -> None:
+    schema = batch_output_schema(
+        generation_id="generation",
+        packet_id="packet",
+        market="us",
+        assessment_date="2026-09-17",
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+    band = schema["$defs"]["NonWaitEntryBand"]["properties"]
+    entry = schema["$defs"]["NonWaitEntryRange"]["properties"]
+    del band["evidence_refs"]["items"]
+    for field in (
+        "assumptions",
+        "re_evaluate_conditions",
+        "technical_basis_refs",
+        "unresolved_inputs",
+        "valuation_basis_refs",
+    ):
+        del entry[field]["items"]
+
+    scan = response_format_schema_completeness_scan(schema)
+    assert scan["status"] == "FAIL"
+    assert scan["array_without_items_count"] == 6
+    assert set(scan["array_without_items_paths"]) == {
+        "$defs.NonWaitEntryBand.properties.evidence_refs",
+        "$defs.NonWaitEntryRange.properties.assumptions",
+        "$defs.NonWaitEntryRange.properties.re_evaluate_conditions",
+        "$defs.NonWaitEntryRange.properties.technical_basis_refs",
+        "$defs.NonWaitEntryRange.properties.unresolved_inputs",
+        "$defs.NonWaitEntryRange.properties.valuation_basis_refs",
+    }
+
+
+def test_shadow_failure_classifier_uses_raw_provider_schema_error(tmp_path) -> None:
+    log = tmp_path / "transport.log"
+    log.write_text(
+        '{"error":{"type":"invalid_request_error","code":"invalid_json_schema"},"status":400}',
+        encoding="utf-8",
+    )
+
+    assert (
+        classify_shadow_failure(RuntimeError("OTHER_TRANSPORT_FAILURE:attempts=1"), log)
+        == "SCHEMA_REJECTED_PRE_INFERENCE"
+    )
+
+
 def test_model_payload_excludes_prior_accepted_and_decision_identity() -> None:
     context = {
         "evidence_packets": [_packet()],
@@ -489,7 +567,7 @@ def test_wait_tactical_not_applicable_fails_before_semantic_validation() -> None
     candidate["entry_range"]["assumptions"] = []
 
     payload = {
-        "contract": "m12cn-r1-investment-policy-shadow-v2",
+        "contract": "m12cn-r2-investment-policy-shadow-v3",
         "generation_id": "generation",
         "packet_id": "packet",
         "market": "us",

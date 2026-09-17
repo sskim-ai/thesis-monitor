@@ -28,6 +28,7 @@ from scripts.m12cn_policy_contract import (
     generic_policy_control_matrix,
     model_subject_payload,
     policy_prompt,
+    response_format_schema_completeness_scan,
     validate_shadow_batch,
 )
 
@@ -76,9 +77,13 @@ EXPECTED_SOURCE_HASHES = {
         "1cbda3115fe26681917a6bd46499a3987e449c9a18f14f19ef8fa7f331e11310"
     ),
     (
-        "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
-        "calibration-shadow-entry-range-design-report.zip"
-    ): "2fb44910ea8f1545da6e8e6f40bfffe95a44fc614b5c41b7755f576cd2ab16ed",
+        "sources/thesis-monitor-20260917-m12cn-r1-wait-entry-tactical-"
+        "applicability-contract-repair-fresh-shadow-report.zip"
+    ): "37d928236611b14c4b0baddcb24bb3a5140520a56e095bb62197629b52681218",
+    (
+        "sources/thesis-monitor-20260917-m12cn-r1-wait-entry-tactical-"
+        "applicability-contract-repair-fresh-shadow-work-instruction.zip"
+    ): "ec19d2cd3dd4dc214ccfbb27a5a259dba3e88da9287ea86612446a8a7a7542c7",
 }
 POST_FREEZE_HASHES = {
     "m12cm-independent-assistant-judgment.json": (
@@ -91,9 +96,23 @@ POST_FREEZE_HASHES = {
         "0fc4761d8e8fb32870c547f8921a6d55dff00c54a072b486b752ed99d43d13ab"
     ),
 }
-COMPLETION_PASS = "M12CN_R1_POLICY_CALIBRATION_SHADOW_PASS_READY_FOR_CHAT_REVIEW"
-COMPLETION_BLOCKED = "M12CN_R1_SHADOW_CONTRACT_REPAIR_PASS_EXECUTION_BLOCKED"
-COMPLETION_FAILED = "M12CN_R1_POLICY_CALIBRATION_SHADOW_FAILED"
+COMPLETION_PASS = "M12CN_R2_POLICY_CALIBRATION_SHADOW_PASS_READY_FOR_CHAT_REVIEW"
+COMPLETION_PREFLIGHT_FAILED = "M12CN_R2_SCHEMA_PREFLIGHT_FAILED"
+COMPLETION_PROVIDER_SCHEMA_REJECTED = "M12CN_R2_PROVIDER_SCHEMA_REJECTED_AFTER_PREFLIGHT"
+COMPLETION_FAILED = "M12CN_R2_POLICY_CALIBRATION_SHADOW_FAILED"
+COMPLETION_NEW_DEPENDENCY = "M12CN_R2_NEW_PRODUCTION_DEPENDENCY_REQUIRES_CHAT"
+R1_REPORT_FILENAME = (
+    "thesis-monitor-20260917-m12cn-r1-wait-entry-tactical-applicability-contract-"
+    "repair-fresh-shadow-report.zip"
+)
+R1_MISSING_ITEM_PATHS = (
+    "$defs.NonWaitEntryBand.properties.evidence_refs",
+    "$defs.NonWaitEntryRange.properties.assumptions",
+    "$defs.NonWaitEntryRange.properties.re_evaluate_conditions",
+    "$defs.NonWaitEntryRange.properties.technical_basis_refs",
+    "$defs.NonWaitEntryRange.properties.unresolved_inputs",
+    "$defs.NonWaitEntryRange.properties.valuation_basis_refs",
+)
 
 
 class M12CNFailure(RuntimeError):
@@ -263,7 +282,7 @@ def verify_pre_freeze_sources(
         if actual != row["sha256"]:
             errors.append(f"shadow_input_hash_mismatch:{relative}")
     return {
-        "contract": "m12cn-r1-pre-freeze-source-integrity-v2",
+        "contract": "m12cn-r2-pre-freeze-source-integrity-v1",
         "cryptographic_only_post_freeze_payload_access": True,
         "post_freeze_semantic_open_count": 0,
         "package_sources": rows,
@@ -274,24 +293,24 @@ def verify_pre_freeze_sources(
     }
 
 
-def verify_prior_m12cn_report(report_zip: Path) -> dict[str, object]:
+def verify_prior_r1_report(report_zip: Path) -> dict[str, object]:
     expected_zip_sha = EXPECTED_SOURCE_HASHES[
         (
-            "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
-            "calibration-shadow-entry-range-design-report.zip"
+            "sources/thesis-monitor-20260917-m12cn-r1-wait-entry-tactical-"
+            "applicability-contract-repair-fresh-shadow-report.zip"
         )
     ]
     actual_zip_sha = sha256_file(report_zip)
     errors: list[str] = []
     rows: list[dict[str, object]] = []
     if actual_zip_sha != expected_zip_sha:
-        errors.append("prior_m12cn_report_zip_hash_mismatch")
+        errors.append("prior_r1_report_zip_hash_mismatch")
     with zipfile.ZipFile(report_zip) as archive:
         manifest_names = [
             name for name in archive.namelist() if name.endswith("/artifact-manifest.json")
         ]
         if len(manifest_names) != 1:
-            raise M12CNFailure("prior_m12cn_artifact_manifest_count_invalid")
+            raise M12CNFailure("prior_r1_artifact_manifest_count_invalid")
         manifest_name = manifest_names[0]
         prefix = manifest_name.removesuffix("artifact-manifest.json")
         manifest = json.loads(archive.read(manifest_name).decode("utf-8"))
@@ -320,11 +339,11 @@ def verify_prior_m12cn_report(report_zip: Path) -> dict[str, object]:
                 }
             )
             if status != "PASS":
-                errors.append(f"prior_m12cn_payload_mismatch:{relative}")
-    if len(rows) != 83:
-        errors.append(f"prior_m12cn_payload_count:{len(rows)}")
+                errors.append(f"prior_r1_payload_mismatch:{relative}")
+    if len(rows) != 78:
+        errors.append(f"prior_r1_payload_count:{len(rows)}")
     return {
-        "contract": "m12cn-r1-prior-result-cryptographic-verification-v1",
+        "contract": "m12cn-r2-prior-r1-result-cryptographic-verification-v1",
         "zip_sha256": actual_zip_sha,
         "expected_zip_sha256": expected_zip_sha,
         "payload_count": len(rows),
@@ -333,6 +352,107 @@ def verify_prior_m12cn_report(report_zip: Path) -> dict[str, object]:
         "error_count": len(errors),
         "errors": errors,
         "status": "PASS" if not errors else "FAIL",
+    }
+
+
+def _single_archive_member(archive: zipfile.ZipFile, suffix: str) -> tuple[str, bytes]:
+    names = [name for name in archive.namelist() if name.endswith(suffix)]
+    if len(names) != 1:
+        raise M12CNFailure(f"archive_member_count_invalid:{suffix}:{len(names)}")
+    return names[0], archive.read(names[0])
+
+
+def classify_shadow_failure(error: BaseException, transport_log: Path | None) -> str:
+    raw = ""
+    if transport_log is not None and transport_log.is_file():
+        raw = transport_log.read_text(encoding="utf-8", errors="replace")
+    combined = f"{type(error).__name__}\n{error}\n{raw}".casefold()
+    if "invalid_json_schema" in combined or (
+        "invalid_request_error" in combined and "schema" in combined
+    ):
+        return "SCHEMA_REJECTED_PRE_INFERENCE"
+    if "rate_limit" in combined or "quota" in combined or 'status": 429' in combined:
+        return "RATE_LIMIT_OR_QUOTA"
+    if "timeout" in combined or "timed out" in combined:
+        return "TRANSPORT_TIMEOUT"
+    if any(
+        marker in combined
+        for marker in (
+            "connection refused",
+            "connection reset",
+            "dns",
+            "network is unreachable",
+            "temporary failure in name resolution",
+        )
+    ):
+        return "NETWORK_FAILURE"
+    if "semantic_validation" in combined or "model_validate" in combined:
+        return "MODEL_OUTPUT_CONTRACT_FAILURE"
+    return "OTHER_DOCUMENTED_FAILURE"
+
+
+def r1_provider_schema_error_reclassification(report_zip: Path) -> dict[str, object]:
+    with zipfile.ZipFile(report_zip) as archive:
+        name, raw = _single_archive_member(
+            archive,
+            "/shadow-calls/us/batch-01/transport.log",
+        )
+    text = raw.decode("utf-8", errors="replace")
+    archived_error = M12CNFailure("OTHER_TRANSPORT_FAILURE:attempts=1")
+    temporary = report_zip.parent / ".m12cn-r1-transport-classification.log"
+    temporary.write_text(text, encoding="utf-8")
+    try:
+        category = classify_shadow_failure(archived_error, temporary)
+    finally:
+        temporary.unlink(missing_ok=True)
+    provider_code = "invalid_json_schema" if "invalid_json_schema" in text else None
+    provider_status = 400 if '"status": 400' in text else None
+    status = (
+        "PASS"
+        if category == "SCHEMA_REJECTED_PRE_INFERENCE"
+        and provider_code == "invalid_json_schema"
+        and provider_status == 400
+        else "FAIL"
+    )
+    return {
+        "contract": "m12cn-r2-r1-provider-schema-error-reclassification-v1",
+        "archived_transport_member": name,
+        "archived_transport_sha256": sha256_bytes(raw),
+        "wrapper_error": "OTHER_TRANSPORT_FAILURE",
+        "provider_error_type": "invalid_request_error" if "invalid_request_error" in text else None,
+        "provider_error_code": provider_code,
+        "provider_http_status": provider_status,
+        "accepted_inference_count": 0,
+        "model_output_count": 0,
+        "classification": category,
+        "status": status,
+    }
+
+
+def r1_invalid_schema_completeness_scan(report_zip: Path) -> dict[str, object]:
+    with zipfile.ZipFile(report_zip) as archive:
+        name, raw = _single_archive_member(
+            archive,
+            "/shadow-model-inputs/us/batch-01/schema.json",
+        )
+    schema = json.loads(raw.decode("utf-8"))
+    scan = response_format_schema_completeness_scan(schema)
+    actual_paths = tuple(scan["array_without_items_paths"])
+    expected_paths = tuple(R1_MISSING_ITEM_PATHS)
+    return {
+        "contract": "m12cn-r2-r1-invalid-schema-completeness-scan-v1",
+        "archived_schema_member": name,
+        "archived_schema_sha256": sha256_bytes(raw),
+        "expected_missing_item_paths": list(expected_paths),
+        "scan": scan,
+        "all_six_paths_reported": set(actual_paths) == set(expected_paths),
+        "status": (
+            "PASS"
+            if scan["status"] == "FAIL"
+            and set(actual_paths) == set(expected_paths)
+            and len(actual_paths) == 6
+            else "FAIL"
+        ),
     }
 
 
@@ -443,16 +563,17 @@ def wait_entry_component_applicability_contract() -> dict[str, object]:
 
 def shadow_schema_version_and_diff() -> dict[str, object]:
     return {
-        "contract": "m12cn-r1-shadow-schema-version-and-diff-v1",
-        "previous_contract": "m12cn-investment-policy-shadow-v1",
+        "contract": "m12cn-r2-shadow-schema-version-and-diff-v1",
+        "previous_contract": "m12cn-r1-investment-policy-shadow-v2",
         "current_contract": CONTRACT,
         "schema_contract": SCHEMA_CONTRACT,
         "changes": [
-            "candidate is discriminated by new_buyer",
-            "WAIT entry components exclude NOT_APPLICABLE structurally",
-            "non-WAIT entry components require NOT_APPLICABLE and null values structurally",
-            "hard semantic validation remains an independent second gate",
+            "all response-format array nodes retain explicit items schemas",
+            "zero-length non-WAIT arrays retain minItems=0 and maxItems=0",
+            "recursive provider-compatible schema completeness preflight added",
+            "R1 provider 400 is classified as SCHEMA_REJECTED_PRE_INFERENCE",
         ],
+        "r1_policy_semantics_changed": False,
         "production_stage2_schema_changed": False,
     }
 
@@ -595,13 +716,152 @@ def schema_structural_proof(paths: Sequence[Path]) -> dict[str, object]:
         )
         errors.extend(f"{path.name}:{error}" for error in row_errors)
     return {
-        "contract": "m12cn-r1-shadow-schema-structural-proof-v1",
+        "contract": "m12cn-r2-shadow-schema-structural-proof-v1",
         "schema_contract": SCHEMA_CONTRACT,
         "schema_count": len(rows),
         "wait_not_applicable_structurally_forbidden": not errors,
         "rows": rows,
         "errors": errors,
         "status": "PASS" if not errors else "FAIL",
+    }
+
+
+def response_format_schema_completeness_contract() -> dict[str, object]:
+    return {
+        "contract": "m12cn-r2-response-format-schema-completeness-contract-v1",
+        "recursive_keywords": ["$defs", "properties", "anyOf", "oneOf", "allOf"],
+        "array_requirement": "every type=array node has explicit items",
+        "zero_length_array_requirement": {
+            "minItems": 0,
+            "maxItems": 0,
+            "items_required": True,
+            "model_populatable": False,
+        },
+        "strict_object_requirement": {
+            "additionalProperties": False,
+            "required_equals_properties": True,
+        },
+        "dynamic_injection_requirements": [
+            "candidate ticker enums equal exact batch subjects",
+            "evidence and claim arrays retain typed item enums",
+            "candidate array cardinality equals exact batch size",
+        ],
+        "production_stage2_schema_changed": False,
+    }
+
+
+def _schema_string_branch(value: object) -> Mapping[str, object] | None:
+    if isinstance(value, Mapping) and value.get("type") == "string":
+        return value
+    if isinstance(value, Mapping):
+        for branch in value.get("anyOf") or []:
+            if isinstance(branch, Mapping) and branch.get("type") == "string":
+                return branch
+    return None
+
+
+def _dynamic_schema_injection_errors(
+    schema: Mapping[str, object],
+    subjects: Sequence[str],
+) -> list[str]:
+    errors: list[str] = []
+    definitions = schema.get("$defs") or {}
+    root_properties = schema.get("properties") or {}
+    candidates = root_properties.get("candidates") or {}
+    if candidates.get("minItems") != len(subjects) or candidates.get("maxItems") != len(subjects):
+        errors.append("candidate_cardinality_injection_missing")
+    for definition in ("WaitShadowCandidate", "NonWaitShadowCandidate"):
+        ticker = definitions.get(definition, {}).get("properties", {}).get("ticker", {})
+        if ticker.get("enum") != list(subjects):
+            errors.append(f"{definition}_ticker_enum_injection_mismatch")
+        for field in (
+            "archetype_evidence_refs",
+            "data_quality_evidence_refs",
+            "holder_reason_evidence_refs",
+            "decisive_supporting_claim_refs",
+            "decisive_contradicting_claim_refs",
+        ):
+            item_schema = (
+                definitions.get(definition, {}).get("properties", {}).get(field, {}).get("items")
+            )
+            if not isinstance(item_schema, Mapping) or not item_schema.get("enum"):
+                errors.append(f"{definition}_{field}_item_enum_missing")
+    wait_entry = definitions.get("WaitEntryRange", {}).get("properties", {})
+    for field in ("valuation_basis_refs", "technical_basis_refs"):
+        item_schema = wait_entry.get(field, {}).get("items")
+        if not isinstance(item_schema, Mapping) or not item_schema.get("enum"):
+            errors.append(f"WaitEntryRange_{field}_item_enum_missing")
+    current_ref = _schema_string_branch(wait_entry.get("current_price_ref"))
+    if current_ref is None or not current_ref.get("enum"):
+        errors.append("WaitEntryRange_current_price_ref_enum_missing")
+    wait_band_items = (
+        definitions.get("WaitEntryBand", {})
+        .get("properties", {})
+        .get("evidence_refs", {})
+        .get("items")
+    )
+    if not isinstance(wait_band_items, Mapping) or not wait_band_items.get("enum"):
+        errors.append("WaitEntryBand_evidence_refs_item_enum_missing")
+    non_wait_band = definitions.get("NonWaitEntryBand", {}).get("properties", {})
+    non_wait_entry = definitions.get("NonWaitEntryRange", {}).get("properties", {})
+    zero_length_arrays = {
+        "NonWaitEntryBand_evidence_refs": non_wait_band.get("evidence_refs", {}),
+        **{
+            f"NonWaitEntryRange_{field}": non_wait_entry.get(field, {})
+            for field in (
+                "assumptions",
+                "re_evaluate_conditions",
+                "technical_basis_refs",
+                "unresolved_inputs",
+                "valuation_basis_refs",
+            )
+        },
+    }
+    for label, array_schema in zero_length_arrays.items():
+        if (
+            array_schema.get("minItems") != 0
+            or array_schema.get("maxItems") != 0
+            or array_schema.get("items") != {"type": "string"}
+        ):
+            errors.append(f"{label}_zero_length_contract_invalid")
+    return errors
+
+
+def repaired_schema_completeness_proof(
+    specs: Sequence[Mapping[str, object]],
+) -> dict[str, object]:
+    rows: list[dict[str, object]] = []
+    for spec in specs:
+        path = Path(spec["schema"])
+        schema = read_json(path)
+        scan = response_format_schema_completeness_scan(schema)
+        dynamic_errors = _dynamic_schema_injection_errors(schema, spec["subjects"])
+        row_errors = [*scan["errors"], *dynamic_errors]
+        rows.append(
+            {
+                "market": spec["market"],
+                "batch": spec["batch"],
+                "subjects": list(spec["subjects"]),
+                "path": str(path),
+                "sha256": sha256_file(path),
+                "scan": scan,
+                "dynamic_injection_errors": dynamic_errors,
+                "errors": row_errors,
+                "status": "PASS" if not row_errors else "FAIL",
+            }
+        )
+    return {
+        "contract": "m12cn-r2-repaired-schema-completeness-proof-v1",
+        "schema_count": len(rows),
+        "passed_schema_count": sum(row["status"] == "PASS" for row in rows),
+        "array_without_items_count": sum(
+            int(row["scan"]["array_without_items_count"]) for row in rows
+        ),
+        "dynamic_injection_error_count": sum(len(row["dynamic_injection_errors"]) for row in rows),
+        "rows": rows,
+        "status": "PASS"
+        if len(rows) == 8 and all(row["status"] == "PASS" for row in rows)
+        else "FAIL",
     }
 
 
@@ -768,7 +1028,7 @@ def compare_three_sets(
             }
         )
     return {
-        "contract": "m12cn-r1-post-freeze-three-way-comparison-v2",
+        "contract": "m12cn-r2-post-freeze-three-way-comparison-v1",
         "comparison_is_descriptive_not_pass_target": True,
         "subject_count": len(expected_tickers),
         "old_vs_shadow_exact_three_axis_agreement": old_shadow_exact,
@@ -905,7 +1165,7 @@ def entry_catalog_coverage(
                 }
             )
     return {
-        "contract": "m12cn-r1-entry-range-catalog-coverage-v1",
+        "contract": "m12cn-r2-entry-range-catalog-coverage-v1",
         "subject_count": len(rows),
         "fundamental_candidate_subject_count": sum(
             int(row["fundamental_candidate_count"] > 0) for row in rows
@@ -980,7 +1240,7 @@ def _result_analyses(
             unresolved_by_archetype_method[f"{archetype}|{method}|{missing}"] += 1
     return {
         "entry": {
-            "contract": "m12cn-r1-entry-range-coverage-and-methods-v2",
+            "contract": "m12cn-r2-entry-range-coverage-and-methods-v1",
             "subject_count": len(candidates),
             "wait_count": wait_count,
             "status_counts": dict(sorted(entry_status.items())),
@@ -1075,13 +1335,13 @@ def _report_markdown(
     call_pass = sum(row.get("status") == "PASS" for row in calls)
     subject_count = completion.get("shadow_subject_count", 0)
     lines = [
-        "# M12CN-R1 WAIT Entry Applicability Repair And Fresh Policy Shadow",
+        "# M12CN-R2 Structured Output Schema Repair And Fresh Policy Shadow",
         "",
         f"**Completion:** `{status}`",
         "",
         "## Scope",
         "",
-        "This was an archive-only WAIT entry-component contract repair and wholly fresh policy calibration against frozen M12CM facts and accepted Fundamental Core. Production prompt, runtime, persistence, scheduler, notifications, and delivery were unchanged.",
+        "This was an archive-only response-format schema completeness repair and wholly fresh policy calibration against frozen M12CM facts and accepted Fundamental Core. R1 WAIT semantics were preserved. Production prompt, runtime, persistence, scheduler, notifications, and delivery were unchanged.",
         "",
         "## Provenance",
         "",
@@ -1094,11 +1354,14 @@ def _report_markdown(
         "## Blindness And Execution",
         "",
         f"- Target-label leaks: `{(leak or {}).get('target_label_leak_count', 'N/A')}`",
-        f"- Shadow calls: `{call_pass}/8`",
+        f"- Shadow calls started: `{len(calls)}/8`",
+        f"- Shadow calls accepted: `{call_pass}/8`",
         f"- Shadow subjects: `{subject_count}/22`",
+        f"- Schema preflight: `{completion.get('schema_preflight_status')}`",
+        f"- Provider schema rejections: `{completion.get('provider_schema_rejection_count')}`",
         "- Fundamental Core calls: `0`",
         "- Retry/repair/fallback/judge/selective rerun: `0`",
-        "- Post-freeze comparison occurred only after output hash freeze.",
+        "- Post-freeze comparison is permitted only after output hash freeze.",
         "",
         "## Policy Result",
         "",
@@ -1177,6 +1440,9 @@ def run(args: argparse.Namespace) -> None:
     analyses: dict[str, object] | None = None
     comparison: dict[str, object] | None = None
     source_integrity: dict[str, object] = {}
+    r1_error_reclassification: dict[str, object] | None = None
+    r1_invalid_schema_scan: dict[str, object] | None = None
+    repaired_schema_proof: dict[str, object] | None = None
     terminal_error: BaseException | None = None
     output_frozen_at: str | None = None
     post_freeze_semantic_opened_at: str | None = None
@@ -1193,16 +1459,31 @@ def run(args: argparse.Namespace) -> None:
         )
         write_json(result_root / "pre-freeze-source-integrity.json", pre_sources)
         require(pre_sources["status"] == "PASS", "M12CN_SOURCE_OR_BASE_MISMATCH")
-        prior_report = verify_prior_m12cn_report(
-            args.package_root.resolve()
-            / "sources/thesis-monitor-20260917-m12cn-investment-archetype-policy-"
-            "calibration-shadow-entry-range-design-report.zip"
-        )
+        prior_report_path = args.package_root.resolve() / "sources" / R1_REPORT_FILENAME
+        prior_report = verify_prior_r1_report(prior_report_path)
         write_json(
-            result_root / "prior-m12cn-result-cryptographic-verification.json",
+            result_root / "prior-r1-result-cryptographic-verification.json",
             prior_report,
         )
         require(prior_report["status"] == "PASS", "M12CN_SOURCE_OR_BASE_MISMATCH")
+        r1_error_reclassification = r1_provider_schema_error_reclassification(prior_report_path)
+        write_json(
+            result_root / "r1-provider-schema-error-reclassification.json",
+            r1_error_reclassification,
+        )
+        require(
+            r1_error_reclassification["status"] == "PASS",
+            "r1_provider_error_reclassification_failed",
+        )
+        r1_invalid_schema_scan = r1_invalid_schema_completeness_scan(prior_report_path)
+        write_json(
+            result_root / "r1-invalid-schema-completeness-scan.json",
+            r1_invalid_schema_scan,
+        )
+        require(
+            r1_invalid_schema_scan["status"] == "PASS",
+            "r1_invalid_schema_negative_control_failed",
+        )
 
         validation_files = copy_validation_artifacts(
             args.validation_root.resolve(),
@@ -1242,6 +1523,10 @@ def run(args: argparse.Namespace) -> None:
             shadow_schema_version_and_diff(),
         )
         write_json(
+            result_root / "response-format-schema-completeness-contract.json",
+            response_format_schema_completeness_contract(),
+        )
+        write_json(
             result_root / "m12cn-failure-reproducer.json",
             m12cn_failure_reproducer(),
         )
@@ -1274,7 +1559,7 @@ def run(args: argparse.Namespace) -> None:
 
         now_utc = datetime.now(UTC)
         generation_id = (
-            f"{now_utc.astimezone(KST):%Y%m%d}-m12cn-r1-policy-shadow-"
+            f"{now_utc.astimezone(KST):%Y%m%d}-m12cn-r2-policy-shadow-"
             f"{now_utc:%Y%m%dT%H%M%SZ}-{args.expected_head[:12]}"
         )
         contexts: dict[str, Any] = {}
@@ -1407,11 +1692,35 @@ def run(args: argparse.Namespace) -> None:
         schema_proof = schema_structural_proof([Path(spec["schema"]) for spec in batch_specs])
         write_json(result_root / "shadow-schema-structural-proof.json", schema_proof)
         require(schema_proof["status"] == "PASS", "shadow_schema_structure_invalid")
+        repaired_schema_proof = repaired_schema_completeness_proof(batch_specs)
+        write_json(
+            result_root / "repaired-schema-completeness-proof.json",
+            repaired_schema_proof,
+        )
+        negative_positive_controls = {
+            "contract": "m12cn-r2-schema-completeness-negative-positive-controls-v1",
+            "negative_control": r1_invalid_schema_scan,
+            "positive_control": repaired_schema_proof,
+            "status": (
+                "PASS"
+                if r1_invalid_schema_scan["status"] == "PASS"
+                and repaired_schema_proof["status"] == "PASS"
+                else "FAIL"
+            ),
+        }
+        write_json(
+            result_root / "schema-completeness-negative-positive-controls.json",
+            negative_positive_controls,
+        )
+        require(
+            repaired_schema_proof["status"] == "PASS",
+            "M12CN_R2_SCHEMA_PREFLIGHT_FAILED",
+        )
         leak_scan = scan_model_facing_files(model_facing_paths, accepted_ids)
         write_json(result_root / "blindness-and-target-leak-proof.json", leak_scan)
         require(leak_scan["status"] == "PASS", "M12CN_BLINDNESS_FAILURE")
         input_manifest = {
-            "contract": "m12cn-r1-shadow-model-input-manifest-v2",
+            "contract": "m12cn-r2-shadow-model-input-manifest-v1",
             "schema_contract": SCHEMA_CONTRACT,
             "generation_id": generation_id,
             "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
@@ -1465,7 +1774,7 @@ def run(args: argparse.Namespace) -> None:
                     schema=spec["schema"],
                     cwd=REPO,
                     timeout=args.timeout,
-                    state_namespace=(f"m12cn-r1:{generation_id}:{market}:batch-{batch_number:02d}"),
+                    state_namespace=(f"m12cn-r2:{generation_id}:{market}:batch-{batch_number:02d}"),
                 )
                 require(
                     int(receipt.get("transport_attempts") or 0) == 1,
@@ -1510,11 +1819,13 @@ def run(args: argparse.Namespace) -> None:
                 )
                 print(f"COMPLETE {ordinal}/8 {market} batch={batch_number}", flush=True)
             except BaseException as exc:  # noqa: BLE001
+                failure_category = classify_shadow_failure(exc, log)
                 row.update(
                     {
                         "status": "FAIL",
                         "safe_error_type": type(exc).__name__,
                         "safe_error_code": str(exc).split(":", 1)[0],
+                        "failure_category": failure_category,
                         "completed_at": datetime.now(UTC).isoformat(),
                     }
                 )
@@ -1534,7 +1845,7 @@ def run(args: argparse.Namespace) -> None:
             "shadow_subject_order_mismatch",
         )
         aggregate = {
-            "contract": "m12cn-r1-shadow-22-subject-results-v2",
+            "contract": "m12cn-r2-shadow-22-subject-results-v1",
             "generation_id": generation_id,
             "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
             "subject_count": len(all_candidates),
@@ -1544,7 +1855,7 @@ def run(args: argparse.Namespace) -> None:
         write_json(aggregate_path, aggregate)
         output_frozen_at = datetime.now(UTC).isoformat()
         output_freeze = {
-            "contract": "m12cn-r1-shadow-output-freeze-manifest-v2",
+            "contract": "m12cn-r2-shadow-output-freeze-manifest-v1",
             "generation_id": generation_id,
             "call_output_count": len(completed_outputs),
             "subject_count": len(all_candidates),
@@ -1647,18 +1958,29 @@ def run(args: argparse.Namespace) -> None:
         if (result_root / "generic-policy-control-matrix.json").is_file()
         else {"status": "NOT_REACHED"}
     )
+    provider_schema_rejected = any(
+        row.get("failure_category") == "SCHEMA_REJECTED_PRE_INFERENCE" for row in call_rows
+    )
+    terminal_code = str(terminal_error).split(":", 1)[0] if terminal_error is not None else None
     if terminal_error is None:
         completion_state = COMPLETION_PASS
-    elif str(terminal_error).startswith("post_freeze_"):
-        completion_state = COMPLETION_BLOCKED
+    elif terminal_code == COMPLETION_PREFLIGHT_FAILED:
+        completion_state = COMPLETION_PREFLIGHT_FAILED
+    elif provider_schema_rejected:
+        completion_state = COMPLETION_PROVIDER_SCHEMA_REJECTED
+    elif terminal_code == COMPLETION_NEW_DEPENDENCY:
+        completion_state = COMPLETION_NEW_DEPENDENCY
     else:
         completion_state = COMPLETION_FAILED
     blockers = []
     if terminal_error is not None:
+        blocker_code = (
+            "SCHEMA_REJECTED_PRE_INFERENCE" if provider_schema_rejected else terminal_code
+        )
         blockers.append(
             {
                 "severity": "P0",
-                "code": str(terminal_error).split(":", 1)[0],
+                "code": blocker_code,
                 "error_type": type(terminal_error).__name__,
                 "bounded_next_action": "Return to Chat; no retry or same-run hotfix authorized.",
             }
@@ -1666,14 +1988,14 @@ def run(args: argparse.Namespace) -> None:
     write_json(
         result_root / "complete-blocker-ledger.json",
         {
-            "contract": "m12cn-r1-complete-blocker-ledger-v2",
+            "contract": "m12cn-r2-complete-blocker-ledger-v1",
             "open_blocker_count": len(blockers),
             "blockers": blockers,
             "status": "PASS" if not blockers else "BLOCKED",
         },
     )
     safety = {
-        "contract": "m12cn-r1-safety-counters-v2",
+        "contract": "m12cn-r2-safety-counters-v1",
         "production_send": 0,
         "production_intent": 0,
         "production_db_mutation": 0,
@@ -1701,12 +2023,13 @@ def run(args: argparse.Namespace) -> None:
         "per_ticker_rerun": 0,
         "second_inference_after_reveal": 0,
         "production_runtime_behavior_change": 0,
+        "provider_schema_rejection": int(provider_schema_rejected),
     }
     write_json(result_root / "safety-counters.json", safety)
     write_json(
         result_root / "shadow-call-ledger.json",
         {
-            "contract": "m12cn-r1-shadow-call-ledger-v2",
+            "contract": "m12cn-r2-shadow-call-ledger-v1",
             "generation_id": generation_id,
             "planned_call_count": 8,
             "started_call_count": len(call_rows),
@@ -1715,7 +2038,7 @@ def run(args: argparse.Namespace) -> None:
         },
     )
     completion = {
-        "contract": "m12cn-r1-program-completion-v2",
+        "contract": "m12cn-r2-program-completion-v1",
         "completion_state": completion_state,
         "generation_id": generation_id,
         "frozen_m12cm_generation": EXPECTED_FROZEN_GENERATION,
@@ -1726,6 +2049,13 @@ def run(args: argparse.Namespace) -> None:
         "shadow_call_count": len(call_rows),
         "shadow_call_pass_count": sum(row.get("status") == "PASS" for row in call_rows),
         "shadow_subject_count": len(all_candidates),
+        "provider_schema_rejection_count": int(provider_schema_rejected),
+        "schema_preflight_status": (
+            repaired_schema_proof.get("status") if repaired_schema_proof else "NOT_REACHED"
+        ),
+        "r1_error_reclassification_status": (
+            r1_error_reclassification.get("status") if r1_error_reclassification else "NOT_REACHED"
+        ),
         "output_frozen_at": output_frozen_at,
         "post_freeze_semantic_opened_at": post_freeze_semantic_opened_at,
         "post_freeze_comparison_status": (
