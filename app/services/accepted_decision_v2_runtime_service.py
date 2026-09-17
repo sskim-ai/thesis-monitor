@@ -75,7 +75,8 @@ CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
 OUTPUT_CONTRACT = "v2-accepted-production-output-v1"
 OUTPUT_CONTRACT_V2 = "v2-accepted-production-output-v2"
 STAGE2_MODEL_OUTPUT_CONTRACT_V2 = "v2-accepted-stage2-model-output-v2"
-STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v3"
+STAGE2_MODEL_OUTPUT_CONTRACT_V3 = "v2-accepted-stage2-model-output-v3"
+STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v4"
 STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT = (
     "stage2-maturity-as-of-deterministic-v1"
 )
@@ -1170,15 +1171,20 @@ def accepted_v2_stage2_output_schema(
     claim_refs = manifest["allowed_maturity_claim_refs"]
     if fundamental_cores is not None and (not isinstance(claim_refs, list) or not claim_refs):
         raise ValueError("v2_stage2_maturity_atomic_claim_catalog_empty")
+    try:
+        maturity_properties = definitions["DriverEvidenceMaturity"]["properties"]
+        supporting_claim_refs = maturity_properties["supporting_claim_refs"]
+        contradicting_claim_refs = maturity_properties["contradicting_claim_refs"]
+    except (KeyError, TypeError) as exc:
+        raise ValueError("v2_stage2_maturity_claim_schema_path_missing") from exc
+    if not isinstance(supporting_claim_refs, dict) or not isinstance(
+        contradicting_claim_refs, dict
+    ):
+        raise ValueError("v2_stage2_maturity_claim_schema_invalid")
+    supporting_claim_refs["minItems"] = 1
     if isinstance(claim_refs, list) and claim_refs:
-        try:
-            maturity_properties = definitions["DriverEvidenceMaturity"]["properties"]
-            supporting_claim_refs = maturity_properties["supporting_claim_refs"]
-            contradicting_claim_refs = maturity_properties["contradicting_claim_refs"]
-        except (KeyError, TypeError) as exc:
-            raise ValueError("v2_stage2_maturity_claim_schema_path_missing") from exc
         for field in (supporting_claim_refs, contradicting_claim_refs):
-            items = field.get("items") if isinstance(field, dict) else None
+            items = field.get("items")
             if not isinstance(items, dict) or items.get("type") != "string":
                 raise ValueError("v2_stage2_maturity_claim_schema_invalid")
             items["enum"] = list(claim_refs)
@@ -1249,12 +1255,16 @@ def materialize_accepted_v2_stage2_output(
     model_contract = payload.get("contract")
     if model_contract not in {
         STAGE2_MODEL_OUTPUT_CONTRACT_V2,
+        STAGE2_MODEL_OUTPUT_CONTRACT_V3,
         STAGE2_MODEL_OUTPUT_CONTRACT,
     }:
         raise Stage2MaturityAsOfMaterializationError(
             "stage2_model_output_contract_mismatch"
         )
-    runtime_owns_source_refs = model_contract == STAGE2_MODEL_OUTPUT_CONTRACT
+    runtime_owns_source_refs = model_contract in {
+        STAGE2_MODEL_OUTPUT_CONTRACT_V3,
+        STAGE2_MODEL_OUTPUT_CONTRACT,
+    }
     trusted_cores = tuple(fundamental_cores or ())
     if runtime_owns_source_refs:
         if tuple(core.ticker for core in trusted_cores) != selected:
@@ -1641,7 +1651,7 @@ For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in 
 
 The runtime owns driver_maturity source-evidence refs and row-level provenance materialization. Do not emit supporting_evidence_refs, contradicting_evidence_refs, as_of, or provenance_status. Do not emit or infer driver_maturity.as_of. Source evidence refs are projected from the selected atomic claims; source-ref selection and provenance scalar derivation are not model tasks.
 
-For every driver_maturity row, supporting_claim_refs and contradicting_claim_refs must copy exact claim_ref values from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. These claim refs identify already-structured frozen-core propositions; never create, alter, infer, split, or repair one. The supporting set must not be empty, and the two atomic claim sets must be disjoint. The runtime projects each side's exact parent source refs from these selected claims. One mixed parent source may appear on both projected source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
+For every driver_maturity row, supporting_claim_refs must contain at least one exact same-ticker claim_ref from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. If no supplied atomic claim supports a proposed driver, do not emit that driver; choose a driver that is actually represented by the supplied atomic claims. contradicting_claim_refs may be empty when no canonical atomic claim contradicts the driver. These claim refs identify already-structured frozen-core propositions; never create, alter, approximate, shorten, infer, split, or repair one. Source evidence refs are runtime-owned and cannot substitute for a missing atomic claim identity. The two atomic claim sets must be disjoint. The runtime projects each side's exact parent source refs from these selected claims. One mixed parent source may appear on both projected source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
 
 Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
 

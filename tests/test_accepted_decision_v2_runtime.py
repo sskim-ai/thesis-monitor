@@ -667,6 +667,8 @@ def test_stage2_atomic_claim_schema_and_prompt_are_bound_to_frozen_cores() -> No
     assert expected
     assert maturity["supporting_claim_refs"]["items"]["enum"] == expected
     assert maturity["contradicting_claim_refs"]["items"]["enum"] == expected
+    assert maturity["supporting_claim_refs"]["minItems"] == 1
+    assert "minItems" not in maturity["contradicting_claim_refs"]
     prompt = accepted_v2_production_prompt(
         context,
         fundamental_cores=(cores[0],),
@@ -687,6 +689,26 @@ def test_stage2_atomic_claim_schema_and_prompt_are_bound_to_frozen_cores() -> No
         f'{corz_manifest["maturity_atomic_claim_catalog_hash"]}"'
     ) in prompt
     assert "Absolute BULLISH/BEARISH polarity is metadata" in prompt
+
+
+def test_m12cl_stage2_prompt_requires_atomic_support_without_ticker_targets() -> None:
+    context = _stage2_exact_ref_context()
+    core = _fundamental_core("CORZ", "decision-evidence:36090e913951b40587f1")
+
+    prompt = accepted_v2_production_prompt(
+        context,
+        fundamental_cores=(core,),
+        subjects=("CORZ",),
+    )
+
+    assert "supporting_claim_refs must contain at least one exact same-ticker" in prompt
+    assert "do not emit that driver" in prompt
+    assert "contradicting_claim_refs may be empty" in prompt
+    assert "cannot substitute for a missing atomic claim identity" in prompt
+    assert "WRD" not in prompt
+    assert "WULF" not in prompt
+    assert "repair model" not in prompt.lower()
+    assert "retry" not in prompt.lower()
 
 
 def test_stage2_prompt_states_canonical_preconfirmation_buy_invariant() -> None:

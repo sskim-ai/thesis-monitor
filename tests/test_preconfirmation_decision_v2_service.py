@@ -74,6 +74,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
     STAGE2_MODEL_OUTPUT_CONTRACT,
     STAGE2_MODEL_OUTPUT_CONTRACT_V2,
+    STAGE2_MODEL_OUTPUT_CONTRACT_V3,
     AcceptedV2EvidenceOwnership,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBaseline,
@@ -653,6 +654,66 @@ def test_m12ck_runtime_rejects_missing_supporting_claim_identity() -> None:
             raw,
             fundamental_cores=output.fundamental_cores,
         )
+
+
+def test_m12cl_v4_schema_requires_support_but_allows_empty_contradiction() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+
+    schema = accepted_v2_stage2_output_schema(
+        context,
+        fundamental_cores=output.fundamental_cores,
+    )
+    maturity = schema["$defs"]["DriverEvidenceMaturity"]
+    properties = maturity["properties"]
+
+    assert STAGE2_MODEL_OUTPUT_CONTRACT == "v2-accepted-stage2-model-output-v4"
+    assert schema["properties"]["contract"]["const"] == STAGE2_MODEL_OUTPUT_CONTRACT
+    assert properties["supporting_claim_refs"]["minItems"] == 1
+    assert "minItems" not in properties["contradicting_claim_refs"]
+    assert "supporting_claim_refs" in maturity["required"]
+    assert "contradicting_claim_refs" in maturity["required"]
+
+
+def test_m12cl_v3_historical_raw_output_remains_materializable() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    v4_raw = _runtime_owned_source_ref_payload(output)
+    v3_raw = dict(v4_raw)
+    v3_raw["contract"] = STAGE2_MODEL_OUTPUT_CONTRACT_V3
+
+    materialized = materialize_accepted_v2_stage2_output(
+        context,
+        v3_raw,
+        fundamental_cores=output.fundamental_cores,
+    )
+    expected = materialize_accepted_v2_stage2_output(
+        context,
+        v4_raw,
+        fundamental_cores=output.fundamental_cores,
+    )
+
+    assert isinstance(materialized, AcceptedV2ProductionBatchOutputV2)
+    assert materialized == expected
+
+
+def test_m12cl_v4_accepts_empty_contradicting_claims() -> None:
+    candidate = _candidate()
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "contradicting_evidence_refs": (),
+            "contradicting_claim_refs": (),
+        }
+    )
+    candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(update={"driver_maturity": (maturity,)})
+    )
+    context, output, _raw = _stage2_materialization_fixture(candidate=candidate)
+
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+    row = materialized.candidates[0].driver_maturity[0]
+
+    assert row.supporting_claim_refs
+    assert row.contradicting_claim_refs == ()
+    assert row.contradicting_evidence_refs == ()
 
 
 def test_m12ck_r10_post_materialization_source_ref_tamper_is_rejected() -> None:
