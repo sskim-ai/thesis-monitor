@@ -1054,6 +1054,9 @@ async def _generate_claim_owned(
             batch = materialize_accepted_v2_stage2_output(
                 context,
                 raw_batch,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
                 subjects=subjects,
             )
         except ValidationError as exc:
@@ -1095,6 +1098,9 @@ async def _generate_claim_owned(
             batch = materialize_accepted_v2_stage2_output(
                 context,
                 _read_json(schema_repair_output),
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
                 subjects=subjects,
             )
             batch_schema_repair_count += 1
@@ -1179,6 +1185,7 @@ async def _generate_claim_owned(
             repaired = materialize_accepted_v2_stage2_output(
                 context,
                 _read_json(repair_output),
+                fundamental_cores=(cores_by_ticker[ticker],),
                 subjects=(ticker,),
             )
             if (

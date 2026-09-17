@@ -74,7 +74,8 @@ from app.services.three_axis_decision_service import HolderDecisionAxis
 CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
 OUTPUT_CONTRACT = "v2-accepted-production-output-v1"
 OUTPUT_CONTRACT_V2 = "v2-accepted-production-output-v2"
-STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v2"
+STAGE2_MODEL_OUTPUT_CONTRACT_V2 = "v2-accepted-stage2-model-output-v2"
+STAGE2_MODEL_OUTPUT_CONTRACT = "v2-accepted-stage2-model-output-v3"
 STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT = (
     "stage2-maturity-as-of-deterministic-v1"
 )
@@ -141,7 +142,7 @@ def accepted_v2_maturity_atomic_claim_catalog(
 
 
 def accepted_v2_maturity_atomic_claim_catalog_manifest(
-    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate],
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
 ) -> dict[str, object]:
     tickers = tuple(core.ticker for core in fundamental_cores)
     if not tickers or len(tickers) != len(set(tickers)):
@@ -1150,9 +1151,21 @@ def accepted_v2_stage2_output_schema(
         maturity_required, list
     ):
         raise ValueError("v2_stage2_maturity_schema_invalid")
-    maturity_properties.pop("as_of", None)
+    for runtime_owned_field in (
+        "supporting_evidence_refs",
+        "contradicting_evidence_refs",
+        "as_of",
+    ):
+        maturity_properties.pop(runtime_owned_field, None)
     maturity_definition["required"] = [
-        value for value in maturity_required if value != "as_of"
+        value
+        for value in maturity_required
+        if value
+        not in {
+            "supporting_evidence_refs",
+            "contradicting_evidence_refs",
+            "as_of",
+        }
     ]
     claim_refs = manifest["allowed_maturity_claim_refs"]
     if fundamental_cores is not None and (not isinstance(claim_refs, list) or not claim_refs):
@@ -1180,6 +1193,8 @@ def _stage2_model_facing_candidate_payload(
     if isinstance(rows, list):
         for row in rows:
             if isinstance(row, dict):
+                row.pop("supporting_evidence_refs", None)
+                row.pop("contradicting_evidence_refs", None)
                 row.pop("as_of", None)
                 row.pop("provenance_status", None)
     return payload
@@ -1198,6 +1213,8 @@ def _stage2_model_facing_rejected_output(
             if isinstance(rows, list):
                 for row in rows:
                     if isinstance(row, dict):
+                        row.pop("supporting_evidence_refs", None)
+                        row.pop("contradicting_evidence_refs", None)
                         row.pop("as_of", None)
                         row.pop("provenance_status", None)
     return payload
@@ -1207,10 +1224,11 @@ def materialize_accepted_v2_stage2_output(
     context: AcceptedV2ProductionContext,
     raw_output: Mapping[str, object],
     *,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
     subjects: Sequence[str] | None = None,
     normalized_contract: str = STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
 ) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
-    """Materialize runtime-owned maturity provenance into a versioned typed contract."""
+    """Materialize runtime-owned source refs and provenance into a typed contract."""
     if normalized_contract not in {
         STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
         STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
@@ -1228,10 +1246,26 @@ def materialize_accepted_v2_stage2_output(
             "stage2_materialization_subject_scope_invalid"
         )
     payload = deepcopy(dict(raw_output))
-    if payload.get("contract") != STAGE2_MODEL_OUTPUT_CONTRACT:
+    model_contract = payload.get("contract")
+    if model_contract not in {
+        STAGE2_MODEL_OUTPUT_CONTRACT_V2,
+        STAGE2_MODEL_OUTPUT_CONTRACT,
+    }:
         raise Stage2MaturityAsOfMaterializationError(
             "stage2_model_output_contract_mismatch"
         )
+    runtime_owns_source_refs = model_contract == STAGE2_MODEL_OUTPUT_CONTRACT
+    trusted_cores = tuple(fundamental_cores or ())
+    if runtime_owns_source_refs:
+        if tuple(core.ticker for core in trusted_cores) != selected:
+            raise Stage2MaturityAsOfMaterializationError(
+                "stage2_materialization_fundamental_core_scope_mismatch"
+            )
+        trusted_core_payload = [core.model_dump(mode="json") for core in trusted_cores]
+        if payload.get("fundamental_cores") != trusted_core_payload:
+            raise Stage2MaturityAsOfMaterializationError(
+                "stage2_materialization_fundamental_core_identity_mismatch"
+            )
     for field_name, expected in (
         ("packet_id", context.packet_id),
         ("claim_id", context.claim_id),
@@ -1242,7 +1276,6 @@ def materialize_accepted_v2_stage2_output(
             raise Stage2MaturityAsOfMaterializationError(
                 f"stage2_materialization_identity_mismatch:{field_name}"
             )
-
     candidates = payload.get("candidates")
     if not isinstance(candidates, list):
         raise Stage2MaturityAsOfMaterializationError(
@@ -1264,6 +1297,19 @@ def materialize_accepted_v2_stage2_output(
 
     packets = {packet.ticker: packet for packet in context.evidence_packets}
     ownership = {row.ticker: row for row in context.evidence_ownership}
+    atomic_catalogs = (
+        {
+            core.ticker: accepted_v2_maturity_atomic_claim_catalog(core)
+            for core in trusted_cores
+        }
+        if runtime_owns_source_refs
+        else {}
+    )
+    atomic_claims_by_ref = {
+        claim.claim_ref: claim
+        for catalog in atomic_catalogs.values()
+        for claim in catalog
+    }
     assessment_date = concrete_evidence_date(context.assessment_date)
     if assessment_date is None:
         raise Stage2MaturityAsOfMaterializationError(
@@ -1306,19 +1352,93 @@ def materialize_accepted_v2_stage2_output(
                     f"{ticker}:{row_index}"
                 )
             cited_refs: list[str] = []
-            for field_name in (
-                "supporting_evidence_refs",
-                "contradicting_evidence_refs",
-            ):
-                values = row.get(field_name)
-                if not isinstance(values, list) or any(
-                    not isinstance(value, str) for value in values
+            if runtime_owns_source_refs:
+                for field_name in (
+                    "supporting_evidence_refs",
+                    "contradicting_evidence_refs",
                 ):
+                    if field_name in row:
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_model_authored_source_refs_forbidden:"
+                            f"{ticker}:{row_index}:{field_name}"
+                        )
+
+                catalog_by_ref = {
+                    claim.claim_ref: claim for claim in atomic_catalogs[ticker]
+                }
+                selected_claims: dict[str, tuple[str, ...]] = {}
+                for side in ("supporting", "contradicting"):
+                    field_name = f"{side}_claim_refs"
+                    values = row.get(field_name)
+                    if not isinstance(values, list) or any(
+                        not isinstance(value, str) for value in values
+                    ):
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_materialization_claim_ref_list_invalid:"
+                            f"{ticker}:{row_index}:{field_name}"
+                        )
+                    claim_refs = tuple(values)
+                    if side == "supporting" and not claim_refs:
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_materialization_supporting_claim_identity_missing:"
+                            f"{ticker}:{row_index}"
+                        )
+                    if len(claim_refs) != len(set(claim_refs)):
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_materialization_duplicate_{side}_claim_ref:"
+                            f"{ticker}:{row_index}"
+                        )
+                    for claim_ref in claim_refs:
+                        claim = catalog_by_ref.get(claim_ref)
+                        if claim is None:
+                            foreign_claim = atomic_claims_by_ref.get(claim_ref)
+                            if foreign_claim is not None:
+                                raise Stage2MaturityAsOfMaterializationError(
+                                    f"stage2_materialization_cross_ticker_claim_ref:"
+                                    f"{ticker}:{row_index}:{claim_ref}"
+                                )
+                            raise Stage2MaturityAsOfMaterializationError(
+                                f"stage2_materialization_unknown_ticker_local_claim_ref:"
+                                f"{ticker}:{row_index}:{claim_ref}"
+                            )
+                        if claim.ticker != ticker:
+                            raise Stage2MaturityAsOfMaterializationError(
+                                f"stage2_materialization_cross_ticker_claim_ref:"
+                                f"{ticker}:{row_index}:{claim_ref}"
+                            )
+                    selected_claims[side] = claim_refs
+
+                overlap = set(selected_claims["supporting"]) & set(
+                    selected_claims["contradicting"]
+                )
+                if overlap:
                     raise Stage2MaturityAsOfMaterializationError(
-                        f"stage2_materialization_ref_list_invalid:"
-                        f"{ticker}:{row_index}:{field_name}"
+                        f"stage2_materialization_atomic_claim_overlap:"
+                        f"{ticker}:{row_index}:{','.join(sorted(overlap))}"
                     )
-                cited_refs.extend(values)
+
+                for side in ("supporting", "contradicting"):
+                    projected: list[str] = []
+                    for claim_ref in selected_claims[side]:
+                        for source_ref in catalog_by_ref[claim_ref].parent_source_refs:
+                            if source_ref not in projected:
+                                projected.append(source_ref)
+                    row[f"{side}_evidence_refs"] = projected
+                    cited_refs.extend(projected)
+            else:
+                for field_name in (
+                    "supporting_evidence_refs",
+                    "contradicting_evidence_refs",
+                ):
+                    values = row.get(field_name)
+                    if not isinstance(values, list) or any(
+                        not isinstance(value, str) for value in values
+                    ):
+                        raise Stage2MaturityAsOfMaterializationError(
+                            f"stage2_materialization_ref_list_invalid:"
+                            f"{ticker}:{row_index}:{field_name}"
+                        )
+                    cited_refs.extend(values)
             if normalized_contract == STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT:
                 concrete_dates = []
                 for ref_id in cited_refs:
@@ -1519,9 +1639,9 @@ Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 
-The runtime owns row-level provenance-date materialization from exact same-row cited evidence refs. Do not emit or infer driver_maturity.as_of. Select only valid exact evidence refs; provenance scalar derivation is not a model task.
+The runtime owns driver_maturity source-evidence refs and row-level provenance materialization. Do not emit supporting_evidence_refs, contradicting_evidence_refs, as_of, or provenance_status. Do not emit or infer driver_maturity.as_of. Source evidence refs are projected from the selected atomic claims; source-ref selection and provenance scalar derivation are not model tasks.
 
-For every driver_maturity row, supporting_claim_refs and contradicting_claim_refs must copy exact claim_ref values from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. These claim refs identify already-structured frozen-core propositions; never create, alter, infer, split, or repair one. The two atomic claim sets must be disjoint. supporting_evidence_refs and contradicting_evidence_refs must exactly equal the union of parent source evidence_refs owned by their respective atomic claims. One mixed parent source may appear on both source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
+For every driver_maturity row, supporting_claim_refs and contradicting_claim_refs must copy exact claim_ref values from that ticker's MATURITY_ATOMIC_CLAIM_CATALOG. These claim refs identify already-structured frozen-core propositions; never create, alter, infer, split, or repair one. The supporting set must not be empty, and the two atomic claim sets must be disjoint. The runtime projects each side's exact parent source refs from these selected claims. One mixed parent source may appear on both projected source-ref sides only when different canonical atomic claims from that parent are used on the two sides. Absolute BULLISH/BEARISH polarity is metadata about the proposition, while supporting/contradicting is relative to the specific maturity driver; do not equate them.
 
 Emit directional_balance, buy_drivers, sell_drivers, and balance_summary from the current evidence. The pair must sum to 10 and use integer or 0.5 increments. Derive the label exactly: BUY when buy >= 6, SELL when sell >= 6, HOLD otherwise. HOLD is current neutrality and must not inherit the prior label. The balance is relative directional force, not probability, expected return, odds, or a fixed-factor weighted score. Every buy/sell driver must cite exact canonical evidence refs.
 

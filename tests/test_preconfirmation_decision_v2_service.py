@@ -73,6 +73,7 @@ from app.services.accepted_decision_v2_runtime_service import (
     STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
     STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
     STAGE2_MODEL_OUTPUT_CONTRACT,
+    STAGE2_MODEL_OUTPUT_CONTRACT_V2,
     AcceptedV2EvidenceOwnership,
     AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionBaseline,
@@ -373,9 +374,22 @@ def _model_facing_stage2_payload(
     output: AcceptedV2ProductionBatchOutput,
 ) -> dict[str, object]:
     payload = output.model_dump(mode="json")
+    payload["contract"] = STAGE2_MODEL_OUTPUT_CONTRACT_V2
+    for candidate in payload["candidates"]:
+        for row in candidate["driver_maturity"]:
+            row.pop("as_of")
+    return payload
+
+
+def _runtime_owned_source_ref_payload(
+    output: AcceptedV2ProductionBatchOutput,
+) -> dict[str, object]:
+    payload = output.model_dump(mode="json")
     payload["contract"] = STAGE2_MODEL_OUTPUT_CONTRACT
     for candidate in payload["candidates"]:
         for row in candidate["driver_maturity"]:
+            row.pop("supporting_evidence_refs")
+            row.pop("contradicting_evidence_refs")
             row.pop("as_of")
     return payload
 
@@ -410,6 +424,340 @@ def _stage2_materialization_fixture(
         candidates=(source_candidate,),
     )
     return context, output, _model_facing_stage2_payload(output)
+
+
+def _materialize_runtime_owned_source_refs(
+    context: AcceptedV2ProductionContext,
+    output: AcceptedV2ProductionBatchOutput,
+    *,
+    subjects: tuple[str, ...] | None = None,
+) -> AcceptedV2ProductionBatchOutputV2:
+    materialized = materialize_accepted_v2_stage2_output(
+        context,
+        _runtime_owned_source_ref_payload(output),
+        fundamental_cores=output.fundamental_cores,
+        subjects=subjects,
+    )
+    assert isinstance(materialized, AcceptedV2ProductionBatchOutputV2)
+    return materialized
+
+
+def test_m12ck_r03_runtime_projects_one_parent_claim_refs() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+    row = materialized.candidates[0].driver_maturity[0]
+
+    assert row.supporting_evidence_refs == ("ref:valuation",)
+    assert row.contradicting_evidence_refs == ("ref:risks",)
+
+
+def test_m12ck_r04_runtime_projects_complete_multi_parent_union() -> None:
+    candidate = _candidate()
+    buy_driver = candidate.buy_drivers[0].model_copy(
+        update={"evidence_refs": ("ref:valuation", "ref:thesis")}
+    )
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_evidence_refs": buy_driver.evidence_refs,
+            "supporting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=buy_driver),
+            ),
+        }
+    )
+    candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(
+            update={"buy_drivers": (buy_driver,), "driver_maturity": (maturity,)}
+        )
+    )
+    context, output, _raw = _stage2_materialization_fixture(candidate=candidate)
+
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+
+    assert materialized.candidates[0].driver_maturity[
+        0
+    ].supporting_evidence_refs == ("ref:valuation", "ref:thesis")
+
+
+def test_m12ck_r05_projection_preserves_claim_parent_order_and_deduplicates() -> None:
+    candidate = _candidate()
+    first = candidate.buy_drivers[0].model_copy(
+        update={"evidence_refs": ("ref:valuation", "ref:thesis")}
+    )
+    second = EvidenceClaim(
+        text="두 번째 구조화된 상방 주장입니다.",
+        evidence_refs=("ref:thesis", "ref:earnings"),
+    )
+    selected_claim_refs = (
+        maturity_atomic_claim_ref(ticker="TEST", claim=second),
+        maturity_atomic_claim_ref(ticker="TEST", claim=first),
+    )
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_evidence_refs": (
+                "ref:thesis",
+                "ref:earnings",
+                "ref:valuation",
+            ),
+            "supporting_claim_refs": selected_claim_refs,
+        }
+    )
+    candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(
+            update={
+                "buy_drivers": (first, second),
+                "driver_maturity": (maturity,),
+            }
+        )
+    )
+    context, output, _raw = _stage2_materialization_fixture(candidate=candidate)
+
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+
+    assert materialized.candidates[0].driver_maturity[
+        0
+    ].supporting_evidence_refs == (
+        "ref:thesis",
+        "ref:earnings",
+        "ref:valuation",
+    )
+
+
+def test_m12ck_r06_cross_ticker_claim_ref_is_rejected_before_provenance() -> None:
+    packet = _packet()
+    other_packet = packet.model_copy(
+        update={"ticker": "OTHER", "company_name": "다른기업", "evidence_sha256": "other"}
+    )
+    test_candidate = _candidate()
+    other_buy = test_candidate.buy_drivers[0]
+    other_sell = test_candidate.sell_drivers[0]
+    other_maturity = test_candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="OTHER", claim=other_buy),
+            ),
+            "contradicting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="OTHER", claim=other_sell),
+            ),
+        }
+    )
+    other_candidate = _candidate_with_current_core_sha(
+        test_candidate.model_copy(
+            update={"ticker": "OTHER", "driver_maturity": (other_maturity,)}
+        )
+    )
+    context = build_accepted_v2_production_context(
+        packet={
+            "packet_id": packet.packet_id,
+            "market": packet.market,
+            "assessment_date": packet.assessment_date,
+            "stocks": [{"ticker": "TEST"}, {"ticker": "OTHER"}],
+        },
+        claim_id="claim-stage2-cross-ticker-atomic",
+        evidence_packets=(packet, other_packet),
+    )
+    cores = (_core(test_candidate), _core(other_candidate))
+    output = AcceptedV2ProductionBatchOutput(
+        packet_id=context.packet_id,
+        claim_id=context.claim_id,
+        market=context.market,
+        assessment_date=context.assessment_date,
+        fundamental_cores=cores,
+        candidates=(test_candidate, other_candidate),
+    )
+    raw = _runtime_owned_source_ref_payload(output)
+    raw["candidates"][0]["driver_maturity"][0]["supporting_claim_refs"] = [
+        other_maturity.supporting_claim_refs[0]
+    ]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_cross_ticker_claim_ref:TEST:0",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=cores,
+            subjects=("TEST", "OTHER"),
+        )
+
+
+def test_m12ck_r07_unknown_claim_ref_is_rejected_before_provenance() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    raw = _runtime_owned_source_ref_payload(output)
+    raw["candidates"][0]["driver_maturity"][0]["supporting_claim_refs"] = [
+        "maturity-claim:" + "f" * 64
+    ]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_unknown_ticker_local_claim_ref:TEST:0",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=output.fundamental_cores,
+        )
+
+
+def test_m12ck_r08_same_claim_on_both_sides_is_rejected() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    raw = _runtime_owned_source_ref_payload(output)
+    supporting = raw["candidates"][0]["driver_maturity"][0][
+        "supporting_claim_refs"
+    ][0]
+    raw["candidates"][0]["driver_maturity"][0]["contradicting_claim_refs"] = [
+        supporting
+    ]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_atomic_claim_overlap:TEST:0",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=output.fundamental_cores,
+        )
+
+
+def test_m12ck_r09_model_authored_source_refs_are_rejected() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    raw = _runtime_owned_source_ref_payload(output)
+    raw["candidates"][0]["driver_maturity"][0][
+        "supporting_evidence_refs"
+    ] = ["ref:valuation"]
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_model_authored_source_refs_forbidden:TEST:0",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=output.fundamental_cores,
+        )
+
+
+def test_m12ck_runtime_rejects_missing_supporting_claim_identity() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    raw = _runtime_owned_source_ref_payload(output)
+    raw["candidates"][0]["driver_maturity"][0]["supporting_claim_refs"] = []
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match="stage2_materialization_supporting_claim_identity_missing:TEST:0",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=output.fundamental_cores,
+        )
+
+
+def test_m12ck_r10_post_materialization_source_ref_tamper_is_rejected() -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+    candidate = materialized.candidates[0]
+    row = candidate.driver_maturity[0].model_copy(
+        update={"supporting_evidence_refs": ("ref:thesis",)}
+    )
+
+    errors = validate_accepted_v2_maturity_atomic_identity(
+        candidate.model_copy(update={"driver_maturity": (row,)}),
+        output.fundamental_cores[0],
+    )
+
+    assert "maturity_supporting_source_claim_mismatch:0" in errors
+
+
+@pytest.mark.parametrize(
+    ("case_id", "parent_refs", "expected_as_of", "expected_status"),
+    (
+        (
+            "R11",
+            ("canonical:financial_quality:latest",),
+            None,
+            MaturityProvenanceStatus.SYMBOLIC_ONLY_NO_CONCRETE_DATE,
+        ),
+        (
+            "R12",
+            ("ref:valuation", "canonical:financial_quality:latest"),
+            "2026-08-30",
+            MaturityProvenanceStatus.CONCRETE_WITH_SYMBOLIC_REFS,
+        ),
+        (
+            "R13",
+            ("ref:valuation", "ref:thesis"),
+            "2026-08-30",
+            MaturityProvenanceStatus.CONCRETE_ONLY,
+        ),
+    ),
+)
+def test_m12ck_r11_r13_provenance_projection_is_preserved(
+    case_id: str,
+    parent_refs: tuple[str, ...],
+    expected_as_of: str | None,
+    expected_status: MaturityProvenanceStatus,
+) -> None:
+    packet = _packet()
+    if "canonical:financial_quality:latest" in parent_refs:
+        packet = packet.model_copy(
+            update={
+                "evidence": (*packet.evidence, _financial_quality_symbolic_ref())
+            }
+        )
+    candidate = _candidate()
+    buy_driver = candidate.buy_drivers[0].model_copy(
+        update={"evidence_refs": parent_refs}
+    )
+    maturity = candidate.driver_maturity[0].model_copy(
+        update={
+            "supporting_evidence_refs": parent_refs,
+            "contradicting_evidence_refs": (),
+            "supporting_claim_refs": (
+                maturity_atomic_claim_ref(ticker="TEST", claim=buy_driver),
+            ),
+            "contradicting_claim_refs": (),
+        }
+    )
+    candidate = _candidate_with_current_core_sha(
+        candidate.model_copy(
+            update={"buy_drivers": (buy_driver,), "driver_maturity": (maturity,)}
+        )
+    )
+    context, output, _raw = _stage2_materialization_fixture(
+        packet=packet,
+        candidate=candidate,
+    )
+
+    materialized = _materialize_runtime_owned_source_refs(context, output)
+    row = materialized.candidates[0].driver_maturity[0]
+
+    assert case_id in {"R11", "R12", "R13"}
+    assert row.as_of == expected_as_of
+    assert row.provenance_status == expected_status
+
+
+@pytest.mark.parametrize("runtime_field", ("as_of", "provenance_status"))
+def test_m12ck_r14_model_authored_provenance_fields_are_rejected(
+    runtime_field: str,
+) -> None:
+    context, output, _raw = _stage2_materialization_fixture()
+    raw = _runtime_owned_source_ref_payload(output)
+    raw["candidates"][0]["driver_maturity"][0][runtime_field] = (
+        "2026-08-30" if runtime_field == "as_of" else "CONCRETE_ONLY"
+    )
+
+    with pytest.raises(
+        Stage2MaturityAsOfMaterializationError,
+        match=f"stage2_model_authored_{runtime_field}_forbidden",
+    ):
+        materialize_accepted_v2_stage2_output(
+            context,
+            raw,
+            fundamental_cores=output.fundamental_cores,
+        )
 
 
 def _materialize_v1(

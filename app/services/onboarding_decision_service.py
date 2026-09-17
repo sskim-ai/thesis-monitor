@@ -361,6 +361,7 @@ def generate_onboarding_accepted_decision(
     output = materialize_accepted_v2_stage2_output(
         context,
         json.loads(paths["output"].read_text(encoding="utf-8")),
+        fundamental_cores=(core,),
         subjects=(item.ticker,),
     )
     if (
@@ -403,6 +404,7 @@ def generate_onboarding_accepted_decision(
         repaired = materialize_accepted_v2_stage2_output(
             context,
             json.loads(paths["repair_output"].read_text(encoding="utf-8")),
+            fundamental_cores=(core,),
             subjects=(item.ticker,),
         )
         if (

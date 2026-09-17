@@ -224,6 +224,7 @@ def _codex_batch(
             batch = materialize_accepted_v2_stage2_output(
                 context,
                 raw_batch,
+                fundamental_cores=selected_cores,
                 subjects=subjects,
             )
         except ValidationError as exc:
@@ -255,6 +256,7 @@ def _codex_batch(
             batch = materialize_accepted_v2_stage2_output(
                 context,
                 _read_json(repair_output),
+                fundamental_cores=selected_cores,
                 subjects=subjects,
             )
         if (
@@ -328,6 +330,7 @@ def _codex_batch(
             repaired = materialize_accepted_v2_stage2_output(
                 context,
                 _read_json(repair_output),
+                fundamental_cores=(cores_by_ticker[ticker],),
                 subjects=(ticker,),
             )
             if (

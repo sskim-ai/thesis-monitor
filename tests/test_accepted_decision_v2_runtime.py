@@ -293,12 +293,6 @@ def _stage2_schema_ref_enums(schema: dict[str, object]) -> dict[str, tuple[str, 
     definitions = schema["$defs"]
     fields = {
         "evidence_refs": definitions["EvidenceClaim"]["properties"]["evidence_refs"],
-        "supporting_evidence_refs": definitions["DriverEvidenceMaturity"][
-            "properties"
-        ]["supporting_evidence_refs"],
-        "contradicting_evidence_refs": definitions["DriverEvidenceMaturity"][
-            "properties"
-        ]["contradicting_evidence_refs"],
     }
     return {
         name: tuple(field["items"]["enum"])
@@ -626,9 +620,7 @@ def test_stage2_exact_ref_schema_inventory_and_catalog_identity() -> None:
     assert ref_paths == {
         "$.$defs.ClaimLogicalCondition.properties.source_condition_ref",
         "$.$defs.ClaimLogicalLeaf.properties.leaf_ref",
-        "$.$defs.DriverEvidenceMaturity.properties.contradicting_evidence_refs",
         "$.$defs.DriverEvidenceMaturity.properties.contradicting_claim_refs",
-        "$.$defs.DriverEvidenceMaturity.properties.supporting_evidence_refs",
         "$.$defs.DriverEvidenceMaturity.properties.supporting_claim_refs",
         "$.$defs.EvidenceClaim.properties.evidence_refs",
     }
@@ -786,7 +778,11 @@ def test_stage2_typed_identity_and_runtime_owned_maturity_date_schema_are_closed
             subjects
         )
     maturity = schema["$defs"]["DriverEvidenceMaturity"]
+    assert "supporting_evidence_refs" not in maturity["properties"]
+    assert "contradicting_evidence_refs" not in maturity["properties"]
     assert "as_of" not in maturity["properties"]
+    assert "supporting_evidence_refs" not in maturity["required"]
+    assert "contradicting_evidence_refs" not in maturity["required"]
     assert "as_of" not in maturity["required"]
     assert maturity["additionalProperties"] is False
     assert manifest["allowed_maturity_dates"]
@@ -886,7 +882,7 @@ def test_production_prompt_keeps_canonical_chart_and_omits_low_level_features() 
     assert "technical-feature:daily:rsi14" not in prompt
     assert '"claim_id":"claim-v2-runtime"' in prompt
     assert "Do not introduce or infer ROIC" in prompt
-    assert "runtime owns row-level provenance-date materialization" in prompt
+    assert "runtime owns driver_maturity source-evidence refs" in prompt
     assert "Do not emit or infer driver_maturity.as_of" in prompt
     assert "Every driver_maturity.as_of must be" not in prompt
     assert "in Stage-2-owned fields" in prompt
