@@ -1014,6 +1014,7 @@ def validate_materialized_pass_b(
     catalogs: Mapping[str, Mapping[str, object]],
     pass_a_by_ticker: Mapping[str, Mapping[str, object]],
     policy_options: Mapping[str, Mapping[str, object]],
+    capabilities: Mapping[str, Mapping[str, object]] | None = None,
 ) -> dict[str, object]:
     decisions = tuple(PassBDecision.model_validate(row) for row in rows)
     envelope = PassBBatchOutput(
@@ -1065,6 +1066,7 @@ def validate_materialized_pass_b(
             policy_option=policy_options[ticker],
             entry_range=entry,
             catalog=catalogs[ticker],
+            capability=(capabilities or {}).get(ticker),
         )
         errors.extend(f"{ticker}:{item}" for item in consistency["errors"])
         entry_rows.append({"ticker": ticker, "entry_range": entry})
