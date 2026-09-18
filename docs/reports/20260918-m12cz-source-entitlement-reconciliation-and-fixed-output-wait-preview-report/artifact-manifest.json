@@ -130,8 +130,8 @@
     },
     {
       "path": "program-completion.json",
-      "bytes": 880,
-      "sha256": "d0afece2c1d402edf846e0a86f53b4a7ca24b89ff33e784ddcea47ff3099a608"
+      "bytes": 873,
+      "sha256": "df2272ca77005bfe2316846c89bd8f1242e8a8535fe9233ca7ab535c6ec21606"
     },
     {
       "path": "residual-gap-ledger.json",
