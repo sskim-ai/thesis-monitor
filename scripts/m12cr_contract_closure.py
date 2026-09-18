@@ -535,7 +535,7 @@ def _mechanical_pass_b_choice(
         }
     return {
         "overall_direction": "BUY",
-        "directional_balance": {"buy": 6.0, "sell": 4.0},
+        "directional_buy_score": 6.0,
         "decision_confidence": "MEDIUM",
         "decisive_supporting_claim_refs": [claim_ref],
         "decisive_contradicting_claim_refs": [],

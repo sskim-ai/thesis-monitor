@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from scripts.m12cs_fresh_two_pass_shadow import (
+    _classify_m12cs_failure,
     _contract_key,
     _test_count,
+    _validation_rule_ids,
     compare_frozen_draft_hashes,
     pass_a_output_leak_scan,
 )
@@ -76,3 +78,35 @@ def test_test_count_reads_passed_and_skipped() -> None:
 
 def test_test_count_handles_missing_counts() -> None:
     assert _test_count("collection failed") == (0, 0)
+
+
+def test_pass_b_raw_semantic_failure_has_stable_category() -> None:
+    category = _classify_m12cs_failure(
+        RuntimeError("pass_b_raw_semantic_validation_failed"),
+        None,
+        execution_stage="PASS_B_RAW_SEMANTIC_VALIDATION",
+    )
+
+    assert category == "PASS_B_RAW_SEMANTIC_VALIDATION_FAILED"
+
+
+def test_pass_b_materialized_failure_has_stable_category() -> None:
+    category = _classify_m12cs_failure(
+        RuntimeError("pass_b_final_semantic_validation_failed"),
+        None,
+        execution_stage="PASS_B_FINAL_SEMANTIC_VALIDATION",
+    )
+
+    assert category == "PASS_B_FINAL_SEMANTIC_VALIDATION_FAILED"
+
+
+def test_validation_rule_ids_preserve_primary_semantic_cause() -> None:
+    assert _validation_rule_ids(
+        {
+            "errors": [
+                "CORZ:PB_BALANCE_SUM",
+                "CPNG:PB_BALANCE_SUM",
+                "CRCL:PB_BALANCE_SUM",
+            ]
+        }
+    ) == ["PB_BALANCE_SUM"]

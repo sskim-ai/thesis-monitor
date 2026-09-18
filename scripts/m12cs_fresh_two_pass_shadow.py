@@ -63,6 +63,7 @@ from scripts.m12cr_shadow_contract import (
     normalize_future_pass_b,
     schema_completeness_and_parity_scan,
     target_leak_scan,
+    validate_future_pass_b_shape,
     validate_materialized_pass_b,
 )
 from scripts.m12cs_r1_provider_schema import (
@@ -684,9 +685,28 @@ def _classify_m12cs_failure(
         transport_log,
         execution_stage=execution_stage,
     )
+    stage = str(execution_stage or "").upper()
     if category == "SCHEMA_REJECTED_PRE_INFERENCE":
-        return "PROVIDER_SCHEMA_DIALECT_REJECTED_PRE_INFERENCE"
+        return (
+            "PASS_B_PROVIDER_SCHEMA_REJECTED_PRE_INFERENCE"
+            if stage.startswith("PASS_B")
+            else "PROVIDER_SCHEMA_DIALECT_REJECTED_PRE_INFERENCE"
+        )
+    if stage == "PASS_B_OUTPUT_PARSE":
+        return "PASS_B_RAW_CONTRACT_FAILED"
+    if stage == "PASS_B_RAW_SEMANTIC_VALIDATION":
+        return "PASS_B_RAW_SEMANTIC_VALIDATION_FAILED"
+    if stage == "PASS_B_MATERIALIZATION":
+        return "PASS_B_MATERIALIZATION_FAILED"
+    if stage == "PASS_B_FINAL_SEMANTIC_VALIDATION":
+        return "PASS_B_FINAL_SEMANTIC_VALIDATION_FAILED"
     return category
+
+
+def _validation_rule_ids(validation: Mapping[str, object]) -> list[str]:
+    return sorted(
+        {str(error).rsplit(":", 1)[-1] for error in validation.get("errors") or () if str(error)}
+    )
 
 
 def _assert_execution_freeze(expected_head: str, code_hashes: Mapping[str, str]) -> None:
@@ -875,7 +895,7 @@ def _invoke_pass_b(
             }
         )
         write_json(result_root / "pass-b-call-ledger.json", {"calls": ledger[8:]})
-        execution_stage = "TRANSPORT"
+        execution_stage = "PASS_B_PROVIDER_REQUEST"
         try:
             receipt = runtime._invoke_signed_in_codex(
                 codex_bin=codex_bin,
@@ -890,17 +910,31 @@ def _invoke_pass_b(
             require(int(receipt.get("transport_attempts") or 0) == 1, "transport_retry_detected")
             ledger_row["provider_accepted_inference"] = True
             ledger_row["completed_response"] = True
-            execution_stage = "OUTPUT_PARSE"
+            execution_stage = "PASS_B_OUTPUT_PARSE"
             output = read_json(output_path)
-            normalized, raw_validation = normalize_future_pass_b(
+            output_sha = sha256_file(output_path)
+            ledger_row["output_sha256"] = output_sha
+            execution_stage = "PASS_B_RAW_SEMANTIC_VALIDATION"
+            raw_validation = validate_future_pass_b_shape(
                 output,
                 subjects=subjects,
                 catalogs=catalogs[market],
             )
-            ledger_row["raw_contract_accepted"] = (
-                raw_validation.get("shape", {}).get("status") == "PASS"
+            write_json(call_dir / "raw-semantic-validation.json", raw_validation)
+            ledger_row["raw_contract_accepted"] = raw_validation["status"] == "PASS"
+            ledger_row["primary_rule_ids"] = _validation_rule_ids(raw_validation)
+            require(
+                raw_validation["status"] == "PASS",
+                "pass_b_raw_semantic_validation_failed",
             )
-            execution_stage = "PASS_B_SEMANTIC_VALIDATION"
+            execution_stage = "PASS_B_MATERIALIZATION"
+            normalized, normalization = normalize_future_pass_b(
+                output,
+                subjects=subjects,
+                catalogs=catalogs[market],
+            )
+            require(normalization["status"] == "PASS", "pass_b_materialization_failed")
+            execution_stage = "PASS_B_FINAL_SEMANTIC_VALIDATION"
             validation = validate_materialized_pass_b(
                 normalized,
                 subjects=subjects,
@@ -917,6 +951,7 @@ def _invoke_pass_b(
                 call_dir / "semantic-validation.json",
                 {
                     "raw_contract": raw_validation,
+                    "normalization": normalization,
                     "materialized": validation,
                     "typed_quality_ownership": ownership,
                     "status": "PASS"
@@ -927,11 +962,13 @@ def _invoke_pass_b(
                     else "FAIL",
                 },
             )
-            require(raw_validation["status"] == "PASS", "pass_b_raw_contract_failed")
-            require(validation["status"] == "PASS", "pass_b_semantic_validation_failed")
+            ledger_row["primary_rule_ids"] = _validation_rule_ids(validation)
+            require(
+                validation["status"] == "PASS",
+                "pass_b_final_semantic_validation_failed",
+            )
             require(ownership["status"] == "PASS", "pass_b_quality_basis_ownership_failed")
             ledger_row["semantic_accepted"] = True
-            output_sha = sha256_file(output_path)
             frozen = result_root / "output-freeze/pass-b" / market / f"batch-{batch:02d}.json"
             frozen.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(output_path, frozen)

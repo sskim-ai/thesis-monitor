@@ -11,6 +11,7 @@ from scripts.m12cr_shadow_contract import (
     field_ownership_inventory,
     future_pass_a_batch_schema,
     future_pass_b_batch_schema,
+    materialize_directional_balance,
     materialize_future_pass_a,
     normalize_future_pass_b,
     parity_matrix,
@@ -21,6 +22,7 @@ from scripts.m12cr_shadow_contract import (
     validate_future_pass_a_shape,
     validate_future_pass_b_shape,
     validate_materialized_pass_b,
+    validate_materialized_directional_balance,
     validate_new_buyer_consistency,
     validate_security_basis_gate,
 )
@@ -226,7 +228,7 @@ def _pass_b_choice(
         }
     return {
         "overall_direction": overall,
-        "directional_balance": {"buy": 6.0, "sell": 4.0},
+        "directional_buy_score": 6.0,
         "decision_confidence": "MEDIUM",
         "decisive_supporting_claim_refs": ["claim:bull"],
         "decisive_contradicting_claim_refs": ["claim:bear"],
@@ -506,6 +508,90 @@ def test_pass_b_all_confidence_values_are_accepted(confidence: str) -> None:
     assert result["status"] == "PASS"
 
 
+@pytest.mark.parametrize(
+    ("score", "expected"),
+    (
+        (0, {"buy": 0.0, "sell": 10.0}),
+        (0.62, {"buy": 0.62, "sell": 9.38}),
+        (3.5, {"buy": 3.5, "sell": 6.5}),
+        (5, {"buy": 5.0, "sell": 5.0}),
+        (6.2, {"buy": 6.2, "sell": 3.8}),
+        (10, {"buy": 10.0, "sell": 0.0}),
+    ),
+)
+def test_directional_buy_score_materializes_decimal_safe_complement(
+    score: float,
+    expected: dict[str, float],
+) -> None:
+    balance = materialize_directional_balance(score)
+
+    assert balance == expected
+    assert validate_materialized_directional_balance(balance)["status"] == "PASS"
+
+
+@pytest.mark.parametrize("score", (-0.01, 10.01, float("nan"), float("inf")))
+def test_directional_buy_score_rejects_nonfinite_or_out_of_range(score: float) -> None:
+    output = _pass_b_output()
+    output["decisions"]["RENAMED"]["directional_buy_score"] = score
+
+    result = validate_future_pass_b_shape(
+        output,
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    assert "PB_BALANCE_BOUNDS" in result["per_ticker"]["RENAMED"]
+
+
+@pytest.mark.parametrize("score", (None, "0.62", True))
+def test_directional_buy_score_rejects_nonnumeric_values(score: object) -> None:
+    output = _pass_b_output()
+    output["decisions"]["RENAMED"]["directional_buy_score"] = score
+
+    result = validate_future_pass_b_shape(
+        output,
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    assert "PB_BALANCE_SHAPE" in result["per_ticker"]["RENAMED"]
+
+
+def test_old_raw_balance_object_is_not_accepted_by_new_contract() -> None:
+    output = _pass_b_output()
+    row = output["decisions"]["RENAMED"]
+    row.pop("directional_buy_score")
+    row["directional_balance"] = {"buy": 0.62, "sell": 0.38}
+
+    result = validate_future_pass_b_shape(
+        output,
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    assert "PB_ROW_EXACT_FIELDS" in result["per_ticker"]["RENAMED"]
+
+
+def test_model_cannot_author_separate_sell_score() -> None:
+    output = _pass_b_output()
+    output["decisions"]["RENAMED"]["directional_sell_score"] = 4.0
+
+    result = validate_future_pass_b_shape(
+        output,
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    assert "PB_ROW_EXACT_FIELDS" in result["per_ticker"]["RENAMED"]
+
+
+def test_final_directional_balance_preserves_sum_invariant() -> None:
+    result = validate_materialized_directional_balance({"buy": 6.2, "sell": 3.7})
+
+    assert result["status"] == "FAIL"
+    assert result["errors"] == ["PB_BALANCE_SUM"]
+
+
 def test_m12cn_wait_with_not_applicable_tactical_is_rejected_offline() -> None:
     output = _pass_b_output(new_buyer="WAIT")
     output["decisions"]["RENAMED"]["new_buyer_decision"]["tactical_choice"] = "NOT_APPLICABLE"
@@ -780,19 +866,11 @@ def _pass_b_negative_cases() -> list[tuple[str, dict[str, object]]]:
     )
     add(
         "PB_BALANCE_SHAPE",
-        lambda value: value["decisions"]["RENAMED"].update({"directional_balance": {"buy": 6.0}}),
+        lambda value: value["decisions"]["RENAMED"].update({"directional_buy_score": "6.0"}),
     )
     add(
         "PB_BALANCE_BOUNDS",
-        lambda value: value["decisions"]["RENAMED"].update(
-            {"directional_balance": {"buy": 11.0, "sell": -1.0}}
-        ),
-    )
-    add(
-        "PB_BALANCE_SUM",
-        lambda value: value["decisions"]["RENAMED"].update(
-            {"directional_balance": {"buy": 5.0, "sell": 4.0}}
-        ),
+        lambda value: value["decisions"]["RENAMED"].update({"directional_buy_score": 11.0}),
     )
     add(
         "PB_CONFIDENCE_ENUM",

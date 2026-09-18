@@ -403,7 +403,7 @@ def test_unresolved_security_basis_does_not_block_new_buyer_wait_shape() -> None
 
 def test_r1_rule_inventory_has_no_missing_upstream_enforcement() -> None:
     inventory = r1_semantic_rule_inventory(semantic_rule_inventory())
-    assert inventory["base_rule_count"] == 111
+    assert inventory["base_rule_count"] == 112
     assert inventory["new_rule_count"] == 9
     assert inventory["missing_upstream_enforcement_count"] == 0
     assert inventory["status"] == "PASS"

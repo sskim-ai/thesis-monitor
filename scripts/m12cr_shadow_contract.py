@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import ast
 import inspect
-import math
 import re
 import textwrap
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
+from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 
 from scripts.m12cn_policy_contract import (
@@ -38,8 +38,8 @@ from scripts.m12cq_two_pass_contract import (
 
 FUTURE_PASS_A_CONTRACT = "m12cr-pass-a-archetype-regime-v2"
 FUTURE_PASS_A_SCHEMA = "m12cr-pass-a-response-schema-v2"
-FUTURE_PASS_B_CONTRACT = "m12cr-pass-b-decision-tactical-v2"
-FUTURE_PASS_B_SCHEMA = "m12cr-pass-b-response-schema-v2"
+FUTURE_PASS_B_CONTRACT = "m12cr-pass-b-decision-tactical-v3"
+FUTURE_PASS_B_SCHEMA = "m12cr-pass-b-response-schema-v3"
 
 
 class OwnershipClass(StrEnum):
@@ -75,7 +75,7 @@ PASS_A_MODEL_FIELDS = (
 
 PASS_B_MODEL_FIELDS = (
     "overall_direction",
-    "directional_balance",
+    "directional_buy_score",
     "decision_confidence",
     "decisive_supporting_claim_refs",
     "decisive_contradicting_claim_refs",
@@ -364,16 +364,20 @@ def _new_buyer_schema(catalog: Mapping[str, object]) -> dict[str, object]:
 
 def _pass_b_row_schema(catalog: Mapping[str, object]) -> dict[str, object]:
     claim_refs = tuple(catalog.get("claim_refs") or ())
-    balance = _strict_object(
-        {
-            "buy": {"type": "number", "minimum": 0.0, "maximum": 10.0},
-            "sell": {"type": "number", "minimum": 0.0, "maximum": 10.0},
-        }
-    )
     return _strict_object(
         {
             "overall_direction": _enum(["BUY", "HOLD", "SELL"]),
-            "directional_balance": balance,
+            "directional_buy_score": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 10.0,
+                "description": (
+                    "Directional buy score on the 0 through 10 scale: 0 is fully "
+                    "sell-leaning, 5 is balanced, and 10 is fully buy-leaning. The "
+                    "runtime derives the complementary sell score. Do not normalize "
+                    "this value to 0 through 1."
+                ),
+            },
             "decision_confidence": _enum([item.value for item in Confidence]),
             "decisive_supporting_claim_refs": _string_array(
                 values=claim_refs,
@@ -501,6 +505,50 @@ def _exact_keys(value: object, expected: Sequence[str]) -> bool:
 
 def _valid_string(value: object, maximum: int) -> bool:
     return isinstance(value, str) and 1 <= len(value) <= maximum
+
+
+def _directional_score_decimal(value: object) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (int, float, Decimal)):
+        raise TypeError("directional_buy_score_number_required")
+    try:
+        score = Decimal(str(value))
+    except InvalidOperation as exc:
+        raise ValueError("directional_buy_score_invalid") from exc
+    if not score.is_finite() or score < Decimal("0") or score > Decimal("10"):
+        raise ValueError("directional_buy_score_out_of_bounds")
+    return score
+
+
+def materialize_directional_balance(value: object) -> dict[str, float]:
+    score = _directional_score_decimal(value)
+    complement = Decimal("10") - score
+    return {
+        "buy": float(str(score)),
+        "sell": float(str(complement)),
+    }
+
+
+def validate_materialized_directional_balance(value: object) -> dict[str, object]:
+    errors: list[str] = []
+    if not _exact_keys(value, ("buy", "sell")):
+        errors.append("PB_BALANCE_SHAPE")
+    else:
+        assert isinstance(value, Mapping)
+        try:
+            buy = _directional_score_decimal(value.get("buy"))
+            sell = _directional_score_decimal(value.get("sell"))
+        except TypeError:
+            errors.append("PB_BALANCE_SHAPE")
+        except ValueError:
+            errors.append("PB_BALANCE_BOUNDS")
+        else:
+            if buy + sell != Decimal("10"):
+                errors.append("PB_BALANCE_SUM")
+    return {
+        "contract": "m12ct-r1-materialized-directional-balance-v1",
+        "errors": errors,
+        "status": "PASS" if not errors else "FAIL",
+    }
 
 
 def _valid_ref_list(
@@ -757,16 +805,13 @@ def validate_future_pass_b_shape(
         all_refs = claim_refs | evidence_refs
         if row.get("overall_direction") not in {"BUY", "HOLD", "SELL"}:
             row_errors.append("PB_OVERALL_ENUM")
-        balance = row.get("directional_balance")
-        if not _exact_keys(balance, ("buy", "sell")):
+        score = row.get("directional_buy_score")
+        try:
+            _directional_score_decimal(score)
+        except TypeError:
             row_errors.append("PB_BALANCE_SHAPE")
-        else:
-            assert isinstance(balance, Mapping)
-            values = (balance.get("buy"), balance.get("sell"))
-            if not all(isinstance(value, (int, float)) and 0 <= value <= 10 for value in values):
-                row_errors.append("PB_BALANCE_BOUNDS")
-            elif not math.isclose(float(values[0]) + float(values[1]), 10.0, abs_tol=1e-6):
-                row_errors.append("PB_BALANCE_SUM")
+        except ValueError:
+            row_errors.append("PB_BALANCE_BOUNDS")
         if row.get("decision_confidence") not in {item.value for item in Confidence}:
             row_errors.append("PB_CONFIDENCE_ENUM")
         if not _valid_ref_list(
@@ -937,7 +982,7 @@ def normalize_future_pass_b(
             "overall_direction": row["overall_direction"],
             "new_buyer": new_buyer["new_buyer"],
             "holder": holder["holder"],
-            "directional_balance": deepcopy(row["directional_balance"]),
+            "directional_balance": materialize_directional_balance(row["directional_buy_score"]),
             "decision_confidence": row["decision_confidence"],
             "decisive_supporting_claim_refs": deepcopy(row["decisive_supporting_claim_refs"]),
             "decisive_contradicting_claim_refs": deepcopy(row["decisive_contradicting_claim_refs"]),
@@ -994,6 +1039,13 @@ def validate_materialized_pass_b(
     entry_rows: list[dict[str, object]] = []
     consistency_rows: list[dict[str, object]] = []
     errors = list(semantic["errors"])
+    balance_rows: list[dict[str, object]] = []
+    for decision in decisions:
+        balance = validate_materialized_directional_balance(
+            decision.directional_balance.model_dump(mode="json")
+        )
+        errors.extend(f"{decision.ticker}:{item}" for item in balance["errors"])
+        balance_rows.append({"ticker": decision.ticker, **balance})
     for decision in decisions:
         ticker = decision.ticker
         try:
@@ -1020,6 +1072,7 @@ def validate_materialized_pass_b(
     return {
         "contract": "m12cr-pass-b-materialized-validation-v1",
         "semantic": semantic,
+        "directional_balance_invariants": balance_rows,
         "entry_rows": entry_rows,
         "consistency_rows": consistency_rows,
         "errors": sorted(set(errors)),
@@ -1066,13 +1119,17 @@ def future_pass_b_prompt_template() -> str:
     return (
         "Pass B returns strict JSON matching the supplied subject-keyed schema. Do not output identity "
         "or ticker fields. Pass-A classification and deterministic policy options are frozen. Judge "
-        "Overall, New Buyer, Holder, directional balance, confidence, exact evidence selections, and "
+        "Overall, New Buyer, Holder, directional buy score, confidence, exact evidence selections, "
+        "and "
         "bounded prose only. The runtime owns rule trace, valuation-affects metadata, price, bands, "
         "distance, methods, source refs, status, typed business-quality state, security valuation "
         "basis, and final entry materialization. Unresolved security basis may support New Buyer "
         "WAIT or suppress an unsafe entry range, but cannot by itself lower Overall or Holder. "
         "Non-directional business-quality confidence limits also cannot be their sole downgrade "
-        "reason. BUY/WAIT/HOLDABLE is "
+        "reason. directional_buy_score is one number on the 0 through 10 scale: 0 means fully "
+        "sell-leaning directional balance, 5 means balanced, and 10 means fully buy-leaning. The "
+        "runtime derives sell as the exact complement to 10. Do not output a sell score and do not "
+        "normalize the buy score to 0 through 1. BUY/WAIT/HOLDABLE is "
         "valid. Valuation or timing alone cannot force Overall lower or Holder REVIEW. Use one schema "
         "branch exactly; do not reproduce deterministic metadata."
     )
@@ -1139,6 +1196,7 @@ def field_ownership_inventory() -> dict[str, object]:
         "market",
         "assessment_date",
         "ticker",
+        "directional_balance",
         "data_quality_effect",
         "data_quality_reason_class",
         "data_quality_reason",
@@ -1281,6 +1339,7 @@ def semantic_rule_inventory() -> dict[str, object]:
         "valuation_affects_runtime_owned",
         "fundamental_option_runtime_owned",
         "entry_metadata_runtime_owned",
+        "directional_sell_score_runtime_owned",
     ]
     rules: list[dict[str, object]] = []
     for index, rule in enumerate(structural_rules, 1):
