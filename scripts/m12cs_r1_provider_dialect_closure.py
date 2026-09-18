@@ -131,6 +131,7 @@ def runtime_integrity(expected_head: str) -> dict[str, object]:
         "scripts/m12cs_fresh_two_pass_shadow.py",
         "scripts/m12cs_r1_",
         "tests/test_m12cr_shadow_contract.py",
+        "tests/test_m12cr_r1_typed_quality_contract.py",
         "tests/test_m12cs_",
     )
     production_paths = [path for path in changed if not path.startswith(allowed)]
@@ -1357,6 +1358,7 @@ def run_validation(result_root: Path) -> dict[str, object]:
         "tests/test_m12cs_r1_provider_schema.py",
         "tests/test_m12cs_fresh_two_pass_shadow.py",
         "tests/test_m12cr_shadow_contract.py",
+        "tests/test_m12cr_r1_typed_quality_contract.py",
     )
     rows.extend(
         (
