@@ -1,0 +1,47 @@
+--- app/services/data_coverage_service.py:305-350 ---
+  305          full_quality = (
+  306              "validation_failed"
+  307              if all_full_rows and not full_rows
+  308              else freshness.full_financial_freshness
+  309              if full_rows
+  310              else "unavailable"
+  311          )
+  312          preliminary_quality = (
+  313              "validation_failed"
+  314              if all_preliminary_rows
+  315              and (
+  316                  not preliminary_rows
+  317                  or any(row.financial_statement_basis_warning for row in all_preliminary_rows)
+  318              )
+  319              else freshness.preliminary_financial_freshness
+  320              if preliminary_rows
+  321              else "not_applicable"
+  322          )
+  323          if preliminary_quality == "validation_failed":
+  324              reasons.append("preliminary_validation_failed")
+  325              if any(row.period_mapping_validation_failed for row in all_preliminary_rows):
+  326                  reasons.append("preliminary_period_mapping_failed")
+  327          preliminary_soft_outliers = {
+  328              outlier
+  329              for row in preliminary_rows
+  330              for outlier in _json_list(row.financial_soft_outliers)
+  331          }
+  332          if preliminary_soft_outliers.intersection(
+  333              {
+  334                  "operating_income_exceeds_revenue",
+  335                  "net_income_exceeds_revenue",
+  336                  "unusually_high_or_low_operating_margin",
+  337                  "unusually_high_or_low_net_margin",
+  338              }
+  339          ):
+  340              reasons.append("preliminary_profitability_outlier")
+  341          financial_quality = (
+  342              "refresh_pending"
+  343              if freshness.refresh_required
+  344              else "refresh_due"
+  345              if freshness.status == "refresh_due"
+  346              else "validation_failed"
+  347              if freshness.status == "preliminary_only" and preliminary_quality == "validation_failed"
+  348              else "partial"
+  349              if freshness.status == "preliminary_only"
+  350              else financial_status

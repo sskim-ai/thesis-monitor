@@ -1,0 +1,47 @@
+--- app/services/financial_validation.py:240-285 ---
+  240      )
+  241      net_income = (
+  242          event.net_income
+  243          if event.net_income is not None
+  244          else _fact_amount(financial_facts, ("지배주주순이익", "당기순이익"))
+  245      )
+  246      margin = event.operating_margin
+  247      if margin is None and revenue not in {None, 0} and operating_income is not None:
+  248          margin = operating_income / revenue * 100
+  249      if revenue is not None and revenue <= 0:
+  250          result.hard_errors.append("non_positive_revenue")
+  251      if (
+  252          revenue not in {None, 0}
+  253          and operating_income is not None
+  254          and abs(operating_income) > abs(revenue)
+  255          and not _is_financial_company(event)
+  256      ):
+  257          result.soft_outliers.append("operating_income_exceeds_revenue")
+  258      if (
+  259          revenue not in {None, 0}
+  260          and net_income is not None
+  261          and abs(net_income) > abs(revenue)
+  262          and not _is_financial_company(event)
+  263      ):
+  264          result.soft_outliers.append("net_income_exceeds_revenue")
+  265      if margin is not None and not _is_financial_company(event):
+  266          if margin > operating_margin_upper_bound or margin < -100:
+  267              result.soft_outliers.append("unusually_high_or_low_operating_margin")
+  268          if revenue not in {None, 0} and operating_income is not None:
+  269              derived = operating_income / revenue * 100
+  270              if event.operating_margin is not None and abs(derived - margin) > 1.0:
+  271                  result.hard_errors.append("reported_and_derived_margin_mismatch")
+  272  
+  273      if (
+  274          revenue not in {None, 0}
+  275          and net_income is not None
+  276          and abs(net_income / revenue) > 1
+  277          and "net_income_exceeds_revenue" not in result.soft_outliers
+  278      ):
+  279          result.soft_outliers.append("unusually_high_or_low_net_margin")
+  280  
+  281      if result.soft_outliers and not _official_financial_source(event):
+  282          result.hard_errors.append("outlier_not_verified_by_official_source")
+  283  
+  284      event.financial_hard_errors = json.dumps(result.hard_errors)
+  285      event.financial_soft_outliers = json.dumps(result.soft_outliers)

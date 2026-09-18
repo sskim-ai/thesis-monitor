@@ -1,0 +1,22 @@
+{
+  "contract": "m12cz-hard-safety-counters-v1",
+  "additional_model_provider_inference_cli_jobs": 0,
+  "a_b_core_judge_repair_reruns": 0,
+  "current_market_or_fundamental_refreshes": 0,
+  "targeted_historical_source_requests": 4,
+  "targeted_historical_source_request_budget": 20,
+  "automatic_network_retries": 0,
+  "production_db_writes": 0,
+  "production_notifications_or_sends": 0,
+  "scheduler_changes": 0,
+  "runtime_code_policy_prompt_schema_validator_materializer_changes": 0,
+  "main_merges": 0,
+  "remote_pushes": 0,
+  "deployments": 0,
+  "full_pytest_runs": 0,
+  "audit_only_sqlite_reads": 3,
+  "official_source_domains": [
+    "data.sec.gov",
+    "www.sec.gov"
+  ]
+}

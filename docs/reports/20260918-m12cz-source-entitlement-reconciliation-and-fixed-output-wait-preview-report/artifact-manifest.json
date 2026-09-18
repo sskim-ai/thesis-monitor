@@ -1,0 +1,192 @@
+{
+  "contract": "m12cz-artifact-manifest-v1",
+  "self_excluded": true,
+  "payload_count": 37,
+  "payloads": [
+    {
+      "path": "MINIMUM_CHANGE_DECISION.md",
+      "bytes": 2006,
+      "sha256": "05b32e922fe49bb12a3fcf35175199d201095f3df39ab4616bcd830ff10c1301"
+    },
+    {
+      "path": "README.md",
+      "bytes": 326,
+      "sha256": "a6b59bebbc383878df0eed53d4f456b1e16ef6265fc0b236b8b5f1ea07e86d28"
+    },
+    {
+      "path": "SOURCE_RECONCILIATION_DECISION.md",
+      "bytes": 4046,
+      "sha256": "0f5c229a56f80b8be57e460737ff0d17201925c9b2bc6dd99d3e00090cba56b4"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 528,
+      "sha256": "73addbca9f2e67f0f5d58c79ef55210a2d0013326014a42d0e252af453adbe1f"
+    },
+    {
+      "path": "WAIT_PREVIEW_19.md",
+      "bytes": 22740,
+      "sha256": "5c7fadccce35fb2b6b86799a241229381179bfcec335c11dee0eacd618e3ac1a"
+    },
+    {
+      "path": "cpng-fcf-source-and-suppression-scope.json",
+      "bytes": 8008,
+      "sha256": "434e77e829ac38f5fba840c9251a2c54476bd614c65b0b758d903db68ca25b0e"
+    },
+    {
+      "path": "expectation-only-overall-support-review.json",
+      "bytes": 7896,
+      "sha256": "8f261f055f38e1e426d24d0b77407e831a114f29a8aa30336122cd027e1fe0d9"
+    },
+    {
+      "path": "financial-quality-source-and-predicate-reconciliation.json",
+      "bytes": 21590,
+      "sha256": "a838dc4a20a40ffa502e726e945a869f287c757271fc06f3a686dc7285b90169"
+    },
+    {
+      "path": "historical-owner-evidence-index.json",
+      "bytes": 11559,
+      "sha256": "93fbbdd5d51fc686685480ab6a258c672298d99e402b493a9f40df73083ca8ca"
+    },
+    {
+      "path": "historical-owner-exports/01-working_capital_user_visible_preintegration_service.txt",
+      "bytes": 2469,
+      "sha256": "9807516ea0bbe85ba3737cde8188dbacfd1e7d410bf8d730bf3e3849b20f0e87"
+    },
+    {
+      "path": "historical-owner-exports/02-stage2_maturity_polarity_adapter_service.txt",
+      "bytes": 3682,
+      "sha256": "5bbc72a8c4a63daa22a1dcb825dedd903c5af6e2289126f1efc3fc994dbc4ad6"
+    },
+    {
+      "path": "historical-owner-exports/03-m12cq_two_pass_contract.txt",
+      "bytes": 8707,
+      "sha256": "50f6ae061d8d876f59fe52792ee21362204e80426b7e4e8278f5b9ddcab306b7"
+    },
+    {
+      "path": "historical-owner-exports/04-m12cv_pass_b_capability_contract.txt",
+      "bytes": 8036,
+      "sha256": "8493468ee9470f6e5ef9bb25390ab2465d81d2447202f77908bb88a509082d38"
+    },
+    {
+      "path": "historical-owner-exports/05-test_m12cv_pass_b_capability_contract.txt",
+      "bytes": 1757,
+      "sha256": "c5224d3a6e02a384aec15d7bfd7aaae08c38dac1631bdf0a34aa5117c800ff9a"
+    },
+    {
+      "path": "historical-owner-exports/06-financial_validation.txt",
+      "bytes": 2383,
+      "sha256": "c7bc4e242302cf7d326a0658b814df8aa4ce8c941244f4fc64cd4f9d5579f9a8"
+    },
+    {
+      "path": "historical-owner-exports/07-config.txt",
+      "bytes": 566,
+      "sha256": "e6d14b8610dd394f0eb9410cd4df0663018d3c8f08fe556056f19cf676a980cf"
+    },
+    {
+      "path": "historical-owner-exports/08-data_coverage_service.txt",
+      "bytes": 2241,
+      "sha256": "2eb9884b17c0f3704b30de94e238ef0f0c9e247c199040313c1a126b8e37a564"
+    },
+    {
+      "path": "historical-owner-exports/09-financial_quality_service.txt",
+      "bytes": 9460,
+      "sha256": "74625c26132e2ed8fea8dd6e0f6bc12f65c0b1b50d3201918b8a54815a4dae38"
+    },
+    {
+      "path": "historical-owner-exports/10-cross_market_decision_engine_service.txt",
+      "bytes": 3445,
+      "sha256": "4fa98e5d1cf1eb23b130b3b122105035a62dc43375e2c19a0c6aa8519b4a12f4"
+    },
+    {
+      "path": "historical-owner-exports/11-cash_flow_user_visible_service.txt",
+      "bytes": 3296,
+      "sha256": "154af9bce16b15cc2459d5aab4e308816431cbe73f2d39ae4d55ee472d3ff09e"
+    },
+    {
+      "path": "historical-owner-exports/12-cash_flow_baseline_consistency_service.txt",
+      "bytes": 3811,
+      "sha256": "dd34dbca7c7f4a045cdcca8fba05da6ea97f7070b74e4487de8056237366a5a4"
+    },
+    {
+      "path": "historical-owner-exports/13-working_capital_evidence_service.txt",
+      "bytes": 7264,
+      "sha256": "452fa9ba9d15bef1bb691a476e5c2310761e1fe04d8b846dfbf5f9e0669f66a0"
+    },
+    {
+      "path": "historical-owner-exports/financial-quality-reason-history.txt",
+      "bytes": 353,
+      "sha256": "4b6dc358fce3127600acf8705b218c51f42d693d9ab011d260c5916c8ecbb88d"
+    },
+    {
+      "path": "historical-owner-exports/working-capital-prohibition-history.txt",
+      "bytes": 122,
+      "sha256": "55bde9c81f249e0860f1096ca3ff6705b36d4a651fd2282ec24db7851c860b6f"
+    },
+    {
+      "path": "original-output-immutability-check.json",
+      "bytes": 6375,
+      "sha256": "c539cfdfeb6e91f2e9d3e6da2aee15a82771d5b6430e4232f72fd8959c95baa3"
+    },
+    {
+      "path": "program-completion.json",
+      "bytes": 880,
+      "sha256": "d0afece2c1d402edf846e0a86f53b4a7ca24b89ff33e784ddcea47ff3099a608"
+    },
+    {
+      "path": "residual-gap-ledger.json",
+      "bytes": 1998,
+      "sha256": "91b2942d42ace058b626fc4fd5368f51fa0f45c65804eb12b9d29ae696ceb88e"
+    },
+    {
+      "path": "retrieved-sources/cpng-2026q2-8k-index.html",
+      "bytes": 10990,
+      "sha256": "e572bf7562ac6a3deb2e36e371b0a6a4cf812f5b5fbe9215986b766025bd5109"
+    },
+    {
+      "path": "retrieved-sources/cpng-2026q2-exhibit-99-1-targeted-excerpts.txt",
+      "bytes": 3577,
+      "sha256": "74937aab57f207dccd59c527d38b428fc75888e177fabc41280fb3a4695ce050"
+    },
+    {
+      "path": "retrieved-sources/cpng-2026q2-exhibit-99-1.html",
+      "bytes": 394169,
+      "sha256": "5368db524a113b654d7b575c00b409f8866a153a71a2fb990d6fd031e595962f"
+    },
+    {
+      "path": "retrieved-sources/cpng-sec-companyfacts.json",
+      "bytes": 1125394,
+      "sha256": "2018f332aa9f72daebc86a8949502b2b4719498be97ff9f001cfe159fe8b8a6f"
+    },
+    {
+      "path": "retrieved-sources/cpng-sec-submissions.json",
+      "bytes": 65902,
+      "sha256": "d8e942a44d498b82f8348f95eb6742564a200cafcac3df02cd09d0bc77a53c5d"
+    },
+    {
+      "path": "safety-counters.json",
+      "bytes": 680,
+      "sha256": "5fb0808c271561a546ddbdc88313eca8a82ddc1384e322658ab4b8a1b5e4d96a"
+    },
+    {
+      "path": "source-binding-and-retrieval-manifest.json",
+      "bytes": 7546,
+      "sha256": "910fdf649d2063ebaa3c4d56d4d58f24426f448e8e9f882984df68db69030556"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 766,
+      "sha256": "d263e1e4e8ea48b96170c145fc0973648795d5fc74898c71cac55c65a59d6cc4"
+    },
+    {
+      "path": "wait-preview-source-display-binding.json",
+      "bytes": 276144,
+      "sha256": "608081158cda4d454bcd2e1d4ae71247ed613c2d0190c20e31afc72bcf063b90"
+    },
+    {
+      "path": "working-capital-operands-and-entitlement.json",
+      "bytes": 95551,
+      "sha256": "dfdd2572c535cb2ea873bcc6c34d41cd954187c20d2927f06214492f35ebd8a1"
+    }
+  ]
+}

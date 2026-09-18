@@ -1,0 +1,11 @@
+--- app/config.py:99-108 ---
+   99      macro_vix_material_pct: float = 5.0
+  100      macro_real_yield_material_bp: float = 5.0
+  101      macro_nominal_yield_material_bp: float = 7.0
+  102      macro_credit_spread_material_bp: float = 10.0
+  103      macro_other_material_pct: float = 1.0
+  104      financial_operating_margin_upper_bound: float = 60.0
+  105      financial_reporting_cadence_days: int = 160
+  106      macro_monitor_enabled: bool = True
+  107      macro_provider_timeout_seconds: float = 20.0
+  108      macro_briefing_send_no_change: bool = True

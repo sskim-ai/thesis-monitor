@@ -1,0 +1,82 @@
+--- app/services/cash_flow_baseline_consistency_service.py:465-545 ---
+  465      if cutoff_date is None:
+  466          return CanonicalCashFlowEvidence(
+  467              ticker=ticker,
+  468              freshness_state="BLOCKED",
+  469              fcf=None,
+  470              ocf=None,
+  471              denial_reasons=("assessment_cutoff_unavailable",),
+  472          )
+  473      path = report_path or _canonical_report_path()
+  474      if not path.exists():
+  475          return CanonicalCashFlowEvidence(
+  476              ticker=ticker,
+  477              freshness_state="REPORT_UNAVAILABLE",
+  478              fcf=None,
+  479              ocf=None,
+  480              denial_reasons=("canonical_cash_flow_report_unavailable",),
+  481          )
+  482      report = _read_canonical_report(str(path.resolve()))
+  483      records = {
+  484          str(item.get("ticker")): item
+  485          for item in report.get("active_universe") or ()
+  486          if isinstance(item, dict) and item.get("ticker")
+  487      }
+  488      record = records.get(ticker)
+  489      if not isinstance(record, dict):
+  490          return CanonicalCashFlowEvidence(
+  491              ticker=ticker,
+  492              freshness_state="BLOCKED",
+  493              fcf=None,
+  494              ocf=None,
+  495              denial_reasons=("subject_not_in_canonical_cash_flow_universe",),
+  496          )
+  497      if str(record.get("cash_flow_core_status")) == "NOT_APPLICABLE":
+  498          return CanonicalCashFlowEvidence(
+  499              ticker=ticker,
+  500              freshness_state="NOT_APPLICABLE",
+  501              fcf=None,
+  502              ocf=None,
+  503              denial_reasons=tuple(str(item) for item in record.get("denial_reasons") or ()),
+  504          )
+  505      facts = {
+  506          str(item.get("fact_id")): item
+  507          for item in report.get("canonical_facts") or ()
+  508          if isinstance(item, dict)
+  509          and item.get("ticker") == ticker
+  510          and item.get("fact_id")
+  511      }
+  512      metrics = record.get("metrics") if isinstance(record.get("metrics"), dict) else {}
+  513  
+  514      def selected(metric_name: str) -> CanonicalMetricEvidence | None:
+  515          value = metrics.get(metric_name) if isinstance(metrics, dict) else None
+  516          fact_id = value.get("fact_id") if isinstance(value, dict) else None
+  517          row = facts.get(str(fact_id)) if fact_id else None
+  518          if not isinstance(row, dict) or str(row.get("eligibility")) != "ELIGIBLE":
+  519              return None
+  520          fact = _metric_evidence(row)
+  521          return fact if fact.filing_date <= cutoff_date else None
+  522  
+  523      fcf = selected("fcf")
+  524      ocf = selected("ocf")
+  525      primary = fcf or ocf
+  526      freshness = "BLOCKED"
+  527      reasons = [str(item) for item in record.get("denial_reasons") or ()]
+  528      if primary is None:
+  529          reasons.append("point_in_time_primary_cash_flow_fact_unavailable")
+  530      elif latest_formal_period is None:
+  531          freshness = "FORMAL_ALIGNMENT_UNAVAILABLE"
+  532      elif primary.period_end < latest_formal_period:
+  533          freshness = "STALE_FORMAL"
+  534      elif primary.period_end > latest_formal_period:
+  535          freshness = "FORMAL_ALIGNMENT_UNAVAILABLE"
+  536      elif latest_preliminary_period and latest_preliminary_period > latest_formal_period:
+  537          freshness = "FORMAL_LAGGING_PROVISIONAL"
+  538      else:
+  539          freshness = "CURRENT_FORMAL"
+  540      return CanonicalCashFlowEvidence(
+  541          ticker=ticker,
+  542          freshness_state=freshness,
+  543          fcf=fcf,
+  544          ocf=ocf,
+  545          denial_reasons=tuple(dict.fromkeys(reasons)),

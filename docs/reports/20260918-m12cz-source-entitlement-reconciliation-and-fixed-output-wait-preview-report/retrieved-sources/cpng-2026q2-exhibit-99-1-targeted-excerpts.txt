@@ -1,0 +1,103 @@
+[Headline and segment excerpt]
+00026: Adjusted EBITDA for the quarter was $163 million with a margin of 1.8%, down 318 bps versus last year.
+00027: •
+00028: Operating cash flow for the trailing twelve months was $1.4 billion, a decrease of $484 million YoY and free cash flow was $105 million for the trailing twelve months, a decrease of $679 million YoY.
+00029: •
+00030: 23.2 million shares of Class A common stock were repurchased during the quarter for an aggregate amount of $459 million.
+00031: Q2 2026 Segment Highlights:
+00032: •
+00033: Product Commerce segment net revenues were $7.4 billion, up 1% YoY on a reported basis and 8% YoY on a constant currency basis.
+00034: •
+00035: Product Commerce gross profit was $2.3 billion, down 5% YoY on a reported basis and up 1% YoY on a constant currency basis. Gross profit margin was 30.5%, a decrease of 204 bps YoY.
+00036: •
+00037: Product Commerce segment adjusted EBITDA was $382 million, down $281 million YoY, with a margin of 5.1%, down 390 bps YoY.
+00038: •
+
+[Management definition excerpt]
+00684: Total Net Revenues Growth, Constant Currency and Gross Profit Growth, Constant Currency
+00685: • Total net revenues growth, constant currency and gross profit growth, constant currency (as percentages) are calculated by determining the increase in current period revenue and gross profit, respectively, over prior period revenue and gross profit, respectively, where current period foreign currency revenue and gross profit are translated using prior period exchange rates.
+00686: Free Cash Flow
+00687: • Net cash provided by (used in) operating activities
+00688: Less: purchases of property and equipment,
+00689: Plus: proceeds from sale of property and equipment.
+00690: •  Provides information to management and investors about the amount of cash generated from our ongoing operations that, after purchases and sales of property and equipment, can be used for strategic initiatives, including investing in our business and strengthening our balance sheet, including paying down debt, repurchasing shares of our Class A common stock, and paying dividends to stockholders.
+00691: Adjusted EBITDA
+00692: • Net income (loss), excluding the effects of:
+00693: - depreciation and amortization,
+00694: - interest expense,
+00695: - interest income,
+00696: - other income (expense), net,
+00697: - income tax expense (benefit),
+00698: - equity-based compensation,
+00699: - acquisition and restructuring-related costs, net,
+
+[TTM reconciliation table excerpt]
+00161: Free cash flow
+00162: (1)
+00163: $
+00164: 51
+00165: $
+00166: 247
+00167: (79)
+00168: %
+00169: Trailing Twelve Months Ended June 30,
+00170: (in millions)
+00171: 2026
+00172: 2025
+00173: % Change
+00174: Net cash provided by operating activities
+00175: $
+00176: 1,425
+00177: $
+00178: 1,909
+00179: (25)
+00180: %
+00181: Free cash flow
+00182: (1)
+00183: $
+00184: 105
+00185: $
+00186: 784
+00187: (87)
+00188: %
+00189: Segment Information
+00190: Three Months Ended June 30,
+00191: (in millions)
+00192: 2026
+00193: 2025
+00194: % Change
+00195: Product Commerce
+00196: Net revenues
+00197: $
+00198: 7,425
+00199: $
+00200: 7,334
+00201: 1
+00202: %
+00203: Net revenues growth, constant currency
+00204: (1)
+00205: 8
+00206: %
+00207: Gross profit
+00208: (2)
+00209: $
+00210: 2,268
+00211: $
+00212: 2,390
+00213: (5)
+00214: %
+00215: Gross profit growth, constant currency
+00216: (1)(2)
+00217: 1
+00218: %
+00219: Segment adjusted EBITDA
+00220: $
+00221: 382
+00222: $
+00223: 663
+00224: (42)
+00225: %
+00226: Developing Offerings
+00227: Net revenues
+00228: $
+00229: 1,431

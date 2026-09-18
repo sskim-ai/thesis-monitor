@@ -1,0 +1,159 @@
+--- app/services/working_capital_evidence_service.py:635-700 ---
+  635  def extract_sec_occurrences(
+  636      payload: Mapping[str, object],
+  637      *,
+  638      raw_payload_sha256: str,
+  639  ) -> tuple[OfficialFinancialOccurrence, ...]:
+  640      cik = str(payload.get("cik") or "").strip().zfill(10)
+  641      if not cik.strip("0"):
+  642          return ()
+  643      facts = payload.get("facts")
+  644      if not isinstance(facts, Mapping):
+  645          return ()
+  646      output: list[OfficialFinancialOccurrence] = []
+  647      for entry in SEC_SEMANTIC_REGISTRY:
+  648          namespace = facts.get(entry.namespace)
+  649          if not isinstance(namespace, Mapping):
+  650              continue
+  651          concept = namespace.get(entry.tag)
+  652          if not isinstance(concept, Mapping):
+  653              continue
+  654          units = concept.get("units")
+  655          if not isinstance(units, Mapping):
+  656              continue
+  657          for source_unit, rows in units.items():
+  658              if not isinstance(rows, list):
+  659                  continue
+  660              for row in rows:
+  661                  if not isinstance(row, Mapping) or row.get("form") not in FORMAL_FORMS:
+  662                      continue
+  663                  value = _parse_decimal(row.get("val"))
+  664                  if value is None:
+  665                      continue
+  666                  unit = str(source_unit)
+  667                  output.append(
+  668                      OfficialFinancialOccurrence(
+  669                          issuer_id=f"sec:{cik}",
+  670                          value=value,
+  671                          currency=_currency_from_unit(unit),
+  672                          unit=unit,
+  673                          period_start=_parse_date(row.get("start")),
+  674                          period_end=_parse_date(row.get("end")),
+  675                          fiscal_year=(
+  676                              int(str(row["fy"]))
+  677                              if str(row.get("fy") or "").isdigit()
+  678                              else None
+  679                          ),
+  680                          fiscal_period=str(row.get("fp")) if row.get("fp") else None,
+  681                          source_provider="sec_edgar_companyfacts",
+  682                          source_document_id=(
+  683                              str(row.get("accn")) if row.get("accn") else None
+  684                          ),
+  685                          source_document_type=(
+  686                              str(row.get("form")) if row.get("form") else None
+  687                          ),
+  688                          filing_date=_parse_date(row.get("filed")),
+  689                          namespace=entry.namespace,
+  690                          tag=entry.tag,
+  691                          raw_payload_sha256=raw_payload_sha256,
+  692                          entity_scope="issuer_level",
+  693                          statement_basis="issuer_reported",
+  694                          frame=str(row.get("frame")) if row.get("frame") else None,
+  695                          source_column="val",
+  696                      )
+  697                  )
+  698      return tuple(output)
+  699  
+  700  
+--- app/services/working_capital_evidence_service.py:1194-1284 ---
+ 1194          report_code
+ 1195      )
+ 1196      fiscal_period = {
+ 1197          "11013": "Q1",
+ 1198          "11012": "Q2",
+ 1199          "11014": "Q3",
+ 1200          "11011": "FY",
+ 1201      }.get(report_code)
+ 1202      if month is None or fiscal_period is None:
+ 1203          return None, None, None
+ 1204      day = 31 if month in {3, 12} else 30
+ 1205      end = date(business_year, month, day)
+ 1206      if fact_kind == FactKind.BALANCE:
+ 1207          return None, end, fiscal_period
+ 1208      if source_column == "thstrm_add_amount":
+ 1209          return date(business_year, 1, 1), end, fiscal_period
+ 1210      if source_column == "thstrm_amount":
+ 1211          start_month = month - 2
+ 1212          return date(business_year, start_month, 1), end, fiscal_period
+ 1213      return None, None, None
+ 1214  
+ 1215  
+ 1216  def extract_opendart_occurrences(
+ 1217      rows: Iterable[Mapping[str, object]],
+ 1218      *,
+ 1219      issuer_id: str,
+ 1220      business_year: int,
+ 1221      report_code: str,
+ 1222      filing_date: date,
+ 1223      source_document_id: str,
+ 1224      raw_payload_sha256: str,
+ 1225      requested_basis: str,
+ 1226  ) -> tuple[OfficialFinancialOccurrence, ...]:
+ 1227      basis = requested_basis.upper()
+ 1228      if basis not in {"CFS", "OFS"}:
+ 1229          return ()
+ 1230      statement_basis = "consolidated" if basis == "CFS" else "separate"
+ 1231      output: list[OfficialFinancialOccurrence] = []
+ 1232      for row in rows:
+ 1233          account_id = str(row.get("account_id") or "").lower()
+ 1234          entry = OPENDART_TAGS.get(account_id)
+ 1235          if entry is None:
+ 1236              continue
+ 1237          row_basis = str(row.get("fs_div") or basis).upper()
+ 1238          if row_basis != basis:
+ 1239              continue
+ 1240          statement_type = str(row.get("sj_div") or "").upper()
+ 1241          if entry.fact_kind == FactKind.BALANCE and statement_type != "BS":
+ 1242              continue
+ 1243          if entry.fact_kind == FactKind.FLOW and statement_type not in {"IS", "CIS"}:
+ 1244              continue
+ 1245          source_column = (
+ 1246              "thstrm_amount"
+ 1247              if entry.fact_kind == FactKind.BALANCE
+ 1248              else "thstrm_add_amount"
+ 1249              if report_code in {"11012", "11014"}
+ 1250              else "thstrm_amount"
+ 1251          )
+ 1252          value = _parse_decimal(row.get(source_column))
+ 1253          if value is None:
+ 1254              continue
+ 1255          start, end, fiscal_period = _opendart_period(
+ 1256              business_year=business_year,
+ 1257              report_code=report_code,
+ 1258              fact_kind=entry.fact_kind,
+ 1259              source_column=source_column,
+ 1260          )
+ 1261          output.append(
+ 1262              OfficialFinancialOccurrence(
+ 1263                  issuer_id=issuer_id,
+ 1264                  value=value,
+ 1265                  currency=str(row.get("currency") or "").upper() or None,
+ 1266                  unit=str(row.get("currency") or "").upper() or None,
+ 1267                  period_start=start,
+ 1268                  period_end=end,
+ 1269                  fiscal_year=business_year,
+ 1270                  fiscal_period=fiscal_period,
+ 1271                  source_provider="opendart",
+ 1272                  source_document_id=source_document_id,
+ 1273                  source_document_type="OpenDART",
+ 1274                  filing_date=filing_date,
+ 1275                  namespace=entry.namespace,
+ 1276                  tag=entry.tag,
+ 1277                  raw_payload_sha256=raw_payload_sha256,
+ 1278                  entity_scope="issuer_level",
+ 1279                  statement_basis=statement_basis,
+ 1280                  frame=None,
+ 1281                  source_column=source_column,
+ 1282              )
+ 1283          )
+ 1284      return tuple(output)

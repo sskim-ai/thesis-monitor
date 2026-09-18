@@ -1,0 +1,144 @@
+{
+  "contract": "m12cz-original-output-immutability-check-v1",
+  "source_file_sha256": "34aace744021cc0b4b150dcd47e9c31bb2f48d8ec4a136cc4123c4de64646f4c",
+  "wait_count": 19,
+  "all_entire_candidates_equal": true,
+  "all_required_fields_equal": true,
+  "original_label_changes": 0,
+  "original_numeric_field_changes": 0,
+  "checks": [
+    {
+      "ticker": "CORZ",
+      "entire_candidate_equal": true,
+      "source_sha256": "4ba13e6c82e5beadd3fe1758a5f96d4aa3bbcc4e423f0e2afc338a32a31ea20c",
+      "embedded_sha256": "4ba13e6c82e5beadd3fe1758a5f96d4aa3bbcc4e423f0e2afc338a32a31ea20c",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "CPNG",
+      "entire_candidate_equal": true,
+      "source_sha256": "49e83a81670fda3aa9edd9c98e47fffa0affab7006e0492010970060ffe74392",
+      "embedded_sha256": "49e83a81670fda3aa9edd9c98e47fffa0affab7006e0492010970060ffe74392",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "CRCL",
+      "entire_candidate_equal": true,
+      "source_sha256": "ce85ccb2b4ef1af57062d2f629062fbdae4aee020704082ddfd1fa095fa381b9",
+      "embedded_sha256": "ce85ccb2b4ef1af57062d2f629062fbdae4aee020704082ddfd1fa095fa381b9",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "GOOGL",
+      "entire_candidate_equal": true,
+      "source_sha256": "2b2a3e5c277615adec2fc4ad326d7ec2f2b05ebbd9b9e3ba68fd82f0e969c475",
+      "embedded_sha256": "2b2a3e5c277615adec2fc4ad326d7ec2f2b05ebbd9b9e3ba68fd82f0e969c475",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "HUT",
+      "entire_candidate_equal": true,
+      "source_sha256": "cef610b139a1436ec8fe858f1bbdbf6184dbcc1c97b892d33049e363a2170c5e",
+      "embedded_sha256": "cef610b139a1436ec8fe858f1bbdbf6184dbcc1c97b892d33049e363a2170c5e",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "MU",
+      "entire_candidate_equal": true,
+      "source_sha256": "c18a5f6295362256c717587c0143d38de2d7527faa0861e812d5230b0174bb30",
+      "embedded_sha256": "c18a5f6295362256c717587c0143d38de2d7527faa0861e812d5230b0174bb30",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "RXRX",
+      "entire_candidate_equal": true,
+      "source_sha256": "553bf8e57ebcdfa4f4bfde9f91e846f40c9e3c1a261dd434640fbdeb1b1f20d9",
+      "embedded_sha256": "553bf8e57ebcdfa4f4bfde9f91e846f40c9e3c1a261dd434640fbdeb1b1f20d9",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "SKHY",
+      "entire_candidate_equal": true,
+      "source_sha256": "cbb3552692a6b18e3a3652bac2807177258413f2385de3910369c6ecb9975dda",
+      "embedded_sha256": "cbb3552692a6b18e3a3652bac2807177258413f2385de3910369c6ecb9975dda",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "SNDK",
+      "entire_candidate_equal": true,
+      "source_sha256": "f92f24c07af87ac37823370447c8efd910327b075f71e18d8dd2453021fd7580",
+      "embedded_sha256": "f92f24c07af87ac37823370447c8efd910327b075f71e18d8dd2453021fd7580",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "TSM",
+      "entire_candidate_equal": true,
+      "source_sha256": "80030a75cfe10fe4bff3aad112fd69dc84311c5fd29d374694c9a8e0efe3bc48",
+      "embedded_sha256": "80030a75cfe10fe4bff3aad112fd69dc84311c5fd29d374694c9a8e0efe3bc48",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "WRD",
+      "entire_candidate_equal": true,
+      "source_sha256": "036901c8df8d4f03120102d8bd4ae5f83cfbd1c3c2da2fe1e8e0bf62d7c3d6e4",
+      "embedded_sha256": "036901c8df8d4f03120102d8bd4ae5f83cfbd1c3c2da2fe1e8e0bf62d7c3d6e4",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "000660",
+      "entire_candidate_equal": true,
+      "source_sha256": "4670eff97235b48aad71dd65a0167d9ce0713ede2b91f54d5ef3747a19f30e33",
+      "embedded_sha256": "4670eff97235b48aad71dd65a0167d9ce0713ede2b91f54d5ef3747a19f30e33",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "003690",
+      "entire_candidate_equal": true,
+      "source_sha256": "c1f6a9d2d2677ce55d66222a53addba7d7ead68ffc7d76c7ee3ce2339aa90b7b",
+      "embedded_sha256": "c1f6a9d2d2677ce55d66222a53addba7d7ead68ffc7d76c7ee3ce2339aa90b7b",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "005490",
+      "entire_candidate_equal": true,
+      "source_sha256": "2edba4eaf575c54ffaad41b08a0b6f060ac187d52c4d5da307328acd8a2afccd",
+      "embedded_sha256": "2edba4eaf575c54ffaad41b08a0b6f060ac187d52c4d5da307328acd8a2afccd",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "005930",
+      "entire_candidate_equal": true,
+      "source_sha256": "9eb99b8fd3013f890c3bc0f4cfab1a2fb5f9c1262575d97297c84d7c1f6edaa0",
+      "embedded_sha256": "9eb99b8fd3013f890c3bc0f4cfab1a2fb5f9c1262575d97297c84d7c1f6edaa0",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "010120",
+      "entire_candidate_equal": true,
+      "source_sha256": "5743732aad7e07febd365e4367fd2fabb8c64a35e4ab6fbac1813164838706a1",
+      "embedded_sha256": "5743732aad7e07febd365e4367fd2fabb8c64a35e4ab6fbac1813164838706a1",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "012450",
+      "entire_candidate_equal": true,
+      "source_sha256": "b01ad5c26a6b0a55a25c25eb9166ad45e28227dd5d85fe4fd47d19e55828dbf6",
+      "embedded_sha256": "b01ad5c26a6b0a55a25c25eb9166ad45e28227dd5d85fe4fd47d19e55828dbf6",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "047810",
+      "entire_candidate_equal": true,
+      "source_sha256": "b7133ae7f7482a8400ef7884406f961080fa0c7559db3a7ec9e1fed512bd870c",
+      "embedded_sha256": "b7133ae7f7482a8400ef7884406f961080fa0c7559db3a7ec9e1fed512bd870c",
+      "label_score_reason_ref_archetype_tier_equal": true
+    },
+    {
+      "ticker": "086280",
+      "entire_candidate_equal": true,
+      "source_sha256": "fb7dfff64beadd61842309344f586f5042d937a216b6f63bff851e6e258f23c6",
+      "embedded_sha256": "fb7dfff64beadd61842309344f586f5042d937a216b6f63bff851e6e258f23c6",
+      "label_score_reason_ref_archetype_tier_equal": true
+    }
+  ]
+}

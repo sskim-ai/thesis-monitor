@@ -1,0 +1,76 @@
+--- app/services/cross_market_decision_engine_service.py:495-569 ---
+  495  def _add_text_refs(
+  496      refs: list[DecisionEvidenceRef],
+  497      *,
+  498      ticker: str,
+  499      category: EvidenceCategory,
+  500      label: str,
+  501      values: object,
+  502      source_ref: str,
+  503      as_of: str | None,
+  504      generation_id: str | None = None,
+  505      logical_severity: LogicalSeverity | None = None,
+  506  ) -> None:
+  507      rows = values if isinstance(values, list) else [values]
+  508      for index, value in enumerate(rows):
+  509          if value is None or not str(value).strip():
+  510              continue
+  511          ref_id = _stable_ref(
+  512              "decision-evidence", ticker, category, label, index, _compact(value)
+  513          )
+  514          refs.append(
+  515              DecisionEvidenceRef(
+  516                  ref_id=ref_id,
+  517                  category=category,
+  518                  label=label,
+  519                  statement=_compact(value),
+  520                  as_of=as_of,
+  521                  source_ref=source_ref,
+  522                  metric_refs=source_checkpoint_metric_refs(_compact(value)),
+  523                  logical_condition=(
+  524                      source_logical_condition(
+  525                          subject=ticker,
+  526                          generation_id=generation_id,
+  527                          evidence_ref=ref_id,
+  528                          statement=_compact(value),
+  529                          severity=logical_severity,
+  530                      )
+  531                      if generation_id and logical_severity
+  532                      else None
+  533                  ),
+  534              )
+  535          )
+  536  
+  537  
+  538  def build_decision_evidence_packet(
+  539      *,
+  540      packet: Mapping[str, object],
+  541      stock: Mapping[str, object],
+  542      technical_features: MultiTimeframeFeaturePacket | None = None,
+  543      technical_context: PacketOwnedTechnicalContext | None = None,
+  544  ) -> DecisionEvidencePacket:
+  545      ticker = str(stock.get("ticker") or "")
+  546      features = technical_context.features if technical_context is not None else technical_features
+  547      if not ticker or (features is not None and features.ticker != ticker):
+  548          raise ValueError("ticker_mismatch")
+  549      if technical_context is not None and technical_context.ticker != ticker:
+  550          raise ValueError("technical_context_ticker_mismatch")
+  551      packet_id = str(packet.get("packet_id") or "")
+  552      market = str(packet.get("market") or "").lower()
+  553      if market not in {"kr", "us"}:
+  554          raise ValueError("unsupported_market")
+  555      assessment_date = str(packet.get("assessment_date") or packet.get("generated_at") or "")[:10]
+  556      thesis = stock.get("thesis") if isinstance(stock.get("thesis"), Mapping) else {}
+  557      assert isinstance(thesis, Mapping)
+  558      horizon = str(thesis.get("time_horizon") or "6-24개월")
+  559      refs: list[DecisionEvidenceRef] = []
+  560  
+  561      _add_text_refs(
+  562          refs,
+  563          ticker=ticker,
+  564          category=EvidenceCategory.THESIS,
+  565          label="핵심 투자 논리",
+  566          values=thesis.get("core_thesis"),
+  567          source_ref="stock.thesis.core_thesis",
+  568          as_of=assessment_date,
+  569      )

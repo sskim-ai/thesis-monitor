@@ -1,0 +1,36 @@
+--- tests/test_m12cv_pass_b_capability_contract.py:184-218 ---
+  184  def test_risk_branches_require_material_bearish_evidence() -> None:
+  185      without_risk, _ = _capability(with_risk=False)
+  186      assert ("WAIT", "EXECUTION_OR_THESIS_RISK") not in _branch_pairs(without_risk)
+  187      assert ("AVOID", "EXECUTION_OR_THESIS_RISK") not in _branch_pairs(without_risk)
+  188      assert [row["stance"] for row in without_risk["holder"]["branches"]] == ["HOLDABLE"]
+  189  
+  190      with_risk, _ = _capability(with_risk=True)
+  191      assert ("WAIT", "EXECUTION_OR_THESIS_RISK") in _branch_pairs(with_risk)
+  192      assert ("AVOID", "EXECUTION_OR_THESIS_RISK") in _branch_pairs(with_risk)
+  193      assert {row["stance"] for row in with_risk["holder"]["branches"]} == {
+  194          "HOLDABLE",
+  195          "REVIEW",
+  196          "REDUCE",
+  197      }
+  198  
+  199  
+  200  def test_protected_archetype_without_material_business_evidence_excludes_nonbuy() -> None:
+  201      catalog = _catalog(with_risk=False)
+  202      catalog["atomic_claims"] = []
+  203      catalog["claim_refs"] = ["claim:bull"]
+  204      capability = build_pass_b_capability_catalog(
+  205          context=_context(),
+  206          catalog=catalog,
+  207          pass_a=_pass_a("DURABLE_FRANCHISE"),
+  208          policy_option=_option(),
+  209      )
+  210      assert capability["overall"]["allowed_values"] == ["BUY"]
+  211  
+  212  
+  213  def test_execution_dependent_growth_preserves_broader_directional_surface() -> None:
+  214      capability, _ = _capability(
+  215          with_risk=False,
+  216          archetype="EXECUTION_DEPENDENT_GROWTH",
+  217      )
+  218      assert capability["overall"]["allowed_values"] == ["BUY", "HOLD", "SELL"]

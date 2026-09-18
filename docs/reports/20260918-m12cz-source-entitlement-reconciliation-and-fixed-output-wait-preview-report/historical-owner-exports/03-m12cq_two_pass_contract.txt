@@ -1,0 +1,185 @@
+--- scripts/m12cq_two_pass_contract.py:275-344 ---
+  275  def _atomic_claim_payload(row: Mapping[str, object]) -> dict[str, object]:
+  276      claim = row.get("claim")
+  277      claim = claim if isinstance(claim, Mapping) else {}
+  278      return {
+  279          "claim_ref": row.get("claim_ref"),
+  280          "text": claim.get("text"),
+  281          "polarity": claim.get("polarity"),
+  282          "logical_condition": claim.get("logical_condition"),
+  283          "parent_source_refs": list(row.get("parent_source_refs") or []),
+  284      }
+  285  
+  286  
+  287  def build_pass_a_subject_context(
+  288      *,
+  289      context: Mapping[str, object],
+  290      ticker: str,
+  291      catalog: Mapping[str, object],
+  292  ) -> dict[str, object]:
+  293      packets = {
+  294          str(row.get("ticker") or ""): row
+  295          for row in context.get("evidence_packets") or []
+  296          if isinstance(row, Mapping)
+  297      }
+  298      packet = packets[ticker]
+  299      core_refs = set(catalog.get("core_evidence_refs") or [])
+  300      evidence_rows = [
+  301          row
+  302          for row in packet.get("evidence") or []
+  303          if isinstance(row, Mapping)
+  304          and row.get("ref_id") in core_refs
+  305          and _eligible_pass_a_evidence(row)
+  306      ]
+  307      eligible_refs = {str(row["ref_id"]) for row in evidence_rows}
+  308      evidence_by_ref = {str(row["ref_id"]): row for row in evidence_rows}
+  309      claims: list[dict[str, object]] = []
+  310      premium_refs: list[str] = []
+  311      for row in catalog.get("atomic_claims") or []:
+  312          if not isinstance(row, Mapping):
+  313              continue
+  314          parent_refs = {str(ref) for ref in row.get("parent_source_refs") or []}
+  315          if not parent_refs or not parent_refs.issubset(eligible_refs):
+  316              continue
+  317          payload = _atomic_claim_payload(row)
+  318          if _forbidden_content_paths(payload):
+  319              continue
+  320          claims.append(payload)
+  321          claim = row.get("claim") if isinstance(row.get("claim"), Mapping) else {}
+  322          parent_categories = {
+  323              str(evidence_by_ref[ref].get("category") or "").lower() for ref in parent_refs
+  324          }
+  325          if (
+  326              claim.get("polarity") == "BULLISH"
+  327              and not claim.get("logical_condition")
+  328              and bool(parent_categories & {"earnings", "earnings_quality", "thesis"})
+  329          ):
+  330              premium_refs.append(str(row["claim_ref"]))
+  331      data_quality_refs = sorted(
+  332          str(row["ref_id"])
+  333          for row in evidence_rows
+  334          if str(row.get("category") or "").lower() == "quality"
+  335          or "quality" in str(row.get("label") or "").lower()
+  336          or "품질" in str(row.get("label") or "")
+  337      )
+  338      return {
+  339          "ticker": ticker,
+  340          "accepted_fundamental_claims": claims,
+  341          "eligible_non_price_evidence": [_compact_evidence_row(row) for row in evidence_rows],
+  342          "eligible_claim_refs": [str(row["claim_ref"]) for row in claims],
+  343          "premium_eligible_claim_refs": sorted(set(premium_refs)),
+  344          "data_quality_catalog": {
+--- scripts/m12cq_two_pass_contract.py:768-820 ---
+  768  def build_pass_b_subject_context(
+  769      *,
+  770      context: Mapping[str, object],
+  771      ticker: str,
+  772      catalog: Mapping[str, object],
+  773      pass_a: Mapping[str, object],
+  774      policy_option: Mapping[str, object],
+  775  ) -> dict[str, object]:
+  776      packets = {
+  777          str(row.get("ticker") or ""): row
+  778          for row in context.get("evidence_packets") or []
+  779          if isinstance(row, Mapping)
+  780      }
+  781      packet = packets[ticker]
+  782      all_refs = set(catalog.get("all_evidence_refs") or [])
+  783      evidence = [
+  784          _compact_evidence_row(row)
+  785          for row in packet.get("evidence") or []
+  786          if isinstance(row, Mapping)
+  787          and row.get("ref_id") in all_refs
+  788          and not str(row.get("ref_id") or "").startswith("technical-feature:")
+  789      ]
+  790      claims = [_atomic_claim_payload(row) for row in catalog.get("atomic_claims") or []]
+  791      entry_catalog = catalog["entry_catalog"]
+  792      return {
+  793          "ticker": ticker,
+  794          "accepted_fundamental_claims": claims,
+  795          "decision_evidence": evidence,
+  796          "frozen_pass_a_classification": deepcopy(dict(pass_a)),
+  797          "deterministic_fundamental_option": deepcopy(dict(policy_option)),
+  798          "current_price": deepcopy(entry_catalog.get("current_price")),
+  799          "tactical_candidates": deepcopy(entry_catalog.get("tactical_candidates") or []),
+  800          "tactical_unresolved_reason": deepcopy(
+  801              (entry_catalog.get("unresolved_policy") or {}).get("tactical_unresolved_reason")
+  802          ),
+  803      }
+  804  
+  805  
+  806  def _material_business_claim_refs(catalog: Mapping[str, object]) -> set[str]:
+  807      evidence_categories: dict[str, str] = {}
+  808      for row in catalog.get("atomic_claims") or []:
+  809          if not isinstance(row, Mapping):
+  810              continue
+  811          for ref in row.get("parent_source_refs") or []:
+  812              evidence_categories.setdefault(str(ref), "unknown")
+  813      excluded = set(catalog.get("valuation_evidence_refs") or []) | set(
+  814          catalog.get("timing_evidence_refs") or []
+  815      )
+  816      return {
+  817          str(row.get("claim_ref") or "")
+  818          for row in catalog.get("atomic_claims") or []
+  819          if isinstance(row, Mapping)
+  820          and any(str(ref) not in excluded for ref in row.get("parent_source_refs") or [])
+--- scripts/m12cq_two_pass_contract.py:824-882 ---
+  824  def _risk_wait_excluded_refs(catalog: Mapping[str, object]) -> set[str]:
+  825      explicit = (
+  826          set(catalog.get("valuation_evidence_refs") or ())
+  827          | set(catalog.get("timing_evidence_refs") or ())
+  828          | set(catalog.get("positive_quality_refs") or ())
+  829          | set(catalog.get("security_valuation_basis_refs") or ())
+  830          | set(catalog.get("business_quality_confidence_refs") or ())
+  831      )
+  832      for ref in catalog.get("all_evidence_refs") or ():
+  833          text = str(ref).lower()
+  834          if (
+  835              text.startswith("canonical:security_")
+  836              or "security_basis" in text
+  837              or text.startswith("canonical:financial_quality:")
+  838              or text.startswith("canonical:business_quality:")
+  839          ):
+  840              explicit.add(str(ref))
+  841      return explicit
+  842  
+  843  
+  844  def eligible_material_risk_claim_refs(catalog: Mapping[str, object]) -> set[str]:
+  845      excluded = _risk_wait_excluded_refs(catalog)
+  846      refs: set[str] = set()
+  847      for row in catalog.get("atomic_claims") or ():
+  848          if not isinstance(row, Mapping):
+  849              continue
+  850          claim = row.get("claim")
+  851          claim_ref = str(row.get("claim_ref") or "")
+  852          parent_refs = {str(ref) for ref in row.get("parent_source_refs") or ()}
+  853          if (
+  854              claim_ref
+  855              and isinstance(claim, Mapping)
+  856              and claim.get("polarity") == "BEARISH"
+  857              and bool(parent_refs - excluded)
+  858          ):
+  859              refs.add(claim_ref)
+  860      return refs
+  861  
+  862  
+  863  def eligible_material_risk_evidence_refs(catalog: Mapping[str, object]) -> set[str]:
+  864      eligible_claims = eligible_material_risk_claim_refs(catalog)
+  865      excluded = _risk_wait_excluded_refs(catalog)
+  866      all_evidence = {str(ref) for ref in catalog.get("all_evidence_refs") or ()}
+  867      refs: set[str] = set()
+  868      for row in catalog.get("atomic_claims") or ():
+  869          if not isinstance(row, Mapping) or str(row.get("claim_ref") or "") not in eligible_claims:
+  870              continue
+  871          refs.update(
+  872              str(ref)
+  873              for ref in row.get("parent_source_refs") or ()
+  874              if str(ref) in all_evidence and str(ref) not in excluded
+  875          )
+  876      return refs
+  877  
+  878  
+  879  def eligible_material_risk_refs(catalog: Mapping[str, object]) -> set[str]:
+  880      return eligible_material_risk_claim_refs(catalog) | eligible_material_risk_evidence_refs(
+  881          catalog
+  882      )

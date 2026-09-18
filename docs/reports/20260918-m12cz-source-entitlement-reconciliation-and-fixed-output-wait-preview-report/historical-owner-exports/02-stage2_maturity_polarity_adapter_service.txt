@@ -1,0 +1,89 @@
+--- app/services/stage2_maturity_polarity_adapter_service.py:19-106 ---
+   19  CONTRACT_VERSION = "stage2-maturity-polarity-adapter-v1"
+   20  ATOMIC_IDENTITY_CONTRACT = "maturity-atomic-claim-identity-v1"
+   21  CLAIM_REF_PREFIX = "maturity-claim:"
+   22  
+   23  
+   24  class MaturityAtomicClaim(FrozenModel):
+   25      contract: Literal["maturity-atomic-claim-identity-v1"] = ATOMIC_IDENTITY_CONTRACT
+   26      claim_ref: str = Field(pattern=r"^maturity-claim:[0-9a-f]{64}$")
+   27      ticker: str
+   28      claim: PolarityEvidenceClaim
+   29  
+   30      @property
+   31      def parent_source_refs(self) -> tuple[str, ...]:
+   32          return self.claim.evidence_refs
+   33  
+   34  
+   35  class MaturityClaimAssignment(Protocol):
+   36      supporting_evidence_refs: tuple[str, ...]
+   37      contradicting_evidence_refs: tuple[str, ...]
+   38      supporting_claim_refs: tuple[str, ...]
+   39      contradicting_claim_refs: tuple[str, ...]
+   40  
+   41  
+   42  def _canonical_sha256(value: object) -> str:
+   43      payload = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+   44      return hashlib.sha256(payload.encode()).hexdigest()
+   45  
+   46  
+   47  def maturity_atomic_claim_ref(*, ticker: str, claim: EvidenceClaim) -> str:
+   48      """Identify a structured proposition independently from its assigned polarity."""
+   49      identity = {
+   50          "contract": ATOMIC_IDENTITY_CONTRACT,
+   51          "ticker": ticker,
+   52          "text": claim.text,
+   53          "evidence_refs": sorted(claim.evidence_refs),
+   54          "logical_condition": (
+   55              claim.logical_condition.model_dump(mode="json")
+   56              if claim.logical_condition is not None
+   57              else None
+   58          ),
+   59      }
+   60      return CLAIM_REF_PREFIX + _canonical_sha256(identity)
+   61  
+   62  
+   63  def _owned_claim(
+   64      *,
+   65      ticker: str,
+   66      claim: EvidenceClaim,
+   67      polarity: EvidencePolarity,
+   68  ) -> MaturityAtomicClaim:
+   69      polarity_claim = PolarityEvidenceClaim(
+   70          text=claim.text,
+   71          evidence_refs=claim.evidence_refs,
+   72          logical_condition=claim.logical_condition,
+   73          polarity=polarity,
+   74          reason_role=EvidenceReasonRole.FUNDAMENTAL,
+   75      )
+   76      return MaturityAtomicClaim(
+   77          claim_ref=maturity_atomic_claim_ref(ticker=ticker, claim=claim),
+   78          ticker=ticker,
+   79          claim=polarity_claim,
+   80      )
+   81  
+   82  
+   83  def stage2_maturity_atomic_claim_catalog(
+   84      *,
+   85      ticker: str,
+   86      buy_drivers: Sequence[EvidenceClaim],
+   87      sell_drivers: Sequence[EvidenceClaim],
+   88  ) -> tuple[MaturityAtomicClaim, ...]:
+   89      """Project frozen structured drivers through the existing polarity vocabulary."""
+   90      projected = (
+   91          *(
+   92              _owned_claim(ticker=ticker, claim=claim, polarity=EvidencePolarity.BULLISH)
+   93              for claim in buy_drivers
+   94          ),
+   95          *(
+   96              _owned_claim(ticker=ticker, claim=claim, polarity=EvidencePolarity.BEARISH)
+   97              for claim in sell_drivers
+   98          ),
+   99      )
+  100      by_ref: dict[str, MaturityAtomicClaim] = {}
+  101      for row in projected:
+  102          existing = by_ref.get(row.claim_ref)
+  103          if existing is not None and existing != row:
+  104              raise ValueError(f"maturity_atomic_claim_identity_conflict:{row.claim_ref}")
+  105          by_ref[row.claim_ref] = row
+  106      return tuple(by_ref[key] for key in sorted(by_ref))

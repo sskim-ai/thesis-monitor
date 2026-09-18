@@ -1,0 +1,213 @@
+--- app/services/financial_quality_service.py:14-52 ---
+   14  DECISION_VERSION = "financial-quality-taint-v2"
+   15  VALUATION_COHERENCE_VERSION = "valuation-coherence-v1"
+   16  
+   17  PROSE_USABLE_STATES = {"verified_usable", "caution_usable"}
+   18  COMPARABLE_BASIS_STATES = {
+   19      "directly_comparable",
+   20      "normalized_to_current_security",
+   21  }
+   22  
+   23  CRITICAL_REASON_CODES = {
+   24      "financial_hard_error",
+   25      "financial_statement_basis_warning",
+   26      "operating_income_exceeds_revenue",
+   27      "net_income_exceeds_revenue",
+   28      "period_mapping_validation_failure",
+   29      "preliminary_period_mapping_failed",
+   30      "preliminary_profitability_outlier",
+   31      "preliminary_validation_failed",
+   32      "unusually_high_or_low_net_margin",
+   33      "unusually_high_or_low_operating_margin",
+   34  }
+   35  
+   36  BOOK_DENIAL_REASON_CODES = {
+   37      "financial_hard_error",
+   38      "financial_statement_basis_warning",
+   39      "period_mapping_validation_failure",
+   40      "preliminary_period_mapping_failed",
+   41      "preliminary_validation_failed",
+   42  }
+   43  
+   44  DIRECT_EARNINGS_FIELDS = (
+   45      "latest_revenue",
+   46      "latest_operating_income",
+   47      "latest_operating_margin",
+   48      "latest_revenue_qoq",
+   49      "latest_revenue_yoy",
+   50      "latest_operating_income_qoq",
+   51      "latest_operating_income_yoy",
+   52  )
+--- app/services/financial_quality_service.py:259-430 ---
+  259  def _state_from_lineage(
+  260      *,
+  261      critical: list[str],
+  262      complete: bool,
+  263      usable_state: str,
+  264      denied_reason: str,
+  265      unknown_reason: str,
+  266  ) -> tuple[str, str | None, str]:
+  267      if critical:
+  268          return "denied", denied_reason, "verified_tainted"
+  269      if complete:
+  270          return usable_state, None, "verified"
+  271      return "unknown", unknown_reason, "unverified"
+  272  
+  273  
+  274  def build_financial_quality_state(
+  275      snapshot_value: Mapping[str, object],
+  276      *,
+  277      source_metadata: Mapping[str, object] | None = None,
+  278  ) -> dict[str, object]:
+  279      """Build exact field-level eligibility while retaining raw audit values."""
+  280      snapshot = _dict(snapshot_value)
+  281      coverage = _dict(snapshot.get("data_coverage"))
+  282      source = _dict(
+  283          source_metadata
+  284          if source_metadata is not None
+  285          else snapshot.get("financial_quality_source_metadata")
+  286      )
+  287      source_period = str(
+  288          source.get("period") or snapshot.get("latest_earnings_period") or ""
+  289      ) or None
+  290      source_type = str(
+  291          source.get("source_type")
+  292          or snapshot.get("earnings_context_source")
+  293          or "unknown"
+  294      )
+  295      source_provider = str(source.get("provider") or "") or None
+  296  
+  297      aggregate_reasons = {
+  298          *_text_list(coverage.get("reason_codes")),
+  299          *_source_reasons(source),
+  300      }
+  301      reason_codes = sorted(aggregate_reasons)
+  302      critical_reasons = sorted(aggregate_reasons.intersection(CRITICAL_REASON_CODES))
+  303  
+  304      direct_sources = _dict(source.get("direct_field_sources"))
+  305      amount_period_contract_active = (
+  306          source.get("financial_amount_period_contract") == AMOUNT_PERIOD_CONTRACT
+  307      )
+  308      fields: dict[str, dict[str, object]] = {}
+  309      for field in DIRECT_EARNINGS_FIELDS:
+  310          if _field_value(snapshot, field) is None:
+  311              continue
+  312          records = _dict_list(direct_sources.get(field))
+  313          if records:
+  314              periods, complete, critical, provider = _dependency_quality(records)
+  315              if amount_period_contract_active and any(
+  316                  item.get("provider") == "opendart" for item in records
+  317              ):
+  318                  complete = bool(
+  319                      complete
+  320                      and all(
+  321                          item.get("amount_period_type")
+  322                          and item.get("amount_period_start")
+  323                          and item.get("amount_period_end")
+  324                          and item.get("source_row_identity")
+  325                          and item.get("consolidated_separate_basis")
+  326                          and item.get("statement_basis_source")
+  327                          and item.get("statement_basis_state")
+  328                          in {"verified_consolidated", "verified_separate"}
+  329                          for item in records
+  330                      )
+  331                  )
+  332              if amount_period_contract_active and field.endswith(("_qoq", "_yoy")):
+  333                  complete = bool(
+  334                      complete
+  335                      and all(
+  336                          item.get("comparison_period_verified") is True
+  337                          for item in records
+  338                      )
+  339                  )
+  340              source_types = list(
+  341                  dict.fromkeys(
+  342                      str(item.get("source_type"))
+  343                      for item in records
+  344                      if item.get("source_type") not in (None, "")
+  345                  )
+  346              )
+  347              field_source_type = (
+  348                  source_types[0] if len(source_types) == 1 else "mixed_sources"
+  349              )
+  350              field_reasons = sorted(
+  351                  {
+  352                      reason
+  353                      for item in records
+  354                      for reason in _source_reasons(item)
+  355                  }
+  356              )
+  357              state, denial, verification = _state_from_lineage(
+  358                  critical=critical,
+  359                  complete=complete,
+  360                  usable_state=(
+  361                      "caution_usable"
+  362                      if any(
+  363                          item.get("source_type") == "preliminary_earnings"
+  364                          for item in records
+  365                      )
+  366                      else "verified_usable"
+  367                  ),
+  368                  denied_reason="critical_financial_quality_outlier",
+  369                  unknown_reason="direct_financial_lineage_unverified",
+  370              )
+  371          else:
+  372              periods = [source_period] if source_period else []
+  373              provider = source_provider
+  374              field_reasons = reason_codes
+  375              if critical_reasons:
+  376                  state, denial, verification = (
+  377                      "denied",
+  378                      "critical_financial_quality_outlier",
+  379                      "snapshot_quality_tainted",
+  380                  )
+  381              elif source_period and source_type != "unknown":
+  382                  state = (
+  383                      "caution_usable"
+  384                      if source_type == "preliminary_earnings"
+  385                      else "verified_usable"
+  386                  )
+  387                  denial = None
+  388                  verification = "snapshot_source_metadata"
+  389              else:
+  390                  state, denial, verification = (
+  391                      "unknown",
+  392                      "direct_financial_lineage_unverified",
+  393                      "unverified",
+  394                  )
+  395              field_source_type = source_type
+  396          quality_record = _quality_record(
+  397              state=state,
+  398              source_period=periods[-1] if periods else source_period,
+  399              source_type=field_source_type,
+  400              provider=provider,
+  401              reason_codes=field_reasons,
+  402              dependency_fields=[f"earnings.{field}"],
+  403              dependency_periods=periods,
+  404              denominator_period=periods[-1] if periods else source_period,
+  405              lineage_verification_status=verification,
+  406              denial_reason=denial,
+  407          )
+  408          if records:
+  409              amount = records[0]
+  410              quality_record.update(
+  411                  {
+  412                      key: amount.get(key)
+  413                      for key in (
+  414                          "amount_period_type",
+  415                          "amount_period_start",
+  416                          "amount_period_end",
+  417                          "financial_lineage_contract",
+  418                          "single_quarter_cumulative_flag",
+  419                          "source_filing_identifier",
+  420                          "source_row_identity",
+  421                          "account_identifier",
+  422                          "account_name",
+  423                          "currency",
+  424                          "consolidated_separate_basis",
+  425                          "statement_basis_contract",
+  426                          "statement_basis_state",
+  427                          "statement_basis_source",
+  428                          "statement_basis_evidence",
+  429                          "comparison_type",
+  430                          "comparison_period_start",

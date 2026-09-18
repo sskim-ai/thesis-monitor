@@ -1,0 +1,192 @@
+{
+  "contract": "m12cz-expectation-only-overall-support-review-v1",
+  "ticker": "000660",
+  "selected_claim": {
+    "kind": "atomic_claim",
+    "logical_condition": null,
+    "parent_source_refs": [
+      "decision-evidence:e69aab50953f46aec513"
+    ],
+    "polarity": "BEARISH",
+    "ref": "maturity-claim:3c37cce411c8282169a39768be533807ae6c643f354478d7aa1e5b8c9fed20e4",
+    "text": "HBM4 램프업과 높은 메모리 수익성 지속 기대가 이미 매우 높다."
+  },
+  "selected_parent": {
+    "as_of": "2026-08-12",
+    "category": "expectations",
+    "label": "시장 기대",
+    "logical_condition": null,
+    "metric_refs": [
+      "FCF",
+      "ROIC"
+    ],
+    "numeric_prose_eligible": false,
+    "ref_id": "decision-evidence:e69aab50953f46aec513",
+    "source_ref": "stock.thesis.market_expectations",
+    "statement": "{\"as_of_date\": \"2026-08-12\", \"downside_surprises\": [\"ASP 하락 또는 HBM4 지연\"], \"level\": \"very_high\", \"priced_in\": [\"HBM4 램프업\", \"AI 메모리 공급제약\"], \"summary\": \"HBM4 실행과 높은 메모리 수익성 지속 기대가 상당 부분 반영됐다.\", \"upside_surprises\": [\"FCF·ROIC 추가 개선\"]}",
+    "unit": null,
+    "value": null
+  },
+  "original_axis": {
+    "axis": "overall",
+    "capability": {
+      "actual_was_model_choice": true,
+      "allowed_labels": [
+        "BUY",
+        "HOLD",
+        "SELL"
+      ],
+      "deterministically_forced": false,
+      "excluded_branches": []
+    },
+    "factual_status": "SOURCE_OPERANDS_NOT_REPROVEN",
+    "inference_level": "action_from_cycle_expectations_with_quality_caveat",
+    "market": "kr",
+    "minimal_next_action": "SOURCE_VALIDATION_REQUIRED",
+    "missing_evidence": [
+      "independent recomputation of working-capital operands",
+      "formal reconciliation of unusual profit composition"
+    ],
+    "original_confidence": "LOW",
+    "original_directional_balance": {
+      "buy": 5.0,
+      "sell": 5.0
+    },
+    "original_label": "HOLD",
+    "original_reason": "HBM 수요와 재고 신호는 우호적이나 높은 기대 반영과 재무 품질 제약으로 확신은 낮다. 보유는 가능하지만 신규 진입은 가치 범위와의 괴리 축소를 기다린다.",
+    "original_reason_class": "OVERALL_POLICY_SUMMARY",
+    "original_thesis_state": "MIXED",
+    "pass_a": {
+      "archetype": "STRUCTURAL_CYCLICAL_LEADER",
+      "archetype_confidence": "LOW",
+      "archetype_supporting_claim_refs": [
+        "maturity-claim:b2a60ee1b20e598ea9f28c35386285b04d7c7716abbcd42cbb263d1eebe576b8"
+      ],
+      "tier_supporting_claim_refs": [
+        "maturity-claim:b2a60ee1b20e598ea9f28c35386285b04d7c7716abbcd42cbb263d1eebe576b8"
+      ],
+      "valuation_regime_tier": "BASE"
+    },
+    "policy_review": "REASONABLE_JUDGMENT_DIFFERENCE",
+    "presentation_review": "MISLEADING_OR_AMBIGUOUS",
+    "selected_refs": [
+      "maturity-claim:23c080ecb59f05a3d2816cc53ec7a0cd87665f6ed8acbe3b5aa7c1f70f9caa07",
+      "maturity-claim:b2a60ee1b20e598ea9f28c35386285b04d7c7716abbcd42cbb263d1eebe576b8",
+      "maturity-claim:3c37cce411c8282169a39768be533807ae6c643f354478d7aa1e5b8c9fed20e4"
+    ],
+    "selected_source_facts": [
+      {
+        "kind": "atomic_claim",
+        "logical_condition": null,
+        "parent_source_refs": [
+          "decision-evidence:6b6165e2d38d67a5ff00",
+          "decision-evidence:2f9c52beb624deab15d0",
+          "decision-evidence:9152a60a51075de9e979"
+        ],
+        "polarity": "BULLISH",
+        "ref": "maturity-claim:23c080ecb59f05a3d2816cc53ec7a0cd87665f6ed8acbe3b5aa7c1f70f9caa07",
+        "text": "HBM4와 AI 서버용 고부가 메모리 수요는 중기 수익성의 핵심 지지 요인이다."
+      },
+      {
+        "kind": "atomic_claim",
+        "logical_condition": null,
+        "parent_source_refs": [
+          "canonical:working-capital-relation:38a9a0707d38e538ccdb2e7e"
+        ],
+        "polarity": "BULLISH",
+        "ref": "maturity-claim:b2a60ee1b20e598ea9f28c35386285b04d7c7716abbcd42cbb263d1eebe576b8",
+        "text": "재고 증가율이 매출원가 증가율보다 낮아 재고 부담 신호는 제한적이다."
+      },
+      {
+        "kind": "atomic_claim",
+        "logical_condition": null,
+        "parent_source_refs": [
+          "decision-evidence:e69aab50953f46aec513"
+        ],
+        "polarity": "BEARISH",
+        "ref": "maturity-claim:3c37cce411c8282169a39768be533807ae6c643f354478d7aa1e5b8c9fed20e4",
+        "text": "HBM4 램프업과 높은 메모리 수익성 지속 기대가 이미 매우 높다."
+      }
+    ],
+    "source_restrictions": {
+      "cash_flow": {
+        "ai_enabled": false,
+        "prohibited_claims": [
+          "cash_flow_user_visible_when_disabled"
+        ],
+        "selection_reason": "initial_market_or_source_scope_excluded",
+        "selection_state": "SUPPRESSED",
+        "status": "SUPPRESSED"
+      },
+      "financial_quality": {
+        "directional_use_allowed": false,
+        "effect": "CONFIDENCE_ONLY",
+        "reason_codes": [
+          "net_income_exceeds_revenue",
+          "preliminary_profitability_outlier",
+          "unusually_high_or_low_operating_margin"
+        ],
+        "state": "denied"
+      },
+      "working_capital": {
+        "allowed_claims": [
+          "typed_relation",
+          "cautious_earnings_quality_context",
+          "one_primary_relation"
+        ],
+        "cash_flow_alignment_state": "NOT_PRESENT",
+        "present": true,
+        "prohibited_claims": [
+          "broad_ar_as_exact_trade_ar",
+          "inventory_component_as_total",
+          "working_capital_causal_overclaim",
+          "dso_inventory_days_dpo_ccc",
+          "working_capital_only_status_or_valuation_change",
+          "duplicate_exact_number_outside_business_earnings"
+        ],
+        "relation_id": "working-capital-relation:38a9a0707d38e538ccdb2e7e"
+      }
+    },
+    "ticker": "000660"
+  },
+  "source_truth": {
+    "parent_category": "expectations",
+    "parent_level": "very_high",
+    "independent_business_or_cycle_impairment_established": false,
+    "interpretation": "The selected bearish parent states very high expectations and priced-in execution. It is expectations/price-reflection evidence, not an independently observed business or cycle deterioration fact."
+  },
+  "governing_policy": {
+    "capability_result": {
+      "actual_was_model_choice": true,
+      "allowed_labels": [
+        "BUY",
+        "HOLD",
+        "SELL"
+      ],
+      "deterministically_forced": false,
+      "excluded_branches": []
+    },
+    "observation": "The capability surface permits HOLD/SELL because material non-price claims exist; permission is not proof that the sole bearish expectations claim satisfies the approved thesis/entry separation.",
+    "financial_quality_directional_use_allowed": false,
+    "working_capital_status_use_restricted": true
+  },
+  "m12cz_policy_acceptance": "NOT_CLOSED",
+  "minimum_change_decision": "POLICY_APPLICATION_REQUIRES_CHAT",
+  "historical_label_action": "Preserve original HOLD; do not force BUY, infer hidden weights, or relabel in this task.",
+  "samsung_parallel_caution": {
+    "selected_expectation_claims": [
+      {
+        "kind": "atomic_claim",
+        "logical_condition": null,
+        "parent_source_refs": [
+          "decision-evidence:8c619918b4fc57e796d8"
+        ],
+        "polarity": "BEARISH",
+        "ref": "maturity-claim:84c352bea30ab14d509d834bd4837593172026dfd7ef2c1d39881a1ed4acff22",
+        "text": "AI 메모리와 DS 이익 회복 기대가 매우 높아 추가 재평가에는 HBM 실행과 현금창출력의 동반 개선이 필요하다."
+      }
+    ],
+    "conclusion": "High expectations alone cannot silently replace the disputed working-capital contribution as independent business impairment support.",
+    "historical_label_action": "Preserve original output pending policy decision."
+  }
+}

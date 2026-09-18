@@ -1,0 +1,1 @@
+a4f8570130d1fd33f802d391c6a196d1c5579278 2026-08-21 21:37:30 +0900 Implement working-capital user-visible pre-integration

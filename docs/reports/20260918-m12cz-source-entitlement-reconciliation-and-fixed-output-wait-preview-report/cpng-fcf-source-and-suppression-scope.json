@@ -1,0 +1,172 @@
+{
+  "contract": "m12cz-cpng-fcf-source-and-suppression-scope-v1",
+  "ticker": "CPNG",
+  "selected_parent": {
+    "as_of": "2026-09-17",
+    "category": "thesis",
+    "label": "핵심 투자 논리",
+    "logical_condition": null,
+    "metric_refs": [
+      "FCF"
+    ],
+    "numeric_prose_eligible": false,
+    "ref_id": "decision-evidence:c6b338c45aaae1f1cb71",
+    "source_ref": "stock.thesis.core_thesis",
+    "statement": "쿠팡의 핵심 투자 논리는 한국 Product Commerce의 고객·매출 성장 기반이 유지되는 가운데 2025년 데이터 사고 이후 훼손된 핵심 커머스 마진이 정상화되고, Taiwan·Coupang Eats·Farfetch 등 Developing Offerings의 성장과 손실 축소가 동시에 진행되며 EBITDA와 FCF가 회복되는지에 있다. 2026년 2분기 Product Commerce 매출은 성장했지만 Adjusted EBITDA margin은 약 5.1%로 크게 하락했고 TTM FCF도 약 1.05억달러로 축소되어 현재는 매출 성장보다 수익성과 현금흐름 정상화가 더 중요하다. 차트상 2026-08-31 기준 현재가 16.53달러는 장기 하락 이후 14.9~15.7달러에서 바닥을 시도한 뒤 초기 반등 중이나 주봉·월봉 추세는 아직 약하다. 따라서 현재 추격보다 15.45~15.70달러 눌림 방어 또는 17.90달러 이상 주봉 박스 돌파를 우선 확인하며, 18.60~19.45달러 회복과 Fundamental 정상화가 동반될 때 중기 투자 논리 신뢰도가 높아진다.",
+    "unit": null,
+    "value": null
+  },
+  "legacy_store_record": {
+    "id": 68,
+    "ticker": "CPNG",
+    "version": 1,
+    "core_thesis": "쿠팡의 핵심 투자 논리는 한국 Product Commerce의 고객·매출 성장 기반이 유지되는 가운데 2025년 데이터 사고 이후 훼손된 핵심 커머스 마진이 정상화되고, Taiwan·Coupang Eats·Farfetch 등 Developing Offerings의 성장과 손실 축소가 동시에 진행되며 EBITDA와 FCF가 회복되는지에 있다. 2026년 2분기 Product Commerce 매출은 성장했지만 Adjusted EBITDA margin은 약 5.1%로 크게 하락했고 TTM FCF도 약 1.05억달러로 축소되어 현재는 매출 성장보다 수익성과 현금흐름 정상화가 더 중요하다. 차트상 2026-08-31 기준 현재가 16.53달러는 장기 하락 이후 14.9~15.7달러에서 바닥을 시도한 뒤 초기 반등 중이나 주봉·월봉 추세는 아직 약하다. 따라서 현재 추격보다 15.45~15.70달러 눌림 방어 또는 17.90달러 이상 주봉 박스 돌파를 우선 확인하며, 18.60~19.45달러 회복과 Fundamental 정상화가 동반될 때 중기 투자 논리 신뢰도가 높아진다.",
+    "status": "active",
+    "source": "custom_gpt",
+    "created_at": "2026-08-31 06:36:49.572095"
+  },
+  "local_thesis_file": {
+    "path": "/Users/sskim/Codex/thesis-monitor/data/theses/CPNG.json",
+    "present": true,
+    "sha256": "69535505d0e5c8dde3d38f29d141c8ce1c3a91b1652c9d5ab852d762583d1ec5",
+    "source": "custom_gpt",
+    "contains_exact_filing_binding": false
+  },
+  "official_source": {
+    "issuer": "Coupang, Inc.",
+    "cik": "0001834584",
+    "q2_10q_accession": "0001834584-26-000073",
+    "q2_10q_filed": "2026-08-04",
+    "q2_8k_accession": "0001834584-26-000070",
+    "q2_8k_filed": "2026-08-04",
+    "exhibit": "99.1",
+    "period_end": "2026-06-30",
+    "currency": "USD",
+    "unit": "USD",
+    "companyfacts_rows": {
+      "ocf": {
+        "fy2025": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 1773000000,
+          "accn": "0001834584-26-000024",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        },
+        "h1_2026": {
+          "start": "2026-01-01",
+          "end": "2026-06-30",
+          "val": 551000000,
+          "accn": "0001834584-26-000073",
+          "fy": 2026,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2026-08-04"
+        },
+        "h1_2025_comparable": {
+          "start": "2025-01-01",
+          "end": "2025-06-30",
+          "val": 899000000,
+          "accn": "0001834584-26-000073",
+          "fy": 2026,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2026-08-04"
+        }
+      },
+      "ppe_purchases": {
+        "fy2025": {
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "val": 1251000000,
+          "accn": "0001834584-26-000024",
+          "fy": 2025,
+          "fp": "FY",
+          "form": "10-K",
+          "filed": "2026-02-26",
+          "frame": "CY2025"
+        },
+        "h1_2026": {
+          "start": "2026-01-01",
+          "end": "2026-06-30",
+          "val": 613000000,
+          "accn": "0001834584-26-000073",
+          "fy": 2026,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2026-08-04"
+        },
+        "h1_2025_comparable": {
+          "start": "2025-01-01",
+          "end": "2025-06-30",
+          "val": 538000000,
+          "accn": "0001834584-26-000073",
+          "fy": 2026,
+          "fp": "Q2",
+          "form": "10-Q",
+          "filed": "2026-08-04"
+        }
+      }
+    },
+    "retrieved_payloads": {
+      "cpng-sec-submissions.json": {
+        "sha256": "d8e942a44d498b82f8348f95eb6742564a200cafcac3df02cd09d0bc77a53c5d",
+        "bytes": 65902
+      },
+      "cpng-sec-companyfacts.json": {
+        "sha256": "2018f332aa9f72daebc86a8949502b2b4719498be97ff9f001cfe159fe8b8a6f",
+        "bytes": 1125394
+      },
+      "cpng-2026q2-8k-index.html": {
+        "sha256": "e572bf7562ac6a3deb2e36e371b0a6a4cf812f5b5fbe9215986b766025bd5109",
+        "bytes": 10990
+      },
+      "cpng-2026q2-exhibit-99-1.html": {
+        "sha256": "5368db524a113b654d7b575c00b409f8866a153a71a2fb990d6fd031e595962f",
+        "bytes": 394169
+      },
+      "cpng-2026q2-exhibit-99-1-targeted-excerpts.txt": {
+        "sha256": "74937aab57f207dccd59c527d38b428fc75888e177fabc41280fb3a4695ce050",
+        "bytes": 3577
+      }
+    }
+  },
+  "ttm_reconciliation": {
+    "formula": "FY2025 + H1_2026 - H1_2025_comparable",
+    "ocf_usd": "1425000000",
+    "ppe_purchases_usd": "1326000000",
+    "backend_ppe_only_fcf_usd": "99000000",
+    "management_reported_sale_proceeds_usd": "6000000",
+    "management_defined_fcf_usd": "105000000",
+    "management_defined_prior_comparable_fcf_usd": "784000000",
+    "management_reported_yoy_decrease_usd": "679000000",
+    "management_definition": "OCF - purchases of property and equipment + proceeds from sale of property and equipment",
+    "backend_definition": "OCF - PPE purchase cash outflow",
+    "definition_difference_usd": "6000000",
+    "exact_arithmetic_pass": true
+  },
+  "margin_support": {
+    "metric": "Product Commerce adjusted EBITDA margin",
+    "q2_2026_pct": "5.1",
+    "official_exhibit_supported": true
+  },
+  "suppression_scope": {
+    "cash_flow_module_state": "SUPPRESSED / ai_enabled=false for subject_not_in_canonical_cash_flow_universe",
+    "scope": "module-local canonical cash-flow display/baseline selection gate",
+    "global_prohibition_on_all_independent_fcf_sources": false,
+    "legacy_path": "cross_market_decision_engine_service creates a decision-evidence ref from stock.thesis.core_thesis without carrying filing provenance or FCF-definition metadata"
+  },
+  "adjudication": {
+    "exact_105m_is_officially_source_backed": true,
+    "exact_105m_matches_backend_ppe_only_fcf": false,
+    "historical_packet_had_exact_source_binding": false,
+    "legacy_path_classification": "RETROSPECTIVELY_CORROBORATED_BUT_HISTORICALLY_UNVERIFIED_SOURCE_BYPASS",
+    "historical_output_action": "Preserve unchanged and annotate source scope under review.",
+    "minimum_change_decision": "CONFIRMED_SOURCE_ENTITLEMENT_DEFECT_REPAIR_PROPOSAL",
+    "smallest_owner": "legacy thesis-to-decision-evidence projection/source binding",
+    "proposal_only": "Bind exact legacy metrics to official filing identity and management-defined FCF semantics, or narrow prose; do not implement in M12CZ."
+  }
+}

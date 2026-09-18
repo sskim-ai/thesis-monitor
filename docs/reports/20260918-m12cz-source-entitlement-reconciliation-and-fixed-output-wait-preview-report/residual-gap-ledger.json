@@ -1,0 +1,37 @@
+{
+  "contract": "m12cz-residual-gap-ledger-v1",
+  "gaps": [
+    {
+      "id": "M12CZ-GAP-001",
+      "subject": "000660 profit composition and recurrence",
+      "status": "BOUNDED_OPEN",
+      "description": "Formal and preliminary rows verify the reported values, but the same supplied evidence does not establish whether the exceptional profitability is recurring or economically sustainable.",
+      "blocked_conclusion": "No business impairment, recurrence, or threshold change may be inferred.",
+      "next_owner": "future separately authorized issuer-note/source reconciliation"
+    },
+    {
+      "id": "M12CZ-GAP-002",
+      "subject": "000660 expectations-only Overall policy acceptance",
+      "status": "CHAT_DECISION_REQUIRED",
+      "description": "The only selected bearish business-direction claim is expectations/price reflection; capability permission is not policy sufficiency.",
+      "blocked_conclusion": "Original HOLD remains immutable and is not accepted or rejected by M12CZ.",
+      "next_owner": "Chat policy owner"
+    },
+    {
+      "id": "M12CZ-GAP-003",
+      "subject": "working-capital entitlement implementation",
+      "status": "REPAIR_NOT_AUTHORIZED",
+      "description": "Restriction loss is confirmed at the Stage-2 projection/capability boundary, but M12CZ is evidence-only.",
+      "blocked_conclusion": "No runtime patch, output relabel, or A/B rerun.",
+      "next_owner": "separately authorized bounded code repair"
+    },
+    {
+      "id": "M12CZ-GAP-004",
+      "subject": "CPNG historical packet provenance",
+      "status": "HISTORICAL_BINDING_ABSENT_RETROSPECTIVE_SOURCE_RECOVERED",
+      "description": "Official 2026-Q2 evidence now corroborates the number and definition, but it was not carried in the frozen historical packet and cannot be retroactively selected.",
+      "blocked_conclusion": "No claim that the historical model had official-source entitlement.",
+      "next_owner": "future legacy thesis source-binding repair"
+    }
+  ]
+}

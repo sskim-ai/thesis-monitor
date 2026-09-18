@@ -1,0 +1,46 @@
+--- app/services/working_capital_user_visible_preintegration_service.py:560-604 ---
+  560          display_value=display_value,
+  561          selected_fact_ids=fact_ids,
+  562          industry=str(subject.get("industry") or context.get("industry") or ""),
+  563          industry_applicability=str(relation.get("applicability") or ""),
+  564          materiality_reason=str(context.get("materiality_reason") or ""),
+  565          display_reason=(
+  566              "selected_incremental_to_compatible_cash_flow"
+  567              if preview_selected and cash_flow_alignment_state == "COMPATIBLE_PERIOD_END"
+  568              else (
+  569                  "selected_current_formal_material_relation"
+  570                  if preview_selected
+  571                  else "suppressed_by_user_visible_guard"
+  572              )
+  573          ),
+  574          numeric_owner="business_earnings",
+  575          resolved_unknowns=resolved_unknowns if preview_selected else (),
+  576          remaining_unknowns=tuple(str(item) for item in context.get("remaining_unknowns") or ()),
+  577          allowed_claims=(
+  578              "typed_relation",
+  579              "cautious_earnings_quality_context",
+  580              "one_primary_relation",
+  581          ),
+  582          prohibited_claims=(
+  583              "broad_ar_as_exact_trade_ar",
+  584              "inventory_component_as_total",
+  585              "working_capital_causal_overclaim",
+  586              "dso_inventory_days_dpo_ccc",
+  587              "working_capital_only_status_or_valuation_change",
+  588              "duplicate_exact_number_outside_business_earnings",
+  589          ),
+  590          ai_enabled=enabled,
+  591          fallback_enabled=enabled,
+  592          user_visible_enabled=enabled,
+  593          preview_selected=preview_selected,
+  594          enablement_gate_ref=gate.gate_id,
+  595          suppression_reasons=tuple(suppression_reasons),
+  596          cash_flow_context_id=cash_flow_context_id,
+  597          cash_flow_period_end=cash_flow_period_end,
+  598          cash_flow_alignment_state=cash_flow_alignment_state,
+  599      )
+  600  
+  601  
+  602  _INDUSTRY_TAIL = {
+  603      "memory_semiconductor": "ASP·제품 믹스·메모리 수요와 함께 확인하며 사이클 방향을 확정하지 않습니다.",
+  604      "automotive": "인도량·인센티브·제품 믹스와 함께 확인하며 수요 방향을 확정하지 않습니다.",

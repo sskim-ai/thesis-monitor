@@ -1,0 +1,20 @@
+{
+  "contract": "m12cz-program-completion-v1",
+  "phase": "M12CZ",
+  "status": "COMPLETE",
+  "terminal": "M12CZ_SOURCE_RECONCILIATION_AND_WAIT_PREVIEW_READY_FOR_CHAT_DECISION",
+  "work_instruction_commit": "653920e5fa852f3597a1ebe177d7a4166963c75a",
+  "historical_implementation_commit": "db92848f9c715807e0e7c55bdd973f9af9a9e095",
+  "result_commit": "RECORDED_BY_LOCAL_GIT_AFTER_ARTIFACT_GENERATION",
+  "source_targets_closed_or_precisely_bounded": true,
+  "wait_previews_source_bound": 19,
+  "original_output_mutations": 0,
+  "runtime_behavior_diff": 0,
+  "production_authorization": false,
+  "next_actions_automatic": false,
+  "next_decisions": [
+    "Chat policy decision for expectations-only Overall support",
+    "separate authorization for bounded working-capital restriction propagation repair",
+    "separate authorization for legacy thesis metric source binding"
+  ]
+}

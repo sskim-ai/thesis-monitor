@@ -1,0 +1,63 @@
+--- app/services/cash_flow_user_visible_service.py:820-881 ---
+  820          ),
+  821          "required_period_label": (
+  822              period_contract["required_period_label"] if period_contract else None
+  823          ),
+  824          "duration_basis": (
+  825              period_contract["duration_basis"] if period_contract else None
+  826          ),
+  827          "is_ytd": period_contract["is_ytd"] if period_contract else False,
+  828          "is_fy": period_contract["is_fy"] if period_contract else False,
+  829          "allowed_period_claims": (
+  830              period_contract["allowed_period_claims"] if period_contract else {}
+  831          ),
+  832          "forbidden_period_claims": (
+  833              period_contract["forbidden_period_claims"] if period_contract else []
+  834          ),
+  835          "fcf_scope": "OCF - PPE CAPEX" if fcf else None,
+  836          "filing_date": (
+  837              context.primary_filing_date.isoformat()
+  838              if context and context.primary_filing_date
+  839              else None
+  840          ),
+  841          "financial_currency": fcf.currency if fcf else None,
+  842          "freshness_state": context.freshness_state.value if context else None,
+  843          "pit_state": (
+  844              "PASS" if context and not context.point_in_time_exclusions else "NOT_SELECTED"
+  845          ),
+  846          "industry_applicability": context.industry_applicability if context else None,
+  847          "materiality_reason": context.materiality_reason if context else None,
+  848          "primary_metric": Metric.FCF.value if fcf else None,
+  849          "primary_fact_ref": selection.primary_fact_id,
+  850          "ocf_fact_ref": context.ocf_fact_id if context else None,
+  851          "ppe_capex_fact_ref": context.capex_fact_id if context else None,
+  852          "fcf_fact_ref": context.fcf_fact_id if context else None,
+  853          "deterministic_relations": (
+  854              [
+  855                  {
+  856                      "metric": item.metric.value,
+  857                      "current_fact_id": item.current_fact_id,
+  858                      "prior_fact_id": item.prior_fact_id,
+  859                      "relation": item.relation.value,
+  860                  }
+  861                  for item in context.deterministic_relations
+  862              ]
+  863              if context
+  864              else []
+  865          ),
+  866          "baseline_consistency_state": selection.baseline_consistency_state,
+  867          "resolved_unknown_ids": list(selection.resolved_unknown_ids),
+  868          "suppressed_baseline_claim_ids": list(
+  869              selection.suppressed_baseline_claim_ids
+  870          ),
+  871          "allowed_sections": ["business_earnings"] if fcf else [],
+  872          "prohibited_claims": (
+  873              list(context.prohibited_claims)
+  874              if context
+  875              else ["cash_flow_user_visible_when_disabled"]
+  876          ),
+  877          "ai_enabled": selection.user_visible_enabled,
+  878          "fallback_enabled": selection.user_visible_enabled,
+  879          "user_visible_enabled": selection.user_visible_enabled,
+  880          "rendered_fallback_text": selection.rendered_text,
+  881      }

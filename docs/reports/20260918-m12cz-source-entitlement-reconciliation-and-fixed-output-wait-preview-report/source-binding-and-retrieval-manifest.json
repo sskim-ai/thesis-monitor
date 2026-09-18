@@ -1,0 +1,152 @@
+{
+  "contract": "m12cz-source-binding-and-retrieval-manifest-v1",
+  "created_at": "2026-09-18T09:50:51Z",
+  "historical_implementation_sha": "db92848f9c715807e0e7c55bdd973f9af9a9e095",
+  "work_instruction_sha": "653920e5fa852f3597a1ebe177d7a4166963c75a",
+  "cutoff_policy": "Historical records must be evaluated at their recorded filing/publication dates; later retrieval is corroboration only.",
+  "request_budget": {
+    "maximum_unique_payloads": 20,
+    "planned_unique_payloads": 4,
+    "automatic_retries_allowed": false,
+    "actual_unique_payloads": 4,
+    "remaining_unique_payloads": 16,
+    "failed_payloads": 0,
+    "automatic_retry_count": 0
+  },
+  "lanes": {
+    "F": {
+      "description": "Exact frozen inputs and historical output lineage; immutable.",
+      "sources": [
+        {
+          "name": "M12CY report",
+          "sha256": "1b04a3a85f49eeae7967d71bac6040d6fc06d02c4d9cc2b799eb8ac4d5df0b8d"
+        },
+        {
+          "name": "M12CY instruction",
+          "sha256": "6a32885e2ac66e3e42c803b58dfc1e49bfe14c2e227885b12ab4036bd69ee67b"
+        },
+        {
+          "name": "M12CX canonical result",
+          "sha256": "df7d3eef818ae21d479d4dea4bc15f5aeb86b3cde956a981cf9b0e6bfca01488"
+        },
+        {
+          "name": "M12CX supplemental result",
+          "sha256": "41e65904e65fcb696a6a44f7348c2d17101e1147497ca256df5b8994bbace6fe"
+        },
+        {
+          "name": "M12CM report",
+          "sha256": "625606d6df521cf3368c8779ec7f24816ee3a374cdfcc7fac367f984983359cc"
+        },
+        {
+          "name": "Combined diagnostic file",
+          "sha256": "34aace744021cc0b4b150dcd47e9c31bb2f48d8ec4a136cc4123c4de64646f4c"
+        }
+      ]
+    },
+    "R": {
+      "description": "Read-only historical source/code records retrieved to validate F; never injected into frozen model packets.",
+      "local_sources": [
+        {
+          "name": "Canonical working-capital facts",
+          "path": "docs/reports/20260821-phase9-1b-canonical-facts.json",
+          "sha256": "cc9a9d8e0cbd1faaae5fef13969869bf454ca3dfd796c88962e7f3a29e90d1c5"
+        },
+        {
+          "name": "Read-only SQLite snapshot",
+          "scope": "Only exact 000660 financial/event and CPNG thesis/security rows; no writes"
+        },
+        {
+          "name": "Historical Git object",
+          "commit": "db92848f9c715807e0e7c55bdd973f9af9a9e095",
+          "access": "git show/git blame only"
+        }
+      ],
+      "network_requests": [
+        {
+          "request_id": "R-SEC-CPNG-SUBMISSIONS-01",
+          "issuer": "CPNG",
+          "purpose": "Resolve exact historical filing/accession identity for the 2026 Q2 legacy FCF narrative.",
+          "official_endpoint": "https://data.sec.gov/submissions/CIK0001834584.json",
+          "period": "2026-Q2 / TTM ending 2026-06-30",
+          "accession_or_receipt": "to be resolved from this official submissions index",
+          "as_of_eligibility": "Corroboration only; must have filingDate on or before the frozen narrative date to qualify.",
+          "expected_use": "Source identity reconciliation, not frozen packet mutation.",
+          "retry_policy": "none",
+          "status": "SUCCESS",
+          "outcome": "HTTP payload saved once; no retry",
+          "retrieved_at_utc": "2026-09-18T09:51:52.847286+00:00",
+          "local_artifact": "retrieved-sources/cpng-sec-submissions.json",
+          "retrieved_bytes": 65902,
+          "retrieved_byte_sha256": "d8e942a44d498b82f8348f95eb6742564a200cafcac3df02cd09d0bc77a53c5d",
+          "automatic_retry_count": 0
+        },
+        {
+          "request_id": "R-SEC-CPNG-COMPANYFACTS-01",
+          "issuer": "CPNG",
+          "purpose": "Check whether official SEC XBRL facts independently bind OCF/PPE cash outflow and comparable TTM endpoints; do not equate them to management FCF without a definition match.",
+          "official_endpoint": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001834584.json",
+          "period": "Current/prior TTM components ending 2026-06-30",
+          "accession_or_receipt": "to be matched to submissions and fact frames",
+          "as_of_eligibility": "Only filings available on or before the frozen narrative date; later revisions are hindsight.",
+          "expected_use": "Provenance comparison and residual-gap decision only.",
+          "retry_policy": "none",
+          "status": "SUCCESS",
+          "outcome": "HTTP payload saved once; no retry",
+          "retrieved_at_utc": "2026-09-18T09:51:58.880948+00:00",
+          "local_artifact": "retrieved-sources/cpng-sec-companyfacts.json",
+          "retrieved_bytes": 1125394,
+          "retrieved_byte_sha256": "2018f332aa9f72daebc86a8949502b2b4719498be97ff9f001cfe159fe8b8a6f",
+          "automatic_retry_count": 0
+        },
+        {
+          "request_id": "R-SEC-CPNG-8K-INDEX-01",
+          "issuer": "CPNG",
+          "purpose": "Resolve the contemporaneous 2026 Q2 earnings exhibit and determine whether the approximately USD 105 million figure is a separately defined management free-cash-flow measure.",
+          "official_endpoint": "https://www.sec.gov/Archives/edgar/data/1834584/000183458426000070/0001834584-26-000070-index.html",
+          "period": "2026-Q2 / TTM ending 2026-06-30",
+          "accession_or_receipt": "0001834584-26-000070",
+          "as_of_eligibility": "Filed 2026-08-04, before the frozen 2026-08-31 narrative date.",
+          "expected_use": "Identify the official exhibit only; no frozen packet mutation.",
+          "retry_policy": "none",
+          "status": "SUCCESS",
+          "outcome": "HTTP payload saved once; no retry",
+          "retrieved_at_utc": "2026-09-18T09:52:57.598011+00:00",
+          "local_artifact": "retrieved-sources/cpng-2026q2-8k-index.html",
+          "retrieved_bytes": 10990,
+          "retrieved_byte_sha256": "e572bf7562ac6a3deb2e36e371b0a6a4cf812f5b5fbe9215986b766025bd5109",
+          "automatic_retry_count": 0
+        },
+        {
+          "request_id": "R-SEC-CPNG-EX991-01",
+          "issuer": "CPNG",
+          "purpose": "Read the exact official earnings exhibit identified by the predeclared 8-K index and bind any management-defined TTM FCF amount and reconciliation.",
+          "official_endpoint": "https://www.sec.gov/Archives/edgar/data/1834584/000183458426000070/cpng-06302026ex991.htm",
+          "period": "2026-Q2 / TTM ending 2026-06-30",
+          "accession_or_receipt": "0001834584-26-000070, Exhibit 99.1",
+          "as_of_eligibility": "Filed 2026-08-04, before the frozen 2026-08-31 narrative date.",
+          "expected_use": "Definition and exact-number reconciliation only; no frozen packet mutation.",
+          "retry_policy": "none",
+          "status": "SUCCESS",
+          "outcome": "HTTP payload saved once; no retry",
+          "retrieved_at_utc": "2026-09-18T09:53:20.593003+00:00",
+          "local_artifact": "retrieved-sources/cpng-2026q2-exhibit-99-1.html",
+          "retrieved_bytes": 394169,
+          "retrieved_byte_sha256": "5368db524a113b654d7b575c00b409f8866a153a71a2fb990d6fd031e595962f",
+          "automatic_retry_count": 0
+        }
+      ]
+    },
+    "X": {
+      "description": "Previously packaged Chat corroboration notes; not firsthand source proof.",
+      "eligible_as_source_substitute": false
+    }
+  },
+  "prohibited_retrieval": [
+    "current quote or estimate refresh",
+    "broad crawl",
+    "new provider or connector",
+    "automatic retry",
+    "production ingestion or checkpoint mutation"
+  ],
+  "completed_at": "2026-09-18T10:19:02.379266+00:00"
+}

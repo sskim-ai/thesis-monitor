@@ -1,0 +1,172 @@
+--- scripts/m12cv_pass_b_capability_contract.py:91-112 ---
+   91  def material_business_claim_refs(catalog: Mapping[str, object]) -> list[str]:
+   92      excluded = set(catalog.get("valuation_evidence_refs") or ()) | set(
+   93          catalog.get("timing_evidence_refs") or ()
+   94      )
+   95      refs: list[str] = []
+   96      for row in catalog.get("atomic_claims") or ():
+   97          if not isinstance(row, Mapping):
+   98              continue
+   99          claim_ref = str(row.get("claim_ref") or "")
+  100          parent_refs = {str(ref) for ref in row.get("parent_source_refs") or ()}
+  101          if claim_ref and any(ref not in excluded for ref in parent_refs):
+  102              refs.append(claim_ref)
+  103      return _ordered_unique(refs)
+  104  
+  105  
+  106  def material_risk_claim_refs(catalog: Mapping[str, object]) -> list[str]:
+  107      return sorted(eligible_material_risk_claim_refs(catalog))
+  108  
+  109  
+  110  def material_risk_evidence_refs(catalog: Mapping[str, object]) -> list[str]:
+  111      return sorted(eligible_material_risk_evidence_refs(catalog))
+  112  
+--- scripts/m12cv_pass_b_capability_contract.py:209-229 ---
+  209          policy_option.get("status") == "RESOLVED"
+  210          and _decimal(policy_option.get("low")) is not None
+  211          and _decimal(policy_option.get("high")) is not None
+  212          and bool(policy_option.get("currency"))
+  213      )
+  214      high = _decimal(policy_option.get("high")) if option_resolved else None
+  215      security = context.get("security_valuation_basis_state")
+  216      security_safe = bool(
+  217          isinstance(security, Mapping)
+  218          and security.get("state") == "RESOLVED"
+  219          and security.get("new_buyer_price_resolution_use_allowed") is True
+  220      )
+  221      material_claims = material_business_claim_refs(catalog)
+  222      risk_claims = material_risk_claim_refs(catalog)
+  223      risk_evidence = material_risk_evidence_refs(catalog)
+  224      tactical = _tactical_capability(context=context, policy_option=policy_option)
+  225      source_refs = _source_refs(
+  226          catalog=catalog,
+  227          context=context,
+  228          policy_option=policy_option,
+  229      )
+--- scripts/m12cv_pass_b_capability_contract.py:322-447 ---
+  322      risk_refs = _ordered_unique([*risk_claims, *risk_evidence])
+  323      if risk_refs:
+  324          new_buyer_branches.extend(
+  325              [
+  326                  {
+  327                      "stance": "WAIT",
+  328                      "reason_class": "EXECUTION_OR_THESIS_RISK",
+  329                      "allowed_evidence_refs": risk_refs,
+  330                      "allowed_tactical_choices": [
+  331                          *tactical["valid_candidate_ids"],
+  332                          "UNRESOLVED",
+  333                      ],
+  334                      "prerequisite": "material_bearish_business_evidence_available",
+  335                  },
+  336                  {
+  337                      "stance": "AVOID",
+  338                      "reason_class": "EXECUTION_OR_THESIS_RISK",
+  339                      "allowed_evidence_refs": risk_refs,
+  340                      "allowed_tactical_choices": ["NOT_APPLICABLE"],
+  341                      "prerequisite": "material_bearish_business_evidence_available",
+  342                  },
+  343              ]
+  344          )
+  345      else:
+  346          excluded_new_buyer.extend(
+  347              [
+  348                  {
+  349                      "branch": "WAIT/EXECUTION_OR_THESIS_RISK",
+  350                      "reason": "material_bearish_business_evidence_absent",
+  351                  },
+  352                  {
+  353                      "branch": "AVOID/EXECUTION_OR_THESIS_RISK",
+  354                      "reason": "material_bearish_business_evidence_absent",
+  355                  },
+  356              ]
+  357          )
+  358  
+  359      holder_branches: list[dict[str, object]] = [
+  360          {
+  361              "stance": "HOLDABLE",
+  362              "reason_classes": [HolderReasonClass.NOT_APPLICABLE.value],
+  363              "allowed_evidence_refs": [],
+  364              "prerequisite": "always_admissible_baseline",
+  365          }
+  366      ]
+  367      excluded_holder: list[dict[str, str]] = []
+  368      if risk_evidence:
+  369          holder_branches.extend(
+  370              [
+  371                  {
+  372                      "stance": "REVIEW",
+  373                      "reason_classes": list(REVIEW_REASON_CLASSES),
+  374                      "allowed_evidence_refs": risk_evidence,
+  375                      "prerequisite": "material_nonvaluation_risk_evidence_available",
+  376                  },
+  377                  {
+  378                      "stance": "REDUCE",
+  379                      "reason_classes": list(REDUCE_REASON_CLASSES),
+  380                      "allowed_evidence_refs": risk_evidence,
+  381                      "prerequisite": "material_nonvaluation_risk_evidence_available",
+  382                  },
+  383              ]
+  384          )
+  385      else:
+  386          excluded_holder.extend(
+  387              [
+  388                  {
+  389                      "branch": "REVIEW",
+  390                      "reason": "material_nonvaluation_risk_evidence_absent",
+  391                  },
+  392                  {
+  393                      "branch": "REDUCE",
+  394                      "reason": "material_nonvaluation_risk_evidence_absent",
+  395                  },
+  396              ]
+  397          )
+  398  
+  399      archetype = str(pass_a.get("archetype") or "")
+  400      protected = archetype in {
+  401          Archetype.DURABLE_FRANCHISE.value,
+  402          Archetype.STRUCTURAL_CYCLICAL_LEADER.value,
+  403      }
+  404      overall_values = ["BUY", "HOLD", "SELL"]
+  405      excluded_overall: list[dict[str, str]] = []
+  406      if protected and not material_claims:
+  407          overall_values = ["BUY"]
+  408          excluded_overall = [
+  409              {
+  410                  "branch": direction,
+  411                  "reason": "material_business_downgrade_evidence_absent",
+  412              }
+  413              for direction in ("HOLD", "SELL")
+  414          ]
+  415  
+  416      if not new_buyer_branches:
+  417          raise ValueError("empty_new_buyer_capability_surface")
+  418      return {
+  419          "contract": CAPABILITY_CONTRACT,
+  420          "contract_version": 1,
+  421          "risk_wait_authorization_rule": ("risk_wait_requires_eligible_material_risk_evidence-v2"),
+  422          "ticker": ticker,
+  423          "deterministic_prerequisites": {
+  424              "archetype": archetype,
+  425              "fundamental_status": policy_option.get("status"),
+  426              "fundamental_unresolved_reasons": list(policy_option.get("unresolved_reasons") or ()),
+  427              "current_price": float(current_value) if current_value is not None else None,
+  428              "fundamental_high": float(high) if high is not None else None,
+  429              "security_valuation_basis_state": (
+  430                  security.get("state") if isinstance(security, Mapping) else None
+  431              ),
+  432              "security_price_resolution_allowed": security_safe,
+  433          },
+  434          "evidence_classes": {
+  435              "material_business_claim_refs": material_claims,
+  436              "material_risk_claim_refs": risk_claims,
+  437              "material_risk_evidence_refs": risk_evidence,
+  438              "fundamental_position_refs": source_refs["fundamental"],
+  439              "fundamental_unresolved_refs": source_refs["unresolved"],
+  440          },
+  441          "tactical": tactical,
+  442          "overall": {
+  443              "allowed_values": overall_values,
+  444              "excluded_branches": excluded_overall,
+  445          },
+  446          "holder": {
+  447              "branches": holder_branches,

@@ -1,0 +1,20 @@
+{
+  "contract": "m12cz-targeted-validation-v1",
+  "scope": "Document-only hash, lineage, Decimal arithmetic, preview cardinality and immutability checks; no full pytest.",
+  "checks": {
+    "historical_commit_resolved": true,
+    "working_capital_relation_count": 4,
+    "working_capital_decimal_exact_matches": 4,
+    "samsung_entitlement_defect_trace_confirmed": true,
+    "sk_identity_period_unit_arithmetic_error_found": false,
+    "cpng_official_management_fcf_bound": true,
+    "cpng_definition_difference_reconciled": true,
+    "wait_preview_count": 19,
+    "wait_resolved_range_count": 5,
+    "wait_unresolved_range_count": 14,
+    "original_candidates_immutable": true,
+    "network_request_count": 4,
+    "network_retry_count": 0
+  },
+  "status": "PASS"
+}
