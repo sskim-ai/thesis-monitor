@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pytest
 
 from scripts.m12cp_valuation_policy_contract import Archetype, ValuationRegimeTier
@@ -272,6 +274,90 @@ def _unresolved_option() -> dict[str, object]:
         }
     )
     return option
+
+
+@pytest.mark.parametrize(
+    ("field", "error"),
+    (
+        ("archetype_supporting_claim_refs", "PA_ARCHETYPE_REF_DUPLICATE"),
+        ("tier_supporting_claim_refs", "PA_TIER_REF_DUPLICATE"),
+    ),
+)
+def test_pass_a_local_validator_rejects_duplicate_model_refs(
+    field: str,
+    error: str,
+) -> None:
+    output = _pass_a_output()
+    output["classifications"]["RENAMED"][field] = ["claim:bull", "claim:bull"]
+
+    result = validate_future_pass_a_shape(
+        output,
+        subjects=("RENAMED",),
+        subject_contexts={"RENAMED": _context()},
+    )
+
+    assert result["status"] == "FAIL"
+    assert error in result["per_ticker"]["RENAMED"]
+
+
+def test_pass_a_local_validator_rejects_duplicate_quality_refs() -> None:
+    output = _pass_a_output(quality_effect="DIRECTIONAL_NEGATIVE")
+    output["classifications"]["RENAMED"]["directional_data_quality_judgment"]["evidence_refs"] = [
+        "quality:negative",
+        "quality:negative",
+    ]
+
+    result = validate_future_pass_a_shape(
+        output,
+        subjects=("RENAMED",),
+        subject_contexts={"RENAMED": _context()},
+    )
+
+    assert result["status"] == "FAIL"
+    assert "PA_QUALITY_EVIDENCE_REF_DUPLICATE" in result["per_ticker"]["RENAMED"]
+
+
+@pytest.mark.parametrize(
+    ("target", "error"),
+    (
+        ("support", "PB_SUPPORT_REF_DUPLICATE"),
+        ("contradiction", "PB_CONTRADICTION_REF_DUPLICATE"),
+        ("holder", "PB_HOLDER_EVIDENCE_REF_DUPLICATE"),
+        ("new_buyer", "PB_NEW_BUYER_EVIDENCE_REF_DUPLICATE"),
+        ("conditions", "PB_REEVALUATE_CONDITION_DUPLICATE"),
+    ),
+)
+def test_pass_b_local_validator_rejects_duplicate_model_arrays(
+    target: str,
+    error: str,
+) -> None:
+    output = _pass_b_output(new_buyer="WAIT", holder="REVIEW")
+    row = output["decisions"]["RENAMED"]
+    if target == "support":
+        row["decisive_supporting_claim_refs"] = ["claim:bull", "claim:bull"]
+    elif target == "contradiction":
+        row["decisive_contradicting_claim_refs"] = ["claim:bear", "claim:bear"]
+    elif target == "holder":
+        row["holder_decision"]["evidence_refs"] = ["core:thesis", "core:thesis"]
+    elif target == "new_buyer":
+        row["new_buyer_decision"]["evidence_refs"] = [
+            "canonical:price",
+            "canonical:price",
+        ]
+    else:
+        row["new_buyer_decision"]["re_evaluate_conditions"] = [
+            "가격 확인",
+            "가격 확인",
+        ]
+
+    result = validate_future_pass_b_shape(
+        deepcopy(output),
+        subjects=("RENAMED",),
+        catalogs={"RENAMED": _catalog()},
+    )
+
+    assert result["status"] == "FAIL"
+    assert error in result["per_ticker"]["RENAMED"]
 
 
 def test_future_schemas_are_strict_subject_keyed_and_complete() -> None:

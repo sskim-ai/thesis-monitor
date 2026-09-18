@@ -65,6 +65,12 @@ from scripts.m12cr_shadow_contract import (
     target_leak_scan,
     validate_materialized_pass_b,
 )
+from scripts.m12cs_r1_provider_schema import (
+    PROVIDER_WIRE_PROJECTION_CONTRACT,
+    SEMANTIC_UNIQUENESS_RULES,
+    project_provider_wire_schema,
+    scan_provider_structured_output_schema,
+)
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -128,6 +134,7 @@ def runtime_integrity(expected_head: str) -> dict[str, object]:
     changed = _git("diff", "--name-only", f"{M12CR_R1_IMPLEMENTATION}..{head}").splitlines()
     allowed = (
         "docs/work-instructions/20260918-m12cs-",
+        "scripts/m12cr_shadow_contract.py",
         "scripts/m12cs_",
         "tests/test_m12cs_",
     )
@@ -439,12 +446,18 @@ def _build_preflight(
         pass_b_contexts=dry_pass_b,
         catalogs=catalogs,
     )
+    schema_freezes = _write_schema_freeze_manifests(
+        result_root=result_root,
+        regenerated_root=regenerated_root,
+        regenerated=regenerated,
+    )
     submitted = read_json(
         args.m12cr_r1_result_root / "all-16-schema-completeness-and-parity-scan.json"
     )
     parity = compare_frozen_draft_hashes(regenerated, submitted)
     write_json(
-        result_root / "pre-inference-16-schema-reproof.json", {**regenerated, "parity": parity}
+        result_root / "pre-inference-16-schema-reproof.json",
+        {**regenerated, "parity": parity, "schema_freezes": schema_freezes},
     )
 
     submitted_hashes = read_json(
@@ -502,6 +515,87 @@ def _build_preflight(
     require(regression["status"] == "PASS", FROZEN_DRIFT)
     require(leak["status"] == "PASS", BLINDNESS_FAILED)
     return contexts, payloads, catalogs, pass_a_contexts, typed, matrix, m12cp
+
+
+def _write_schema_freeze_manifests(
+    *,
+    result_root: Path,
+    regenerated_root: Path,
+    regenerated: Mapping[str, object],
+) -> dict[str, object]:
+    semantic_rows: list[dict[str, object]] = []
+    provider_rows: list[dict[str, object]] = []
+    for row in regenerated.get("rows") or ():
+        stage = str(row["stage"])
+        market = str(row["market"])
+        batch = int(row["batch"])
+        relative = Path(stage) / market / f"batch-{batch:02d}" / "schema.json"
+        internal_path = regenerated_root / "future-drafts" / relative
+        internal = read_json(internal_path)
+        wire, projection = project_provider_wire_schema(internal)
+        scan = scan_provider_structured_output_schema(wire)
+        wire_path = result_root / "provider-wire-contract" / relative
+        write_json(wire_path, wire)
+        semantic_rows.append(
+            {
+                "stage": stage,
+                "market": market,
+                "batch": batch,
+                "subjects": list(row["subjects"]),
+                "schema_sha256": sha256_file(internal_path),
+                "canonical_schema_sha256": projection["internal_semantic_schema_sha256"],
+                "status": row["status"],
+            }
+        )
+        provider_rows.append(
+            {
+                "stage": stage,
+                "market": market,
+                "batch": batch,
+                "subjects": list(row["subjects"]),
+                "path": str(wire_path.relative_to(result_root)),
+                "schema_sha256": sha256_file(wire_path),
+                "canonical_schema_sha256": projection["provider_wire_schema_sha256"],
+                "projection": projection,
+                "dialect_scan": scan,
+                "status": scan["status"],
+            }
+        )
+    semantic_manifest = {
+        "contract": "m12cs-r1-semantic-contract-freeze-manifest-v1",
+        "schema_count": len(semantic_rows),
+        "schemas": semantic_rows,
+        "local_uniqueness_rules": list(SEMANTIC_UNIQUENESS_RULES),
+        "semantic_policy_change": "LOCAL_DUPLICATE_ENFORCEMENT_ONLY",
+        "status": "PASS"
+        if len(semantic_rows) == 16 and all(row["status"] == "PASS" for row in semantic_rows)
+        else "FAIL",
+    }
+    provider_manifest = {
+        "contract": "m12cs-r1-provider-wire-contract-freeze-manifest-v1",
+        "projection_contract": PROVIDER_WIRE_PROJECTION_CONTRACT,
+        "schema_count": len(provider_rows),
+        "schemas": provider_rows,
+        "unique_items_count": sum(
+            row["dialect_scan"]["unique_items_count"] for row in provider_rows
+        ),
+        "unsupported_keyword_count": sum(
+            row["dialect_scan"]["unsupported_keyword_count"] for row in provider_rows
+        ),
+        "status": "PASS"
+        if len(provider_rows) == 16 and all(row["status"] == "PASS" for row in provider_rows)
+        else "FAIL",
+    }
+    semantic_path = result_root / "semantic-contract-freeze-manifest.json"
+    provider_path = result_root / "provider-wire-contract-freeze-manifest.json"
+    write_json(semantic_path, semantic_manifest)
+    write_json(provider_path, provider_manifest)
+    require(semantic_manifest["status"] == provider_manifest["status"] == "PASS", FROZEN_DRIFT)
+    return {
+        "semantic_contract_freeze_sha256": sha256_file(semantic_path),
+        "provider_wire_contract_freeze_sha256": sha256_file(provider_path),
+        "status": "PASS",
+    }
 
 
 def _planned_ledger(contexts: Mapping[str, Any]) -> list[dict[str, object]]:
@@ -563,13 +657,36 @@ def _write_execution_draft(
         + f"\n\n{label}:\n"
         + json.dumps(list(payloads), ensure_ascii=False, default=str)
     )
+    internal_schema_path = call_dir / "internal-semantic-schema.json"
     schema_path = call_dir / "schema.json"
     prompt_path = call_dir / "prompt.txt"
     context_path = call_dir / "subject-context.json"
-    write_json(schema_path, schema)
+    provider_schema, projection = project_provider_wire_schema(schema)
+    dialect = scan_provider_structured_output_schema(provider_schema)
+    require(dialect["status"] == "PASS", "provider_wire_schema_dialect_preflight_failed")
+    write_json(internal_schema_path, schema)
+    write_json(schema_path, provider_schema)
+    write_json(call_dir / "provider-wire-projection.json", projection)
+    write_json(call_dir / "provider-dialect-scan.json", dialect)
     write_text(prompt_path, prompt)
     write_json(context_path, {"subjects": list(payloads)})
     return prompt_path, schema_path, context_path
+
+
+def _classify_m12cs_failure(
+    error: BaseException,
+    transport_log: Path | None,
+    *,
+    execution_stage: str | None = None,
+) -> str:
+    category = classify_shadow_failure(
+        error,
+        transport_log,
+        execution_stage=execution_stage,
+    )
+    if category == "SCHEMA_REJECTED_PRE_INFERENCE":
+        return "PROVIDER_SCHEMA_DIALECT_REJECTED_PRE_INFERENCE"
+    return category
 
 
 def _assert_execution_freeze(expected_head: str, code_hashes: Mapping[str, str]) -> None:
@@ -692,7 +809,7 @@ def _invoke_pass_a(
                     "status": "FAIL",
                     "safe_error_type": type(exc).__name__,
                     "safe_error_code": str(exc).split(":", 1)[0],
-                    "failure_category": classify_shadow_failure(
+                    "failure_category": _classify_m12cs_failure(
                         exc,
                         log_path,
                         execution_stage=execution_stage,
@@ -847,7 +964,7 @@ def _invoke_pass_b(
                     "status": "FAIL",
                     "safe_error_type": type(exc).__name__,
                     "safe_error_code": str(exc).split(":", 1)[0],
-                    "failure_category": classify_shadow_failure(
+                    "failure_category": _classify_m12cs_failure(
                         exc,
                         log_path,
                         execution_stage=execution_stage,
@@ -1008,6 +1125,7 @@ def run_validation(result_root: Path, *, phase: str) -> dict[str, object]:
         suites = {
             "focused": (
                 "tests/test_m12cs_fresh_two_pass_shadow.py",
+                "tests/test_m12cs_r1_provider_schema.py",
                 "tests/test_m12cr_r1_typed_quality_contract.py",
                 "tests/test_m12cr_shadow_contract.py",
                 "tests/test_m12cq_two_pass_policy_shadow.py",
@@ -1019,6 +1137,7 @@ def run_validation(result_root: Path, *, phase: str) -> dict[str, object]:
             ),
             "frozen-contract": (
                 "tests/test_m12cs_fresh_two_pass_shadow.py",
+                "tests/test_m12cs_r1_provider_schema.py",
                 "tests/test_m12cr_r1_typed_quality_contract.py",
                 "tests/test_m12cr_shadow_contract.py",
                 "tests/test_m12cq_two_pass_policy_shadow.py",
@@ -1029,6 +1148,7 @@ def run_validation(result_root: Path, *, phase: str) -> dict[str, object]:
         suites = {
             "focused": (
                 "tests/test_m12cs_fresh_two_pass_shadow.py",
+                "tests/test_m12cs_r1_provider_schema.py",
                 "tests/test_m12cr_r1_typed_quality_contract.py",
                 "tests/test_m12cr_shadow_contract.py",
                 "tests/test_m12cq_two_pass_policy_shadow.py",
@@ -1040,6 +1160,7 @@ def run_validation(result_root: Path, *, phase: str) -> dict[str, object]:
             ),
             "frozen-contract": (
                 "tests/test_m12cs_fresh_two_pass_shadow.py",
+                "tests/test_m12cs_r1_provider_schema.py",
                 "tests/test_m12cr_r1_typed_quality_contract.py",
                 "tests/test_m12cr_shadow_contract.py",
                 "tests/test_m12cq_two_pass_policy_shadow.py",
@@ -1077,7 +1198,9 @@ def run_validation(result_root: Path, *, phase: str) -> dict[str, object]:
     ruff = str(Path(sys.executable).with_name("ruff"))
     targets = (
         "scripts/m12cs_fresh_two_pass_shadow.py",
+        "scripts/m12cs_r1_provider_schema.py",
         "tests/test_m12cs_fresh_two_pass_shadow.py",
+        "tests/test_m12cs_r1_provider_schema.py",
         "scripts/m12cr_r1_typed_quality_contract.py",
         "scripts/m12cr_shadow_contract.py",
     )
@@ -1137,6 +1260,11 @@ def _report_markdown(
 ) -> str:
     pass_a = sum(row.get("stage") == "pass-a" and row.get("status") == "PASS" for row in ledger)
     pass_b = sum(row.get("stage") == "pass-b" and row.get("status") == "PASS" for row in ledger)
+    reference_line = (
+        "Post-freeze reference semantic access: `1 / REACHED_AFTER_FINAL_FREEZE`."
+        if comparison is not None
+        else "Post-freeze reference semantic access: `0 / NOT_REACHED`."
+    )
     return "\n".join(
         [
             "# M12CS Fresh Two-Pass Typed-Quality / Valuation Calibration Shadow",
@@ -1162,7 +1290,8 @@ def _report_markdown(
             "- Production send/DB/scheduler/broker actions: `0`",
             "- Main merge / remote push / deploy: `0`",
             "",
-            "M12CS executed the frozen M12CR-R1 contract. Prior judgments were opened only after the final 22-subject result was frozen and were used descriptively, never as targets.",
+            "M12CS executed the frozen M12CR-R1 semantic contract with its separately frozen provider-wire schema projection.",
+            reference_line,
         ]
     )
 
@@ -1254,6 +1383,7 @@ def run(args: argparse.Namespace) -> None:
         )
         code_paths = (
             "scripts/m12cs_fresh_two_pass_shadow.py",
+            "scripts/m12cs_r1_provider_schema.py",
             "scripts/m12cr_r1_typed_quality_closure.py",
             "scripts/m12cr_r1_typed_quality_contract.py",
             "scripts/m12cr_contract_closure.py",
@@ -1271,6 +1401,12 @@ def run(args: argparse.Namespace) -> None:
             "planned_calls": 16,
             "transport_attempt_limit": 1,
             "code_hashes": code_hashes,
+            "semantic_contract_freeze_sha256": sha256_file(
+                result_root / "semantic-contract-freeze-manifest.json"
+            ),
+            "provider_wire_contract_freeze_sha256": sha256_file(
+                result_root / "provider-wire-contract-freeze-manifest.json"
+            ),
             "post_freeze_reference_semantic_open_count": 0,
             "frozen_at": datetime.now(UTC).isoformat(),
         }
@@ -1613,11 +1749,19 @@ def run(args: argparse.Namespace) -> None:
 
     blockers = []
     if terminal_error is not None:
+        failed_call = next(
+            (row for row in reversed(ledger) if row.get("status") == "FAIL"),
+            None,
+        )
+        causal_category = (
+            failed_call.get("failure_category") if isinstance(failed_call, Mapping) else None
+        )
         blockers.append(
             {
                 "stage": stage,
+                "causal_category": causal_category,
                 "safe_error_type": type(terminal_error).__name__,
-                "safe_error_code": str(terminal_error).split(":", 1)[0],
+                "underlying_safe_wrapper_error_code": str(terminal_error).split(":", 1)[0],
             }
         )
     completion = {

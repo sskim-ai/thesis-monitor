@@ -20,6 +20,7 @@ from scripts.m12cn_policy_contract import (
 )
 from scripts.m12cp_valuation_policy_contract import Archetype, ValuationRegimeTier
 from scripts.m12cr_r1_typed_quality_contract import project_business_evidence_quality
+from scripts.m12cs_r1_provider_schema import SEMANTIC_UNIQUENESS_RULES
 from scripts.m12cq_two_pass_contract import (
     PASS_A_CONTRACT,
     PASS_B_CONTRACT,
@@ -56,6 +57,7 @@ class EnforcementLayer(StrEnum):
     DETERMINISTIC_MATERIALIZER = "DETERMINISTIC_MATERIALIZER"
     PROMPT_ONLY = "PROMPT_ONLY"
     CROSS_REFERENCE_VALIDATOR_ONLY = "CROSS_REFERENCE_VALIDATOR_ONLY"
+    LOCAL_RAW_SEMANTIC_VALIDATOR = "LOCAL_RAW_SEMANTIC_VALIDATOR"
     MISSING_UPSTREAM_ENFORCEMENT = "MISSING_UPSTREAM_ENFORCEMENT"
 
 
@@ -516,6 +518,14 @@ def _valid_ref_list(
     )
 
 
+def _has_duplicate_strings(value: object) -> bool:
+    return (
+        isinstance(value, list)
+        and all(isinstance(item, str) for item in value)
+        and len(value) != len(set(value))
+    )
+
+
 def validate_future_pass_a_shape(
     output: Mapping[str, object],
     *,
@@ -553,6 +563,8 @@ def validate_future_pass_a_shape(
             maximum=6,
         ):
             row_errors.append("PA_ARCHETYPE_REF_OWNERSHIP")
+        if _has_duplicate_strings(row.get("archetype_supporting_claim_refs")):
+            row_errors.append("PA_ARCHETYPE_REF_DUPLICATE")
         if not _valid_string(row.get("archetype_rationale"), 600):
             row_errors.append("PA_ARCHETYPE_RATIONALE_BOUNDS")
         tier = row.get("valuation_regime_tier")
@@ -572,6 +584,8 @@ def validate_future_pass_a_shape(
                 maximum=6,
             ):
                 row_errors.append("PA_RESOLVED_TIER_REF_OWNERSHIP")
+        if _has_duplicate_strings(tier_value_refs):
+            row_errors.append("PA_TIER_REF_DUPLICATE")
         if not _valid_string(row.get("tier_rationale"), 600):
             row_errors.append("PA_TIER_RATIONALE_BOUNDS")
         judgment = row.get("directional_data_quality_judgment")
@@ -583,6 +597,8 @@ def validate_future_pass_a_shape(
                 row_errors.append("PA_QUALITY_BRANCH_SHAPE")
             effect = judgment.get("effect")
             refs = judgment.get("evidence_refs")
+            if _has_duplicate_strings(refs):
+                row_errors.append("PA_QUALITY_EVIDENCE_REF_DUPLICATE")
             quality = context.get("data_quality_catalog") or {}
             if effect == DataQualityEffect.NONE.value:
                 if (
@@ -760,6 +776,8 @@ def validate_future_pass_b_shape(
             maximum=6,
         ):
             row_errors.append("PB_SUPPORT_REF_OWNERSHIP")
+        if _has_duplicate_strings(row.get("decisive_supporting_claim_refs")):
+            row_errors.append("PB_SUPPORT_REF_DUPLICATE")
         if not _valid_ref_list(
             row.get("decisive_contradicting_claim_refs"),
             allowed=claim_refs,
@@ -767,6 +785,8 @@ def validate_future_pass_b_shape(
             maximum=6,
         ):
             row_errors.append("PB_CONTRADICTION_REF_OWNERSHIP")
+        if _has_duplicate_strings(row.get("decisive_contradicting_claim_refs")):
+            row_errors.append("PB_CONTRADICTION_REF_DUPLICATE")
         if set(row.get("decisive_supporting_claim_refs") or ()) & set(
             row.get("decisive_contradicting_claim_refs") or ()
         ):
@@ -782,6 +802,8 @@ def validate_future_pass_b_shape(
             stance = holder.get("holder")
             reason_class = holder.get("reason_class")
             refs = holder.get("evidence_refs")
+            if _has_duplicate_strings(refs):
+                row_errors.append("PB_HOLDER_EVIDENCE_REF_DUPLICATE")
             if not _valid_string(holder.get("reason"), 500):
                 row_errors.append("PB_HOLDER_REASON_BOUNDS")
             if stance == "HOLDABLE":
@@ -833,6 +855,10 @@ def validate_future_pass_b_shape(
             refs = new_buyer.get("evidence_refs")
             tactical = new_buyer.get("tactical_choice")
             conditions = new_buyer.get("re_evaluate_conditions")
+            if _has_duplicate_strings(refs):
+                row_errors.append("PB_NEW_BUYER_EVIDENCE_REF_DUPLICATE")
+            if _has_duplicate_strings(conditions):
+                row_errors.append("PB_REEVALUATE_CONDITION_DUPLICATE")
             tactical_ids = {
                 str(item["candidate_id"])
                 for item in catalog["entry_catalog"].get("tactical_candidates") or ()
@@ -1284,6 +1310,19 @@ def semantic_rule_inventory() -> dict[str, object]:
                 "upstream_enforcement": EnforcementLayer.DETERMINISTIC_MATERIALIZER.value,
             }
         )
+    for uniqueness in SEMANTIC_UNIQUENESS_RULES:
+        rules.append(
+            {
+                "rule_id": uniqueness["rule_id"],
+                "stage": str(uniqueness["logical_field"])
+                .split(".", 1)[0]
+                .upper()
+                .replace("-", "_"),
+                "rule": uniqueness["rule_id"],
+                "logical_field": uniqueness["logical_field"],
+                "upstream_enforcement": EnforcementLayer.LOCAL_RAW_SEMANTIC_VALIDATOR.value,
+            }
+        )
     deterministic_legacy = {
         "current_price_context_missing",
         "duplicate_rule_trace",
@@ -1344,6 +1383,7 @@ def parity_matrix() -> dict[str, object]:
             in {
                 EnforcementLayer.SCHEMA_STRUCTURAL.value,
                 EnforcementLayer.CROSS_REFERENCE_VALIDATOR_ONLY.value,
+                EnforcementLayer.LOCAL_RAW_SEMANTIC_VALIDATOR.value,
             },
         }
         for row in inventory["rules"]
