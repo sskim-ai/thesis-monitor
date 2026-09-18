@@ -772,33 +772,23 @@ def semantic_uniqueness_reproof(
             }
         )
 
-    quality_market, quality_ticker = _first_subject(
-        state,
-        lambda market, ticker: bool(
-            state["pass_a_contexts"][market][ticker]
-            .get("data_quality_catalog", {})
-            .get("material_disclosure_failure_refs")
-            or state["pass_a_contexts"][market][ticker]
-            .get("data_quality_catalog", {})
-            .get("positive_quality_refs")
-        ),
-    )
-    quality_context = state["pass_a_contexts"][quality_market][quality_ticker]
+    quality_ticker = pass_a_ticker
+    quality_context = deepcopy(state["pass_a_contexts"][pass_a_market][quality_ticker])
+    quality_ref = str(quality_context["eligible_claim_refs"][0])
+    quality_context["data_quality_catalog"] = {
+        **quality_context.get("data_quality_catalog", {}),
+        "material_disclosure_failure_refs": [],
+        "positive_quality_refs": [quality_ref],
+    }
     quality_base = _mechanical_pass_a_choice(
         context=quality_context,
         matrix_subject=state["matrix"][quality_ticker],
         force_unresolved=False,
     )
     quality_catalog = quality_context["data_quality_catalog"]
-    negative_quality_refs = list(quality_catalog.get("material_disclosure_failure_refs") or ())
-    if negative_quality_refs:
-        effect = "DIRECTIONAL_NEGATIVE"
-        reason_class = "MATERIAL_DISCLOSURE_FAILURE"
-        ref = negative_quality_refs[0]
-    else:
-        effect = "DIRECTIONAL_POSITIVE"
-        reason_class = "EVIDENCED_QUALITY_IMPROVEMENT"
-        ref = list(quality_catalog["positive_quality_refs"])[0]
+    effect = "DIRECTIONAL_POSITIVE"
+    reason_class = "EVIDENCED_QUALITY_IMPROVEMENT"
+    ref = list(quality_catalog["positive_quality_refs"])[0]
     quality_base["directional_data_quality_judgment"] = {
         "effect": effect,
         "reason_class": reason_class,
@@ -827,6 +817,7 @@ def semantic_uniqueness_reproof(
     positive_rows.append(
         {
             "logical_field": "pass-a.directional_data_quality_judgment.evidence_refs",
+            "fixture_scope": "SYNTHETIC_VALIDATOR_ONLY",
             "ticker": quality_ticker,
             "payload": quality_output,
             "validation": quality_valid,
@@ -835,6 +826,7 @@ def semantic_uniqueness_reproof(
     negative_rows.append(
         {
             "logical_field": "pass-a.directional_data_quality_judgment.evidence_refs",
+            "fixture_scope": "SYNTHETIC_VALIDATOR_ONLY",
             "rule_id": "PA_QUALITY_EVIDENCE_REF_DUPLICATE",
             "ticker": quality_ticker,
             "payload": quality_duplicate_output,
