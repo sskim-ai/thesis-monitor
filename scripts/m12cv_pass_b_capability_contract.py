@@ -6,6 +6,10 @@ from decimal import Decimal, InvalidOperation
 
 from scripts.m12cn_policy_contract import Confidence, HolderReasonClass, ThesisState
 from scripts.m12cp_valuation_policy_contract import Archetype
+from scripts.m12cq_two_pass_contract import (
+    eligible_material_risk_claim_refs,
+    eligible_material_risk_evidence_refs,
+)
 from scripts.m12cr_shadow_contract import validate_future_pass_b_shape
 
 
@@ -100,37 +104,11 @@ def material_business_claim_refs(catalog: Mapping[str, object]) -> list[str]:
 
 
 def material_risk_claim_refs(catalog: Mapping[str, object]) -> list[str]:
-    material = set(material_business_claim_refs(catalog))
-    refs: list[str] = []
-    for row in catalog.get("atomic_claims") or ():
-        if not isinstance(row, Mapping):
-            continue
-        claim = row.get("claim")
-        claim_ref = str(row.get("claim_ref") or "")
-        if (
-            claim_ref in material
-            and isinstance(claim, Mapping)
-            and claim.get("polarity") == "BEARISH"
-        ):
-            refs.append(claim_ref)
-    return _ordered_unique(refs)
+    return sorted(eligible_material_risk_claim_refs(catalog))
 
 
 def material_risk_evidence_refs(catalog: Mapping[str, object]) -> list[str]:
-    risk_claims = set(material_risk_claim_refs(catalog))
-    allowed = set(catalog.get("all_evidence_refs") or ())
-    excluded = set(catalog.get("valuation_evidence_refs") or ()) | set(
-        catalog.get("timing_evidence_refs") or ()
-    )
-    refs: list[str] = []
-    for row in catalog.get("atomic_claims") or ():
-        if not isinstance(row, Mapping) or str(row.get("claim_ref") or "") not in risk_claims:
-            continue
-        for ref in row.get("parent_source_refs") or ():
-            text = str(ref)
-            if text in allowed and text not in excluded:
-                refs.append(text)
-    return _ordered_unique(refs)
+    return sorted(eligible_material_risk_evidence_refs(catalog))
 
 
 def _source_refs(
@@ -440,6 +418,7 @@ def build_pass_b_capability_catalog(
     return {
         "contract": CAPABILITY_CONTRACT,
         "contract_version": 1,
+        "risk_wait_authorization_rule": ("risk_wait_requires_eligible_material_risk_evidence-v2"),
         "ticker": ticker,
         "deterministic_prerequisites": {
             "archetype": archetype,
@@ -728,9 +707,12 @@ def pass_b_capability_validator_parity_matrix() -> dict[str, object]:
             "boundary": "model-selected refs remain defense-in-depth validated",
         },
         {
-            "rule": "risk_wait_matches_selected_holder_or_thesis_state",
+            "rule": "risk_wait_requires_eligible_material_risk_evidence",
             "classification": "MODEL_DEPENDENT_CROSS_REFERENCE",
-            "boundary": "cross-field model judgment remains final-validator owned",
+            "boundary": (
+                "selected refs must belong to the subject-local eligible material-risk "
+                "branch; Holder and thesis labels are independent"
+            ),
         },
         {
             "rule": "entry_range_projection",

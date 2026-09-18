@@ -1327,6 +1327,7 @@ def semantic_rule_inventory() -> dict[str, object]:
         "attractive_without_permitted_fundamental_position",
         "attractive_with_severe_execution_or_thesis_condition",
         "wait_without_authorized_structured_condition",
+        "risk_wait_requires_eligible_material_risk_evidence",
         "avoid_without_material_risk_evidence",
         "fundamental_tactical_currency_mismatch",
         "security_basis_violation",
@@ -1404,6 +1405,7 @@ def semantic_rule_inventory() -> dict[str, object]:
         "overall_nonbuy_supported_only_by_valuation_or_timing",
         "reduce_supported_only_by_valuation",
         "review_supported_only_by_valuation",
+        "risk_wait_requires_eligible_material_risk_evidence",
         "wait_without_authorized_structured_condition",
     }
     for index, code in enumerate(legacy_codes, 1):

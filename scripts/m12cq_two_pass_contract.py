@@ -821,6 +821,87 @@ def _material_business_claim_refs(catalog: Mapping[str, object]) -> set[str]:
     }
 
 
+def _risk_wait_excluded_refs(catalog: Mapping[str, object]) -> set[str]:
+    explicit = (
+        set(catalog.get("valuation_evidence_refs") or ())
+        | set(catalog.get("timing_evidence_refs") or ())
+        | set(catalog.get("positive_quality_refs") or ())
+        | set(catalog.get("security_valuation_basis_refs") or ())
+        | set(catalog.get("business_quality_confidence_refs") or ())
+    )
+    for ref in catalog.get("all_evidence_refs") or ():
+        text = str(ref).lower()
+        if (
+            text.startswith("canonical:security_")
+            or "security_basis" in text
+            or text.startswith("canonical:financial_quality:")
+            or text.startswith("canonical:business_quality:")
+        ):
+            explicit.add(str(ref))
+    return explicit
+
+
+def eligible_material_risk_claim_refs(catalog: Mapping[str, object]) -> set[str]:
+    excluded = _risk_wait_excluded_refs(catalog)
+    refs: set[str] = set()
+    for row in catalog.get("atomic_claims") or ():
+        if not isinstance(row, Mapping):
+            continue
+        claim = row.get("claim")
+        claim_ref = str(row.get("claim_ref") or "")
+        parent_refs = {str(ref) for ref in row.get("parent_source_refs") or ()}
+        if (
+            claim_ref
+            and isinstance(claim, Mapping)
+            and claim.get("polarity") == "BEARISH"
+            and bool(parent_refs - excluded)
+        ):
+            refs.add(claim_ref)
+    return refs
+
+
+def eligible_material_risk_evidence_refs(catalog: Mapping[str, object]) -> set[str]:
+    eligible_claims = eligible_material_risk_claim_refs(catalog)
+    excluded = _risk_wait_excluded_refs(catalog)
+    all_evidence = {str(ref) for ref in catalog.get("all_evidence_refs") or ()}
+    refs: set[str] = set()
+    for row in catalog.get("atomic_claims") or ():
+        if not isinstance(row, Mapping) or str(row.get("claim_ref") or "") not in eligible_claims:
+            continue
+        refs.update(
+            str(ref)
+            for ref in row.get("parent_source_refs") or ()
+            if str(ref) in all_evidence and str(ref) not in excluded
+        )
+    return refs
+
+
+def eligible_material_risk_refs(catalog: Mapping[str, object]) -> set[str]:
+    return eligible_material_risk_claim_refs(catalog) | eligible_material_risk_evidence_refs(
+        catalog
+    )
+
+
+def _risk_wait_capability_refs(
+    capability: Mapping[str, object] | None,
+) -> tuple[bool, set[str]]:
+    if not isinstance(capability, Mapping):
+        return False, set()
+    new_buyer = capability.get("new_buyer")
+    if not isinstance(new_buyer, Mapping):
+        return False, set()
+    for branch in new_buyer.get("branches") or ():
+        if not isinstance(branch, Mapping):
+            continue
+        if (
+            branch.get("stance") == "WAIT"
+            and branch.get("reason_class") == NewBuyerReasonClass.EXECUTION_OR_THESIS_RISK.value
+            and branch.get("prerequisite") == "material_bearish_business_evidence_available"
+        ):
+            return True, {str(ref) for ref in branch.get("allowed_evidence_refs") or ()}
+    return False, set()
+
+
 def validate_pass_b_batch(
     output: PassBBatchOutput,
     *,
@@ -930,6 +1011,7 @@ def validate_new_buyer_consistency(
     policy_option: Mapping[str, object],
     entry_range: Mapping[str, object],
     catalog: Mapping[str, object],
+    capability: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     if isinstance(decision, PassBDecision):
         row = decision.model_dump(mode="json")
@@ -976,15 +1058,23 @@ def validate_new_buyer_consistency(
             and current_value > float(tactical["high"])
         ):
             authorized = True
-        if (
-            reason_class == NewBuyerReasonClass.EXECUTION_OR_THESIS_RISK.value
-            and bool(row.get("new_buyer_reason_refs"))
-            and (
-                row.get("holder") in {"REVIEW", "REDUCE"}
-                or row.get("thesis_state") in {"MIXED", "IMPAIRED", "INVALIDATED"}
+        if reason_class == NewBuyerReasonClass.EXECUTION_OR_THESIS_RISK.value:
+            selected_refs = {str(ref) for ref in row.get("new_buyer_reason_refs") or ()}
+            eligible_refs = eligible_material_risk_refs(catalog)
+            capability_exposed, capability_refs = _risk_wait_capability_refs(capability)
+            if capability is None:
+                capability_exposed = bool(eligible_refs)
+                capability_refs = eligible_refs
+            risk_wait_authorized = (
+                catalog.get("ticker") == row.get("ticker")
+                and capability_exposed
+                and bool(selected_refs)
+                and selected_refs.issubset(capability_refs & eligible_refs)
             )
-        ):
-            authorized = True
+            if risk_wait_authorized:
+                authorized = True
+            else:
+                errors.append("risk_wait_requires_eligible_material_risk_evidence")
         if not authorized:
             errors.append("wait_without_authorized_structured_condition")
         if option_resolved and entry_range.get("entry_range_status") != "ENTRY_RANGE_RESOLVED":
