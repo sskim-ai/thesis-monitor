@@ -1,0 +1,46 @@
+{
+  "task_id": "M12DS-R6-20260922",
+  "current_main": {
+    "sha": "2097645892e30d84aba435416f98e7f9545a87fa",
+    "tree": "436e41a4fb718d5be5dfda85a9423b555e1deb23",
+    "origin_main_same": true,
+    "r5_r2_terminal": "M12DS_R5_R2_CI_PORTABLE_MAIN_INTEGRATED_POST_MERGE_PASS",
+    "r5_r2_approved_resume_report_sha256": "c2ad0f6eeef176db11360643b267ae3da5c3e2b9ec2eca46719a41f039284a72",
+    "r5_r2_initial_scope_stop_sha256": "d68fba3202ceea25ce8c2bb724991200b3bd269aa892563db55a3306b2514d92",
+    "candidate_ci_run": 35739161546,
+    "main_ci_run": 35740058754,
+    "focused_passed": 1553,
+    "full_passed": 5206,
+    "existing_skips": 63,
+    "production_semantic_mismatches": 0,
+    "accepted_message_count": 24,
+    "accepted_message_combined_sha256": "e31d7f40576981c1f25df662f0865e1eb58e97cdb3921f9ba42230d6ad8c026e",
+    "night_replay": "2/2 PASS",
+    "production_mutations": 0
+  },
+  "requirements": {
+    "restore_us_major_indices": true,
+    "restore_wti": true,
+    "restore_treasury_yields": [
+      "3Y",
+      "5Y",
+      "10Y",
+      "30Y"
+    ],
+    "sector_top_bottom_3_us": true,
+    "sector_top_bottom_3_kr": true,
+    "stock_support_resistance": true,
+    "night_weekly_in_progress_ohlc": true,
+    "night_monthly_official_history_backfill": true,
+    "price_asof_partial_cleanup": true,
+    "wording_consistency_cleanup": true
+  },
+  "forbidden": {
+    "investment_policy_change": true,
+    "source_authority_blanket_widening": true,
+    "production_send": true,
+    "main_merge_in_r6": true,
+    "onboarding_in_r6": true
+  },
+  "next_after_human_review_and_integration": "M12DT_NEW_TICKER_ONBOARDING_GATE"
+}

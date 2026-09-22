@@ -1,0 +1,43 @@
+{
+  "contract": "m12ds-r6-message-information-coverage-v1",
+  "us_market": {
+    "indices": "Restore all existing canonical user-facing US major-index rows. At minimum validate current packet owners for SPY/QQQ/IWM if those are the canonical current rows; do not substitute proxies for a different pre-existing cash-index owner.",
+    "wti": "Use the existing approved WTI source owner with provider-specific publication-lag semantics.",
+    "treasury": [
+      "3Y",
+      "5Y",
+      "10Y",
+      "30Y"
+    ],
+    "session_date": "Normalize exchange observations to the actual exchange-local completed session date, not collection-host local date.",
+    "macro_publication": "Freshness is evaluated against the expected publication date for that provider/series, including weekends and holidays."
+  },
+  "sector_ranking": {
+    "model_generated": false,
+    "rank_key": "same-session numeric return",
+    "positive_count": 3,
+    "negative_count": 3,
+    "ties": "stable canonical instrument/sector key",
+    "kr_taxonomy": "Do not combine KOSPI and KOSDAQ taxonomies unless an existing canonical cross-venue sector owner explicitly makes them comparable."
+  },
+  "stock_technical": {
+    "support_source": "existing active_support deterministic price-structure owner",
+    "resistance_source": "existing active_resistance deterministic price-structure owner",
+    "tactical_watch_separate": true,
+    "fundamental_range_separate": true,
+    "missing_side": "UNRESOLVED, never invented"
+  },
+  "night_futures": {
+    "authority": "OFFICIAL_KRX_NIGHT",
+    "products": [
+      "KOSPI200",
+      "KOSDAQ150"
+    ],
+    "daily": "latest final official night session",
+    "weekly": "same selected contract, current calendar week through reference date, render IN_PROGRESS OHLC and included/expected sessions",
+    "monthly": "same selected contract, official history from month start through reference date, excluding future/non-session dates",
+    "contract_mixing": false,
+    "partial_rendering": "Partial/in-progress aggregate OHLC may render; unavailable return must be labeled unresolved rather than collapsing the whole block to data-insufficient.",
+    "kiwoom_role": "cross-check only"
+  }
+}
