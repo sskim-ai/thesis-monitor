@@ -54,7 +54,7 @@ R6_SOURCE_HASHES = {
     'app/macro/providers/krx.py': '8930d364aa15f38e35c0812be5c0d737e1c896180a73987528ab667da9cb2961',
     'app/macro/providers/market.py': 'b3075cba09a172c10bcadf43c50f9e3f822ee21d97e12ce5457ec09d5bf48fca',
     'app/macro/storage.py': '9256d010a7ab4887416f94fde0fd796ba7e959b0399580ec70c8a80b717b4de9',
-    'app/services/numeric_semantic_registry.py': '0c5e500400c1132c0f94d0cb245f96c68b19a79268a3de17bc329f92b0be4ccd',
+    'app/services/numeric_semantic_registry.py': '77b3283bee3654a601a245a091d49938f539f5911b5fe73b307a1bd5aba4a75a',
     'tests/test_fred_provider.py': '31184daf0cca7860fc05e95b2a2317e1726a271b5d6d2deebee3432ae7702279',
 }
 R6_METADATA_INSERTION = b'''    raw_metadata = _json(item.raw_payload, {})

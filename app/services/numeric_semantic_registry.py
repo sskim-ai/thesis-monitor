@@ -2301,12 +2301,18 @@ def _source_aware_label(
         series = str(fields.get("series_code") or "")
         if label := _INDEX_SERIES_LABELS.get(series):
             return f"{label} 등락률"
+        if fields.get("symbol") in {"KOSPI", "KOSDAQ"}:
+            return f"{fields['symbol']} 등락률"
     if semantic_type == "sector_return_pct":
         series = str(fields.get("series_code") or "")
         if series == "SOXX":
             return "반도체 업종 등락률"
         if series:
             return f"{series} 업종 등락률"
+        if (fields.get("taxonomy") == "kiwoom-sector-index-v1"
+                and fields.get("market_scope") in {"KOSPI", "KOSDAQ"}
+                and fields.get("sector") and fields.get("source_ref")):
+            return f"{fields['market_scope']} {fields['sector']} 등락률"
     if semantic_type == "sector_proxy_level":
         series = str(fields.get("series_code") or "")
         if series:

@@ -83,6 +83,9 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
                 component("market-session", "latest_completed_regular_session_date",completed,"DATE","ISO_DATE",completed)]
     heading = ("미국" if market == "us" else "한국")+f" 시장 점검 · 판단 {assessment_date}\n완료 정규장 기준: {completed}"
     claims.append(claim("SESSION",temporal,heading,metadata={"source_session_sha256":digest(session)}))
+    if market == 'kr':
+        from app.services.kr_market_numeric_claim_service import local_kr_claims
+        claims.extend(local_kr_claims(source, completed, eligible))
     from app.services.market_sector_ranking_service import ranked_sector_claims
     rankings = ranked_sector_claims(list(by_id.values()), source.get('numeric_registry') or [],
                                    market, completed, eligible, source)

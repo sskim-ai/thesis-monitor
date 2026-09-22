@@ -35,6 +35,11 @@ Accepted policy baseline: `2097645892e30d84aba435416f98e7f9545a87fa`.
   packet assessment date is not substituted. Session mismatch, future session and
   stale quality still fail closed. The current collection was reprojected offline
   from the unchanged read-only isolated database before any model calls.
+- KR index/sector labels now resolve from their owned symbol or venue/taxonomy,
+  closing an audit-only numeric-registry gap. Local index, breadth, size and flow
+  blocks require exact agreement between canonical facts, the numeric registry and
+  the eligible adapter rows. Wrong dates, units, values, aliases and ambiguous
+  rows are suppressed; model prose still owns no exact numeric literals.
 - Stock quote as-of and active support/resistance consume `current_price_context`.
   Partial aggregate chart availability does not hide a valid timestamp or the
   available side. Missing sides remain unresolved. Neither side replaces
