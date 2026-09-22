@@ -1,5 +1,15 @@
 # Thesis Monitor Master Workflow
 
+## Local R6 Review Track (2026-09-23)
+
+R6 is local-only on baseline `2097645892e30d84aba435416f98e7f9545a87fa`.
+After the initial source-gate stop below, the user authorized continuing with night
+context deferred and excluded. The remainder of the fresh proof is now pending.
+Implementation `427a65deae14be6bdb6f8a288bb211c08181bba1` passes offline validation;
+the new night source gate fails current reference/finality, so inference and 24-message capture
+are not run. No main/push/deploy or production mutation occurred. Human review and M12DT remain
+pending. See [closeout](reports/20260922-m12ds-r6-closeout.md); older entries below are historical.
+
 Master Workflow: `v31`
 As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`

@@ -13,7 +13,23 @@ from pathlib import Path
 from scripts.m12ds_r4_source_preflight import KST, OPERATING, REPO, git_state, helpers
 
 
-async def run(root):
+def night_collection_mode(gate, probe, *, defer_unavailable_night=False):
+    if gate['status'] == 'PASS':
+        return False
+    allowed = {'current_official_night_pair_unavailable', 'night_finality_unverified',
+               'KOSPI200:reference_or_finality_mismatch', 'KOSDAQ150:reference_or_finality_mismatch',
+               'KOSPI200:exact_pair_and_canonical_required', 'KOSDAQ150:exact_pair_and_canonical_required'}
+    empty_expected = any(row.get('query_date') == probe.get('expected_reference_date')
+        and row.get('http_status') == 200 and row.get('result') == 'empty'
+        for row in probe.get('date_statuses', []))
+    if (not defer_unavailable_night or gate['status'] != 'FAIL' or not gate.get('errors')
+            or not set(gate['errors']) <= allowed or not probe.get('live_source')
+            or not empty_expected or probe.get('finality_valid')):
+        raise ValueError('night_source_gate_required')
+    return True
+
+
+async def run(root, *, defer_unavailable_night=False):
     root = root.resolve()
     data = root / 'private/isolated-data'
     report = root / 'report'
@@ -26,8 +42,8 @@ async def run(root):
 
     if (report / 'collection-start.json').exists():
         raise ValueError('one_current_collection_only')
-    if read('report/night-source-gate.json')['status'] != 'PASS':
-        raise ValueError('night_source_gate_required')
+    night_deferred = night_collection_mode(read('report/night-source-gate.json'),
+        read('source/night-probe.json'), defer_unavailable_night=defer_unavailable_night)
     states = {str(p): git_state(p) for p in (REPO, OPERATING)}
     if any(s['status'] for s in states.values()):
         raise ValueError('clean_collection_commit_required')
@@ -83,6 +99,8 @@ async def run(root):
         put('report/sec-foreign-raw-manifest.json', foreign_raw)
     put('report/collection-start.json', {'at': observed, 'git': states, 'source_db': before_db,
         'night_snapshot_sha256': helpers.sha256_file(root / 'source/night-provider.json'),
+        'night_deferred_by_user': night_deferred,
+        'night_source_gate_sha256': helpers.sha256_file(root / 'report/night-source-gate.json'),
         'model_calls': 0, 'controller_retries': 0})
 
     async def call(name, fn):
@@ -124,15 +142,16 @@ async def run(root):
             session_date=us_session.latest_completed_regular_session_date, observed_at=us_at))
         rows = []
         probe = read('source/night-probe.json')
-        for values in read('source/night-provider.json')['observations']:
+        for values in ([] if night_deferred else read('source/night-provider.json')['observations']):
             values['observed_at'] = datetime.fromisoformat(values['observed_at'])
             row, _ = persist_observation(session, 'krx_night_futures', CollectedObservation(**values), us_at)
             from datetime import date
             rows.append(helpers.serialized_market_observation(row, date.fromisoformat(probe['expected_reference_date'])))
         _replace_night_observations(session, us_at.date(), rows)
-        _write_gate_metadata(session, us_at.date(), {'state': 'ready',
+        _write_gate_metadata(session, us_at.date(), {'state': 'unavailable' if night_deferred else 'ready',
             'expected_session': probe['expected_reference_date'], 'expected_reference_date': probe['expected_reference_date'],
             'query_attempted': True, 'first_query_at': probe['fetched_at'], 'last_query_at': probe['fetched_at'],
+            'deferred_by_user': night_deferred,
             'ready_products': [r['series_code'] for r in rows], 'retry_count': 0, 'deadline_reached': True})
         await call('us-stock-sources', lambda: run_daily_monitor(session, run_date=us_at.date(), force=True,
             market_scope='us', as_of=us_at, queue_notifications=False, dispatch_notifications=False))
@@ -172,4 +191,6 @@ async def run(root):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', type=Path, required=True)
-    asyncio.run(run(parser.parse_args().root))
+    parser.add_argument('--defer-unavailable-night', action='store_true')
+    args = parser.parse_args()
+    asyncio.run(run(args.root, defer_unavailable_night=args.defer_unavailable_night))

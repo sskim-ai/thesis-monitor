@@ -1,5 +1,20 @@
 # Next Session Prompt
 
+## Current Local R6 Continuation
+
+Latest user direction: proceed with non-night work despite the expected publication gap.
+Use the explicit `--defer-unavailable-night` controller option and preserve the original
+failed gate. Do not use the initial stop decision below as the final task status.
+
+Read `docs/reports/20260922-m12ds-r6-closeout.md` before the historical notes below.
+R6 implementation is validated and frozen at `427a65deae14be6bdb6f8a288bb211c08181bba1`.
+Its 2026-09-23 00:24 KST night source gate failed current-reference/finality; no fresh inference
+or messages were generated. A resumed proof must first obtain the official completed pair for
+the reference date owned at its new cutoff, then run the unchanged current source/Core/A/B
+pipeline and capture 24 messages. Do not substitute the historical 22 previews or the recovered
+September 1-21 history. No automatic retry or schedule was created. R6 still forbids main merge,
+push, deploy, Telegram and production-state changes; M12DT is not ready.
+
 Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
 integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
 `docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact

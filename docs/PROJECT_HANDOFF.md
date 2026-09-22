@@ -1,5 +1,18 @@
 # Thesis Monitor Project Handoff
 
+## Local M12DS-R6 Handoff (2026-09-23)
+
+The user authorized continuing after the initial night gate failure with night data deferred,
+not substituting stale rows. Non-night collection/inference/capture are pending that continuation.
+
+Read [R6 closeout](reports/20260922-m12ds-r6-closeout.md) first. The implementation is frozen
+at `427a65deae14be6bdb6f8a288bb211c08181bba1`; operating/main remains `2097645892e30d84aba435416f98e7f9545a87fa`.
+Full tests pass 5,227 with the existing 63 skips. The new source generation failed because the
+official night pair is September 21, not the required September 22; 0 new model calls and 0/24
+fresh captures. Historical same-contract month coverage 15/15 for both products is not current
+proof. Resume only with a new source gate, then frozen inference and exact human-review capture.
+Main merge/push/deploy, Telegram and production-state changes remain forbidden in R6.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and

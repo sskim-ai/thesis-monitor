@@ -1,6 +1,11 @@
 # M12DS-R6 Information Coverage
 
 Status: LOCAL IMPLEMENTATION, fresh proof and human review pending. No deployment.
+Closeout: current source gate failed at 2026-09-23 00:24 KST; no inference or fresh
+message captures. See [R6 closeout](../reports/20260922-m12ds-r6-closeout.md).
+The user then authorized continuing the non-night proof with this known unavailable
+night context deferred. The original failure is not promoted to PASS, and stale night
+facts remain ineligible. Final proof is pending this separate continuation.
 Instruction commit: `cfb6f939858a2b87be70c4f46a4b51eaf068aee5`.
 Accepted policy baseline: `2097645892e30d84aba435416f98e7f9545a87fa`.
 

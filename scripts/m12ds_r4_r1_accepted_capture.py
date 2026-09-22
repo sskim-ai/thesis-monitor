@@ -139,6 +139,24 @@ async def capture_all(proof):
 
 def night_trace(proof, captures):
     source = proof.root.parent
+    start = source / 'report/collection-start.json'
+    if (getattr(proof, 'ALLOW_DEFERRED_NIGHT', False) and start.exists()
+            and p.read(start).get('night_deferred_by_user')):
+        gate_path = source / 'report/night-source-gate.json'
+        p.require(p.sha(gate_path) == p.read(start)['night_source_gate_sha256'], 'NIGHT_GATE_DRIFT')
+        p.require(p.read(gate_path)['status'] == 'FAIL', 'NIGHT_DEFERRAL_REQUIRES_RECORDED_FAILURE')
+        leaked = []
+        for market, packet in proof.packets.items():
+            context = proof.MARKET_OWNER.market_context(packet)
+            if any(c['claim_type'] == 'OFFICIAL_NIGHT' for c in context.get('numeric_catalog', {}).get('claims', [])):
+                leaked.append(market + ':numeric_claim')
+            if any('night' in str(f.get('category', '')).lower() for f in context['facts'].values()):
+                leaked.append(market + ':model_input')
+        p.require(not leaked, 'DEFERRED_NIGHT_LEAKAGE:' + ','.join(leaked))
+        return dict(status='DEFERRED_BY_USER', current_e2e='NOT_PROVEN',
+            suppression='PASS', current_night_consumption=0,
+            source_gate_sha256=p.sha(gate_path), source_errors=p.read(gate_path)['errors'],
+            products=[], historical_substitution=False)
     canonical = p.read(source / 'source/night-provider.json')['observations']
     raw = p.read(source / 'source/night-raw-row-index.json')
     context = proof.MARKET_OWNER.market_context(proof.packets['us']) if hasattr(proof,'MARKET_OWNER') else market_context(proof.packets['us'])

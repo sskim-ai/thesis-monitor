@@ -9,6 +9,7 @@ from scripts import m12ds_r6_market as market
 
 
 class Reproof(Previous):
+    ALLOW_DEFERRED_NIGHT = True
     MARKET_OWNER = market
     INSTRUCTIONS = Previous.INSTRUCTIONS.parent / '20260922-m12ds-r6'
     PREFIX = 'M12DS_R6'
