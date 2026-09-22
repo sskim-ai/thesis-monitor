@@ -44,6 +44,9 @@ REVIEWED_HASHES = {
     "app/services/sec_financial_snapshot_service.py": "4976b66380a9a54607119483edb846134b9bdf2dc5070c9983c28a0fd96dc4e9",
     "app/services/daily_digest_renderer.py": "d662bcbd55d8f131c8350be4487066c54532c7249902d40baa8aebd45cdfed8c",
 }
+WORKFLOW_PATH = ".github/workflows/test.yml"
+WORKFLOW_BEFORE_SHA256 = "b0932124732f0234db8ad76b1e356b044c8c4bc0892645c6f514ef7575515d5d"
+WORKFLOW_AFTER_SHA256 = "f1502fd11213551c9f552c43ea4eb65df913104e1fd8241fc03a53d0fd03be31"
 
 
 def _git(*args):
@@ -94,14 +97,46 @@ def _clean_approval(path, observed):
             "clean_root_tree_verified": True, "exact_blob_verified": True}
 
 
+def _workflow_approval(observed):
+    root = CLEAN_IDENTITY["clean_root_sha"]
+    if not _ancestor(root):
+        return None
+    try:
+        if (_git("rev-parse", root + "^{tree}").decode().strip() != CLEAN_IDENTITY["clean_root_tree_sha"]
+                or _git("show", "-s", "--format=%P", root).decode().strip() != CLEAN_IDENTITY["parent_main_sha"]):
+            return None
+        before = _git("show", f"{root}:{WORKFLOW_PATH}")
+        if sha256(before).hexdigest() != WORKFLOW_BEFORE_SHA256:
+            return None
+        expected = before.replace(b"      - uses: actions/checkout@v5\n",
+                                  b"      - uses: actions/checkout@v5\n        with:\n          fetch-depth: 0\n")
+        if observed != expected or sha256(observed).hexdigest() != WORKFLOW_AFTER_SHA256:
+            return None
+        # Precommit proof may start at the reviewed original HEAD; no other HEAD bytes qualify.
+        head_hash = sha256(_git("show", f"HEAD:{WORKFLOW_PATH}")).hexdigest()
+        if head_hash not in {WORKFLOW_BEFORE_SHA256, WORKFLOW_AFTER_SHA256}:
+            return None
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return {"owner": "M12DS-R5-R2", "path": WORKFLOW_PATH,
+            "contract": "m12ds-r5-r2-ci-portable-provenance-tests-v1",
+            "provenance_mode": "REVIEWED_CI_HISTORY_DEPTH", "clean_root": root,
+            "clean_root_ancestor_verified": True, "clean_root_tree_verified": True,
+            "before_sha256": WORKFLOW_BEFORE_SHA256, "sha256": WORKFLOW_AFTER_SHA256,
+            "head_sha256": head_hash, "exact_transform_verified": True}
+
+
 def approved_descendant(path):
     pin = PINS.get(path)
-    if pin is None or not Path(path).is_file() or Path(path).is_symlink():
+    if ((pin is None and path != WORKFLOW_PATH) or not Path(path).is_file()
+            or Path(path).is_symlink()):
         return None
     try:
         observed = Path(path).read_bytes()
     except OSError:
         return None
+    if path == WORKFLOW_PATH:
+        return _workflow_approval(observed)
     # A failed clean attestation must never fall back to a different proof mode.
     if _ancestor(CLEAN_IDENTITY["clean_root_sha"]):
         return _clean_approval(path, observed)

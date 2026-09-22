@@ -1,0 +1,38 @@
+{
+  "contract": "m12ds-r5-r2-ci-portable-provenance-tests-v1",
+  "clean_root_sha": "33d051ed80fface5741f59a4bff2de8794808931",
+  "clean_root_tree_sha": "4c3443c1ae5221aed91cb846bb7a020f38fa1497",
+  "reviewed_candidate_sha": "72c246700b1966d50343306a30efdb56ed6eeabc",
+  "r5_r1_report_sha256": "767131c76778ac70d47c9fc1b52688a59e673535bc3dea75a02043902524f5b5",
+  "runner": {
+    "owner": "M12DS_RUNNER_SEMANTIC_IDENTITY",
+    "path": "scripts/m12dr_fresh_blind_reproof.py",
+    "historical_reference": "df90c148e8f7d3c604354e6001db38640692ebd4",
+    "reviewed_root_file_sha256": "d98b004194af883c885b538d00662f3f9d4a2cce09f7f5820031bdf94db7365e",
+    "fingerprint_format": "python-ast-dump-without-attributes-v1",
+    "protected_methods": {
+      "__init__": "bc85fee6bc946600d19d8e325ef05ecd4381fe7b567ce0d258ec2730ea3344cb",
+      "args": "8bc126518282e0e97840dc5d9290db16a0037d8d56f3ca8f2a65e1f3d44e1832",
+      "before_a": "36268d3baef6429f01ad8a5be395185598618cff4784c451cca1f66e08fb0a3d",
+      "before_b": "78cf46441c5307722caf3d027c3739707397e54572f0edfa40991498e21fc8f5",
+      "bounded": "6810dc5cc33f9cb83bdf4f091812d57b906bf3e1b15dd555fcfcd152789f8e7a",
+      "chain": "4bccc6a462a80993d91dd5884be439ee11854d7c220d5bdbd21272585f99467b",
+      "core": "24d75a5f7c03bb85a0a2f6b52305ca43fd8b1dfa5cd57c064aa03e86ae1f4a1c",
+      "freeze": "ccce21c33acec004c4be899e6c136ca974ed4a5cb7e6b187df6c73d12ed8237e",
+      "identity": "67cb89146fd1a5ae92a93b6f9eda5b22acf99093fa74b2edaa79a372508ce1f4",
+      "pass_b": "73913deb02ca2ee00c0a91544fedce66b1f80d6f39f178def471b7b48cad45f7",
+      "publish": "8ec68036ebd40830daa973aa3c26686e79ec486075e76f306941525d91f5b6fa",
+      "receipt": "6aaa1ea570ff8ae5c429f92d9d5d6447cc3ca359cfd2f5022929f98eb6fff902",
+      "run": "22022c958ea7dbfcc709fee301ee90ae6419437f5cfc2a015d445db86cf7e96a",
+      "verify": "200508b82ccf4564703cc24848e0a4118caaaceab8752c85b9fd3c4957ae7b99"
+    },
+    "pass_a_validation_tail_sha256": "fd69b9999c63d153f6726dca4b27da8ff93ff3868a0409eb280324acd0e3565c",
+    "excluded_semantics": ["invoke", "pass_a.body[0]"]
+  },
+  "transport": {
+    "owner": "M12DS_ORIGINAL_CHILD_TRANSPORT_BYTE_IDENTITY",
+    "path": "app/services/official_codex_shadow_transport_service.py",
+    "historical_reference": "4a700efe205ee46e0c14e31b5e29590bb0d5788f",
+    "reviewed_root_file_sha256": "16ceba30b662be5055e430614c45bdf1e0c5f4d3bf2881fb437fb5abe24a6eb4"
+  }
+}

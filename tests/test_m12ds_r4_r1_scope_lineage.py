@@ -42,6 +42,10 @@ def clean_repo(tmp_path, monkeypatch):
         target = repo / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes((SOURCE_ROOT / path).read_bytes())
+    workflow = repo / guard.WORKFLOW_PATH
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_bytes(subprocess.check_output(
+        ["git", "show", guard.CLEAN_IDENTITY["clean_root_sha"] + ":" + guard.WORKFLOW_PATH], cwd=SOURCE_ROOT))
     root = commit(repo, "reviewed clean root")
     identity = {**guard.CLEAN_IDENTITY, "clean_root_sha": root,
                 "clean_root_tree_sha": git(repo, "rev-parse", "HEAD^{tree}"), "parent_main_sha": parent}
@@ -189,9 +193,100 @@ def test_legacy_exact_ancestry_is_preserved(clean_repo, monkeypatch, changed):
             assert receipt["provenance_mode"] == "LEGACY_HISTORICAL_ANCESTRY"
 
 
+def approved_workflow_bytes():
+    return (SOURCE_ROOT / guard.WORKFLOW_PATH).read_bytes()
+
+
+def test_reviewed_workflow_transition_and_descendant(clean_repo):
+    repo, _, _ = clean_repo
+    path = Path(guard.WORKFLOW_PATH)
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+    path.write_bytes(approved_workflow_bytes())
+    precommit = approved_descendant(guard.WORKFLOW_PATH)
+    assert precommit["exact_transform_verified"]
+    assert precommit["head_sha256"] == guard.WORKFLOW_BEFORE_SHA256
+    commit(repo, "approved history-depth transition")
+    committed = approved_descendant(guard.WORKFLOW_PATH)
+    assert committed["head_sha256"] == guard.WORKFLOW_AFTER_SHA256
+    assert committed["clean_root_ancestor_verified"]
+    commit(repo, "unchanged descendant")
+    assert approved_descendant(guard.WORKFLOW_PATH) == committed
+
+
+@pytest.mark.parametrize("mutation", ["depth", "permission", "job", "whitespace"])
+def test_workflow_only_exact_reviewed_change_is_accepted(clean_repo, mutation):
+    data = approved_workflow_bytes()
+    if mutation == "depth":
+        data = data.replace(b"fetch-depth: 0", b"fetch-depth: 1")
+    elif mutation == "permission":
+        data += b"\npermissions: write-all\n"
+    elif mutation == "job":
+        data = data.replace(b"run: pytest", b"run: echo bypass")
+    else:
+        data += b" "
+    Path(guard.WORKFLOW_PATH).write_bytes(data)
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+
+
+def test_workflow_bad_head_cannot_be_masked_by_working_copy(clean_repo):
+    repo, _, _ = clean_repo
+    path = Path(guard.WORKFLOW_PATH)
+    path.write_bytes(approved_workflow_bytes() + b"\n# unauthorized\n")
+    commit(repo, "unapproved workflow HEAD")
+    path.write_bytes(approved_workflow_bytes())
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+
+
+def test_workflow_requires_reviewed_root_ancestry(clean_repo):
+    repo, row, _ = clean_repo
+    git(repo, "checkout", "--detach", row["parent_main_sha"])
+    path = Path(guard.WORKFLOW_PATH)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(approved_workflow_bytes())
+    commit(repo, "unapproved parallel root")
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+
+
+@pytest.mark.parametrize("identity_key", ["clean_root_tree_sha", "parent_main_sha"])
+def test_workflow_rejects_wrong_root_identity(clean_repo, monkeypatch, identity_key):
+    Path(guard.WORKFLOW_PATH).write_bytes(approved_workflow_bytes())
+    monkeypatch.setattr(guard, "CLEAN_IDENTITY", {**guard.CLEAN_IDENTITY, identity_key: "0" * 40})
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+
+
+def test_workflow_rejects_wrong_root_bytes(clean_repo, monkeypatch):
+    repo, row, _ = clean_repo
+    path = Path(guard.WORKFLOW_PATH)
+    path.write_bytes(path.read_bytes() + b"\n# wrong root\n")
+    wrong = commit(repo, "wrong root bytes")
+    monkeypatch.setattr(guard, "CLEAN_IDENTITY", {**guard.CLEAN_IDENTITY,
+        "clean_root_sha": wrong, "clean_root_tree_sha": git(repo, "rev-parse", "HEAD^{tree}"),
+        "parent_main_sha": row["clean_root_sha"]})
+    path.write_bytes(approved_workflow_bytes())
+    assert approved_descendant(guard.WORKFLOW_PATH) is None
+
+
 @pytest.mark.parametrize("protected_test", ["M12E", "M12U", "M12F", "M12W", "M12AA", "M12AB"])
-def test_each_migrated_scope_still_detects_unauthorized_owner_mutation(monkeypatch, protected_test):
+def test_each_migrated_scope_still_detects_unauthorized_owner_mutation(monkeypatch, protected_test, request):
     target = "app/services/daily_digest_renderer.py"
+    if protected_test == "M12W":
+        repo, row, _ = request.getfixturevalue("clean_repo")
+        monkeypatch.setattr(w, "BASE", row["clean_root_sha"])
+        commit(repo, "unchanged reviewed descendant")
+        before = w.freeze()
+        assert before["status"] == "PASS"
+        assert before["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256"
+        assert before["changed_existing_paths"] == []
+        assert approved_descendant(target)["clean_root_ancestor_verified"]
+        path = Path(target)
+        path.write_bytes(path.read_bytes() + b"\n# unauthorized owner mutation\n")
+        commit(repo, "mutated descendant")
+        assert approved_descendant(target) is None
+        after = w.freeze()
+        assert after["status"] == "FAIL"
+        assert after["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256"
+        assert after["changed_existing_paths"] == [target]
+        return
     original = Path.read_bytes
 
     def mutated(path):
@@ -202,7 +297,5 @@ def test_each_migrated_scope_still_detects_unauthorized_owner_mutation(monkeypat
     assert approved_descendant(target) is None
     if protected_test in {"M12E", "M12U", "M12F"}:
         assert target in u.scope_audit()["unexpected_file_changes"]
-    elif protected_test == "M12W":
-        assert target in w.freeze()["changed_existing_paths"]
     else:
         assert (aa if protected_test == "M12AA" else ab)._freeze_paths((target,))["status"] == "FAIL"
