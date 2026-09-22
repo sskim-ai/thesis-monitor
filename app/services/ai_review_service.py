@@ -3426,7 +3426,7 @@ def _market_packet(
     structured_session_date = (
         us_market_session(generated_at).latest_completed_regular_session_date
         if market == "us"
-        else run_date
+        else korea_market_session(generated_at).latest_completed_regular_session_date
     )
     try:
         envelope = load_structured_market_context(
@@ -3465,6 +3465,7 @@ def _market_packet(
         ],
         market=market,
         cross_section=cross_section,
+        cross_section_session_date=structured_session_date,
         previous_briefing=previous_briefing,
     )
     market_facts = [

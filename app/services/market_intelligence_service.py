@@ -576,6 +576,7 @@ def build_market_intelligence(
     *,
     market: str,
     cross_section: MarketCrossSection | None = None,
+    cross_section_session_date: date | None = None,
     previous_briefing: MacroBriefing | None = None,
 ) -> dict[str, object]:
     market_summary = _market_summary_view(briefing, previous_briefing)
@@ -597,10 +598,12 @@ def build_market_intelligence(
         if relative is not None:
             facts.append(relative)
     cross_section_facts: list[dict[str, object]] = []
+    section_date = cross_section_session_date or run_date
     if (
         cross_section is not None
         and cross_section.market.lower() == market.lower()
-        and cross_section.session_date == run_date
+        and cross_section.session_date == section_date
+        and section_date <= run_date
         and cross_section.quality.freshness == "fresh"
     ):
         for index in cross_section.indices:
@@ -608,7 +611,7 @@ def build_market_intelligence(
                 {
                     "fact_id": f"market:cross-section:index:{index.symbol}",
                     "fact_type": "market_cross_section_index",
-                    "as_of_date": run_date.isoformat(),
+                    "as_of_date": section_date.isoformat(),
                     "source": cross_section.quality.provider,
                     "fields": {
                         "symbol": index.symbol,
@@ -625,7 +628,7 @@ def build_market_intelligence(
                     {
                         "fact_id": f"market:breadth:{market}:counts",
                         "fact_type": "market_breadth_counts",
-                        "as_of_date": run_date.isoformat(),
+                        "as_of_date": section_date.isoformat(),
                         "source": cross_section.quality.provider,
                         "fields": {
                             "eligible_count": breadth.eligible_count,
@@ -637,7 +640,7 @@ def build_market_intelligence(
                     {
                         "fact_id": f"market:breadth:{market}:returns",
                         "fact_type": "market_breadth_returns",
-                        "as_of_date": run_date.isoformat(),
+                        "as_of_date": section_date.isoformat(),
                         "source": cross_section.quality.provider,
                         "fields": {
                             "advance_ratio_pct": (
@@ -661,7 +664,7 @@ def build_market_intelligence(
                         {
                             "fact_id": (f"market:breadth:{market}:{scoped.scope}:counts"),
                             "fact_type": "market_breadth_counts",
-                            "as_of_date": run_date.isoformat(),
+                            "as_of_date": section_date.isoformat(),
                             "source": cross_section.quality.provider,
                             "fields": {
                                 "market_scope": scoped.scope,
@@ -674,7 +677,7 @@ def build_market_intelligence(
                         {
                             "fact_id": (f"market:breadth:{market}:{scoped.scope}:returns"),
                             "fact_type": "market_breadth_returns",
-                            "as_of_date": run_date.isoformat(),
+                            "as_of_date": section_date.isoformat(),
                             "source": cross_section.quality.provider,
                             "fields": {
                                 "market_scope": scoped.scope,
@@ -707,7 +710,7 @@ def build_market_intelligence(
                     {
                         "fact_id": f"market:breadth:{market}:activity",
                         "fact_type": "market_breadth_activity",
-                        "as_of_date": run_date.isoformat(),
+                        "as_of_date": section_date.isoformat(),
                         "source": cross_section.quality.provider,
                         "fields": {
                             "total_trading_volume": safe_volume,
@@ -721,7 +724,7 @@ def build_market_intelligence(
                 {
                     "fact_id": f"market:concentration:{market}",
                     "fact_type": "market_concentration",
-                    "as_of_date": run_date.isoformat(),
+                    "as_of_date": section_date.isoformat(),
                     "source": cross_section.quality.provider,
                     "fields": {
                         "metric_role": cross_section.concentration.get("metric_role"),
@@ -745,7 +748,7 @@ def build_market_intelligence(
                     {
                         "fact_id": (f"market:flow-concentration:{market_scope}:{actor}"),
                         "fact_type": "market_flow_concentration",
-                        "as_of_date": run_date.isoformat(),
+                        "as_of_date": section_date.isoformat(),
                         "source": cross_section.quality.provider,
                         "fields": relation,
                     }
@@ -755,7 +758,7 @@ def build_market_intelligence(
                 {
                     "fact_id": market_cross_section_sector_fact_id(sector),
                     "fact_type": "market_cross_section_sector",
-                    "as_of_date": run_date.isoformat(),
+                    "as_of_date": section_date.isoformat(),
                     "source": cross_section.quality.provider,
                     "fields": {
                         **sector.model_dump(mode="json", exclude={"advance_ratio"}),
@@ -770,7 +773,7 @@ def build_market_intelligence(
                 {
                     "fact_id": f"market:flow:{market}:{flow.market}:{flow.actor}",
                     "fact_type": "market_flow",
-                    "as_of_date": run_date.isoformat(),
+                    "as_of_date": section_date.isoformat(),
                     "source": cross_section.quality.provider,
                     "fields": {
                         "actor": flow.actor,

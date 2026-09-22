@@ -117,6 +117,22 @@ def test_r6_source_pins_reject_unregistered_changes_and_bad_head(tmp_path, monke
     assert approved_descendant(path) is None
 
 
+def test_r6_only_exact_completed_session_projection_is_accepted(clean_repo, monkeypatch):
+    repo, _, document = clean_repo
+    instruction = commit(repo, 'R6 instruction')
+    monkeypatch.setattr(guard, 'R6_INSTRUCTION_SHA', instruction)
+    path = 'app/services/ai_review_service.py'
+    target = Path(path)
+    target.write_bytes((SOURCE_ROOT / path).read_bytes())
+    assert approved_descendant(path)['exact_transform_verified']
+    commit(repo, 'completed source session projection only')
+    target.write_bytes(target.read_bytes() + b'\n# unapproved\n')
+    assert approved_descendant(path) is None
+    target.write_bytes((SOURCE_ROOT / path).read_bytes())
+    document.write_text('{}')
+    assert approved_descendant(path) is None
+
+
 def test_clean_descendant_and_missing_private_objects(clean_repo, monkeypatch):
     repo, _, _ = clean_repo
     commit(repo, "public descendant")

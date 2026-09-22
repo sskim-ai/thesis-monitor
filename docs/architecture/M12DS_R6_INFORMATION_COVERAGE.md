@@ -30,6 +30,11 @@ Accepted policy baseline: `2097645892e30d84aba435416f98e7f9545a87fa`.
   proxy. KR uses the existing sector applicability classifier and separate
   KOSPI/KOSDAQ universes. Rank by same-session numeric return, ties by canonical
   fact ID. TOP/BOTTOM means relative ranking, not necessarily positive/negative sign.
+- KR structured cross-sections use the existing completed regular-session owner,
+  including after KST midnight. Their facts retain that source session date; the
+  packet assessment date is not substituted. Session mismatch, future session and
+  stale quality still fail closed. The current collection was reprojected offline
+  from the unchanged read-only isolated database before any model calls.
 - Stock quote as-of and active support/resistance consume `current_price_context`.
   Partial aggregate chart availability does not hide a valid timestamp or the
   available side. Missing sides remain unresolved. Neither side replaces
@@ -53,6 +58,11 @@ The historical scope guard permits only the exact receipt-projection insertion
 and individually hashed R6 source-owner changes descending from the instruction
 commit. Any further byte change is rejected. Old scope failures remain failures
 for unrelated owners; no global allowlist or threshold relaxation is added.
+The completed-session projection in `ai_review_service` is an exact two-site
+transformation under the same verified clean-history attestation. The missing
+M12DS launch-context contract was restored byte-for-byte from the original work
+instruction (SHA-256 `9a65cc4768f86d4b05441c5a4d8db58f55b36e374314b47fa63c896683259de0`);
+no auth, TLS, sandbox or model policy was changed.
 
 ## Official Publication References
 

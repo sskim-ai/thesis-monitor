@@ -155,7 +155,7 @@ def approved_descendant(path):
         return _workflow_approval(observed)
     if path in R6_SOURCE_HASHES:
         return _r6_source_approval(path, observed)
-    if path == 'app/macro/briefing.py' and _ancestor(R6_INSTRUCTION_SHA):
+    if path in {'app/macro/briefing.py', 'app/services/ai_review_service.py'} and _ancestor(R6_INSTRUCTION_SHA):
         return _r6_metadata_approval(path, observed)
     # A failed clean attestation must never fall back to a different proof mode.
     if _ancestor(CLEAN_IDENTITY["clean_root_sha"]):
@@ -175,7 +175,7 @@ def approved_descendant(path):
 
 
 def _r6_metadata_approval(path, observed):
-    """Only two source receipts may be propagated; no temporal policy edits."""
+    """Only the exact receipt/session-source projection may change."""
     try:
         expected_rows = [{"path": p, "owner": owner, "historical_pin": commit,
                           "sha256": REVIEWED_HASHES[p]} for p, (owner, commit) in PINS.items()]
@@ -188,10 +188,22 @@ def _r6_metadata_approval(path, observed):
         before = _git('show', f'{R6_INSTRUCTION_SHA}:{path}')
         if sha256(before).hexdigest() != REVIEWED_HASHES[path]:
             return None
-        anchor = b'    if item.category == "kr_night_futures":\n'
-        if before.count(anchor) != 1:
-            return None
-        after = before.replace(anchor, R6_METADATA_INSERTION + anchor)
+        if path == 'app/macro/briefing.py':
+            anchor = b'    if item.category == "kr_night_futures":\n'
+            if before.count(anchor) != 1:
+                return None
+            after = before.replace(anchor, R6_METADATA_INSERTION + anchor)
+        else:
+            anchor = (b'        us_market_session(generated_at).latest_completed_regular_session_date\n'
+                      b'        if market == "us"\n        else run_date\n')
+            call = b'        cross_section=cross_section,\n        previous_briefing=previous_briefing,\n'
+            if before.count(anchor) != 1 or before.count(call) != 1:
+                return None
+            after = before.replace(anchor, anchor.replace(b'else run_date',
+                b'else korea_market_session(generated_at).latest_completed_regular_session_date'))
+            after = after.replace(call, b'        cross_section=cross_section,\n'
+                b'        cross_section_session_date=structured_session_date,\n'
+                b'        previous_briefing=previous_briefing,\n')
         if observed != after or _git('show', f'HEAD:{path}') not in (before, after):
             return None
         return dict(owner='M12DS-R6', path=path, instruction_commit=R6_INSTRUCTION_SHA,
