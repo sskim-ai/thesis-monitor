@@ -4,7 +4,8 @@ from app.services.daily_digest import (
     VALUATION_LABELS,
 )
 from app.services.kr_close_fx import render_kr_close_fx
-from app.services.night_futures import is_night_futures_warning, render_night_futures
+from app.services.night_futures import NightFuturesSummary, is_night_futures_warning, render_night_futures
+from app.services.night_futures_session_mapping_service import US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT
 from app.services.night_futures_visibility_service import (
     night_futures_user_facing_visibility,
 )
@@ -19,7 +20,18 @@ def render_daily_digest(
     digest: DailyDigest,
     *,
     include_stock_details: bool = True,
+    accepted_market=None,
 ) -> str:
+    if accepted_market is not None:
+        from app.services.accepted_calibration_message_service import (
+            AcceptedMarketCalibration, calibration_market_render,
+        )
+        if not isinstance(accepted_market, AcceptedMarketCalibration):
+            raise ValueError("accepted_market_contract_required")
+        if digest is not None and (digest.market_scope != accepted_market.market
+                or str(digest.digest_date) != accepted_market.assessment_date):
+            raise ValueError("accepted_market_digest_identity_mismatch")
+        return calibration_market_render(accepted_market)
     if digest.market_scope == "us" and digest.us_full_message_context is not None:
         full_message = render_us_full_market_message(digest.us_full_message_context)
         if full_message.status == "PASS":
@@ -87,7 +99,14 @@ def render_daily_digest(
     )
     night_visibility = night_futures_user_facing_visibility(digest.market_scope)
     if night_visibility.visible:
-        night_futures = render_night_futures(digest.night_futures)
+        summary = digest.night_futures
+        if digest.market_scope == "kr":
+            summary = NightFuturesSummary(
+                items=[r for r in summary.items
+                       if r.reference_date_contract != US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT],
+                cautions=summary.cautions,
+            )
+        night_futures = render_night_futures(summary)
         if night_futures:
             lines.extend(["", night_futures])
     lines.extend(["", "🧭 현재 시장 상황"])

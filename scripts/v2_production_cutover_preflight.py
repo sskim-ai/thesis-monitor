@@ -23,25 +23,30 @@ from app.services.accepted_decision_v2_runtime_service import (
     AcceptedV2ProductionArtifact,
     AcceptedV2ProductionBatchOutput,
     AcceptedV2ProductionContext,
+    AcceptedV2FundamentalCoreBatch,
+    AcceptedV2FundamentalCoreCandidate,
+    accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_output_schema,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
+    materialize_accepted_v2_stage2_output,
+    validate_accepted_v2_stage2_candidate,
+    validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
     validate_accepted_v2_production_output,
 )
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidencePacket,
     build_decision_evidence_packet,
 )
-from app.services.decision_canary_service import (
-    insert_decision_canary_block,
-    strict_json_schema,
-)
+from app.services.decision_canary_service import insert_decision_canary_block
 from app.services.packet_owned_technical_context_service import (
     packet_owned_context_for_stock,
-)
-from app.services.preconfirmation_decision_v2_service import (
-    validate_preconfirmation_candidate,
 )
 from scripts.kr_final_preenable_test_delivery import deliver_test_messages
 from scripts.kr_market_preenable_evidence import audit_test_sink, load_env_values
@@ -114,20 +119,96 @@ def _codex_batch(
     state_namespace: str | None = None,
 ) -> AcceptedV2ProductionBatchOutput:
     codex_bin = _signed_in_codex_bin()
-    schema = output_dir / "output.schema.json"
-    _write_json(
-        schema,
-        strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
-    )
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    fundamental_cores: list[AcceptedV2FundamentalCoreCandidate] = []
+    for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
+        subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
+        batch_number = index // V2_REASONING_BATCH_SIZE + 1
+        prompt = output_dir / f"core-batch-{batch_number:02d}.prompt.txt"
+        output = output_dir / f"core-batch-{batch_number:02d}.output.json"
+        log = output_dir / f"core-batch-{batch_number:02d}.log"
+        core_schema = output_dir / f"core-batch-{batch_number:02d}.schema.json"
+        ref_catalog = output_dir / f"core-batch-{batch_number:02d}.ref-catalog.json"
+        _write_text(prompt, accepted_v2_fundamental_core_prompt(context, subjects=subjects))
+        _write_json(
+            core_schema,
+            accepted_v2_fundamental_core_output_schema(context, subjects=subjects),
+        )
+        _write_json(
+            ref_catalog,
+            accepted_v2_fundamental_core_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+            ),
+        )
+        _invoke_signed_in_codex(
+            codex_bin=codex_bin,
+            prompt=prompt,
+            output=output,
+            log=log,
+            schema=core_schema,
+            cwd=output_dir,
+            timeout=timeout,
+            state_namespace=state_namespace or context.claim_id,
+        )
+        batch = AcceptedV2FundamentalCoreBatch.model_validate(_read_json(output))
+        scope_errors = validate_accepted_v2_fundamental_core_batch_scope(
+            batch,
+            context,
+            subjects=subjects,
+        )
+        if scope_errors:
+            raise ValueError(f"preflight_fundamental_core_scope_mismatch:{batch_number}")
+        by_ticker = {row.ticker: row for row in batch.cores}
+        for ticker in subjects:
+            errors = validate_accepted_v2_fundamental_core(
+                by_ticker[ticker], ownership[ticker]
+            )
+            if errors:
+                raise ValueError(
+                    "preflight_fundamental_core_invalid:"
+                    + ticker
+                    + ":"
+                    + ",".join(errors)
+                )
+            fundamental_cores.append(by_ticker[ticker])
+
     candidates = []
     adjudications = []
+    cores_by_ticker = {row.ticker: row for row in fundamental_cores}
     for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
         subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
         batch_number = index // V2_REASONING_BATCH_SIZE + 1
         prompt = output_dir / f"batch-{batch_number:02d}.prompt.txt"
         output = output_dir / f"batch-{batch_number:02d}.output.json"
         log = output_dir / f"batch-{batch_number:02d}.log"
-        _write_text(prompt, accepted_v2_production_prompt(context, subjects=subjects))
+        schema = output_dir / f"batch-{batch_number:02d}.schema.json"
+        ref_catalog = output_dir / f"batch-{batch_number:02d}.ref-catalog.json"
+        selected_cores = tuple(cores_by_ticker[ticker] for ticker in subjects)
+        _write_json(
+            schema,
+            accepted_v2_stage2_output_schema(
+                context,
+                subjects=subjects,
+                fundamental_cores=selected_cores,
+            ),
+        )
+        _write_json(
+            ref_catalog,
+            accepted_v2_stage2_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+                fundamental_cores=selected_cores,
+            ),
+        )
+        _write_text(
+            prompt,
+            accepted_v2_production_prompt(
+                context,
+                fundamental_cores=selected_cores,
+                subjects=subjects,
+            ),
+        )
         _invoke_signed_in_codex(
             codex_bin=codex_bin,
             prompt=prompt,
@@ -140,7 +221,12 @@ def _codex_batch(
         )
         raw_batch = _read_json(output)
         try:
-            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                raw_batch,
+                fundamental_cores=selected_cores,
+                subjects=subjects,
+            )
         except ValidationError as exc:
             if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
                 raise
@@ -151,6 +237,7 @@ def _codex_batch(
                 repair_prompt,
                 accepted_v2_production_batch_schema_repair_prompt(
                     context,
+                    fundamental_cores=selected_cores,
                     subjects=subjects,
                     rejected_output=raw_batch,
                     validation_errors=_schema_validation_errors(exc),
@@ -166,13 +253,19 @@ def _codex_batch(
                 timeout=timeout,
                 state_namespace=state_namespace or context.claim_id,
             )
-            batch = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                fundamental_cores=selected_cores,
+                subjects=subjects,
+            )
         if (
             batch.packet_id != context.packet_id
             or batch.claim_id != context.claim_id
             or batch.market != context.market
             or batch.assessment_date != context.assessment_date
             or {row.ticker for row in batch.candidates} != set(subjects)
+            or tuple(batch.fundamental_cores) != selected_cores
         ):
             raise ValueError(f"preflight_batch_identity_or_scope_mismatch:{batch_number}")
         batch_candidates = {row.ticker: row for row in batch.candidates}
@@ -181,21 +274,47 @@ def _codex_batch(
             raise ValueError(f"preflight_duplicate_adjudication:{batch_number}")
         packets = {row.ticker: row for row in context.evidence_packets}
         for ticker in subjects:
-            validation = validate_preconfirmation_candidate(
-                packets[ticker], batch_candidates[ticker]
+            validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
+                batch_candidates[ticker],
+                cores_by_ticker[ticker],
+                ownership[ticker],
             )
-            if validation.valid:
+            combined_errors = validation.errors
+            if not combined_errors:
                 continue
             repair_prompt = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.txt"
             repair_output = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.json"
             repair_log = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.log"
+            repair_schema = output_dir / f"batch-{batch_number:02d}.{ticker}.repair.schema.json"
+            repair_ref_catalog = (
+                output_dir
+                / f"batch-{batch_number:02d}.{ticker}.repair.ref-catalog.json"
+            )
+            _write_json(
+                repair_schema,
+                accepted_v2_stage2_output_schema(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
+            )
+            _write_json(
+                repair_ref_catalog,
+                accepted_v2_stage2_ref_catalog_manifest(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
+            )
             _write_text(
                 repair_prompt,
                 accepted_v2_production_repair_prompt(
                     context,
+                    fundamental_core=cores_by_ticker[ticker],
                     ticker=ticker,
                     rejected_candidate=batch_candidates[ticker],
-                    validation_errors=tuple(dict.fromkeys(validation.errors)),
+                    validation_errors=combined_errors,
                 ),
             )
             _invoke_signed_in_codex(
@@ -203,12 +322,17 @@ def _codex_batch(
                 prompt=repair_prompt,
                 output=repair_output,
                 log=repair_log,
-                schema=schema,
+                schema=repair_schema,
                 cwd=output_dir,
                 timeout=timeout,
                 state_namespace=state_namespace or context.claim_id,
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            repaired = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                fundamental_cores=(cores_by_ticker[ticker],),
+                subjects=(ticker,),
+            )
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id
@@ -217,10 +341,14 @@ def _codex_batch(
                 or len(repaired.candidates) != 1
                 or repaired.candidates[0].ticker != ticker
                 or any(row.ticker != ticker for row in repaired.adjudications)
+                or tuple(repaired.fundamental_cores) != (cores_by_ticker[ticker],)
             ):
                 raise ValueError(f"preflight_repair_scope_mismatch:{ticker}")
-            repaired_validation = validate_preconfirmation_candidate(
-                packets[ticker], repaired.candidates[0]
+            repaired_validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
+                repaired.candidates[0],
+                cores_by_ticker[ticker],
+                ownership[ticker],
             )
             if not repaired_validation.valid:
                 raise ValueError(
@@ -239,6 +367,7 @@ def _codex_batch(
         claim_id=context.claim_id,
         market=context.market,
         assessment_date=context.assessment_date,
+        fundamental_cores=tuple(fundamental_cores),
         candidates=tuple(candidates),
         adjudications=tuple(adjudications),
     )

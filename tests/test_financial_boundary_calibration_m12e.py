@@ -27,11 +27,16 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
     ]
     assert result["unexpected_file_changes"] == [
         "app/services/directional_financial_context_service.py",
+        "app/services/evidence_maturity_pricing_service.py",
+        "app/services/krx_night_session_contract_service.py",
+        "app/services/market_intelligence_service.py",
         "app/services/structured_autonomy_alias_service.py",
         "scripts/directional_financial_context_m12.py",
         "scripts/first_class_typed_financial_evidence_m12b.py",
         "scripts/new_issuer_final_freeze_ownership_proof.py",
         "scripts/new_issuer_holdout_selection_ownership_proof.py",
+        "tests/test_evidence_maturity_pricing_service.py",
+        "tests/test_market_intelligence_service.py",
     ]
     before = m12u.e.prompt_value(
         m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE]

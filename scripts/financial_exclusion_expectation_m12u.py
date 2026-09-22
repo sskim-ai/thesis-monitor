@@ -45,6 +45,7 @@ def report(number, value):
 
 
 def scope_audit():
+    from scripts.approved_scope_descendants import approved_descendant
     baseline = read(BASELINE)
     allowed = {
         HELPER,
@@ -77,11 +78,31 @@ def scope_audit():
         "tests/test_uskr22_structured_autonomy_shadow.py",
         # M12BR marks only exact replay tests whose raw/report inputs were excluded.
         "tests/conftest.py",
+        # M12BS owns the two-stage decision runtime, three-axis rendering, and
+        # leading-market integration surfaces plus their direct regressions.
+        "app/jobs/accepted_decision_v2_runtime.py",
+        "app/services/accepted_decision_v2_runtime_service.py",
+        "app/services/accepted_decision_v2_service.py",
+        "app/services/notification_service.py",
+        "app/services/onboarding_decision_service.py",
+        "app/services/preconfirmation_decision_v2_service.py",
+        "app/services/us_full_message_service.py",
+        "scripts/v2_production_cutover_preflight.py",
+        "tests/test_accepted_decision_v2_runtime.py",
+        "tests/test_direction_timing_ownership_service.py",
+        "tests/test_notification_service.py",
+        "tests/test_preconfirmation_decision_v2_service.py",
+        "tests/test_us_full_message.py",
+        # M12CG-R4-R1 forwards the already-frozen Core reference through the
+        # existing delivery reader and owns only its direct regressions.
+        "app/services/ai_assisted_delivery_service.py",
+        "tests/test_ai_assisted_delivery.py",
     }
     unexpected = [
         p
         for p, h in baseline["files"].items()
         if p not in allowed
+        and not approved_descendant(p)
         and not (
             not Path(p).is_file()
             and p.startswith(("artifacts/", "docs/reports/"))

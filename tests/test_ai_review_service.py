@@ -58,6 +58,176 @@ from scripts.sync_custom_gpt_knowledge import (
 RUN_DATE = date(2026, 8, 14)
 
 
+def _session_packet(market, timestamp, basis):
+    at = datetime.fromisoformat(timestamp)
+    header = ai_review_service._market_packet_session(market, at.date(), at)
+    price = {
+        "current_price": 100,
+        "price_basis": basis,
+        "exchange_trade_date": header[
+            "market_date" if basis == "intraday" else "latest_completed_regular_session_date"
+        ],
+        "latest_completed_regular_session_date": header["latest_completed_regular_session_date"],
+        "price_as_of": timestamp,
+    }
+    return {
+        "market": market,
+        "assessment_date": at.date().isoformat(),
+        "generated_at": timestamp,
+        "market_context": {
+            "session": header,
+            "adapter_context": {
+                "market": market.upper(),
+                "as_of": timestamp,
+                "assessment_date": at.date().isoformat(),
+                "session_context": {
+                    **{
+                        k: header[k]
+                        for k in (
+                            "assessment_state",
+                            "market_date",
+                            "latest_completed_regular_session_date",
+                            "timezone",
+                        )
+                    },
+                    "role": "regular"
+                    if header["market_session"] == "open"
+                    else header["market_session"],
+                },
+            },
+        },
+        "stocks": [
+            {
+                "ticker": "SYNTHETIC",
+                "price_and_positioning": {"price": price},
+                "fact_catalog": [
+                    {
+                        "fact_id": "price:current",
+                        "source": "unchanged-provider",
+                        "as_of_date": timestamp,
+                        "fields": copy.deepcopy(price),
+                    }
+                ],
+            }
+        ],
+    }
+
+
+@pytest.mark.parametrize(
+    "market,timestamp,basis,session,state",
+    [
+        ("kr", "2026-09-21T06:00:00+00:00", "intraday", "open", "provisional"),
+        ("kr", "2026-09-21T13:00:00+00:00", "close", "closed", "final"),
+        ("kr", "2026-09-21T07:00:00+00:00", "close", "after_hours", "final"),
+        ("us", "2026-09-21T06:00:00+00:00", "close", "closed", "final"),
+        ("us", "2026-09-21T14:00:00+00:00", "intraday", "open", "provisional"),
+        ("us", "2026-09-21T12:00:00+00:00", "close", "pre_market", "final"),
+    ],
+)
+def test_market_session_parity_current_market_owner(market, timestamp, basis, session, state):
+    packet = _session_packet(market, timestamp, basis)
+    before = copy.deepcopy(packet)
+    header = packet["market_context"]["session"]
+    assert header["market_session"] == session
+    assert header["assessment_state"] == state
+    capture = {
+        "market": market,
+        "render_mode": "LATEST_COMPLETED_CLOSE",
+        "target_session": header["latest_completed_regular_session_date"],
+    }
+    receipt = ai_review_service.validate_market_packet_session_parity(
+        packet, completed_captures=(capture,)
+    )
+    assert receipt["status"] == "PASS", receipt
+    assert packet == before
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "old_macro_header",
+        "adapter_state",
+        "price_projection",
+        "price_date",
+        "completed_date",
+        "future_close",
+        "missing_generated_at",
+        "naive_generated_at",
+        "adapter_as_of",
+        "adapter_market",
+        "missing_price_basis",
+    ],
+)
+def test_market_session_parity_rejects_without_mutation(mutation):
+    packet = _session_packet("kr", "2026-09-21T06:00:00+00:00", "intraday")
+    header = packet["market_context"]["session"]
+    adapter = packet["market_context"]["adapter_context"]
+    price = packet["stocks"][0]["price_and_positioning"]["price"]
+    if mutation == "old_macro_header":
+        header.update(market_session="closed", assessment_state="final")
+    elif mutation == "adapter_state":
+        adapter["session_context"]["assessment_state"] = "final"
+    elif mutation == "price_projection":
+        price["price_basis"] = "close"
+    elif mutation == "price_date":
+        price["exchange_trade_date"] = "2026-09-18"
+    elif mutation == "completed_date":
+        price["latest_completed_regular_session_date"] = "2026-09-21"
+    elif mutation == "future_close":
+        price["price_basis"] = "close"
+    elif mutation == "missing_generated_at":
+        packet.pop("generated_at")
+    elif mutation == "naive_generated_at":
+        packet["generated_at"] = "2026-09-21T06:00:00"
+    elif mutation == "adapter_as_of":
+        adapter["as_of"] = "2026-09-21T06:01:00+00:00"
+    elif mutation == "adapter_market":
+        adapter["market"] = "US"
+    else:
+        price.pop("price_basis")
+    before = copy.deepcopy(packet)
+    receipt = ai_review_service.validate_market_packet_session_parity(packet)
+    assert receipt["status"] == "FAIL"
+    assert receipt["error_code"] == "MARKET_SESSION_CROSS_FIELD_INCONSISTENCY"
+    assert packet == before
+
+
+def test_market_session_parity_rejects_intraday_under_actual_closed_owner():
+    packet = _session_packet("kr", "2026-09-21T13:00:00+00:00", "intraday")
+    receipt = ai_review_service.validate_market_packet_session_parity(packet)
+    assert "SYNTHETIC.intraday_as_final" in receipt["errors"]
+
+
+def test_market_session_parity_completed_capture_date_is_independent():
+    packet = _session_packet("kr", "2026-09-21T06:00:00+00:00", "intraday")
+    capture = {
+        "market": "kr",
+        "render_mode": "LATEST_COMPLETED_CLOSE",
+        "target_session": "2026-09-21",
+    }
+    receipt = ai_review_service.validate_market_packet_session_parity(
+        packet, completed_captures=(capture,)
+    )
+    assert "capture.target_session" in receipt["errors"]
+
+
+def test_shared_morning_macro_cannot_own_kr_packet_header(monkeypatch, tmp_path):
+    _settings(monkeypatch, tmp_path)
+    at = datetime(2026, 8, 14, 1, 0, tzinfo=UTC)
+    with Session(_engine()) as session:
+        _seed(session)
+        morning = session.exec(select(MacroBriefing)).first()
+        morning.market_session = "closed"
+        morning.assessment_state = "final"
+        session.add(morning)
+        session.commit()
+        result = ai_review_service._market_packet(session, RUN_DATE, "kr", [], generated_at=at)
+        assert result["session"]["market_session"] == "open"
+        assert result["session"]["assessment_state"] == "provisional"
+        assert morning.market_session == "closed"
+        assert morning.assessment_state == "final"
+
+
 def _engine():
     value = create_engine(
         "sqlite://",

@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.models.event import Event
 from app.providers.filings import OpenDARTProvider, _resolve_opendart_company, _yyyymmdd
 from app.services.financial_snapshot_service import upsert_financial_snapshot_from_event
+from app.services.financial_validation import validate_event_financials
 
 FINANCIAL_REPORT_KEYWORDS = ("분기보고서", "반기보고서", "사업보고서")
 
@@ -30,11 +31,11 @@ def _is_financial_report(title: str) -> bool:
     return any(keyword in title for keyword in FINANCIAL_REPORT_KEYWORDS)
 
 
-def _published_date(value: str) -> date:
+def _published_date(value: str) -> date | None:
     try:
         return date.fromisoformat(f"{value[:4]}-{value[4:6]}-{value[6:8]}")
     except ValueError:
-        return date.today()
+        return None
 
 
 def _event_from_facts(
@@ -46,7 +47,10 @@ def _event_from_facts(
     published: date,
     facts: list[str],
     unknowns: list[str],
+    financial_lineage: list[dict[str, object]],
 ) -> Event:
+    if not receipt_no:
+        raise ValueError("OpenDART backfill receipt identity is required")
     confirmed_facts = [
         f"OpenDART filing title: {title}",
         f"OpenDART receipt number: {receipt_no}",
@@ -66,6 +70,19 @@ def _event_from_facts(
         confirmed_facts=json.dumps(confirmed_facts),
         inferred_implications="[]",
         unknowns=json.dumps(unknowns),
+        source_document_id=receipt_no,
+        document_identity_status="validated",
+        claim_actor=company_name,
+        claim_actor_type="company_official_filing",
+        document_type="full_statement",
+        financial_scope="full_statement",
+        financial_report_filed=True,
+        raw_financial_fields=json.dumps([
+            *financial_lineage,
+            {"contract": "opendart-backfill-source-audit-v1",
+             "provider": "opendart", "source_document_id": receipt_no,
+             "unknowns": unknowns},
+        ]),
         requires_review=True,
         relevance_score=40,
         relevance_reason="financial report backfill snapshot",
@@ -135,13 +152,22 @@ async def backfill_financial_snapshots(
         for item in sorted(report_rows, key=lambda row: row.get("rcept_dt") or ""):
             title = item.get("report_nm") or "OpenDART filing"
             receipt_no = item.get("rcept_no") or ""
+            if not receipt_no:
+                result.skipped_count += 1
+                result.warnings.append("OpenDART backfill receipt identity missing")
+                continue
             published = _published_date(item.get("rcept_dt") or "")
-            facts, unknowns = await provider_instance._fetch_financial_facts(
+            if published is None:
+                result.skipped_count += 1
+                result.warnings.append("OpenDART backfill filing date missing or invalid")
+                continue
+            facts, unknowns, financial_lineage = await provider_instance._fetch_financial_facts(
                 client=client,
                 api_key=settings.opendart_api_key,
                 corp_code=company.corp_code,
                 title=title,
                 published=published,
+                receipt_no=receipt_no,
             )
             share_facts, share_unknowns = await provider_instance._fetch_share_status_facts(
                 client=client,
@@ -161,9 +187,9 @@ async def backfill_financial_snapshots(
             )
             facts.extend(dividend_facts)
             unknowns.extend(dividend_unknowns)
+            result.warnings.extend(unknowns)
             if not facts:
                 result.skipped_count += 1
-                result.warnings.extend(unknowns)
                 continue
 
             event = _event_from_facts(
@@ -174,6 +200,11 @@ async def backfill_financial_snapshots(
                 published=published,
                 facts=facts,
                 unknowns=unknowns,
+                financial_lineage=financial_lineage,
+            )
+            validate_event_financials(
+                event,
+                operating_margin_upper_bound=settings.financial_operating_margin_upper_bound,
             )
             snapshot = upsert_financial_snapshot_from_event(session, event)
             if snapshot is None:

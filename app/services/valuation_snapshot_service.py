@@ -47,6 +47,7 @@ from app.services.official_security_identity_service import (
     load_official_identity_provenance,
 )
 from app.services.sec_financial_snapshot_service import SecFinancialSnapshotService
+from app.services.sec_business_field_quality_service import field_errors, independently_usable_business
 from app.services.security_identity_service import (
     IDENTITY_CONFLICT,
     IDENTITY_UNKNOWN,
@@ -186,7 +187,7 @@ def _earnings_quarters(rows: list[FinancialSnapshot]) -> list[FinancialSnapshot]
         key = _quarter_key(row)
         if key is None or row.snapshot_type not in {"full_statement", "preliminary_earnings"}:
             continue
-        if _stored_list(row.financial_hard_errors):
+        if _stored_list(row.financial_hard_errors) and not independently_usable_business(row):
             continue
         if row.financial_statement_basis_warning or row.margin_quality_review:
             continue
@@ -942,7 +943,8 @@ class ValuationSnapshotService:
                 "filing_date": (
                     value.isoformat() if (value := filing_date(row)) else None
                 ),
-                "hard_errors": _stored_list(row.financial_hard_errors),
+                "hard_errors": (field_errors(row, field) if field is not None
+                                else _stored_list(row.financial_hard_errors)),
                 "soft_outliers": _stored_list(row.financial_soft_outliers),
                 "financial_statement_basis_warning": (
                     row.financial_statement_basis_warning

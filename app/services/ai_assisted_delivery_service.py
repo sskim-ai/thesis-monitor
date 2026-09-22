@@ -19,6 +19,7 @@ from app.config import get_settings
 from app.models.thesis import NotificationDelivery
 from app.schemas.ai_review import AIDailyReviewOutput, AIMarketReview, AIStockReview
 from app.services.accepted_decision_v2_runtime_service import (
+    AcceptedV2FundamentalCoreBatch,
     AcceptedV2ProductionArtifact,
     accepted_v2_production_paths,
     advance_accepted_v2_state,
@@ -715,15 +716,20 @@ def _load_delivery_accepted_v2(
     settings = get_settings()
     if not v2_accepted_production_armed(settings=settings):
         return None, "NOT_ACTIVE", None
-    artifact_path = accepted_v2_production_paths(
+    paths = accepted_v2_production_paths(
         output_path,
         claim_id=output.claim_id,
-    )["final"]
+    )
+    artifact_path = paths["final"]
     try:
+        trusted_core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
+            _read_json(paths["core_temp"])
+        )
         artifact = load_accepted_v2_production_artifact(
             artifact_path,
             packet=packet,
             claim_id=output.claim_id,
+            trusted_fundamental_core_batch=trusted_core_batch,
         )
     except (FileNotFoundError, ValueError, json.JSONDecodeError):
         return None, "V2_DECISION_SUPPRESSED_SAFE", artifact_path

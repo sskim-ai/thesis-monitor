@@ -25,14 +25,26 @@ from app.services.accepted_decision_v2_runtime_service import (
     RECEIPT_CONTRACT,
     REASONING_EFFORT,
     REASONING_MODEL,
-    AcceptedV2ProductionBatchOutput,
+    AcceptedV2ProductionBatchOutputV2,
     AcceptedV2ProductionContext,
+    AcceptedV2FundamentalCoreBatch,
+    AcceptedV2FundamentalCoreCandidate,
+    accepted_v2_fundamental_core_prompt,
+    accepted_v2_fundamental_core_output_schema,
+    accepted_v2_fundamental_core_ref_catalog_manifest,
     accepted_v2_production_batch_schema_repair_prompt,
     accepted_v2_production_paths,
     accepted_v2_production_prompt,
     accepted_v2_production_repair_prompt,
+    accepted_v2_stage2_output_schema,
+    accepted_v2_stage2_ref_catalog_manifest,
     build_accepted_v2_production_context,
     load_accepted_v2_production_artifact,
+    materialize_accepted_v2_stage2_output,
+    parse_accepted_v2_production_batch_output,
+    validate_accepted_v2_stage2_candidate,
+    validate_accepted_v2_fundamental_core,
+    validate_accepted_v2_fundamental_core_batch_scope,
     v2_accepted_production_armed,
     validate_accepted_v2_production_output,
 )
@@ -56,16 +68,10 @@ from app.services.codex_network_transport_service import (
     probe_codex_network_readiness,
     retryable_codex_transport_failure,
 )
-from app.services.decision_canary_service import strict_json_schema
 from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext,
     packet_owned_context_for_stock,
 )
-from app.services.preconfirmation_decision_v2_service import (
-    validate_preconfirmation_candidate,
-)
-
-
 V2_REASONING_BATCH_SIZE = 3
 V2_BATCH_SCHEMA_REPAIR_LIMIT = 1
 V2_TRANSPORT_ATTEMPT_LIMIT = 2
@@ -281,7 +287,22 @@ def _invoke_signed_in_codex(
     cwd: Path,
     timeout: int,
     state_namespace: str,
+    official_shadow=None,
 ) -> dict[str, object]:
+    if official_shadow is not None:
+        from app.services.official_codex_shadow_transport_service import invoke_official_shadow
+
+        return invoke_official_shadow(
+            codex_bin=codex_bin,
+            prompt=prompt,
+            output=output,
+            log=log,
+            schema=schema,
+            cwd=cwd,
+            timeout=timeout,
+            state_namespace=state_namespace,
+            request=official_shadow,
+        )
     invocation_paths = {
         "cwd": _repository_path(cwd),
         "prompt": _repository_path(prompt),
@@ -629,10 +650,14 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
     paths = _paths(claim, claim_id)
     _atomic_json(paths["context"], context.model_dump(mode="json"))
     _atomic_json(
-        paths["schema"],
-        strict_json_schema(AcceptedV2ProductionBatchOutput.model_json_schema()),
+        paths["core_schema"],
+        accepted_v2_fundamental_core_output_schema(context),
     )
-    _atomic_text(paths["prompt"], accepted_v2_production_prompt(context))
+    _atomic_json(
+        paths["schema"],
+        accepted_v2_stage2_output_schema(context),
+    )
+    _atomic_text(paths["core_prompt"], accepted_v2_fundamental_core_prompt(context))
     _record_stage(
         packet_id,
         claim_id,
@@ -650,6 +675,9 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
             for status in ("FULL", "PARTIAL_SAFE", "UNAVAILABLE", "INVALID")
         },
         "context_path": str(paths["context"]),
+        "core_prompt_path": str(paths["core_prompt"]),
+        "core_schema_path": str(paths["core_schema"]),
+        "core_temp_output_path": str(paths["core_temp"]),
         "prompt_path": str(paths["prompt"]),
         "schema_path": str(paths["schema"]),
         "temp_output_path": str(paths["temp"]),
@@ -662,11 +690,23 @@ def validate_output(packet_id: str, claim_id: str) -> dict[str, object]:
     paths = _paths(claim, claim_id)
     identity = _generation_identity(packet_id, claim_id, claim)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
-    output = AcceptedV2ProductionBatchOutput.model_validate(_read_json(paths["temp"]))
-    artifact = validate_accepted_v2_production_output(context, output)
+    trusted_core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
+        _read_json(paths["core_temp"])
+    )
+    output = parse_accepted_v2_production_batch_output(_read_json(paths["temp"]))
+    artifact = validate_accepted_v2_production_output(
+        context,
+        output,
+        trusted_fundamental_core_batch=trusted_core_batch,
+    )
     _atomic_json(paths["final"], artifact.model_dump(mode="json"))
     packet = _read_json(_repository_path(Path(str(claim.get("packet_path") or ""))))
-    load_accepted_v2_production_artifact(paths["final"], packet=packet, claim_id=claim_id)
+    load_accepted_v2_production_artifact(
+        paths["final"],
+        packet=packet,
+        claim_id=claim_id,
+        trusted_fundamental_core_batch=trusted_core_batch,
+    )
     receipt = {
         "contract": RECEIPT_CONTRACT,
         "status": artifact.status,
@@ -861,11 +901,99 @@ async def _generate_claim_owned(
     claim = _claim(packet_id, claim_id)
     paths = _paths(claim, claim_id)
     context = AcceptedV2ProductionContext.model_validate(_read_json(paths["context"]))
+    ownership = {row.ticker: row for row in context.evidence_ownership}
+    fundamental_cores: list[AcceptedV2FundamentalCoreCandidate] = []
     candidates = []
     adjudications = []
     batch_schema_repair_count = 0
     candidate_repair_count = 0
     transport_telemetry: list[dict[str, object]] = []
+    for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
+        subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
+        batch_number = index // V2_REASONING_BATCH_SIZE + 1
+        core_prompt = paths["core_prompt"].with_name(
+            f"{paths['core_prompt'].stem}.batch-{batch_number:02d}.txt"
+        )
+        core_output = paths["core_temp"].with_name(
+            f"{paths['core_temp'].stem}.batch-{batch_number:02d}.json"
+        )
+        core_log = paths["core_log"].with_name(
+            f"{paths['core_log'].stem}.batch-{batch_number:02d}.log"
+        )
+        core_schema = paths["core_schema"].with_name(
+            f"{paths['core_schema'].stem}.batch-{batch_number:02d}.json"
+        )
+        core_ref_catalog = paths["core_schema"].with_name(
+            f"{paths['core_schema'].stem}.batch-{batch_number:02d}.ref-catalog.json"
+        )
+        _atomic_text(
+            core_prompt,
+            accepted_v2_fundamental_core_prompt(context, subjects=subjects),
+        )
+        _atomic_json(
+            core_schema,
+            accepted_v2_fundamental_core_output_schema(context, subjects=subjects),
+        )
+        _atomic_json(
+            core_ref_catalog,
+            accepted_v2_fundamental_core_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+            ),
+        )
+        _record_stage(
+            packet_id,
+            claim_id,
+            stage="fundamental_core_invoking",
+            batch_number=batch_number,
+            subject_count=len(subjects),
+        )
+        transport_telemetry.append(
+            _invoke_signed_in_codex(
+                codex_bin=codex_bin,
+                prompt=core_prompt,
+                output=core_output,
+                log=core_log,
+                schema=core_schema,
+                cwd=paths["core_prompt"].parent,
+                timeout=timeout,
+                state_namespace=claim_id,
+            )
+        )
+        core_batch = AcceptedV2FundamentalCoreBatch.model_validate(
+            _read_json(core_output)
+        )
+        scope_errors = validate_accepted_v2_fundamental_core_batch_scope(
+            core_batch,
+            context,
+            subjects=subjects,
+        )
+        if scope_errors:
+            raise ValueError("v2_production_fundamental_core_scope_mismatch")
+        batch_cores = {row.ticker: row for row in core_batch.cores}
+        for ticker in subjects:
+            errors = validate_accepted_v2_fundamental_core(
+                batch_cores[ticker], ownership[ticker]
+            )
+            if errors:
+                raise ValueError(
+                    "v2_production_fundamental_core_invalid:"
+                    + ticker
+                    + ":"
+                    + ",".join(errors)
+                )
+            fundamental_cores.append(batch_cores[ticker])
+    _atomic_json(
+        paths["core_temp"],
+        AcceptedV2FundamentalCoreBatch(
+            packet_id=context.packet_id,
+            claim_id=context.claim_id,
+            market=context.market,
+            assessment_date=context.assessment_date,
+            cores=tuple(fundamental_cores),
+        ).model_dump(mode="json"),
+    )
+    cores_by_ticker = {row.ticker: row for row in fundamental_cores}
     for index in range(0, len(context.selected_subjects), V2_REASONING_BATCH_SIZE):
         subjects = context.selected_subjects[index : index + V2_REASONING_BATCH_SIZE]
         batch_number = index // V2_REASONING_BATCH_SIZE + 1
@@ -876,9 +1004,39 @@ async def _generate_claim_owned(
             f"{paths['temp'].stem}.batch-{batch_number:02d}.json"
         )
         batch_log = paths["log"].with_name(f"{paths['log'].stem}.batch-{batch_number:02d}.log")
+        batch_schema = paths["schema"].with_name(
+            f"{paths['schema'].stem}.batch-{batch_number:02d}.json"
+        )
+        batch_ref_catalog = paths["schema"].with_name(
+            f"{paths['schema'].stem}.batch-{batch_number:02d}.ref-catalog.json"
+        )
+        _atomic_json(
+            batch_schema,
+            accepted_v2_stage2_output_schema(
+                context,
+                subjects=subjects,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+            ),
+        )
+        _atomic_json(
+            batch_ref_catalog,
+            accepted_v2_stage2_ref_catalog_manifest(
+                context,
+                subjects=subjects,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+            ),
+        )
         _atomic_text(
             batch_prompt,
-            accepted_v2_production_prompt(context, subjects=subjects),
+            accepted_v2_production_prompt(
+                context,
+                fundamental_cores=tuple(cores_by_ticker[ticker] for ticker in subjects),
+                subjects=subjects,
+            ),
         )
         _record_stage(
             packet_id,
@@ -893,7 +1051,7 @@ async def _generate_claim_owned(
                 prompt=batch_prompt,
                 output=batch_output,
                 log=batch_log,
-                schema=Path(str(prepared["schema_path"])),
+                schema=batch_schema,
                 cwd=paths["prompt"].parent,
                 timeout=timeout,
                 state_namespace=claim_id,
@@ -908,7 +1066,14 @@ async def _generate_claim_owned(
             subject_count=len(subjects),
         )
         try:
-            batch = AcceptedV2ProductionBatchOutput.model_validate(raw_batch)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                raw_batch,
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+                subjects=subjects,
+            )
         except ValidationError as exc:
             if V2_BATCH_SCHEMA_REPAIR_LIMIT != 1:
                 raise
@@ -925,6 +1090,9 @@ async def _generate_claim_owned(
                 schema_repair_prompt,
                 accepted_v2_production_batch_schema_repair_prompt(
                     context,
+                    fundamental_cores=tuple(
+                        cores_by_ticker[ticker] for ticker in subjects
+                    ),
                     subjects=subjects,
                     rejected_output=raw_batch,
                     validation_errors=_schema_validation_errors(exc),
@@ -936,14 +1104,19 @@ async def _generate_claim_owned(
                     prompt=schema_repair_prompt,
                     output=schema_repair_output,
                     log=schema_repair_log,
-                    schema=Path(str(prepared["schema_path"])),
+                    schema=batch_schema,
                     cwd=paths["prompt"].parent,
                     timeout=timeout,
                     state_namespace=claim_id,
                 )
             )
-            batch = AcceptedV2ProductionBatchOutput.model_validate(
-                _read_json(schema_repair_output)
+            batch = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(schema_repair_output),
+                fundamental_cores=tuple(
+                    cores_by_ticker[ticker] for ticker in subjects
+                ),
+                subjects=subjects,
             )
             batch_schema_repair_count += 1
         if (
@@ -952,6 +1125,8 @@ async def _generate_claim_owned(
             or batch.market != context.market
             or batch.assessment_date != context.assessment_date
             or {row.ticker for row in batch.candidates} != set(subjects)
+            or tuple(batch.fundamental_cores)
+            != tuple(cores_by_ticker[ticker] for ticker in subjects)
         ):
             raise ValueError("v2_production_batch_identity_or_scope_mismatch")
         batch_candidates = {row.ticker: row for row in batch.candidates}
@@ -960,10 +1135,14 @@ async def _generate_claim_owned(
             raise ValueError("v2_production_duplicate_batch_adjudication")
         packets = {row.ticker: row for row in context.evidence_packets}
         for ticker in subjects:
-            validation = validate_preconfirmation_candidate(
-                packets[ticker], batch_candidates[ticker]
+            validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
+                batch_candidates[ticker],
+                cores_by_ticker[ticker],
+                ownership[ticker],
             )
-            if validation.valid:
+            combined_errors = validation.errors
+            if not combined_errors:
                 continue
             repair_prompt = paths["prompt"].with_name(
                 f"{paths['prompt'].stem}.batch-{batch_number:02d}.{ticker}.repair.txt"
@@ -974,13 +1153,36 @@ async def _generate_claim_owned(
             repair_log = paths["log"].with_name(
                 f"{paths['log'].stem}.batch-{batch_number:02d}.{ticker}.repair.log"
             )
+            repair_schema = paths["schema"].with_name(
+                f"{paths['schema'].stem}.batch-{batch_number:02d}.{ticker}.repair.json"
+            )
+            repair_ref_catalog = paths["schema"].with_name(
+                f"{paths['schema'].stem}.batch-{batch_number:02d}.{ticker}.repair.ref-catalog.json"
+            )
+            _atomic_json(
+                repair_schema,
+                accepted_v2_stage2_output_schema(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
+            )
+            _atomic_json(
+                repair_ref_catalog,
+                accepted_v2_stage2_ref_catalog_manifest(
+                    context,
+                    subjects=(ticker,),
+                    fundamental_cores=(cores_by_ticker[ticker],),
+                ),
+            )
             _atomic_text(
                 repair_prompt,
                 accepted_v2_production_repair_prompt(
                     context,
+                    fundamental_core=cores_by_ticker[ticker],
                     ticker=ticker,
                     rejected_candidate=batch_candidates[ticker],
-                    validation_errors=tuple(dict.fromkeys(validation.errors)),
+                    validation_errors=combined_errors,
                 ),
             )
             transport_telemetry.append(
@@ -989,13 +1191,18 @@ async def _generate_claim_owned(
                     prompt=repair_prompt,
                     output=repair_output,
                     log=repair_log,
-                    schema=Path(str(prepared["schema_path"])),
+                    schema=repair_schema,
                     cwd=paths["prompt"].parent,
                     timeout=timeout,
                     state_namespace=claim_id,
                 )
             )
-            repaired = AcceptedV2ProductionBatchOutput.model_validate(_read_json(repair_output))
+            repaired = materialize_accepted_v2_stage2_output(
+                context,
+                _read_json(repair_output),
+                fundamental_cores=(cores_by_ticker[ticker],),
+                subjects=(ticker,),
+            )
             if (
                 repaired.packet_id != context.packet_id
                 or repaired.claim_id != context.claim_id
@@ -1004,10 +1211,14 @@ async def _generate_claim_owned(
                 or len(repaired.candidates) != 1
                 or repaired.candidates[0].ticker != ticker
                 or any(row.ticker != ticker for row in repaired.adjudications)
+                or tuple(repaired.fundamental_cores) != (cores_by_ticker[ticker],)
             ):
                 raise ValueError("v2_production_repair_identity_or_scope_mismatch")
-            repaired_validation = validate_preconfirmation_candidate(
-                packets[ticker], repaired.candidates[0]
+            repaired_validation = validate_accepted_v2_stage2_candidate(
+                packets[ticker],
+                repaired.candidates[0],
+                cores_by_ticker[ticker],
+                ownership[ticker],
             )
             if not repaired_validation.valid:
                 raise ValueError(
@@ -1027,11 +1238,12 @@ async def _generate_claim_owned(
     output_path = Path(str(prepared["temp_output_path"]))
     _atomic_json(
         output_path,
-        AcceptedV2ProductionBatchOutput(
+        AcceptedV2ProductionBatchOutputV2(
             packet_id=context.packet_id,
             claim_id=context.claim_id,
             market=context.market,
             assessment_date=context.assessment_date,
+            fundamental_cores=tuple(fundamental_cores),
             candidates=tuple(candidates),
             adjudications=tuple(adjudications),
         ).model_dump(mode="json"),

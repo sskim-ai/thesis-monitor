@@ -1,4 +1,6 @@
 import json
+import hashlib
+import math
 import re
 from html import unescape
 from html.parser import HTMLParser
@@ -10,10 +12,13 @@ from sqlmodel import Session, select
 from app.models.financial import FinancialSnapshot
 from app.models.security import ProviderResponseCache, SecurityMaster
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.sec_business_field_quality_service import field_quality_receipt
+from app.services.sec_foreign_comparison_service import current_projection, parse_document
 
 
 _CONCEPTS = {
     "revenue": ("RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues"),
+    "operating_income": ("OperatingIncomeLoss",),
     "net_income": ("ProfitLoss",),
     "owners_parent_net_income": ("NetIncomeLoss",),
     "common_net_income": ("NetIncomeLossAvailableToCommonStockholdersBasic",),
@@ -28,6 +33,7 @@ _CONCEPTS = {
 }
 _IFRS_CONCEPTS = {
     "revenue": ("Revenue",),
+    "operating_income": (),
     "net_income": ("ProfitLoss",),
     "owners_parent_net_income": ("ProfitLossAttributableToOwnersOfParent",),
     "common_net_income": (),
@@ -543,6 +549,7 @@ def _facts(payload: dict[str, object], field: str) -> list[dict[str, object]]:
     if not isinstance(taxonomy, dict):
         return []
     taxonomies = (("us-gaap", _CONCEPTS[field]), ("ifrs-full", _IFRS_CONCEPTS[field]))
+    collected: list[dict[str, object]] = []
     for taxonomy_name, concepts in taxonomies:
         taxonomy_facts = taxonomy.get(taxonomy_name, {})
         if not isinstance(taxonomy_facts, dict):
@@ -555,22 +562,20 @@ def _facts(payload: dict[str, object], field: str) -> list[dict[str, object]]:
             if not isinstance(units, dict):
                 continue
             preferred = _UNITS.get(field, ("USD", "TWD", "CNY"))
-            for unit in preferred:
+            available_units = (*preferred, *(unit for unit in units if unit not in preferred))
+            for unit in available_units:
                 entries = units.get(unit)
                 if isinstance(entries, list) and entries:
-                    return [
-                        {**item, "_unit": unit, "_concept": concept, "_taxonomy": taxonomy_name}
-                        for item in entries
+                    records = [
+                        {**item, "_unit": unit, "_concept": concept, "_taxonomy": taxonomy_name,
+                         "_source_row_ordinal": ordinal}
+                        for ordinal, item in enumerate(entries)
                         if isinstance(item, dict)
                     ]
-            for unit, entries in units.items():
-                if isinstance(entries, list) and entries:
-                    return [
-                        {**item, "_unit": unit, "_concept": concept, "_taxonomy": taxonomy_name}
-                        for item in entries
-                        if isinstance(item, dict)
-                    ]
-    return []
+                    if field not in {"revenue", "operating_income"}:
+                        return records
+                    collected.extend(records)
+    return collected
 
 
 def _duration_days(item: dict[str, object]) -> int:
@@ -586,6 +591,7 @@ def _period_entries(payload: dict[str, object]) -> list[dict[str, object]]:
         *_facts(payload, "owners_parent_net_income"),
         *_facts(payload, "common_net_income"),
         *_facts(payload, "revenue"),
+        *_facts(payload, "operating_income"),
     ]
     periods: dict[tuple[int, str, date, date], dict[str, object]] = {}
     for item in candidates:
@@ -624,7 +630,36 @@ def _select_fact(
     )
     if fp != "FY" and _duration_days(selected) > 130:
         return None
+    if selected.get("_concept") in {*_CONCEPTS["revenue"], *_CONCEPTS["operating_income"], "Revenue"}:
+        peers = [item for item in candidates if _duration_days(item) == _duration_days(selected)]
+        if _duration_days(selected) <= 0 or _duration_days(selected) == 9999:
+            return None
+        if selected.get("_unit") not in {"USD", "TWD", "CNY", "RMB", "KRW"}:
+            return None
+        if isinstance(selected["val"], bool) or not math.isfinite(selected["val"]):
+            return None
+        if len({(item.get("accn"), item.get("start"), item.get("_unit"), item["val"]) for item in peers}) != 1:
+            return None
     return selected
+
+
+def _business_occurrence_error(entries, fy, fp, filed, end) -> str | None:
+    candidates = [item for item in entries if item.get("fy") == fy
+                  and item.get("fp") == fp and _parse_date(item.get("filed")) == filed
+                  and _parse_date(item.get("end")) == end
+                  and 0 < _duration_days(item) < 9999
+                  and (fp == "FY" or _duration_days(item) <= 130)]
+    if not candidates:
+        return None
+    duration = (max if fp == "FY" else min)(_duration_days(item) for item in candidates)
+    peers = [item for item in candidates if _duration_days(item) == duration]
+    if any(item.get("_unit") not in {"USD", "TWD", "CNY", "RMB", "KRW"}
+           or isinstance(item.get("val"), bool) or not isinstance(item.get("val"), (int, float))
+           or not math.isfinite(item["val"]) for item in peers):
+        return "sec_business_occurrence_invalid_unit_or_value"
+    if len({(item.get("accn"), item.get("start"), item["_unit"], item["val"]) for item in peers}) != 1:
+        return "sec_business_occurrence_conflict"
+    return None
 
 
 def _select_value(
@@ -679,6 +714,7 @@ def _companyfacts_snapshots(
     ticker: str,
 ) -> list[FinancialSnapshot]:
     facts = {field: _facts(payload, field) for field in _CONCEPTS}
+    payload_sha = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     built: list[FinancialSnapshot] = []
     for period in _period_entries(payload):
         fy = int(period["fy"])
@@ -701,6 +737,7 @@ def _companyfacts_snapshots(
             reported_date=filed,
             source="SEC Company Facts",
             provider="sec_companyfacts",
+            source_filing_id=str(period.get("accn") or "") or None,
             quality_warnings=(
                 "foreign issuer filing coverage is partial; ADR ratio and currency mapping required"
                 if str(period.get("form", "")) in {"20-F", "6-K"}
@@ -708,8 +745,15 @@ def _companyfacts_snapshots(
             ),
         )
         selected_facts: dict[str, dict[str, object] | None] = {}
+        business_field_errors = {
+            field: [error] if (error := _business_occurrence_error(facts[field], fy, fp, filed, end)) else []
+            for field in ("revenue", "operating_income")
+        }
+        business_errors = sorted(set().union(*map(set, business_field_errors.values())))
+        row.financial_hard_errors = json.dumps(business_errors)
         for field in (
             "revenue",
+            "operating_income",
             "net_income",
             "owners_parent_net_income",
             "common_net_income",
@@ -718,6 +762,13 @@ def _companyfacts_snapshots(
             selected_facts[field] = _select_fact(facts[field], fy, fp, filed, end)
             selected = selected_facts[field]
             setattr(row, field, float(selected["val"]) if selected else None)
+        revenue_fact = selected_facts.get("revenue")
+        operating_fact = selected_facts.get("operating_income")
+        if revenue_fact and operating_fact and row.revenue and all(
+            revenue_fact.get(key) == operating_fact.get(key)
+            for key in ("start", "end", "_unit", "accn")
+        ):
+            row.operating_margin = row.operating_income / row.revenue * 100
         row.eps = row.diluted_eps
         selected_facts["common_equity"] = _select_instant_fact(facts["common_equity"], filed, end)
         row.common_equity = (
@@ -747,6 +798,7 @@ def _companyfacts_snapshots(
                 selected_facts.get(field)
                 for field in (
                     "revenue",
+                    "operating_income",
                     "net_income",
                     "owners_parent_net_income",
                     "common_net_income",
@@ -767,14 +819,52 @@ def _companyfacts_snapshots(
                     "source": "sec_companyfacts",
                     "concept": selected.get("_concept"),
                     "taxonomy": selected.get("_taxonomy"),
+                    "projection_contract": "sec-business-field-projection-v1",
+                    "issuer_cik": payload.get("cik"),
+                    "source_document_id": selected.get("accn"),
+                    "source_document_type": selected.get("form"),
+                    "source_filing_date": selected.get("filed"),
+                    "source_row_ordinal": selected.get("_source_row_ordinal"),
+                    "source_row_identity": hashlib.sha256(json.dumps(
+                        {"cik": payload.get("cik"), "field": field, "occurrence": selected},
+                        sort_keys=True, separators=(",", ":"),
+                    ).encode()).hexdigest(),
+                    "source_payload_sha256": payload_sha,
+                    "source_reported_value": selected.get("val"),
+                    "period_start": selected.get("start"),
+                    "period_end": selected.get("end"),
+                    "duration_days": _duration_days(selected),
                     "attribution": _INCOME_ATTRIBUTION.get(field),
                 }
                 for field, selected in selected_facts.items()
                 if selected is not None
             ]
         )
+        records = json.loads(row.raw_financial_fields)
+        for field, errors in business_field_errors.items():
+            witness = next((r for r in records if r.get("field") == field), None)
+            selection = None if witness is None else {
+                "source_row_identity": witness["source_row_identity"],
+                "source_payload_sha256": witness["source_payload_sha256"],
+                "value": witness["source_reported_value"], "start": witness["period_start"],
+                "end": witness["period_end"], "filed": witness["source_filing_date"],
+                "accn": witness["source_document_id"], "currency": witness["currency"],
+                "taxonomy_concept": [witness["taxonomy"], witness["concept"]],
+            }
+            peers = [item for item in facts[field] if item.get("fy") == fy and item.get("fp") == fp
+                     and _parse_date(item.get("filed")) == filed and _parse_date(item.get("end")) == end]
+            identities = [hashlib.sha256(json.dumps(
+                {"cik": payload.get("cik"), "field": field, "occurrence": item},
+                sort_keys=True, separators=(",", ":"),
+            ).encode()).hexdigest() for item in peers]
+            records.append({"field": "sec_business_quality", "field_quality": field_quality_receipt(
+                ticker=row.ticker, issuer=payload.get("cik"), field=field, errors=errors,
+                selected=selection, occurrence_ids=identities,
+            )})
+        row.raw_financial_fields = json.dumps(records)
         if fp == "FY":
             row.cumulative_revenue = row.revenue
+            row.cumulative_operating_income = row.operating_income
             row.cumulative_net_income = row.net_income
             row.cumulative_diluted_eps = row.diluted_eps
             row.common_dividends = _select_value(facts["common_dividends"], fy, fp, filed, end)
@@ -795,6 +885,7 @@ def _companyfacts_snapshots(
         if annual and len(quarters) == 3:
             for field in (
                 "revenue",
+                "operating_income",
                 "net_income",
                 "owners_parent_net_income",
                 "common_net_income",
@@ -812,12 +903,17 @@ def _companyfacts_snapshots(
             annual.period_scope = "single-quarter"
             annual.is_cumulative = False
             annual.normalization_method = "FY minus Q1-Q3 standalone by semantic field"
+            annual.operating_margin = (
+                annual.operating_income / annual.revenue * 100
+                if annual.revenue and annual.operating_income is not None else None
+            )
     return built
 
 
 class SecFinancialSnapshotService:
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *, response_hook=None) -> None:
         self.transport = transport
+        self.response_hook = response_hook
         self._ticker_ciks: dict[str, str] | None = None
 
     async def _resolve_cik(self, client: httpx.AsyncClient, ticker: str) -> str | None:
@@ -852,6 +948,23 @@ class SecFinancialSnapshotService:
         fetched_documents = 0
         exhibit_documents = 0
         six_k_count = 0
+        foreign_occurrences: list[dict[str, object]] = []
+
+        def parse_response(response, *, accession, form, filing_date):
+            occurrences = parse_document(
+                response.text, issuer_cik=cik, accession=str(accession), document_type=form,
+                filing_date=str(filing_date), source_url=str(response.url), raw_payload=response.content,
+            )
+            foreign_occurrences.extend(occurrences)
+            parsed = _parse_foreign_financial_release(response.text)
+            exact = current_projection(occurrences)
+            if exact:
+                parsed = {**(parsed or {}), **exact}
+            if parsed:
+                parsed.update(filing_date=str(filing_date), source_filing_id=str(accession),
+                              source_url=str(response.url), foreign_business_occurrences=occurrences)
+            return parsed
+
         for form, accession, primary, filing_date in zip(
             forms, accessions, primary_documents, filing_dates, strict=False
         ):
@@ -901,7 +1014,7 @@ class SecFinancialSnapshotService:
             parsed_here: dict[str, object] | None = None
             financial_candidate = _looks_like_financial_release(primary_text)
             if form in {"6-K", "20-F"}:
-                parsed_here = _parse_foreign_financial_release(primary_text)
+                parsed_here = parse_response(primary_response, accession=accession, form=form, filing_date=filing_date)
                 for exhibit in exhibits:
                     try:
                         exhibit_response = await client.get(str(exhibit["url"]))
@@ -917,17 +1030,9 @@ class SecFinancialSnapshotService:
                     financial_candidate = financial_candidate or _looks_like_financial_release(
                         exhibit_response.text
                     )
-                    parsed_here = parsed_here or _parse_foreign_financial_release(
-                        exhibit_response.text
-                    )
+                    exhibit_parsed = parse_response(exhibit_response, accession=accession, form=form, filing_date=filing_date)
+                    parsed_here = parsed_here or exhibit_parsed
                     if parsed_here:
-                        parsed_here.update(
-                            {
-                                "filing_date": str(filing_date),
-                                "source_filing_id": str(accession),
-                                "source_url": str(exhibit["url"]),
-                            }
-                        )
                         break
             if parsed_here:
                 parsed_here.setdefault("filing_date", str(filing_date))
@@ -972,6 +1077,10 @@ class SecFinancialSnapshotService:
             (item for item in candidates if item.get("statement_parsed")),
             None,
         )
+        if parsed_statement:
+            parsed_statement["foreign_business_occurrences"] = list(
+                {o["occurrence_id"]: o for o in foreign_occurrences}.values()
+            )
         return {
             "filing_discovery_coverage": "full" if candidates else "unavailable",
             "document_fetch_coverage": "full" if fetched_documents else "unavailable",
@@ -1089,6 +1198,9 @@ class SecFinancialSnapshotService:
         row.diluted_eps = float(selected_eps["value"]) if selected_eps else None
         row.eps = row.diluted_eps
         raw_fields: list[dict[str, object]] = []
+        if parsed.get("foreign_business_occurrences"):
+            raw_fields.append({"field": "foreign_business_occurrences",
+                               "occurrences": parsed["foreign_business_occurrences"]})
         for field in (
             "revenue",
             "operating_income",
@@ -1205,7 +1317,8 @@ class SecFinancialSnapshotService:
         headers = {"User-Agent": user_agent, "Accept": "application/json"}
         companyfacts_started = datetime.now(timezone.utc)
         async with httpx.AsyncClient(
-            timeout=20.0, headers=headers, transport=self.transport
+            timeout=20.0, headers=headers, transport=self.transport,
+            event_hooks={"response": [self.response_hook]} if self.response_hook else None,
         ) as client:
             cik = await self._resolve_cik(client, ticker)
             if not cik:
@@ -1316,6 +1429,7 @@ class SecFinancialSnapshotService:
                     FinancialSnapshot.filing_date == row.filing_date,
                     FinancialSnapshot.period_type == row.period_type,
                     FinancialSnapshot.fiscal_year == row.fiscal_year,
+                    FinancialSnapshot.financial_period_end == row.financial_period_end,
                 )
             ).first()
             if existing is None:

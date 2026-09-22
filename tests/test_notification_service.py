@@ -18,6 +18,7 @@ from app.services.notification_service import (
     TelegramChunkResult,
     TelegramDeliveryError,
     TelegramNotifier,
+    _concise_text,
     _fallback_valuation_context,
     _macro_report,
     _is_internal_fact,
@@ -29,6 +30,23 @@ from app.services.notification_service import (
     dispatch_pending_notifications,
     queue_daily_stock_notification,
 )
+
+
+def test_concise_text_keeps_complete_cpng_core_sentence() -> None:
+    first = (
+        "쿠팡의 핵심 투자 논리는 한국 Product Commerce의 고객·매출 성장 기반이 유지되는 "
+        "가운데 훼손된 핵심 커머스 마진이 정상화되고 Developing Offerings의 성장과 손실 "
+        "축소가 동시에 진행되며 EBITDA와 FCF가 회복되는지에 있다."
+    )
+    second = (
+        "최근 Product Commerce 매출은 성장했지만 마진과 TTM FCF가 축소되어 현재는 "
+        "매출 성장보다 수익성과 현금흐름 회복을 확인해야 한다."
+    )
+
+    rendered = _concise_text(f"{first} {second}", character_limit=len(first) + 5)
+
+    assert rendered == first
+    assert not rendered.endswith("현금흐름.")
 
 
 @pytest.mark.parametrize(

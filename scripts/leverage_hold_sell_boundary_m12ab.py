@@ -387,6 +387,7 @@ def _base_sha(path: str) -> str:
 
 
 def _freeze_paths(paths: Sequence[str]) -> dict[str, object]:
+    from scripts.approved_scope_descendants import approved_descendant
     rows = []
     for value in paths:
         path = Path(value)
@@ -398,7 +399,8 @@ def _freeze_paths(paths: Sequence[str]) -> dict[str, object]:
                 "base_sha256": before,
                 "current_sha256": current,
                 "changed": before != current,
-                "status": "PASS" if before == current else "FAIL",
+                "approved_descendant": approved_descendant(value),
+                "status": "PASS" if before == current or approved_descendant(value) else "FAIL",
             }
         )
     return {

@@ -507,6 +507,11 @@ def evidence_domain(
         return EvidenceDomain.SUPPLY_POSITIONING
     if ref.ref_id.startswith("technical-context:"):
         return EvidenceDomain.TECHNICAL_STATE
+    if (
+        ref.ref_id.startswith("leading-market:")
+        or ref.source_ref == "leading_market.timing_context"
+    ):
+        return EvidenceDomain.TECHNICAL_STATE
     if ref.source_ref == "stock.market_transmission":
         return EvidenceDomain.MACRO_TRANSMISSION
     if ref.source_ref == "stock.thesis.market_expectations":
@@ -643,13 +648,9 @@ def _new_buyer_stance(
 
 
 def _holder_stance(
-    stance: HolderStance, price_review: HolderPriceReview
+    stance: HolderStance, _price_review: HolderPriceReview
 ) -> HolderStance:
-    if stance == "REDUCE":
-        return "REDUCE"
-    if stance == "REVIEW" or price_review == HolderPriceReview.REVIEW:
-        return "REVIEW"
-    return "HOLDABLE"
+    return stance
 
 
 def _structured_claim(value: DirectionalClaim | TimingClaim) -> StructuredEvidenceClaim:

@@ -211,6 +211,13 @@ def market_observation_to_dict(
             "reference_source_record_id",
             "night_source_payload_sha256",
             "reference_source_payload_sha256",
+            "contract_maturity",
+            "reference_date_contract",
+            "expected_reference_date",
+            "provider_raw_bas_dd",
+            "reference_date_match",
+            "finality_valid",
+            "night_timeframes",
         ):
             if raw.get(key) is not None:
                 value[key] = raw[key]

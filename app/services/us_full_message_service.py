@@ -9,7 +9,9 @@ from app.services.krx_night_history_service import (
     KrxNightAggregateBar,
     KrxNightTimeframes,
 )
+from app.services.leading_market_snapshot_service import leading_market_block_from_context
 from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
+from app.services.official_night_market_eligibility_service import night_market_eligibility
 from app.services.night_futures_visibility_service import (
     night_futures_user_facing_visibility,
 )
@@ -38,6 +40,10 @@ TREASURY_CURVE = (
     ("DGS5", "5년"),
     ("DGS10", "10년"),
     ("DGS30", "30년"),
+)
+TREASURY_COMPANIONS = (
+    ("DFII10", "market_real_yield", "10년 실질금리"),
+    ("T10YIE", "market_breakeven_inflation", "10년 기대인플레이션"),
 )
 
 
@@ -180,15 +186,25 @@ def _treasury_curve_block(
     lines: list[str] = []
     fact_ids: list[str] = []
     observation_dates: list[str] = []
-    for series, label in TREASURY_CURVE:
+
+    def append_rate(
+        series: str,
+        label: str,
+        *,
+        expected_type: str,
+        required_line: bool,
+    ) -> None:
         fact = by_series.get(series)
         if (
             fact is None
-            or fact.get("fact_type") != "market_nominal_yield"
-            or _fact_id(fact) != f"market:nominal_yield:{series}"
+            or fact.get("fact_type") != expected_type
+            or _series(fact) != series
+            or _fact_id(fact)
+            != f"market:{expected_type.removeprefix('market_')}:{series}"
         ):
-            lines.append(f"• {label}: 공식 관측 없음")
-            continue
+            if required_line:
+                lines.append(f"• {label}: 공식 관측 없음")
+            return
         fields = _fields(fact)
         level = _number(fields.get("level_pct"))
         previous = _number(fields.get("previous_level_pct"))
@@ -203,7 +219,7 @@ def _treasury_curve_block(
             or not previous_date
         ):
             lines.append(f"• {label}: 직전 유효 관측쌍 불충분")
-            continue
+            return
         if previous_date >= observed or not math.isclose(
             delta_bp,
             (level - previous) * 100,
@@ -211,11 +227,22 @@ def _treasury_curve_block(
             abs_tol=0.011,
         ):
             lines.append(f"• {label}: 관측쌍 검증 실패")
-            continue
+            return
         date_label = observed[5:].replace("-", "/")
         lines.append(f"• {label}: {level:.2f}% · {delta_bp:+.0f}bp ({date_label} 관측)")
         fact_ids.append(_fact_id(fact))
         observation_dates.append(observed)
+
+    for series, label in TREASURY_CURVE:
+        append_rate(
+            series,
+            label,
+            expected_type="market_nominal_yield",
+            required_line=True,
+        )
+    for series, fact_type, label in TREASURY_COMPANIONS:
+        append_rate(series, label, expected_type=fact_type, required_line=False)
+
     common_date = observation_dates[0] if observation_dates and len(set(observation_dates)) == 1 else ""
     heading = "🌐 미국 국채금리"
     if common_date:
@@ -296,8 +323,8 @@ def render_us_full_market_message(
         index_fact_ids.append(_fact_id(fact))
         if fact.get("as_of_date"):
             index_dates.add(str(fact["as_of_date"]))
-    if len(index_dates) > 1:
-        errors.append("index_session_mismatch")
+    if len(index_dates) != 1:
+        errors.append("index_session_missing_or_mixed")
 
     internal_lines: list[str] = []
     style = _plan_item(plan, UsMarketDigestSlot.PARTICIPATION_STYLE)
@@ -359,10 +386,16 @@ def render_us_full_market_message(
     night_lines: list[str] = []
     night_fact_ids: list[str] = []
     night_rows = _mapping(context).get("night_futures", [])
-    night_visibility = night_futures_user_facing_visibility("us")
+    night_visibility = night_futures_user_facing_visibility("us", context=dict(context))
     if night_visibility.visible and isinstance(night_rows, list):
         for row in night_rows:
             if not isinstance(row, Mapping):
+                continue
+            night_session = _mapping(context).get("session") or {}
+            if not night_market_eligibility(
+                row, market="us", assessment_date=night_session.get("assessment_date"),
+                completed_session_date=night_session.get("latest_completed_regular_session_date"),
+            )["eligible"]:
                 continue
             series = str(row.get("series_code") or "")
             value = _number(row.get("change_pct"))
@@ -396,7 +429,8 @@ def render_us_full_market_message(
         macro is not None
         and macro.omission_reason == DigestOmissionReason.SELECTED
         and macro_fact is not None
-        and _series(macro_fact) not in {"DGS3", "DGS5", "DGS10", "DGS30", "DFII10"}
+        and _series(macro_fact)
+        not in {"DGS3", "DGS5", "DGS10", "DGS30", "DFII10", "T10YIE"}
     ):
         macro_claim = render_specific_macro_claim(macro_fact)
         macro_role = str(_fields(macro_fact).get("temporal_role") or "")
@@ -410,10 +444,38 @@ def render_us_full_market_message(
     if not checks:
         checks = ("다음 완료 세션의 주요 지수·동일가중·업종 분산이 이어지는지 확인합니다.",)
 
-    blocks = ["🇺🇸 미국시장 마감", "📈 주요 지수\n" + "\n".join(index_lines)]
+    session_date = next(iter(index_dates), "날짜 확인 불가")
+    try:
+        leading_market = leading_market_block_from_context(
+            _mapping(context), expected_market="us"
+        )
+    except (TypeError, ValueError) as exc:
+        leading_market = None
+        errors.append(f"leading_market_context_invalid:{exc}")
+    leading_visible = leading_market is not None and leading_market.status == "VISIBLE"
+    header = (
+        f"🇺🇸 미국 시장환경 점검 · 완료 세션 {session_date}"
+        if leading_visible
+        else f"🇺🇸 미국시장 마감 · {session_date}"
+    )
+    blocks = [
+        header,
+        "📈 주요 지수\n" + "\n".join(index_lines),
+    ]
     section_order = ["HEADER", "INDEX_BLOCK"]
     blocks.append("🔎 시장 내부\n" + "\n".join(internal_lines))
     section_order.append("MARKET_INTERNAL")
+    if treasury_block is not None:
+        blocks.append(treasury_block[0])
+        section_order.append("TREASURY_CURVE")
+    if leading_visible:
+        assert leading_market is not None
+        blocks.append(leading_market.text)
+        section_order.append("LEADING_MARKET")
+    elif leading_market is not None and leading_market.status == "INVALID":
+        errors.extend(
+            f"leading_market_invalid:{error}" for error in leading_market.validation.errors
+        )
     if night_lines:
         night_date = next(
             (
@@ -428,9 +490,6 @@ def render_us_full_market_message(
             night_heading += f" · 기준 {night_date[5:].replace('-', '/')}"
         blocks.append(night_heading + "\n" + "\n".join(night_lines))
         section_order.append("NIGHT_FUTURES")
-    if treasury_block is not None:
-        blocks.append(treasury_block[0])
-        section_order.append("TREASURY_CURVE")
     if macro_lines:
         blocks.append("🌐 보조 시장환경\n" + "\n".join(macro_lines))
         section_order.append("MACRO_CONTEXT")

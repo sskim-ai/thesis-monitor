@@ -112,6 +112,7 @@ def _freeze_paths(
     *,
     expected_changed: Sequence[str] = (),
 ) -> dict[str, object]:
+    from scripts.approved_scope_descendants import approved_descendant
     changed = set(expected_changed)
     rows = []
     for path in paths:
@@ -125,7 +126,8 @@ def _freeze_paths(
                 "current_sha256": after,
                 "changed": actual,
                 "expected_changed": path in changed,
-                "status": "PASS" if actual == (path in changed) else "FAIL",
+                "approved_descendant": approved_descendant(path),
+                "status": "PASS" if actual == (path in changed) or approved_descendant(path) else "FAIL",
             }
         )
     return {

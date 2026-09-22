@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
+
+from app.services.leading_market_snapshot_service import (
+    LeadingMarketObservation,
+    LeadingMarketSessionState,
+    LeadingMarketSnapshot,
+    LeadingMarketSourceContract,
+)
 from app.services.us_full_message_service import (
     preserve_us_full_message_layout,
     render_us_full_market_message,
@@ -43,6 +51,51 @@ def _context() -> dict[str, object]:
     context: dict[str, object] = {"fact_catalog": facts, "key_change_fact_ids": []}
     context["us_market_digest_plan"] = build_us_market_digest_plan(context).to_dict()
     return context
+
+
+def _leading_context(*, age: timedelta = timedelta(seconds=30)) -> dict[str, object]:
+    now = datetime(2026, 8, 28, 0, 30, tzinfo=UTC)
+    source = LeadingMarketSourceContract(
+        contract_id="fixture-cme-v1",
+        provider="fixture-official",
+        market="us",
+        instrument_ids=("ES", "NQ"),
+        reference_basis="PRIOR_OFFICIAL_SETTLEMENT",
+        active_max_age_seconds=120,
+        preopen_max_age_seconds=300,
+        source_timezone="America/Chicago",
+        official_or_existing_supported_free=True,
+    )
+    observations = tuple(
+        LeadingMarketObservation(
+            instrument_id=instrument_id,
+            display_name=display_name,
+            provider="fixture-official",
+            session_id="2026-08-27-CME-GLOBEX",
+            current_price=current_price,
+            reference_price=reference_price,
+            change_pct=(current_price / reference_price - 1) * 100,
+            reference_basis="PRIOR_OFFICIAL_SETTLEMENT",
+            as_of=now - age,
+            source_timezone="America/Chicago",
+            source_document_or_endpoint="official-fixture-endpoint",
+        )
+        for instrument_id, display_name, current_price, reference_price in (
+            ("ES", "S&P 500 선물", 5010.0, 5000.0),
+            ("NQ", "Nasdaq-100 선물", 18036.0, 18000.0),
+        )
+    )
+    snapshot = LeadingMarketSnapshot(
+        market="us",
+        session_state=LeadingMarketSessionState.ACTIVE_FUTURES_SESSION,
+        observations=observations,
+        collected_at=now - timedelta(seconds=10),
+    )
+    return {
+        "source_contract": source.model_dump(mode="json"),
+        "snapshot": snapshot.model_dump(mode="json"),
+        "validation_as_of": now.isoformat(),
+    }
 
 
 def _macro_fact(
@@ -101,7 +154,9 @@ def test_full_message_owns_index_and_sector_numbers_in_fixed_order() -> None:
         "MARKET_INTERNAL",
         "NEXT_CHECK",
     )
-    assert rendered.text.startswith("🇺🇸 미국시장 마감\n\n📈 주요 지수")
+    assert rendered.text.startswith(
+        "🇺🇸 미국시장 마감 · 2026-08-27\n\n📈 주요 지수"
+    )
     for line in (
         "• SPY +0.66%",
         "• QQQ +1.37%",
@@ -175,6 +230,39 @@ def test_full_message_temporarily_suppresses_verified_night_returns() -> None:
     assert "KOSPI200 야간선물" not in rendered.text
     assert "KOSDAQ150 야간선물" not in rendered.text
     assert rendered.night_fact_ids == ()
+
+
+def test_completed_us_session_and_current_futures_are_visibly_separate() -> None:
+    context = _context()
+    context["leading_market_context"] = _leading_context()
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.section_order == (
+        "HEADER",
+        "INDEX_BLOCK",
+        "MARKET_INTERNAL",
+        "LEADING_MARKET",
+        "NEXT_CHECK",
+    )
+    assert rendered.text.startswith("🇺🇸 미국 시장환경 점검 · 완료 세션 2026-08-27")
+    assert "• SPY +0.66%" in rendered.text
+    assert "⏱ 현재 선행시장 · 2026-08-28 09:29 KST" in rendered.text
+    assert "• S&P 500 선물 +0.20%" in rendered.text
+    assert "완료된 정규장 신호가 아닙니다" in rendered.text
+
+
+def test_stale_us_futures_are_suppressed_without_replacing_completed_session() -> None:
+    context = _context()
+    context["leading_market_context"] = _leading_context(age=timedelta(minutes=10))
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.text.startswith("🇺🇸 미국시장 마감 · 2026-08-27")
+    assert "현재 선행시장" not in rendered.text
+    assert "LEADING_MARKET" not in rendered.section_order
 
 
 def _timeframe(
@@ -390,6 +478,106 @@ def test_nominal_treasury_curve_uses_same_series_observation_pairs() -> None:
     ):
         assert line in rendered.text
     assert len(rendered.treasury_fact_ids) == 4
+
+
+def test_treasury_companions_keep_direct_series_and_distinct_daily_dates() -> None:
+    context = _context()
+    rates = (
+        ("DGS3", "market_nominal_yield", "3년", 3.72, 3.74, "2026-09-01"),
+        ("DGS5", "market_nominal_yield", "5년", 3.84, 3.83, "2026-09-01"),
+        ("DGS10", "market_nominal_yield", "10년", 4.21, 4.17, "2026-09-01"),
+        ("DGS30", "market_nominal_yield", "30년", 4.86, 4.80, "2026-09-01"),
+        ("DFII10", "market_real_yield", "10년 실질금리", 1.91, 1.89, "2026-08-31"),
+        (
+            "T10YIE",
+            "market_breakeven_inflation",
+            "10년 기대인플레이션",
+            2.30,
+            2.31,
+            "2026-08-31",
+        ),
+    )
+    for series, fact_type, label, current, previous, observed in rates:
+        context["fact_catalog"].append(
+            {
+                "fact_id": f"market:{fact_type.removeprefix('market_')}:{series}",
+                "fact_type": fact_type,
+                "as_of_date": observed,
+                "fields": {
+                    "series_code": series,
+                    "label": label,
+                    "level_pct": current,
+                    "previous_level_pct": previous,
+                    "previous_observation_date": "2026-08-28",
+                    "change_bp": (current - previous) * 100,
+                    "temporal_role": "CURRENT_OBSERVATION",
+                    "today_signal_eligible": True,
+                    "structured_state": "CURRENT_DIRECTIONAL",
+                },
+            }
+        )
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert "🌐 미국 국채금리\n" in rendered.text
+    assert "• 5년: 3.84% · +1bp (09/01 관측)" in rendered.text
+    assert "• 10년 실질금리: 1.91% · +2bp (08/31 관측)" in rendered.text
+    assert "• 10년 기대인플레이션: 2.30% · -1bp (08/31 관측)" in rendered.text
+    assert rendered.treasury_fact_ids == (
+        "market:nominal_yield:DGS3",
+        "market:nominal_yield:DGS5",
+        "market:nominal_yield:DGS10",
+        "market:nominal_yield:DGS30",
+        "market:real_yield:DFII10",
+        "market:breakeven_inflation:T10YIE",
+    )
+
+
+def test_daily_treasury_and_current_futures_keep_separate_time_layers() -> None:
+    context = _context()
+    values = {
+        "DGS3": (3.72, 3.74),
+        "DGS5": (3.84, 3.83),
+        "DGS10": (4.21, 4.17),
+        "DGS30": (4.86, 4.80),
+    }
+    for series, (current, previous) in values.items():
+        context["fact_catalog"].append(
+            {
+                "fact_id": f"market:nominal_yield:{series}",
+                "fact_type": "market_nominal_yield",
+                "as_of_date": "2026-09-01",
+                "fields": {
+                    "series_code": series,
+                    "level_pct": current,
+                    "previous_level_pct": previous,
+                    "previous_observation_date": "2026-08-31",
+                    "change_bp": (current - previous) * 100,
+                },
+            }
+        )
+    context["leading_market_context"] = _leading_context()
+
+    rendered = render_us_full_market_message(context)
+
+    assert rendered.status == "PASS"
+    assert rendered.section_order == (
+        "HEADER",
+        "INDEX_BLOCK",
+        "MARKET_INTERNAL",
+        "TREASURY_CURVE",
+        "LEADING_MARKET",
+        "NEXT_CHECK",
+    )
+    assert rendered.text.index("완료 세션 2026-08-27") < rendered.text.index(
+        "미국 국채금리 · 09/01 관측"
+    )
+    assert rendered.text.index("미국 국채금리 · 09/01 관측") < rendered.text.index(
+        "현재 선행시장 · 2026-08-28 09:29 KST"
+    )
+    assert "business_delta" not in vars(rendered)
+    assert "holder_axis" not in vars(rendered)
 
 
 def test_dual_market_test_message_keeps_treasury_and_suppresses_night() -> None:

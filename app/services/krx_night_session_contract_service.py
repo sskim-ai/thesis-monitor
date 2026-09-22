@@ -75,7 +75,7 @@ class KrxNightFuturesSessionQuote(FrozenModel):
     low: Decimal
     last: Decimal
     volume: int
-    comparisons: tuple[NightFuturesReferenceComparison, ...] = Field(min_length=1)
+    comparisons: tuple[NightFuturesReferenceComparison, ...] = ()
     source: str = Field(min_length=1)
     source_quality: Literal["OFFICIAL", "APPROVED_PROVIDER", "HUMAN_FIXTURE"]
     is_delayed: bool | None

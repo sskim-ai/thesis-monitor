@@ -3,6 +3,7 @@ import hashlib
 import json
 import math
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
@@ -1162,11 +1163,17 @@ def _dynamic_price_block(
 
 def _concise_text(value: str, *, sentence_limit: int = 2, character_limit: int = 320) -> str:
     sentences = re.split(r"(?<=[.!?])\s+", value.strip())
-    concise = " ".join(sentence for sentence in sentences[:sentence_limit] if sentence)
-    if len(concise) <= character_limit:
-        return concise
-    shortened = concise[:character_limit].rsplit(" ", 1)[0].rstrip("., ")
-    return shortened + "."
+    selected: list[str] = []
+    for sentence in (sentence for sentence in sentences[:sentence_limit] if sentence):
+        candidate = " ".join((*selected, sentence))
+        if len(candidate) <= character_limit:
+            selected.append(sentence)
+            continue
+        if selected:
+            break
+        shortened = sentence[:character_limit].rsplit(" ", 1)[0].rstrip("., ")
+        return shortened + "."
+    return " ".join(selected)
 
 
 def _preliminary_ttm_eps_caution(
@@ -2603,17 +2610,35 @@ def _fallback_thesis_signal(
 
 
 def _kr_close_macro_report(briefing: MacroBriefing) -> tuple[str, dict[str, object]]:
+    from app.services.leading_market_snapshot_service import (
+        leading_market_block_from_context,
+    )
+
     market = _json_value(briefing.market_summary, {})
     quality = _json_value(briefing.data_quality, [])
     quality_items = quality if isinstance(quality, list) else []
     body = render_kr_close_fx(summarize_kr_close_fx(briefing))
     text = f"🇰🇷 한국 시장환경 점검 · {briefing.briefing_date}\n{body}"
+    leading_market_status = "NOT_SUPPLIED"
+    if isinstance(market, Mapping):
+        try:
+            leading_market = leading_market_block_from_context(
+                market, expected_market="kr"
+            )
+        except (TypeError, ValueError):
+            leading_market = None
+            leading_market_status = "INVALID_OMITTED"
+        if leading_market is not None:
+            leading_market_status = leading_market.status
+            if leading_market.status == "VISIBLE":
+                text = f"{text}\n\n{leading_market.text}"
     return text, {
         "analysis_type": "macro_kr_close",
         "briefing_date": str(briefing.briefing_date),
         "as_of": str(briefing.as_of),
         "market": market,
         "data_quality": quality_items,
+        "leading_market_status": leading_market_status,
     }
 
 

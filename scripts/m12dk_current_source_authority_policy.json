@@ -1,0 +1,202 @@
+{
+  "contract": "m12dk-current-source-authority-v1",
+  "principle": "Fresh-source permission is explicit, family/role/version/lineage bound, deny-on-unknown. A source family being present in Core or atomic parents never creates authority by itself.",
+  "existing_use_enums": [
+    "BUSINESS_CONTEXT",
+    "CONTEXT",
+    "HOLDER_STANCE",
+    "NEW_BUYER_EXECUTION_RISK",
+    "OVERALL_DIRECTION",
+    "PASS_A_ARCHETYPE",
+    "PASS_A_VALUATION_TIER"
+  ],
+  "family_rules": [
+    {
+      "id": "CONFIGURED_CORE_THESIS_DEFINITION",
+      "patterns": [
+        "stock.thesis.core_thesis"
+      ],
+      "allow": [
+        "BUSINESS_CONTEXT",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "HOLDER_STANCE",
+        "NEW_BUYER_EXECUTION_RISK"
+      ],
+      "rationale": "Configured thesis defines business thesis/archetype assumptions. It is not proof that current strengthening/deterioration occurred."
+    },
+    {
+      "id": "CONFIGURED_MACRO_EXPOSURE_DEFINITION",
+      "patterns": [
+        "stock.thesis.macro_exposures"
+      ],
+      "allow": [
+        "BUSINESS_CONTEXT",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "HOLDER_STANCE",
+        "NEW_BUYER_EXECUTION_RISK"
+      ],
+      "rationale": "Defines exposure/cyclicality; current macro realization must come from separately observed evidence."
+    },
+    {
+      "id": "THESIS_REEVALUATION_CONDITION",
+      "patterns": [
+        "stock.thesis.strengthen_signals",
+        "stock.thesis.weaken_signals",
+        "stock.thesis.invalidation_signals"
+      ],
+      "allow": [
+        "BUSINESS_CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "HOLDER_STANCE",
+        "NEW_BUYER_EXECUTION_RISK",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER"
+      ],
+      "rationale": "These are conditions/hypotheses to test, not evidence that the condition occurred."
+    },
+    {
+      "id": "OBSERVED_EARNINGS_FACT",
+      "patterns": [
+        "stock.fact_catalog.earnings:*"
+      ],
+      "allow": [
+        "BUSINESS_CONTEXT",
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER"
+      ],
+      "prohibit": [],
+      "requirements": [
+        "same ticker/entity",
+        "exact source generation + metadata digest binding",
+        "period/as_of present",
+        "financial_period_required semantics satisfied",
+        "underlying financial-quality/field lineage is verified_usable or caution_usable as applicable",
+        "denied/critical/unverified fields cannot be elevated"
+      ],
+      "rationale": "Observed current/historical earnings facts can support business/archetype/regime and direction when their provider/quality lineage is verified."
+    },
+    {
+      "id": "FINANCIAL_QUALITY_STATE",
+      "patterns": [
+        "stock.fact_catalog.financial_quality:*"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE",
+        "NEW_BUYER_EXECUTION_RISK"
+      ],
+      "rationale": "Quality/taint state affects confidence/eligibility but does not independently prove business deterioration."
+    },
+    {
+      "id": "WORKING_CAPITAL_CONTEXT",
+      "patterns": [
+        "stock.fact_catalog.working-capital-derived:*",
+        "stock.fact_catalog.working-capital-relation:*",
+        "stock.fact_catalog.working-capital-reported:*"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE",
+        "NEW_BUYER_EXECUTION_RISK"
+      ],
+      "rationale": "Preserve accepted working-capital contextual-only restrictions; no decisive elevation."
+    },
+    {
+      "id": "EXPECTATIONS_CONTEXT",
+      "patterns": [
+        "stock.thesis.market_expectations"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE"
+      ],
+      "rationale": "Expectations/priced-in state is not independent long-term business evidence."
+    },
+    {
+      "id": "MARKET_CONTEXT_ONLY",
+      "patterns": [
+        "stock.fact_catalog.market:*",
+        "stock.market_transmission"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE"
+      ],
+      "rationale": "Market context may affect timing/risk but does not independently establish company business quality."
+    },
+    {
+      "id": "QUALITY_IDENTITY_CONTEXT_ONLY",
+      "patterns": [
+        "stock.fact_catalog.security_identity:*",
+        "stock.fact_catalog.security_basis:*"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE"
+      ],
+      "rationale": "Identity/security basis gates confidence and valuation applicability, not company direction."
+    },
+    {
+      "id": "PRICE_VALUATION_TECHNICAL_EXCLUDED_FROM_PASS_A",
+      "patterns": [
+        "stock.fact_catalog.chart:*",
+        "stock.fact_catalog.positioning:*",
+        "stock.fact_catalog.price:*",
+        "stock.fact_catalog.v3-zone:*",
+        "stock.fact_catalog.valuation:*",
+        "stock.current_price_context",
+        "stock.technical_context",
+        "technical_feature:*"
+      ],
+      "allow": [
+        "CONTEXT"
+      ],
+      "prohibit": [
+        "OVERALL_DIRECTION",
+        "PASS_A_ARCHETYPE",
+        "PASS_A_VALUATION_TIER",
+        "HOLDER_STANCE"
+      ],
+      "pass_a_model_visible": false,
+      "rationale": "Pass A is price/technical/current-valuation blind. These remain downstream B/timing/valuation inputs under existing contracts."
+    }
+  ],
+  "unknown_rule": "Any family/version/shape not exactly matched remains contextual/no-decisive-use. No broad fallback.",
+  "important_note": "This contract authorizes evidence eligibility, not a target conclusion. Final A/B validators and axis sufficiency remain unchanged."
+}

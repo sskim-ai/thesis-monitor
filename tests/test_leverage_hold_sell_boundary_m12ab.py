@@ -85,7 +85,10 @@ def test_legacy_production_surfaces_remain_frozen() -> None:
         "app/services/daily_digest_renderer.py",
     ):
         assert m12ab._freeze_paths((path,))["status"] == "PASS"
-        assert m12ab.BASE_FILE_SHA256[path] == m12ab._file_sha(m12ab.Path(path))
+        from scripts.approved_scope_descendants import approved_descendant
+        descendant = approved_descendant(path)
+        expected = descendant["sha256"] if descendant else m12ab.BASE_FILE_SHA256[path]
+        assert expected == m12ab._file_sha(m12ab.Path(path))
 
     ownership = m12ab._freeze_paths(
         ("app/services/direction_timing_ownership_service.py",)

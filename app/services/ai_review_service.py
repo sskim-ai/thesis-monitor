@@ -158,7 +158,7 @@ from app.services.structured_market_context_service import (
     load_structured_market_context,
 )
 from app.services.us_market_digest_plan_service import build_us_market_digest_plan
-from app.services.market_session import us_market_session
+from app.services.market_session import korea_market_session, us_market_session
 from app.services.valuation_snapshot_service import (
     _earnings_quarters,
     _latest_balance,
@@ -3244,6 +3244,150 @@ def _stock_packet(
     return stock
 
 
+def _market_packet_session(
+    market: AIReviewMarket, run_date: date, generated_at: datetime
+) -> dict[str, str]:
+    state = (
+        korea_market_session(generated_at) if market == "kr" else us_market_session(generated_at)
+    )
+    return {
+        "market": market,
+        "assessment_date": run_date.isoformat(),
+        "market_session": state.session,
+        "assessment_state": state.assessment_state,
+        "market_date": state.market_date.isoformat(),
+        "latest_completed_regular_session_date": state.latest_completed_regular_session_date.isoformat(),
+        "timezone": state.timezone_name,
+    }
+
+
+def validate_market_packet_session_parity(
+    packet: dict[str, object], *, completed_captures: tuple[dict[str, object], ...] = ()
+) -> dict[str, object]:
+    """Audit current packet typing without relabeling source observations.
+
+    Completed-close captures are a separate layer, never the current header's
+    session owner. This opt-in preinference gate does not mutate stored packets.
+    """
+    errors: list[str] = []
+    market = packet.get("market")
+    try:
+        at = datetime.fromisoformat(str(packet["generated_at"]).replace("Z", "+00:00"))
+        run_date = date.fromisoformat(str(packet["assessment_date"]))
+        if market not in {"us", "kr"} or at.utcoffset() is None:
+            raise ValueError("unowned_market_or_timestamp")
+    except (KeyError, TypeError, ValueError):
+        return {
+            "status": "FAIL",
+            "error_code": "MARKET_SESSION_CROSS_FIELD_INCONSISTENCY",
+            "errors": ["packet_identity_or_generated_at_invalid"],
+        }
+    expected = _market_packet_session(market, run_date, at)
+    context = _dict(packet.get("market_context"))
+    header = _dict(context.get("session"))
+    for key, value in expected.items():
+        if header.get(key) != value:
+            errors.append(f"header.{key}")
+    adapter = _dict(context.get("adapter_context"))
+    adapter_session = _dict(adapter.get("session_context"))
+    for key in (
+        "assessment_state",
+        "market_date",
+        "latest_completed_regular_session_date",
+        "timezone",
+    ):
+        if adapter_session.get(key) != expected[key]:
+            errors.append(f"adapter.{key}")
+    expected_role = (
+        "regular" if expected["market_session"] == "open" else expected["market_session"]
+    )
+    if adapter_session.get("role") != expected_role:
+        errors.append("adapter.role")
+    if str(adapter.get("market", "")).lower() != market:
+        errors.append("adapter.market")
+    if adapter.get("assessment_date") != expected["assessment_date"]:
+        errors.append("adapter.assessment_date")
+    try:
+        adapter_at = datetime.fromisoformat(str(adapter.get("as_of")).replace("Z", "+00:00"))
+        if adapter_at != at:
+            errors.append("adapter.as_of")
+    except ValueError:
+        errors.append("adapter.as_of")
+
+    stock_count = 0
+    for stock in _list(packet.get("stocks")):
+        if not isinstance(stock, dict):
+            errors.append("stock_shape")
+            continue
+        stock_count += 1
+        ticker = str(stock.get("ticker", ""))
+        price = _dict(_dict(stock.get("price_and_positioning")).get("price"))
+        price_facts = [
+            _dict(row.get("fields"))
+            for row in _list(stock.get("fact_catalog"))
+            if isinstance(row, dict) and row.get("fact_id") == "price:current"
+        ]
+        if len(price_facts) > 1:
+            errors.append(f"{ticker}.duplicate_current_price")
+        views = ([price] if price else []) + price_facts
+        for view in views:
+            basis = view.get("price_basis")
+            if basis in {None, "unavailable"}:
+                if view.get("current_price") is not None:
+                    errors.append(f"{ticker}.untyped_current_price")
+                continue
+            if basis not in {"intraday", "close"}:
+                errors.append(f"{ticker}.unowned_price_basis")
+                continue
+            if (
+                view.get("latest_completed_regular_session_date")
+                != expected["latest_completed_regular_session_date"]
+            ):
+                errors.append(f"{ticker}.latest_completed_regular_session_date")
+            try:
+                trade_date = date.fromisoformat(str(view.get("exchange_trade_date")))
+            except ValueError:
+                errors.append(f"{ticker}.exchange_trade_date_missing")
+                continue
+            if basis == "intraday":
+                if (
+                    expected["market_session"] != "open"
+                    or header.get("assessment_state") != "provisional"
+                ):
+                    errors.append(f"{ticker}.intraday_as_final")
+                if trade_date.isoformat() != expected["market_date"]:
+                    errors.append(f"{ticker}.intraday_date")
+            elif trade_date > date.fromisoformat(expected["latest_completed_regular_session_date"]):
+                errors.append(f"{ticker}.uncompleted_close_date")
+        if price and price_facts:
+            for key in (
+                "price_basis",
+                "exchange_trade_date",
+                "latest_completed_regular_session_date",
+                "price_as_of",
+            ):
+                if price.get(key) != price_facts[0].get(key):
+                    errors.append(f"{ticker}.current_price_projection.{key}")
+
+    for capture in completed_captures:
+        if str(capture.get("market", "")).lower() != market:
+            errors.append("capture.market")
+        if capture.get("render_mode") != "LATEST_COMPLETED_CLOSE":
+            errors.append("capture.mode")
+        if capture.get("target_session") != expected["latest_completed_regular_session_date"]:
+            errors.append("capture.target_session")
+    return {
+        "status": "FAIL" if errors else "PASS",
+        "error_code": "MARKET_SESSION_CROSS_FIELD_INCONSISTENCY" if errors else None,
+        "errors": sorted(set(errors)),
+        "market": market,
+        "generated_at": packet["generated_at"],
+        "expected_session": expected,
+        "stock_count": stock_count,
+        "completed_capture_count": len(completed_captures),
+    }
+
+
 def _market_packet(
     session: Session,
     run_date: date,
@@ -3426,12 +3570,7 @@ def _market_packet(
         and fact_is_in_consumer_scope(fact, FactConsumer.DAILY_REVIEW)
     }
     return {
-        "session": {
-            "market": market,
-            "assessment_date": run_date.isoformat(),
-            "market_session": digest.macro.market_session,
-            "assessment_state": digest.macro.assessment_state,
-        },
+        "session": _market_packet_session(market, run_date, generated_at),
         "regime": {
             "label": digest.macro.regime_label,
             "confidence": digest.macro.confidence,

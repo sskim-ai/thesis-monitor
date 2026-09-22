@@ -327,6 +327,8 @@ def _semantic_hash_audit() -> dict[str, object]:
     actual = {str(path): file_sha256(path) for path in SEMANTIC_PATHS}
     successor_owned = {
         "app/services/directional_financial_context_service.py",
+        # M12BS moves this owner into the frozen fundamental-core boundary.
+        "app/services/direction_timing_ownership_service.py",
     }
     mismatches = [
         path

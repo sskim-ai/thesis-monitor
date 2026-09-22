@@ -4,10 +4,13 @@ import hashlib
 import json
 import re
 from collections import Counter
+from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal
 
 from pydantic import Field
+
+from app.services.accepted_calibration_message_service import AcceptedCalibrationPlan, calibration_render
 
 from app.services.cross_market_decision_engine_service import (
     Confidence,
@@ -37,6 +40,12 @@ from app.services.logical_condition_service import (
 from app.services.production_validation_policy_service import (
     RepetitionClass,
     classify_repeated_span,
+)
+from app.services.three_axis_decision_service import (
+    HolderDecisionAxis,
+    NewBuyerDecisionAxis,
+    ThreeAxisDecision,
+    render_three_axis_header,
 )
 
 
@@ -119,6 +128,18 @@ class AcceptedDecisionPlan(FrozenModel):
     accepted_buy_drivers: tuple[EvidenceClaim, ...] = ()
     accepted_sell_drivers: tuple[EvidenceClaim, ...] = ()
     accepted_balance_summary: str | None = None
+    accepted_new_buyer_axis: NewBuyerDecisionAxis | None = None
+    accepted_holder_axis: HolderDecisionAxis | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class AcceptedDecisionFrozenCoreNumericScope:
+    ticker: str
+    fundamental_core_sha256: str
+    directional_balance: DirectionalBalance
+    buy_drivers: tuple[EvidenceClaim, ...]
+    sell_drivers: tuple[EvidenceClaim, ...]
+    balance_summary: str
 
 
 class AcceptedDecisionValidationResult(FrozenModel):
@@ -162,6 +183,7 @@ _ORDER_LANGUAGE = re.compile(
 _EXACT_NUMBER = re.compile(
     r"(?<![A-Za-z])[-+]?\d[\d,.]*(?:\.\d+)?\s*(?:%|원|달러|USD|KRW|배|주|MW|GW)"
 )
+_INTERNAL_LABEL_LANGUAGE = re.compile(r"(?:상향|하향)\s*라벨|내부\s*(?:위험\s*)?확신")
 
 _SELF_TRANSITION = {
     ("BUY", "UPGRADE"): re.compile(
@@ -215,6 +237,13 @@ def normalize_decision_change_condition(
     }
     for source, target in replacements.get((decision, direction), ()):
         text = re.sub(source, target, text, flags=re.IGNORECASE)
+    text = re.sub(
+        r"(?:추가\s*)?(?:상향|하향)\s*라벨은\s*없으며,?\s*",
+        "",
+        text,
+    )
+    text = re.sub(r"SELL\s*내부\s*위험\s*확신", "SELL 판단 확신", text)
+    text = re.sub(r"BUY\s*내부\s*확신", "BUY 판단 확신", text)
     return claim.model_copy(update={"text": text})
 
 
@@ -288,6 +317,8 @@ def _not_ready_plan(
         candidate_buy_drivers=candidate.buy_drivers,
         candidate_sell_drivers=candidate.sell_drivers,
         candidate_balance_summary=candidate.balance_summary,
+        accepted_new_buyer_axis=None,
+        accepted_holder_axis=None,
     )
 
 
@@ -479,6 +510,8 @@ def resolve_accepted_v2_decision(
             "accepted_sell_driver_refs": [
                 list(claim.evidence_refs) for claim in accepted_sell_drivers
             ],
+            "new_buyer_axis": candidate.new_buyer_axis.model_dump(mode="json"),
+            "holder_axis": candidate.holder_axis.model_dump(mode="json"),
         },
     )
     accepted_decision_id = _canonical_fingerprint(
@@ -533,12 +566,16 @@ def resolve_accepted_v2_decision(
         accepted_buy_drivers=accepted_buy_drivers,
         accepted_sell_drivers=accepted_sell_drivers,
         accepted_balance_summary=accepted_balance_summary,
+        accepted_new_buyer_axis=candidate.new_buyer_axis,
+        accepted_holder_axis=candidate.holder_axis,
     )
 
 
 def validate_accepted_v2_decision(
     packet: DecisionEvidencePacket,
     plan: AcceptedDecisionPlan,
+    *,
+    frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> AcceptedDecisionValidationResult:
     errors: list[str] = []
     if plan.status != AcceptedDecisionStatus.READY:
@@ -560,10 +597,28 @@ def validate_accepted_v2_decision(
         errors.append("accepted_decision_balance_mismatch")
     if not plan.accepted_buy_drivers or not plan.accepted_sell_drivers:
         errors.append("accepted_directional_drivers_missing")
+    frozen_core_fields_bound = bool(
+        frozen_core_numeric_scope is not None
+        and plan.accepted_source == AcceptedDecisionSource.CANDIDATE
+        and plan.ticker == frozen_core_numeric_scope.ticker
+        and plan.material_disagreement is False
+        and plan.adjudication_id is None
+        and plan.adjudication_status == "NOT_REQUIRED"
+        and plan.candidate_directional_balance
+        == frozen_core_numeric_scope.directional_balance
+        and plan.candidate_buy_drivers == frozen_core_numeric_scope.buy_drivers
+        and plan.candidate_sell_drivers == frozen_core_numeric_scope.sell_drivers
+        and plan.candidate_balance_summary == frozen_core_numeric_scope.balance_summary
+        and plan.accepted_directional_balance
+        == frozen_core_numeric_scope.directional_balance
+        and plan.accepted_buy_drivers == frozen_core_numeric_scope.buy_drivers
+        and plan.accepted_sell_drivers == frozen_core_numeric_scope.sell_drivers
+        and plan.accepted_balance_summary == frozen_core_numeric_scope.balance_summary
+    )
     if not plan.accepted_balance_summary:
         errors.append("accepted_balance_summary_missing")
     else:
-        if _EXACT_NUMBER.search(plan.accepted_balance_summary):
+        if _EXACT_NUMBER.search(plan.accepted_balance_summary) and not frozen_core_fields_bound:
             errors.append("adjudication_introduced_unregistered_numeric")
         errors.extend(
             directional_balance_language_errors(
@@ -574,6 +629,10 @@ def validate_accepted_v2_decision(
                 )
             )
         )
+    if plan.accepted_new_buyer_axis is None:
+        errors.append("accepted_new_buyer_axis_missing")
+    if plan.accepted_holder_axis is None:
+        errors.append("accepted_holder_axis_missing")
     if plan.accepted_preconfirmation_buy and plan.accepted_decision != "BUY":
         errors.append("rejected_preconfirmation_buy_leaked_to_accepted")
     if plan.accepted_postconfirmation_hold and plan.accepted_decision != "HOLD":
@@ -587,23 +646,39 @@ def validate_accepted_v2_decision(
     ):
         errors.append("keep_v1_did_not_replace_candidate_or_balance")
     claims = tuple(
-        claim
-        for claim in (
-            plan.accepted_reason,
-            plan.accepted_confirmation_cost_basis,
-            plan.accepted_upgrade_condition,
-            plan.accepted_downgrade_condition,
-            *plan.accepted_buy_drivers,
-            *plan.accepted_sell_drivers,
+        (claim, allow_frozen_core_numeric)
+        for claim, allow_frozen_core_numeric in (
+            (plan.accepted_reason, False),
+            (plan.accepted_confirmation_cost_basis, False),
+            (plan.accepted_upgrade_condition, False),
+            (plan.accepted_downgrade_condition, False),
+            *((claim, frozen_core_fields_bound) for claim in plan.accepted_buy_drivers),
+            *((claim, frozen_core_fields_bound) for claim in plan.accepted_sell_drivers),
+            (
+                (
+                    plan.accepted_new_buyer_axis.reason
+                    if plan.accepted_new_buyer_axis is not None
+                    else None
+                ),
+                False,
+            ),
+            (
+                plan.accepted_holder_axis.reason
+                if plan.accepted_holder_axis is not None
+                else None,
+                False,
+            ),
         )
         if claim is not None
     )
     allowed_refs = {row.ref_id for row in packet.evidence}
-    for claim in claims:
+    for claim, allow_frozen_core_numeric in claims:
         if _ORDER_LANGUAGE.search(claim.text):
             errors.append("order_command_language")
-        if _EXACT_NUMBER.search(claim.text):
+        if _EXACT_NUMBER.search(claim.text) and not allow_frozen_core_numeric:
             errors.append("adjudication_introduced_unregistered_numeric")
+        if _INTERNAL_LABEL_LANGUAGE.search(claim.text):
+            errors.append("internal_label_language")
         for ref_id in claim.evidence_refs:
             if ref_id not in allowed_refs:
                 errors.append(f"unknown_accepted_evidence_ref:{ref_id}")
@@ -666,7 +741,9 @@ def validate_accepted_v2_render(
     elif rendered_decision != plan.accepted_decision:
         errors.append("rendered_decision_not_accepted_decision")
     required_label = (
-        "🧪 SHADOW V2 · accepted decision 검증" if render_mode == "shadow" else "🧠 AI 분석 판단:"
+        "🧪 SHADOW V2 · accepted decision 검증"
+        if render_mode == "shadow"
+        else "🧠 AI 분석 판단"
     )
     if required_label not in text:
         errors.append(f"accepted_{render_mode}_label_missing")
@@ -678,6 +755,12 @@ def validate_accepted_v2_render(
         errors.append("accepted_directional_balance_missing_from_render")
     if _ORDER_LANGUAGE.search(text):
         errors.append("order_command_language")
+    if plan.accepted_decision is not None and f"종합 방향: {plan.accepted_decision}" not in text:
+        errors.append("overall_direction_missing_from_render")
+    if plan.accepted_new_buyer_axis is None or "신규 관찰자:" not in text:
+        errors.append("new_buyer_axis_missing_from_render")
+    if plan.accepted_holder_axis is None or "보유자:" not in text:
+        errors.append("holder_axis_missing_from_render")
     return AcceptedRenderValidationResult(
         valid=not errors,
         errors=tuple(dict.fromkeys(errors)),
@@ -716,6 +799,8 @@ def render_accepted_v2_shadow(
         raise ValueError("accepted_decision_lineage_missing")
     if plan.accepted_directional_balance is None:
         raise ValueError("accepted_directional_balance_missing")
+    if plan.accepted_new_buyer_axis is None or plan.accepted_holder_axis is None:
+        raise ValueError("accepted_three_axis_missing")
     confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
     maturity = {
         "EARLY": "초기",
@@ -733,7 +818,14 @@ def render_accepted_v2_shadow(
     lines = [
         "🧪 SHADOW V2 · accepted decision 검증",
         f"🏢 {packet.company_name}({packet.ticker})",
-        f"🧠 AI 수용 판단: {plan.accepted_decision}",
+        "🧠 AI 수용 판단",
+        *render_three_axis_header(
+            ThreeAxisDecision(
+                overall_direction=plan.accepted_decision,
+                new_buyer=plan.accepted_new_buyer_axis,
+                holder=plan.accepted_holder_axis,
+            )
+        ),
         f"판단 균형: {render_directional_balance(plan.accepted_directional_balance)}",
         f"추론등급: 매우 높음 | 판단 확신도: {confidence[str(plan.accepted_confidence)]}",
         (
@@ -784,16 +876,26 @@ def render_accepted_v2_shadow(
 
 def render_accepted_v2_production(
     packet: DecisionEvidencePacket,
-    plan: AcceptedDecisionPlan,
+    plan: AcceptedDecisionPlan | AcceptedCalibrationPlan,
+    *,
+    frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> RenderedProductionAcceptedDecision:
+    if isinstance(plan, AcceptedCalibrationPlan):
+        return calibration_render(packet, plan)
     plan = normalize_accepted_plan_conditions(plan)
-    accepted_validation = validate_accepted_v2_decision(packet, plan)
+    accepted_validation = validate_accepted_v2_decision(
+        packet,
+        plan,
+        frozen_core_numeric_scope=frozen_core_numeric_scope,
+    )
     if not accepted_validation.valid or plan.accepted_decision is None:
         raise ValueError("accepted_decision_invalid:" + ",".join(accepted_validation.errors))
     if plan.accepted_source is None or plan.accepted_reason is None:
         raise ValueError("accepted_decision_lineage_missing")
     if plan.accepted_directional_balance is None:
         raise ValueError("accepted_directional_balance_missing")
+    if plan.accepted_new_buyer_axis is None or plan.accepted_holder_axis is None:
+        raise ValueError("accepted_three_axis_missing")
     if plan.accepted_upgrade_condition is None or plan.accepted_downgrade_condition is None:
         raise ValueError("accepted_change_condition_missing")
     confidence = {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}
@@ -805,7 +907,14 @@ def render_accepted_v2_production(
         "UNKNOWN": "판단 근거 부족",
     }
     lines = [
-        f"🧠 AI 분석 판단: {plan.accepted_decision}",
+        "🧠 AI 분석 판단",
+        *render_three_axis_header(
+            ThreeAxisDecision(
+                overall_direction=plan.accepted_decision,
+                new_buyer=plan.accepted_new_buyer_axis,
+                holder=plan.accepted_holder_axis,
+            )
+        ),
         f"판단 균형: {render_directional_balance(plan.accepted_directional_balance)}",
         (
             f"판단 확신도: {confidence[str(plan.accepted_confidence)]} | "
@@ -814,6 +923,10 @@ def render_accepted_v2_production(
         "",
         "🎯 핵심 판단",
         f"• {plan.accepted_reason.text}",
+        "",
+        "👥 대상별 판단",
+        f"• 신규 관찰자: {plan.accepted_new_buyer_axis.reason.text}",
+        f"• 보유자: {plan.accepted_holder_axis.reason.text}",
         "",
         "🔄 재평가 조건",
         f"• 상향 재평가: {plan.accepted_upgrade_condition.text}",

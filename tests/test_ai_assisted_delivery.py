@@ -1,6 +1,7 @@
 import json
 from datetime import date, datetime
 from pathlib import Path
+from types import SimpleNamespace
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -151,6 +152,89 @@ def test_v2_production_keeps_ai_assisted_route_active_after_pilot_days(
         },
     )
     assert ai_assisted_pilot_active("us") is True
+
+
+def test_delivery_v2_reader_forwards_independent_core_temp(
+    monkeypatch, tmp_path: Path
+) -> None:
+    settings = _settings(monkeypatch, tmp_path).model_copy(
+        update={
+            "visible_stock_decision_engine": "v2_accepted",
+            "v2_production_enabled": True,
+            "v2_full_monitored_stock_coverage_target": True,
+            "v1_decision_rollback_available": True,
+        }
+    )
+    monkeypatch.setattr(delivery_service, "get_settings", lambda: settings)
+    output = delivery_service.AIDailyReviewOutput.model_validate(_output())
+    output_path = tmp_path / "ai_review" / "outbox" / "review.json"
+    paths = delivery_service.accepted_v2_production_paths(
+        output_path,
+        claim_id=output.claim_id,
+    )
+    paths["core_temp"].parent.mkdir(parents=True, exist_ok=True)
+    paths["core_temp"].write_text('{"trusted":"core"}', encoding="utf-8")
+    trusted_core = object()
+
+    class _FakeCoreBatch:
+        @classmethod
+        def model_validate(cls, payload):
+            assert payload == {"trusted": "core"}
+            return trusted_core
+
+    forwarded: dict[str, object] = {}
+
+    def _load(*args, **kwargs):
+        forwarded.update(kwargs)
+        return SimpleNamespace(status="PASS")
+
+    monkeypatch.setattr(
+        delivery_service,
+        "AcceptedV2FundamentalCoreBatch",
+        _FakeCoreBatch,
+    )
+    monkeypatch.setattr(delivery_service, "load_accepted_v2_production_artifact", _load)
+
+    artifact, status, artifact_path = delivery_service._load_delivery_accepted_v2(
+        _packet(),
+        output,
+        output_path,
+    )
+
+    assert artifact is not None
+    assert status == "PASS"
+    assert artifact_path == paths["final"]
+    assert forwarded["trusted_fundamental_core_batch"] is trusted_core
+
+
+def test_delivery_v2_reader_suppresses_when_independent_core_temp_is_missing(
+    monkeypatch, tmp_path: Path
+) -> None:
+    settings = _settings(monkeypatch, tmp_path).model_copy(
+        update={
+            "visible_stock_decision_engine": "v2_accepted",
+            "v2_production_enabled": True,
+            "v2_full_monitored_stock_coverage_target": True,
+            "v1_decision_rollback_available": True,
+        }
+    )
+    monkeypatch.setattr(delivery_service, "get_settings", lambda: settings)
+    output = delivery_service.AIDailyReviewOutput.model_validate(_output())
+    output_path = tmp_path / "ai_review" / "outbox" / "review.json"
+    paths = delivery_service.accepted_v2_production_paths(
+        output_path,
+        claim_id=output.claim_id,
+    )
+
+    artifact, status, artifact_path = delivery_service._load_delivery_accepted_v2(
+        _packet(),
+        output,
+        output_path,
+    )
+
+    assert artifact is None
+    assert status == "V2_DECISION_SUPPRESSED_SAFE"
+    assert artifact_path == paths["final"]
 
 
 def test_archive_quality_scope_keeps_v2_subjects_outside_adaptive_canary() -> None:
