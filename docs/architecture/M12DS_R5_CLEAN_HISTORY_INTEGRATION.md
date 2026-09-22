@@ -23,3 +23,22 @@ The existing P2 price-as-of, US market coverage, and wording items are unchanged
 
 This document specifies the integration boundary; completion and exact-SHA
 validation are recorded in the separate local R5 closeout report.
+
+## R5-R1 Provenance Migration
+
+`m12ds-r5-r1-clean-history-provenance-v1` preserves legacy pin ancestry and adds
+an explicit reviewed clean-root mode. The compact provenance JSON binds the
+published root, its tree and parent, original review identities, path owners and
+the eight reviewed byte hashes. The guard independently pins the expected
+attestation; editing the JSON cannot authorize different protected bytes.
+
+Clean mode verifies root ancestry and root, HEAD and working-tree file bytes. It
+never reads private historical commit blobs. A failed clean attestation cannot
+fall back to legacy approval. Receipts distinguish verified clean-root ancestry
+from historical ancestry and never claim the latter when it is absent.
+
+A checkout must contain the published clean root and its descendants to perform
+this audit. Missing history fails closed; a shallow checkout is not an implicit
+approval. Direct tests use isolated real Git graphs without private objects so
+CI checkout depth does not weaken or skip the proof. A separate full clean clone
+of the candidate verifies the actual reviewed root before publication.
