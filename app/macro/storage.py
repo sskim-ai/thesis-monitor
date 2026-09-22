@@ -59,6 +59,24 @@ def persist_observation(
     ).first()
     if existing is not None:
         if observation.quality_status is not None:
+            receipt = observation.raw_payload.get('completed_session_receipt')
+            if (provider == 'ohlcv_analyst' and isinstance(receipt, dict)
+                    and receipt.get('contract') == 'completed-market-session-v1'
+                    and receipt.get('series_code') == observation.series_code
+                    and receipt.get('completed_session_date') == observation.observed_at.date().isoformat()):
+                # A final source row can supersede an earlier live/host-date row.
+                # Preserve the replaced occurrence rather than silently losing it.
+                prior = json.loads(existing.raw_payload or '{}')
+                if any(getattr(existing, k) != getattr(observation, k)
+                       for k in ('value', 'previous_value', 'change_value', 'change_pct')):
+                    observation.raw_payload['superseded_occurrence'] = dict(
+                        value=existing.value, previous_value=existing.previous_value,
+                        change_value=existing.change_value, change_pct=existing.change_pct,
+                        raw_payload=prior, retrieved_at=str(existing.retrieved_at))
+                elif 'superseded_occurrence' in prior:
+                    observation.raw_payload['superseded_occurrence'] = prior['superseded_occurrence']
+                for key in ('value', 'previous_value', 'change_value', 'change_pct'):
+                    setattr(existing, key, getattr(observation, key))
             existing.quality_status = observation.quality_status
             existing.raw_payload = json.dumps(observation.raw_payload, ensure_ascii=False)
             existing.retrieved_at = datetime.now(timezone.utc)

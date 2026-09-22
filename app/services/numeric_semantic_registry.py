@@ -459,6 +459,10 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="both",
     ),
+    "index_proxy_price": _spec(
+        "index_proxy_price", ("USD",), ("주요 지수 ETF 종가",),
+        (r"(?:spy|qqq|iwm).*(?:종가|수준)",), "positive_amount", scope="market",
+    ),
     "sector_proxy_level": _spec(
         "sector_proxy_level",
         ("index",),
@@ -1847,6 +1851,7 @@ _FIELD_RULES = (
         "pct",
     ),
     NumericFieldRule(("market_index",), r"fields\.return_pct", "index_return_pct", "pct"),
+    NumericFieldRule(("market_index",), r"fields\.level", "index_proxy_price", "USD"),
     NumericFieldRule(("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
     NumericFieldRule(("market_sector",), r"fields\.level", "sector_proxy_level", "index"),
     NumericFieldRule(("market_style",), r"fields\.return_pct", "style_return_pct", "pct"),

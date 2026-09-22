@@ -27,6 +27,12 @@ def test_fred_collects_immediately_previous_valid_observation_first(
     get_settings.cache_clear()
 
     def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.host == 'fred.stlouisfed.org':
+            return httpx.Response(200, text='''
+                <meta name="dcterms:PeriodOfTime" content="start:2000-01-01; end:2026-09-01;">
+                <span class="updated-text default-text" title="Sep 1, 2026 4:00 PM CDT"></span>
+                <span class="updated-text text-link" title="Sep 2, 2026"></span>
+            ''', request=request)
         return httpx.Response(
             200,
             json={

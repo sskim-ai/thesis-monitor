@@ -128,12 +128,19 @@ def _night_timeframe_line(frame: KrxNightAggregateBar, label: str) -> str:
             f"  - {heading}: 시가 {frame.open:,.2f} · 종가 {frame.close:,.2f} · "
             f"갭 {frame.gap_pct:+.2f}% · 등락 {frame.return_pct:+.2f}%"
         )
-    if frame.return_pct is None:
-        return f"  - {heading}: 자료 부족"
+    elapsed = tuple(day for day in frame.expected_dates if day <= frame.reference_date)
+    coverage = f"포함 {len(frame.included_dates)}/{len(elapsed)} 거래일"
+    if frame.missing_dates:
+        coverage += " · 누락 " + ", ".join(day.isoformat() for day in frame.missing_dates)
+    change = (
+        "등락률 미확인(동일 계약 이전 기간 기준값 부족)"
+        if frame.return_pct is None else
+        f"{'주간' if frame.timeframe == 'WEEKLY' else '월간'} {frame.return_pct:+.2f}%"
+    )
     return (
-        f"  - {heading}: 시가 {frame.open:,.2f} · 종가 {frame.close:,.2f} · "
-        f"{'주간' if frame.timeframe == 'WEEKLY' else '월간'} "
-        f"{frame.return_pct:+.2f}%"
+        f"  - {heading}: 시가 {frame.open:,.2f} · 고가 {frame.high:,.2f} · "
+        f"저가 {frame.low:,.2f} · 종가 {frame.close:,.2f}\n"
+        f"    {frame.aggregation_start_date} ~ {frame.reference_date} · {coverage} · {change}"
     )
 
 

@@ -47,6 +47,22 @@ REVIEWED_HASHES = {
 WORKFLOW_PATH = ".github/workflows/test.yml"
 WORKFLOW_BEFORE_SHA256 = "b0932124732f0234db8ad76b1e356b044c8c4bc0892645c6f514ef7575515d5d"
 WORKFLOW_AFTER_SHA256 = "f1502fd11213551c9f552c43ea4eb65df913104e1fd8241fc03a53d0fd03be31"
+R6_INSTRUCTION_SHA = 'cfb6f939858a2b87be70c4f46a4b51eaf068aee5'
+R6_BASE_SHA = '2097645892e30d84aba435416f98e7f9545a87fa'
+R6_SOURCE_HASHES = {
+    'app/macro/providers/fred.py': '3f79b8b5c714a774cd8428bc1a45b2995d14f4edb103db96993ede152ed85a1f',
+    'app/macro/providers/krx.py': '8930d364aa15f38e35c0812be5c0d737e1c896180a73987528ab667da9cb2961',
+    'app/macro/providers/market.py': 'b3075cba09a172c10bcadf43c50f9e3f822ee21d97e12ce5457ec09d5bf48fca',
+    'app/macro/storage.py': '9256d010a7ab4887416f94fde0fd796ba7e959b0399580ec70c8a80b717b4de9',
+    'app/services/numeric_semantic_registry.py': '0c5e500400c1132c0f94d0cb245f96c68b19a79268a3de17bc329f92b0be4ccd',
+    'tests/test_fred_provider.py': '31184daf0cca7860fc05e95b2a2317e1726a271b5d6d2deebee3432ae7702279',
+}
+R6_METADATA_INSERTION = b'''    raw_metadata = _json(item.raw_payload, {})
+    if isinstance(raw_metadata, dict):
+        for key in ('publication_receipt', 'completed_session_receipt'):
+            if isinstance(raw_metadata.get(key), dict):
+                value[key] = raw_metadata[key]
+'''
 
 
 def _git(*args):
@@ -128,7 +144,7 @@ def _workflow_approval(observed):
 
 def approved_descendant(path):
     pin = PINS.get(path)
-    if ((pin is None and path != WORKFLOW_PATH) or not Path(path).is_file()
+    if ((pin is None and path != WORKFLOW_PATH and path not in R6_SOURCE_HASHES) or not Path(path).is_file()
             or Path(path).is_symlink()):
         return None
     try:
@@ -137,6 +153,10 @@ def approved_descendant(path):
         return None
     if path == WORKFLOW_PATH:
         return _workflow_approval(observed)
+    if path in R6_SOURCE_HASHES:
+        return _r6_source_approval(path, observed)
+    if path == 'app/macro/briefing.py' and _ancestor(R6_INSTRUCTION_SHA):
+        return _r6_metadata_approval(path, observed)
     # A failed clean attestation must never fall back to a different proof mode.
     if _ancestor(CLEAN_IDENTITY["clean_root_sha"]):
         return _clean_approval(path, observed)
@@ -152,3 +172,50 @@ def approved_descendant(path):
     return {"owner": owner, "commit": commit, "path": path, "sha256": sha256(expected).hexdigest(),
             "ancestor_verified": True, "historical_ancestor_verified": True,
             "provenance_mode": "LEGACY_HISTORICAL_ANCESTRY", "exact_blob_verified": True}
+
+
+def _r6_metadata_approval(path, observed):
+    """Only two source receipts may be propagated; no temporal policy edits."""
+    try:
+        expected_rows = [{"path": p, "owner": owner, "historical_pin": commit,
+                          "sha256": REVIEWED_HASHES[p]} for p, (owner, commit) in PINS.items()]
+        if json.loads(ATTESTATION_PATH.read_text(), object_pairs_hook=_unique_keys) != {
+                **CLEAN_IDENTITY, 'protected_paths': expected_rows}:
+            return None
+        root = CLEAN_IDENTITY['clean_root_sha']
+        if (not _ancestor(root) or _git('rev-parse', root+'^{tree}').decode().strip() != CLEAN_IDENTITY['clean_root_tree_sha']):
+            return None
+        before = _git('show', f'{R6_INSTRUCTION_SHA}:{path}')
+        if sha256(before).hexdigest() != REVIEWED_HASHES[path]:
+            return None
+        anchor = b'    if item.category == "kr_night_futures":\n'
+        if before.count(anchor) != 1:
+            return None
+        after = before.replace(anchor, R6_METADATA_INSERTION + anchor)
+        if observed != after or _git('show', f'HEAD:{path}') not in (before, after):
+            return None
+        return dict(owner='M12DS-R6', path=path, instruction_commit=R6_INSTRUCTION_SHA,
+                    sha256=sha256(after).hexdigest(), before_sha256=REVIEWED_HASHES[path],
+                    provenance_mode='EXACT_SOURCE_METADATA_PROJECTION', exact_transform_verified=True,
+                    clean_root_ancestor_verified=True, temporal_policy_changed=False)
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError):
+        return None
+
+
+def _r6_source_approval(path, observed):
+    try:
+        if (not _ancestor(R6_INSTRUCTION_SHA)
+                or _git('show','-s','--format=%P',R6_INSTRUCTION_SHA).decode().strip() != R6_BASE_SHA):
+            return None
+        before = _git('show', f'{R6_INSTRUCTION_SHA}:{path}')
+        if before != _git('show', f'{R6_BASE_SHA}:{path}'):
+            return None
+        expected = R6_SOURCE_HASHES[path]
+        if (sha256(observed).hexdigest() != expected or
+                sha256(_git('show', f'HEAD:{path}')).hexdigest() not in {sha256(before).hexdigest(), expected}):
+            return None
+        return dict(owner='M12DS-R6', path=path, instruction_commit=R6_INSTRUCTION_SHA,
+                    before_sha256=sha256(before).hexdigest(), sha256=expected,
+                    provenance_mode='EXACT_R6_SOURCE_INFORMATION_OWNER', exact_blob_verified=True)
+    except (OSError, KeyError, subprocess.SubprocessError):
+        return None

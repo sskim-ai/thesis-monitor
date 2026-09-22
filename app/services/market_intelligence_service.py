@@ -180,6 +180,9 @@ def _observation_fact(
         "source_url": str(item.get("source_url") or ""),
     }
     temporal = item.get("temporal")
+    for key in ('publication_receipt', 'completed_session_receipt'):
+        if isinstance(item.get(key), dict):
+            fields[key] = item[key]
     if isinstance(temporal, dict):
         fields.update(
             {
@@ -215,7 +218,7 @@ def _observation_fact(
         fields["market_session"] = str(item["market_session"])
 
     if fact_type in {"market_index", "market_sector", "market_style"}:
-        if value is not None and fact_type in {"market_sector", "market_style"}:
+        if value is not None:
             fields["level"] = value
         if change_pct is not None:
             fields["return_pct"] = change_pct
@@ -272,7 +275,7 @@ def _observation_fact(
     return {
         "fact_id": _fact_id(series_code),
         "fact_type": fact_type,
-        "as_of_date": str(item.get("observed_at") or run_date).split(" ", 1)[0],
+        "as_of_date": str(item.get("observed_at") or run_date)[:10],
         "source": "verified_macro_briefing",
         "fields": fields,
     }

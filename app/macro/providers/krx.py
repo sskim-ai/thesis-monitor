@@ -23,6 +23,9 @@ SERIES_CODES = {
 class KrxNightFuturesProvider:
     name = "krx_night_futures"
 
+    def __init__(self, *, include_month_history: bool = False):
+        self.include_month_history = include_month_history
+
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         run_date = as_of.astimezone(KST).date()
         probe = await fetch_live_probe(
@@ -45,6 +48,10 @@ class KrxNightFuturesProvider:
                 telemetry=telemetry,
             )
         observations: list[CollectedObservation] = []
+        if self.include_month_history:
+            from app.services.krx_night_month_backfill_service import backfill_selected_month
+            telemetry['month_history'] = await backfill_selected_month(
+                default_krx_night_history_directory(), probe.observations, as_of=as_of)
         for item in probe.observations:
             observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
             timeframes = build_same_contract_timeframes(

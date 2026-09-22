@@ -41,7 +41,8 @@ def clean_repo(tmp_path, monkeypatch):
     for path in PINS:
         target = repo / path
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((SOURCE_ROOT / path).read_bytes())
+        target.write_bytes(subprocess.check_output(
+            ['git', 'show', guard.CLEAN_IDENTITY['clean_root_sha'] + ':' + path], cwd=SOURCE_ROOT))
     workflow = repo / guard.WORKFLOW_PATH
     workflow.parent.mkdir(parents=True, exist_ok=True)
     workflow.write_bytes(subprocess.check_output(
@@ -66,6 +67,54 @@ def test_approved_descendants_require_exact_ancestor_blobs(clean_repo):
         assert receipt and receipt["clean_root_ancestor_verified"], path
         assert receipt["ancestor_verified"] is False
     assert approved_descendant("app/services/daily_monitor_service.py") is None
+
+
+def test_r6_only_exact_receipt_projection_can_descend_clean_history(clean_repo, monkeypatch):
+    repo, attestation, document = clean_repo
+    instruction = commit(repo, 'frozen R6 instruction')
+    monkeypatch.setattr(guard, 'R6_INSTRUCTION_SHA', instruction)
+    path = 'app/macro/briefing.py'
+    target = Path(path)
+    before = target.read_bytes()
+    anchor = b'    if item.category == "kr_night_futures":\n'
+    after = before.replace(anchor, guard.R6_METADATA_INSERTION + anchor)
+    target.write_bytes(after)
+    assert approved_descendant(path)['exact_transform_verified']
+    commit(repo, 'two source receipts only')
+    assert approved_descendant(path)['temporal_policy_changed'] is False
+    target.write_bytes(after + b'\n# unrelated change\n')
+    assert approved_descendant(path) is None
+    target.write_bytes(after)
+    changed = deepcopy(attestation)
+    changed['mode'] = 'BYPASS'
+    document.write_text(json.dumps(changed))
+    assert approved_descendant(path) is None
+
+
+def test_r6_source_pins_reject_unregistered_changes_and_bad_head(tmp_path, monkeypatch):
+    repo=tmp_path/'r6-source'
+    repo.mkdir()
+    git(repo,'init')
+    path='app/macro/providers/fred.py'
+    target=repo/path
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b'original source\n')
+    base=commit(repo,'baseline')
+    instruction=commit(repo,'instruction')
+    after=b'reviewed source information\n'
+    monkeypatch.chdir(repo)
+    monkeypatch.setattr(guard,'R6_BASE_SHA',base)
+    monkeypatch.setattr(guard,'R6_INSTRUCTION_SHA',instruction)
+    monkeypatch.setattr(guard,'R6_SOURCE_HASHES',{path:guard.sha256(after).hexdigest()})
+    target.write_bytes(after)
+    assert approved_descendant(path)['exact_blob_verified']
+    commit(repo,'reviewed source')
+    assert approved_descendant(path)['owner']=='M12DS-R6'
+    target.write_bytes(after+b'extra change\n')
+    assert approved_descendant(path) is None
+    commit(repo,'unapproved source')
+    target.write_bytes(after)
+    assert approved_descendant(path) is None
 
 
 def test_clean_descendant_and_missing_private_objects(clean_repo, monkeypatch):

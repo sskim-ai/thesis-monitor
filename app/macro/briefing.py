@@ -183,6 +183,11 @@ def market_observation_to_dict(
         value["previous_observation_date"] = previous_observation_date.isoformat()
     if temporal_decision:
         value["temporal"] = temporal_decision
+    raw_metadata = _json(item.raw_payload, {})
+    if isinstance(raw_metadata, dict):
+        for key in ('publication_receipt', 'completed_session_receipt'):
+            if isinstance(raw_metadata.get(key), dict):
+                value[key] = raw_metadata[key]
     if item.category == "kr_night_futures":
         raw = _json(item.raw_payload, {})
         raw = raw if isinstance(raw, dict) else {}

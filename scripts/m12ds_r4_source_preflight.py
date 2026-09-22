@@ -62,7 +62,7 @@ def gate(probe, canonical, rows):
             'downstream_render_status': 'NOT_RUN', 'production_send': 0, 'model_calls': 0}
 
 
-async def run(root, generation_prefix='20260922-m12ds-r4-current-'):
+async def run(root, generation_prefix='20260922-m12ds-r4-current-', *, include_month_history=False):
     root = root.resolve()
     if root.exists():
         raise ValueError('new_r4_source_directory_required')
@@ -132,7 +132,7 @@ async def run(root, generation_prefix='20260922-m12ds-r4-current-'):
         return result
 
     with patch.object(provider, 'fetch_live_probe', traced_fetch):
-        result = await asyncio.wait_for(provider.KrxNightFuturesProvider().collect(observed), timeout=1200)
+        result = await asyncio.wait_for(provider.KrxNightFuturesProvider(include_month_history=include_month_history).collect(observed), timeout=1200)
     if len(captured) != 1:
         raise ValueError('exact_official_probe_invocation_required')
     probe = captured[0]
@@ -182,5 +182,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--generation-prefix', default='20260922-m12ds-r4-current-')
+    parser.add_argument('--include-month-history', action='store_true')
     args = parser.parse_args()
-    asyncio.run(run(args.root, args.generation_prefix))
+    asyncio.run(run(args.root, args.generation_prefix, include_month_history=args.include_month_history))

@@ -40,7 +40,7 @@ def stock_plan(proof, ticker, ep):
     if getattr(proof, 'TYPED_PRESENTATION', False):
         stock = next(s for packet in proof.packets.values() for s in packet['stocks'] if s['ticker']==ticker)
         candidate = stock.get('current_price_context')
-        if candidate and candidate.get('availability') == 'ready' and any(entries.get(k) is not None for k in ('fundamental_entry_low','tactical_watch_low')):
+        if candidate and candidate.get('availability') in {'ready', 'partial'}:
             quote = candidate
             receipt['quote_context_sha256'] = digest(quote)
     return AcceptedCalibrationPlan(ticker=ticker, source_generation_id=proof.source_gen,

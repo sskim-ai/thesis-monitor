@@ -142,7 +142,7 @@ def calibration_render(packet, plan):
         quote = plan.quote_context
         try:
             valid = (quote.get('contract') == 'current-price-context-v1'
-                     and quote.get('availability') == 'ready'
+                     and quote.get('availability') in {'ready', 'partial'}
                      and date.fromisoformat(quote['as_of_date']) <= date.fromisoformat(packet.assessment_date)
                      and quote.get('price_basis') in {'adjusted_close', 'close', 'intraday'})
         except (KeyError, TypeError, ValueError):
@@ -152,6 +152,21 @@ def calibration_render(packet, plan):
         else:
             basis = {'adjusted_close':'조정 종가', 'close':'종가', 'intraday':'장중 관측'}[quote['price_basis']]
             lines.insert(2, f"가격 자료 기준: {quote['as_of_date']} · {basis}")
+            lines.extend(["", "기술적 가격 구간"])
+            for key, label in (("active_support", "기술적 지지"), ("active_resistance", "기술적 저항")):
+                zone = quote.get(key) or {}
+                if zone.get('available') is not True:
+                    lines.append(f"{label}: 미확인")
+                    continue
+                low, high = zone.get('zone_low'), zone.get('zone_high')
+                currency = quote.get('currency')
+                if (any(isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)
+                        for v in (low, high)) or low <= 0 or high < low
+                        or currency not in {'KRW', 'USD'} or not zone.get('source') or not zone.get('timeframe')):
+                    errors.append('accepted_technical_zone_invalid')
+                    continue
+                precision = 0 if currency == 'KRW' else 2
+                lines.append(f"{label}: {low:,.{precision}f} ~ {high:,.{precision}f} {currency}")
     for prefix, label in (("fundamental_entry", "기업가치 기준 진입 범위"),
                           ("tactical_watch", "가격 흐름 관찰 구간")):
         low, high = [plan.entries.get(prefix + suffix) for suffix in ("_low", "_high")]

@@ -6,6 +6,7 @@ from math import isclose, isfinite
 
 from app.services.official_night_market_eligibility_service import night_market_eligibility, night_catalog_matches
 from app.services.us_full_message_service import _night_timeframe_block
+from app.services.market_current_context_service import current_context_eligible
 
 CONTRACT = "market-numeric-claim-v1"
 FORMATTER = "market-numeric-formatter-v1"
@@ -44,6 +45,8 @@ def claim(kind, components, text, *, parents=(), formula=None, metadata=None):
 
 
 def _eligible(fact, completed, assessed):
+    if current_context_eligible(fact, completed, assessed):
+        return True
     fields = fact.get("fields") or {}
     try:
         observed = date.fromisoformat(fact["as_of_date"])
@@ -80,21 +83,32 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
                 component("market-session", "latest_completed_regular_session_date",completed,"DATE","ISO_DATE",completed)]
     heading = ("미국" if market == "us" else "한국")+f" 시장 점검 · 판단 {assessment_date}\n완료 정규장 기준: {completed}"
     claims.append(claim("SESSION",temporal,heading,metadata={"source_session_sha256":digest(session)}))
+    from app.services.market_sector_ranking_service import ranked_sector_claims
+    rankings = ranked_sector_claims(list(by_id.values()), source.get('numeric_registry') or [],
+                                   market, completed, eligible, source)
+    ranked_scopes = {r['metadata']['scope'] for r in rankings}
     accepted_keys = set()
     for row in source.get("numeric_registry") or []:
         ref, path = row.get("fact_id"), row.get("field_path")
-        if path not in {"fields.return_pct","fields.relative_return_pct","fields.level_pct"}:
+        if path not in {"fields.return_pct","fields.relative_return_pct","fields.level_pct",
+                        "fields.level", "fields.price_usd_per_barrel"}:
             continue
         fact = by_id.get(ref)
         fields = (fact or {}).get("fields") or {}
         key = path.removeprefix("fields.")
+        if key == 'level' and (fact or {}).get('fact_type') != 'market_index':
+            continue
+        if (path == 'fields.return_pct' and 'US_SECTOR_ETF' in ranked_scopes
+                and (fact or {}).get('fact_type') == 'market_sector' and fields.get('series_code') != 'SOXX'):
+            continue
         if (ref not in eligible or not fact or not _eligible(fact,completed,assessment_date)
                 or row.get("registered") is not True or row.get("prose_allowed") is not True
                 or row.get("scope") not in {"market","both"}
                 or not number(row.get("value")) or row["value"] != fields.get(key)):
             suppressed.append(dict(ref=ref,path=path,reason="source_or_registry_permission_denied"))
             continue
-        allowed_units = {"pct", "percent", "percentage_point", "pp"} if key == "relative_return_pct" else {"pct", "percent"}
+        allowed_units = ({"USD"} if key == 'level' else {"USD_per_barrel"} if key == 'price_usd_per_barrel'
+                         else {"pct", "percent", "percentage_point", "pp"} if key == "relative_return_pct" else {"pct", "percent"})
         if row.get("unit") not in allowed_units:
             suppressed.append(dict(ref=ref,path=path,reason="numeric_unit_mismatch"))
             continue
@@ -121,16 +135,22 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
             label_path = "label" if fields.get("label") else "series_code"
             label = str(fields[label_path])
             components.append(component(ref,"fields."+label_path,label,"INSTRUMENT","TEXT",observed))
+            if fact.get('fact_type') == 'market_index' and fields.get('series_code'):
+                label += f" ETF({fields['series_code']})"
+                components.append(component(ref,'fields.series_code',fields['series_code'],'INSTRUMENT','TEXT',observed))
         else:
             suppressed.append(dict(ref=ref,path=path,reason="numeric_instrument_owner_missing"))
             continue
-        role = "YIELD" if key=="level_pct" else "RETURN"
-        unit = "pp" if key=="relative_return_pct" else "pct"
+        role = 'LEVEL' if key in {'level', 'price_usd_per_barrel'} else "YIELD" if key=="level_pct" else "RETURN"
+        unit = 'USD' if key == 'level' else 'USD_per_barrel' if key == 'price_usd_per_barrel' else "pp" if key=="relative_return_pct" else "pct"
         components += [component(ref,path,row["value"],role,unit,observed),
                        component(ref,"as_of_date",observed,"DATE","ISO_DATE",observed)]
         value = f"{row['value']:.2f}%" if key=="level_pct" else f"{row['value']:+.2f}{'pp' if unit=='pp' else '%'}"
+        if key in {'level', 'price_usd_per_barrel'}:
+            value = f"{row['value']:,.2f} {'USD/배럴' if key == 'price_usd_per_barrel' else 'USD'}"
         claims.append(claim("OBSERVED_MARKET_VALUE",components,f"• {label}: {value} ({observed} 관측)",
                             parents=parents,formula=formula,metadata={"registry_row_sha256":digest(row),"fact_sha256":digest(fact)}))
+    claims.extend(rankings)
     for row in source.get("night_futures") or []:
         receipt = night_market_eligibility(row,market=market,assessment_date=assessment_date,completed_session_date=completed)
         if not receipt["eligible"]:
@@ -151,7 +171,7 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
             ("change_value","DELTA","point"),("change_pct","RETURN","pct"))]
         for name in ("daily","weekly","monthly"):
             frame = row["night_timeframes"][name]
-            for key,role,unit in (("open","LEVEL","point"),("close","LEVEL","point"),("gap_pct","RETURN","pct"),("return_pct","RETURN","pct")):
+            for key,role,unit in (("open","LEVEL","point"),("high","LEVEL","point"),("low","LEVEL","point"),("close","LEVEL","point"),("gap_pct","RETURN","pct"),("return_pct","RETURN","pct")):
                 if frame.get(key) is not None:
                     parts.append(component(frame["fact_id"],key,frame[key],role,unit,frame["reference_date"],scope="NIGHT_FUTURES_MODULE"))
             for key,numerator,baseline in (("return_pct","close","return_baseline_close"),("gap_pct","open","gap_baseline_close")):
@@ -159,6 +179,11 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
                     if not number(frame.get(numerator)) or not number(frame.get(baseline)) or frame[baseline]<=0 or not isclose((frame[numerator]/frame[baseline]-1)*100,frame[key],abs_tol=1e-6):
                         raise ValueError("night_timeframe_derived_arithmetic_invalid")
                     parts.append(component(frame['fact_id'],baseline,frame[baseline],"DERIVATION_BASELINE","point",frame['reference_date'],scope="NIGHT_FUTURES_MODULE"))
+            for key in ("aggregation_start_date", "reference_date", "expected_dates", "included_dates", "missing_dates", "future_expected_dates"):
+                parts.append(component(frame['fact_id'],key,frame[key],"SESSION_COVERAGE","ISO_DATE",frame['reference_date'],scope="NIGHT_FUTURES_MODULE"))
+            for key, value in (("included_count", len(frame['included_dates'])),
+                               ("elapsed_expected_count", sum(d <= frame['reference_date'] for d in frame['expected_dates']))):
+                parts.append(component(frame['fact_id'],key,value,"DERIVED_SESSION_COUNT","count",frame['reference_date'],scope="NIGHT_FUTURES_MODULE"))
         exact = (f"한국 야간선물 · 기준 {day}\n"+block[0]+f"\n  종가 {row['value']:,.2f} · 직전 정규장({row['reference_date']}) {row['reference_price']:,.2f}"
                  +f" · 차이 {row['change_value']:+.2f}pt / {row['change_pct']:+.2f}%")
         claims.append(claim("OFFICIAL_NIGHT",parts,exact,
