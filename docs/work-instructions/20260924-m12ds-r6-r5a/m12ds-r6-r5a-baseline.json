@@ -1,0 +1,21 @@
+{
+  "task_id": "M12DS-R6-R5A-20260924",
+  "r6_r5_report_sha256": "0e675ed0c05df9c3672a2fcfdea709eaad177f8e9190de2494a1080100cee67f",
+  "r6_r5_terminal": "M12DS_R6_R5_CUTOFF_OBSERVATION_PENDING",
+  "r6_r5_final_sha": "1da19d245e84b6643a7139f8177f72acd46a16fe",
+  "route_sha256": "c3020384e933286760e33d03a627b26cd662753a4cb3f5c893b111d36b9a8c7e",
+  "plan_sha256": "018c17edb00fd78181ae3f3627785b678dd854dc11689c7c1fd5b14290930f8f",
+  "cutoffs_kst": [
+    "08:05",
+    "08:10",
+    "08:15",
+    "08:20"
+  ],
+  "expected_target_session": "2026-09-23",
+  "full_universe_count": 22,
+  "quote_subset": [
+    "SPY",
+    "SOXX",
+    "XLC"
+  ]
+}
