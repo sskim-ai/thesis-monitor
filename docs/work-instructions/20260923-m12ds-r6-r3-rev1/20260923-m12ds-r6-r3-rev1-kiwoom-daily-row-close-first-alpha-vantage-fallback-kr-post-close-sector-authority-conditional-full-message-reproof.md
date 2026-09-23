@@ -1,12 +1,12 @@
 # Thesis Monitor — M12DS-R6-R3-REV1 Kiwoom Daily-Row Close Qualification First + Alpha Vantage Fallback + KR Post-Close Sector Authority + Conditional Full 24-Message Reproof
 
-**Suggested work-instruction filename:**  
+**Suggested work-instruction filename:**
 `20260923-m12ds-r6-r3-rev1-kiwoom-daily-row-close-first-alpha-vantage-fallback-kr-post-close-sector-authority-conditional-full-message-reproof.md`
 
-**Suggested result bundle:**  
+**Suggested result bundle:**
 `thesis-monitor-20260923-m12ds-r6-r3-rev1-kiwoom-daily-row-close-first-alpha-vantage-fallback-kr-post-close-sector-authority-conditional-full-message-reproof-report.zip`
 
-**Required review bundle on full success:**  
+**Required review bundle on full success:**
 `m12ds-r6-r3-rev1-rendered-message-review.zip` + `.sha256`
 
 **Task ID:** `M12DS-R6-R3-REV1-20260923`
