@@ -1,12 +1,12 @@
 # Thesis Monitor — M12DS-R6-R5 Kiwoom Regular-Close Ownership Decision + Conditional Full Message Reproof
 
-**Suggested work-instruction filename:**  
+**Suggested work-instruction filename:**
 `20260923-m12ds-r6-r5-kiwoom-regular-close-ownership-decision-conditional-full-message-reproof.md`
 
-**Suggested result bundle:**  
+**Suggested result bundle:**
 `thesis-monitor-20260923-m12ds-r6-r5-kiwoom-regular-close-ownership-decision-conditional-full-message-reproof-report.zip`
 
-**Required review bundle on full success:**  
+**Required review bundle on full success:**
 `m12ds-r6-r5-rendered-message-review.zip` + `.sha256`
 
 **Task ID:** `M12DS-R6-R5-20260923`
