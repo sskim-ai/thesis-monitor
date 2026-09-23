@@ -1,0 +1,26 @@
+{
+  "contract": "m12ds-r6-r4-kiwoom-daily-close-finality-cutoff-v1",
+  "provider": "Kiwoom",
+  "endpoint": "usa06012",
+  "daily_context_mapping": {
+    "date": "dt",
+    "open": "open_pric",
+    "high": "high_pric",
+    "low": "low_pric",
+    "close": "cur_prc",
+    "close_official_label": "현재가(종가)"
+  },
+  "scope_rule": "Mapping applies only inside the proven usa06012 dated daily-row schema. Generic cur_prc remains CURRENT_QUOTE.",
+  "remaining_finality_proof": [
+    "correct canonical exchange routing",
+    "regular-session-only daily bar semantics or after-hours non-mutation proof",
+    "target completed-session row available at real 08:05/08:10/08:15/08:20 cutoff"
+  ],
+  "cutoff_evidence_priority": [
+    "existing raw receipt/log captured at an actual configured cutoff with trustworthy acquisition timestamp",
+    "new bounded manual read-only observer at the next configured cutoff window"
+  ],
+  "kr_post_close": "carry forward existing PASS receipt; fresh source generation must reproduce or bind it under the final generation",
+  "alpha_vantage": "disabled for this task; no further calls",
+  "new_external_provider": false
+}

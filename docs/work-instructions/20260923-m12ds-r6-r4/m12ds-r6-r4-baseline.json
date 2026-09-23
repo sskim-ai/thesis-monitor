@@ -1,0 +1,41 @@
+{
+  "task_id": "M12DS-R6-R4-20260923",
+  "operating_main": "2097645892e30d84aba435416f98e7f9545a87fa",
+  "continuation_base": "e25e41baf231318b873adf62cab8433eeded5b0e",
+  "r6_r3_rev1_report_sha256": "e62452cc3d736b0e5af30daa8c58ac495d88d22320e25c41816058591456c88f",
+  "r6_r3_rev1_terminal": "M12DS_R6_R3_REV1_ALPHA_VANTAGE_ACCOUNT_INSUFFICIENT",
+  "kiwoom": {
+    "endpoint": "usa06012",
+    "official_title": "미국주식 일 차트",
+    "row_close_semantic": "PASS_OFFICIAL_SCHEMA",
+    "row_close_field": "cur_prc",
+    "row_close_label": "현재가(종가)",
+    "regular_session_finality": "UNPROVEN",
+    "actual_cutoff": "UNPROVEN",
+    "bad_probe_routing": "SPY/NA -> code 7; not coverage evidence"
+  },
+  "alpha_vantage": {
+    "status": "ACCOUNT_INSUFFICIENT",
+    "daily_limit_reported": 25,
+    "data_rows_from_probe": 0,
+    "calls_per_full_refresh_current_design": 22,
+    "calls_for_four_full_refreshes": 88,
+    "active_fallback_next_task": false
+  },
+  "kr_post_close": {
+    "status": "PASS",
+    "venues": [
+      "KOSPI",
+      "KOSDAQ"
+    ],
+    "parity": "EXACT_LEVEL_AND_RETURN",
+    "ranking": "TOP3_BOTTOM3_PASS"
+  },
+  "validation": "clean env 5346 passed / 63 existing skips / 0 failed",
+  "transport": {
+    "timeout_seconds": 600,
+    "max_attempts": 3,
+    "max_retries_after_first": 2,
+    "retry_identity": "BYTE_IDENTICAL"
+  }
+}
