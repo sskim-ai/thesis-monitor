@@ -1,12 +1,12 @@
 # Thesis Monitor — M12DS-R6-R4 Kiwoom Daily-Close Finality + Real Cutoff Proof + Full 24-Message Reproof
 
-**Suggested work-instruction filename:**  
+**Suggested work-instruction filename:**
 `20260923-m12ds-r6-r4-kiwoom-daily-close-finality-cutoff-full-message-reproof.md`
 
-**Suggested result bundle:**  
+**Suggested result bundle:**
 `thesis-monitor-20260923-m12ds-r6-r4-kiwoom-daily-close-finality-cutoff-full-message-reproof-report.zip`
 
-**Required review bundle on full success:**  
+**Required review bundle on full success:**
 `m12ds-r6-r4-rendered-message-review.zip` + `.sha256`
 
 **Task ID:** `M12DS-R6-R4-20260923`
