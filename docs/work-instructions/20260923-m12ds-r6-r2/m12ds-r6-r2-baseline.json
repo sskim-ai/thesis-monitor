@@ -1,0 +1,40 @@
+{
+  "task_id": "M12DS-R6-R2-20260923",
+  "operating_main": "2097645892e30d84aba435416f98e7f9545a87fa",
+  "continuation_branch_final": "196b3f82f2a17fdb882339deda99490b7e0dbb60",
+  "r6_r1_rev1_report_sha256": "b90cb60e9d55082ec15a66d9a083edce53accad1b429ab3a5b7dfcecb5bd0dff",
+  "r6_r1_rev1_terminal": "M12DS_R6_R1_INFORMATION_COVERAGE_INCOMPLETE",
+  "model_calls": 0,
+  "new_messages": 0,
+  "validation": "5291 passed / 63 existing skips / 0 failed",
+  "p0_open": 0,
+  "p1_open": 2,
+  "p1": [
+    "US settled regular-session close/finality authority for latest completed session",
+    "KR completed-session sector ownership at production execution cutoff"
+  ],
+  "closed_locally": {
+    "kr_price_basis": "8/8 adjusted_intraday -> INTRADAY + ADJUSTED",
+    "macro_freshness_contract": "implemented fail-closed",
+    "night_dwm": "unchanged previously passing implementation",
+    "stock_support_resistance": "unchanged previously passing implementation"
+  },
+  "transport_policy": {
+    "timeout_seconds": 600,
+    "max_attempts": 3,
+    "max_retries_after_first": 2,
+    "retry_identity": "BYTE_IDENTICAL",
+    "retry_only": [
+      "TRANSIENT_TRANSPORT",
+      "TRANSIENT_PROCESS"
+    ],
+    "never_retry": [
+      "SCHEMA",
+      "SEMANTIC",
+      "SOURCE_USE",
+      "POLICY",
+      "SECURITY",
+      "IDENTITY"
+    ]
+  }
+}

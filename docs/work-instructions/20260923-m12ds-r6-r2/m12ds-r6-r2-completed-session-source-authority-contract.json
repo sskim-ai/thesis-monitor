@@ -1,0 +1,39 @@
+{
+  "contract": "m12ds-r6-r2-completed-session-source-authority-v1",
+  "schedule_owner": {
+    "required": true,
+    "rule": "Resolve the actual production US/KR market-message execution cutoff from repository scheduler/config before choosing a source-finality strategy."
+  },
+  "us_close": {
+    "required_semantic": "SETTLED_REGULAR_SESSION_CLOSE",
+    "allowed_proof": [
+      "explicit provider field documented as regular-session settled close for the owned session",
+      "historical/daily endpoint whose documented row semantics prove completed daily close",
+      "already-approved read-only route that exposes previous/regular close with exact session ownership"
+    ],
+    "not_allowed": [
+      "wall-clock passage alone",
+      "current quote silently treated as close",
+      "using a later row that would not exist at the actual production cutoff",
+      "stale 2026-09-04 row promoted to current"
+    ],
+    "new_external_provider_requires_user_approval": true
+  },
+  "kr_sector": {
+    "post_close_mode": "Current-only sector snapshot may own the completed same-day session only with exchange CLOSED state + provider semantics + completed composite-index parity proof.",
+    "pre_close_mode": "Previous completed-session ranking requires an approved target-date historical sector route.",
+    "taxonomy_mixing": false,
+    "model_ranking": false
+  },
+  "macro_display": {
+    "direction_evidence": "only CURRENT_BY_PROVIDER_CALENDAR or otherwise source-owned current rows",
+    "latest_available_information": "may render in a clearly separated/delayed informational block with observation date; must never become current-direction support/contradiction",
+    "stale_value_presented_as_current": false
+  },
+  "transport": {
+    "timeout_seconds": 600,
+    "max_attempts": 3,
+    "max_retries_after_first": 2,
+    "retry_request_identity": "BYTE_IDENTICAL"
+  }
+}
