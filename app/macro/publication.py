@@ -4,7 +4,9 @@ from hashlib import sha256
 from html.parser import HTMLParser
 from zoneinfo import ZoneInfo
 
-PUBLICATION_SERIES = frozenset({"DGS3", "DGS5", "DGS10", "DGS30", "DCOILWTICO"})
+PUBLICATION_SERIES = frozenset({"DGS2", "DGS3", "DGS5", "DGS10", "DGS30", "DCOILWTICO",
+                                "DFII10", "T10YIE", "BAMLH0A0HYM2", "VIXCLS"})
+H15_CLOCK_SERIES = frozenset({'DGS2', 'DGS3', 'DGS5', 'DGS10', 'DGS30'})
 CONTRACT = "fred-published-observation-v1"
 
 
@@ -39,9 +41,9 @@ def publication_receipt(body: bytes, series: str, as_of: datetime) -> dict:
     if published.tzname() != abbreviation:
         raise ValueError('publication_timezone_mismatch')
     next_day = datetime.strptime(metadata.next_release, '%b %d, %Y').date()
-    # H.15 publishes at 16:15 ET. WTI has no verified release clock: deny from
-    # the start of its declared next release date until a new publication arrives.
-    next_due = datetime.combine(next_day, time(0) if series == 'DCOILWTICO' else time(16, 15),
+    # Preserve the existing H.15 clock. Other series have no verified clock here:
+    # deny from the start of the declared release day, never assume H.15 timing.
+    next_due = datetime.combine(next_day, time(16, 15) if series in H15_CLOCK_SERIES else time(0),
                                 tzinfo=ZoneInfo('America/New_York'))
     if expected > published.date() or next_due <= published:
         raise ValueError('publication_date_order_invalid')
@@ -65,3 +67,26 @@ def publication_current(receipt, series, observed, as_of):
                 < datetime.fromisoformat(receipt['next_publication_due']))
     except (KeyError, TypeError, ValueError):
         return False
+
+
+def publication_freshness(receipt, series, observed, *, completed, assessed):
+    """Calendar-owned publication validity is distinct from current-session evidence."""
+    state = 'STALE_UNEXPECTED'
+    try:
+        at = datetime.fromisoformat(receipt['assessed_at'])
+        valid = (at.date().isoformat() == assessed
+                 and date.fromisoformat(observed) <= date.fromisoformat(completed)
+                 <= date.fromisoformat(assessed)
+                 and publication_current(receipt, series, observed, at))
+        if valid:
+            state = ('CURRENT_BY_PROVIDER_CALENDAR' if observed == completed
+                     else 'LATEST_PUBLISHED_WITH_LAG')
+    except (KeyError, TypeError, ValueError):
+        pass
+    return dict(contract='macro-publication-freshness-display-v1', state=state,
+                observation_date=observed, completed_session=completed,
+                calendar_owner='official_series_next_release',
+                reason=('provider_publication_verified_for_cutoff' if state != 'STALE_UNEXPECTED'
+                        else 'publication_receipt_missing_expired_or_unverified_for_cutoff'),
+                current_direction_eligible=state == 'CURRENT_BY_PROVIDER_CALENDAR',
+                factual_display_eligible=state != 'STALE_UNEXPECTED')

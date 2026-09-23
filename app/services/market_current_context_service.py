@@ -1,7 +1,7 @@
 """Source-owned current context is not automatically a new daily signal."""
 from datetime import date, datetime
 
-from app.macro.publication import publication_current
+from app.macro.publication import PUBLICATION_SERIES, publication_freshness
 from app.services.kr_market_digest_quality_service import is_kr_sector_return_row
 
 
@@ -16,10 +16,9 @@ def current_context_eligible(fact, completed, assessed):
         if date.fromisoformat(observed) > date.fromisoformat(assessed):
             return False
         publication = fields.get('publication_receipt')
-        if publication:
-            at = datetime.fromisoformat(publication['assessed_at'])
-            return (at.date().isoformat() == assessed and fields.get('provider') == 'fred'
-                    and publication_current(publication, fields.get('series_code'), observed, at))
+        if fields.get('provider') == 'fred' and fields.get('series_code') in PUBLICATION_SERIES:
+            return publication_freshness(publication, fields['series_code'], observed,
+                completed=completed, assessed=assessed)['factual_display_eligible']
         receipt = fields.get('completed_session_receipt') or {}
         return (fact.get('fact_type') in {'market_index', 'market_sector', 'market_style'}
                 and fields.get('provider') == 'ohlcv_analyst'

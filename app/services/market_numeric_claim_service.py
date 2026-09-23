@@ -7,6 +7,7 @@ from math import isclose, isfinite
 from app.services.official_night_market_eligibility_service import night_market_eligibility, night_catalog_matches
 from app.services.us_full_message_service import _night_timeframe_block
 from app.services.market_current_context_service import current_context_eligible
+from app.macro.publication import PUBLICATION_SERIES, publication_freshness
 
 CONTRACT = "market-numeric-claim-v1"
 FORMATTER = "market-numeric-formatter-v1"
@@ -48,6 +49,8 @@ def _eligible(fact, completed, assessed):
     if current_context_eligible(fact, completed, assessed):
         return True
     fields = fact.get("fields") or {}
+    if fields.get('provider') == 'fred' and fields.get('series_code') in PUBLICATION_SERIES:
+        return False
     try:
         observed = date.fromisoformat(fact["as_of_date"])
         if observed > date.fromisoformat(assessed):
@@ -151,8 +154,18 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
         value = f"{row['value']:.2f}%" if key=="level_pct" else f"{row['value']:+.2f}{'pp' if unit=='pp' else '%'}"
         if key in {'level', 'price_usd_per_barrel'}:
             value = f"{row['value']:,.2f} {'USD/배럴' if key == 'price_usd_per_barrel' else 'USD'}"
-        claims.append(claim("OBSERVED_MARKET_VALUE",components,f"• {label}: {value} ({observed} 관측)",
-                            parents=parents,formula=formula,metadata={"registry_row_sha256":digest(row),"fact_sha256":digest(fact)}))
+        freshness = None
+        suffix = ''
+        if fields.get('provider') == 'fred' and fields.get('series_code') in PUBLICATION_SERIES:
+            freshness = publication_freshness(fields.get('publication_receipt'), fields['series_code'],
+                observed, completed=completed, assessed=assessment_date)
+            if freshness['state'] == 'LATEST_PUBLISHED_WITH_LAG':
+                suffix = ' · 최신 공표값(관측 지연), 현재 방향 판단 제외'
+        metadata = {"registry_row_sha256":digest(row),"fact_sha256":digest(fact)}
+        if freshness is not None:
+            metadata['publication_freshness'] = freshness
+        claims.append(claim("OBSERVED_MARKET_VALUE",components,f"• {label}: {value} ({observed} 관측){suffix}",
+                            parents=parents,formula=formula,metadata=metadata))
     claims.extend(rankings)
     for row in source.get("night_futures") or []:
         receipt = night_market_eligibility(row,market=market,assessment_date=assessment_date,completed_session_date=completed)

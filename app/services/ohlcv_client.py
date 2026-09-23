@@ -837,7 +837,8 @@ class OhlcvClient:
         )
         chart_daily = context.chart.timeframes.get("daily")
         context.chart.as_of_date = latest_date
-        context.chart.price_basis = "adjusted_intraday" if is_live_bar else "adjusted_close"
+        from app.services.current_price_basis_service import legacy_price_basis
+        context.chart.price_basis = legacy_price_basis(intraday=is_live_bar, adjusted=True)
         context.chart.quality = (
             "provisional"
             if is_live_bar

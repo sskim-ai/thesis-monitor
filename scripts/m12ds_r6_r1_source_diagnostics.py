@@ -135,6 +135,7 @@ async def run(root):
     service = KiwoomKrMarketContextService(client, max_pages=1)
     kr = []
     for market, spec in MARKETS.items():
+        archive_start = len(service._archive_rows)
         bodies = [
             ('ka20001', {'mrkt_tp': spec['ka20001_market'], 'inds_cd': spec['code']}),
             ('ka20003', {'inds_cd': spec['code']}),
@@ -154,7 +155,7 @@ async def run(root):
             row['status'] = 'PASS'
         except (ValueError, TypeError, RuntimeError, httpx.HTTPError) as exc:
             row.update(status='FAIL', exception=exception_receipt(exc))
-        row['payload_hashes'] = [r['payload_sha256'] for r in service._archive_rows]
+        row['payload_hashes'] = [r['payload_sha256'] for r in service._archive_rows[archive_start:]]
         kr.append(row)
     put(root / 'kr-diagnostic.json', {'rows': kr, 'provider_calls': asdict(client.stats)})
     put(root / 'complete.json', {'at': datetime.now(KST), 'model_calls': 0,
@@ -163,13 +164,59 @@ async def run(root):
     print(json.dumps({'kr_rows': len(kr), 'kr_pass': sum(r['status']=='PASS' for r in kr)}), flush=True)
 
 
+async def auxiliary(root):
+    from app.config import get_settings
+    from app.macro.providers.fred import FredProvider
+    from app.macro.publication import publication_freshness
+    from app.services.market_session import us_market_session, korea_market_session
+    from app.services.ohlcv_client import OhlcvClient
+    from app.services.current_price_basis_service import legacy_price_basis, price_basis_context
+
+    root.mkdir(parents=True, exist_ok=False)
+    settings = get_settings()
+    at = datetime.now(KST)
+    completed = us_market_session(at).latest_completed_regular_session_date.isoformat()
+    fred = await FredProvider().collect(at)
+    rows = []
+    for item in fred.observations:
+        receipt = item.raw_payload.get('publication_receipt')
+        rows.append({'series': item.series_code, 'value': item.value,
+            'observed': item.observed_at.date().isoformat(), 'publication_receipt': receipt,
+            'freshness': publication_freshness(receipt, item.series_code,
+                item.observed_at.date().isoformat(), completed=completed, assessed=at.date().isoformat())})
+    put(root / 'macro-freshness.json', {'at': at, 'rows': rows, 'warnings': fred.warnings})
+    transport = DiagnosticTransport(root / 'private/kr-quotes')
+    key = settings.ohlcv_api_key or settings.action_api_key
+    quotes = []
+    async with httpx.AsyncClient(base_url=settings.ohlcv_base_url.rstrip('/'),
+            headers={'X-API-Key': key} if key else {}, timeout=settings.ohlcv_timeout_seconds,
+            transport=transport) as client:
+        for ticker in ('000660','003690','005490','005930','010120','012450','047810','086280'):
+            response = await client.get('/ohlcv', params=dict(symbol=ticker, market='KR', periods='daily',
+                count=3, include_indicators='false', indicator_limit=0, adjusted='true'))
+            response.raise_for_status()
+            payload = response.json()
+            bars, _, provider = OhlcvClient._decode_period_payload(payload, ticker=ticker, period='daily', adjusted=True)
+            latest = max(bars, key=lambda b: b['date'])
+            state = korea_market_session(at)
+            live = state.session == 'open' and latest['date'] == state.market_date.isoformat()
+            owned = payload.get('meta', {}).get('adjusted') is True
+            quotes.append(dict(ticker=ticker, provider=provider, adjusted_response_owned=owned,
+                raw_response_sha256=sha256(response.content).hexdigest(), date=latest['date'],
+                price_basis=price_basis_context(legacy_price_basis(intraday=live, adjusted=True)) if owned else None))
+    put(root / 'quote-adjustment-ownership.json', {'at': at, 'rows': quotes, 'model_calls': 0})
+    print(json.dumps({'macro_observations': len(rows), 'quotes': len(quotes),
+                      'owned_adjustment': sum(r['adjusted_response_owned'] for r in quotes)}), flush=True)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', required=True, type=Path)
+    parser.add_argument('--auxiliary', action='store_true')
     args = parser.parse_args()
     os.environ.update(THESIS_MONITOR_ENV_FILE='/Users/sskim/Codex/thesis-monitor/.env',
         DATA_DIR=str(args.root / 'isolated-data'), DATABASE_URL='sqlite:///:memory:',
         TELEGRAM_BOT_TOKEN='', TELEGRAM_CHAT_ID='', TELEGRAM_TEST_CHAT_ID='',
         NOTIFICATION_DRY_RUN='true', PERSISTENCE_V2_WRITER_ENABLED='false',
         PERSISTENCE_V2_OUTBOX_DELIVERY_ENABLED='false')
-    asyncio.run(run(args.root.resolve()))
+    asyncio.run((auxiliary if args.auxiliary else run)(args.root.resolve()))

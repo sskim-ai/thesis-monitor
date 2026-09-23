@@ -41,6 +41,8 @@ def stock_plan(proof, ticker, ep):
         stock = next(s for packet in proof.packets.values() for s in packet['stocks'] if s['ticker']==ticker)
         candidate = stock.get('current_price_context')
         if candidate and candidate.get('availability') in {'ready', 'partial'}:
+            from app.services.current_price_basis_service import validate_quote_context
+            validate_quote_context(candidate, ep.assessment_date)
             quote = candidate
             receipt['quote_context_sha256'] = digest(quote)
     return AcceptedCalibrationPlan(ticker=ticker, source_generation_id=proof.source_gen,

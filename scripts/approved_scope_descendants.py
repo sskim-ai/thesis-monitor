@@ -64,6 +64,58 @@ R6_METADATA_INSERTION = b'''    raw_metadata = _json(item.raw_payload, {})
                 value[key] = raw_metadata[key]
 '''
 
+R6_R1_INSTRUCTION_SHA = '88ce447a35698a1ed02257b89184556537218bcd'
+R6_R1_BASE_SHA = 'ff15917d3182e299faa8c292dee7f1485e5ffd51'
+R6_R1_PRICE_BEFORE = {
+    'app/services/current_price_context_service.py': '9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f',
+    'app/services/ohlcv_client.py': '91ba0207a96445869d089e5446e242059624eea74b5cc10d78266cace462972f',
+}
+
+
+def _r6_r1_price_transform(path, before):
+    if path == 'app/services/ohlcv_client.py':
+        changes = [(b'        context.chart.price_basis = "adjusted_intraday" if is_live_bar else "adjusted_close"\n',
+            b'        from app.services.current_price_basis_service import legacy_price_basis\n'
+            b'        context.chart.price_basis = legacy_price_basis(intraday=is_live_bar, adjusted=True)\n')]
+    elif path == 'app/services/current_price_context_service.py':
+        changes = [
+            (b'from typing import Mapping\n', b'from typing import Mapping\n\n'
+             b'from app.services.current_price_basis_service import price_basis_context\n'),
+            (b'    available_count = sum(\n', b'    try:\n'
+             b"        typed_basis = price_basis_context(structure.get('price_basis'))\n"
+             b'    except ValueError:\n        typed_basis = None\n    available_count = sum(\n'),
+            (b'        "price_basis": structure.get("price_basis"),\n',
+             b'        "price_basis": structure.get("price_basis"),\n'
+             b'        "price_basis_context": typed_basis,\n'
+             b'        "latest_completed_regular_session_date": decision.get("latest_completed_regular_session_date"),\n'),
+        ]
+    else:
+        return None
+    for original, replacement in changes:
+        if before.count(original) != 1:
+            return None
+        before = before.replace(original, replacement)
+    return before
+
+
+def _r6_r1_price_approval(path, observed):
+    try:
+        if (not _ancestor(R6_R1_INSTRUCTION_SHA)
+                or _git('show', '-s', '--format=%P', R6_R1_INSTRUCTION_SHA).decode().strip() != R6_R1_BASE_SHA):
+            return None
+        before = _git('show', f'{R6_R1_INSTRUCTION_SHA}:{path}')
+        if sha256(before).hexdigest() != R6_R1_PRICE_BEFORE[path]:
+            return None
+        after = _r6_r1_price_transform(path, before)
+        if observed != after or _git('show', f'HEAD:{path}') not in (before, after):
+            return None
+        return dict(owner='M12DS-R6-R1-REV1', path=path, instruction_commit=R6_R1_INSTRUCTION_SHA,
+            before_sha256=R6_R1_PRICE_BEFORE[path], sha256=sha256(after).hexdigest(),
+            provenance_mode='EXACT_PRICE_BASIS_METADATA_MIGRATION', exact_transform_verified=True,
+            investment_decision_policy_changed=False)
+    except (OSError, KeyError, subprocess.SubprocessError):
+        return None
+
 
 def _git(*args):
     return subprocess.check_output(["git", *args], stderr=subprocess.DEVNULL, timeout=10)
@@ -144,7 +196,7 @@ def _workflow_approval(observed):
 
 def approved_descendant(path):
     pin = PINS.get(path)
-    if ((pin is None and path != WORKFLOW_PATH and path not in R6_SOURCE_HASHES) or not Path(path).is_file()
+    if ((pin is None and path != WORKFLOW_PATH and path not in R6_SOURCE_HASHES and path not in R6_R1_PRICE_BEFORE) or not Path(path).is_file()
             or Path(path).is_symlink()):
         return None
     try:
@@ -153,6 +205,8 @@ def approved_descendant(path):
         return None
     if path == WORKFLOW_PATH:
         return _workflow_approval(observed)
+    if path in R6_R1_PRICE_BEFORE:
+        return _r6_r1_price_approval(path, observed)
     if path in R6_SOURCE_HASHES:
         return _r6_source_approval(path, observed)
     if path in {'app/macro/briefing.py', 'app/services/ai_review_service.py'} and _ancestor(R6_INSTRUCTION_SHA):

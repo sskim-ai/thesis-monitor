@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Mapping
 
+from app.services.current_price_basis_service import price_basis_context
+
 
 CURRENT_PRICE_CONTEXT_CONTRACT = "current-price-context-v1"
 
@@ -87,6 +89,10 @@ def select_current_price_context(
     support = _zone(structure.get("active_support"))
     resistance = _zone(structure.get("active_resistance"))
     current_price = _number(structure.get("current_price"))
+    try:
+        typed_basis = price_basis_context(structure.get('price_basis'))
+    except ValueError:
+        typed_basis = None
     available_count = sum(
         (
             current_price is not None,
@@ -104,6 +110,8 @@ def select_current_price_context(
         "currency": decision.get("currency"),
         "as_of_date": structure.get("as_of_date"),
         "price_basis": structure.get("price_basis"),
+        "price_basis_context": typed_basis,
+        "latest_completed_regular_session_date": decision.get("latest_completed_regular_session_date"),
         "active_support": support,
         "active_resistance": resistance,
         "current_price_risk_reward": {

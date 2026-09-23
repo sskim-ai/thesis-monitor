@@ -138,19 +138,14 @@ def calibration_render(packet, plan):
         "", "대상별 판단", "신규 관찰자: " + str(row["new_buyer_reason"]),
         "보유자: " + str(row["holder_reason"])]
     if plan.quote_context is not None:
-        from datetime import date
+        from app.services.current_price_basis_service import validate_quote_context, price_basis_label
         quote = plan.quote_context
         try:
-            valid = (quote.get('contract') == 'current-price-context-v1'
-                     and quote.get('availability') in {'ready', 'partial'}
-                     and date.fromisoformat(quote['as_of_date']) <= date.fromisoformat(packet.assessment_date)
-                     and quote.get('price_basis') in {'adjusted_close', 'close', 'intraday'})
-        except (KeyError, TypeError, ValueError):
-            valid = False
-        if not valid:
-            errors.append('accepted_quote_asof_invalid')
+            typed_basis = validate_quote_context(quote, packet.assessment_date)
+        except ValueError as exc:
+            errors.append(str(exc))
         else:
-            basis = {'adjusted_close':'조정 종가', 'close':'종가', 'intraday':'장중 관측'}[quote['price_basis']]
+            basis = price_basis_label(typed_basis)
             lines.insert(2, f"가격 자료 기준: {quote['as_of_date']} · {basis}")
             lines.extend(["", "기술적 가격 구간"])
             for key, label in (("active_support", "기술적 지지"), ("active_resistance", "기술적 저항")):
