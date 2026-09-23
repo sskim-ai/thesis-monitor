@@ -1,0 +1,89 @@
+{
+  "contract": "m12ds-r6-r1-rev1-market-source-and-price-basis-closure-v1",
+  "us_ohlcv_diagnostics": {
+    "required_per_symbol": [
+      "request parameters",
+      "provider endpoint/provider id",
+      "HTTP/result status",
+      "raw payload SHA-256",
+      "sanitized response shape/sample metadata",
+      "latest raw bar date",
+      "parser selected bar date",
+      "cache/fallback path and whether used",
+      "exception type/message/stack owner"
+    ],
+    "no_stale_eligibility_widening": true,
+    "new_provider_without_chat": false
+  },
+  "kr_sector_diagnostics": {
+    "preserve_successful_transport_receipts": true,
+    "retain_sanitized_raw_shape_and_sha": true,
+    "retain_parser_exception": true,
+    "taxonomy_substitution": false
+  },
+  "price_basis_v2": {
+    "dimensions": {
+      "phase": [
+        "INTRADAY",
+        "CLOSE"
+      ],
+      "adjustment": [
+        "RAW",
+        "ADJUSTED"
+      ]
+    },
+    "legacy_mapping": {
+      "intraday": [
+        "INTRADAY",
+        "RAW"
+      ],
+      "adjusted_intraday": [
+        "INTRADAY",
+        "ADJUSTED"
+      ],
+      "close": [
+        "CLOSE",
+        "RAW"
+      ],
+      "adjusted_close": [
+        "CLOSE",
+        "ADJUSTED"
+      ]
+    },
+    "silent_coercion": false,
+    "shared_by": [
+      "producer",
+      "validator",
+      "renderer",
+      "capture"
+    ]
+  },
+  "macro_freshness_display": {
+    "states": [
+      "CURRENT_BY_PROVIDER_CALENDAR",
+      "LATEST_PUBLISHED_WITH_LAG",
+      "STALE_UNEXPECTED"
+    ],
+    "rule": "Expected publication calendar/lag owns freshness; host-date age alone does not.",
+    "stale_unexpected_render_as_current": false
+  },
+  "final_transport": {
+    "timeout_seconds": 600,
+    "max_attempts_per_logical_request": 3,
+    "max_retries_after_first_attempt": 2,
+    "retry_request_identity": "BYTE_IDENTICAL",
+    "retry_only": "typed transient transport/process",
+    "never_retry": [
+      "schema",
+      "semantic",
+      "source_use",
+      "policy",
+      "security",
+      "identity"
+    ],
+    "source_refresh_between_attempts": false,
+    "result_driven_prompt_edit": false,
+    "offline_substitution": false,
+    "fourth_attempt": false
+  }
+}

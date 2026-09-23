@@ -1,0 +1,95 @@
+{
+  "task_id": "M12DS-R6-R1-REV1-20260923",
+  "operating_main": "2097645892e30d84aba435416f98e7f9545a87fa",
+  "run1": {
+    "report_sha256": "54fa9395432278b9e1acf6c14f5950f80398a8d44c8727ea50bea04ecf57829d",
+    "review_sha256": "7231af5e120791cbdec8f9ddfbb05d3a26bf4f3cf73e41d442c9d3d4e673a2cc",
+    "controller": "05dec5a42572648665ceb2a0bbb1f32cdd57dc9d",
+    "source_generation": "20260923-m12ds-r6-0805-fresh-20260923T080654+0900",
+    "accepted_messages": 16,
+    "expected_messages": 24,
+    "night_dwm": "PASS",
+    "inference": "Market2/Core22/A22/B22"
+  },
+  "run2": {
+    "report_sha256": "d1806ef34ff3de9a3fd5549a1f50aee654d4cff4a41a535223b6716d66f748c7",
+    "review_sha256": "486cbc232f9428a057cd4f2753a6ae3d9549df6ade91883d1fbdd5f29fc9fe2a",
+    "controller": "ff15917d3182e299faa8c292dee7f1485e5ffd51",
+    "source_generation": "20260923-m12ds-r6-repeat-fresh-20260923T102200+0900",
+    "accepted_messages": 16,
+    "expected_messages": 24,
+    "night_dwm": "PASS",
+    "inference": "Market2/Core22/A22/B22",
+    "actual_retries": 0,
+    "transport_policy": "600s per attempt / first + up to 2 byte-identical transient retries / max 3 attempts"
+  },
+  "reproduced_gaps": {
+    "us_indices": {
+      "SPY": "2026-09-04",
+      "QQQ": "2026-09-04",
+      "IWM": "2026-09-04",
+      "completed_session": "2026-09-22",
+      "collector_warning_family": "ohlcv_analyst:<symbol>:ValueError",
+      "exact_root_cause_proven": false
+    },
+    "us_sector_rankings": {
+      "current_session": false,
+      "rows_as_of": "2026-09-04",
+      "exact_root_cause_proven": false
+    },
+    "kr_sector_rankings": {
+      "provider_requests": 5,
+      "provider_successes": 5,
+      "network_failures": 0,
+      "error": "ValueError",
+      "exact_root_cause_proven": false
+    },
+    "kr_messages": {
+      "failed_subjects": [
+        "000660",
+        "003690",
+        "005490",
+        "005930",
+        "010120",
+        "012450",
+        "047810",
+        "086280"
+      ],
+      "producer_price_basis": "adjusted_intraday",
+      "renderer_allowed": [
+        "adjusted_close",
+        "close",
+        "intraday"
+      ],
+      "dates_match": true
+    }
+  },
+  "preserve": {
+    "night_weekly": "2/2",
+    "night_monthly": "16/16",
+    "night_final_e2e": "PASS",
+    "us_stock_support_resistance": "PASS",
+    "treasury_3_5_10_30_render": "PASS",
+    "wti_render": "PASS_WITH_LAGGED_OBSERVATION_DATE"
+  },
+  "next_after_r6_human_approval": "M12DT_NEW_TICKER_ONBOARDING_GATE",
+  "standing_transport_policy": {
+    "timeout_seconds": 600,
+    "max_attempts_per_logical_request": 3,
+    "max_retries_after_first_attempt": 2,
+    "retry_request_identity": "BYTE_IDENTICAL",
+    "retry_only": [
+      "TRANSIENT_TRANSPORT",
+      "TRANSIENT_PROCESS"
+    ],
+    "never_retry": [
+      "SCHEMA",
+      "SEMANTIC",
+      "SOURCE_USE",
+      "POLICY",
+      "SECURITY",
+      "IDENTITY"
+    ],
+    "fourth_attempt_forbidden": true
+  }
+}
