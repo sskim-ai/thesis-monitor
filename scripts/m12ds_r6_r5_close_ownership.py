@@ -5,6 +5,7 @@ from datetime import date
 from scripts.m12ds_r6_r2_cutoff_audit import KST, NY, session_at
 from scripts.m12ds_r6_r3_source_qualification import number
 from scripts.m12ds_r6_r4_kiwoom_finality import (
+    CUTOFF_MINUTES,
     aware,
     cutoff_attempt,
     daily_observation,
@@ -153,6 +154,14 @@ def review_cutoff(dailies, raw_subset, quotes, routes, *, cutoff):
 
 
 def later_historical_comparison(at_cutoff, later, route):
+    start = aware(at_cutoff["started_at"]).astimezone(KST)
+    end = aware(at_cutoff["received_at"]).astimezone(KST)
+    if (
+        start.hour != 8
+        or start.minute not in CUTOFF_MINUTES
+        or start.replace(second=0, microsecond=0) != end.replace(second=0, microsecond=0)
+    ):
+        raise ValueError("delayed_comparison_requires_actual_configured_cutoff")
     early, late = (daily_observation(e, route) for e in (at_cutoff, later))
     target = early["pair"][0]["date"]
     if (

@@ -182,6 +182,19 @@ def test_plan_has_bounded_readonly_calls_and_no_automation():
     assert set(r["api_id"] for r in p["requests"]) == {"usa06012", "usa20100"}
 
 
+@pytest.mark.parametrize("at", ["2026-09-23T12:00:00+09:00", "2026-09-23T08:08:00+09:00"])
+def test_delayed_comparison_rejects_non_cutoff_sample(at):
+    with pytest.raises(ValueError, match="actual_configured_cutoff"):
+        later_historical_comparison(daily(at=at), daily(at="2026-09-23T18:00:00+09:00"), route())
+
+
+def test_delayed_comparison_rejects_response_outside_acquisition_minute():
+    early = daily(at="2026-09-23T08:05:30+09:00")
+    early["received_at"] = "2026-09-23T08:06:01+09:00"
+    with pytest.raises(ValueError, match="actual_configured_cutoff"):
+        later_historical_comparison(early, daily(at="2026-09-23T18:00:00+09:00"), route())
+
+
 def test_preflight_missed_and_wrong_window_fail_before_network(tmp_path):
     routes, _ = universe()
     day = date(2000, 1, 1)
