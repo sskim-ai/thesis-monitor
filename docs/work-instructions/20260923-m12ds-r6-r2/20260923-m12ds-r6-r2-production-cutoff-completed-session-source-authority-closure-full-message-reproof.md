@@ -1,12 +1,12 @@
 # Thesis Monitor — M12DS-R6-R2 Production-Cutoff Completed-Session Source Authority Closure + Full 24-Message Reproof
 
-**Suggested work-instruction filename:**  
+**Suggested work-instruction filename:**
 `20260923-m12ds-r6-r2-production-cutoff-completed-session-source-authority-closure-full-message-reproof.md`
 
-**Suggested result bundle:**  
+**Suggested result bundle:**
 `thesis-monitor-20260923-m12ds-r6-r2-production-cutoff-completed-session-source-authority-closure-full-message-reproof-report.zip`
 
-**Required review bundle on success:**  
+**Required review bundle on success:**
 `m12ds-r6-r2-rendered-message-review.zip` + `.sha256`
 
 **Task ID:** `M12DS-R6-R2-20260923`
@@ -584,4 +584,3 @@ After exact messages are reviewed and accepted:
 1. bounded R6 main integration + remote CI/replay;
 2. then:
    `M12DT_NEW_TICKER_ONBOARDING_GATE`.
-
