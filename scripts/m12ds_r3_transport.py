@@ -1,4 +1,4 @@
-"""At most two identical official attempts; only typed no-response transient failures retry."""
+"""Frozen bounded official attempts; only typed no-response transient failures retry."""
 from copy import deepcopy
 from pathlib import Path
 import json
@@ -11,7 +11,16 @@ from scripts import m12ds_launch_context as launch
 POLICY = {'contract': 'm12ds-r3-rev1-identical-transient-retry-v1', 'logical_requests': 26,
           'max_attempts_per_request': 2, 'max_processes': 52, 'timeout_seconds': 1200,
           'offline_substitution': False, 'model': 'gpt-5.6-sol', 'effort': 'xhigh'}
+REPEAT_POLICY = {**POLICY, 'contract': 'm12ds-r6-repeat-600s-two-transient-retries-v1',
+                 'max_attempts_per_request': 3, 'max_processes': 78, 'timeout_seconds': 600}
 RUNTIME_ROOT = Path('/private/tmp')
+
+
+def policy_for(proof):
+    policy = deepcopy(getattr(proof, 'TRANSPORT_POLICY', POLICY))
+    if policy not in (POLICY, REPEAT_POLICY):
+        raise p.SystemicFailure('UNAPPROVED_TRANSPORT_POLICY')
+    return policy
 
 
 def classify(code, *, output_present, event_types, stderr, tool_event=False):
@@ -62,22 +71,25 @@ def event_security_failure(path):
     return False
 
 
-def request_identity(request, frozen_dependencies):
+def request_identity(request, frozen_dependencies, policy=None):
+    policy = POLICY if policy is None else policy
     source = Path(request['directory'])
     return {'request_files': p.manifest(source), 'frozen_dependencies': deepcopy(frozen_dependencies),
-            'model': POLICY['model'], 'effort': POLICY['effort'], 'timeout_seconds': POLICY['timeout_seconds']}
+            'model': policy['model'], 'effort': policy['effort'], 'timeout_seconds': policy['timeout_seconds'],
+            'transport_policy': deepcopy(policy)}
 
 
 def invoke(proof, stage, spec, request):
     proof.preinvoke(stage, spec, request)
-    identity = request_identity(request, proof.dependencies)
+    policy = policy_for(proof)
+    identity = request_identity(request, proof.dependencies, policy)
     row = proof.ledger[-1]
     row['attempt_receipts'] = []
-    for attempt in (1, 2):
-        if len(proof.ledger) > POLICY['logical_requests'] or sum(r['attempts'] for r in proof.ledger) >= POLICY['max_processes']:
+    for attempt in range(1, policy['max_attempts_per_request'] + 1):
+        if len(proof.ledger) > policy['logical_requests'] or sum(r['attempts'] for r in proof.ledger) >= policy['max_processes']:
             raise p.SystemicFailure('R3_PROCESS_BUDGET_EXCEEDED')
         proof.preinvoke(stage, spec, request)
-        if request_identity(request, proof.dependencies) != identity:
+        if policy_for(proof) != policy or request_identity(request, proof.dependencies, policy) != identity:
             raise p.SystemicFailure('RETRY_LOGICAL_REQUEST_IDENTITY_DRIFT')
         context, expected = launch.context_receipt(), p.read(proof.report / 'host-context.json')
         if not (context['state_access']['effective_open_readwrite_without_write']
@@ -108,7 +120,7 @@ def invoke(proof, stage, spec, request):
         try:
             transport_receipt = p.transport.invoke_official_shadow(
                 codex_bin=str(p.BIN), prompt=approved / 'prompt.txt', schema=approved / 'provider-wire-schema.json',
-                output=output, log=log, cwd=approved, timeout=1200, state_namespace=namespace, request=req)
+                output=output, log=log, cwd=approved, timeout=policy['timeout_seconds'], state_namespace=namespace, request=req)
             p.write(destination / 'transport-receipt.json', transport_receipt)
         except p.transport.OfficialShadowError as exc:
             failure = exc.code
@@ -135,11 +147,11 @@ def invoke(proof, stage, spec, request):
             p.write(destination / 'attempt-receipt.json', receipt)
             proof.publish()
         proof.preinvoke(stage, spec, request)
-        if request_identity(request, proof.dependencies) != identity:
+        if policy_for(proof) != policy or request_identity(request, proof.dependencies, policy) != identity:
             raise p.SystemicFailure('POST_ATTEMPT_REQUEST_IDENTITY_DRIFT')
         if classification == 'SYSTEMIC':
             raise p.SystemicFailure('R3_SYSTEMIC_RUNTIME_OR_SECURITY:' + str(failure))
-        if classification == 'TRANSIENT' and attempt == 1:
+        if classification == 'TRANSIENT' and attempt < policy['max_attempts_per_request']:
             continue
         if classification != 'PASS':
             raise p.BatchFailure(str(failure))

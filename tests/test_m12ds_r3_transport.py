@@ -90,3 +90,55 @@ def test_certificate_error_in_event_stream_never_transient(tmp_path):
     path.write_text(json.dumps({'type': 'error', 'message': 'invalid peer certificate: UnknownIssuer'}))
     assert t.event_security_failure(path)
     assert t.sanitize_events(path)[0] == [{'type': 'error', 'item_type': None}]
+
+
+@pytest.mark.parametrize('outcomes,count,error', [
+    (['TRANSPORT_TIMEOUT', 'TRANSPORT_TIMEOUT', 'valid'], 3, None),
+    (['TRANSPORT_TIMEOUT'] * 3, 3, t.p.BatchFailure),
+    (['invalid'], 1, t.p.BatchFailure),
+    (['AUTH_MISSING'], 1, t.p.SystemicFailure),
+    (['tool'], 1, t.p.SystemicFailure),
+])
+def test_repeat_policy_bounded_identical_attempts(monkeypatch, tmp_path, outcomes, count, error):
+    proof, spec, request, calls = setup(monkeypatch, tmp_path, outcomes)
+    proof.TRANSPORT_POLICY = t.REPEAT_POLICY
+    if error:
+        with pytest.raises(error):
+            t.invoke(proof, 'core', spec, request)
+    else:
+        assert t.invoke(proof, 'core', spec, request)[0] == {'value': 'valid'}
+    assert len(calls) == count
+    assert {c['timeout'] for c in calls} == {600}
+    assert len({c['prompt'] for c in calls}) == len({c['schema'] for c in calls}) == 1
+    assert len({r['logical_identity_sha256'] for r in proof.ledger[-1]['attempt_receipts']}) == 1
+    assert t.POLICY['timeout_seconds'] == 1200
+    assert t.POLICY['max_attempts_per_request'] == 2
+
+
+def test_repeat_policy_budget_and_unapproved_policy_start_no_process(monkeypatch, tmp_path):
+    proof, spec, request, calls = setup(monkeypatch, tmp_path, [])
+    proof.TRANSPORT_POLICY = {**t.REPEAT_POLICY, 'max_attempts_per_request': 4}
+    with pytest.raises(t.p.SystemicFailure, match='UNAPPROVED_TRANSPORT_POLICY'):
+        t.invoke(proof, 'core', spec, request)
+    proof.TRANSPORT_POLICY = t.REPEAT_POLICY
+    proof.ledger = [{'attempts': 3}] * 26 + [{'attempts': 0}]
+    with pytest.raises(t.p.SystemicFailure, match='PROCESS_BUDGET_EXCEEDED'):
+        t.invoke(proof, 'core', spec, request)
+    assert calls == []
+
+
+def test_repeat_receipt_identity_matches_effective_policy(tmp_path):
+    from scripts.m12ds_r6_repeat_reproof import Reproof, bind_transport_receipt
+    from scripts.m12ds_r6_reproof import Reproof as Original
+    identity = dict(stage='pass-a', market='fictional', batch=1, subjects=['fictional'],
+                    model='gpt-5.6-sol', effort='xhigh', timeout_seconds=1200,
+                    execution_generation_id='fictional', request_composition='FINAL_POST_QUALITY_BOUND',
+                    file_sha256={'prompt': 'unchanged-prompt-digest'})
+    receipt = dict(identity, request_sha256=t.p.owner.canonical_sha256(identity), directory=str(tmp_path))
+    bind_transport_receipt(receipt)
+    identity['timeout_seconds'] = 600
+    assert receipt['request_sha256'] == t.p.owner.canonical_sha256(identity)
+    assert receipt['attempt_limit'] == 3
+    assert t.p.read(tmp_path / 'request-receipt.json') == receipt
+    assert Reproof.TRANSPORT_POLICY == t.REPEAT_POLICY
+    assert Original.TRANSPORT_POLICY == t.POLICY

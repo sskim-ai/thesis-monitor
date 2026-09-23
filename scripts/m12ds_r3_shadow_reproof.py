@@ -31,6 +31,8 @@ def stage(root):
 
 
 class Reproof(R2):
+    TRANSPORT_POLICY = transport.POLICY
+    RETRY_LABEL = 'ONE_IDENTICAL_TYPED_TRANSIENT_RETRY_ONLY'
     POLICY, SCHEMAS, MARKET_OWNER = policy, schemas, market
     INSTRUCTIONS = INSTRUCTIONS
     PREFIX = 'M12DS_R3_REV1'
@@ -61,7 +63,9 @@ class Reproof(R2):
 
     def capture(self, stage_name, spec, context, schema, prompt):
         receipt = super().capture(stage_name, spec, context, schema, prompt)
-        receipt.update(attempt_limit=2, retries='ONE_IDENTICAL_TYPED_TRANSIENT_RETRY_ONLY')
+        policy = transport.policy_for(self)
+        receipt.update(attempt_limit=policy['max_attempts_per_request'], retries=self.RETRY_LABEL,
+                       timeout_seconds=policy['timeout_seconds'])
         p.write(Path(receipt['directory']) / 'request-receipt.json', receipt)
         return receipt
 
@@ -75,16 +79,18 @@ class Reproof(R2):
 
     def freeze(self):
         super().freeze()
-        self.frozen['retry_policy'] = transport.POLICY
-        self.frozen['max_processes'] = 52
-        self.frozen['retry'] = 'ONE_IDENTICAL_TYPED_TRANSIENT_RETRY_ONLY'
+        policy = transport.policy_for(self)
+        self.frozen['retry_policy'] = policy
+        self.frozen['max_processes'] = policy['max_processes']
+        self.frozen['timeout_seconds'] = policy['timeout_seconds']
+        self.frozen['retry'] = self.RETRY_LABEL
         self.frozen['preflight_audits'] = {n: p.sha(self.report / n) for n in ('valuation-source-entitlement.json', 'market-source-parity.json')}
         p.write(self.report / 'execution-freeze.json', self.frozen)
         self.verify()
 
     def verify(self):
         super().verify()
-        if self.frozen.get('retry_policy') and self.frozen['retry_policy'] != transport.POLICY:
+        if self.frozen.get('retry_policy') and self.frozen['retry_policy'] != transport.policy_for(self):
             raise p.SystemicFailure('RETRY_POLICY_DRIFT')
         for name, digest in self.frozen.get('preflight_audits', {}).items():
             if p.sha(self.report / name) != digest:
@@ -132,8 +138,9 @@ class Reproof(R2):
     def bounded(self, stage_name, spec, callback):
         super().bounded(stage_name, spec, callback)
         row = self.ledger[-1]
-        if row['status'] == 'PASS' and row['attempts'] == 2:
-            row['status'] = 'PASS_AFTER_SINGLE_TRANSIENT_RETRY'
+        if row['status'] == 'PASS' and row['attempts'] > 1:
+            row['status'] = ('PASS_AFTER_SINGLE_TRANSIENT_RETRY' if row['attempts'] == 2
+                             else 'PASS_AFTER_TWO_TRANSIENT_RETRIES')
             self.publish()
 
 
